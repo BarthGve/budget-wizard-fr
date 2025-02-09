@@ -27,6 +27,11 @@ const Register = () => {
       return;
     }
 
+    if (formData.password.length < 6) {
+      toast.error("Le mot de passe doit contenir au moins 6 caractères");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -39,13 +44,14 @@ const Register = () => {
         },
       });
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        if (signUpError.message.includes("User already registered")) {
+          throw new Error("Un compte existe déjà avec cet email");
+        }
+        throw signUpError;
+      }
 
       if (signUpData.user) {
-        // Wait a bit for the trigger to create the profile
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // No need to create the contributor record manually as it's handled by the database trigger
         toast.success("Inscription réussie ! Vérifiez votre email pour confirmer votre compte.");
         navigate("/login");
       }
@@ -108,6 +114,7 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                minLength={6}
               />
             </div>
             <div className="space-y-2">
@@ -118,6 +125,7 @@ const Register = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                minLength={6}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
