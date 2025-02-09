@@ -5,7 +5,7 @@ import {
   LayoutDashboard,
   Users,
   PiggyBank,
-  Bell,
+  ClipboardList,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -23,7 +23,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
     { title: "Dashboard", icon: LayoutDashboard, path: "/" },
     { title: "Contributeurs", icon: Users, path: "/contributors" },
     { title: "Épargne", icon: PiggyBank, path: "/savings" },
-    { title: "Notifications", icon: Bell, path: "/notifications" },
+    { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
     { title: "Paramètres", icon: Settings, path: "/settings" },
   ];
 
