@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Index";
 import Contributors from "./pages/Contributors";
 import Settings from "./pages/Settings";
+import Savings from "./pages/Savings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Dashboard />} />
           <Route path="/contributors" element={<Contributors />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/savings" element={<Savings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
