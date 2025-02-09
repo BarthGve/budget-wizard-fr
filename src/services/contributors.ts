@@ -66,6 +66,18 @@ export const updateContributorService = async (
   currentContributors: Contributor[]
 ) => {
   try {
+    // Vérifier d'abord si le contributeur existe
+    const { data: existingContributor, error: checkError } = await supabase
+      .from("contributors")
+      .select("*")
+      .eq("id", contributor.id)
+      .maybeSingle();
+
+    if (checkError) throw checkError;
+    if (!existingContributor) {
+      throw new Error(`Contributeur non trouvé avec l'ID: ${contributor.id}`);
+    }
+
     // Calculer le nouveau budget total
     const totalBudget = currentContributors.reduce(
       (sum, c) =>
@@ -108,17 +120,18 @@ export const updateContributorService = async (
 
       if (error) throw error;
       if (!data) {
-        throw new Error(`Contributeur non trouvé: ${c.id}`);
+        throw new Error(`Erreur lors de la mise à jour du contributeur: ${c.id}`);
       }
       
       return data;
     });
 
+    // Attendre que toutes les mises à jour soient terminées
     await Promise.all(updates);
 
     // Récupérer et retourner la liste mise à jour des contributeurs
     return await fetchContributorsService();
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in updateContributorService:", error);
     throw error;
   }
