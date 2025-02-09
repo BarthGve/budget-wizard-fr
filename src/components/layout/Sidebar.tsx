@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -9,8 +9,12 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface SidebarProps {
   className?: string;
@@ -18,6 +22,7 @@ interface SidebarProps {
 
 export const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
@@ -27,15 +32,28 @@ export const Sidebar = ({ className }: SidebarProps) => {
     { title: "Paramètres", icon: Settings, path: "/settings" },
   ];
 
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast.success("Déconnexion réussie");
+      navigate("/login");
+    } catch (error: any) {
+      toast.error("Erreur lors de la déconnexion");
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
     <aside
       className={cn(
-        "h-screen bg-white border-r border-gray-200 transition-all duration-300",
+        "h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col",
         collapsed ? "w-20" : "w-64",
         className
       )}
     >
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col flex-1">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           {!collapsed && <h1 className="text-xl font-semibold">Budget Wizard</h1>}
           <button
@@ -73,8 +91,18 @@ export const Sidebar = ({ className }: SidebarProps) => {
             ))}
           </ul>
         </nav>
+
+        <div className="p-4 border-t border-gray-200">
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-5 w-5 mr-2" />
+            {!collapsed && <span>Déconnexion</span>}
+          </Button>
+        </div>
       </div>
     </aside>
   );
 };
-
