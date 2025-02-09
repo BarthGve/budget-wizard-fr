@@ -46,6 +46,8 @@ export const ContributorCard = ({
     setIsEditDialogOpen(false);
   };
 
+  const canEdit = !contributor.is_owner || contributor.total_contribution > 0;
+
   return (
     <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
       <div className="flex items-center space-x-4">
@@ -70,7 +72,7 @@ export const ContributorCard = ({
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          {!contributor.is_owner && (
+          {canEdit && (
             <>
               <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogTrigger asChild>
@@ -86,33 +88,37 @@ export const ContributorCard = ({
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-name">Nom</Label>
-                      <Input
-                        id="edit-name"
-                        value={editedContributor.name}
-                        onChange={(e) =>
-                          setEditedContributor({
-                            ...editedContributor,
-                            name: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-email">Email</Label>
-                      <Input
-                        id="edit-email"
-                        type="email"
-                        value={editedContributor.email}
-                        onChange={(e) =>
-                          setEditedContributor({
-                            ...editedContributor,
-                            email: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
+                    {!contributor.is_owner && (
+                      <>
+                        <div className="grid gap-2">
+                          <Label htmlFor="edit-name">Nom</Label>
+                          <Input
+                            id="edit-name"
+                            value={editedContributor.name}
+                            onChange={(e) =>
+                              setEditedContributor({
+                                ...editedContributor,
+                                name: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="edit-email">Email</Label>
+                          <Input
+                            id="edit-email"
+                            type="email"
+                            value={editedContributor.email}
+                            onChange={(e) =>
+                              setEditedContributor({
+                                ...editedContributor,
+                                email: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </>
+                    )}
                     <div className="grid gap-2">
                       <Label htmlFor="edit-contribution">Contribution (€)</Label>
                       <Input
@@ -133,31 +139,35 @@ export const ContributorCard = ({
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Supprimer le contributeur</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Êtes-vous sûr de vouloir supprimer ce contributeur ? Cette
-                      action ne peut pas être annulée.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => onDelete(contributor.id)}
-                      className="bg-red-500 hover:bg-red-600"
-                    >
-                      Supprimer
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              {!contributor.is_owner && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Supprimer le contributeur
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Êtes-vous sûr de vouloir supprimer ce contributeur ? Cette
+                        action ne peut pas être annulée.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => onDelete(contributor.id)}
+                        className="bg-red-500 hover:bg-red-600"
+                      >
+                        Supprimer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </>
           )}
         </div>
