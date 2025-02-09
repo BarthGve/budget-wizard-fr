@@ -62,6 +62,9 @@ export const updateContributorService = async (
   contributor: Contributor,
   currentContributors: Contributor[]
 ) => {
+  console.log("Updating contributor:", contributor);
+  console.log("Current contributors:", currentContributors);
+
   // Calculer le nouveau budget total
   const totalBudget = currentContributors.reduce(
     (sum, c) =>
@@ -72,33 +75,52 @@ export const updateContributorService = async (
     0
   );
 
+  console.log("Total budget:", totalBudget);
+
   // Mettre à jour tous les contributeurs avec leurs nouveaux pourcentages
-  const updatePromises = currentContributors.map((c) => {
+  const updatePromises = currentContributors.map(async (c) => {
     const isUpdatedContributor = c.id === contributor.id;
     const contribution = isUpdatedContributor
       ? contributor.total_contribution
       : c.total_contribution;
     const percentage = (contribution / totalBudget) * 100;
 
-    return supabase
+    console.log(`Updating contributor ${c.id}:`, {
+      contribution,
+      percentage,
+      isUpdatedContributor,
+    });
+
+    const updateData = isUpdatedContributor
+      ? {
+          total_contribution: contribution,
+          percentage_contribution: percentage,
+          ...(c.is_owner
+            ? {}
+            : {
+                name: contributor.name,
+                email: contributor.email,
+              }),
+        }
+      : {
+          percentage_contribution: percentage,
+        };
+
+    console.log("Update data:", updateData);
+
+    const { data, error } = await supabase
       .from("contributors")
-      .update({
-        ...(isUpdatedContributor
-          ? {
-              total_contribution: contribution,
-              percentage_contribution: percentage,
-              ...(c.is_owner
-                ? {}
-                : {
-                    name: contributor.name,
-                    email: contributor.email,
-                  }),
-            }
-          : {
-              percentage_contribution: percentage,
-            }),
-      })
-      .eq("id", c.id);
+      .update(updateData)
+      .eq("id", c.id)
+      .select();
+
+    if (error) {
+      console.error(`Error updating contributor ${c.id}:`, error);
+      throw error;
+    }
+
+    console.log(`Updated contributor ${c.id}:`, data);
+    return data;
   });
 
   await Promise.all(updatePromises);
