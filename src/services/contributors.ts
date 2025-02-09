@@ -1,7 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { Contributor, NewContributor } from "@/types/contributor";
-import { calculateContributorsPercentages } from "@/utils/contributorCalculations";
 
 export const fetchContributorsService = async () => {
   const { data, error } = await supabase
@@ -34,6 +33,7 @@ export const addContributorService = async (
     currentContributors.reduce((sum, c) => sum + c.total_contribution, 0) +
     contribution;
 
+  // D'abord, insérer le nouveau contributeur
   const { error: insertError } = await supabase.from("contributors").insert([
     {
       name: newContributor.name,
@@ -46,14 +46,23 @@ export const addContributorService = async (
 
   if (insertError) throw insertError;
 
-  await updateContributorsPercentages(currentContributors, totalBudget);
+  // Ensuite, mettre à jour les pourcentages de tous les contributeurs existants
+  const updatePromises = currentContributors.map((contributor) => {
+    const newPercentage = (contributor.total_contribution / totalBudget) * 100;
+    return supabase
+      .from("contributors")
+      .update({ percentage_contribution: newPercentage })
+      .eq("id", contributor.id);
+  });
+
+  await Promise.all(updatePromises);
 };
 
 export const updateContributorService = async (
   contributor: Contributor,
   currentContributors: Contributor[]
 ) => {
-  // Calculer le nouveau budget total en prenant en compte la nouvelle contribution
+  // Calculer le nouveau budget total
   const totalBudget = currentContributors.reduce(
     (sum, c) =>
       sum +
@@ -63,30 +72,36 @@ export const updateContributorService = async (
     0
   );
 
-  // Mettre à jour le contributeur actuel
-  const { error: updateError } = await supabase
-    .from("contributors")
-    .update({
-      total_contribution: contributor.total_contribution,
-      percentage_contribution: (contributor.total_contribution / totalBudget) * 100,
-      ...(contributor.is_owner
-        ? {}
-        : {
-            name: contributor.name,
-            email: contributor.email,
-          }),
-    })
-    .eq("id", contributor.id);
+  // Mettre à jour tous les contributeurs avec leurs nouveaux pourcentages
+  const updatePromises = currentContributors.map((c) => {
+    const isUpdatedContributor = c.id === contributor.id;
+    const contribution = isUpdatedContributor
+      ? contributor.total_contribution
+      : c.total_contribution;
+    const percentage = (contribution / totalBudget) * 100;
 
-  if (updateError) throw updateError;
+    return supabase
+      .from("contributors")
+      .update({
+        ...(isUpdatedContributor
+          ? {
+              total_contribution: contribution,
+              percentage_contribution: percentage,
+              ...(c.is_owner
+                ? {}
+                : {
+                    name: contributor.name,
+                    email: contributor.email,
+                  }),
+            }
+          : {
+              percentage_contribution: percentage,
+            }),
+      })
+      .eq("id", c.id);
+  });
 
-  // Mettre à jour les pourcentages des autres contributeurs
-  const otherContributors = currentContributors.filter(
-    (c) => c.id !== contributor.id
-  );
-  if (otherContributors.length > 0) {
-    await updateContributorsPercentages(otherContributors, totalBudget);
-  }
+  await Promise.all(updatePromises);
 };
 
 export const deleteContributorService = async (
@@ -99,6 +114,7 @@ export const deleteContributorService = async (
     throw new Error("Impossible de supprimer le propriétaire");
   }
 
+  // D'abord supprimer le contributeur
   const { error: deleteError } = await supabase
     .from("contributors")
     .delete()
@@ -106,6 +122,7 @@ export const deleteContributorService = async (
 
   if (deleteError) throw deleteError;
 
+  // Calculer le nouveau budget total sans le contributeur supprimé
   const remainingContributors = currentContributors.filter(
     (c) => c.id !== contributorId
   );
@@ -114,21 +131,14 @@ export const deleteContributorService = async (
     0
   );
 
-  await updateContributorsPercentages(remainingContributors, totalBudget);
-};
+  // Mettre à jour les pourcentages des contributeurs restants
+  const updatePromises = remainingContributors.map((contributor) => {
+    const newPercentage = (contributor.total_contribution / totalBudget) * 100;
+    return supabase
+      .from("contributors")
+      .update({ percentage_contribution: newPercentage })
+      .eq("id", contributor.id);
+  });
 
-const updateContributorsPercentages = async (
-  contributors: Contributor[],
-  totalBudget: number
-) => {
-  await Promise.all(
-    contributors.map((c) =>
-      supabase
-        .from("contributors")
-        .update({
-          percentage_contribution: (c.total_contribution / totalBudget) * 100,
-        })
-        .eq("id", c.id)
-    )
-  );
+  await Promise.all(updatePromises);
 };
