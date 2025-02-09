@@ -97,6 +97,18 @@ const Contributors = () => {
         return;
       }
 
+      // Check if email already exists
+      const { data: existingContributor } = await supabase
+        .from("contributors")
+        .select("id")
+        .eq("email", newContributor.email)
+        .single();
+
+      if (existingContributor) {
+        toast.error("Un contributeur avec cet email existe déjà");
+        return;
+      }
+
       // Calculate new percentage contributions
       const totalBudget = contributors.reduce(
         (sum, c) => sum + c.total_contribution,
