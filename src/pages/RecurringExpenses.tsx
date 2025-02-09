@@ -11,19 +11,61 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+interface RecurringExpense {
+  id: string;
+  name: string;
+  amount: number;
+  category: string;
+}
 
 const RecurringExpenses = () => {
-  const [recurringExpenses, setRecurringExpenses] = useState([
-    { id: 1, name: "Loyer", amount: 1200, category: "Logement" },
-    { id: 2, name: "Électricité", amount: 80, category: "Logement" },
-    { id: 3, name: "Internet", amount: 40, category: "Télécommunications" },
-    { id: 4, name: "Transport", amount: 75, category: "Transport" },
-  ]);
+  const queryClient = useQueryClient();
 
-  const handleDeleteExpense = (id: number) => {
-    setRecurringExpenses((prev) => prev.filter((expense) => expense.id !== id));
-    toast.success("Dépense supprimée avec succès");
+  const { data: recurringExpenses, isLoading } = useQuery({
+    queryKey: ["recurring-expenses"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("recurring_expenses")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching recurring expenses:", error);
+        toast.error("Erreur lors du chargement des charges récurrentes");
+        throw error;
+      }
+
+      return data as RecurringExpense[];
+    },
+  });
+
+  const handleDeleteExpense = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("recurring_expenses")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["recurring-expenses"] });
+      toast.success("Dépense supprimée avec succès");
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+      toast.error("Erreur lors de la suppression de la dépense");
+    }
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div>Chargement...</div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -50,7 +92,7 @@ const RecurringExpenses = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recurringExpenses.map((expense) => (
+              {recurringExpenses?.map((expense) => (
                 <div
                   key={expense.id}
                   className="flex items-center justify-between border-b pb-3"
