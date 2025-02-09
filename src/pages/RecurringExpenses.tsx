@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import {
   Card,
@@ -13,6 +12,7 @@ import { Plus, Edit2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { RecurringExpenseDialog } from "@/components/recurring-expenses/RecurringExpenseDialog";
 
 interface RecurringExpense {
   id: string;
@@ -85,10 +85,14 @@ const RecurringExpenses = () => {
               <CardTitle>Charges Mensuelles Récurrentes</CardTitle>
               <CardDescription>Gérez vos dépenses récurrentes par catégorie</CardDescription>
             </div>
-            <Button variant="outline" size="sm" className="ml-auto">
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter une charge
-            </Button>
+            <RecurringExpenseDialog
+              trigger={
+                <Button variant="outline" size="sm" className="ml-auto">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Ajouter une charge
+                </Button>
+              }
+            />
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -106,9 +110,14 @@ const RecurringExpenses = () => {
                   <div className="flex items-center space-x-4">
                     <p className="font-medium">{expense.amount} €</p>
                     <div className="flex space-x-2">
-                      <Button variant="ghost" size="sm">
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
+                      <RecurringExpenseDialog
+                        expense={expense}
+                        trigger={
+                          <Button variant="ghost" size="sm">
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
                       <Button
                         variant="ghost"
                         size="sm"
