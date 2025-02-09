@@ -68,21 +68,15 @@ export const updateContributorService = async (
     totalBudget
   );
 
-  const updateData = contributor.is_owner
-    ? {
-        total_contribution: contributor.total_contribution,
-        percentage_contribution: (contributor.total_contribution / totalBudget) * 100,
-      }
-    : {
-        name: contributor.name,
-        email: contributor.email,
-        total_contribution: contributor.total_contribution,
-        percentage_contribution: (contributor.total_contribution / totalBudget) * 100,
-      };
-
+  // Mise à jour de la contribution et du pourcentage pour tous les contributeurs, y compris le propriétaire
   const { error: updateError } = await supabase
     .from("contributors")
-    .update(updateData)
+    .update({
+      name: contributor.name,
+      email: contributor.email,
+      total_contribution: contributor.total_contribution,
+      percentage_contribution: (contributor.total_contribution / totalBudget) * 100,
+    })
     .eq("id", contributor.id);
 
   if (updateError) throw updateError;
