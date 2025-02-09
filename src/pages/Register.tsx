@@ -1,12 +1,65 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Les mots de passe ne correspondent pas");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        toast.success("Inscription réussie !");
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      console.error("Error: ", error);
+      toast.error(error.message || "Une erreur est survenue lors de l'inscription");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -21,25 +74,50 @@ const Register = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nom</Label>
-              <Input id="name" placeholder="Votre nom" />
+              <Input 
+                id="name" 
+                placeholder="Votre nom"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="vous@exemple.com" />
+              <Input 
+                id="email" 
+                type="email" 
+                placeholder="vous@exemple.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
-              <Input id="password" type="password" />
+              <Input 
+                id="password" 
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-              <Input id="confirmPassword" type="password" />
+              <Input 
+                id="confirmPassword" 
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
             </div>
-            <Button type="submit" className="w-full">
-              S'inscrire
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Inscription en cours..." : "S'inscrire"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm text-muted-foreground">
