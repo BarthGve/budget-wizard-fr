@@ -10,6 +10,9 @@ import Settings from "./pages/Settings";
 import Savings from "./pages/Savings";
 import NotFound from "./pages/NotFound";
 import RecurringExpenses from "./pages/RecurringExpenses";
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +23,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contributors" element={<Contributors />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/savings" element={<Savings />} />
