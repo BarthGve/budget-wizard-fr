@@ -9,6 +9,7 @@ import Contributors from "./pages/Contributors";
 import Settings from "./pages/Settings";
 import Savings from "./pages/Savings";
 import NotFound from "./pages/NotFound";
+import RecurringExpenses from "./pages/RecurringExpenses";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/contributors" element={<Contributors />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/savings" element={<Savings />} />
+          <Route path="/recurring-expenses" element={<RecurringExpenses />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
