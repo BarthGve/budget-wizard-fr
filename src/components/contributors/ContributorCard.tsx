@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 interface ContributorCardProps {
   contributor: Contributor;
@@ -37,6 +38,14 @@ export const ContributorCard = ({
   onEdit,
   onDelete,
 }: ContributorCardProps) => {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editedContributor, setEditedContributor] = useState(contributor);
+
+  const handleUpdate = () => {
+    onEdit(editedContributor);
+    setIsEditDialogOpen(false);
+  };
+
   return (
     <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
       <div className="flex items-center space-x-4">
@@ -63,7 +72,7 @@ export const ContributorCard = ({
         <div className="flex items-center space-x-2">
           {!contributor.is_owner && (
             <>
-              <Dialog>
+              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="ghost" size="icon">
                     <Pencil className="h-4 w-4" />
@@ -81,9 +90,12 @@ export const ContributorCard = ({
                       <Label htmlFor="edit-name">Nom</Label>
                       <Input
                         id="edit-name"
-                        value={contributor.name}
+                        value={editedContributor.name}
                         onChange={(e) =>
-                          onEdit({ ...contributor, name: e.target.value })
+                          setEditedContributor({
+                            ...editedContributor,
+                            name: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -92,9 +104,12 @@ export const ContributorCard = ({
                       <Input
                         id="edit-email"
                         type="email"
-                        value={contributor.email}
+                        value={editedContributor.email}
                         onChange={(e) =>
-                          onEdit({ ...contributor, email: e.target.value })
+                          setEditedContributor({
+                            ...editedContributor,
+                            email: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -103,10 +118,10 @@ export const ContributorCard = ({
                       <Input
                         id="edit-contribution"
                         type="number"
-                        value={contributor.total_contribution}
+                        value={editedContributor.total_contribution}
                         onChange={(e) =>
-                          onEdit({
-                            ...contributor,
+                          setEditedContributor({
+                            ...editedContributor,
                             total_contribution: parseFloat(e.target.value),
                           })
                         }
@@ -114,9 +129,7 @@ export const ContributorCard = ({
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button onClick={() => onEdit(contributor)}>
-                      Mettre à jour
-                    </Button>
+                    <Button onClick={handleUpdate}>Mettre à jour</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
