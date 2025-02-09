@@ -33,7 +33,6 @@ export const addContributorService = async (
     currentContributors.reduce((sum, c) => sum + c.total_contribution, 0) +
     contribution;
 
-  // D'abord, insérer le nouveau contributeur
   const { data: insertedContributor, error: insertError } = await supabase
     .from("contributors")
     .insert([
@@ -51,7 +50,6 @@ export const addContributorService = async (
   if (insertError) throw insertError;
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
-  // Ensuite, mettre à jour les pourcentages de tous les contributeurs existants
   for (const contributor of currentContributors) {
     const newPercentage = (contributor.total_contribution / totalBudget) * 100;
     const { error: updateError } = await supabase
@@ -62,7 +60,6 @@ export const addContributorService = async (
     if (updateError) throw updateError;
   }
 
-  // Récupérer la liste mise à jour des contributeurs
   return await fetchContributorsService();
 };
 
@@ -71,18 +68,6 @@ export const updateContributorService = async (
   currentContributors: Contributor[]
 ) => {
   try {
-    // Vérifier d'abord si le contributeur existe
-    const { data: existingContributor, error: checkError } = await supabase
-      .from("contributors")
-      .select("*")
-      .eq("id", contributor.id)
-      .single();
-
-    if (checkError) throw checkError;
-    if (!existingContributor) {
-      throw new Error(`Contributeur non trouvé avec l'ID: ${contributor.id}`);
-    }
-
     // Calculer le nouveau budget total avec la contribution mise à jour
     const totalBudget = currentContributors.reduce(
       (sum, c) =>
@@ -93,20 +78,17 @@ export const updateContributorService = async (
       0
     );
 
-    // Préparer les données de mise à jour
-    const updateData = {
-      ...(!existingContributor.is_owner && {
-        name: contributor.name,
-        email: contributor.email,
-      }),
-      total_contribution: contributor.total_contribution,
-      percentage_contribution: (contributor.total_contribution / totalBudget) * 100,
-    };
-
     // Mettre à jour le contributeur principal
     const { error: updateError } = await supabase
       .from("contributors")
-      .update(updateData)
+      .update({
+        total_contribution: contributor.total_contribution,
+        percentage_contribution: (contributor.total_contribution / totalBudget) * 100,
+        ...(contributor.is_owner ? {} : {
+          name: contributor.name,
+          email: contributor.email,
+        }),
+      })
       .eq("id", contributor.id);
 
     if (updateError) throw updateError;
@@ -126,7 +108,6 @@ export const updateContributorService = async (
       if (error) throw error;
     }
 
-    // Récupérer la liste mise à jour des contributeurs
     return await fetchContributorsService();
   } catch (error: any) {
     console.error("Error in updateContributorService:", error);
@@ -146,7 +127,6 @@ export const deleteContributorService = async (
     throw new Error("Impossible de supprimer le propriétaire");
   }
 
-  // D'abord supprimer le contributeur
   const { error: deleteError } = await supabase
     .from("contributors")
     .delete()
@@ -154,7 +134,6 @@ export const deleteContributorService = async (
 
   if (deleteError) throw deleteError;
 
-  // Calculer le nouveau budget total sans le contributeur supprimé
   const remainingContributors = currentContributors.filter(
     (c) => c.id !== contributorId
   );
@@ -163,7 +142,6 @@ export const deleteContributorService = async (
     0
   );
 
-  // Mettre à jour les pourcentages des contributeurs restants
   for (const contributor of remainingContributors) {
     const newPercentage = (contributor.total_contribution / totalBudget) * 100;
     const { error } = await supabase
@@ -174,6 +152,6 @@ export const deleteContributorService = async (
     if (error) throw error;
   }
 
-  // Récupérer la liste mise à jour des contributeurs
   return await fetchContributorsService();
 };
+
