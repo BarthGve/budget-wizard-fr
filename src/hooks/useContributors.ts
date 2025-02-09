@@ -45,7 +45,6 @@ export const useContributors = () => {
         return;
       }
 
-      // Check if email already exists using maybeSingle() instead of single()
       const { data: existingContributor, error: existingError } = await supabase
         .from("contributors")
         .select("id")
@@ -59,7 +58,6 @@ export const useContributors = () => {
         return;
       }
 
-      // Calculate new percentage contributions
       const totalBudget = contributors.reduce(
         (sum, c) => sum + c.total_contribution,
         0
@@ -79,7 +77,6 @@ export const useContributors = () => {
 
       if (insertError) throw insertError;
 
-      // Update percentages for all contributors
       await Promise.all(
         contributors.map((c) =>
           supabase
@@ -101,6 +98,8 @@ export const useContributors = () => {
 
   const updateContributor = async (contributor: Contributor) => {
     try {
+      console.log("Updating contributor:", contributor);
+      
       const totalBudget = contributors.reduce(
         (sum, c) =>
           sum +
@@ -120,21 +119,27 @@ export const useContributors = () => {
           100,
       }));
 
-      // Update the edited contributor
+      const updateData = contributor.is_owner
+        ? {
+            total_contribution: contributor.total_contribution,
+            percentage_contribution:
+              (contributor.total_contribution / totalBudget) * 100,
+          }
+        : {
+            name: contributor.name,
+            email: contributor.email,
+            total_contribution: contributor.total_contribution,
+            percentage_contribution:
+              (contributor.total_contribution / totalBudget) * 100,
+          };
+
       const { error: updateError } = await supabase
         .from("contributors")
-        .update({
-          name: contributor.name,
-          email: contributor.email,
-          total_contribution: contributor.total_contribution,
-          percentage_contribution:
-            (contributor.total_contribution / totalBudget) * 100,
-        })
+        .update(updateData)
         .eq("id", contributor.id);
 
       if (updateError) throw updateError;
 
-      // Update percentages for all other contributors
       await Promise.all(
         updatedContributors
           .filter((c) => c.id !== contributor.id)
@@ -148,7 +153,7 @@ export const useContributors = () => {
 
       setEditingContributor(null);
       toast.success("Le contributeur a été mis à jour avec succès");
-      fetchContributors();
+      await fetchContributors();
     } catch (error: any) {
       console.error("Error updating contributor:", error);
       toast.error("Erreur lors de la mise à jour du contributeur");
@@ -178,7 +183,6 @@ export const useContributors = () => {
         0
       );
 
-      // Update percentages for remaining contributors
       await Promise.all(
         remainingContributors.map((c) =>
           supabase

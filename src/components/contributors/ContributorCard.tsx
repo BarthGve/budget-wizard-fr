@@ -42,7 +42,11 @@ export const ContributorCard = ({
   const [editedContributor, setEditedContributor] = useState(contributor);
 
   const handleUpdate = () => {
-    onEdit(editedContributor);
+    const updatedContributor = {
+      ...editedContributor,
+      total_contribution: parseFloat(editedContributor.total_contribution.toString()),
+    };
+    onEdit(updatedContributor);
     setIsEditDialogOpen(false);
   };
 
@@ -124,7 +128,7 @@ export const ContributorCard = ({
                     onChange={(e) =>
                       setEditedContributor({
                         ...editedContributor,
-                        total_contribution: parseFloat(e.target.value),
+                        total_contribution: parseFloat(e.target.value) || 0,
                       })
                     }
                   />
