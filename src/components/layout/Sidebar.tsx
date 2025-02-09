@@ -20,7 +20,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const menuItems = [
-    { title: "Dashboard", icon: LayoutDashboard, path: "/" },
+    { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { title: "Contributeurs", icon: Users, path: "/contributors" },
     { title: "Épargne", icon: PiggyBank, path: "/savings" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
@@ -77,3 +77,4 @@ export const Sidebar = ({ className }: SidebarProps) => {
     </aside>
   );
 };
+
