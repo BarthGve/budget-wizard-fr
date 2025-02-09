@@ -29,7 +29,7 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -39,11 +39,15 @@ const Register = () => {
         },
       });
 
-      if (error) throw error;
+      if (signUpError) throw signUpError;
 
-      if (data.user) {
-        toast.success("Inscription réussie !");
-        navigate("/dashboard");
+      if (signUpData.user) {
+        // Wait a bit for the trigger to create the profile
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // No need to create the contributor record manually as it's handled by the database trigger
+        toast.success("Inscription réussie ! Vérifiez votre email pour confirmer votre compte.");
+        navigate("/login");
       }
     } catch (error: any) {
       console.error("Error: ", error);
