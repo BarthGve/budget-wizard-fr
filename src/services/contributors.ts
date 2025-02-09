@@ -78,7 +78,7 @@ export const updateContributorService = async (
       throw new Error(`Contributeur non trouvé avec l'ID: ${contributor.id}`);
     }
 
-    // Calculer le nouveau budget total
+    // Calculer le nouveau budget total avec la contribution mise à jour
     const totalBudget = currentContributors.reduce(
       (sum, c) =>
         sum +
@@ -100,19 +100,12 @@ export const updateContributorService = async (
           }),
     };
 
-    const { data: updatedContributor, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from("contributors")
       .update(updateData)
-      .eq("id", contributor.id)
-      .select()
-      .maybeSingle();
+      .eq("id", contributor.id);
 
     if (updateError) throw updateError;
-    if (!updatedContributor) {
-      throw new Error(
-        `Erreur lors de la mise à jour du contributeur: ${contributor.id}`
-      );
-    }
 
     // Ensuite, mettre à jour les pourcentages des autres contributeurs
     const otherContributors = currentContributors.filter(
@@ -180,4 +173,3 @@ export const deleteContributorService = async (
   // Récupérer la liste mise à jour des contributeurs
   return await fetchContributorsService();
 };
-
