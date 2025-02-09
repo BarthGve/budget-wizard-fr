@@ -34,28 +34,33 @@ export const addContributorService = async (
     contribution;
 
   // D'abord, insérer le nouveau contributeur
-  const { error: insertError } = await supabase.from("contributors").insert([
-    {
-      name: newContributor.name,
-      email: newContributor.email,
-      total_contribution: contribution,
-      percentage_contribution: (contribution / totalBudget) * 100,
-      profile_id: userId,
-    },
-  ]);
+  const { data: insertedContributor, error: insertError } = await supabase
+    .from("contributors")
+    .insert([
+      {
+        name: newContributor.name,
+        email: newContributor.email,
+        total_contribution: contribution,
+        percentage_contribution: (contribution / totalBudget) * 100,
+        profile_id: userId,
+      },
+    ])
+    .select()
+    .maybeSingle();
 
   if (insertError) throw insertError;
+  if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
   // Ensuite, mettre à jour les pourcentages de tous les contributeurs existants
-  const updatePromises = currentContributors.map((contributor) => {
+  for (const contributor of currentContributors) {
     const newPercentage = (contributor.total_contribution / totalBudget) * 100;
-    return supabase
+    const { error: updateError } = await supabase
       .from("contributors")
       .update({ percentage_contribution: newPercentage })
       .eq("id", contributor.id);
-  });
 
-  await Promise.all(updatePromises);
+    if (updateError) throw updateError;
+  }
 
   // Récupérer la liste mise à jour des contributeurs
   return await fetchContributorsService();
@@ -88,18 +93,17 @@ export const updateContributorService = async (
       0
     );
 
-    // D'abord, mettre à jour le contributeur principal
+    // Préparer les données de mise à jour
     const updateData = {
+      ...(!existingContributor.is_owner && {
+        name: contributor.name,
+        email: contributor.email,
+      }),
       total_contribution: contributor.total_contribution,
       percentage_contribution: (contributor.total_contribution / totalBudget) * 100,
-      ...(existingContributor.is_owner
-        ? {}
-        : {
-            name: contributor.name,
-            email: contributor.email,
-          }),
     };
 
+    // Mettre à jour le contributeur principal
     const { error: updateError } = await supabase
       .from("contributors")
       .update(updateData)
@@ -107,7 +111,7 @@ export const updateContributorService = async (
 
     if (updateError) throw updateError;
 
-    // Ensuite, mettre à jour les pourcentages des autres contributeurs
+    // Mettre à jour les pourcentages des autres contributeurs de manière séquentielle
     const otherContributors = currentContributors.filter(
       (c) => c.id !== contributor.id
     );
@@ -159,16 +163,16 @@ export const deleteContributorService = async (
     0
   );
 
-  // Mettre à jour les pourcentages des contributeurs restants
-  const updatePromises = remainingContributors.map((contributor) => {
+  // Mettre à jour les pourcentages des contributeurs restants de manière séquentielle
+  for (const contributor of remainingContributors) {
     const newPercentage = (contributor.total_contribution / totalBudget) * 100;
-    return supabase
+    const { error } = await supabase
       .from("contributors")
       .update({ percentage_contribution: newPercentage })
       .eq("id", contributor.id);
-  });
 
-  await Promise.all(updatePromises);
+    if (error) throw error;
+  }
 
   // Récupérer la liste mise à jour des contributeurs
   return await fetchContributorsService();
