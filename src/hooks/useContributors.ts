@@ -45,12 +45,14 @@ export const useContributors = () => {
         return;
       }
 
-      // Check if email already exists
-      const { data: existingContributor } = await supabase
+      // Check if email already exists using maybeSingle() instead of single()
+      const { data: existingContributor, error: existingError } = await supabase
         .from("contributors")
         .select("id")
         .eq("email", newContributor.email)
-        .single();
+        .maybeSingle();
+
+      if (existingError) throw existingError;
 
       if (existingContributor) {
         toast.error("Un contributeur avec cet email existe déjà");
