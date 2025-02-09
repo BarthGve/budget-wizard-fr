@@ -67,38 +67,53 @@ export const updateContributorService = async (
   contributor: Contributor,
   currentContributors: Contributor[]
 ) => {
-  try {
-    // Calculer le nouveau budget total avec la contribution mise à jour
-    const totalBudget = currentContributors.reduce(
-      (sum, c) =>
-        sum +
-        (c.id === contributor.id
-          ? contributor.total_contribution
-          : c.total_contribution),
-      0
-    );
+  const { data: existingContributor, error: checkError } = await supabase
+    .from("contributors")
+    .select("*")
+    .eq("id", contributor.id)
+    .maybeSingle();
 
-    // Mettre à jour le contributeur principal
-    const { error: updateError } = await supabase
+  if (checkError) throw checkError;
+  if (!existingContributor) {
+    throw new Error(`Contributeur non trouvé avec l'ID: ${contributor.id}`);
+  }
+
+  const totalBudget = currentContributors.reduce(
+    (sum, c) =>
+      sum +
+      (c.id === contributor.id
+        ? contributor.total_contribution
+        : c.total_contribution),
+    0
+  );
+
+  // Mettre à jour séparément la contribution et les autres champs
+  const { error: updateError } = await supabase
+    .from("contributors")
+    .update({
+      total_contribution: contributor.total_contribution,
+      percentage_contribution: (contributor.total_contribution / totalBudget) * 100,
+    })
+    .eq("id", contributor.id);
+
+  if (updateError) throw updateError;
+
+  // Si ce n'est pas le propriétaire, mettre à jour le nom et l'email
+  if (!existingContributor.is_owner) {
+    const { error: updateNameEmailError } = await supabase
       .from("contributors")
       .update({
-        total_contribution: contributor.total_contribution,
-        percentage_contribution: (contributor.total_contribution / totalBudget) * 100,
-        ...(contributor.is_owner ? {} : {
-          name: contributor.name,
-          email: contributor.email,
-        }),
+        name: contributor.name,
+        email: contributor.email,
       })
       .eq("id", contributor.id);
 
-    if (updateError) throw updateError;
+    if (updateNameEmailError) throw updateNameEmailError;
+  }
 
-    // Mettre à jour les pourcentages des autres contributeurs
-    const otherContributors = currentContributors.filter(
-      (c) => c.id !== contributor.id
-    );
-
-    for (const c of otherContributors) {
+  // Mettre à jour les pourcentages des autres contributeurs
+  for (const c of currentContributors) {
+    if (c.id !== contributor.id) {
       const newPercentage = (c.total_contribution / totalBudget) * 100;
       const { error } = await supabase
         .from("contributors")
@@ -107,12 +122,9 @@ export const updateContributorService = async (
 
       if (error) throw error;
     }
-
-    return await fetchContributorsService();
-  } catch (error: any) {
-    console.error("Error in updateContributorService:", error);
-    throw error;
   }
+
+  return await fetchContributorsService();
 };
 
 export const deleteContributorService = async (
@@ -154,4 +166,3 @@ export const deleteContributorService = async (
 
   return await fetchContributorsService();
 };
-
