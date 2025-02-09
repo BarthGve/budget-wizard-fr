@@ -43,6 +43,7 @@ interface Contributor {
   total_contribution: number;
   percentage_contribution: number;
   is_owner: boolean;
+  profile_id: string;
 }
 
 const Contributors = () => {
@@ -87,6 +88,15 @@ const Contributors = () => {
     }
 
     try {
+      // Get the current user's profile ID
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      if (!user) {
+        toast.error("Vous devez être connecté pour ajouter un contributeur");
+        return;
+      }
+
       // Calculate new percentage contributions
       const totalBudget = contributors.reduce(
         (sum, c) => sum + c.total_contribution,
@@ -101,6 +111,7 @@ const Contributors = () => {
             email: newContributor.email,
             total_contribution: contribution,
             percentage_contribution: (contribution / totalBudget) * 100,
+            profile_id: user.id,
           },
         ])
         .select()
