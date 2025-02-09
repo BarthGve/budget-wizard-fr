@@ -45,8 +45,8 @@ export const addContributorService = async (
         profile_id: userId,
       },
     ])
-    .select()
-    .maybeSingle();
+    .select("*")
+    .single();
 
   if (insertError) throw insertError;
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
@@ -76,7 +76,7 @@ export const updateContributorService = async (
       .from("contributors")
       .select("*")
       .eq("id", contributor.id)
-      .maybeSingle();
+      .single();
 
     if (checkError) throw checkError;
     if (!existingContributor) {
@@ -111,7 +111,7 @@ export const updateContributorService = async (
 
     if (updateError) throw updateError;
 
-    // Mettre à jour les pourcentages des autres contributeurs de manière séquentielle
+    // Mettre à jour les pourcentages des autres contributeurs
     const otherContributors = currentContributors.filter(
       (c) => c.id !== contributor.id
     );
@@ -126,7 +126,7 @@ export const updateContributorService = async (
       if (error) throw error;
     }
 
-    // Récupérer et retourner la liste mise à jour des contributeurs
+    // Récupérer la liste mise à jour des contributeurs
     return await fetchContributorsService();
   } catch (error: any) {
     console.error("Error in updateContributorService:", error);
@@ -163,7 +163,7 @@ export const deleteContributorService = async (
     0
   );
 
-  // Mettre à jour les pourcentages des contributeurs restants de manière séquentielle
+  // Mettre à jour les pourcentages des contributeurs restants
   for (const contributor of remainingContributors) {
     const newPercentage = (contributor.total_contribution / totalBudget) * 100;
     const { error } = await supabase
