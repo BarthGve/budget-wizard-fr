@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      contributors: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_owner: boolean
+          name: string
+          percentage_contribution: number
+          profile_id: string
+          total_contribution: number
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_owner?: boolean
+          name: string
+          percentage_contribution?: number
+          profile_id: string
+          total_contribution?: number
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_owner?: boolean
+          name?: string
+          percentage_contribution?: number
+          profile_id?: string
+          total_contribution?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contributors_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           full_name: string | null

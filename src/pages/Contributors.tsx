@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { UserPlus, Pencil, Trash2 } from "lucide-react";
 import {
   AlertDialog,
@@ -34,130 +34,211 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Contributor {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  avatar: string;
-  totalContribution: number;
-  percentageContribution: number;
+  total_contribution: number;
+  percentage_contribution: number;
+  is_owner: boolean;
 }
 
 const Contributors = () => {
-  const { toast } = useToast();
-  const [contributors, setContributors] = useState<Contributor[]>([
-    {
-      id: 1,
-      name: "Jean Dupont",
-      email: "jean@example.com",
-      avatar: "",
-      totalContribution: 2500,
-      percentageContribution: 50,
-    },
-    {
-      id: 2,
-      name: "Marie Martin",
-      email: "marie@example.com",
-      avatar: "",
-      totalContribution: 2500,
-      percentageContribution: 50,
-    },
-  ]);
-
+  const [contributors, setContributors] = useState<Contributor[]>([]);
   const [editingContributor, setEditingContributor] = useState<Contributor | null>(
     null
   );
+  const [isLoading, setIsLoading] = useState(true);
   const [newContributor, setNewContributor] = useState({
     name: "",
     email: "",
-    totalContribution: "",
+    total_contribution: "",
   });
 
-  const handleAddContributor = () => {
-    const contribution = parseFloat(newContributor.totalContribution);
+  const fetchContributors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("contributors")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+
+      setContributors(data || []);
+    } catch (error: any) {
+      console.error("Error fetching contributors:", error);
+      toast.error("Erreur lors du chargement des contributeurs");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchContributors();
+  }, []);
+
+  const handleAddContributor = async () => {
+    const contribution = parseFloat(newContributor.total_contribution);
     if (!newContributor.name || !newContributor.email || isNaN(contribution)) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs correctement",
-        variant: "destructive",
-      });
+      toast.error("Veuillez remplir tous les champs correctement");
       return;
     }
 
-    const newId = Math.max(...contributors.map((c) => c.id)) + 1;
-    const totalBudget = contributors.reduce(
-      (sum, c) => sum + c.totalContribution,
-      0
-    ) + contribution;
+    try {
+      // Calculate new percentage contributions
+      const totalBudget = contributors.reduce(
+        (sum, c) => sum + c.total_contribution,
+        0
+      ) + contribution;
 
-    const updatedContributors = contributors.map((c) => ({
-      ...c,
-      percentageContribution: (c.totalContribution / totalBudget) * 100,
-    }));
+      const { data: newContributorData, error: insertError } = await supabase
+        .from("contributors")
+        .insert([
+          {
+            name: newContributor.name,
+            email: newContributor.email,
+            total_contribution: contribution,
+            percentage_contribution: (contribution / totalBudget) * 100,
+          },
+        ])
+        .select()
+        .single();
 
-    setContributors([
-      ...updatedContributors,
-      {
-        id: newId,
-        name: newContributor.name,
-        email: newContributor.email,
-        avatar: "",
-        totalContribution: contribution,
-        percentageContribution: (contribution / totalBudget) * 100,
-      },
-    ]);
+      if (insertError) throw insertError;
 
-    setNewContributor({ name: "", email: "", totalContribution: "" });
-    toast({
-      title: "Succès",
-      description: "Le contributeur a été ajouté avec succès",
-    });
+      // Update percentages for all contributors
+      const updatedContributors = contributors.map((c) => ({
+        ...c,
+        percentage_contribution: (c.total_contribution / totalBudget) * 100,
+      }));
+
+      await Promise.all(
+        updatedContributors.map((c) =>
+          supabase
+            .from("contributors")
+            .update({ percentage_contribution: c.percentage_contribution })
+            .eq("id", c.id)
+        )
+      );
+
+      setNewContributor({ name: "", email: "", total_contribution: "" });
+      toast.success("Le contributeur a été ajouté avec succès");
+      fetchContributors();
+    } catch (error: any) {
+      console.error("Error adding contributor:", error);
+      toast.error("Erreur lors de l'ajout du contributeur");
+    }
   };
 
-  const handleUpdateContributor = () => {
+  const handleUpdateContributor = async () => {
     if (!editingContributor) return;
 
-    const updatedContributors = contributors.map((c) =>
-      c.id === editingContributor.id ? editingContributor : c
-    );
+    try {
+      const totalBudget = contributors.reduce(
+        (sum, c) =>
+          sum +
+          (c.id === editingContributor.id
+            ? editingContributor.total_contribution
+            : c.total_contribution),
+        0
+      );
 
-    const totalBudget = updatedContributors.reduce(
-      (sum, c) => sum + c.totalContribution,
-      0
-    );
+      const updatedContributors = contributors.map((c) => ({
+        ...c,
+        percentage_contribution:
+          (c.id === editingContributor.id
+            ? editingContributor.total_contribution
+            : c.total_contribution) /
+          totalBudget *
+          100,
+      }));
 
-    const contributorsWithUpdatedPercentages = updatedContributors.map((c) => ({
-      ...c,
-      percentageContribution: (c.totalContribution / totalBudget) * 100,
-    }));
+      // Update the edited contributor
+      const { error: updateError } = await supabase
+        .from("contributors")
+        .update({
+          name: editingContributor.name,
+          email: editingContributor.email,
+          total_contribution: editingContributor.total_contribution,
+          percentage_contribution: (editingContributor.total_contribution / totalBudget) * 100,
+        })
+        .eq("id", editingContributor.id);
 
-    setContributors(contributorsWithUpdatedPercentages);
-    setEditingContributor(null);
-    toast({
-      title: "Succès",
-      description: "Le contributeur a été mis à jour avec succès",
-    });
+      if (updateError) throw updateError;
+
+      // Update percentages for all other contributors
+      await Promise.all(
+        updatedContributors
+          .filter((c) => c.id !== editingContributor.id)
+          .map((c) =>
+            supabase
+              .from("contributors")
+              .update({ percentage_contribution: c.percentage_contribution })
+              .eq("id", c.id)
+          )
+      );
+
+      setEditingContributor(null);
+      toast.success("Le contributeur a été mis à jour avec succès");
+      fetchContributors();
+    } catch (error: any) {
+      console.error("Error updating contributor:", error);
+      toast.error("Erreur lors de la mise à jour du contributeur");
+    }
   };
 
-  const handleDeleteContributor = (id: number) => {
-    const remainingContributors = contributors.filter((c) => c.id !== id);
-    const totalBudget = remainingContributors.reduce(
-      (sum, c) => sum + c.totalContribution,
-      0
-    );
+  const handleDeleteContributor = async (id: string) => {
+    try {
+      const contributorToDelete = contributors.find((c) => c.id === id);
+      if (!contributorToDelete) return;
 
-    const updatedContributors = remainingContributors.map((c) => ({
-      ...c,
-      percentageContribution: (c.totalContribution / totalBudget) * 100,
-    }));
+      if (contributorToDelete.is_owner) {
+        toast.error("Impossible de supprimer le propriétaire");
+        return;
+      }
 
-    setContributors(updatedContributors);
-    toast({
-      title: "Succès",
-      description: "Le contributeur a été supprimé avec succès",
-    });
+      const { error: deleteError } = await supabase
+        .from("contributors")
+        .delete()
+        .eq("id", id);
+
+      if (deleteError) throw deleteError;
+
+      const remainingContributors = contributors.filter((c) => c.id !== id);
+      const totalBudget = remainingContributors.reduce(
+        (sum, c) => sum + c.total_contribution,
+        0
+      );
+
+      // Update percentages for remaining contributors
+      await Promise.all(
+        remainingContributors.map((c) =>
+          supabase
+            .from("contributors")
+            .update({
+              percentage_contribution: (c.total_contribution / totalBudget) * 100,
+            })
+            .eq("id", c.id)
+        )
+      );
+
+      toast.success("Le contributeur a été supprimé avec succès");
+      fetchContributors();
+    } catch (error: any) {
+      console.error("Error deleting contributor:", error);
+      toast.error("Erreur lors de la suppression du contributeur");
+    }
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div>Chargement...</div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -216,11 +297,11 @@ const Contributors = () => {
                   <Input
                     id="contribution"
                     type="number"
-                    value={newContributor.totalContribution}
+                    value={newContributor.total_contribution}
                     onChange={(e) =>
                       setNewContributor({
                         ...newContributor,
-                        totalContribution: e.target.value,
+                        total_contribution: e.target.value,
                       })
                     }
                   />
@@ -249,7 +330,6 @@ const Contributors = () => {
                 >
                   <div className="flex items-center space-x-4">
                     <Avatar>
-                      <AvatarImage src={contributor.avatar} />
                       <AvatarFallback>
                         {contributor.name
                           .split(" ")
@@ -265,113 +345,117 @@ const Contributors = () => {
                   <div className="flex items-center space-x-4">
                     <div className="text-right">
                       <p className="font-medium">
-                        {contributor.totalContribution} €
+                        {contributor.total_contribution} €
                       </p>
                       <p className="text-sm text-gray-500">
-                        {contributor.percentageContribution.toFixed(1)}% du budget
+                        {contributor.percentage_contribution.toFixed(1)}% du budget
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setEditingContributor(contributor)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Modifier le contributeur</DialogTitle>
-                            <DialogDescription>
-                              Modifiez les informations du contributeur
-                            </DialogDescription>
-                          </DialogHeader>
-                          {editingContributor && (
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-name">Nom</Label>
-                                <Input
-                                  id="edit-name"
-                                  value={editingContributor.name}
-                                  onChange={(e) =>
-                                    setEditingContributor({
-                                      ...editingContributor,
-                                      name: e.target.value,
-                                    })
+                      {!contributor.is_owner && (
+                        <>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setEditingContributor(contributor)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Modifier le contributeur</DialogTitle>
+                                <DialogDescription>
+                                  Modifiez les informations du contributeur
+                                </DialogDescription>
+                              </DialogHeader>
+                              {editingContributor && (
+                                <div className="grid gap-4 py-4">
+                                  <div className="grid gap-2">
+                                    <Label htmlFor="edit-name">Nom</Label>
+                                    <Input
+                                      id="edit-name"
+                                      value={editingContributor.name}
+                                      onChange={(e) =>
+                                        setEditingContributor({
+                                          ...editingContributor,
+                                          name: e.target.value,
+                                        })
+                                      }
+                                    />
+                                  </div>
+                                  <div className="grid gap-2">
+                                    <Label htmlFor="edit-email">Email</Label>
+                                    <Input
+                                      id="edit-email"
+                                      type="email"
+                                      value={editingContributor.email}
+                                      onChange={(e) =>
+                                        setEditingContributor({
+                                          ...editingContributor,
+                                          email: e.target.value,
+                                        })
+                                      }
+                                    />
+                                  </div>
+                                  <div className="grid gap-2">
+                                    <Label htmlFor="edit-contribution">
+                                      Contribution (€)
+                                    </Label>
+                                    <Input
+                                      id="edit-contribution"
+                                      type="number"
+                                      value={editingContributor.total_contribution}
+                                      onChange={(e) =>
+                                        setEditingContributor({
+                                          ...editingContributor,
+                                          total_contribution: parseFloat(e.target.value),
+                                        })
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                              <DialogFooter>
+                                <Button onClick={handleUpdateContributor}>
+                                  Mettre à jour
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Supprimer le contributeur
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Êtes-vous sûr de vouloir supprimer ce contributeur ?
+                                  Cette action ne peut pas être annulée.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() =>
+                                    handleDeleteContributor(contributor.id)
                                   }
-                                />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-email">Email</Label>
-                                <Input
-                                  id="edit-email"
-                                  type="email"
-                                  value={editingContributor.email}
-                                  onChange={(e) =>
-                                    setEditingContributor({
-                                      ...editingContributor,
-                                      email: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-contribution">
-                                  Contribution (€)
-                                </Label>
-                                <Input
-                                  id="edit-contribution"
-                                  type="number"
-                                  value={editingContributor.totalContribution}
-                                  onChange={(e) =>
-                                    setEditingContributor({
-                                      ...editingContributor,
-                                      totalContribution: parseFloat(e.target.value),
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
-                          )}
-                          <DialogFooter>
-                            <Button onClick={handleUpdateContributor}>
-                              Mettre à jour
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Supprimer le contributeur
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Êtes-vous sûr de vouloir supprimer ce contributeur ?
-                              Cette action ne peut pas être annulée.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() =>
-                                handleDeleteContributor(contributor.id)
-                              }
-                              className="bg-red-500 hover:bg-red-600"
-                            >
-                              Supprimer
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                                  className="bg-red-500 hover:bg-red-600"
+                                >
+                                  Supprimer
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
