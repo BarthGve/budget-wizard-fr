@@ -44,9 +44,9 @@ export const useContributors = () => {
         return;
       }
 
-      await addContributorService(newContributor, user.id, contributors);
+      const updatedContributors = await addContributorService(newContributor, user.id, contributors);
+      setContributors(updatedContributors);
       toast.success("Le contributeur a été ajouté avec succès");
-      fetchContributors();
     } catch (error: any) {
       console.error("Error adding contributor:", error);
       toast.error(error.message || "Erreur lors de l'ajout du contributeur");
@@ -55,10 +55,10 @@ export const useContributors = () => {
 
   const updateContributor = async (contributor: Contributor) => {
     try {
-      await updateContributorService(contributor, contributors);
+      const updatedContributors = await updateContributorService(contributor, contributors);
+      setContributors(updatedContributors);
       setEditingContributor(null);
       toast.success("Le contributeur a été mis à jour avec succès");
-      await fetchContributors();
     } catch (error: any) {
       console.error("Error updating contributor:", error);
       toast.error("Erreur lors de la mise à jour du contributeur");
@@ -67,9 +67,9 @@ export const useContributors = () => {
 
   const deleteContributor = async (id: string) => {
     try {
-      await deleteContributorService(id, contributors);
+      const updatedContributors = await deleteContributorService(id, contributors);
+      setContributors(updatedContributors);
       toast.success("Le contributeur a été supprimé avec succès");
-      fetchContributors();
     } catch (error: any) {
       console.error("Error deleting contributor:", error);
       toast.error(error.message || "Erreur lors de la suppression du contributeur");
