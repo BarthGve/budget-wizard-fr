@@ -77,7 +77,7 @@ export const updateContributorService = async (
     );
 
     // Mettre à jour tous les contributeurs
-    const updates = currentContributors.map((c) => {
+    const updates = currentContributors.map(async (c) => {
       const isUpdatedContributor = c.id === contributor.id;
       const contribution = isUpdatedContributor
         ? contributor.total_contribution
@@ -99,12 +99,19 @@ export const updateContributorService = async (
             percentage_contribution: percentage,
           };
 
-      return supabase
+      const { data, error } = await supabase
         .from("contributors")
         .update(updateData)
         .eq("id", c.id)
         .select()
-        .single();
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) {
+        throw new Error(`Contributeur non trouvé: ${c.id}`);
+      }
+      
+      return data;
     });
 
     await Promise.all(updates);
