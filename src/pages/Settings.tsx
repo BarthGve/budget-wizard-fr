@@ -28,11 +28,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const Settings = () => {
+  const queryClient = useQueryClient();
+
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
@@ -72,6 +74,8 @@ const Settings = () => {
       return;
     }
 
+    // Invalider toutes les requêtes qui dépendent du profil
+    await queryClient.invalidateQueries({ queryKey: ["profile"] });
     toast.success("Palette de couleurs mise à jour avec succès");
   };
 

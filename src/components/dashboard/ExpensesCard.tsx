@@ -1,6 +1,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCategoryColor } from "@/utils/colors";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ContributorShare {
   name: string;
@@ -15,6 +17,25 @@ interface ExpensesCardProps {
 }
 
 export const ExpensesCard = ({ totalExpenses, contributorShares }: ExpensesCardProps) => {
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
+    staleTime: 0,
+  });
+
   return (
     <Card className="card-hover">
       <CardHeader>
@@ -31,7 +52,7 @@ export const ExpensesCard = ({ totalExpenses, contributorShares }: ExpensesCardP
               style={{
                 left: `${contrib.start}%`,
                 width: `${contrib.end - contrib.start}%`,
-                backgroundColor: getCategoryColor(index),
+                backgroundColor: getCategoryColor(index, profile?.color_palette),
               }}
             />
           ))}
@@ -42,7 +63,7 @@ export const ExpensesCard = ({ totalExpenses, contributorShares }: ExpensesCardP
               <div className="flex items-center gap-2">
                 <div 
                   className="h-3 w-3 rounded-full" 
-                  style={{ backgroundColor: getCategoryColor(index) }}
+                  style={{ backgroundColor: getCategoryColor(index, profile?.color_palette) }}
                 />
                 <span>{contrib.name}</span>
               </div>

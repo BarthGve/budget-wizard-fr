@@ -36,6 +36,7 @@ export const SavingsPieChart = ({ monthlySavings, totalSavings }: SavingsPieChar
 
       return data;
     },
+    staleTime: 0, // Forcer le rafraîchissement à chaque changement
   });
 
   const chartData = monthlySavings.map(saving => ({

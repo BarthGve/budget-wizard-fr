@@ -36,6 +36,7 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
 
       return data;
     },
+    staleTime: 0, // Forcer le rafraîchissement à chaque changement
   });
 
   const chartData = recurringExpenses.map(expense => ({
