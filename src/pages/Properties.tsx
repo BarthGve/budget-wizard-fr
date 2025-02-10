@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PropertyList } from "@/components/properties/PropertyList";
+import { AddPropertyDialog } from "@/components/properties/AddPropertyDialog";
 import { toast } from "sonner";
 
 const Properties = () => {
@@ -27,11 +28,14 @@ const Properties = () => {
   return (
     <DashboardLayout>
       <div className="grid gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Propriétés</h1>
-          <p className="text-muted-foreground">
-            Gérez vos biens immobiliers et suivez leurs performances
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Propriétés</h1>
+            <p className="text-muted-foreground">
+              Gérez vos biens immobiliers et suivez leurs performances
+            </p>
+          </div>
+          <AddPropertyDialog />
         </div>
 
         <PropertyList properties={properties || []} isLoading={isLoading} />
