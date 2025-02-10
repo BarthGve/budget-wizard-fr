@@ -1,30 +1,44 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Target } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 interface SavingsGoalProps {
   savingsPercentage: number;
   setSavingsPercentage: (value: number) => void;
-  monthlyIncome: number;
-  setMonthlyIncome: (value: number) => void;
   totalMonthlyAmount: number;
 }
 
 export const SavingsGoal = ({
   savingsPercentage,
   setSavingsPercentage,
-  monthlyIncome,
-  setMonthlyIncome,
   totalMonthlyAmount,
 }: SavingsGoalProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const { data: contributors } = useQuery({
+    queryKey: ["contributors"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("contributors")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const totalIncome = contributors?.reduce(
+    (acc, contributor) => acc + contributor.total_contribution,
+    0
+  ) || 0;
 
   const updateSavingsPercentage = async (value: number) => {
     const { data: session } = await supabase.auth.getSession();
@@ -54,7 +68,7 @@ export const SavingsGoal = ({
     });
   };
 
-  const targetMonthlySavings = (monthlyIncome * savingsPercentage) / 100;
+  const targetMonthlySavings = (totalIncome * savingsPercentage) / 100;
   const remainingToTarget = targetMonthlySavings - totalMonthlyAmount;
 
   return (
@@ -70,15 +84,6 @@ export const SavingsGoal = ({
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
-          <div>
-            <Label>Revenus mensuels (€)</Label>
-            <Input
-              type="number"
-              value={monthlyIncome}
-              onChange={(e) => setMonthlyIncome(Number(e.target.value))}
-              placeholder="Ex: 2000"
-            />
-          </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label>Pourcentage d'épargne</Label>
@@ -92,24 +97,26 @@ export const SavingsGoal = ({
             />
           </div>
         </div>
-        {monthlyIncome > 0 && (
-          <div className="space-y-2 rounded-lg bg-secondary p-4">
-            <div className="flex items-center justify-between text-sm">
-              <span>Objectif mensuel</span>
-              <span className="font-medium">{targetMonthlySavings.toFixed(2)}€</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span>Total épargné</span>
-              <span className="font-medium">{totalMonthlyAmount.toFixed(2)}€</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span>Reste à épargner</span>
-              <span className={`font-medium ${remainingToTarget > 0 ? 'text-destructive' : 'text-green-500'}`}>
-                {remainingToTarget.toFixed(2)}€
-              </span>
-            </div>
+        <div className="space-y-2 rounded-lg bg-secondary p-4">
+          <div className="flex items-center justify-between text-sm">
+            <span>Revenu total</span>
+            <span className="font-medium">{totalIncome.toFixed(2)}€</span>
           </div>
-        )}
+          <div className="flex items-center justify-between text-sm">
+            <span>Objectif mensuel</span>
+            <span className="font-medium">{targetMonthlySavings.toFixed(2)}€</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span>Total épargné</span>
+            <span className="font-medium">{totalMonthlyAmount.toFixed(2)}€</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span>Reste à épargner</span>
+            <span className={`font-medium ${remainingToTarget > 0 ? 'text-destructive' : 'text-green-500'}`}>
+              {remainingToTarget.toFixed(2)}€
+            </span>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

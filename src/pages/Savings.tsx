@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { MonthlyTotal } from "@/components/savings/MonthlyTotal";
-import { NewSavingForm } from "@/components/savings/NewSavingForm";
+import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
 import { SavingsList } from "@/components/savings/SavingsList";
 
 interface MonthlySaving {
@@ -19,7 +19,6 @@ interface MonthlySaving {
 const Savings = () => {
   const [monthlySavings, setMonthlySavings] = useState<MonthlySaving[]>([]);
   const [savingsPercentage, setSavingsPercentage] = useState(0);
-  const [monthlyIncome, setMonthlyIncome] = useState(0);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -84,31 +83,30 @@ const Savings = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Épargne</h1>
-          <p className="text-muted-foreground">
-            Gérez vos versements mensuels d'épargne
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Épargne</h1>
+            <p className="text-muted-foreground">
+              Gérez vos versements mensuels d'épargne
+            </p>
+          </div>
+          <NewSavingDialog onSavingAdded={fetchMonthlySavings} />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <SavingsGoal
             savingsPercentage={savingsPercentage}
             setSavingsPercentage={setSavingsPercentage}
-            monthlyIncome={monthlyIncome}
-            setMonthlyIncome={setMonthlyIncome}
             totalMonthlyAmount={totalMonthlyAmount}
           />
 
           <MonthlyTotal totalMonthlyAmount={totalMonthlyAmount} />
-
-          <NewSavingForm onSavingAdded={fetchMonthlySavings} />
-
-          <SavingsList
-            monthlySavings={monthlySavings}
-            onSavingDeleted={fetchMonthlySavings}
-          />
         </div>
+
+        <SavingsList
+          monthlySavings={monthlySavings}
+          onSavingDeleted={fetchMonthlySavings}
+        />
       </div>
     </DashboardLayout>
   );

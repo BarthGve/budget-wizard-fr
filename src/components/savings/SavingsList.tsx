@@ -1,7 +1,15 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { LineChart, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -41,40 +49,34 @@ export const SavingsList = ({ monthlySavings, onSavingDeleted }: SavingsListProp
   };
 
   return (
-    <>
-      {monthlySavings.map((saving) => (
-        <Card key={saving.id}>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <LineChart className="h-5 w-5 text-primary" />
-                <CardTitle>{saving.name}</CardTitle>
-              </div>
+    <Table>
+      <TableCaption>Liste de vos versements mensuels d'épargne</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Nom</TableHead>
+          <TableHead>Description</TableHead>
+          <TableHead className="text-right">Montant</TableHead>
+          <TableHead className="w-[100px]">Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {monthlySavings.map((saving) => (
+          <TableRow key={saving.id}>
+            <TableCell className="font-medium">{saving.name}</TableCell>
+            <TableCell>{saving.description || "-"}</TableCell>
+            <TableCell className="text-right">{saving.amount}€</TableCell>
+            <TableCell>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => deleteMonthlySaving(saving.id)}
               >
-                <X className="h-4 w-4" />
+                <Trash2 className="h-4 w-4" />
               </Button>
-            </div>
-            <CardDescription>Versement mensuel</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
-                Montant mensuel:
-              </span>
-              <span className="text-lg font-bold">{saving.amount}€</span>
-            </div>
-            {saving.description && (
-              <p className="text-sm text-muted-foreground">
-                {saving.description}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      ))}
-    </>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
