@@ -92,16 +92,19 @@ export type Database = {
         Row: {
           full_name: string | null
           id: string
+          savings_goal_percentage: number | null
           updated_at: string | null
         }
         Insert: {
           full_name?: string | null
           id: string
+          savings_goal_percentage?: number | null
           updated_at?: string | null
         }
         Update: {
           full_name?: string | null
           id?: string
+          savings_goal_percentage?: number | null
           updated_at?: string | null
         }
         Relationships: []
