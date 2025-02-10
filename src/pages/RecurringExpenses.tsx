@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RecurringExpenseDialog } from "@/components/recurring-expenses/RecurringExpenseDialog";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface RecurringExpense {
   id: string;
@@ -23,10 +25,30 @@ interface RecurringExpense {
 
 const RecurringExpenses = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/login");
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
 
   const { data: recurringExpenses, isLoading } = useQuery({
     queryKey: ["recurring-expenses"],
     queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) throw userError;
+      if (!user) {
+        toast.error("Vous devez être connecté pour voir vos charges récurrentes");
+        throw new Error("Not authenticated");
+      }
+
       const { data, error } = await supabase
         .from("recurring_expenses")
         .select("*")

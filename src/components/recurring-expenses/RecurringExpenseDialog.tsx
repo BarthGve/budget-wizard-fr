@@ -53,6 +53,14 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) throw userError;
+      if (!user) {
+        toast.error("Vous devez être connecté pour effectuer cette action");
+        return;
+      }
+
       if (expense) {
         // Update existing expense
         const { error } = await supabase
@@ -72,6 +80,7 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
           name: values.name,
           amount: Number(values.amount),
           category: values.category,
+          profile_id: user.id,
         });
 
         if (error) throw error;
