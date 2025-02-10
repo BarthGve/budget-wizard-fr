@@ -1,8 +1,9 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Property } from '@/types/property';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PropertiesMapProps {
   properties: Property[];
@@ -11,12 +12,29 @@ interface PropertiesMapProps {
 export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const [mapboxToken, setMapboxToken] = useState<string>('');
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    // Fetch Mapbox token from Supabase
+    const fetchMapboxToken = async () => {
+      const { data: secret } = await supabase.from('app_settings')
+        .select('value')
+        .eq('name', 'MAPBOX_TOKEN')
+        .single();
+
+      if (secret?.value) {
+        setMapboxToken(secret.value);
+      }
+    };
+
+    fetchMapboxToken();
+  }, []);
+
+  useEffect(() => {
+    if (!mapContainer.current || !mapboxToken) return;
 
     // Initialize map
-    mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN'; // Les utilisateurs devront remplacer ceci par leur token
+    mapboxgl.accessToken = mapboxToken;
     
     const bounds = new mapboxgl.LngLatBounds();
     
@@ -64,7 +82,7 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
     return () => {
       map.current?.remove();
     };
-  }, [properties]);
+  }, [properties, mapboxToken]);
 
   return (
     <div className="w-full h-[400px] rounded-lg overflow-hidden shadow-md">
