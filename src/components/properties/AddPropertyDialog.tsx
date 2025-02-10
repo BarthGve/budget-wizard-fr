@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AddPropertyDialog = () => {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
   const [newProperty, setNewProperty] = useState({
     name: "",
@@ -50,8 +51,31 @@ export const AddPropertyDialog = () => {
     candy: "bg-pink-400 hover:bg-pink-500",
   };
 
+  const geocodeAddress = async (address: string) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          address
+        )}&limit=1`
+      );
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        return {
+          latitude: data[0].lat,
+          longitude: data[0].lon,
+        };
+      }
+      throw new Error("Adresse introuvable");
+    } catch (error) {
+      console.error("Erreur de géocodage:", error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -60,8 +84,17 @@ export const AddPropertyDialog = () => {
       }
 
       // Validate required fields
-      if (!newProperty.name || !newProperty.address || !newProperty.area || !newProperty.purchase_value || !newProperty.latitude || !newProperty.longitude) {
+      if (!newProperty.name || !newProperty.address || !newProperty.area || !newProperty.purchase_value) {
         toast.error("Veuillez remplir tous les champs obligatoires");
+        return;
+      }
+
+      // Géocodage de l'adresse
+      let coordinates;
+      try {
+        coordinates = await geocodeAddress(newProperty.address);
+      } catch (error) {
+        toast.error("Impossible de géolocaliser cette adresse");
         return;
       }
 
@@ -72,8 +105,8 @@ export const AddPropertyDialog = () => {
         purchase_value: Number(newProperty.purchase_value),
         monthly_rent: newProperty.monthly_rent ? Number(newProperty.monthly_rent) : null,
         loan_payment: newProperty.loan_payment ? Number(newProperty.loan_payment) : null,
-        latitude: Number(newProperty.latitude),
-        longitude: Number(newProperty.longitude),
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
         profile_id: user.id,
       });
 
@@ -95,6 +128,8 @@ export const AddPropertyDialog = () => {
     } catch (error) {
       console.error("Error adding property:", error);
       toast.error("Erreur lors de l'ajout du bien");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -172,37 +207,17 @@ export const AddPropertyDialog = () => {
               placeholder="Ex: 1500"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="latitude">Latitude*</Label>
-              <Input
-                id="latitude"
-                type="number"
-                step="any"
-                value={newProperty.latitude}
-                onChange={(e) => setNewProperty({ ...newProperty, latitude: e.target.value })}
-                placeholder="Ex: 48.8566"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="longitude">Longitude*</Label>
-              <Input
-                id="longitude"
-                type="number"
-                step="any"
-                value={newProperty.longitude}
-                onChange={(e) => setNewProperty({ ...newProperty, longitude: e.target.value })}
-                placeholder="Ex: 2.3522"
-              />
-            </div>
-          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Annuler
           </Button>
-          <Button className={`text-white ${paletteToBackground[colorPalette]}`} onClick={handleSubmit}>
-            Ajouter
+          <Button 
+            className={`text-white ${paletteToBackground[colorPalette]}`} 
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? "Ajout en cours..." : "Ajouter"}
           </Button>
         </DialogFooter>
       </DialogContent>
