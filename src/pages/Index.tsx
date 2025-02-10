@@ -16,6 +16,84 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const Dashboard = () => {
+  // Fetch contributors data for total revenue
+  const { data: contributors } = useQuery({
+    queryKey: ["contributors"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("contributors")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching contributors:", error);
+        toast.error("Erreur lors du chargement des contributeurs");
+        throw error;
+      }
+
+      return data || [];
+    },
+  });
+
+  // Fetch monthly savings data
+  const { data: monthlySavings } = useQuery({
+    queryKey: ["monthly-savings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("monthly_savings")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching monthly savings:", error);
+        toast.error("Erreur lors du chargement de l'épargne mensuelle");
+        throw error;
+      }
+
+      return data || [];
+    },
+  });
+
+  // Fetch user profile for savings goal percentage
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        toast.error("Erreur lors du chargement du profil");
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
+  // Calculate total revenue from contributors
+  const totalRevenue = contributors?.reduce(
+    (sum, contributor) => sum + contributor.total_contribution,
+    0
+  ) || 0;
+
+  // Calculate total monthly savings
+  const totalMonthlySavings = monthlySavings?.reduce(
+    (sum, saving) => sum + saving.amount,
+    0
+  ) || 0;
+
+  // Calculate savings goal based on total revenue and savings percentage
+  const savingsGoal = profile?.savings_goal_percentage
+    ? (totalRevenue * profile.savings_goal_percentage) / 100
+    : 0;
+
   const { data: recurringExpenses } = useQuery({
     queryKey: ["recurring-expenses"],
     queryFn: async () => {
@@ -44,14 +122,6 @@ const Dashboard = () => {
 
   // Calculer le total des dépenses récurrentes
   const totalExpenses = recurringExpenses?.reduce((sum, expense) => sum + Number(expense.amount), 0) || 0;
-
-  // Données temporaires pour la démo (sauf totalExpenses qui est maintenant dynamique)
-  const budget = {
-    totalRevenue: 5000,
-    totalExpenses: totalExpenses,
-    savingsGoal: 1000,
-    currentSavings: 750,
-  };
 
   // Grouper les dépenses par catégorie
   const expensesByCategory = recurringExpenses?.reduce((acc, expense) => {
@@ -90,7 +160,7 @@ const Dashboard = () => {
               <CardDescription>Tous contributeurs confondus</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{budget.totalRevenue} €</p>
+              <p className="text-3xl font-bold">{totalRevenue.toFixed(2)} €</p>
             </CardContent>
           </Card>
 
@@ -100,7 +170,7 @@ const Dashboard = () => {
               <CardDescription>Total des charges mensuelles</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{budget.totalExpenses} €</p>
+              <p className="text-3xl font-bold">{totalExpenses.toFixed(2)} €</p>
             </CardContent>
           </Card>
 
@@ -112,10 +182,10 @@ const Dashboard = () => {
             <CardContent>
               <div className="space-y-4">
                 <p className="text-3xl font-bold">
-                  {budget.currentSavings} € / {budget.savingsGoal} €
+                  {totalMonthlySavings.toFixed(2)} € / {savingsGoal.toFixed(2)} €
                 </p>
                 <Progress
-                  value={(budget.currentSavings / budget.savingsGoal) * 100}
+                  value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0}
                 />
               </div>
             </CardContent>
@@ -142,13 +212,13 @@ const Dashboard = () => {
                 <div key={category.name} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{category.name}</span>
-                    <span>{category.amount} €</span>
+                    <span>{category.amount.toFixed(2)} €</span>
                   </div>
                   <div className="h-2 rounded-full bg-gray-100">
                     <div
                       className={`h-full rounded-full ${category.color}`}
                       style={{
-                        width: `${(category.amount / budget.totalExpenses) * 100}%`,
+                        width: `${(category.amount / totalExpenses) * 100}%`,
                       }}
                     />
                   </div>
