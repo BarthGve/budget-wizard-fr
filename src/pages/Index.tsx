@@ -1,18 +1,15 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { Progress } from "@/components/ui/progress";
-import { BarChart } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { BarChart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { RevenueCard } from "@/components/dashboard/RevenueCard";
+import { ExpensesCard } from "@/components/dashboard/ExpensesCard";
+import { SavingsCard } from "@/components/dashboard/SavingsCard";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Dashboard = () => {
   // Fetch contributors data for total revenue
@@ -174,96 +171,18 @@ const Dashboard = () => {
 
         {/* Cartes principales */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="card-hover">
-            <CardHeader>
-              <CardTitle>Revenus Totaux</CardTitle>
-              <CardDescription>Répartition par contributeur</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-3xl font-bold">{Math.round(totalRevenue)} €</p>
-              <div className="relative h-4">
-                {cumulativeContributionPercentages.map((contrib, index) => (
-                  <div
-                    key={contrib.name}
-                    className="absolute h-full rounded-full"
-                    style={{
-                      left: `${contrib.start}%`,
-                      width: `${contrib.end - contrib.start}%`,
-                      backgroundColor: getCategoryColor(index),
-                    }}
-                  />
-                ))}
-              </div>
-              <div className="space-y-2">
-                {cumulativeContributionPercentages.map((contrib, index) => (
-                  <div key={contrib.name} className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <div 
-                        className="h-3 w-3 rounded-full" 
-                        style={{ backgroundColor: getCategoryColor(index) }}
-                      />
-                      <span>{contrib.name}</span>
-                    </div>
-                    <span>{Math.round(contrib.amount)} €</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="card-hover">
-            <CardHeader>
-              <CardTitle>Dépenses</CardTitle>
-              <CardDescription>Répartition par contributeur</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-3xl font-bold">{Math.round(totalExpenses)} €</p>
-              <div className="relative h-4">
-                {cumulativeExpensePercentages.map((contrib, index) => (
-                  <div
-                    key={contrib.name}
-                    className="absolute h-full rounded-full"
-                    style={{
-                      left: `${contrib.start}%`,
-                      width: `${contrib.end - contrib.start}%`,
-                      backgroundColor: getCategoryColor(index),
-                    }}
-                  />
-                ))}
-              </div>
-              <div className="space-y-2">
-                {cumulativeExpensePercentages.map((contrib, index) => (
-                  <div key={contrib.name} className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <div 
-                        className="h-3 w-3 rounded-full" 
-                        style={{ backgroundColor: getCategoryColor(index) }}
-                      />
-                      <span>{contrib.name}</span>
-                    </div>
-                    <span>{Math.round(contrib.amount)} €</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="card-hover">
-            <CardHeader>
-              <CardTitle>Objectif d'épargne</CardTitle>
-              <CardDescription>Progression mensuelle</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-3xl font-bold">
-                  {Math.round(totalMonthlySavings)} € / {Math.round(savingsGoal)} €
-                </p>
-                <Progress
-                  value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <RevenueCard 
+            totalRevenue={totalRevenue}
+            contributorShares={cumulativeContributionPercentages}
+          />
+          <ExpensesCard 
+            totalExpenses={totalExpenses}
+            contributorShares={cumulativeExpensePercentages}
+          />
+          <SavingsCard 
+            totalMonthlySavings={totalMonthlySavings}
+            savingsGoal={savingsGoal}
+          />
         </div>
 
         {/* Répartition des dépenses récurrentes */}
@@ -282,17 +201,18 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {categories.map((category) => (
-                <div key={category.name} className="space-y-2">
+              {recurringExpenses?.map((expense, index) => (
+                <div key={expense.id} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium">{category.name}</span>
-                    <span>{category.amount.toFixed(2)} €</span>
+                    <span className="font-medium">{expense.name}</span>
+                    <span>{Math.round(expense.amount)} €</span>
                   </div>
                   <div className="h-2 rounded-full bg-gray-100">
                     <div
-                      className={`h-full rounded-full ${category.color}`}
+                      className="h-full rounded-full"
                       style={{
-                        width: `${(category.amount / totalExpenses) * 100}%`,
+                        width: `${(expense.amount / totalExpenses) * 100}%`,
+                        backgroundColor: getCategoryColor(index),
                       }}
                     />
                   </div>
@@ -304,20 +224,6 @@ const Dashboard = () => {
       </div>
     </DashboardLayout>
   );
-};
-
-// Fonction utilitaire pour obtenir la couleur de la catégorie
-const getCategoryColor = (index: number): string => {
-  const colors = [
-    'rgb(59, 130, 246)', // blue-500
-    'rgb(34, 197, 94)', // green-500
-    'rgb(234, 179, 8)', // yellow-500
-    'rgb(239, 68, 68)', // red-500
-    'rgb(168, 85, 247)', // purple-500
-    'rgb(236, 72, 153)', // pink-500
-    'rgb(107, 114, 128)', // gray-500
-  ];
-  return colors[index % colors.length];
 };
 
 export default Dashboard;
