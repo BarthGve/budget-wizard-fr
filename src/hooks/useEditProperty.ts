@@ -17,6 +17,7 @@ export const useEditProperty = (property: Property, onSuccess: () => void) => {
     purchase_value: property.purchase_value.toString(),
     monthly_rent: property.monthly_rent?.toString() || "",
     loan_payment: property.loan_payment?.toString() || "",
+    investment_type: property.investment_type || "",
   });
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,6 +89,7 @@ export const useEditProperty = (property: Property, onSuccess: () => void) => {
           purchase_value: Number(editedProperty.purchase_value),
           monthly_rent: editedProperty.monthly_rent ? Number(editedProperty.monthly_rent) : null,
           loan_payment: editedProperty.loan_payment ? Number(editedProperty.loan_payment) : null,
+          investment_type: editedProperty.investment_type || null,
           latitude: coordinates.latitude,
           longitude: coordinates.longitude,
         })
@@ -114,3 +116,4 @@ export const useEditProperty = (property: Property, onSuccess: () => void) => {
     isLoading
   };
 };
+

@@ -118,6 +118,7 @@ export type Database = {
           area: number
           created_at: string
           id: string
+          investment_type: string | null
           latitude: number | null
           loan_payment: number | null
           longitude: number | null
@@ -133,6 +134,7 @@ export type Database = {
           area: number
           created_at?: string
           id?: string
+          investment_type?: string | null
           latitude?: number | null
           loan_payment?: number | null
           longitude?: number | null
@@ -148,6 +150,7 @@ export type Database = {
           area?: number
           created_at?: string
           id?: string
+          investment_type?: string | null
           latitude?: number | null
           loan_payment?: number | null
           longitude?: number | null

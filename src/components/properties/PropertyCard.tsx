@@ -42,14 +42,26 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
             <span className="text-sm">Carte</span>
           </div>
         </div>
+        {property.investment_type && (
+          <div className="py-1">
+            <p className="text-sm text-muted-foreground">Type d'investissement</p>
+            <p className="font-medium">{property.investment_type}</p>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="grid gap-2 p-4 pt-0">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4">
           <div>
-            <p className="text-sm text-muted-foreground">Valeur</p>
+            <p className="text-sm text-muted-foreground">Valeur d'achat</p>
             <p className="font-medium">{formatCurrency(property.purchase_value)}</p>
           </div>
-          {property.monthly_rent && (
+          {property.loan_payment && property.loan_payment > 0 && (
+            <div>
+              <p className="text-sm text-muted-foreground">Mensualité du prêt</p>
+              <p className="font-medium">{formatCurrency(property.loan_payment)}</p>
+            </div>
+          )}
+          {property.monthly_rent && property.monthly_rent > 0 && (
             <div>
               <p className="text-sm text-muted-foreground">Loyer mensuel</p>
               <p className="font-medium">{formatCurrency(property.monthly_rent)}</p>
@@ -60,3 +72,4 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
     </Card>
   );
 };
+

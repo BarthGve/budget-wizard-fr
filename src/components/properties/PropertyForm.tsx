@@ -30,6 +30,15 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
         />
       </div>
       <div className="grid gap-2">
+        <Label htmlFor="investment_type">Type d'investissement</Label>
+        <Input
+          id="investment_type"
+          value={newProperty.investment_type}
+          onChange={(e) => onChange({ ...newProperty, investment_type: e.target.value })}
+          placeholder="Ex: Pinel, LMNP, Ancien"
+        />
+      </div>
+      <div className="grid gap-2">
         <Label htmlFor="area">Surface (m²)*</Label>
         <Input
           id="area"
@@ -72,3 +81,4 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
     </div>
   );
 };
+

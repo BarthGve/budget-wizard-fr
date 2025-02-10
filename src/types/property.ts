@@ -1,3 +1,4 @@
+
 export interface Property {
   id: string;
   name: string;
@@ -9,6 +10,7 @@ export interface Property {
   monthly_rent?: number | null;
   loan_payment?: number | null;
   photo_url?: string | null;
+  investment_type?: string | null;
   created_at: string;
   updated_at: string;
   profile_id: string;
@@ -21,4 +23,6 @@ export interface NewProperty {
   purchase_value: string;
   monthly_rent: string;
   loan_payment: string;
+  investment_type: string;
 }
+
