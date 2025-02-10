@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 interface NewSavingDialogProps {
   onSavingAdded: () => void;
@@ -29,6 +30,33 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
   const [newSavingDescription, setNewSavingDescription] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
+  });
+
+  const colorPalette = profile?.color_palette || "default";
+  const paletteToBackground: Record<string, string> = {
+    default: "bg-blue-500 hover:bg-blue-600",
+    ocean: "bg-sky-500 hover:bg-sky-600",
+    forest: "bg-green-500 hover:bg-green-600",
+    sunset: "bg-orange-500 hover:bg-orange-600",
+    candy: "bg-pink-400 hover:bg-pink-500",
+  };
 
   const resetForm = () => {
     setNewSavingName("");
@@ -81,7 +109,7 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className={`text-white ${paletteToBackground[colorPalette]}`}>
           <Plus className="mr-2 h-4 w-4" />
           Nouveau versement
         </Button>
@@ -124,7 +152,7 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={addNewMonthlySaving}>Ajouter</Button>
+          <Button onClick={addNewMonthlySaving} className={`text-white ${paletteToBackground[colorPalette]}`}>Ajouter</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
