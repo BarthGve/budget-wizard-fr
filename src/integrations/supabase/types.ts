@@ -112,6 +112,62 @@ export type Database = {
         }
         Relationships: []
       }
+      properties: {
+        Row: {
+          address: string
+          area: number
+          created_at: string
+          id: string
+          latitude: number
+          loan_payment: number | null
+          longitude: number
+          monthly_rent: number | null
+          name: string
+          photo_url: string | null
+          profile_id: string
+          purchase_value: number
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          area: number
+          created_at?: string
+          id?: string
+          latitude: number
+          loan_payment?: number | null
+          longitude: number
+          monthly_rent?: number | null
+          name: string
+          photo_url?: string | null
+          profile_id: string
+          purchase_value: number
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          area?: number
+          created_at?: string
+          id?: string
+          latitude?: number
+          loan_payment?: number | null
+          longitude?: number
+          monthly_rent?: number | null
+          name?: string
+          photo_url?: string | null
+          profile_id?: string
+          purchase_value?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "properties_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recurring_expenses: {
         Row: {
           amount: number
