@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Home, MapPin, Ruler } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
+import { EditPropertyDialog } from "./EditPropertyDialog";
 
 interface PropertyCardProps {
   property: Property;
@@ -18,6 +19,9 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
           alt={property.name}
           className="object-cover w-full h-full"
         />
+        <div className="absolute top-2 right-2">
+          <EditPropertyDialog property={property} />
+        </div>
       </CardHeader>
       <CardContent className="grid gap-2 p-4">
         <div className="flex items-start justify-between">
