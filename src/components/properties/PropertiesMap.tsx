@@ -4,6 +4,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Property } from '@/types/property';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface PropertiesMapProps {
   properties: Property[];
@@ -13,17 +14,32 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Fetch Mapbox token from Supabase
     const fetchMapboxToken = async () => {
-      const { data: secret } = await supabase.from('app_settings')
-        .select('value')
-        .eq('name', 'MAPBOX_TOKEN')
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('app_settings')
+          .select('value')
+          .eq('name', 'MAPBOX_TOKEN')
+          .maybeSingle();
 
-      if (secret?.value) {
-        setMapboxToken(secret.value);
+        if (error) throw error;
+        
+        if (!data) {
+          toast.error("Token Mapbox non trouvé");
+          setIsLoading(false);
+          return;
+        }
+
+        setMapboxToken(data.value);
+      } catch (error) {
+        console.error('Error fetching Mapbox token:', error);
+        toast.error("Erreur lors du chargement de la carte");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -31,7 +47,7 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
   }, []);
 
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current || !mapboxToken || isLoading) return;
 
     // Initialize map
     mapboxgl.accessToken = mapboxToken;
@@ -82,7 +98,21 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
     return () => {
       map.current?.remove();
     };
-  }, [properties, mapboxToken]);
+  }, [properties, mapboxToken, isLoading]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-[400px] rounded-lg overflow-hidden shadow-md bg-muted animate-pulse" />
+    );
+  }
+
+  if (!mapboxToken) {
+    return (
+      <div className="w-full h-[400px] rounded-lg overflow-hidden shadow-md bg-muted flex items-center justify-center">
+        <p className="text-muted-foreground">Impossible de charger la carte</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-[400px] rounded-lg overflow-hidden shadow-md">
