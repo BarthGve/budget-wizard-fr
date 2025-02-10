@@ -38,56 +38,58 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
         </Button>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={chartData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={5}
-                dataKey="value"
-              >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={getCategoryColor(index)} />
-                ))}
-              </Pie>
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="rounded-lg border bg-background p-2 shadow-sm">
-                        <p className="font-medium">{data.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {data.value} € ({Math.round((data.value / totalExpenses) * 100)}%)
-                        </p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="mt-4 space-y-2">
-          {recurringExpenses.map((expense, index) => (
-            <div key={expense.id} className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div
-                  className="mr-2 h-3 w-3 rounded-full"
-                  style={{ backgroundColor: getCategoryColor(index) }}
+        <div className="flex items-center gap-8">
+          <div className="w-[200px]">
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={getCategoryColor(index)} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="rounded-lg border bg-background p-2 shadow-sm">
+                          <p className="font-medium">{data.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {data.value} € ({Math.round((data.value / totalExpenses) * 100)}%)
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
                 />
-                <span className="text-sm font-medium">{expense.name}</span>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex-1 space-y-2">
+            {recurringExpenses.map((expense, index) => (
+              <div key={expense.id} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div
+                    className="mr-2 h-3 w-3 rounded-full"
+                    style={{ backgroundColor: getCategoryColor(index) }}
+                  />
+                  <span className="text-sm font-medium">{expense.name}</span>
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  {Math.round(expense.amount)} €
+                </span>
               </div>
-              <span className="text-sm text-muted-foreground">
-                {Math.round(expense.amount)} €
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>
