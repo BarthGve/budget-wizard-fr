@@ -2,7 +2,7 @@
 export interface Contributor {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   total_contribution: number;
   percentage_contribution: number;
   is_owner: boolean;
@@ -11,6 +11,6 @@ export interface Contributor {
 
 export interface NewContributor {
   name: string;
-  email: string;
+  email?: string;
   total_contribution: string;
 }

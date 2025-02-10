@@ -30,8 +30,8 @@ export const useContributors = () => {
   };
 
   const addContributor = async (newContributor: NewContributor) => {
-    if (!newContributor.name || !newContributor.email || isNaN(parseFloat(newContributor.total_contribution))) {
-      toast.error("Veuillez remplir tous les champs correctement");
+    if (!newContributor.name || isNaN(parseFloat(newContributor.total_contribution))) {
+      toast.error("Veuillez remplir tous les champs requis");
       return;
     }
 

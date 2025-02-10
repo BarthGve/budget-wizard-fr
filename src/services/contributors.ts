@@ -17,15 +17,17 @@ export const addContributorService = async (
   userId: string,
   currentContributors: Contributor[]
 ) => {
-  const { data: existingContributor, error: existingError } = await supabase
-    .from("contributors")
-    .select("id")
-    .eq("email", newContributor.email)
-    .maybeSingle();
+  if (newContributor.email) {
+    const { data: existingContributor, error: existingError } = await supabase
+      .from("contributors")
+      .select("id")
+      .eq("email", newContributor.email)
+      .maybeSingle();
 
-  if (existingError) throw existingError;
-  if (existingContributor) {
-    throw new Error("Un contributeur avec cet email existe déjà");
+    if (existingError) throw existingError;
+    if (existingContributor) {
+      throw new Error("Un contributeur avec cet email existe déjà");
+    }
   }
 
   const contribution = parseFloat(newContributor.total_contribution);
@@ -100,12 +102,16 @@ export const updateContributorService = async (
 
   // Si ce n'est pas le propriétaire, mettre à jour le nom et l'email
   if (!existingContributor.is_owner) {
+    const updateData: { name?: string; email?: string } = {
+      name: contributor.name,
+    };
+    if (contributor.email) {
+      updateData.email = contributor.email;
+    }
+    
     const { error: updateNameEmailError } = await supabase
       .from("contributors")
-      .update({
-        name: contributor.name,
-        email: contributor.email,
-      })
+      .update(updateData)
       .eq("id", contributor.id);
 
     if (updateNameEmailError) throw updateNameEmailError;

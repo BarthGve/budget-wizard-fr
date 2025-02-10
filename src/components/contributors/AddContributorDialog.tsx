@@ -61,7 +61,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email (optionnel)</Label>
             <Input
               id="email"
               type="email"
