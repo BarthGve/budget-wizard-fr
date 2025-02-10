@@ -11,22 +11,63 @@ import { Progress } from "@/components/ui/progress";
 import { BarChart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Dashboard = () => {
-  // Données temporaires pour la démo
+  const { data: recurringExpenses } = useQuery({
+    queryKey: ["recurring-expenses"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) throw userError;
+      if (!user) {
+        toast.error("Vous devez être connecté pour voir vos charges récurrentes");
+        throw new Error("Not authenticated");
+      }
+
+      const { data, error } = await supabase
+        .from("recurring_expenses")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching recurring expenses:", error);
+        toast.error("Erreur lors du chargement des charges récurrentes");
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
+  // Calculer le total des dépenses récurrentes
+  const totalExpenses = recurringExpenses?.reduce((sum, expense) => sum + Number(expense.amount), 0) || 0;
+
+  // Données temporaires pour la démo (sauf totalExpenses qui est maintenant dynamique)
   const budget = {
     totalRevenue: 5000,
-    totalExpenses: 3000,
+    totalExpenses: totalExpenses,
     savingsGoal: 1000,
     currentSavings: 750,
   };
 
-  const categories = [
-    { name: "Logement", amount: 1200, color: "bg-blue-500" },
-    { name: "Transport", amount: 400, color: "bg-green-500" },
-    { name: "Alimentation", amount: 600, color: "bg-yellow-500" },
-    { name: "Loisirs", amount: 300, color: "bg-purple-500" },
-  ];
+  // Grouper les dépenses par catégorie
+  const expensesByCategory = recurringExpenses?.reduce((acc, expense) => {
+    if (!acc[expense.category]) {
+      acc[expense.category] = 0;
+    }
+    acc[expense.category] += Number(expense.amount);
+    return acc;
+  }, {} as { [key: string]: number }) || {};
+
+  // Convertir en format pour l'affichage
+  const categories = Object.entries(expensesByCategory).map(([name, amount]) => ({
+    name,
+    amount,
+    color: getCategoryColor(name),
+  }));
 
   return (
     <DashboardLayout>
@@ -121,4 +162,19 @@ const Dashboard = () => {
   );
 };
 
+// Fonction utilitaire pour obtenir la couleur de la catégorie
+const getCategoryColor = (category: string): string => {
+  const colors: { [key: string]: string } = {
+    Logement: "bg-blue-500",
+    Transport: "bg-green-500",
+    Alimentation: "bg-yellow-500",
+    Santé: "bg-red-500",
+    Loisirs: "bg-purple-500",
+    Télécommunications: "bg-pink-500",
+    Autres: "bg-gray-500",
+  };
+  return colors[category] || "bg-gray-500";
+};
+
 export default Dashboard;
+
