@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PropertyList } from "@/components/properties/PropertyList";
 import { AddPropertyDialog } from "@/components/properties/AddPropertyDialog";
+import { PropertiesMap } from "@/components/properties/PropertiesMap";
 import { toast } from "sonner";
 
 const Properties = () => {
@@ -38,6 +39,7 @@ const Properties = () => {
           <AddPropertyDialog />
         </div>
 
+        <PropertiesMap properties={properties || []} />
         <PropertyList properties={properties || []} isLoading={isLoading} />
       </div>
     </DashboardLayout>
