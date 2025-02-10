@@ -10,6 +10,7 @@ import { RevenueCard } from "@/components/dashboard/RevenueCard";
 import { ExpensesCard } from "@/components/dashboard/ExpensesCard";
 import { SavingsCard } from "@/components/dashboard/SavingsCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCategoryColor } from "@/utils/colors";
 
 const Dashboard = () => {
   // Fetch contributors data for total revenue
