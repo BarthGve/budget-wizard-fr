@@ -63,7 +63,9 @@ export const ContributorCard = ({
         </Avatar>
         <div>
           <h3 className="font-medium">{contributor.name}</h3>
-          <p className="text-sm text-gray-500">{contributor.email}</p>
+          {contributor.email && (
+            <p className="text-sm text-gray-500">{contributor.email}</p>
+          )}
         </div>
       </div>
       <div className="flex items-center space-x-4">
@@ -120,7 +122,9 @@ export const ContributorCard = ({
                   </>
                 )}
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-contribution">Contribution (€)</Label>
+                  <Label htmlFor="edit-contribution">
+                    {contributor.is_owner ? "Votre contribution (€)" : "Contribution (€)"}
+                  </Label>
                   <Input
                     id="edit-contribution"
                     type="number"
