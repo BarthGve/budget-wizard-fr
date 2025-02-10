@@ -1,4 +1,3 @@
-
 export interface Property {
   id: string;
   name: string;
@@ -13,4 +12,13 @@ export interface Property {
   created_at: string;
   updated_at: string;
   profile_id: string;
+}
+
+export interface NewProperty {
+  name: string;
+  address: string;
+  area: string;
+  purchase_value: string;
+  monthly_rent: string;
+  loan_payment: string;
 }
