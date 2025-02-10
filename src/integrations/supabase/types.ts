@@ -90,18 +90,21 @@ export type Database = {
       }
       profiles: {
         Row: {
+          color_palette: string | null
           full_name: string | null
           id: string
           savings_goal_percentage: number | null
           updated_at: string | null
         }
         Insert: {
+          color_palette?: string | null
           full_name?: string | null
           id: string
           savings_goal_percentage?: number | null
           updated_at?: string | null
         }
         Update: {
+          color_palette?: string | null
           full_name?: string | null
           id?: string
           savings_goal_percentage?: number | null

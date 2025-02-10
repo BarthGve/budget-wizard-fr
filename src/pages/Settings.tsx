@@ -15,13 +15,66 @@ import {
   CreditCard,
   Lock,
   Mail,
+  Palette,
   Shield,
   User,
   Wallet,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Settings = () => {
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        toast.error("Erreur lors du chargement du profil");
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
+  const handleColorPaletteChange = async (value: string) => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      toast.error("Erreur lors de la mise à jour de la palette de couleurs");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ color_palette: value })
+      .eq("id", user?.id);
+
+    if (error) {
+      toast.error("Erreur lors de la mise à jour de la palette de couleurs");
+      return;
+    }
+
+    toast.success("Palette de couleurs mise à jour avec succès");
+  };
+
   return (
     <DashboardLayout>
       <div className="grid gap-6">
@@ -31,6 +84,39 @@ const Settings = () => {
             Gérez vos préférences et paramètres de compte
           </p>
         </div>
+
+        {/* Apparence */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center space-x-2">
+              <Palette className="h-5 w-5" />
+              <CardTitle>Apparence</CardTitle>
+            </div>
+            <CardDescription>
+              Personnalisez l'apparence de votre espace
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Palette de couleurs</Label>
+              <Select
+                defaultValue={profile?.color_palette || "default"}
+                onValueChange={handleColorPaletteChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choisissez une palette" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default">Par défaut</SelectItem>
+                  <SelectItem value="ocean">Océan</SelectItem>
+                  <SelectItem value="forest">Forêt</SelectItem>
+                  <SelectItem value="sunset">Coucher de soleil</SelectItem>
+                  <SelectItem value="candy">Bonbons</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Profil */}
         <Card>
