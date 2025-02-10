@@ -7,43 +7,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   PiggyBank,
-  Target,
-  TrendingUp,
-  LineChart,
-  Calendar,
   Plus,
   X,
+  LineChart,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
-interface SavingsGoal {
+interface MonthlySaving {
   id: string;
   name: string;
-  target_amount: number;
-  current_amount: number;
-  monthly_contribution: number;
+  amount: number;
+  description?: string;
 }
 
 const Savings = () => {
-  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>([]);
-  const [newGoalName, setNewGoalName] = useState("");
-  const [newGoalTarget, setNewGoalTarget] = useState(1000);
-  const [savingsPercentage, setSavingsPercentage] = useState(15);
-  const monthlyIncome = 5000; // À connecter avec les données réelles
+  const [monthlySavings, setMonthlySavings] = useState<MonthlySaving[]>([]);
+  const [newSavingName, setNewSavingName] = useState("");
+  const [newSavingAmount, setNewSavingAmount] = useState(0);
+  const [newSavingDescription, setNewSavingDescription] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const fetchSavingsGoals = async () => {
+  const fetchMonthlySavings = async () => {
     const { data: session } = await supabase.auth.getSession();
     if (!session.session) {
       navigate("/login");
@@ -51,31 +45,31 @@ const Savings = () => {
     }
 
     const { data, error } = await supabase
-      .from("savings_goals")
+      .from("monthly_savings")
       .select("*")
       .order("created_at", { ascending: true });
 
     if (error) {
       toast({
         title: "Erreur",
-        description: "Impossible de charger les objectifs d'épargne",
+        description: "Impossible de charger les versements mensuels",
         variant: "destructive",
       });
       return;
     }
 
-    setSavingsGoals(data || []);
+    setMonthlySavings(data || []);
   };
 
   useEffect(() => {
-    fetchSavingsGoals();
+    fetchMonthlySavings();
   }, []);
 
-  const addNewGoal = async () => {
-    if (!newGoalName.trim()) {
+  const addNewMonthlySaving = async () => {
+    if (!newSavingName.trim()) {
       toast({
         title: "Erreur",
-        description: "Veuillez donner un nom à votre objectif d'épargne",
+        description: "Veuillez donner un nom à votre versement mensuel",
         variant: "destructive",
       });
       return;
@@ -87,18 +81,17 @@ const Savings = () => {
       return;
     }
 
-    const { error } = await supabase.from("savings_goals").insert({
-      name: newGoalName,
-      target_amount: newGoalTarget,
-      current_amount: 0,
-      monthly_contribution: (monthlyIncome * savingsPercentage) / 100,
+    const { error } = await supabase.from("monthly_savings").insert({
+      name: newSavingName,
+      amount: newSavingAmount,
+      description: newSavingDescription,
       profile_id: session.session.user.id,
     });
 
     if (error) {
       toast({
         title: "Erreur",
-        description: "Impossible d'ajouter l'objectif d'épargne",
+        description: "Impossible d'ajouter le versement mensuel",
         variant: "destructive",
       });
       return;
@@ -106,21 +99,22 @@ const Savings = () => {
 
     toast({
       title: "Succès",
-      description: "Objectif d'épargne ajouté",
+      description: "Versement mensuel ajouté",
     });
 
-    setNewGoalName("");
-    setNewGoalTarget(1000);
-    fetchSavingsGoals();
+    setNewSavingName("");
+    setNewSavingAmount(0);
+    setNewSavingDescription("");
+    fetchMonthlySavings();
   };
 
-  const deleteGoal = async (id: string) => {
-    const { error } = await supabase.from("savings_goals").delete().eq("id", id);
+  const deleteMonthlySaving = async (id: string) => {
+    const { error } = await supabase.from("monthly_savings").delete().eq("id", id);
 
     if (error) {
       toast({
         title: "Erreur",
-        description: "Impossible de supprimer l'objectif d'épargne",
+        description: "Impossible de supprimer le versement mensuel",
         variant: "destructive",
       });
       return;
@@ -128,21 +122,16 @@ const Savings = () => {
 
     toast({
       title: "Succès",
-      description: "Objectif d'épargne supprimé",
+      description: "Versement mensuel supprimé",
     });
 
-    fetchSavingsGoals();
+    fetchMonthlySavings();
   };
 
-  const totalSavings = savingsGoals.reduce(
-    (acc, goal) => acc + goal.current_amount,
+  const totalMonthlyAmount = monthlySavings.reduce(
+    (acc, saving) => acc + saving.amount,
     0
   );
-  const totalTarget = savingsGoals.reduce(
-    (acc, goal) => acc + goal.target_amount,
-    0
-  );
-  const projectedMonthlySavings = (monthlyIncome * savingsPercentage) / 100;
 
   return (
     <DashboardLayout>
@@ -150,156 +139,110 @@ const Savings = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Épargne</h1>
           <p className="text-muted-foreground">
-            Gérez vos objectifs d'épargne et suivez votre progression
+            Gérez vos versements mensuels d'épargne
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Ajouter un nouvel objectif */}
+          {/* Ajouter un nouveau versement mensuel */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Plus className="h-5 w-5 text-primary" />
-                <CardTitle>Nouvel objectif d'épargne</CardTitle>
+                <CardTitle>Nouveau versement mensuel</CardTitle>
               </div>
               <CardDescription>
-                Définissez un nouvel objectif d'épargne
+                Ajoutez un nouveau versement mensuel d'épargne
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="goal-name">Nom de l'objectif</Label>
+                <Label htmlFor="saving-name">Nom du versement</Label>
                 <Input
-                  id="goal-name"
-                  value={newGoalName}
-                  onChange={(e) => setNewGoalName(e.target.value)}
-                  placeholder="Ex: Vacances, Voiture..."
+                  id="saving-name"
+                  value={newSavingName}
+                  onChange={(e) => setNewSavingName(e.target.value)}
+                  placeholder="Ex: Assurance Vie, PEL..."
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="goal-target">Montant cible</Label>
+                <Label htmlFor="saving-amount">Montant mensuel (€)</Label>
                 <Input
-                  id="goal-target"
+                  id="saving-amount"
                   type="number"
-                  value={newGoalTarget}
-                  onChange={(e) => setNewGoalTarget(Number(e.target.value))}
-                  placeholder="Entrez votre objectif"
+                  value={newSavingAmount}
+                  onChange={(e) => setNewSavingAmount(Number(e.target.value))}
+                  placeholder="Ex: 200"
                 />
               </div>
-              <Button onClick={addNewGoal} className="w-full">
-                Ajouter l'objectif
+              <div className="space-y-2">
+                <Label htmlFor="saving-description">Description (optionnel)</Label>
+                <Textarea
+                  id="saving-description"
+                  value={newSavingDescription}
+                  onChange={(e) => setNewSavingDescription(e.target.value)}
+                  placeholder="Ex: Versement automatique le 5 du mois..."
+                />
+              </div>
+              <Button onClick={addNewMonthlySaving} className="w-full">
+                Ajouter le versement
               </Button>
             </CardContent>
           </Card>
 
-          {/* Pourcentage d'épargne */}
+          {/* Total mensuel */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
                 <PiggyBank className="h-5 w-5 text-primary" />
-                <CardTitle>Taux d'épargne mensuel</CardTitle>
+                <CardTitle>Total mensuel</CardTitle>
               </div>
               <CardDescription>
-                Pourcentage de vos revenus à épargner
+                Montant total de vos versements mensuels
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <Slider
-                  value={[savingsPercentage]}
-                  onValueChange={([value]) => setSavingsPercentage(value)}
-                  max={50}
-                  step={1}
-                />
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    {savingsPercentage}% de vos revenus
-                  </span>
-                  <span className="text-sm font-medium">
-                    {projectedMonthlySavings}€ / mois
-                  </span>
-                </div>
+            <CardContent>
+              <div className="text-center">
+                <p className="text-4xl font-bold">{totalMonthlyAmount}€</p>
+                <p className="text-sm text-muted-foreground mt-2">par mois</p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Liste des objectifs */}
-          {savingsGoals.map((goal) => (
-            <Card key={goal.id}>
+          {/* Liste des versements mensuels */}
+          {monthlySavings.map((saving) => (
+            <Card key={saving.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    <CardTitle>{goal.name}</CardTitle>
+                    <LineChart className="h-5 w-5 text-primary" />
+                    <CardTitle>{saving.name}</CardTitle>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => deleteGoal(goal.id)}
+                    onClick={() => deleteMonthlySaving(saving.id)}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <CardDescription>Progression de votre objectif</CardDescription>
+                <CardDescription>Versement mensuel</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Progress
-                  value={(goal.current_amount / goal.target_amount) * 100}
-                />
-                <p className="text-sm text-muted-foreground">
-                  {goal.current_amount}€ / {goal.target_amount}€
-                </p>
-                <div className="flex items-center justify-between text-sm">
-                  <span>Contribution mensuelle:</span>
-                  <span className="font-medium">
-                    {goal.monthly_contribution}€ / mois
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    Montant mensuel:
                   </span>
+                  <span className="text-lg font-bold">{saving.amount}€</span>
                 </div>
+                {saving.description && (
+                  <p className="text-sm text-muted-foreground">
+                    {saving.description}
+                  </p>
+                )}
               </CardContent>
             </Card>
           ))}
-
-          {/* Prévisions */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                <CardTitle>Prévisions globales</CardTitle>
-              </div>
-              <CardDescription>Projection de votre épargne totale</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Épargne actuelle:</p>
-                  <p className="text-2xl font-bold">{totalSavings}€</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Objectif total:</p>
-                  <p className="text-2xl font-bold text-right">{totalTarget}€</p>
-                </div>
-              </div>
-              <Progress value={(totalSavings / totalTarget) * 100} />
-            </CardContent>
-          </Card>
-
-          {/* Historique */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <LineChart className="h-5 w-5 text-primary" />
-                <CardTitle>Historique</CardTitle>
-              </div>
-              <CardDescription>Suivi de votre épargne</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[200px] flex items-center justify-center">
-                <p className="text-muted-foreground">
-                  Graphique à venir avec l'intégration Supabase
-                </p>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </DashboardLayout>
@@ -307,4 +250,3 @@ const Savings = () => {
 };
 
 export default Savings;
-

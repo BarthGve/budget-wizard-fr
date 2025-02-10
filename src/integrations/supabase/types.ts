@@ -50,6 +50,44 @@ export type Database = {
           },
         ]
       }
+      monthly_savings: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_savings_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           full_name: string | null
@@ -99,47 +137,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "recurring_expenses_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      savings_goals: {
-        Row: {
-          created_at: string
-          current_amount: number
-          id: string
-          monthly_contribution: number
-          name: string
-          profile_id: string
-          target_amount: number
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          current_amount?: number
-          id?: string
-          monthly_contribution?: number
-          name: string
-          profile_id: string
-          target_amount?: number
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          current_amount?: number
-          id?: string
-          monthly_contribution?: number
-          name?: string
-          profile_id?: string
-          target_amount?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "savings_goals_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
