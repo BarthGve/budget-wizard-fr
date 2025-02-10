@@ -59,11 +59,12 @@ export const SavingsPieChart = ({ monthlySavings, totalSavings }: SavingsPieChar
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
+                      const percentage = Math.round((data.value / totalSavings) * 100);
                       return (
                         <div className="rounded-lg border bg-background p-2 shadow-sm">
                           <p className="font-medium">{data.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {data.value} € ({Math.round((data.value / totalSavings) * 100)}%)
+                            {percentage}%
                           </p>
                         </div>
                       );
@@ -85,7 +86,7 @@ export const SavingsPieChart = ({ monthlySavings, totalSavings }: SavingsPieChar
                   <span className="text-sm font-medium">{saving.name}</span>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {Math.round(saving.amount)} €
+                  {Math.round((saving.amount / totalSavings) * 100)}%
                 </span>
               </div>
             ))}

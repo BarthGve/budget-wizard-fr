@@ -59,11 +59,12 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
+                      const percentage = Math.round((data.value / totalExpenses) * 100);
                       return (
                         <div className="rounded-lg border bg-background p-2 shadow-sm">
                           <p className="font-medium">{data.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {data.value} € ({Math.round((data.value / totalExpenses) * 100)}%)
+                            {percentage}%
                           </p>
                         </div>
                       );
@@ -85,7 +86,7 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
                   <span className="text-sm font-medium">{expense.name}</span>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {Math.round(expense.amount)} €
+                  {Math.round((expense.amount / totalExpenses) * 100)}%
                 </span>
               </div>
             ))}
