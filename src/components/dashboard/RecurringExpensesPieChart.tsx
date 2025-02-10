@@ -12,11 +12,17 @@ interface RecurringExpense {
   id: string;
   name: string;
   amount: number;
+  category: string;
 }
 
 interface RecurringExpensesPieChartProps {
   recurringExpenses: RecurringExpense[];
   totalExpenses: number;
+}
+
+interface CategoryTotal {
+  category: string;
+  amount: number;
 }
 
 export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: RecurringExpensesPieChartProps) => {
@@ -36,12 +42,26 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
 
       return data;
     },
-    staleTime: 0, // Forcer le rafraîchissement à chaque changement
+    staleTime: 0,
   });
 
-  const chartData = recurringExpenses.map(expense => ({
-    name: expense.name,
-    value: expense.amount
+  // Regrouper les dépenses par catégorie
+  const categoryTotals = recurringExpenses.reduce<CategoryTotal[]>((acc, expense) => {
+    const existingCategory = acc.find(cat => cat.category === expense.category);
+    if (existingCategory) {
+      existingCategory.amount += expense.amount;
+    } else {
+      acc.push({
+        category: expense.category,
+        amount: expense.amount
+      });
+    }
+    return acc;
+  }, []);
+
+  const chartData = categoryTotals.map(category => ({
+    name: category.category,
+    value: category.amount
   }));
 
   return (
@@ -97,17 +117,17 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
             </ResponsiveContainer>
           </div>
           <div className="flex-1 space-y-2">
-            {recurringExpenses.map((expense, index) => (
-              <div key={expense.id} className="flex items-center justify-between">
+            {categoryTotals.map((category, index) => (
+              <div key={category.category} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div
                     className="mr-2 h-3 w-3 rounded-full"
                     style={{ backgroundColor: getCategoryColor(index, profile?.color_palette) }}
                   />
-                  <span className="text-sm font-medium">{expense.name}</span>
+                  <span className="text-sm font-medium">{category.category}</span>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {Math.round((expense.amount / totalExpenses) * 100)}%
+                  {Math.round((category.amount / totalExpenses) * 100)}%
                 </span>
               </div>
             ))}
