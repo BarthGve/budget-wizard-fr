@@ -35,22 +35,26 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
             <Home className="w-4 h-4 text-primary" />
           </div>
         </div>
-        <div className="flex items-center gap-2 py-2">
-          <Ruler className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm">{property.area} m²</span>
-        </div>
-        {property.investment_type && (
-          <div className="flex items-center gap-2 py-1">
-            <Layers className="w-4 h-4 text-muted-foreground" />
+
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="flex items-center gap-2">
+            <Ruler className="w-4 h-4 text-muted-foreground" />
             <div>
-              <p className="text-sm text-muted-foreground">Type d'investissement</p>
-              <p className="font-medium">{property.investment_type}</p>
+              <p className="text-sm text-muted-foreground">Superficie</p>
+              <p className="font-medium">{property.area} m²</p>
             </div>
           </div>
-        )}
-      </CardContent>
-      <CardFooter className="grid gap-2 p-4 pt-0">
-        <div className="grid gap-4">
+
+          {property.investment_type && (
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-muted-foreground">Type d'investissement</p>
+                <p className="font-medium">{property.investment_type}</p>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-muted-foreground" />
             <div>
@@ -58,6 +62,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
               <p className="font-medium">{formatCurrency(property.purchase_value)}</p>
             </div>
           </div>
+
           {property.loan_payment && property.loan_payment > 0 && (
             <div className="flex items-center gap-2">
               <CreditCard className="w-4 h-4 text-muted-foreground" />
@@ -67,6 +72,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
               </div>
             </div>
           )}
+
           {property.monthly_rent && property.monthly_rent > 0 && (
             <div className="flex items-center gap-2">
               <Coins className="w-4 h-4 text-muted-foreground" />
@@ -77,7 +83,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
             </div>
           )}
         </div>
-      </CardFooter>
+      </CardContent>
     </Card>
   );
 };
