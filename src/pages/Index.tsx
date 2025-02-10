@@ -82,17 +82,25 @@ const Dashboard = () => {
     0
   ) || 0;
 
-  // Calculate total monthly savings
-  const totalMonthlySavings = monthlySavings?.reduce(
-    (sum, saving) => sum + saving.amount,
-    0
-  ) || 0;
+  // Calculate cumulative percentages for the stacked progress bar
+  const cumulativeContributionPercentages = contributors?.reduce<{ name: string; start: number; end: number; amount: number }[]>(
+    (acc, contributor) => {
+      const lastEnd = acc.length > 0 ? acc[acc.length - 1].end : 0;
+      const percentage = (contributor.total_contribution / totalRevenue) * 100;
+      return [
+        ...acc,
+        {
+          name: contributor.name,
+          start: lastEnd,
+          end: lastEnd + percentage,
+          amount: contributor.total_contribution
+        }
+      ];
+    },
+    []
+  ) || [];
 
-  // Calculate savings goal based on total revenue and savings percentage
-  const savingsGoal = profile?.savings_goal_percentage
-    ? (totalRevenue * profile.savings_goal_percentage) / 100
-    : 0;
-
+  // Fetch recurring expenses data
   const { data: recurringExpenses } = useQuery({
     queryKey: ["recurring-expenses"],
     queryFn: async () => {
@@ -119,24 +127,37 @@ const Dashboard = () => {
     },
   });
 
-  // Calculer le total des dépenses récurrentes
+  // Calculate total monthly savings
+  const totalMonthlySavings = monthlySavings?.reduce(
+    (sum, saving) => sum + saving.amount,
+    0
+  ) || 0;
+
+  // Calculate savings goal based on total revenue and savings percentage
+  const savingsGoal = profile?.savings_goal_percentage
+    ? (totalRevenue * profile.savings_goal_percentage) / 100
+    : 0;
+
+  // Calculate total expenses
   const totalExpenses = recurringExpenses?.reduce((sum, expense) => sum + Number(expense.amount), 0) || 0;
 
-  // Grouper les dépenses par catégorie
-  const expensesByCategory = recurringExpenses?.reduce((acc, expense) => {
-    if (!acc[expense.category]) {
-      acc[expense.category] = 0;
-    }
-    acc[expense.category] += Number(expense.amount);
-    return acc;
-  }, {} as { [key: string]: number }) || {};
-
-  // Convertir en format pour l'affichage
-  const categories = Object.entries(expensesByCategory).map(([name, amount]) => ({
-    name,
-    amount,
-    color: getCategoryColor(name),
-  }));
+  // Calculate cumulative expense percentages
+  const cumulativeExpensePercentages = contributors?.reduce<{ name: string; start: number; end: number; amount: number }[]>(
+    (acc, contributor) => {
+      const lastEnd = acc.length > 0 ? acc[acc.length - 1].end : 0;
+      const contributorShare = totalExpenses * (contributor.percentage_contribution / 100);
+      return [
+        ...acc,
+        {
+          name: contributor.name,
+          start: lastEnd,
+          end: lastEnd + contributor.percentage_contribution,
+          amount: contributorShare
+        }
+      ];
+    },
+    []
+  ) || [];
 
   return (
     <DashboardLayout>
@@ -160,17 +181,33 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-3xl font-bold">{Math.round(totalRevenue)} €</p>
-              {contributors?.map((contributor) => (
-                <div key={contributor.id} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{contributor.name}</span>
-                    <span>{Math.round(contributor.total_contribution)} €</span>
-                  </div>
-                  <Progress
-                    value={(contributor.total_contribution / totalRevenue) * 100}
+              <div className="relative h-4">
+                {cumulativeContributionPercentages.map((contrib, index) => (
+                  <div
+                    key={contrib.name}
+                    className="absolute h-full rounded-full"
+                    style={{
+                      left: `${contrib.start}%`,
+                      width: `${contrib.end - contrib.start}%`,
+                      backgroundColor: getCategoryColor(index),
+                    }}
                   />
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="space-y-2">
+                {cumulativeContributionPercentages.map((contrib, index) => (
+                  <div key={contrib.name} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="h-3 w-3 rounded-full" 
+                        style={{ backgroundColor: getCategoryColor(index) }}
+                      />
+                      <span>{contrib.name}</span>
+                    </div>
+                    <span>{Math.round(contrib.amount)} €</span>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
@@ -181,20 +218,33 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-3xl font-bold">{Math.round(totalExpenses)} €</p>
-              {contributors?.map((contributor) => {
-                const contributorShare = totalExpenses * (contributor.percentage_contribution / 100);
-                return (
-                  <div key={contributor.id} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{contributor.name}</span>
-                      <span>{Math.round(contributorShare)} €</span>
+              <div className="relative h-4">
+                {cumulativeExpensePercentages.map((contrib, index) => (
+                  <div
+                    key={contrib.name}
+                    className="absolute h-full rounded-full"
+                    style={{
+                      left: `${contrib.start}%`,
+                      width: `${contrib.end - contrib.start}%`,
+                      backgroundColor: getCategoryColor(index),
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="space-y-2">
+                {cumulativeExpensePercentages.map((contrib, index) => (
+                  <div key={contrib.name} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="h-3 w-3 rounded-full" 
+                        style={{ backgroundColor: getCategoryColor(index) }}
+                      />
+                      <span>{contrib.name}</span>
                     </div>
-                    <Progress
-                      value={contributor.percentage_contribution}
-                    />
+                    <span>{Math.round(contrib.amount)} €</span>
                   </div>
-                );
-              })}
+                ))}
+              </div>
             </CardContent>
           </Card>
 
@@ -257,17 +307,17 @@ const Dashboard = () => {
 };
 
 // Fonction utilitaire pour obtenir la couleur de la catégorie
-const getCategoryColor = (category: string): string => {
-  const colors: { [key: string]: string } = {
-    Logement: "bg-blue-500",
-    Transport: "bg-green-500",
-    Alimentation: "bg-yellow-500",
-    Santé: "bg-red-500",
-    Loisirs: "bg-purple-500",
-    Télécommunications: "bg-pink-500",
-    Autres: "bg-gray-500",
-  };
-  return colors[category] || "bg-gray-500";
+const getCategoryColor = (index: number): string => {
+  const colors = [
+    'rgb(59, 130, 246)', // blue-500
+    'rgb(34, 197, 94)', // green-500
+    'rgb(234, 179, 8)', // yellow-500
+    'rgb(239, 68, 68)', // red-500
+    'rgb(168, 85, 247)', // purple-500
+    'rgb(236, 72, 153)', // pink-500
+    'rgb(107, 114, 128)', // gray-500
+  ];
+  return colors[index % colors.length];
 };
 
 export default Dashboard;
