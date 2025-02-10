@@ -3,7 +3,8 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { RevenueCard } from "@/components/dashboard/RevenueCard";
 import { ExpensesCard } from "@/components/dashboard/ExpensesCard";
 import { SavingsCard } from "@/components/dashboard/SavingsCard";
-import { RecurringExpensesCard } from "@/components/dashboard/RecurringExpensesCard";
+import { RecurringExpensesPieChart } from "@/components/dashboard/RecurringExpensesPieChart";
+import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
 import { useDashboardData } from "@/hooks/useDashboardData";
 
 const Dashboard = () => {
@@ -94,11 +95,17 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Répartition des dépenses récurrentes */}
-        <RecurringExpensesCard 
-          recurringExpenses={recurringExpenses || []}
-          totalExpenses={totalExpenses}
-        />
+        {/* Graphiques circulaires */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <RecurringExpensesPieChart 
+            recurringExpenses={recurringExpenses || []}
+            totalExpenses={totalExpenses}
+          />
+          <SavingsPieChart 
+            monthlySavings={monthlySavings || []}
+            totalSavings={totalMonthlySavings}
+          />
+        </div>
       </div>
     </DashboardLayout>
   );
