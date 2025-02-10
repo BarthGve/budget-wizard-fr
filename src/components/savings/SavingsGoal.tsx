@@ -22,6 +22,24 @@ export const SavingsGoal = ({
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
+  });
+
   const { data: contributors } = useQuery({
     queryKey: ["contributors"],
     queryFn: async () => {
@@ -34,6 +52,15 @@ export const SavingsGoal = ({
       return data || [];
     },
   });
+
+  const colorPalette = profile?.color_palette || "default";
+  const paletteToText: Record<string, string> = {
+    default: "text-blue-500",
+    ocean: "text-sky-500",
+    forest: "text-green-500",
+    sunset: "text-orange-500",
+    candy: "text-pink-400",
+  };
 
   const totalIncome = contributors?.reduce(
     (acc, contributor) => acc + contributor.total_contribution,
@@ -75,7 +102,7 @@ export const SavingsGoal = ({
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Target className="h-5 w-5 text-primary" />
+          <Target className={`h-5 w-5 ${paletteToText[colorPalette]}`} />
           <CardTitle>Objectif d'épargne</CardTitle>
         </div>
         <CardDescription>
@@ -94,6 +121,7 @@ export const SavingsGoal = ({
               onValueChange={(value) => updateSavingsPercentage(value[0])}
               max={100}
               step={1}
+              className={paletteToText[colorPalette]}
             />
           </div>
         </div>
