@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
@@ -42,6 +41,24 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -50,6 +67,15 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
       category: expense?.category || "",
     },
   });
+
+  const colorPalette = profile?.color_palette || "default";
+  const paletteToBackground: Record<string, string> = {
+    default: "bg-blue-500 hover:bg-blue-600",
+    ocean: "bg-sky-500 hover:bg-sky-600",
+    forest: "bg-green-500 hover:bg-green-600",
+    sunset: "bg-orange-500 hover:bg-orange-600",
+    candy: "bg-pink-400 hover:bg-pink-500",
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -62,7 +88,6 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
       }
 
       if (expense) {
-        // Update existing expense
         const { error } = await supabase
           .from("recurring_expenses")
           .update({
@@ -75,7 +100,6 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
         if (error) throw error;
         toast.success("Charge récurrente mise à jour avec succès");
       } else {
-        // Create new expense
         const { error } = await supabase.from("recurring_expenses").insert({
           name: values.name,
           amount: Number(values.amount),
@@ -172,7 +196,7 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
               >
                 Annuler
               </Button>
-              <Button type="submit">
+              <Button className={`text-white ${paletteToBackground[colorPalette]}`} type="submit">
                 {expense ? "Mettre à jour" : "Ajouter"}
               </Button>
             </div>

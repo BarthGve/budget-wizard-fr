@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 
 interface SidebarProps {
   className?: string;
@@ -23,6 +24,33 @@ interface SidebarProps {
 export const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
+  });
+
+  const colorPalette = profile?.color_palette || "default";
+  const paletteToActive: Record<string, string> = {
+    default: "bg-blue-500 text-white hover:bg-blue-600",
+    ocean: "bg-sky-500 text-white hover:bg-sky-600",
+    forest: "bg-green-500 text-white hover:bg-green-600",
+    sunset: "bg-orange-500 text-white hover:bg-orange-600",
+    candy: "bg-pink-400 text-white hover:bg-pink-500",
+  };
 
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
@@ -79,7 +107,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
                       "flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
                       "hover:bg-gray-100",
                       isActive
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        ? paletteToActive[colorPalette]
                         : "text-gray-700"
                     )
                   }
