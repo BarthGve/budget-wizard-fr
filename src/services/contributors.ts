@@ -52,16 +52,8 @@ export const addContributorService = async (
   if (insertError) throw insertError;
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
-  for (const contributor of currentContributors) {
-    const newPercentage = (contributor.total_contribution / totalBudget) * 100;
-    const { error: updateError } = await supabase
-      .from("contributors")
-      .update({ percentage_contribution: newPercentage })
-      .eq("id", contributor.id);
-
-    if (updateError) throw updateError;
-  }
-
+  await updateContributorsPercentages(currentContributors, totalBudget);
+  
   return await fetchContributorsService();
 };
 
@@ -69,27 +61,13 @@ export const updateContributorService = async (
   contributor: Contributor,
   currentContributors: Contributor[]
 ) => {
-  const { data: existingContributor, error: checkError } = await supabase
-    .from("contributors")
-    .select("*")
-    .eq("id", contributor.id)
-    .maybeSingle();
-
-  if (checkError) throw checkError;
-  if (!existingContributor) {
-    throw new Error(`Contributeur non trouvé avec l'ID: ${contributor.id}`);
-  }
-
   const totalBudget = currentContributors.reduce(
     (sum, c) =>
-      sum +
-      (c.id === contributor.id
-        ? contributor.total_contribution
-        : c.total_contribution),
+      sum + (c.id === contributor.id ? contributor.total_contribution : c.total_contribution),
     0
   );
 
-  // Mettre à jour séparément la contribution et les autres champs
+  // Mettre à jour la contribution et le pourcentage
   const { error: updateError } = await supabase
     .from("contributors")
     .update({
@@ -101,36 +79,37 @@ export const updateContributorService = async (
   if (updateError) throw updateError;
 
   // Si ce n'est pas le propriétaire, mettre à jour le nom et l'email
-  if (!existingContributor.is_owner) {
-    const updateData: { name?: string; email?: string } = {
-      name: contributor.name,
-    };
-    if (contributor.email) {
-      updateData.email = contributor.email;
-    }
-    
-    const { error: updateNameEmailError } = await supabase
+  if (!contributor.is_owner) {
+    const { error: updateDetailsError } = await supabase
       .from("contributors")
-      .update(updateData)
+      .update({
+        name: contributor.name,
+        email: contributor.email,
+      })
       .eq("id", contributor.id);
 
-    if (updateNameEmailError) throw updateNameEmailError;
+    if (updateDetailsError) throw updateDetailsError;
   }
 
   // Mettre à jour les pourcentages des autres contributeurs
-  for (const c of currentContributors) {
-    if (c.id !== contributor.id) {
-      const newPercentage = (c.total_contribution / totalBudget) * 100;
-      const { error } = await supabase
-        .from("contributors")
-        .update({ percentage_contribution: newPercentage })
-        .eq("id", c.id);
-
-      if (error) throw error;
-    }
-  }
+  await updateContributorsPercentages(
+    currentContributors.filter(c => c.id !== contributor.id),
+    totalBudget
+  );
 
   return await fetchContributorsService();
+};
+
+const updateContributorsPercentages = async (contributors: Contributor[], totalBudget: number) => {
+  for (const c of contributors) {
+    const newPercentage = (c.total_contribution / totalBudget) * 100;
+    const { error } = await supabase
+      .from("contributors")
+      .update({ percentage_contribution: newPercentage })
+      .eq("id", c.id);
+
+    if (error) throw error;
+  }
 };
 
 export const deleteContributorService = async (
@@ -160,15 +139,7 @@ export const deleteContributorService = async (
     0
   );
 
-  for (const contributor of remainingContributors) {
-    const newPercentage = (contributor.total_contribution / totalBudget) * 100;
-    const { error } = await supabase
-      .from("contributors")
-      .update({ percentage_contribution: newPercentage })
-      .eq("id", contributor.id);
-
-    if (error) throw error;
-  }
+  await updateContributorsPercentages(remainingContributors, totalBudget);
 
   return await fetchContributorsService();
 };
