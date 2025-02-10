@@ -2,15 +2,41 @@
 import { Property } from "@/types/property";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Home, Ruler, DollarSign, CreditCard, Coins, Layers } from "lucide-react";
+import { Home, Ruler, DollarSign, CreditCard, Coins, Layers, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
 import { EditPropertyDialog } from "./EditPropertyDialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface PropertyCardProps {
   property: Property;
 }
 
 export const PropertyCard = ({ property }: PropertyCardProps) => {
+  const queryClient = useQueryClient();
+
+  const handleDelete = async () => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce bien ?")) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("properties")
+        .delete()
+        .eq("id", property.id);
+
+      if (error) throw error;
+
+      toast.success("Bien supprimé avec succès");
+      queryClient.invalidateQueries({ queryKey: ["properties"] });
+    } catch (error) {
+      console.error("Error deleting property:", error);
+      toast.error("Erreur lors de la suppression du bien");
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="relative h-48 p-0 overflow-hidden">
@@ -19,8 +45,15 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
           alt={property.name}
           className="object-cover w-full h-full"
         />
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 right-2 flex gap-2">
           <EditPropertyDialog property={property} />
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={handleDelete}
+          >
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="grid gap-2 p-4">
