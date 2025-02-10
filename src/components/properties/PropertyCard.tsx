@@ -2,7 +2,7 @@
 import { Property } from "@/types/property";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Home, Ruler, DollarSign, CreditCard, Cash, Layers } from "lucide-react";
+import { Home, Ruler, DollarSign, CreditCard, Coin, Layers } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
 import { EditPropertyDialog } from "./EditPropertyDialog";
 
@@ -69,7 +69,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
           )}
           {property.monthly_rent && property.monthly_rent > 0 && (
             <div className="flex items-center gap-2">
-              <Cash className="w-4 h-4 text-muted-foreground" />
+              <Coin className="w-4 h-4 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Loyer mensuel</p>
                 <p className="font-medium">{formatCurrency(property.monthly_rent)}</p>
@@ -81,4 +81,3 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
     </Card>
   );
 };
-
