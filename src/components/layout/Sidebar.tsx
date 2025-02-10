@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,6 +57,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
     { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { title: "Contributeurs", icon: Users, path: "/contributors" },
     { title: "Épargne", icon: PiggyBank, path: "/savings" },
+    { title: "Patrimoine", icon: Home, path: "/properties" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
     { title: "Paramètres", icon: Settings, path: "/settings" },
   ];
