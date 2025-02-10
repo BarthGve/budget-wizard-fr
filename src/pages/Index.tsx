@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const Dashboard = () => {
   // Fetch contributors data for total revenue
@@ -139,21 +138,6 @@ const Dashboard = () => {
     color: getCategoryColor(name),
   }));
 
-  // Préparer les données pour le graphique des revenus
-  const revenueChartData = contributors?.map(contributor => ({
-    name: contributor.name,
-    value: contributor.total_contribution,
-  })) || [];
-
-  // Préparer les données pour le graphique des dépenses par contributeur
-  const expenseShareData = contributors?.map(contributor => ({
-    name: contributor.name,
-    value: (totalExpenses * (contributor.percentage_contribution / 100)),
-  })) || [];
-
-  // Couleurs pour les graphiques
-  const COLORS = ['#9b87f5', '#7E69AB', '#6E59A5', '#1A1F2C', '#D6BCFA'];
-
   return (
     <DashboardLayout>
       <div className="grid gap-6">
@@ -174,30 +158,19 @@ const Dashboard = () => {
               <CardTitle>Revenus Totaux</CardTitle>
               <CardDescription>Répartition par contributeur</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px]">
-              <p className="text-3xl font-bold mb-4">{Math.round(totalRevenue)} €</p>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={revenueChartData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    label={({ name, value }) => `${name}: ${Math.round(value)}€`}
-                  >
-                    {revenueChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: number) => `${Math.round(value)}€`}
+            <CardContent className="space-y-4">
+              <p className="text-3xl font-bold">{Math.round(totalRevenue)} €</p>
+              {contributors?.map((contributor) => (
+                <div key={contributor.id} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{contributor.name}</span>
+                    <span>{Math.round(contributor.total_contribution)} €</span>
+                  </div>
+                  <Progress
+                    value={(contributor.total_contribution / totalRevenue) * 100}
                   />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+                </div>
+              ))}
             </CardContent>
           </Card>
 
@@ -206,30 +179,22 @@ const Dashboard = () => {
               <CardTitle>Dépenses</CardTitle>
               <CardDescription>Répartition par contributeur</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px]">
-              <p className="text-3xl font-bold mb-4">{Math.round(totalExpenses)} €</p>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={expenseShareData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    label={({ name, value }) => `${name}: ${Math.round(value)}€`}
-                  >
-                    {expenseShareData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: number) => `${Math.round(value)}€`}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+            <CardContent className="space-y-4">
+              <p className="text-3xl font-bold">{Math.round(totalExpenses)} €</p>
+              {contributors?.map((contributor) => {
+                const contributorShare = totalExpenses * (contributor.percentage_contribution / 100);
+                return (
+                  <div key={contributor.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{contributor.name}</span>
+                      <span>{Math.round(contributorShare)} €</span>
+                    </div>
+                    <Progress
+                      value={contributor.percentage_contribution}
+                    />
+                  </div>
+                );
+              })}
             </CardContent>
           </Card>
 
