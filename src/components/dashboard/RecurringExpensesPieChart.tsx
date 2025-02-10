@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { BarChart } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { getCategoryColor } from "@/utils/colors";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RecurringExpense {
   id: string;
@@ -18,6 +20,24 @@ interface RecurringExpensesPieChartProps {
 }
 
 export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: RecurringExpensesPieChartProps) => {
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
+  });
+
   const chartData = recurringExpenses.map(expense => ({
     name: expense.name,
     value: expense.amount
@@ -52,7 +72,7 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
                   dataKey="value"
                 >
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={getCategoryColor(index)} />
+                    <Cell key={`cell-${index}`} fill={getCategoryColor(index, profile?.color_palette)} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -81,7 +101,7 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
                 <div className="flex items-center">
                   <div
                     className="mr-2 h-3 w-3 rounded-full"
-                    style={{ backgroundColor: getCategoryColor(index) }}
+                    style={{ backgroundColor: getCategoryColor(index, profile?.color_palette) }}
                   />
                   <span className="text-sm font-medium">{expense.name}</span>
                 </div>

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { PiggyBank } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { getCategoryColor } from "@/utils/colors";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MonthlySaving {
   id: string;
@@ -18,6 +20,24 @@ interface SavingsPieChartProps {
 }
 
 export const SavingsPieChart = ({ monthlySavings, totalSavings }: SavingsPieChartProps) => {
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
+  });
+
   const chartData = monthlySavings.map(saving => ({
     name: saving.name,
     value: saving.amount
@@ -52,7 +72,7 @@ export const SavingsPieChart = ({ monthlySavings, totalSavings }: SavingsPieChar
                   dataKey="value"
                 >
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={getCategoryColor(index)} />
+                    <Cell key={`cell-${index}`} fill={getCategoryColor(index, profile?.color_palette)} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -81,7 +101,7 @@ export const SavingsPieChart = ({ monthlySavings, totalSavings }: SavingsPieChar
                 <div className="flex items-center">
                   <div
                     className="mr-2 h-3 w-3 rounded-full"
-                    style={{ backgroundColor: getCategoryColor(index) }}
+                    style={{ backgroundColor: getCategoryColor(index, profile?.color_palette) }}
                   />
                   <span className="text-sm font-medium">{saving.name}</span>
                 </div>
