@@ -6,6 +6,9 @@ import { useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { PropertiesMap } from "@/components/properties/PropertiesMap";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -64,7 +67,19 @@ const PropertyDetail = () => {
           <p className="text-muted-foreground">{property.address}</p>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid md:grid-cols-2 gap-4">
+          <Card className="p-6">
+            <div className="h-[400px] mb-4">
+              <PropertiesMap properties={[property]} />
+            </div>
+            <div className="flex justify-end">
+              <Button className="w-full">
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter une dépense
+              </Button>
+            </div>
+          </Card>
+
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Détails</h2>
             <div className="grid gap-2">
