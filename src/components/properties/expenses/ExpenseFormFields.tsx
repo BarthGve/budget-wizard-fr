@@ -1,4 +1,3 @@
-
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -64,8 +63,6 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
                   mode="single"
                   selected={field.value}
                   onSelect={field.onChange}
-                  fromDate={fiveYearsAgo}
-                  toDate={today}
                   initialFocus
                 />
               </PopoverContent>
