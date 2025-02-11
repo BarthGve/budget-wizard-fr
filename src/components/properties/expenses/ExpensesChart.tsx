@@ -20,7 +20,6 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
   const today = new Date();
   const fiveYearsAgo = subYears(today, 5);
 
-  // Filtrer les dépenses des 5 dernières années et les regrouper par année et catégorie
   const yearlyExpenses = expenses
     .filter((expense) => {
       const expenseDate = parseISO(expense.date);
@@ -51,19 +50,52 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
   return (
     <Card className="p-6">
       <h2 className="text-xl font-semibold mb-4">Évolution des dépenses</h2>
-      <div className="h-[400px]">
+      <div className="h-[600px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
-            <XAxis dataKey="year" />
-            <YAxis />
-            <Tooltip 
-              formatter={(value: number) => new Intl.NumberFormat('fr-FR', {
-                style: 'currency',
-                currency: 'EUR'
-              }).format(value)}
-              labelFormatter={(year) => `Année ${year}`}
+          <BarChart 
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          >
+            <XAxis 
+              dataKey="year"
+              tick={{ fill: '#6b7280' }}
+              axisLine={{ stroke: '#e5e7eb' }}
             />
-            <Legend />
+            <YAxis 
+              tick={{ fill: '#6b7280' }}
+              axisLine={{ stroke: '#e5e7eb' }}
+              tickFormatter={(value) => 
+                new Intl.NumberFormat('fr-FR', {
+                  style: 'currency',
+                  currency: 'EUR',
+                  notation: 'compact',
+                  maximumFractionDigits: 1
+                }).format(value)
+              }
+            />
+            <Tooltip 
+              formatter={(value: number) => 
+                new Intl.NumberFormat('fr-FR', {
+                  style: 'currency',
+                  currency: 'EUR'
+                }).format(value)
+              }
+              labelFormatter={(year) => `Année ${year}`}
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '0.375rem',
+                padding: '0.5rem'
+              }}
+            />
+            <Legend 
+              verticalAlign="top"
+              height={36}
+              formatter={(value) => {
+                const category = EXPENSE_CATEGORIES.find(cat => cat.value === value);
+                return category ? category.label : value;
+              }}
+            />
             {EXPENSE_CATEGORIES.map((category) => (
               <Bar
                 key={category.value}
@@ -83,15 +115,15 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
 function getCategoryColor(category: string): string {
   switch (category) {
     case 'charges':
-      return '#4f46e5';
+      return '#9b87f5';
     case 'impots':
-      return '#ef4444';
+      return '#E5DEFF';
     case 'travaux':
-      return '#f59e0b';
+      return '#7E69AB';
     case 'assurance':
-      return '#10b981';
+      return '#8E9196';
     case 'autres':
-      return '#6b7280';
+      return '#F1F0FB';
     default:
       return '#94a3b8';
   }
