@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 interface SavingsGoalProps {
   savingsPercentage: number;
@@ -20,6 +21,7 @@ export const SavingsGoal = ({
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [localPercentage, setLocalPercentage] = useState(savingsPercentage);
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
@@ -72,7 +74,11 @@ export const SavingsGoal = ({
     0
   ) || 0;
 
-  const handleValueChange = async (newValue: number[]) => {
+  const handleValueChange = (newValue: number[]) => {
+    setLocalPercentage(newValue[0]);
+  };
+
+  const handleValueCommit = async (newValue: number[]) => {
     const value = newValue[0];
     if (value === savingsPercentage) return;
 
@@ -93,6 +99,7 @@ export const SavingsGoal = ({
         description: "Impossible de mettre à jour votre objectif d'épargne",
         variant: "destructive",
       });
+      setLocalPercentage(savingsPercentage);
       return;
     }
 
@@ -103,7 +110,7 @@ export const SavingsGoal = ({
     });
   };
 
-  const targetMonthlySavings = (totalIncome * savingsPercentage) / 100;
+  const targetMonthlySavings = (totalIncome * localPercentage) / 100;
   const remainingToTarget = targetMonthlySavings - totalMonthlyAmount;
 
   return (
@@ -122,18 +129,18 @@ export const SavingsGoal = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label>Pourcentage d'épargne</Label>
-              <span className="text-sm font-medium">{savingsPercentage}%</span>
+              <span className="text-sm font-medium">{localPercentage}%</span>
             </div>
             <div className="px-1">
               <Slider
                 min={0}
                 max={100}
                 step={1}
-                value={[savingsPercentage]}
+                value={[localPercentage]}
                 onValueChange={handleValueChange}
+                onValueCommit={handleValueCommit}
                 className={paletteToText[colorPalette]}
                 aria-label="Pourcentage d'épargne"
-                defaultValue={[savingsPercentage]}
               />
             </div>
           </div>
