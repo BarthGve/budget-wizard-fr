@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const FINNHUB_API_KEY = Deno.env.get('FINNHUB_API_KEY')
+const ALPHA_VANTAGE_API_KEY = Deno.env.get('ALPHA_VANTAGE_API_KEY')
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -15,17 +15,64 @@ serve(async (req) => {
   }
 
   try {
-    if (!FINNHUB_API_KEY) {
-      throw new Error('FINNHUB_API_KEY is not set')
+    if (!ALPHA_VANTAGE_API_KEY) {
+      throw new Error('ALPHA_VANTAGE_API_KEY is not set')
     }
 
-    // Updated symbols: FCHI.PAR for CAC 40, IWDA.AS for iShares MSCI World ETF (alternative to SWDA.L)
-    const symbols = ['FCHI.PAR', 'IWDA.AS', 'BINANCE:BTCEUR']
-    const promises = symbols.map(symbol =>
-      fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_API_KEY}`)
-        .then(res => res.json())
-        .then(data => ({ symbol, data }))
-    )
+    // Les symboles pour le CAC 40 et l'ETF MSCI World
+    const symbols = ['^FCHI', 'IWDA.AS', 'BTC-EUR']
+    const promises = symbols.map(async symbol => {
+      // Pour le Bitcoin, on utilise un endpoint différent
+      if (symbol === 'BTC-EUR') {
+        const response = await fetch(
+          `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=EUR&apikey=${ALPHA_VANTAGE_API_KEY}`
+        )
+        const data = await response.json()
+        const rate = data["Realtime Currency Exchange Rate"]
+        const currentPrice = parseFloat(rate["5. Exchange Rate"])
+        // On simule le même format que pour les actions pour la cohérence
+        return {
+          symbol,
+          data: {
+            c: currentPrice,
+            pc: currentPrice, // On n'a pas le previous close pour les crypto en temps réel
+            d: 0,
+            dp: 0
+          }
+        }
+      } else {
+        // Pour les actions et indices
+        const response = await fetch(
+          `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_VANTAGE_API_KEY}`
+        )
+        const data = await response.json()
+        const quote = data["Global Quote"]
+        
+        if (!quote || Object.keys(quote).length === 0) {
+          console.error(`No data found for symbol: ${symbol}`)
+          return {
+            symbol,
+            data: {
+              c: 0,
+              pc: 0,
+              d: 0,
+              dp: 0
+            }
+          }
+        }
+
+        // Conversion au format attendu par le frontend
+        return {
+          symbol,
+          data: {
+            c: parseFloat(quote["05. price"]),
+            pc: parseFloat(quote["08. previous close"]),
+            d: parseFloat(quote["09. change"]),
+            dp: parseFloat(quote["10. change percent"].replace('%', ''))
+          }
+        }
+      }
+    })
 
     const results = await Promise.all(promises)
     console.log("Market data fetched successfully:", results)
