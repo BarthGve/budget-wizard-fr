@@ -18,14 +18,24 @@ export const useUsers = (page: number, pageSize: number) => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data: { users: userData }, error: usersError } = await supabase.auth.admin.listUsers({
-        page: page - 1,
-        perPage: pageSize,
-      });
+      
+      // Get users using our secure RPC function
+      const { data: usersData, error: usersError } = await supabase
+        .rpc('list_users', { 
+          page_number: page - 1,
+          page_size: pageSize 
+        });
 
       if (usersError) throw usersError;
 
-      const userIds = userData?.map(user => user.id) || [];
+      // Get total users count
+      const { data: totalUsers, error: countError } = await supabase
+        .rpc('get_total_users');
+
+      if (countError) throw countError;
+
+      // Get roles for these users
+      const userIds = usersData?.map(user => user.id) || [];
       const { data: rolesData } = await supabase
         .from('user_roles')
         .select('user_id, role')
@@ -36,7 +46,7 @@ export const useUsers = (page: number, pageSize: number) => {
         roleMap.set(role.user_id, role.role);
       });
 
-      const formattedUsers = userData?.map(user => ({
+      const formattedUsers = usersData?.map(user => ({
         id: user.id,
         email: user.email || '',
         role: roleMap.get(user.id) || "user",
@@ -44,7 +54,7 @@ export const useUsers = (page: number, pageSize: number) => {
       })) || [];
 
       setUsers(formattedUsers);
-      setTotalPages(Math.ceil((userData?.length || 0) / pageSize));
+      setTotalPages(Math.ceil(totalUsers / pageSize));
     } catch (error: any) {
       toast.error("Erreur lors du chargement des utilisateurs");
       console.error("Error fetching users:", error);
