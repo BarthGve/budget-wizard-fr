@@ -79,11 +79,13 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
                   {date ? format(date, "d MMMM yyyy", { locale: fr }) : "Sélectionner une date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={date}
                   onSelect={(date) => date && setDate(date)}
+                  locale={fr}
+                  disabled={false}
                   initialFocus
                 />
               </PopoverContent>
