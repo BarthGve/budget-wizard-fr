@@ -15,10 +15,12 @@ const Settings = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6">
-          <ProfileSettings />
+        <div className="grid gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ProfileSettings />
+            <SecuritySettings />
+          </div>
           <ExpenseCategoriesSettings />
-          <SecuritySettings />
         </div>
       </div>
     </DashboardLayout>
