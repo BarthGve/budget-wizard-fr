@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Edit2 } from "lucide-react";
 import { useState } from "react";
 import { PropertyForm } from "./PropertyForm";
-import { useColorPalette } from "@/hooks/useColorPalette";
 import { Property } from "@/types/property";
 import { useEditProperty } from "@/hooks/useEditProperty";
 import { Label } from "@/components/ui/label";
@@ -16,7 +15,6 @@ interface EditPropertyDialogProps {
 
 export const EditPropertyDialog = ({ property }: EditPropertyDialogProps) => {
   const [open, setOpen] = useState(false);
-  const { backgroundClass } = useColorPalette();
   const { editedProperty, setEditedProperty, handleSubmit, isLoading, handlePhotoUpload } = useEditProperty(property, () => setOpen(false));
 
   return (
@@ -64,9 +62,9 @@ export const EditPropertyDialog = ({ property }: EditPropertyDialogProps) => {
             Annuler
           </Button>
           <Button 
-            className={`text-white ${backgroundClass}`}
             onClick={handleSubmit}
             disabled={isLoading}
+            className="bg-primary text-white hover:bg-primary/90"
           >
             {isLoading ? "Modification en cours..." : "Modifier"}
           </Button>

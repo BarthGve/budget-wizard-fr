@@ -10,7 +10,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { useColorPalette } from "@/hooks/useColorPalette";
 
 interface PropertyCardProps {
   property: Property;
@@ -19,7 +18,6 @@ interface PropertyCardProps {
 export const PropertyCard = ({ property }: PropertyCardProps) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { backgroundClass } = useColorPalette();
 
   const handleDelete = async () => {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce bien ?")) {
@@ -70,13 +68,13 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
           <div className="flex items-center gap-2">
             <h3 className="font-semibold">{property.name}</h3>
             {property.investment_type && (
-              <Badge variant="secondary" className={`text-xs ${backgroundClass}`}>
+              <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
                 {property.investment_type}
               </Badge>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Home className={`w-4 h-4 ${backgroundClass.replace('bg-', 'text-').replace('/hover.*/', '')}`} />
+            <Home className="w-4 h-4 text-primary" />
           </div>
         </div>
         <p className="text-sm text-muted-foreground line-clamp-1">

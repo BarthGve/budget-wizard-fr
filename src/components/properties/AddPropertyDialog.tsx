@@ -5,17 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { usePropertyForm } from "@/hooks/usePropertyForm";
 import { PropertyForm } from "./PropertyForm";
-import { useColorPalette } from "@/hooks/useColorPalette";
 
 export const AddPropertyDialog = () => {
   const [open, setOpen] = useState(false);
-  const { backgroundClass } = useColorPalette();
   const { newProperty, setNewProperty, handleSubmit, isLoading } = usePropertyForm(() => setOpen(false));
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className={`text-white ${backgroundClass}`}>
+        <Button className="bg-primary text-white hover:bg-primary/90">
           <Plus className="mr-2 h-4 w-4" />
           Ajouter un bien
         </Button>
@@ -38,9 +36,9 @@ export const AddPropertyDialog = () => {
             Annuler
           </Button>
           <Button 
-            className={`text-white ${backgroundClass}`}
             onClick={handleSubmit}
             disabled={isLoading}
+            className="bg-primary text-white hover:bg-primary/90"
           >
             {isLoading ? "Ajout en cours..." : "Ajouter"}
           </Button>
