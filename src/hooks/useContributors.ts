@@ -44,7 +44,7 @@ export const useContributors = () => {
         return;
       }
 
-      const updatedContributors = await addContributorService(newContributor, user.id, contributors);
+      const updatedContributors = await addContributorService(newContributor, user.id);
       setContributors(updatedContributors);
       toast.success("Le contributeur a été ajouté avec succès");
     } catch (error: any) {
@@ -55,7 +55,7 @@ export const useContributors = () => {
 
   const updateContributor = async (contributor: Contributor) => {
     try {
-      const updatedContributors = await updateContributorService(contributor, contributors);
+      const updatedContributors = await updateContributorService(contributor);
       setContributors(updatedContributors);
       setEditingContributor(null);
       toast.success("Le contributeur a été mis à jour avec succès");
@@ -67,7 +67,7 @@ export const useContributors = () => {
 
   const deleteContributor = async (id: string) => {
     try {
-      const updatedContributors = await deleteContributorService(id, contributors);
+      const updatedContributors = await deleteContributorService(id);
       setContributors(updatedContributors);
       toast.success("Le contributeur a été supprimé avec succès");
     } catch (error: any) {
