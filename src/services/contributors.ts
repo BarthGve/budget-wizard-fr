@@ -3,9 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Contributor, NewContributor } from "@/types/contributor";
 
 export const fetchContributorsService = async () => {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
+  if (!user) throw new Error("Non authentifié");
+
   const { data, error } = await supabase
     .from("contributors")
     .select("*")
+    .eq("profile_id", user.id)
     .order("created_at", { ascending: true });
 
   if (error) throw error;
@@ -22,6 +27,7 @@ export const addContributorService = async (
       .from("contributors")
       .select("id")
       .eq("email", newContributor.email)
+      .eq("profile_id", userId)
       .maybeSingle();
 
     if (existingError) throw existingError;
@@ -190,4 +196,3 @@ export const deleteContributorService = async (
 
   return await fetchContributorsService();
 };
-
