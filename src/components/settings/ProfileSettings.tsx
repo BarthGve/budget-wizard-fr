@@ -40,6 +40,18 @@ export const ProfileSettings = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Vérifier la taille du fichier (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("L'image ne doit pas dépasser 2MB");
+        return;
+      }
+
+      // Vérifier le type de fichier
+      if (!file.type.startsWith('image/')) {
+        toast.error("Le fichier doit être une image");
+        return;
+      }
+
       setAvatarFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
@@ -58,14 +70,31 @@ export const ProfileSettings = () => {
       let avatarUrl = profile?.avatar_url;
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
-        const filePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
+        // Delete old avatar if exists
+        if (profile?.avatar_url) {
+          const oldFilePath = profile.avatar_url.split('/').slice(-2).join('/');
+          await supabase.storage
+            .from('avatars')
+            .remove([oldFilePath]);
+        }
+
+        // Upload new avatar
+        const { error: uploadError, data } = await supabase.storage
           .from('avatars')
-          .upload(filePath, avatarFile);
+          .upload(filePath, avatarFile, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          throw new Error("Erreur lors de l'upload de l'avatar");
+        }
 
+        // Get public URL
         const { data: { publicUrl } } = supabase.storage
           .from('avatars')
           .getPublicUrl(filePath);
@@ -87,9 +116,16 @@ export const ProfileSettings = () => {
 
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast.success("Profil mis à jour avec succès");
+      
+      // Clean up preview URL
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
+      setAvatarFile(null);
     } catch (error: any) {
       console.error("Error updating profile:", error);
-      toast.error("Erreur lors de la mise à jour du profil");
+      toast.error(error.message || "Erreur lors de la mise à jour du profil");
     } finally {
       setIsUpdating(false);
     }
