@@ -93,14 +93,25 @@ export const Sidebar = ({ className }: SidebarProps) => {
       )}
     >
       <div className="flex flex-col flex-1">
-        {/* App Name */}
-        <div className="p-4 border-b border-gray-200">
+        {/* App Name and Collapse Button */}
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           <h1 className={cn(
             "font-bold text-primary transition-all duration-300",
-            collapsed ? "text-center text-sm" : "text-xl"
+            collapsed ? "text-sm" : "text-xl"
           )}>
             {collapsed ? "SBW" : "Shared Budget Wizard"}
           </h1>
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? (
+              <ChevronRight className="h-5 w-5 text-gray-500" />
+            ) : (
+              <ChevronLeft className="h-5 w-5 text-gray-500" />
+            )}
+          </button>
         </div>
 
         {/* Main Navigation */}
@@ -167,18 +178,6 @@ export const Sidebar = ({ className }: SidebarProps) => {
             </Button>
           </div>
         </div>
-
-        {/* Collapse Button */}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="p-2 m-4 rounded-lg hover:bg-gray-100 transition-colors"
-        >
-          {collapsed ? (
-            <ChevronRight className="h-5 w-5" />
-          ) : (
-            <ChevronLeft className="h-5 w-5" />
-          )}
-        </button>
       </div>
     </aside>
   );
