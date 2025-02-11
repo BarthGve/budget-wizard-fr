@@ -6,11 +6,31 @@ import { PropertyList } from "@/components/properties/PropertyList";
 import { AddPropertyDialog } from "@/components/properties/AddPropertyDialog";
 import { PropertiesMap } from "@/components/properties/PropertiesMap";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Properties = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
   const { data: properties, isLoading } = useQuery({
     queryKey: ["properties"],
     queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error("No session");
+      }
+
       const { data, error } = await supabase
         .from("properties")
         .select("*")
