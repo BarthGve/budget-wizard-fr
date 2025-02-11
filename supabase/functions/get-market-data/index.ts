@@ -28,8 +28,24 @@ serve(async (req) => {
           `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=EUR&apikey=${ALPHA_VANTAGE_API_KEY}`
         )
         const data = await response.json()
+        
+        // Vérification de la validité des données
+        if (!data || !data["Realtime Currency Exchange Rate"]) {
+          console.error(`Invalid response for Bitcoin: ${JSON.stringify(data)}`)
+          return {
+            symbol,
+            data: {
+              c: 0,
+              pc: 0,
+              d: 0,
+              dp: 0
+            }
+          }
+        }
+
         const rate = data["Realtime Currency Exchange Rate"]
-        const currentPrice = parseFloat(rate["5. Exchange Rate"])
+        const currentPrice = parseFloat(rate["5. Exchange Rate"] || 0)
+        
         // On simule le même format que pour les actions pour la cohérence
         return {
           symbol,
@@ -46,10 +62,10 @@ serve(async (req) => {
           `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_VANTAGE_API_KEY}`
         )
         const data = await response.json()
-        const quote = data["Global Quote"]
         
-        if (!quote || Object.keys(quote).length === 0) {
-          console.error(`No data found for symbol: ${symbol}`)
+        // Vérification de la validité des données
+        if (!data || !data["Global Quote"] || Object.keys(data["Global Quote"]).length === 0) {
+          console.error(`Invalid or empty response for symbol ${symbol}: ${JSON.stringify(data)}`)
           return {
             symbol,
             data: {
@@ -61,14 +77,16 @@ serve(async (req) => {
           }
         }
 
-        // Conversion au format attendu par le frontend
+        const quote = data["Global Quote"]
+        
+        // Conversion au format attendu par le frontend avec des valeurs par défaut sécurisées
         return {
           symbol,
           data: {
-            c: parseFloat(quote["05. price"]),
-            pc: parseFloat(quote["08. previous close"]),
-            d: parseFloat(quote["09. change"]),
-            dp: parseFloat(quote["10. change percent"].replace('%', ''))
+            c: parseFloat(quote["05. price"] || "0"),
+            pc: parseFloat(quote["08. previous close"] || "0"),
+            d: parseFloat(quote["09. change"] || "0"),
+            dp: parseFloat((quote["10. change percent"] || "0%").replace('%', ''))
           }
         }
       }
