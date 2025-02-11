@@ -3,6 +3,9 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } fro
 import { subYears, format, parseISO, isWithinInterval, startOfYear, endOfYear } from "date-fns";
 import { fr } from "date-fns/locale";
 import { EXPENSE_CATEGORIES } from "./ExpenseFormFields";
+import { getCategoryColor } from "@/utils/colors";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Expense {
   id: string;
@@ -16,6 +19,24 @@ interface ExpensesChartProps {
 }
 
 export function ExpensesChart({ expenses }: ExpensesChartProps) {
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
+  });
+
   const today = new Date();
   const fiveYearsAgo = subYears(today, 5);
 
@@ -95,13 +116,13 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
                 return category ? category.label : value;
               }}
             />
-            {EXPENSE_CATEGORIES.map((category) => (
+            {EXPENSE_CATEGORIES.map((category, index) => (
               <Bar
                 key={category.value}
                 dataKey={category.value}
                 name={category.label}
                 stackId="a"
-                fill={getCategoryColor(category.value)}
+                fill={getCategoryColor(index, profile?.color_palette)}
               />
             ))}
           </BarChart>
@@ -109,21 +130,4 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
       </div>
     </>
   );
-}
-
-function getCategoryColor(category: string): string {
-  switch (category) {
-    case 'charges':
-      return '#9b87f5';
-    case 'impots':
-      return '#E5DEFF';
-    case 'travaux':
-      return '#7E69AB';
-    case 'assurance':
-      return '#8E9196';
-    case 'autres':
-      return '#F1F0FB';
-    default:
-      return '#94a3b8';
-  }
 }

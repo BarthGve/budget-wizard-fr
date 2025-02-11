@@ -1,49 +1,49 @@
 
 const palettes = {
   default: [
-    'rgb(59, 130, 246)', // blue-500
-    'rgb(34, 197, 94)', // green-500
-    'rgb(234, 179, 8)', // yellow-500
-    'rgb(239, 68, 68)', // red-500
-    'rgb(168, 85, 247)', // purple-500
-    'rgb(236, 72, 153)', // pink-500
-    'rgb(107, 114, 128)', // gray-500
+    '#9b87f5', // Primary Purple
+    '#7E69AB', // Secondary Purple
+    '#8B5CF6', // Vivid Purple
+    '#D946EF', // Magenta Pink
+    '#F97316', // Bright Orange
+    '#0EA5E9', // Ocean Blue
+    '#8E9196', // Neutral Gray
   ],
   ocean: [
-    'rgb(14, 165, 233)', // sky-500
-    'rgb(6, 182, 212)', // cyan-500
-    'rgb(20, 184, 166)', // teal-500
-    'rgb(59, 130, 246)', // blue-500
-    'rgb(99, 102, 241)', // indigo-500
-    'rgb(168, 85, 247)', // purple-500
-    'rgb(147, 197, 253)', // blue-300
+    '#0EA5E9', // sky-500
+    '#06B6D4', // cyan-500
+    '#14B8A6', // teal-500
+    '#3B82F6', // blue-500
+    '#6366F1', // indigo-500
+    '#A855F7', // purple-500
+    '#93C5FD', // blue-300
   ],
   forest: [
-    'rgb(34, 197, 94)', // green-500
-    'rgb(16, 185, 129)', // emerald-500
-    'rgb(168, 162, 158)', // warm-gray-400
-    'rgb(234, 179, 8)', // yellow-500
-    'rgb(245, 158, 11)', // amber-500
-    'rgb(249, 115, 22)', // orange-500
-    'rgb(139, 69, 19)', // saddle-brown
+    '#22C55E', // green-500
+    '#10B981', // emerald-500
+    '#A8A29E', // warm-gray-400
+    '#EAB308', // yellow-500
+    '#F59E0B', // amber-500
+    '#F97316', // orange-500
+    '#8B4513', // saddle-brown
   ],
   sunset: [
-    'rgb(249, 115, 22)', // orange-500
-    'rgb(239, 68, 68)', // red-500
-    'rgb(236, 72, 153)', // pink-500
-    'rgb(217, 70, 239)', // fuchsia-500
-    'rgb(245, 158, 11)', // amber-500
-    'rgb(234, 179, 8)', // yellow-500
-    'rgb(168, 85, 247)', // purple-500
+    '#F97316', // orange-500
+    '#EF4444', // red-500
+    '#EC4899', // pink-500
+    '#D946EF', // fuchsia-500
+    '#F59E0B', // amber-500
+    '#EAB308', // yellow-500
+    '#A855F7', // purple-500
   ],
   candy: [
-    'rgb(244, 114, 182)', // pink-400
-    'rgb(248, 113, 113)', // red-400
-    'rgb(251, 146, 60)', // orange-400
-    'rgb(250, 204, 21)', // yellow-400
-    'rgb(74, 222, 128)', // green-400
-    'rgb(96, 165, 250)', // blue-400
-    'rgb(192, 132, 252)', // purple-400
+    '#F472B6', // pink-400
+    '#F87171', // red-400
+    '#FB923C', // orange-400
+    '#FACC15', // yellow-400
+    '#4ADE80', // green-400
+    '#60A5FA', // blue-400
+    '#C084FC', // purple-400
   ],
 };
 
