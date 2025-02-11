@@ -2,13 +2,15 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { PropertiesMap } from "@/components/properties/PropertiesMap";
 import { AddExpenseDialog } from "@/components/properties/AddExpenseDialog";
 import { ExpensesList } from "@/components/properties/ExpensesList";
+import { ChevronLeft } from "lucide-react";
+import { formatCurrency } from "@/utils/format";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -81,12 +83,22 @@ const PropertyDetail = () => {
   return (
     <DashboardLayout>
       <div className="grid gap-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{property.name}</h1>
-            <p className="text-muted-foreground">{property.address}</p>
+        <div className="flex flex-col gap-6">
+          <Link 
+            to="/properties" 
+            className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors w-fit"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span>Retour aux biens</span>
+          </Link>
+
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">{property.name}</h1>
+              <p className="text-muted-foreground">{property.address}</p>
+            </div>
+            <AddExpenseDialog propertyId={property.id} onExpenseAdded={() => refetchExpenses()} />
           </div>
-          <AddExpenseDialog propertyId={property.id} onExpenseAdded={() => refetchExpenses()} />
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
@@ -98,14 +110,24 @@ const PropertyDetail = () => {
 
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Détails</h2>
-            <div className="grid gap-2">
+            <div className="grid gap-4">
               <div>
-                <span className="font-medium">Prix d'achat:</span>{" "}
-                {property.purchase_value.toLocaleString()} €
+                <span className="font-medium">Adresse:</span>{" "}
+                {property.address}
+              </div>
+              <div>
+                <span className="font-medium">Valeur du bien:</span>{" "}
+                {formatCurrency(property.purchase_value)}
               </div>
               <div>
                 <span className="font-medium">Surface:</span> {property.area} m²
               </div>
+              {property.monthly_rent && (
+                <div>
+                  <span className="font-medium">Loyer mensuel:</span>{" "}
+                  {formatCurrency(property.monthly_rent)}
+                </div>
+              )}
               <div>
                 <span className="font-medium">Type d'investissement:</span>{" "}
                 {property.investment_type || "Non spécifié"}
