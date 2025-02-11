@@ -11,6 +11,7 @@ import {
   ChevronRight,
   LogOut,
   Home,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,6 +45,22 @@ export const Sidebar = ({ className }: SidebarProps) => {
     },
   });
 
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      const { data, error } = await supabase.rpc('has_role', {
+        user_id: user.id,
+        role: 'admin'
+      });
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const colorPalette = profile?.color_palette || "default";
   const paletteToActive: Record<string, string> = {
     default: "bg-blue-500 text-white hover:bg-blue-600",
@@ -59,6 +76,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
     { title: "Épargne", icon: PiggyBank, path: "/savings" },
     { title: "Patrimoine", icon: Home, path: "/properties" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
+    ...(isAdmin ? [{ title: "Administration", icon: Shield, path: "/admin" }] : []),
     { title: "Paramètres", icon: Settings, path: "/settings" },
   ];
 
