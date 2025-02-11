@@ -16,7 +16,9 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
     if (!mapContainer.current || map.current) return;
 
     // Initialize map
-    map.current = L.map(mapContainer.current).setView([46.227638, 2.213749], 5);
+    map.current = L.map(mapContainer.current, {
+      zoomControl: false // Désactiver les contrôles de zoom par défaut
+    }).setView([46.227638, 2.213749], 5);
 
     // Add OpenStreetMap tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -54,6 +56,11 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
       });
     }
 
+    // Force a resize after a short delay to ensure proper sizing
+    setTimeout(() => {
+      map.current?.invalidateSize();
+    }, 100);
+
     return () => {
       if (map.current) {
         map.current.remove();
@@ -63,8 +70,8 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
   }, [properties]);
 
   return (
-    <div className="w-full h-full rounded-lg overflow-hidden" style={{ zIndex: 0 }}>
-      <div ref={mapContainer} className="w-full h-full" />
+    <div className="w-full h-full" style={{ position: 'relative', zIndex: 0 }}>
+      <div ref={mapContainer} className="absolute inset-0 rounded-lg overflow-hidden" />
     </div>
   );
 };

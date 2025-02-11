@@ -11,9 +11,12 @@ import { AddExpenseDialog } from "@/components/properties/AddExpenseDialog";
 import { ExpensesList } from "@/components/properties/ExpensesList";
 import { ChevronLeft } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
+import { useState } from "react";
 
 const PropertyDetail = () => {
   const { id } = useParams();
+  const [expenseToEdit, setExpenseToEdit] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const { data: property, isLoading: isLoadingProperty } = useQuery({
     queryKey: ["property", id],
@@ -80,6 +83,11 @@ const PropertyDetail = () => {
     );
   }
 
+  const handleExpenseEdit = (expense: any) => {
+    setExpenseToEdit(expense);
+    setIsEditDialogOpen(true);
+  };
+
   return (
     <DashboardLayout>
       <div className="grid gap-6">
@@ -97,12 +105,18 @@ const PropertyDetail = () => {
               <h1 className="text-3xl font-bold tracking-tight">{property.name}</h1>
               <p className="text-muted-foreground">{property.address}</p>
             </div>
-            <AddExpenseDialog propertyId={property.id} onExpenseAdded={() => refetchExpenses()} />
+            <AddExpenseDialog 
+              propertyId={property.id} 
+              onExpenseAdded={() => refetchExpenses()} 
+              expense={expenseToEdit}
+              open={isEditDialogOpen}
+              onOpenChange={setIsEditDialogOpen}
+            />
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
-          <Card className="p-6">
+          <Card className="p-6 relative">
             <div className="h-[200px]">
               <PropertiesMap properties={[property]} />
             </div>
@@ -144,7 +158,11 @@ const PropertyDetail = () => {
                 <Skeleton className="h-12 w-full" />
               </div>
             ) : (
-              <ExpensesList expenses={expenses || []} />
+              <ExpensesList 
+                expenses={expenses || []} 
+                onExpenseDeleted={() => refetchExpenses()}
+                onExpenseEdit={handleExpenseEdit}
+              />
             )}
           </Card>
         </div>
