@@ -1,7 +1,7 @@
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Edit2, Upload } from "lucide-react";
+import { Edit2 } from "lucide-react";
 import { useState } from "react";
 import { PropertyForm } from "./PropertyForm";
 import { useColorPalette } from "@/hooks/useColorPalette";
