@@ -29,8 +29,21 @@ export const usePropertyForm = (onSuccess: () => void) => {
         return;
       }
 
-      if (!newProperty.name || !newProperty.address || !newProperty.area || !newProperty.purchase_value) {
-        toast.error("Veuillez remplir tous les champs obligatoires");
+      // Vérification des champs obligatoires
+      if (!newProperty.name.trim()) {
+        toast.error("Le nom du bien est obligatoire");
+        return;
+      }
+      if (!newProperty.address.trim()) {
+        toast.error("L'adresse est obligatoire");
+        return;
+      }
+      if (!newProperty.area || Number(newProperty.area) <= 0) {
+        toast.error("La surface doit être supérieure à 0");
+        return;
+      }
+      if (!newProperty.purchase_value || Number(newProperty.purchase_value) <= 0) {
+        toast.error("La valeur d'achat doit être supérieure à 0");
         return;
       }
 
@@ -43,13 +56,13 @@ export const usePropertyForm = (onSuccess: () => void) => {
       }
 
       const { error } = await supabase.from("properties").insert({
-        name: newProperty.name,
-        address: newProperty.address,
+        name: newProperty.name.trim(),
+        address: newProperty.address.trim(),
         area: Number(newProperty.area),
         purchase_value: Number(newProperty.purchase_value),
         monthly_rent: newProperty.monthly_rent ? Number(newProperty.monthly_rent) : null,
         loan_payment: newProperty.loan_payment ? Number(newProperty.loan_payment) : null,
-        investment_type: newProperty.investment_type || null,
+        investment_type: newProperty.investment_type ? newProperty.investment_type.trim() : null,
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
         profile_id: user.id,
@@ -84,4 +97,3 @@ export const usePropertyForm = (onSuccess: () => void) => {
     isLoading
   };
 };
-
