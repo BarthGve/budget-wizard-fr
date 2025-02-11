@@ -86,6 +86,10 @@ export const updateContributorService = async (
 
   console.log("Calculated total budget:", totalBudget);
 
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
+  if (!user) throw new Error("Non authentifié");
+
   // Mettre à jour la contribution et le pourcentage
   const newPercentage = (contributor.total_contribution / totalBudget) * 100;
   console.log("Updating contribution and percentage:", {
@@ -93,13 +97,16 @@ export const updateContributorService = async (
     percentage: newPercentage,
   });
 
-  const { error: updateError } = await supabase
+  const query = supabase
     .from("contributors")
     .update({
       total_contribution: contributor.total_contribution,
       percentage_contribution: newPercentage,
     })
-    .eq("id", contributor.id);
+    .eq("id", contributor.id)
+    .eq("profile_id", user.id);
+
+  const { error: updateError } = await query;
 
   if (updateError) {
     console.error("Error updating contribution:", updateError);
@@ -115,7 +122,8 @@ export const updateContributorService = async (
         name: contributor.name,
         email: contributor.email,
       })
-      .eq("id", contributor.id);
+      .eq("id", contributor.id)
+      .eq("profile_id", user.id);
 
     if (updateDetailsError) {
       console.error("Error updating details:", updateDetailsError);
@@ -133,6 +141,10 @@ export const updateContributorService = async (
 };
 
 const updateContributorsPercentages = async (contributors: Contributor[], totalBudget: number) => {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
+  if (!user) throw new Error("Non authentifié");
+
   console.log("Updating percentages for contributors:", {
     contributors,
     totalBudget,
@@ -149,7 +161,8 @@ const updateContributorsPercentages = async (contributors: Contributor[], totalB
     const { error } = await supabase
       .from("contributors")
       .update({ percentage_contribution: newPercentage })
-      .eq("id", c.id);
+      .eq("id", c.id)
+      .eq("profile_id", user.id);
 
     if (error) {
       console.error("Error updating percentage:", error);
@@ -164,6 +177,10 @@ export const deleteContributorService = async (
 ) => {
   console.log("Attempting to delete contributor:", contributorId);
 
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
+  if (!user) throw new Error("Non authentifié");
+
   const contributorToDelete = currentContributors.find(
     (c) => c.id === contributorId
   );
@@ -175,7 +192,8 @@ export const deleteContributorService = async (
   const { error: deleteError } = await supabase
     .from("contributors")
     .delete()
-    .eq("id", contributorId);
+    .eq("id", contributorId)
+    .eq("profile_id", user.id);
 
   if (deleteError) throw deleteError;
 
@@ -196,3 +214,4 @@ export const deleteContributorService = async (
 
   return await fetchContributorsService();
 };
+
