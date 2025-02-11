@@ -40,26 +40,14 @@ export const CreateUserDialog = ({
     setLoading(true);
 
     try {
-      // Create the user
-      const { data: userData, error: userError } = await supabase.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-      });
+      const { data, error } = await supabase
+        .rpc('create_admin_user', {
+          email,
+          password,
+          role
+        });
 
-      if (userError) throw userError;
-
-      // Add the role
-      if (userData.user) {
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert([{ 
-            user_id: userData.user.id, 
-            role: role 
-          }]);
-
-        if (roleError) throw roleError;
-      }
+      if (error) throw error;
 
       toast.success("Utilisateur créé avec succès");
       onUserCreated();
