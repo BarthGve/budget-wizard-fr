@@ -2,7 +2,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
@@ -15,10 +14,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
 interface AddExpenseDialogProps {
   propertyId: string;
   onExpenseAdded: () => void;
+  expense?: any;
+  open?: boolean;
+  onOpenChange?: Dispatch<SetStateAction<boolean>>;
 }
 
 const EXPENSE_CATEGORIES = [
@@ -29,8 +32,7 @@ const EXPENSE_CATEGORIES = [
   { value: "autres", label: "Autres" },
 ];
 
-export function AddExpenseDialog({ propertyId, onExpenseAdded }: AddExpenseDialogProps) {
-  const [open, setOpen] = useState(false);
+export function AddExpenseDialog({ propertyId, onExpenseAdded, expense, open, onOpenChange }: AddExpenseDialogProps) {
   const { toast } = useToast();
   const form = useForm({
     defaultValues: {
@@ -40,6 +42,17 @@ export function AddExpenseDialog({ propertyId, onExpenseAdded }: AddExpenseDialo
       date: new Date(),
     },
   });
+
+  useEffect(() => {
+    if (expense) {
+      form.reset({
+        amount: expense.amount.toString(),
+        category: expense.category,
+        description: expense.description,
+        date: new Date(expense.date),
+      });
+    }
+  }, [expense, form]);
 
   const onSubmit = async (values: any) => {
     try {
@@ -53,37 +66,56 @@ export function AddExpenseDialog({ propertyId, onExpenseAdded }: AddExpenseDialo
         return;
       }
 
-      const { error } = await supabase.from("property_expenses").insert({
-        property_id: propertyId,
-        profile_id: session.session.user.id,
-        amount: Number(values.amount),
-        category: values.category,
-        description: values.description,
-        date: format(values.date, "yyyy-MM-dd"),
-      });
+      let error;
+      if (expense) {
+        // Update existing expense
+        ({ error } = await supabase
+          .from("property_expenses")
+          .update({
+            amount: Number(values.amount),
+            category: values.category,
+            description: values.description,
+            date: format(values.date, "yyyy-MM-dd"),
+          })
+          .eq('id', expense.id));
+      } else {
+        // Create new expense
+        ({ error } = await supabase
+          .from("property_expenses")
+          .insert({
+            property_id: propertyId,
+            profile_id: session.session.user.id,
+            amount: Number(values.amount),
+            category: values.category,
+            description: values.description,
+            date: format(values.date, "yyyy-MM-dd"),
+          }));
+      }
 
       if (error) throw error;
 
       toast({
         title: "Succès",
-        description: "La dépense a été ajoutée",
+        description: expense ? "La dépense a été modifiée" : "La dépense a été ajoutée",
       });
 
-      setOpen(false);
+      if (onOpenChange) {
+        onOpenChange(false);
+      }
       form.reset();
       onExpenseAdded();
     } catch (error) {
-      console.error("Error adding expense:", error);
+      console.error("Error adding/updating expense:", error);
       toast({
         title: "Erreur",
-        description: "Impossible d'ajouter la dépense",
+        description: "Impossible d'ajouter/modifier la dépense",
         variant: "destructive",
       });
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" /> Ajouter une dépense
@@ -91,7 +123,7 @@ export function AddExpenseDialog({ propertyId, onExpenseAdded }: AddExpenseDialo
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Ajouter une dépense</DialogTitle>
+          <DialogTitle>{expense ? "Modifier la dépense" : "Ajouter une dépense"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -184,13 +216,15 @@ export function AddExpenseDialog({ propertyId, onExpenseAdded }: AddExpenseDialo
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  setOpen(false);
+                  if (onOpenChange) {
+                    onOpenChange(false);
+                  }
                   form.reset();
                 }}
               >
                 Annuler
               </Button>
-              <Button type="submit">Ajouter</Button>
+              <Button type="submit">{expense ? "Modifier" : "Ajouter"}</Button>
             </div>
           </form>
         </Form>
