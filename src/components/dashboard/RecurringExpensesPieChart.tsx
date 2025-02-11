@@ -4,9 +4,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BarChart } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { getCategoryColor } from "@/utils/colors";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 interface RecurringExpense {
   id: string;
@@ -26,26 +23,6 @@ interface CategoryTotal {
 }
 
 export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: RecurringExpensesPieChartProps) => {
-  const { data: profile } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user?.id)
-        .single();
-
-      if (error) throw error;
-
-      return data;
-    },
-    staleTime: 0,
-  });
-
-  // Regrouper les dépenses par catégorie
   const categoryTotals = recurringExpenses.reduce<CategoryTotal[]>((acc, expense) => {
     const existingCategory = acc.find(cat => cat.category === expense.category);
     if (existingCategory) {
@@ -64,8 +41,10 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
     value: category.amount
   }));
 
+  const COLORS = ['rgb(34, 197, 94)', 'rgb(99, 102, 241)', 'rgb(249, 115, 22)', 'rgb(236, 72, 153)', 'rgb(234, 179, 8)'];
+
   return (
-    <Card className="col-span-full md:col-span-1">
+    <Card className="col-span-full md:col-span-1 bg-white">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div>
           <CardTitle>Répartition des Dépenses</CardTitle>
@@ -93,24 +72,21 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
                   dataKey="value"
                 >
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={getCategoryColor(index, profile?.color_palette)} />
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload;
-                      const percentage = Math.round((data.value / totalExpenses) * 100);
-                      return (
-                        <div className="rounded-lg border bg-background p-2 shadow-sm">
-                          <p className="font-medium">{data.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {percentage}%
-                          </p>
-                        </div>
-                      );
-                    }
-                    return null;
+                  formatter={(value: number) => 
+                    new Intl.NumberFormat('fr-FR', {
+                      style: 'currency',
+                      currency: 'EUR'
+                    }).format(value)
+                  }
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '0.375rem',
+                    padding: '0.5rem'
                   }}
                 />
               </PieChart>
@@ -122,12 +98,15 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
                 <div className="flex items-center">
                   <div
                     className="mr-2 h-3 w-3 rounded-full"
-                    style={{ backgroundColor: getCategoryColor(index, profile?.color_palette) }}
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
                   <span className="text-sm font-medium">{category.category}</span>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  {Math.round((category.amount / totalExpenses) * 100)}%
+                <span className="text-sm text-violet-500">
+                  {new Intl.NumberFormat('fr-FR', {
+                    style: 'currency',
+                    currency: 'EUR'
+                  }).format(category.amount)}
                 </span>
               </div>
             ))}

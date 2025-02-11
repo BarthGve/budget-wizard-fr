@@ -10,55 +10,23 @@ interface SavingsCardProps {
 }
 
 export const SavingsCard = ({ totalMonthlySavings, savingsGoal }: SavingsCardProps) => {
-  const { data: profile } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user?.id)
-        .single();
-
-      if (error) throw error;
-
-      return data;
-    },
-  });
-
-  const colorPalette = profile?.color_palette || "default";
-  const paletteToText: Record<string, string> = {
-    default: "text-blue-500",
-    ocean: "text-sky-500",
-    forest: "text-green-500",
-    sunset: "text-orange-500",
-    candy: "text-pink-400",
-  };
-
-  const paletteToProgress: Record<string, string> = {
-    default: "bg-blue-500",
-    ocean: "bg-sky-500",
-    forest: "bg-green-500",
-    sunset: "bg-orange-500",
-    candy: "bg-pink-400",
-  };
-
   return (
-    <Card className="card-hover">
+    <Card className="bg-white">
       <CardHeader>
         <CardTitle>Objectif d'épargne</CardTitle>
         <CardDescription>Progression mensuelle</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <p className={`text-3xl font-bold ${paletteToText[colorPalette]}`}>
-            {Math.round(totalMonthlySavings)} € / {Math.round(savingsGoal)} €
+          <p className="text-3xl font-bold">
+            <span className="text-green-500">{Math.round(totalMonthlySavings)} €</span>
+            {" "}/{" "}
+            <span>{Math.round(savingsGoal)} €</span>
           </p>
-          <Progress
+          <Progress 
             value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0}
-            className={`${paletteToProgress[colorPalette]}`}
+            className="bg-green-100"
+            indicatorClassName="bg-green-500"
           />
         </div>
       </CardContent>
