@@ -40,7 +40,7 @@ export const CreateUserDialog = ({
     setLoading(true);
 
     try {
-      const { error } = await supabase.rpc('create_admin_user', {
+      const { data, error } = await supabase.rpc('create_admin_user', {
         email,
         password,
         role
@@ -49,6 +49,10 @@ export const CreateUserDialog = ({
       if (error) {
         console.error("Error creating user:", error);
         throw error;
+      }
+
+      if (!data) {
+        throw new Error("Aucune donnée reçue du serveur");
       }
 
       toast.success("Utilisateur créé avec succès");
