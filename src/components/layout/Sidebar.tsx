@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -92,52 +93,17 @@ export const Sidebar = ({ className }: SidebarProps) => {
       )}
     >
       <div className="flex flex-col flex-1">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          {!collapsed ? (
-            <div className="flex items-center space-x-3">
-              <Avatar>
-                <AvatarImage
-                  src={profile?.avatar_url || undefined}
-                  alt={profile?.full_name || "Avatar"}
-                />
-                <AvatarFallback>
-                  {(profile?.full_name || "?")[0]?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="font-medium">{profile?.full_name || "Utilisateur"}</span>
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-sm text-primary hover:text-primary-hover"
-                  onClick={() => navigate("/settings")}
-                >
-                  Gérer le profil
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <Avatar className="w-10 h-10">
-              <AvatarImage
-                src={profile?.avatar_url || undefined}
-                alt={profile?.full_name || "Avatar"}
-              />
-              <AvatarFallback>
-                {(profile?.full_name || "?")[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          )}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            {collapsed ? (
-              <ChevronRight className="h-5 w-5" />
-            ) : (
-              <ChevronLeft className="h-5 w-5" />
-            )}
-          </button>
+        {/* App Name */}
+        <div className="p-4 border-b border-gray-200">
+          <h1 className={cn(
+            "font-bold text-primary transition-all duration-300",
+            collapsed ? "text-center text-sm" : "text-xl"
+          )}>
+            {collapsed ? "SBW" : "Shared Budget Wizard"}
+          </h1>
         </div>
 
+        {/* Main Navigation */}
         <nav className="flex-1 p-4">
           <ul className="space-y-2">
             {menuItems.map((item) => (
@@ -162,16 +128,57 @@ export const Sidebar = ({ className }: SidebarProps) => {
           </ul>
         </nav>
 
-        <div className="p-4 border-t border-gray-200">
-          <Button
-            variant="ghost"
-            className="w-full justify-start hover:bg-primary/10 hover:text-primary"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-5 w-5 mr-2" />
-            {!collapsed && <span>Déconnexion</span>}
-          </Button>
+        {/* Profile and Logout Section */}
+        <div className="mt-auto border-t border-gray-200">
+          <div className="p-4">
+            <div className={cn(
+              "flex items-center mb-4",
+              collapsed ? "justify-center" : "space-x-3"
+            )}>
+              <Avatar>
+                <AvatarImage
+                  src={profile?.avatar_url || undefined}
+                  alt={profile?.full_name || "Avatar"}
+                />
+                <AvatarFallback>
+                  {(profile?.full_name || "?")[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {!collapsed && (
+                <div className="flex flex-col">
+                  <span className="font-medium">{profile?.full_name || "Utilisateur"}</span>
+                  <Button
+                    variant="link"
+                    className="h-auto p-0 text-sm text-primary hover:text-primary-hover"
+                    onClick={() => navigate("/settings")}
+                  >
+                    Gérer le profil
+                  </Button>
+                </div>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              className="w-full justify-start hover:bg-primary/10 hover:text-primary"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-5 w-5 mr-2" />
+              {!collapsed && <span>Déconnexion</span>}
+            </Button>
+          </div>
         </div>
+
+        {/* Collapse Button */}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="p-2 m-4 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          {collapsed ? (
+            <ChevronRight className="h-5 w-5" />
+          ) : (
+            <ChevronLeft className="h-5 w-5" />
+          )}
+        </button>
       </div>
     </aside>
   );

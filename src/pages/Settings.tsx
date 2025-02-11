@@ -6,7 +6,7 @@ import { ProfileSettings } from "@/components/settings/ProfileSettings";
 const Settings = () => {
   return (
     <DashboardLayout>
-      <div className="grid gap-6">
+      <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Paramètres</h1>
           <p className="text-muted-foreground">
@@ -14,8 +14,10 @@ const Settings = () => {
           </p>
         </div>
 
-        <ProfileSettings />
-        <SecuritySettings />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ProfileSettings />
+          <SecuritySettings />
+        </div>
       </div>
     </DashboardLayout>
   );
