@@ -91,7 +91,7 @@ const PropertyDetail = () => {
 
         <div className="grid md:grid-cols-2 gap-4">
           <Card className="p-6">
-            <div className="h-[200px] mb-4">
+            <div className="h-[200px]">
               <PropertiesMap properties={[property]} />
             </div>
           </Card>

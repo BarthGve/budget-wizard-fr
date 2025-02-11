@@ -63,7 +63,7 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
   }, [properties]);
 
   return (
-    <div className="w-full h-[400px] rounded-lg overflow-hidden shadow-md" style={{ zIndex: 0 }}>
+    <div className="w-full h-full rounded-lg overflow-hidden" style={{ zIndex: 0 }}>
       <div ref={mapContainer} className="w-full h-full" />
     </div>
   );
