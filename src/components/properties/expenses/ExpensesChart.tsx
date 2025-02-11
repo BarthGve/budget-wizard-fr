@@ -48,9 +48,9 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
     .sort((a, b) => a.year.localeCompare(b.year));
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 h-full">
       <h2 className="text-xl font-semibold mb-4">Évolution des dépenses</h2>
-      <div className="h-[600px]">
+      <div className="h-[calc(100%-2rem)]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={chartData}

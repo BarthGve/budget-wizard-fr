@@ -44,7 +44,7 @@ export function ExpensesList({ expenses, onExpenseDeleted, onExpenseEdit }: Expe
   const [currentPage, setCurrentPage] = useState(1);
   const [sortField, setSortField] = useState<keyof PropertyExpense>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   const handleSort = (field: keyof PropertyExpense) => {
     if (field === sortField) {
