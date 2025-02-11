@@ -2,7 +2,7 @@
 import { Property } from "@/types/property";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Home, Ruler, DollarSign, CreditCard, Coins, Layers, Trash2 } from "lucide-react";
+import { Home, Ruler, DollarSign, CreditCard, Coins, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
 import { EditPropertyDialog } from "./EditPropertyDialog";
 import { useQueryClient } from "@tanstack/react-query";
@@ -83,16 +83,6 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
               <p className="font-medium">{property.area} m²</p>
             </div>
           </div>
-
-          {property.investment_type && (
-            <div className="flex items-center gap-2">
-              <Layers className="w-4 h-4 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Type d'investissement</p>
-                <p className="font-medium">{property.investment_type}</p>
-              </div>
-            </div>
-          )}
 
           <div className="flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-muted-foreground" />
