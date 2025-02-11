@@ -102,32 +102,32 @@ const PropertyDetail = () => {
             <span>Retour aux biens</span>
           </Link>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-start">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">{property.name}</h1>
               <p className="text-muted-foreground">{property.address}</p>
             </div>
-            <AddExpenseDialog 
-              propertyId={property.id} 
-              onExpenseAdded={() => refetchExpenses()} 
-              expense={expenseToEdit}
-              open={isEditDialogOpen}
-              onOpenChange={setIsEditDialogOpen}
-            />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <Card className="p-6">
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-xl font-semibold">Localisation</h2>
+            <div className="flex items-center gap-6">
               {property.latitude && property.longitude && (
                 <PropertyWeather 
                   latitude={property.latitude} 
                   longitude={property.longitude}
                 />
               )}
+              <AddExpenseDialog 
+                propertyId={property.id} 
+                onExpenseAdded={() => refetchExpenses()} 
+                expense={expenseToEdit}
+                open={isEditDialogOpen}
+                onOpenChange={setIsEditDialogOpen}
+              />
             </div>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Localisation</h2>
             <div className="h-[200px] w-full overflow-hidden rounded-lg">
               <PropertiesMap properties={[property]} />
             </div>
