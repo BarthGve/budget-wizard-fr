@@ -8,9 +8,14 @@ export const useDashboardData = () => {
   const { data: contributors } = useQuery({
     queryKey: ["contributors"],
     queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error("Non authentifié");
+
       const { data, error } = await supabase
         .from("contributors")
         .select("*")
+        .eq("profile_id", user.id)
         .order("created_at", { ascending: true });
 
       if (error) {
@@ -27,9 +32,14 @@ export const useDashboardData = () => {
   const { data: monthlySavings } = useQuery({
     queryKey: ["monthly-savings"],
     queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error("Non authentifié");
+
       const { data, error } = await supabase
         .from("monthly_savings")
         .select("*")
+        .eq("profile_id", user.id)
         .order("created_at", { ascending: true });
 
       if (error) {
@@ -48,11 +58,12 @@ export const useDashboardData = () => {
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
+      if (!user) throw new Error("Non authentifié");
 
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user?.id)
+        .eq("id", user.id)
         .single();
 
       if (error) {
@@ -70,16 +81,13 @@ export const useDashboardData = () => {
     queryKey: ["recurring-expenses"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
       if (userError) throw userError;
-      if (!user) {
-        toast.error("Vous devez être connecté pour voir vos charges récurrentes");
-        throw new Error("Not authenticated");
-      }
-
+      if (!user) throw new Error("Non authentifié");
+      
       const { data, error } = await supabase
         .from("recurring_expenses")
         .select("*")
+        .eq("profile_id", user.id)
         .order("created_at", { ascending: true });
 
       if (error) {
