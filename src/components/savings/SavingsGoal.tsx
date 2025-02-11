@@ -72,7 +72,10 @@ export const SavingsGoal = ({
     0
   ) || 0;
 
-  const updateSavingsPercentage = async (value: number) => {
+  const updateSavingsPercentage = async (newValue: number[]) => {
+    const value = newValue[0];
+    if (value === savingsPercentage) return;
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       navigate("/login");
@@ -121,13 +124,16 @@ export const SavingsGoal = ({
               <Label>Pourcentage d'épargne</Label>
               <span className="text-sm font-medium">{savingsPercentage}%</span>
             </div>
-            <Slider
-              value={[savingsPercentage]}
-              onValueChange={(value) => updateSavingsPercentage(value[0])}
-              max={100}
-              step={1}
-              className={paletteToText[colorPalette]}
-            />
+            <div className="px-1">
+              <Slider
+                value={[savingsPercentage]}
+                onValueChange={updateSavingsPercentage}
+                onValueCommit={updateSavingsPercentage}
+                max={100}
+                step={1}
+                className={paletteToText[colorPalette]}
+              />
+            </div>
           </div>
         </div>
         <div className="space-y-2 rounded-lg bg-secondary p-4">
@@ -154,3 +160,4 @@ export const SavingsGoal = ({
     </Card>
   );
 };
+
