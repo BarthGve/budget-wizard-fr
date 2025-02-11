@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +8,7 @@ import { toast } from "sonner";
 import { PropertiesMap } from "@/components/properties/PropertiesMap";
 import { AddExpenseDialog } from "@/components/properties/AddExpenseDialog";
 import { ExpensesList } from "@/components/properties/ExpensesList";
+import { ExpensesChart } from "@/components/properties/expenses/ExpensesChart";
 import { ChevronLeft } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
 import { useState } from "react";
@@ -149,22 +149,28 @@ const PropertyDetail = () => {
             </div>
           </Card>
 
-          <Card className="p-6 md:col-span-2">
-            <h2 className="text-xl font-semibold mb-4">Dépenses</h2>
-            {isLoadingExpenses ? (
-              <div className="space-y-4">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ) : (
-              <ExpensesList 
-                expenses={expenses || []} 
-                onExpenseDeleted={() => refetchExpenses()}
-                onExpenseEdit={handleExpenseEdit}
-              />
+          <div className="space-y-4 md:col-span-2">
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Dépenses</h2>
+              {isLoadingExpenses ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : (
+                <ExpensesList 
+                  expenses={expenses || []} 
+                  onExpenseDeleted={() => refetchExpenses()}
+                  onExpenseEdit={handleExpenseEdit}
+                />
+              )}
+            </Card>
+
+            {!isLoadingExpenses && expenses && (
+              <ExpensesChart expenses={expenses} />
             )}
-          </Card>
+          </div>
         </div>
       </div>
     </DashboardLayout>

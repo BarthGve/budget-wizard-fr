@@ -29,6 +29,9 @@ interface ExpenseFormFieldsProps {
 }
 
 export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
+  const today = new Date();
+  const fiveYearsAgo = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
+
   return (
     <>
       <FormField
@@ -61,6 +64,8 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
                   mode="single"
                   selected={field.value}
                   onSelect={field.onChange}
+                  fromDate={fiveYearsAgo}
+                  toDate={today}
                   initialFocus
                 />
               </PopoverContent>
