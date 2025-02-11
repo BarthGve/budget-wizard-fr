@@ -9,6 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Profile } from "@/types/profile";
 
 export const ProfileSettings = () => {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -17,7 +18,7 @@ export const ProfileSettings = () => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const { data: profile } = useQuery({
+  const { data: profile } = useQuery<Profile>({
     queryKey: ["profile"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -108,7 +109,7 @@ export const ProfileSettings = () => {
           <div className="flex flex-col items-center space-y-4">
             <Avatar className="h-24 w-24">
               <AvatarImage
-                src={previewUrl || profile?.avatar_url}
+                src={previewUrl || profile?.avatar_url || undefined}
                 alt={profile?.full_name || "Avatar"}
               />
               <AvatarFallback>

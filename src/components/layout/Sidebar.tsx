@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Profile } from "@/types/profile";
 
 interface SidebarProps {
   className?: string;
@@ -28,7 +29,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
 
-  const { data: profile } = useQuery({
+  const { data: profile } = useQuery<Profile>({
     queryKey: ["profile"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -99,7 +100,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
             <div className="flex items-center space-x-3">
               <Avatar>
                 <AvatarImage
-                  src={profile?.avatar_url}
+                  src={profile?.avatar_url || undefined}
                   alt={profile?.full_name || "Avatar"}
                 />
                 <AvatarFallback>
@@ -120,7 +121,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
           ) : (
             <Avatar className="w-10 h-10">
               <AvatarImage
-                src={profile?.avatar_url}
+                src={profile?.avatar_url || undefined}
                 alt={profile?.full_name || "Avatar"}
               />
               <AvatarFallback>
