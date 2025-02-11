@@ -113,8 +113,8 @@ const StocksPage = () => {
             <Card key={symbol}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {symbol === '^FCHI' ? 'CAC 40' : 
-                   symbol === 'SWDA.L' ? 'MSCI World ETF' : 
+                  {symbol === 'FCHI.PAR' ? 'CAC 40' : 
+                   symbol === 'IWDA.AS' ? 'MSCI World ETF' : 
                    'Bitcoin/EUR'}
                 </CardTitle>
                 {data.c > data.pc ? (
