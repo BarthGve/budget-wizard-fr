@@ -40,14 +40,16 @@ export const CreateUserDialog = ({
     setLoading(true);
 
     try {
-      const { data, error } = await supabase
-        .rpc('create_admin_user', {
-          email,
-          password,
-          role
-        });
+      const { error } = await supabase.rpc('create_admin_user', {
+        email,
+        password,
+        role
+      });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error creating user:", error);
+        throw error;
+      }
 
       toast.success("Utilisateur créé avec succès");
       onUserCreated();
@@ -56,8 +58,8 @@ export const CreateUserDialog = ({
       setPassword("");
       setRole("user");
     } catch (error: any) {
-      toast.error("Erreur lors de la création de l'utilisateur");
-      console.error("Error creating user:", error);
+      console.error("Error details:", error);
+      toast.error(error.message || "Erreur lors de la création de l'utilisateur");
     } finally {
       setLoading(false);
     }
