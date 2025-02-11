@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 interface PropertyCardProps {
   property: Property;
@@ -64,16 +65,21 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
       </CardHeader>
       <CardContent className="grid gap-2 p-4">
         <div className="flex items-start justify-between">
-          <div>
+          <div className="flex items-center gap-2">
             <h3 className="font-semibold">{property.name}</h3>
-            <p className="text-sm text-muted-foreground line-clamp-1">
-              {property.address}
-            </p>
+            {property.investment_type && (
+              <Badge variant="secondary" className="text-xs">
+                {property.investment_type}
+              </Badge>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Home className="w-4 h-4 text-primary" />
           </div>
         </div>
+        <p className="text-sm text-muted-foreground line-clamp-1">
+          {property.address}
+        </p>
 
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div className="flex items-center gap-2">
