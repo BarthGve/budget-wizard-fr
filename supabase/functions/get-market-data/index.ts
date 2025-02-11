@@ -19,8 +19,8 @@ serve(async (req) => {
       throw new Error('FINNHUB_API_KEY is not set')
     }
 
-    // Fetch data for CAC 40 (^FCHI), MSCI World ETF (SWDA.L), and Bitcoin (BINANCE:BTCEUR)
-    const symbols = ['^FCHI', 'SWDA.L', 'BINANCE:BTCEUR']
+    // Updated symbols: FCHI.PAR for CAC 40, IWDA.AS for iShares MSCI World ETF (alternative to SWDA.L)
+    const symbols = ['FCHI.PAR', 'IWDA.AS', 'BINANCE:BTCEUR']
     const promises = symbols.map(symbol =>
       fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_API_KEY}`)
         .then(res => res.json())
