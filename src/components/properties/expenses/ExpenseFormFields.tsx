@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { fr } from "date-fns/locale";
 import { UseFormReturn } from "react-hook-form";
 
@@ -37,13 +37,22 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
         render={({ field }) => (
           <FormItem className="flex flex-col">
             <FormLabel>Date</FormLabel>
-            <Popover>
-              <PopoverTrigger asChild>
-                <FormControl>
+            <div className="flex gap-2">
+              <Input
+                type="date"
+                className="w-[200px]"
+                value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                onChange={(e) => {
+                  const date = e.target.value ? new Date(e.target.value) : new Date();
+                  field.onChange(date);
+                }}
+              />
+              <Popover>
+                <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "w-full pl-3 text-left font-normal",
+                      "w-[280px] pl-3 text-left font-normal",
                       !field.value && "text-muted-foreground"
                     )}
                   >
@@ -54,23 +63,18 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
                     )}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
-                </FormControl>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  defaultMonth={field.value}
-                  onSelect={(date) => {
-                    if (date) {
-                      field.onChange(date);
-                    }
-                  }}
-                  initialFocus
-                  disabled={false}
-                />
-              </PopoverContent>
-            </Popover>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    defaultMonth={field.value}
+                    onSelect={field.onChange}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </FormItem>
         )}
       />
