@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -116,8 +117,8 @@ const PropertyDetail = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
-          <Card className="p-6 relative">
-            <div className="h-[200px]">
+          <Card className="p-6">
+            <div className="h-[200px] w-full overflow-hidden rounded-lg">
               <PropertiesMap properties={[property]} />
             </div>
           </Card>
@@ -125,10 +126,6 @@ const PropertyDetail = () => {
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Détails</h2>
             <div className="grid gap-4">
-              <div>
-                <span className="font-medium">Adresse:</span>{" "}
-                {property.address}
-              </div>
               <div>
                 <span className="font-medium">Valeur du bien:</span>{" "}
                 {formatCurrency(property.purchase_value)}
