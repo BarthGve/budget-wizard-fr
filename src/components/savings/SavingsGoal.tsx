@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -125,12 +126,14 @@ export const SavingsGoal = ({
             </div>
             <div className="px-1">
               <Slider
-                defaultValue={[savingsPercentage]}
-                value={[savingsPercentage]}
-                onValueChange={handleValueChange}
+                min={0}
                 max={100}
                 step={1}
+                value={[savingsPercentage]}
+                onValueChange={handleValueChange}
                 className={paletteToText[colorPalette]}
+                aria-label="Pourcentage d'épargne"
+                defaultValue={[savingsPercentage]}
               />
             </div>
           </div>
