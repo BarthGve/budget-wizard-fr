@@ -42,33 +42,38 @@ export const UserTable = () => {
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      // Fetch users with their roles
-      const { data: userData, error: usersError, count } = await supabase
-        .from('auth.users')
-        .select(`
-          id,
-          email,
-          created_at,
-          user_roles (
-            role
-          )
-        `, { count: 'exact' })
-        .range(from, to);
+      // Utiliser la fonction prédéfinie de Supabase pour obtenir la liste des utilisateurs
+      const { data: { users: userData }, error: usersError } = await supabase.auth.admin.listUsers({
+        page: page - 1,
+        perPage: PAGE_SIZE,
+      });
 
       if (usersError) throw usersError;
 
-      if (count) {
-        setTotalPages(Math.ceil(count / PAGE_SIZE));
-      }
+      // Récupérer les rôles des utilisateurs
+      const userIds = userData?.map(user => user.id) || [];
+      const { data: rolesData } = await supabase
+        .from('user_roles')
+        .select('user_id, role')
+        .in('user_id', userIds);
 
+      // Créer un map des rôles par user_id
+      const roleMap = new Map();
+      rolesData?.forEach(role => {
+        roleMap.set(role.user_id, role.role);
+      });
+
+      // Formater les données des utilisateurs
       const formattedUsers = userData?.map(user => ({
         id: user.id,
-        email: user.email,
-        role: user.user_roles?.[0]?.role || "user",
+        email: user.email || '',
+        role: roleMap.get(user.id) || "user",
         created_at: user.created_at,
       })) || [];
 
       setUsers(formattedUsers);
+      // Note: Pour la pagination, nous devrons peut-être ajuster cela en fonction du nombre total d'utilisateurs
+      setTotalPages(Math.ceil((userData?.length || 0) / PAGE_SIZE));
     } catch (error: any) {
       toast.error("Erreur lors du chargement des utilisateurs");
       console.error("Error fetching users:", error);
@@ -94,7 +99,10 @@ export const UserTable = () => {
       // Ajouter le nouveau rôle
       const { error: insertError } = await supabase
         .from('user_roles')
-        .insert([{ user_id: userId, role: newRole }]);
+        .insert([{ 
+          user_id: userId, 
+          role: newRole 
+        }]);
 
       if (insertError) throw insertError;
 
