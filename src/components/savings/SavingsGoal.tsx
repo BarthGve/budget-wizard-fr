@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -72,7 +71,7 @@ export const SavingsGoal = ({
     0
   ) || 0;
 
-  const updateSavingsPercentage = async (newValue: number[]) => {
+  const handleValueChange = async (newValue: number[]) => {
     const value = newValue[0];
     if (value === savingsPercentage) return;
 
@@ -126,9 +125,9 @@ export const SavingsGoal = ({
             </div>
             <div className="px-1">
               <Slider
+                defaultValue={[savingsPercentage]}
                 value={[savingsPercentage]}
-                onValueChange={updateSavingsPercentage}
-                onValueCommit={updateSavingsPercentage}
+                onValueChange={handleValueChange}
                 max={100}
                 step={1}
                 className={paletteToText[colorPalette]}
@@ -160,4 +159,3 @@ export const SavingsGoal = ({
     </Card>
   );
 };
-
