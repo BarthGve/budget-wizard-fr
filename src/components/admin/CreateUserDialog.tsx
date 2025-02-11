@@ -32,7 +32,7 @@ export const CreateUserDialog = ({
 }: CreateUserDialogProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState<"user" | "admin">("user");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,7 +53,10 @@ export const CreateUserDialog = ({
       if (userData.user) {
         const { error: roleError } = await supabase
           .from('user_roles')
-          .insert({ user_id: userData.user.id, role });
+          .insert([{ 
+            user_id: userData.user.id, 
+            role: role 
+          }]);
 
         if (roleError) throw roleError;
       }
@@ -101,7 +104,7 @@ export const CreateUserDialog = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="role">Rôle</Label>
-            <Select value={role} onValueChange={setRole}>
+            <Select value={role} onValueChange={(value: "user" | "admin") => setRole(value)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

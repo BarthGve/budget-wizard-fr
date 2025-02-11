@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -24,7 +24,7 @@ import { CreateUserDialog } from "./CreateUserDialog";
 interface User {
   id: string;
   email: string;
-  role: string;
+  role: "user" | "admin";
   created_at: string;
 }
 
@@ -43,9 +43,16 @@ export const UserTable = () => {
       const to = from + PAGE_SIZE - 1;
 
       // Fetch users with their roles
-      const { data: users, error: usersError, count } = await supabase
-        .from('profiles')
-        .select('id, created_at, email:auth_users!inner(email), roles:user_roles(role)', { count: 'exact' })
+      const { data: userData, error: usersError, count } = await supabase
+        .from('auth.users')
+        .select(`
+          id,
+          email,
+          created_at,
+          user_roles (
+            role
+          )
+        `, { count: 'exact' })
         .range(from, to);
 
       if (usersError) throw usersError;
@@ -54,10 +61,10 @@ export const UserTable = () => {
         setTotalPages(Math.ceil(count / PAGE_SIZE));
       }
 
-      const formattedUsers = users?.map(user => ({
+      const formattedUsers = userData?.map(user => ({
         id: user.id,
         email: user.email,
-        role: user.roles?.[0]?.role || 'user',
+        role: user.user_roles?.[0]?.role || "user",
         created_at: user.created_at,
       })) || [];
 
@@ -70,7 +77,11 @@ export const UserTable = () => {
     }
   };
 
-  const handleRoleChange = async (userId: string, newRole: string) => {
+  useEffect(() => {
+    fetchUsers();
+  }, [page]);
+
+  const handleRoleChange = async (userId: string, newRole: "user" | "admin") => {
     try {
       // Supprimer les rôles existants
       const { error: deleteError } = await supabase
@@ -83,7 +94,7 @@ export const UserTable = () => {
       // Ajouter le nouveau rôle
       const { error: insertError } = await supabase
         .from('user_roles')
-        .insert({ user_id: userId, role: newRole });
+        .insert([{ user_id: userId, role: newRole }]);
 
       if (insertError) throw insertError;
 
@@ -135,7 +146,7 @@ export const UserTable = () => {
                 <TableCell>
                   <Select
                     value={user.role}
-                    onValueChange={(value) => handleRoleChange(user.id, value)}
+                    onValueChange={(value: "user" | "admin") => handleRoleChange(user.id, value)}
                   >
                     <SelectTrigger className="w-32">
                       <SelectValue />
