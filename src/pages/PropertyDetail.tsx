@@ -6,14 +6,14 @@ import { useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { PropertiesMap } from "@/components/properties/PropertiesMap";
+import { AddExpenseDialog } from "@/components/properties/AddExpenseDialog";
+import { ExpensesList } from "@/components/properties/ExpensesList";
 
 const PropertyDetail = () => {
   const { id } = useParams();
 
-  const { data: property, isLoading } = useQuery({
+  const { data: property, isLoading: isLoadingProperty } = useQuery({
     queryKey: ["property", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -32,7 +32,26 @@ const PropertyDetail = () => {
     },
   });
 
-  if (isLoading) {
+  const { data: expenses, isLoading: isLoadingExpenses, refetch: refetchExpenses } = useQuery({
+    queryKey: ["property-expenses", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("property_expenses")
+        .select("*")
+        .eq("property_id", id)
+        .order("date", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching expenses:", error);
+        toast.error("Erreur lors du chargement des dépenses");
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
+  if (isLoadingProperty) {
     return (
       <DashboardLayout>
         <div className="grid gap-6">
@@ -62,21 +81,18 @@ const PropertyDetail = () => {
   return (
     <DashboardLayout>
       <div className="grid gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{property.name}</h1>
-          <p className="text-muted-foreground">{property.address}</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">{property.name}</h1>
+            <p className="text-muted-foreground">{property.address}</p>
+          </div>
+          <AddExpenseDialog propertyId={property.id} onExpenseAdded={() => refetchExpenses()} />
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
           <Card className="p-6">
-            <div className="h-[400px] mb-4">
+            <div className="h-[200px] mb-4">
               <PropertiesMap properties={[property]} />
-            </div>
-            <div className="flex justify-end">
-              <Button className="w-full">
-                <Plus className="mr-2 h-4 w-4" />
-                Ajouter une dépense
-              </Button>
             </div>
           </Card>
 
@@ -95,6 +111,19 @@ const PropertyDetail = () => {
                 {property.investment_type || "Non spécifié"}
               </div>
             </div>
+          </Card>
+
+          <Card className="p-6 md:col-span-2">
+            <h2 className="text-xl font-semibold mb-4">Dépenses</h2>
+            {isLoadingExpenses ? (
+              <div className="space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            ) : (
+              <ExpensesList expenses={expenses || []} />
+            )}
           </Card>
         </div>
       </div>
