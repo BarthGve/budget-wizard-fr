@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NewContributor } from "@/types/contributor";
 import {
@@ -13,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserPlus } from "lucide-react";
-import { useColorPalette } from "@/hooks/useColorPalette";
 
 interface AddContributorDialogProps {
   onAdd: (contributor: NewContributor) => void;
@@ -93,7 +93,10 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           <Button variant="outline" onClick={() => setNewContributor({ name: "", email: "", total_contribution: "" })}>
             Annuler
           </Button>
-          <Button onClick={handleAdd}>
+          <Button 
+            onClick={handleAdd}
+            className="bg-primary text-white hover:bg-primary/90"
+          >
             Ajouter
           </Button>
         </DialogFooter>
