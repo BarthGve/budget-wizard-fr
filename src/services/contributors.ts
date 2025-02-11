@@ -10,6 +10,7 @@ export const fetchContributorsService = async () => {
   const { data, error } = await supabase
     .from("contributors")
     .select("*")
+    .eq("profile_id", user.id)  // Ajout du filtre par profile_id
     .order("created_at", { ascending: true });
 
   if (error) throw error;
@@ -25,6 +26,7 @@ export const addContributorService = async (
       .from("contributors")
       .select("id")
       .eq("email", newContributor.email)
+      .eq("profile_id", userId)  // Ajout du filtre par profile_id
       .maybeSingle();
 
     if (existingError) throw existingError;
@@ -77,7 +79,8 @@ export const updateContributorService = async (contributor: Contributor) => {
   const { error: updateError } = await supabase
     .from("contributors")
     .update(updateData)
-    .eq("id", contributor.id);
+    .eq("id", contributor.id)
+    .eq("profile_id", user.id);  // Ajout du filtre par profile_id
 
   if (updateError) throw updateError;
 
@@ -99,7 +102,8 @@ export const deleteContributorService = async (contributorId: string) => {
   const { error: deleteError } = await supabase
     .from("contributors")
     .delete()
-    .eq("id", contributorId);
+    .eq("id", contributorId)
+    .eq("profile_id", user.id);  // Ajout du filtre par profile_id
 
   if (deleteError) throw deleteError;
 
