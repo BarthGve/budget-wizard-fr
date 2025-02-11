@@ -8,6 +8,7 @@ import { EditPropertyDialog } from "./EditPropertyDialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface PropertyCardProps {
   property: Property;
@@ -15,6 +16,7 @@ interface PropertyCardProps {
 
 export const PropertyCard = ({ property }: PropertyCardProps) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const handleDelete = async () => {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce bien ?")) {
@@ -37,15 +39,19 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
     }
   };
 
+  const handleCardClick = () => {
+    navigate(`/properties/${property.id}`);
+  };
+
   return (
-    <Card>
+    <Card className="cursor-pointer transition-transform hover:scale-[1.02]" onClick={handleCardClick}>
       <CardHeader className="relative h-48 p-0 overflow-hidden">
         <img
           src={property.photo_url || "/placeholder.svg"}
           alt={property.name}
           className="object-cover w-full h-full"
         />
-        <div className="absolute top-2 right-2 flex gap-2">
+        <div className="absolute top-2 right-2 flex gap-2" onClick={(e) => e.stopPropagation()}>
           <EditPropertyDialog property={property} />
           <Button 
             variant="ghost" 
