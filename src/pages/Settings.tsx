@@ -1,10 +1,7 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { NotificationSettings } from "@/components/settings/NotificationSettings";
-import { PaymentSettings } from "@/components/settings/PaymentSettings";
-import { PrivacySettings } from "@/components/settings/PrivacySettings";
-import { ProfileSettings } from "@/components/settings/ProfileSettings";
 import { SecuritySettings } from "@/components/settings/SecuritySettings";
+import { ProfileSettings } from "@/components/settings/ProfileSettings";
 
 const Settings = () => {
   return (
@@ -19,9 +16,6 @@ const Settings = () => {
 
         <ProfileSettings />
         <SecuritySettings />
-        <NotificationSettings />
-        <PaymentSettings />
-        <PrivacySettings />
       </div>
     </DashboardLayout>
   );

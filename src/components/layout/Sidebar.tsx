@@ -5,7 +5,6 @@ import {
   Users,
   PiggyBank,
   ClipboardList,
-  Settings,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -69,7 +68,6 @@ export const Sidebar = ({ className }: SidebarProps) => {
     { title: "Patrimoine", icon: Home, path: "/properties" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
     ...(isAdmin ? [{ title: "Administration", icon: Shield, path: "/admin" }] : []),
-    { title: "Paramètres", icon: Settings, path: "/settings" },
   ];
 
   const handleLogout = async () => {
