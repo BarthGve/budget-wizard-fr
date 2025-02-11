@@ -7,12 +7,20 @@ import { SavingsList } from "@/components/savings/SavingsList";
 import { useDashboardData } from "@/hooks/useDashboardData";
 
 const Savings = () => {
-  const { monthlySavings, profile } = useDashboardData();
+  const { monthlySavings, profile, refetch } = useDashboardData();
 
   const totalMonthlyAmount = monthlySavings?.reduce(
     (acc, saving) => acc + saving.amount,
     0
   ) || 0;
+
+  const handleSavingAdded = () => {
+    refetch();
+  };
+
+  const handleSavingDeleted = () => {
+    refetch();
+  };
 
   return (
     <DashboardLayout>
@@ -24,7 +32,7 @@ const Savings = () => {
               Gérez vos versements mensuels d'épargne
             </p>
           </div>
-          <NewSavingDialog />
+          <NewSavingDialog onSavingAdded={handleSavingAdded} />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -38,6 +46,7 @@ const Savings = () => {
 
         <SavingsList
           monthlySavings={monthlySavings || []}
+          onSavingDeleted={handleSavingDeleted}
         />
       </div>
     </DashboardLayout>
