@@ -86,7 +86,9 @@ export const ContributorCard = ({
               <DialogHeader>
                 <DialogTitle>Modifier le contributeur</DialogTitle>
                 <DialogDescription>
-                  Modifiez les informations du contributeur
+                  {contributor.is_owner 
+                    ? "Modifiez votre contribution au budget"
+                    : "Modifiez les informations du contributeur"}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -139,7 +141,9 @@ export const ContributorCard = ({
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={handleUpdate}>Mettre à jour</Button>
+                <Button onClick={handleUpdate}>
+                  {contributor.is_owner ? "Mettre à jour ma contribution" : "Mettre à jour"}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
