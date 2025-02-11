@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { UserTable } from "@/components/admin/UserTable";
 
 const Admin = () => {
   const navigate = useNavigate();
 
-  // Vérifier si l'utilisateur est admin
   const { data: isAdmin, isLoading } = useQuery({
     queryKey: ["isAdmin"],
     queryFn: async () => {
@@ -44,7 +44,7 @@ const Admin = () => {
             Gérez les utilisateurs et les paramètres de l'application
           </p>
         </div>
-        {/* Le contenu de l'administration sera ajouté ici */}
+        <UserTable />
       </div>
     </DashboardLayout>
   );
