@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserPlus } from "lucide-react";
+import { useColorPalette } from "@/hooks/useColorPalette";
 
 interface AddContributorDialogProps {
   onAdd: (contributor: NewContributor) => void;
@@ -25,6 +26,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
     email: "",
     total_contribution: "",
   });
+  const { backgroundClass } = useColorPalette();
 
   const handleAdd = () => {
     onAdd(newContributor);
@@ -34,7 +36,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>
+        <Button className={`text-white ${backgroundClass}`}>
           <UserPlus className="mr-2 h-4 w-4" />
           Ajouter un contributeur
         </Button>
@@ -90,7 +92,15 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleAdd}>Ajouter</Button>
+          <Button variant="outline" onClick={() => setNewContributor({ name: "", email: "", total_contribution: "" })}>
+            Annuler
+          </Button>
+          <Button 
+            onClick={handleAdd}
+            className={`text-white ${backgroundClass}`}
+          >
+            Ajouter
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
