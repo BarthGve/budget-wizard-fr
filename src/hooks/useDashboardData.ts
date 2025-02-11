@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 export const useDashboardData = () => {
   // Fetch contributors data
-  const { data: contributors } = useQuery({
+  const { data: contributors, refetch: refetchContributors } = useQuery({
     queryKey: ["contributors"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -29,7 +29,7 @@ export const useDashboardData = () => {
   });
 
   // Fetch monthly savings data
-  const { data: monthlySavings } = useQuery({
+  const { data: monthlySavings, refetch: refetchMonthlySavings } = useQuery({
     queryKey: ["monthly-savings"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -53,7 +53,7 @@ export const useDashboardData = () => {
   });
 
   // Fetch user profile
-  const { data: profile } = useQuery({
+  const { data: profile, refetch: refetchProfile } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -77,7 +77,7 @@ export const useDashboardData = () => {
   });
 
   // Fetch recurring expenses
-  const { data: recurringExpenses } = useQuery({
+  const { data: recurringExpenses, refetch: refetchRecurringExpenses } = useQuery({
     queryKey: ["recurring-expenses"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -100,10 +100,18 @@ export const useDashboardData = () => {
     },
   });
 
+  const refetch = () => {
+    refetchContributors();
+    refetchMonthlySavings();
+    refetchProfile();
+    refetchRecurringExpenses();
+  };
+
   return {
     contributors,
     monthlySavings,
     profile,
     recurringExpenses,
+    refetch,
   };
 };
