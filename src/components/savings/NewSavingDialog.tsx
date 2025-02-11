@@ -49,15 +49,6 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
     },
   });
 
-  const colorPalette = profile?.color_palette || "default";
-  const paletteToBackground: Record<string, string> = {
-    default: "bg-blue-500 hover:bg-blue-600",
-    ocean: "bg-sky-500 hover:bg-sky-600",
-    forest: "bg-green-500 hover:bg-green-600",
-    sunset: "bg-orange-500 hover:bg-orange-600",
-    candy: "bg-pink-400 hover:bg-pink-500",
-  };
-
   const resetForm = () => {
     setNewSavingName("");
     setNewSavingAmount(0);
@@ -109,7 +100,7 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className={`text-white ${paletteToBackground[colorPalette]}`}>
+        <Button className="bg-primary text-primary-foreground hover:bg-primary-hover">
           <Plus className="mr-2 h-4 w-4" />
           Nouveau versement
         </Button>
@@ -152,7 +143,13 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={addNewMonthlySaving} className={`text-white ${paletteToBackground[colorPalette]}`}>Ajouter</Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
+          <Button 
+            onClick={addNewMonthlySaving}
+            className="bg-primary text-primary-foreground hover:bg-primary-hover"
+          >
+            Ajouter
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
