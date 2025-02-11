@@ -6,32 +6,32 @@ import { Target } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface SavingsGoalProps {
   savingsPercentage: number;
-  setSavingsPercentage: (value: number) => void;
   totalMonthlyAmount: number;
 }
 
 export const SavingsGoal = ({
   savingsPercentage,
-  setSavingsPercentage,
   totalMonthlyAmount,
 }: SavingsGoalProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
+      if (!user) throw new Error("Non authentifié");
 
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user?.id)
+        .eq("id", user.id)
         .single();
 
       if (error) throw error;
@@ -43,9 +43,14 @@ export const SavingsGoal = ({
   const { data: contributors } = useQuery({
     queryKey: ["contributors"],
     queryFn: async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error("Non authentifié");
+
       const { data, error } = await supabase
         .from("contributors")
         .select("*")
+        .eq("profile_id", user.id)
         .order("created_at", { ascending: true });
 
       if (error) throw error;
@@ -68,8 +73,8 @@ export const SavingsGoal = ({
   ) || 0;
 
   const updateSavingsPercentage = async (value: number) => {
-    const { data: session } = await supabase.auth.getSession();
-    if (!session.session) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       navigate("/login");
       return;
     }
@@ -77,7 +82,7 @@ export const SavingsGoal = ({
     const { error } = await supabase
       .from("profiles")
       .update({ savings_goal_percentage: value })
-      .eq("id", session.session.user.id);
+      .eq("id", user.id);
 
     if (error) {
       toast({
@@ -88,7 +93,7 @@ export const SavingsGoal = ({
       return;
     }
 
-    setSavingsPercentage(value);
+    await queryClient.invalidateQueries({ queryKey: ["profile"] });
     toast({
       title: "Succès",
       description: "Votre objectif d'épargne a été mis à jour",
