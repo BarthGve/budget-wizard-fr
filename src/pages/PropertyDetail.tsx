@@ -70,14 +70,14 @@ const PropertyDetail = () => {
             <div className="grid gap-2">
               <div>
                 <span className="font-medium">Prix d'achat:</span>{" "}
-                {property.purchase_price.toLocaleString()} €
+                {property.purchase_value.toLocaleString()} €
               </div>
               <div>
-                <span className="font-medium">Surface:</span> {property.surface} m²
+                <span className="font-medium">Surface:</span> {property.area} m²
               </div>
               <div>
-                <span className="font-medium">Description:</span>{" "}
-                {property.description}
+                <span className="font-medium">Type d'investissement:</span>{" "}
+                {property.investment_type || "Non spécifié"}
               </div>
             </div>
           </Card>
