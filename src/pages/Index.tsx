@@ -70,12 +70,14 @@ const Dashboard = () => {
     <DashboardLayout>
       <div className="grid gap-6">
         {/* En-tête du dashboard */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Aperçu de votre situation financière
-            </p>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+              <p className="text-muted-foreground">
+                Aperçu du budget mensuel
+              </p>
+            </div>
           </div>
         </div>
 

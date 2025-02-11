@@ -17,7 +17,7 @@ export const ExpensesCard = ({ totalExpenses, contributorShares }: ExpensesCardP
   return (
     <Card className="bg-white">
       <CardHeader>
-        <CardTitle>Dépenses</CardTitle>
+        <CardTitle>Charges mensuelles</CardTitle>
         <CardDescription>Répartition par contributeur</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

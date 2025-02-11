@@ -28,7 +28,7 @@ export const SavingsPieChart = ({ monthlySavings, totalSavings }: SavingsPieChar
     <Card className="col-span-full md:col-span-1 bg-white">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div>
-          <CardTitle>Répartition de l'Épargne</CardTitle>
+          <CardTitle>Prévision d'épargne</CardTitle>
           <CardDescription>Vue d'ensemble par catégorie</CardDescription>
         </div>
         <Button variant="outline" size="sm" asChild>
