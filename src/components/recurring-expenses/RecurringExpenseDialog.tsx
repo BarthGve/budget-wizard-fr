@@ -59,6 +59,19 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
     },
   });
 
+  const { data: categories } = useQuery({
+    queryKey: ["recurring-expense-categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("recurring_expense_categories")
+        .select("*")
+        .order("name");
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -174,9 +187,9 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {CATEGORIES.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
+                      {categories?.map((category) => (
+                        <SelectItem key={category.id} value={category.name}>
+                          {category.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

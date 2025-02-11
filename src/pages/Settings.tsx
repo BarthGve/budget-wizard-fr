@@ -2,6 +2,7 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SecuritySettings } from "@/components/settings/SecuritySettings";
 import { ProfileSettings } from "@/components/settings/ProfileSettings";
+import { ExpenseCategoriesSettings } from "@/components/settings/ExpenseCategoriesSettings";
 
 const Settings = () => {
   return (
@@ -14,8 +15,9 @@ const Settings = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <ProfileSettings />
+          <ExpenseCategoriesSettings />
           <SecuritySettings />
         </div>
       </div>

@@ -249,6 +249,38 @@ export type Database = {
           },
         ]
       }
+      recurring_expense_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_expense_categories_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recurring_expenses: {
         Row: {
           amount: number
