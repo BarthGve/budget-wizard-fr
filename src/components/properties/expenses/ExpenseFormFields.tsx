@@ -60,18 +60,21 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
                 <Calendar
                   mode="single"
                   selected={field.value}
+                  defaultMonth={field.value}
                   onSelect={(date) => {
                     if (date) {
                       field.onChange(date);
                     }
                   }}
                   initialFocus
+                  disabled={false}
                 />
               </PopoverContent>
             </Popover>
           </FormItem>
         )}
       />
+
       <FormField
         control={form.control}
         name="category"
@@ -95,6 +98,7 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
           </FormItem>
         )}
       />
+
       <FormField
         control={form.control}
         name="description"
@@ -107,6 +111,7 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
           </FormItem>
         )}
       />
+
       <FormField
         control={form.control}
         name="amount"
