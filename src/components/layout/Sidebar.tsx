@@ -61,15 +61,6 @@ export const Sidebar = ({ className }: SidebarProps) => {
     }
   });
 
-  const colorPalette = profile?.color_palette || "default";
-  const paletteToActive: Record<string, string> = {
-    default: "bg-blue-500 text-white hover:bg-blue-600",
-    ocean: "bg-sky-500 text-white hover:bg-sky-600",
-    forest: "bg-green-500 text-white hover:bg-green-600",
-    sunset: "bg-orange-500 text-white hover:bg-orange-600",
-    candy: "bg-pink-400 text-white hover:bg-pink-500",
-  };
-
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { title: "Contributeurs", icon: Users, path: "/contributors" },
@@ -127,7 +118,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
                       "flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
                       "hover:bg-gray-100",
                       isActive
-                        ? paletteToActive[colorPalette]
+                        ? "bg-primary text-primary-foreground hover:bg-primary-hover"
                         : "text-gray-700"
                     )
                   }
@@ -143,7 +134,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
         <div className="p-4 border-t border-gray-200">
           <Button
             variant="ghost"
-            className="w-full justify-start"
+            className="w-full justify-start hover:bg-primary/10 hover:text-primary"
             onClick={handleLogout}
           >
             <LogOut className="h-5 w-5 mr-2" />

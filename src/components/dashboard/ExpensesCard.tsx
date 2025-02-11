@@ -43,7 +43,7 @@ export const ExpensesCard = ({ totalExpenses, contributorShares }: ExpensesCardP
         <CardDescription>Répartition par contributeur</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-3xl font-bold">{Math.round(totalExpenses)} €</p>
+        <p className="text-3xl font-bold text-primary">{Math.round(totalExpenses)} €</p>
         <div className="relative h-4">
           {contributorShares.map((contrib, index) => (
             <div
@@ -67,7 +67,7 @@ export const ExpensesCard = ({ totalExpenses, contributorShares }: ExpensesCardP
                 />
                 <span>{contrib.name}</span>
               </div>
-              <span>{Math.round(contrib.amount)} €</span>
+              <span className="font-semibold text-primary">{Math.round(contrib.amount)} €</span>
             </div>
           ))}
         </div>
