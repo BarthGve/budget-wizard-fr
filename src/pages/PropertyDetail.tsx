@@ -10,6 +10,7 @@ import { PropertiesMap } from "@/components/properties/PropertiesMap";
 import { AddExpenseDialog } from "@/components/properties/AddExpenseDialog";
 import { ExpensesList } from "@/components/properties/ExpensesList";
 import { ExpensesChart } from "@/components/properties/expenses/ExpensesChart";
+import { PropertyWeather } from "@/components/properties/PropertyWeather";
 import { ChevronLeft } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
 import { useState } from "react";
@@ -118,6 +119,15 @@ const PropertyDetail = () => {
 
         <div className="grid md:grid-cols-2 gap-4">
           <Card className="p-6">
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="text-xl font-semibold">Localisation</h2>
+              {property.latitude && property.longitude && (
+                <PropertyWeather 
+                  latitude={property.latitude} 
+                  longitude={property.longitude}
+                />
+              )}
+            </div>
             <div className="h-[200px] w-full overflow-hidden rounded-lg">
               <PropertiesMap properties={[property]} />
             </div>
