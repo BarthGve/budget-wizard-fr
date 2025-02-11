@@ -416,6 +416,12 @@ export type Database = {
           created_at: string
         }[]
       }
+      register_edge_function: {
+        Args: {
+          function_name: string
+        }
+        Returns: undefined
+      }
       update_contributor_percentages: {
         Args: {
           profile_id_param: string
