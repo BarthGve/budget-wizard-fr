@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MarketDataCard } from "@/components/stocks/MarketDataCard";
-import { InvestmentForm } from "@/components/stocks/InvestmentForm";
+import { InvestmentDialog } from "@/components/stocks/InvestmentDialog";
 import { InvestmentHistory } from "@/components/stocks/InvestmentHistory";
 
 const StocksPage = () => {
@@ -55,6 +55,9 @@ const StocksPage = () => {
   const currentYear = new Date().getFullYear();
   const currentYearTotal = yearlyData.find(data => data.year === currentYear)?.amount || 0;
 
+  // Calculate total investment
+  const totalInvestment = yearlyData.reduce((sum, data) => sum + data.amount, 0);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
@@ -67,11 +70,14 @@ const StocksPage = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Bourse</h1>
-          <p className="text-muted-foreground">
-            Suivez vos investissements et les marchés en temps réel
-          </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Bourse</h1>
+            <p className="text-muted-foreground">
+              Suivez vos investissements et les marchés en temps réel
+            </p>
+          </div>
+          <InvestmentDialog onSuccess={refetchHistory} />
         </div>
 
         {/* Market Data Cards */}
@@ -81,10 +87,8 @@ const StocksPage = () => {
           ))}
         </div>
 
-        {/* Investment Input and Current Year Total */}
+        {/* Investment Totals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InvestmentForm onSuccess={refetchHistory} />
-
           <Card>
             <CardHeader>
               <CardTitle>Total {currentYear}</CardTitle>
@@ -93,6 +97,18 @@ const StocksPage = () => {
             <CardContent>
               <div className="text-2xl font-bold">
                 {formatPrice(currentYearTotal)}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Total global</CardTitle>
+              <CardDescription>Montant total de tous les investissements</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatPrice(totalInvestment)}
               </div>
             </CardContent>
           </Card>
