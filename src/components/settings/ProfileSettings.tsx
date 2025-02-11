@@ -33,7 +33,7 @@ export const ProfileSettings = () => {
       if (error) throw error;
 
       setFullName(data.full_name || "");
-      return data;
+      return data as Profile;
     },
   });
 
@@ -82,7 +82,7 @@ export const ProfileSettings = () => {
         }
 
         // Upload new avatar
-        const { error: uploadError, data } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(filePath, avatarFile, {
             cacheControl: '3600',

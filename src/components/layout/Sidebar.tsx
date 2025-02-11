@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -43,7 +42,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
 
       if (error) throw error;
 
-      return data;
+      return data as Profile;
     },
   });
 
