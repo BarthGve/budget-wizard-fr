@@ -1,12 +1,7 @@
+
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { UseFormReturn } from "react-hook-form";
 
@@ -36,33 +31,15 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
         render={({ field }) => (
           <FormItem className="flex flex-col">
             <FormLabel>Date</FormLabel>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full pl-3 text-left font-normal",
-                    !field.value && "text-muted-foreground"
-                  )}
-                >
-                  {field.value ? (
-                    format(field.value, "d MMMM yyyy", { locale: fr })
-                  ) : (
-                    <span>Choisir une date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  defaultMonth={field.value}
-                  onSelect={field.onChange}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              type="date"
+              className="w-full"
+              value={field.value ? field.value.toISOString().split('T')[0] : ""}
+              onChange={(e) => {
+                const date = e.target.value ? new Date(e.target.value) : new Date();
+                field.onChange(date);
+              }}
+            />
           </FormItem>
         )}
       />
