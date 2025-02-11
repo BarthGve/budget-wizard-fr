@@ -21,11 +21,12 @@ export const addContributorService = async (
   newContributor: NewContributor,
   userId: string
 ) => {
-  if (newContributor.email) {
+  // On ne vérifie l'unicité de l'email que s'il est fourni
+  if (newContributor.email && newContributor.email.trim() !== '') {
     const { data: existingContributor, error: existingError } = await supabase
       .from("contributors")
       .select("id")
-      .eq("email", newContributor.email)
+      .eq("email", newContributor.email.trim())
       .eq("profile_id", userId)
       .maybeSingle();
 
@@ -42,7 +43,7 @@ export const addContributorService = async (
     .insert([
       {
         name: newContributor.name,
-        email: newContributor.email,
+        email: newContributor.email ? newContributor.email.trim() : null, // On s'assure que l'email est null si vide
         total_contribution: contribution,
         profile_id: userId,
       },
@@ -61,11 +62,27 @@ export const updateContributorService = async (contributor: Contributor) => {
   if (userError) throw userError;
   if (!user) throw new Error("Non authentifié");
 
+  // Pour la mise à jour, on vérifie aussi l'unicité de l'email s'il est modifié
+  if (contributor.email && contributor.email.trim() !== '') {
+    const { data: existingContributor, error: existingError } = await supabase
+      .from("contributors")
+      .select("id")
+      .eq("email", contributor.email.trim())
+      .eq("profile_id", user.id)
+      .neq("id", contributor.id) // On exclut le contributeur actuel
+      .maybeSingle();
+
+    if (existingError) throw existingError;
+    if (existingContributor) {
+      throw new Error("Un contributeur avec cet email existe déjà");
+    }
+  }
+
   const updateData = contributor.is_owner
     ? { total_contribution: contributor.total_contribution }
     : {
         name: contributor.name,
-        email: contributor.email,
+        email: contributor.email ? contributor.email.trim() : null,
         total_contribution: contributor.total_contribution,
       };
 
