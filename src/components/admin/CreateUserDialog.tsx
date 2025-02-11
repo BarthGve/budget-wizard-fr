@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Dialog,
@@ -18,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useColorPalette } from "@/hooks/useColorPalette";
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -35,7 +33,6 @@ export const CreateUserDialog = ({
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"user" | "admin">("user");
   const [loading, setLoading] = useState(false);
-  const { backgroundClass } = useColorPalette();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,8 +109,8 @@ export const CreateUserDialog = ({
           </div>
           <Button 
             type="submit" 
-            className={`w-full text-white ${backgroundClass}`}
             disabled={loading}
+            className="w-full"
           >
             {loading ? "Création..." : "Créer l'utilisateur"}
           </Button>

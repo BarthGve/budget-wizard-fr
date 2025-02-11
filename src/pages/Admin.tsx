@@ -5,11 +5,9 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserTable } from "@/components/admin/UserTable";
-import { useColorPalette } from "@/hooks/useColorPalette";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { backgroundClass } = useColorPalette();
 
   const { data: isAdmin, isLoading } = useQuery({
     queryKey: ["isAdmin"],

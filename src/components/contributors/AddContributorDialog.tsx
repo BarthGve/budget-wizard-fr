@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NewContributor } from "@/types/contributor";
 import {
@@ -26,7 +25,6 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
     email: "",
     total_contribution: "",
   });
-  const { backgroundClass } = useColorPalette();
 
   const handleAdd = () => {
     onAdd(newContributor);
@@ -36,7 +34,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className={`text-white ${backgroundClass}`}>
+        <Button className="bg-primary text-white hover:bg-primary/90">
           <UserPlus className="mr-2 h-4 w-4" />
           Ajouter un contributeur
         </Button>
@@ -95,10 +93,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           <Button variant="outline" onClick={() => setNewContributor({ name: "", email: "", total_contribution: "" })}>
             Annuler
           </Button>
-          <Button 
-            onClick={handleAdd}
-            className={`text-white ${backgroundClass}`}
-          >
+          <Button onClick={handleAdd}>
             Ajouter
           </Button>
         </DialogFooter>
