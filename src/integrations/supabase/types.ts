@@ -310,6 +310,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_user: {
+        Args: {
+          user_id_to_delete: string
+        }
+        Returns: undefined
+      }
       get_total_users: {
         Args: Record<PropertyKey, never>
         Returns: number

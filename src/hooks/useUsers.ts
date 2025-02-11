@@ -91,7 +91,10 @@ export const useUsers = (page: number, pageSize: number) => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
+      const { error } = await supabase.rpc('delete_user', {
+        user_id_to_delete: userId
+      });
+      
       if (error) throw error;
 
       toast.success("Utilisateur supprimé avec succès");
