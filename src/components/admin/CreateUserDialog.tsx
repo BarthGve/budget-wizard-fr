@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   Dialog,
@@ -110,7 +111,7 @@ export const CreateUserDialog = ({
           <Button 
             type="submit" 
             disabled={loading}
-            className="w-full"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
           >
             {loading ? "Création..." : "Créer l'utilisateur"}
           </Button>

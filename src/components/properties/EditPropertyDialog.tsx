@@ -64,7 +64,7 @@ export const EditPropertyDialog = ({ property }: EditPropertyDialogProps) => {
           <Button 
             onClick={handleSubmit}
             disabled={isLoading}
-            className="bg-primary text-white hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary-hover"
           >
             {isLoading ? "Modification en cours..." : "Modifier"}
           </Button>

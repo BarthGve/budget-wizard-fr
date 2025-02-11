@@ -13,7 +13,7 @@ export const AddPropertyDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-primary text-white hover:bg-primary/90">
+        <Button className="bg-primary text-primary-foreground hover:bg-primary-hover">
           <Plus className="mr-2 h-4 w-4" />
           Ajouter un bien
         </Button>
@@ -38,7 +38,7 @@ export const AddPropertyDialog = () => {
           <Button 
             onClick={handleSubmit}
             disabled={isLoading}
-            className="bg-primary text-white hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary-hover"
           >
             {isLoading ? "Ajout en cours..." : "Ajouter"}
           </Button>

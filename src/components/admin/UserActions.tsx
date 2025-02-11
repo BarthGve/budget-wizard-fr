@@ -40,6 +40,7 @@ export const UserActions = ({
         variant="ghost"
         size="icon"
         onClick={() => onDelete(userId)}
+        className="hover:bg-primary/10 hover:text-primary"
       >
         <Trash2 className="h-4 w-4" />
       </Button>
