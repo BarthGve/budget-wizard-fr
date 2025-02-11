@@ -1,3 +1,4 @@
+
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,9 +29,6 @@ interface ExpenseFormFieldsProps {
 }
 
 export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
-  const today = new Date();
-  const fiveYearsAgo = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
-
   return (
     <>
       <FormField
@@ -62,7 +60,11 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
                 <Calendar
                   mode="single"
                   selected={field.value}
-                  onSelect={field.onChange}
+                  onSelect={(date) => {
+                    if (date) {
+                      field.onChange(date);
+                    }
+                  }}
                   initialFocus
                 />
               </PopoverContent>
