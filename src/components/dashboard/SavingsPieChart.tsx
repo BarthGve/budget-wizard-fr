@@ -84,10 +84,7 @@ export const SavingsPieChart = ({ monthlySavings, totalSavings }: SavingsPieChar
                   <span className="text-sm font-medium">{saving.name}</span>
                 </div>
                 <span className="text-sm text-green-500">
-                  {new Intl.NumberFormat('fr-FR', {
-                    style: 'currency',
-                    currency: 'EUR'
-                  }).format(saving.amount)}
+                  {((saving.amount / totalSavings) * 100).toFixed(1)}%
                 </span>
               </div>
             ))}

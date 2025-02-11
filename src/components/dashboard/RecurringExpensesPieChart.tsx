@@ -103,10 +103,7 @@ export const RecurringExpensesPieChart = ({ recurringExpenses, totalExpenses }: 
                   <span className="text-sm font-medium">{category.category}</span>
                 </div>
                 <span className="text-sm text-violet-500">
-                  {new Intl.NumberFormat('fr-FR', {
-                    style: 'currency',
-                    currency: 'EUR'
-                  }).format(category.amount)}
+                  {((category.amount / totalExpenses) * 100).toFixed(1)}%
                 </span>
               </div>
             ))}
