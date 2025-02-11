@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface SidebarProps {
   className?: string;
@@ -94,7 +95,39 @@ export const Sidebar = ({ className }: SidebarProps) => {
     >
       <div className="flex flex-col flex-1">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          {!collapsed && <h1 className="text-xl font-semibold">Budget Wizard</h1>}
+          {!collapsed ? (
+            <div className="flex items-center space-x-3">
+              <Avatar>
+                <AvatarImage
+                  src={profile?.avatar_url}
+                  alt={profile?.full_name || "Avatar"}
+                />
+                <AvatarFallback>
+                  {(profile?.full_name || "?")[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <span className="font-medium">{profile?.full_name || "Utilisateur"}</span>
+                <Button
+                  variant="link"
+                  className="h-auto p-0 text-sm text-primary hover:text-primary-hover"
+                  onClick={() => navigate("/settings")}
+                >
+                  Gérer le profil
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Avatar className="w-10 h-10">
+              <AvatarImage
+                src={profile?.avatar_url}
+                alt={profile?.full_name || "Avatar"}
+              />
+              <AvatarFallback>
+                {(profile?.full_name || "?")[0]?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          )}
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
