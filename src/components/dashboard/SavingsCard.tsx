@@ -25,8 +25,7 @@ export const SavingsCard = ({ totalMonthlySavings, savingsGoal }: SavingsCardPro
           </p>
           <Progress 
             value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0}
-            className="bg-green-100"
-            indicatorClassName="bg-green-500"
+            className="h-2 bg-green-100"
           />
         </div>
       </CardContent>
