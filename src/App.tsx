@@ -14,6 +14,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Properties from "./pages/Properties";
+import PropertyDetail from "./pages/PropertyDetail";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/savings" element={<Savings />} />
           <Route path="/properties" element={<Properties />} />
+          <Route path="/properties/:id" element={<PropertyDetail />} />
           <Route path="/recurring-expenses" element={<RecurringExpenses />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
