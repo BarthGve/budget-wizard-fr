@@ -16,6 +16,7 @@ import Register from "./pages/Register";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
 import Admin from "./pages/Admin";
+import Stocks from "./pages/Stocks";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/properties/:id" element={<PropertyDetail />} />
           <Route path="/recurring-expenses" element={<RecurringExpenses />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/stocks" element={<Stocks />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
@@ -45,4 +47,3 @@ const App = () => (
 );
 
 export default App;
-
