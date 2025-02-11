@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,30 @@ interface InvestmentDialogProps {
 export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
+  const [dateString, setDateString] = useState(format(new Date(), "dd/MM/yyyy"));
   const [amount, setAmount] = useState("");
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const handleDateInput = (value: string) => {
+    setDateString(value);
+    try {
+      // Tentative de parse de la date au format DD/MM/YYYY
+      const parsedDate = parse(value, "dd/MM/yyyy", new Date());
+      if (!isNaN(parsedDate.getTime())) {
+        setDate(parsedDate);
+      }
+    } catch (error) {
+      // Si le format n'est pas valide, on ne met pas à jour la date
+    }
+  };
+
+  const handleCalendarSelect = (selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      setDate(selectedDate);
+      setDateString(format(selectedDate, "dd/MM/yyyy"));
+      setCalendarOpen(false);
+    }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -29,6 +52,11 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
       const investmentAmount = parseFloat(amount);
       if (isNaN(investmentAmount) || investmentAmount <= 0) {
         throw new Error("Montant invalide");
+      }
+
+      // Vérifie que la date est valide
+      if (isNaN(date.getTime())) {
+        throw new Error("Date invalide");
       }
 
       const { error } = await supabase
@@ -44,6 +72,7 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
       toast.success("Investissement enregistré avec succès");
       setAmount("");
       setDate(new Date());
+      setDateString(format(new Date(), "dd/MM/yyyy"));
       setOpen(false);
       onSuccess();
     } catch (error: any) {
@@ -66,30 +95,34 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Date d'investissement</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "d MMMM yyyy", { locale: fr }) : "Sélectionner une date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(date) => date && setDate(date)}
-                  locale={fr}
-                  disabled={false}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={dateString}
+                onChange={(e) => handleDateInput(e.target.value)}
+                placeholder="JJ/MM/AAAA"
+                className="flex-1"
+              />
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <CalendarIcon className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={handleCalendarSelect}
+                    locale={fr}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            {dateString && isNaN(date.getTime()) && (
+              <p className="text-sm text-red-500">Format de date invalide. Utilisez JJ/MM/AAAA</p>
+            )}
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Montant</label>
