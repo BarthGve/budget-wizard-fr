@@ -149,7 +149,7 @@ const PropertyDetail = () => {
             </div>
           </Card>
 
-          <div className="space-y-4 md:col-span-2 grid lg:grid-cols-2 lg:space-y-0 gap-4">
+          <div className="grid lg:grid-cols-2 gap-4 md:col-span-2">
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Dépenses</h2>
               {isLoadingExpenses ? (
@@ -168,7 +168,9 @@ const PropertyDetail = () => {
             </Card>
 
             {!isLoadingExpenses && expenses && (
-              <ExpensesChart expenses={expenses} />
+              <Card className="p-6">
+                <ExpensesChart expenses={expenses} />
+              </Card>
             )}
           </div>
         </div>

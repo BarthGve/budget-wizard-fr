@@ -1,5 +1,4 @@
 
-import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { subYears, format, parseISO, isWithinInterval, startOfYear, endOfYear } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -48,9 +47,9 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
     .sort((a, b) => a.year.localeCompare(b.year));
 
   return (
-    <Card className="p-6 h-full">
+    <>
       <h2 className="text-xl font-semibold mb-4">Évolution des dépenses</h2>
-      <div className="h-[calc(100%-2rem)]">
+      <div className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={chartData}
@@ -108,7 +107,7 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-    </Card>
+    </>
   );
 }
 
