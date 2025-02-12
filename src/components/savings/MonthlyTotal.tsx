@@ -49,7 +49,7 @@ export const MonthlyTotal = ({ totalMonthlyAmount }: MonthlyTotalProps) => {
       </CardHeader>
       <CardContent>
         <div className="text-center">
-          <p className={`text-4xl font-bold ${paletteToColor[colorPalette]}`}>{totalMonthlyAmount}€</p>
+          <p className= "text-primary-4xl font-bold">{totalMonthlyAmount}€</p>
           <p className="text-sm text-muted-foreground mt-2">par mois</p>
         </div>
       </CardContent>
