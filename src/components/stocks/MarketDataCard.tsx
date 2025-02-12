@@ -30,11 +30,11 @@ export const MarketDataCard = ({ symbol, data }: MarketDataCardProps) => {
   // Déterminer le nom à afficher en fonction du symbole
   let displayName = "";
   let isCAC = false;
-  if (symbol === '^FCHI') {
+  if (symbol === 'I:FCHI') {
     displayName = 'CAC 40';
     isCAC = true;
-  } else if (symbol === 'IWDA.AS') {
-    displayName = 'MSCI World ETF';
+  } else if (symbol === 'AAPL') {
+    displayName = 'Apple';
   } else if (symbol === 'BTC-EUR') {
     displayName = 'Bitcoin/EUR';
   }

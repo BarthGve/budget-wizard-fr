@@ -19,7 +19,7 @@ serve(async (req) => {
       throw new Error('POLYGON_API_KEY is not set')
     }
 
-    const symbols = ['I:FCHI', 'IWDA.AMS', 'BTC-EUR']
+    const symbols = ['I:FCHI', 'AAPL', 'BTC-EUR']
     const promises = symbols.map(async symbol => {
       let url = '';
       if (symbol === 'BTC-EUR') {
@@ -27,7 +27,7 @@ serve(async (req) => {
       } else if (symbol === 'I:FCHI') {
         url = `https://api.polygon.io/v2/aggs/ticker/I:FCHI/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
       } else {
-        url = `https://api.polygon.io/v2/aggs/ticker/IWDA.AMS/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
+        url = `https://api.polygon.io/v2/aggs/ticker/AAPL/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
       }
 
       console.log(`Fetching data for ${symbol} from URL: ${url}`);
