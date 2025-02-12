@@ -96,7 +96,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
     >
       <div className="flex flex-col flex-1">
         {/* App Name and Collapse Button */}
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="p-4 border-b rounded-r-xl border-gray-200 flex items-center justify-between">
           <h1 className={cn(
             "font-bold text-primary transition-all duration-300",
             collapsed ? "text-sm" : "text-xl"
