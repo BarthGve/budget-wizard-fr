@@ -19,7 +19,7 @@ export const SavingsCard = ({ totalMonthlySavings, savingsGoal }: SavingsCardPro
       <CardContent>
         <div className="space-y-4">
           <p className="text-3xl font-bold">
-            <span className="text-primary-foreground">{Math.round(totalMonthlySavings)} €</span>
+            <span className="text-primary">{Math.round(totalMonthlySavings)} €</span>
             {" "}/{" "}
             <span>{Math.round(savingsGoal)} €</span>
           </p>
