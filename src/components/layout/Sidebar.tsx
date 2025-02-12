@@ -89,7 +89,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
   return (
     <aside
       className={cn(
-        "h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col",
+        "h-screen bg-white border-r rounded-r-xl border-gray-200 transition-all duration-300 flex flex-col",
         collapsed ? "w-20" : "w-64",
         className
       )}
