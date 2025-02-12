@@ -76,7 +76,7 @@ serve(async (req) => {
       } else {
         // Pour l'ETF MSCI World
         const response = await fetch(
-          `https://api.polygon.io/v2/aggs/ticker/IWDA/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`
+          `https://api.polygon.io/v2/aggs/ticker/IWDA.AS/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`
         )
         const data = await response.json()
         
