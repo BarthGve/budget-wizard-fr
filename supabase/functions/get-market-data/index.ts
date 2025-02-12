@@ -19,7 +19,7 @@ serve(async (req) => {
       throw new Error('POLYGON_API_KEY is not set')
     }
 
-    const symbols = ['^FCHI', 'IWDA.AS', 'BTC-EUR']
+    const symbols = ['I:FCHI', 'IWDA.AMS', 'BTC-EUR']
     const promises = symbols.map(async symbol => {
       if (symbol === 'BTC-EUR') {
         // Pour le Bitcoin, utiliser l'endpoint Crypto
@@ -47,7 +47,7 @@ serve(async (req) => {
             pc: result.o  // Open price comme previous close
           }
         }
-      } else if (symbol === '^FCHI') {
+      } else if (symbol === 'I:FCHI') {
         // Pour le CAC 40, utiliser l'endpoint Indices
         const response = await fetch(
           `https://api.polygon.io/v2/aggs/ticker/I:FCHI/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`
@@ -76,7 +76,7 @@ serve(async (req) => {
       } else {
         // Pour l'ETF MSCI World
         const response = await fetch(
-          `https://api.polygon.io/v2/aggs/ticker/IWDA.AS/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`
+          `https://api.polygon.io/v2/aggs/ticker/IWDA.AMS/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`
         )
         const data = await response.json()
         
