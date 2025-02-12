@@ -125,7 +125,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
                   to={item.path}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
+                      "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                       "hover:bg-gray-100",
                       isActive
                         ? "bg-primary text-primary-foreground hover:bg-primary-hover"
