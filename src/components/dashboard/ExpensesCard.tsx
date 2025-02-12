@@ -21,7 +21,7 @@ export const ExpensesCard = ({ totalExpenses, contributorShares }: ExpensesCardP
         <CardDescription>Répartition par contributeur</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-3xl font-bold text-violet-500">{Math.round(totalExpenses)} €</p>
+        <p className="text-3xl font-bold">{Math.round(totalExpenses)} €</p>
         {contributorShares.length > 1 && (
           <>
             <div className="relative h-2">
