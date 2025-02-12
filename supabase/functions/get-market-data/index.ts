@@ -21,99 +21,55 @@ serve(async (req) => {
 
     const symbols = ['I:FCHI', 'IWDA.AMS', 'BTC-EUR']
     const promises = symbols.map(async symbol => {
+      let url = '';
       if (symbol === 'BTC-EUR') {
-        // Pour le Bitcoin, utiliser l'endpoint Crypto
-        const response = await fetch(
-          `https://api.polygon.io/v2/aggs/ticker/X:BTCEUR/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`
-        )
-        const data = await response.json()
-        
-        if (!data || !data.results || data.results.length === 0) {
-          console.error(`Invalid response for Bitcoin: ${JSON.stringify(data)}`)
-          return {
-            symbol,
-            data: {
-              c: 0,
-              pc: 0
-            }
-          }
-        }
-
-        const result = data.results[0]
-        return {
-          symbol,
-          data: {
-            c: result.c,  // Close price
-            pc: result.o  // Open price comme previous close
-          }
-        }
+        url = `https://api.polygon.io/v2/aggs/ticker/X:BTCEUR/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
       } else if (symbol === 'I:FCHI') {
-        // Pour le CAC 40, utiliser l'endpoint Indices
-        const response = await fetch(
-          `https://api.polygon.io/v2/aggs/ticker/I:FCHI/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`
-        )
-        const data = await response.json()
-        
-        if (!data || !data.results || data.results.length === 0) {
-          console.error(`Invalid response for CAC40: ${JSON.stringify(data)}`)
-          return {
-            symbol,
-            data: {
-              c: 0,
-              pc: 0
-            }
-          }
-        }
-
-        const result = data.results[0]
-        return {
-          symbol,
-          data: {
-            c: result.c,
-            pc: result.o
-          }
-        }
+        url = `https://api.polygon.io/v2/aggs/ticker/I:FCHI/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
       } else {
-        // Pour l'ETF MSCI World
-        const response = await fetch(
-          `https://api.polygon.io/v2/aggs/ticker/IWDA.AMS/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`
-        )
-        const data = await response.json()
-        
-        if (!data || !data.results || data.results.length === 0) {
-          console.error(`Invalid response for MSCI World: ${JSON.stringify(data)}`)
-          return {
-            symbol,
-            data: {
-              c: 0,
-              pc: 0
-            }
-          }
-        }
+        url = `https://api.polygon.io/v2/aggs/ticker/IWDA.AMS/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
+      }
 
-        const result = data.results[0]
+      console.log(`Fetching data for ${symbol} from URL: ${url}`);
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      console.log(`Response for ${symbol}:`, JSON.stringify(data, null, 2));
+
+      if (!data || !data.results || data.results.length === 0) {
+        console.error(`Invalid response for ${symbol}: ${JSON.stringify(data)}`);
         return {
           symbol,
           data: {
-            c: result.c,
-            pc: result.o
+            c: 0,
+            pc: 0
           }
-        }
+        };
       }
-    })
 
-    const results = await Promise.all(promises)
-    console.log("Market data fetched successfully from Polygon.io:", results)
+      const result = data.results[0];
+      return {
+        symbol,
+        data: {
+          c: result.c,
+          pc: result.o
+        }
+      };
+    });
+
+    const results = await Promise.all(promises);
+    console.log("Final market data:", JSON.stringify(results, null, 2));
 
     return new Response(
       JSON.stringify(results),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    );
   } catch (error) {
-    console.error("Error fetching market data:", error)
+    console.error("Error fetching market data:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-    )
+    );
   }
-})
+});
