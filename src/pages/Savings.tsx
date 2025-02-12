@@ -29,7 +29,7 @@ const Savings = () => {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Épargne</h1>
             <p className="text-muted-foreground">
-              Gérez vos versements mensuels d'épargne
+              Prévoyez vos versements mensuels d'épargne
             </p>
           </div>
           <NewSavingDialog onSavingAdded={handleSavingAdded} />
