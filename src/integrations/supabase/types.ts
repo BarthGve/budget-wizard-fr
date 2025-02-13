@@ -380,6 +380,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_delete_account: {
+        Args: {
+          user_id_to_check: string
+        }
+        Returns: boolean
+      }
       create_admin_user: {
         Args: {
           email: string
@@ -387,6 +393,10 @@ export type Database = {
           role: Database["public"]["Enums"]["app_role"]
         }
         Returns: Json
+      }
+      delete_own_account: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       delete_user: {
         Args: {
