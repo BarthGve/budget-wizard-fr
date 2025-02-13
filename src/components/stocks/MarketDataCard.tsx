@@ -51,8 +51,8 @@ export const MarketDataCard = ({
   if (!history || history.length === 0) {
     console.warn(`No historical data for ${symbol}`);
   }
-  return <Card className="p-4 px-[13px]px-0 pb-2 my-0 py-px">
-      <CardHeader className="\n">
+  return <Card className="p-4 px-[13px]px-0 pb-2 my-0 py-px px-[14px]">
+      <CardHeader className="\\n mx-0 px-0 py-[12px]">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {displayName}
         </CardTitle>
