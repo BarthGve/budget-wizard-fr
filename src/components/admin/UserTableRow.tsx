@@ -24,12 +24,20 @@ export const UserTableRow = ({ user, onRoleChange, onDelete }: UserTableRowProps
       <div className="flex items-center space-x-4">
         <Avatar>
           {user.avatar_url ? (
-            <AvatarImage src={user.avatar_url} alt={user.email} />
-          ) : (
-            <AvatarFallback className="bg-primary/10 text-primary">
-              {getInitials(user.email)}
-            </AvatarFallback>
-          )}
+            <AvatarImage 
+              src={user.avatar_url} 
+              alt={user.email}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = target.parentElement?.querySelector('[role="img"]');
+                if (fallback) fallback.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          <AvatarFallback className="bg-primary/10 text-primary">
+            {getInitials(user.email)}
+          </AvatarFallback>
         </Avatar>
         <div>
           <p className="font-medium">{user.email.split('@')[0]}</p>
