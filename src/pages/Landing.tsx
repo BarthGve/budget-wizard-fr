@@ -1,17 +1,12 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogIn, UserPlus } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Landing = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background">
+  return <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold tracking-tight text-primary mb-4">
-            Shared Budget Wizard
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight text-primary mb-4">Budget Wizard</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Gérez vos dépenses en groupe facilement. Suivez les contributions, partagez les coûts et gardez une vue claire sur vos finances partagées.
           </p>
@@ -76,8 +71,6 @@ const Landing = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
