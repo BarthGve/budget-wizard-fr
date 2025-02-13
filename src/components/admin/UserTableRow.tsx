@@ -31,7 +31,9 @@ export const UserTableRow = ({ user, onRoleChange, onDelete }: UserTableRowProps
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
                 const fallback = target.parentElement?.querySelector('[role="img"]');
-                if (fallback) fallback.style.display = 'flex';
+                if (fallback && fallback instanceof HTMLElement) {
+                  fallback.style.display = 'flex';
+                }
               }}
             />
           ) : null}
