@@ -52,7 +52,7 @@ export const MarketDataCard = ({ symbol, data, history }: MarketDataCardProps) =
   }
 
   return (
-    <Card className="p-6">
+    <Card className="p-4">
       <CardHeader className="px-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {displayName}
@@ -77,7 +77,7 @@ export const MarketDataCard = ({ symbol, data, history }: MarketDataCardProps) =
           
           {/* Sparkline Chart */}
           {history && history.length > 0 && (
-            <div className="h-[120px] mt-4">
+            <div className="h-[80px] mt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={history}>
                   <Line
@@ -85,7 +85,7 @@ export const MarketDataCard = ({ symbol, data, history }: MarketDataCardProps) =
                     dataKey="value"
                     stroke={color}
                     strokeWidth={2}
-                    dot={{ fill: color, r: 4 }}
+                    dot={false}
                     isAnimationActive={false}
                   />
                 </LineChart>

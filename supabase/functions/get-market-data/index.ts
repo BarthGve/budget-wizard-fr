@@ -19,10 +19,10 @@ serve(async (req) => {
     }
 
     const today = new Date()
-    const sevenDaysAgo = new Date(today)
-    sevenDaysAgo.setDate(today.getDate() - 7)
+    const sixMonthsAgo = new Date(today)
+    sixMonthsAgo.setMonth(today.getMonth() - 6)
     
-    const fromDate = sevenDaysAgo.toISOString().split('T')[0]
+    const fromDate = sixMonthsAgo.toISOString().split('T')[0]
     const toDate = today.toISOString().split('T')[0]
 
     const symbols = ['I:FCHI', 'AAPL', 'BTC-EUR']
