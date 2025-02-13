@@ -7,12 +7,17 @@ import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
+import { Separator } from "@/components/ui/separator";
 
 export const SecuritySettings = () => {
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +52,30 @@ export const SecuritySettings = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+      const { error } = await supabase.rpc('delete_own_account');
+      
+      if (error) {
+        if (error.message.includes('last admin')) {
+          toast.error("Impossible de supprimer le dernier compte administrateur");
+        } else {
+          toast.error("Erreur lors de la suppression du compte");
+        }
+        return;
+      }
+
+      toast.success("Compte supprimé avec succès");
+      navigate('/');
+    } catch (error: any) {
+      console.error("Error deleting account:", error);
+      toast.error(error.message || "Erreur lors de la suppression du compte");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -56,7 +85,7 @@ export const SecuritySettings = () => {
         </div>
         <CardDescription>Gérez vos paramètres de sécurité et mot de passe</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
         <form onSubmit={handleUpdatePassword} className="space-y-4">
           <div className="grid gap-4">
             <div className="space-y-2">
@@ -88,6 +117,44 @@ export const SecuritySettings = () => {
             {isUpdating ? "Mise à jour..." : "Mettre à jour le mot de passe"}
           </Button>
         </form>
+
+        <div className="space-y-4">
+          <Separator className="my-4" />
+          
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-sm font-medium text-destructive mb-1">Zone de danger</h4>
+              <p className="text-sm text-muted-foreground">
+                Actions irréversibles pour votre compte
+              </p>
+            </div>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="destructive" className="w-full">
+                  Supprimer mon compte
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Êtes-vous sûr de vouloir supprimer votre compte ?</DialogTitle>
+                  <DialogDescription>
+                    Cette action est irréversible. Toutes vos données seront définitivement supprimées.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDeleteAccount}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? "Suppression..." : "Oui, supprimer mon compte"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
