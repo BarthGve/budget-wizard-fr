@@ -36,7 +36,7 @@ export const MonthlyTotal = ({
     sunset: "text-orange-500",
     candy: "text-pink-400"
   };
-  return <Card className="py-0 my-[63px]">
+  return <Card className="py-0 my-px">
       <CardHeader>
         <div className="flex items-center gap-2">
           <PiggyBank className="h-5 w-5 text-primary" />
