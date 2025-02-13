@@ -82,8 +82,13 @@ const StocksPage = () => {
 
         {/* Market Data Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {marketData?.map(({ symbol, data }) => (
-            <MarketDataCard key={symbol} symbol={symbol} data={data} />
+          {marketData?.map(({ symbol, data, history }) => (
+            <MarketDataCard 
+              key={symbol} 
+              symbol={symbol} 
+              data={data} 
+              history={history} 
+            />
           ))}
         </div>
 
