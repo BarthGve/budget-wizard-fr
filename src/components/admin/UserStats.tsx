@@ -15,7 +15,8 @@ export const UserStats = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_user_stats');
       if (error) throw error;
-      return data as UserStats;
+      // Cast to unknown first, then to our interface
+      return data as unknown as UserStats;
     }
   });
 
