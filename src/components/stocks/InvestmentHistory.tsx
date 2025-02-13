@@ -25,15 +25,7 @@ export const InvestmentHistory = ({ data }: InvestmentHistoryProps) => {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="year" />
-              <YAxis 
-                tickFormatter={(value) => 
-                  new Intl.NumberFormat('fr-FR', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    maximumFractionDigits: 0
-                  }).format(value)
-                }
-              />
+          
               <Tooltip 
                 formatter={(value) => 
                   new Intl.NumberFormat('fr-FR', {
