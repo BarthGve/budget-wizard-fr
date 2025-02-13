@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +13,7 @@ const StocksPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke("get-market-data");
       if (error) throw error;
+      console.log("Market data received:", data);
       return data;
     },
     refetchInterval: 60000, // Refresh every minute
@@ -82,14 +82,17 @@ const StocksPage = () => {
 
         {/* Market Data Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {marketData?.map(({ symbol, data, history }) => (
-            <MarketDataCard 
-              key={symbol} 
-              symbol={symbol} 
-              data={data} 
-              history={history} 
-            />
-          ))}
+          {marketData?.map(({ symbol, data, history }) => {
+            console.log(`Rendering card for ${symbol}`, { data, history });
+            return (
+              <MarketDataCard 
+                key={symbol} 
+                symbol={symbol} 
+                data={data} 
+                history={history} 
+              />
+            );
+          })}
         </div>
 
         {/* Investment Totals */}

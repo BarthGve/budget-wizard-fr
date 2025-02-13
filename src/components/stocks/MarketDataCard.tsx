@@ -16,6 +16,8 @@ interface MarketDataCardProps {
 }
 
 export const MarketDataCard = ({ symbol, data, history }: MarketDataCardProps) => {
+  console.log(`Rendering MarketDataCard for ${symbol}`, { data, history });
+
   const formatPrice = (price: number, isCAC: boolean) => {
     if (isCAC) {
       return new Intl.NumberFormat('fr-FR', {
@@ -44,6 +46,11 @@ export const MarketDataCard = ({ symbol, data, history }: MarketDataCardProps) =
   const isPositive = data.c > data.pc;
   const color = isPositive ? '#22c55e' : '#ef4444';
 
+  // Vérifions que nous avons bien des données historiques
+  if (!history || history.length === 0) {
+    console.warn(`No historical data for ${symbol}`);
+  }
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -67,28 +74,30 @@ export const MarketDataCard = ({ symbol, data, history }: MarketDataCardProps) =
           </p>
           
           {/* Sparkline Chart */}
-          <div className="h-[60px] -mx-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={history}>
-                <defs>
-                  <linearGradient id={`gradient-${symbol}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={color} stopOpacity={0.2} />
-                    <stop offset="100%" stopColor={color} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke={color}
-                  strokeWidth={1.5}
-                  fillOpacity={1}
-                  fill={`url(#gradient-${symbol})`}
-                  dot={false}
-                  isAnimationActive={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          {history && history.length > 0 && (
+            <div className="h-[60px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={history}>
+                  <defs>
+                    <linearGradient id={`gradient-${symbol}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={color} stopOpacity={0.2} />
+                      <stop offset="100%" stopColor={color} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke={color}
+                    strokeWidth={1.5}
+                    fillOpacity={1}
+                    fill={`url(#gradient-${symbol})`}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
