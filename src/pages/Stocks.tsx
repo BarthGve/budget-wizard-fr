@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
@@ -5,8 +6,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { MarketDataCard } from "@/components/stocks/MarketDataCard";
 import { InvestmentDialog } from "@/components/stocks/InvestmentDialog";
 import { InvestmentHistory } from "@/components/stocks/InvestmentHistory";
+import { CurrentYearInvestmentsDialog } from "@/components/stocks/CurrentYearInvestmentsDialog";
+import { YearlyInvestmentsDialog } from "@/components/stocks/YearlyInvestmentsDialog";
+import { useState } from "react";
 
 const StocksPage = () => {
+  const [currentYearDialogOpen, setCurrentYearDialogOpen] = useState(false);
+  const [yearlyTotalDialogOpen, setYearlyTotalDialogOpen] = useState(false);
+
   // Fetch market data
   const { data: marketData } = useQuery({
     queryKey: ["marketData"],
@@ -54,6 +61,9 @@ const StocksPage = () => {
   // Calculate current year total
   const currentYear = new Date().getFullYear();
   const currentYearTotal = yearlyData.find(data => data.year === currentYear)?.amount || 0;
+  const currentYearInvestments = investmentHistory?.filter(
+    inv => new Date(inv.investment_date).getFullYear() === currentYear
+  ) || [];
 
   // Calculate total investment
   const totalInvestment = yearlyData.reduce((sum, data) => sum + data.amount, 0);
@@ -82,22 +92,19 @@ const StocksPage = () => {
 
         {/* Market Data Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {marketData?.map(({ symbol, data, history }) => {
-            console.log(`Rendering card for ${symbol}`, { data, history });
-            return (
-              <MarketDataCard 
-                key={symbol} 
-                symbol={symbol} 
-                data={data} 
-                history={history} 
-              />
-            );
-          })}
+          {marketData?.map(({ symbol, data, history }) => (
+            <MarketDataCard 
+              key={symbol} 
+              symbol={symbol} 
+              data={data} 
+              history={history} 
+            />
+          ))}
         </div>
 
         {/* Investment Totals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
+          <Card className="cursor-pointer transition-colors hover:bg-accent/50" onClick={() => setCurrentYearDialogOpen(true)}>
             <CardHeader>
               <CardTitle>Total {currentYear}</CardTitle>
               <CardDescription>Montant total investi cette année</CardDescription>
@@ -109,7 +116,7 @@ const StocksPage = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="cursor-pointer transition-colors hover:bg-accent/50" onClick={() => setYearlyTotalDialogOpen(true)}>
             <CardHeader>
               <CardTitle>Total global</CardTitle>
               <CardDescription>Montant total de tous les investissements</CardDescription>
@@ -124,6 +131,20 @@ const StocksPage = () => {
 
         {/* Investment History Chart */}
         <InvestmentHistory data={yearlyData} />
+
+        {/* Modals */}
+        <CurrentYearInvestmentsDialog
+          open={currentYearDialogOpen}
+          onOpenChange={setCurrentYearDialogOpen}
+          investments={currentYearInvestments}
+          onSuccess={refetchHistory}
+        />
+
+        <YearlyInvestmentsDialog
+          open={yearlyTotalDialogOpen}
+          onOpenChange={setYearlyTotalDialogOpen}
+          yearlyData={yearlyData}
+        />
       </div>
     </DashboardLayout>
   );
