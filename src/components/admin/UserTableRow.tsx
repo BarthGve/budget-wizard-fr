@@ -1,5 +1,5 @@
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserActions } from "./UserActions";
 import type { User } from "@/hooks/useUsers";
 
@@ -23,9 +23,13 @@ export const UserTableRow = ({ user, onRoleChange, onDelete }: UserTableRowProps
     <div className="flex items-center justify-between p-4 hover:bg-gray-50">
       <div className="flex items-center space-x-4">
         <Avatar>
-          <AvatarFallback className="bg-primary/10 text-primary">
-            {getInitials(user.email)}
-          </AvatarFallback>
+          {user.avatar_url ? (
+            <AvatarImage src={user.avatar_url} alt={user.email} />
+          ) : (
+            <AvatarFallback className="bg-primary/10 text-primary">
+              {getInitials(user.email)}
+            </AvatarFallback>
+          )}
         </Avatar>
         <div>
           <p className="font-medium">{user.email.split('@')[0]}</p>

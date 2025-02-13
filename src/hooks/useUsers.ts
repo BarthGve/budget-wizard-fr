@@ -8,6 +8,7 @@ export interface User {
   email: string;
   role: "user" | "admin";
   created_at: string;
+  avatar_url: string | null;
 }
 
 export const useUsers = (page: number, pageSize: number) => {
@@ -51,6 +52,7 @@ export const useUsers = (page: number, pageSize: number) => {
         email: user.email || '',
         role: roleMap.get(user.id) || "user",
         created_at: user.created_at,
+        avatar_url: user.avatar_url
       })) || [];
 
       setUsers(formattedUsers);
