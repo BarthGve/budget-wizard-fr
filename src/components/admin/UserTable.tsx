@@ -1,15 +1,7 @@
 
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
+import { UserPlus, ChevronDown } from "lucide-react";
 import { CreateUserDialog } from "./CreateUserDialog";
 import { UserTableRow } from "./UserTableRow";
 import { UserTablePagination } from "./UserTablePagination";
@@ -33,33 +25,29 @@ export const UserTable = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Utilisateurs</h2>
+        <div>
+          <h2 className="text-xl font-semibold">Membres de l'équipe</h2>
+          <p className="text-sm text-muted-foreground">
+            Invitez et gérez les membres de votre équipe.
+          </p>
+        </div>
         <Button onClick={() => setIsCreateDialogOpen(true)}>
           <UserPlus className="mr-2 h-4 w-4" />
           Nouvel utilisateur
         </Button>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Email</TableHead>
-              <TableHead>Rôle</TableHead>
-              <TableHead>Date de création</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => (
-              <UserTableRow
-                key={user.id}
-                user={user}
-                onRoleChange={handleRoleChange}
-                onDelete={handleDeleteUser}
-              />
-            ))}
-          </TableBody>
-        </Table>
+      <div className="bg-white rounded-lg border shadow-sm">
+        <div className="divide-y">
+          {users.map((user) => (
+            <UserTableRow
+              key={user.id}
+              user={user}
+              onRoleChange={handleRoleChange}
+              onDelete={handleDeleteUser}
+            />
+          ))}
+        </div>
       </div>
 
       <UserTablePagination

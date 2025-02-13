@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, ChevronDown } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -28,11 +28,12 @@ export const UserActions = ({
         value={currentRole}
         onValueChange={(value: "user" | "admin") => onRoleChange(userId, value)}
       >
-        <SelectTrigger className="w-32">
+        <SelectTrigger className="w-[130px] bg-white border-gray-200">
           <SelectValue />
+          <ChevronDown className="h-4 w-4 opacity-50" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="user">Utilisateur</SelectItem>
+          <SelectItem value="user">Membre</SelectItem>
           <SelectItem value="admin">Administrateur</SelectItem>
         </SelectContent>
       </Select>
@@ -40,7 +41,7 @@ export const UserActions = ({
         variant="ghost"
         size="icon"
         onClick={() => onDelete(userId)}
-        className="hover:bg-primary/10 hover:text-primary"
+        className="text-gray-500 hover:text-red-600 hover:bg-red-50"
       >
         <Trash2 className="h-4 w-4" />
       </Button>
