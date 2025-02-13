@@ -414,6 +414,7 @@ export type Database = {
           id: string
           email: string
           created_at: string
+          avatar_url: string
         }[]
       }
       register_edge_function: {
