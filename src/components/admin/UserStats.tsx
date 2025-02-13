@@ -4,13 +4,18 @@ import { Users, UserPlus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+interface UserStats {
+  total_users: number;
+  new_users: number;
+}
+
 export const UserStats = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["userStats"],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_user_stats');
       if (error) throw error;
-      return data;
+      return data as UserStats;
     }
   });
 
