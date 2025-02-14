@@ -12,15 +12,15 @@ export const SavingsCard = ({
 }: SavingsCardProps) => {
   return <Card className="bg-white py-0 my-[2px]">
       <CardHeader className="py-[16px]">
-        <CardTitle>Objectif d'épargne</CardTitle>
+        <CardTitle className="text-2xl">Objectif d'épargne</CardTitle>
         <CardDescription>Progression mensuelle</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <p className="font-bold text-2xl">
-            <span className="text-primary">{Math.round(totalMonthlySavings)} €</span>
+            <span className="text-primary text-2xl">{Math.round(totalMonthlySavings)} €</span>
             {" "}/{" "}
-            <span>{Math.round(savingsGoal)} €</span>
+            <span className="text-2xl">{Math.round(savingsGoal)} €</span>
           </p>
           <Progress value={savingsGoal > 0 ? totalMonthlySavings / savingsGoal * 100 : 0} className="h-2 bg-slate-400 [&>div]:bg-primary" />
         </div>

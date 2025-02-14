@@ -15,7 +15,7 @@ export const RevenueCard = ({
 }: RevenueCardProps) => {
   return <Card className="bg-white my-[6px]">
       <CardHeader className="py-[16px]">
-        <CardTitle>Revenus Totaux</CardTitle>
+        <CardTitle className="text-2xl">Revenus mensuels</CardTitle>
         <CardDescription>Et répartition par contributeur</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
