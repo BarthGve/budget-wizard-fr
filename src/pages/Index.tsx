@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { RevenueCard } from "@/components/dashboard/RevenueCard";
 import { ExpensesCard } from "@/components/dashboard/ExpensesCard";
@@ -22,7 +21,7 @@ const Dashboard = () => {
   const totalRevenue = contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
   const yearlyRevenue = totalRevenue * 12;
 
-  // Calculate expenses based on periodicity
+  // Calculate monthly expenses
   const calculateMonthlyExpenses = () => {
     return recurringExpenses?.reduce((sum, expense) => {
       switch (expense.periodicity) {
@@ -38,29 +37,26 @@ const Dashboard = () => {
     }, 0) || 0;
   };
 
+  // Calculate yearly expenses with separate accumulation
   const calculateYearlyExpenses = () => {
-    const monthlyExpensesAnnualized = recurringExpenses?.reduce((sum, expense) => {
-      if (expense.periodicity === "monthly") {
-        return sum + (expense.amount * 12);
-      }
-      return sum;
-    }, 0) || 0;
+    if (!recurringExpenses) return 0;
 
-    const quarterlyExpensesAnnualized = recurringExpenses?.reduce((sum, expense) => {
-      if (expense.periodicity === "quarterly") {
-        return sum + (expense.amount * 4);
-      }
-      return sum;
-    }, 0) || 0;
+    // Monthly expenses annualized
+    const monthlyTotal = recurringExpenses
+      .filter(expense => expense.periodicity === "monthly")
+      .reduce((sum, expense) => sum + expense.amount * 12, 0);
 
-    const yearlyExpenses = recurringExpenses?.reduce((sum, expense) => {
-      if (expense.periodicity === "yearly") {
-        return sum + expense.amount;
-      }
-      return sum;
-    }, 0) || 0;
+    // Quarterly expenses annualized
+    const quarterlyTotal = recurringExpenses
+      .filter(expense => expense.periodicity === "quarterly")
+      .reduce((sum, expense) => sum + expense.amount * 4, 0);
 
-    return monthlyExpensesAnnualized + quarterlyExpensesAnnualized + yearlyExpenses;
+    // Yearly expenses as is
+    const yearlyTotal = recurringExpenses
+      .filter(expense => expense.periodicity === "yearly")
+      .reduce((sum, expense) => sum + expense.amount, 0);
+
+    return monthlyTotal + quarterlyTotal + yearlyTotal;
   };
 
   const monthlyExpenses = calculateMonthlyExpenses();
@@ -106,6 +102,7 @@ const Dashboard = () => {
 
   // Calculate total monthly savings
   const totalMonthlySavings = monthlySavings?.reduce((sum, saving) => sum + saving.amount, 0) || 0;
+  const yearlyMonthlySavings = totalMonthlySavings * 12;
 
   // Calculate savings goal based on total revenue and savings percentage
   const savingsGoal = profile?.savings_goal_percentage 
@@ -114,25 +111,42 @@ const Dashboard = () => {
 
   // Get expenses for pie chart based on current view
   const getExpensesForPieChart = () => {
+    if (!recurringExpenses) return [];
+
     if (currentView === "yearly") {
-      return recurringExpenses?.map(expense => ({
-        ...expense,
-        amount: expense.periodicity === "monthly" 
-          ? expense.amount * 12 
-          : expense.periodicity === "quarterly" 
-            ? expense.amount * 4 
-            : expense.amount
-      })) || [];
+      return recurringExpenses.map(expense => {
+        let amount = expense.amount;
+        if (expense.periodicity === "monthly") {
+          amount = expense.amount * 12;
+        } else if (expense.periodicity === "quarterly") {
+          amount = expense.amount * 4;
+        }
+        return { ...expense, amount };
+      });
     }
     
-    return recurringExpenses?.map(expense => ({
-      ...expense,
-      amount: expense.periodicity === "monthly" 
-        ? expense.amount 
-        : expense.periodicity === "quarterly" 
-          ? expense.amount / 3 
-          : expense.amount / 12
-    })) || [];
+    return recurringExpenses.map(expense => {
+      let amount = expense.amount;
+      if (expense.periodicity === "quarterly") {
+        amount = expense.amount / 3;
+      } else if (expense.periodicity === "yearly") {
+        amount = expense.amount / 12;
+      }
+      return { ...expense, amount };
+    });
+  };
+
+  // Prepare savings data for pie chart based on view
+  const getSavingsForPieChart = () => {
+    if (!monthlySavings) return [];
+    
+    if (currentView === "yearly") {
+      return monthlySavings.map(saving => ({
+        ...saving,
+        amount: saving.amount * 12
+      }));
+    }
+    return monthlySavings;
   };
 
   return (
@@ -183,11 +197,17 @@ const Dashboard = () => {
                 totalExpenses={yearlyExpenses} 
                 contributorShares={getCumulativeExpensePercentages(yearlyExpenses)} 
               />
-              <SavingsCard totalMonthlySavings={totalMonthlySavings * 12} savingsGoal={savingsGoal} />
+              <SavingsCard totalMonthlySavings={yearlyMonthlySavings} savingsGoal={savingsGoal} />
             </div>
             <div className="grid gap-6 md:grid-cols-2">
-              <RecurringExpensesPieChart recurringExpenses={getExpensesForPieChart()} totalExpenses={yearlyExpenses} />
-              <SavingsPieChart monthlySavings={monthlySavings || []} totalSavings={totalMonthlySavings * 12} />
+              <RecurringExpensesPieChart 
+                recurringExpenses={getExpensesForPieChart()} 
+                totalExpenses={yearlyExpenses} 
+              />
+              <SavingsPieChart 
+                monthlySavings={getSavingsForPieChart()} 
+                totalSavings={yearlyMonthlySavings} 
+              />
             </div>
           </TabsContent>
         </Tabs>
