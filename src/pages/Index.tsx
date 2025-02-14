@@ -86,7 +86,7 @@ const Dashboard = () => {
   };
 
   // Calculate cumulative expense percentages
-  const getCumulativeExpensePercentages = (totalExpenses: number) => {
+  const getCumulativeExpensePercentages = (expenses: number) => {
     return contributors?.reduce<{
       name: string;
       start: number;
@@ -94,7 +94,7 @@ const Dashboard = () => {
       amount: number;
     }[]>((acc, contributor) => {
       const lastEnd = acc.length > 0 ? acc[acc.length - 1].end : 0;
-      const contributorShare = totalExpenses * (contributor.percentage_contribution / 100);
+      const contributorShare = expenses * (contributor.percentage_contribution / 100);
       return [...acc, {
         name: contributor.name,
         start: lastEnd,
@@ -114,19 +114,24 @@ const Dashboard = () => {
 
   // Get expenses for pie chart based on current view
   const getExpensesForPieChart = () => {
-    return recurringExpenses?.map(expense => ({
-      ...expense,
-      amount: currentView === "yearly" 
-        ? expense.periodicity === "monthly" 
+    if (currentView === "yearly") {
+      return recurringExpenses?.map(expense => ({
+        ...expense,
+        amount: expense.periodicity === "monthly" 
           ? expense.amount * 12 
           : expense.periodicity === "quarterly" 
             ? expense.amount * 4 
             : expense.amount
-        : expense.periodicity === "monthly" 
-          ? expense.amount 
-          : expense.periodicity === "quarterly" 
-            ? expense.amount / 3 
-            : expense.amount / 12
+      })) || [];
+    }
+    
+    return recurringExpenses?.map(expense => ({
+      ...expense,
+      amount: expense.periodicity === "monthly" 
+        ? expense.amount 
+        : expense.periodicity === "quarterly" 
+          ? expense.amount / 3 
+          : expense.amount / 12
     })) || [];
   };
 
