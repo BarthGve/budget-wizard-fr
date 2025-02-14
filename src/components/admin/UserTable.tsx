@@ -20,7 +20,7 @@ export const UserTable = () => {
   return <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold">Membres de l'équipe</h2>
+          <h2 className="text-xl font-semibold">Listing des utilisateurs</h2>
           <p className="text-sm text-muted-foreground">
         </p>
         </div>
