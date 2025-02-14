@@ -9,6 +9,12 @@ import { RecurringExpenseDialog } from "@/components/recurring-expenses/Recurrin
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+const periodicityLabels = {
+  monthly: "Mensuelle",
+  quarterly: "Trimestrielle",
+  yearly: "Annuelle"
+};
+
 interface RecurringExpense {
   id: string;
   name: string;
@@ -113,9 +119,11 @@ const RecurringExpenses = () => {
                 <div key={expense.id} className="flex items-center justify-between border-b pb-3">
                   <div className="space-y-1">
                     <p className="font-medium">{expense.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Catégorie: {expense.category}
-                    </p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>Catégorie: {expense.category}</span>
+                      <span>•</span>
+                      <span>Périodicité: {periodicityLabels[expense.periodicity]}</span>
+                    </div>
                   </div>
                   <div className="flex items-center space-x-4">
                     <p className="font-medium">{expense.amount} €</p>
