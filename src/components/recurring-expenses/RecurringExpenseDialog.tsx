@@ -11,6 +11,7 @@ interface RecurringExpenseDialogProps {
     name: string;
     amount: number;
     category: string;
+    periodicity: "monthly" | "quarterly" | "yearly";
   };
   trigger: React.ReactNode;
 }
