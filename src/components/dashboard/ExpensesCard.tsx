@@ -16,7 +16,7 @@ export const ExpensesCard = ({
   return <Card className="bg-white my-[4px]">
       <CardHeader className="py-[16px]">
         <CardTitle>Charges mensuelles</CardTitle>
-        <CardDescription>Répartition par contributeur</CardDescription>
+        <CardDescription>Et répartition par contributeur</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="font-bold text-2xl">{Math.round(totalExpenses)} €</p>
