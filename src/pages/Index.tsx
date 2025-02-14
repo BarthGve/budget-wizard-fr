@@ -22,33 +22,49 @@ const Dashboard = () => {
   const totalRevenue = contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
   const yearlyRevenue = totalRevenue * 12;
 
-  // Calculate monthly expenses
-  const monthlyExpenses = recurringExpenses?.reduce((sum, expense) => {
-    switch (expense.periodicity) {
-      case "monthly":
-        return sum + expense.amount;
-      case "quarterly":
-        return sum + (expense.amount / 3);
-      case "yearly":
-        return sum + (expense.amount / 12);
-      default:
-        return sum;
-    }
-  }, 0) || 0;
+  // Calculate expenses based on periodicity
+  const calculateMonthlyExpenses = () => {
+    return recurringExpenses?.reduce((sum, expense) => {
+      switch (expense.periodicity) {
+        case "monthly":
+          return sum + expense.amount;
+        case "quarterly":
+          return sum + (expense.amount / 3);
+        case "yearly":
+          return sum + (expense.amount / 12);
+        default:
+          return sum;
+      }
+    }, 0) || 0;
+  };
 
-  // Calculate yearly expenses
-  const yearlyExpenses = recurringExpenses?.reduce((sum, expense) => {
-    switch (expense.periodicity) {
-      case "monthly":
+  const calculateYearlyExpenses = () => {
+    const monthlyExpensesAnnualized = recurringExpenses?.reduce((sum, expense) => {
+      if (expense.periodicity === "monthly") {
         return sum + (expense.amount * 12);
-      case "quarterly":
+      }
+      return sum;
+    }, 0) || 0;
+
+    const quarterlyExpensesAnnualized = recurringExpenses?.reduce((sum, expense) => {
+      if (expense.periodicity === "quarterly") {
         return sum + (expense.amount * 4);
-      case "yearly":
+      }
+      return sum;
+    }, 0) || 0;
+
+    const yearlyExpenses = recurringExpenses?.reduce((sum, expense) => {
+      if (expense.periodicity === "yearly") {
         return sum + expense.amount;
-      default:
-        return sum;
-    }
-  }, 0) || 0;
+      }
+      return sum;
+    }, 0) || 0;
+
+    return monthlyExpensesAnnualized + quarterlyExpensesAnnualized + yearlyExpenses;
+  };
+
+  const monthlyExpenses = calculateMonthlyExpenses();
+  const yearlyExpenses = calculateYearlyExpenses();
 
   // Calculate cumulative percentages for the revenue stacked progress bar
   const getCumulativeContributionPercentages = (total: number) => {
@@ -96,6 +112,24 @@ const Dashboard = () => {
     ? (currentView === "yearly" ? yearlyRevenue : totalRevenue) * profile.savings_goal_percentage / 100 
     : 0;
 
+  // Get expenses for pie chart based on current view
+  const getExpensesForPieChart = () => {
+    return recurringExpenses?.map(expense => ({
+      ...expense,
+      amount: currentView === "yearly" 
+        ? expense.periodicity === "monthly" 
+          ? expense.amount * 12 
+          : expense.periodicity === "quarterly" 
+            ? expense.amount * 4 
+            : expense.amount
+        : expense.periodicity === "monthly" 
+          ? expense.amount 
+          : expense.periodicity === "quarterly" 
+            ? expense.amount / 3 
+            : expense.amount / 12
+    })) || [];
+  };
+
   return (
     <DashboardLayout>
       <div className="grid gap-6">
@@ -129,7 +163,7 @@ const Dashboard = () => {
               <SavingsCard totalMonthlySavings={totalMonthlySavings} savingsGoal={savingsGoal} />
             </div>
             <div className="grid gap-6 md:grid-cols-2">
-              <RecurringExpensesPieChart recurringExpenses={recurringExpenses || []} totalExpenses={monthlyExpenses} />
+              <RecurringExpensesPieChart recurringExpenses={getExpensesForPieChart()} totalExpenses={monthlyExpenses} />
               <SavingsPieChart monthlySavings={monthlySavings || []} totalSavings={totalMonthlySavings} />
             </div>
           </TabsContent>
@@ -147,7 +181,7 @@ const Dashboard = () => {
               <SavingsCard totalMonthlySavings={totalMonthlySavings * 12} savingsGoal={savingsGoal} />
             </div>
             <div className="grid gap-6 md:grid-cols-2">
-              <RecurringExpensesPieChart recurringExpenses={recurringExpenses || []} totalExpenses={yearlyExpenses} />
+              <RecurringExpensesPieChart recurringExpenses={getExpensesForPieChart()} totalExpenses={yearlyExpenses} />
               <SavingsPieChart monthlySavings={monthlySavings || []} totalSavings={totalMonthlySavings * 12} />
             </div>
           </TabsContent>
