@@ -10,6 +10,7 @@ export const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   amount: z.string().min(1, "Le montant est requis").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Le montant doit être un nombre positif"),
   category: z.string().min(1, "La catégorie est requise"),
+  periodicity: z.enum(["monthly", "quarterly", "yearly"])
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -20,6 +21,7 @@ interface UseRecurringExpenseFormProps {
     name: string;
     amount: number;
     category: string;
+    periodicity: "monthly" | "quarterly" | "yearly";
   };
   onSuccess: () => void;
 }
@@ -33,6 +35,7 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
       name: expense?.name || "",
       amount: expense?.amount?.toString() || "",
       category: expense?.category || "",
+      periodicity: expense?.periodicity || "monthly"
     },
   });
 
@@ -53,6 +56,7 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
             name: values.name,
             amount: Number(values.amount),
             category: values.category,
+            periodicity: values.periodicity
           })
           .eq("id", expense.id);
 
@@ -63,6 +67,7 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
           name: values.name,
           amount: Number(values.amount),
           category: values.category,
+          periodicity: values.periodicity,
           profile_id: user.id,
         });
 

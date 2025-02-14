@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -88,6 +87,7 @@ export const useDashboardData = () => {
         .from("recurring_expenses")
         .select("*")
         .eq("profile_id", user.id)
+        .eq("periodicity", "monthly")  // Ne sélectionner que les charges mensuelles
         .order("created_at", { ascending: true });
 
       if (error) {
