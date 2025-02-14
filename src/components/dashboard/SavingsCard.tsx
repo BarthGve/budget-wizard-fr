@@ -22,7 +22,7 @@ export const SavingsCard = ({
             {" "}/{" "}
             <span>{Math.round(savingsGoal)} €</span>
           </p>
-          <Progress value={savingsGoal > 0 ? totalMonthlySavings / savingsGoal * 100 : 0} className="h-2 [&>div]:bg-primary bg-primary-400" />
+          <Progress value={savingsGoal > 0 ? totalMonthlySavings / savingsGoal * 100 : 0} className="h-2 bg-primary-400 [&>div]:bg-primary" />
         </div>
       </CardContent>
     </Card>;
