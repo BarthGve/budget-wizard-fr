@@ -7,6 +7,7 @@ import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Dashboard = () => {
   const [currentView, setCurrentView] = useState<"monthly" | "yearly">("monthly");
@@ -17,20 +18,31 @@ const Dashboard = () => {
     recurringExpenses
   } = useDashboardData();
 
+  // Get current month name
+  const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
+
   // Calculate total revenue from contributors
   const totalRevenue = contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
   const yearlyRevenue = totalRevenue * 12;
 
-  // Calculate monthly expenses
+  // Calculate monthly expenses based on debit dates
   const calculateMonthlyExpenses = () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-based
+
     return recurringExpenses?.reduce((sum, expense) => {
       switch (expense.periodicity) {
         case "monthly":
           return sum + expense.amount;
         case "quarterly":
-          return sum + (expense.amount / 3);
+          // Check if this quarter's debit month matches current month
+          const quarterMonths = expense.debit_month ? 
+            [expense.debit_month, ((expense.debit_month + 2) % 12) + 1, ((expense.debit_month + 5) % 12) + 1] : 
+            [1, 4, 7, 10];
+          return sum + (quarterMonths.includes(currentMonth) ? expense.amount : 0);
         case "yearly":
-          return sum + (expense.amount / 12);
+          // Include yearly expense only if current month matches debit month
+          return sum + (expense.debit_month === currentMonth ? expense.amount : 0);
         default:
           return sum;
       }
@@ -61,6 +73,14 @@ const Dashboard = () => {
 
   const monthlyExpenses = calculateMonthlyExpenses();
   const yearlyExpenses = calculateYearlyExpenses();
+
+  // Calculate total monthly savings
+  const totalMonthlySavings = monthlySavings?.reduce((sum, saving) => sum + saving.amount, 0) || 0;
+  const yearlyMonthlySavings = totalMonthlySavings * 12;
+
+  // Calculate monthly balance
+  const monthlyBalance = totalRevenue - monthlyExpenses - totalMonthlySavings;
+  const yearlyBalance = yearlyRevenue - yearlyExpenses - yearlyMonthlySavings;
 
   // Calculate cumulative percentages for the revenue stacked progress bar
   const getCumulativeContributionPercentages = (total: number) => {
@@ -99,10 +119,6 @@ const Dashboard = () => {
       }];
     }, []) || [];
   };
-
-  // Calculate total monthly savings
-  const totalMonthlySavings = monthlySavings?.reduce((sum, saving) => sum + saving.amount, 0) || 0;
-  const yearlyMonthlySavings = totalMonthlySavings * 12;
 
   // Calculate savings goal based on total revenue and savings percentage
   const savingsGoal = profile?.savings_goal_percentage 
@@ -157,7 +173,9 @@ const Dashboard = () => {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Tableau de bord</h1>
               <p className="text-muted-foreground">
-                Aperçu du budget {currentView === "monthly" ? "mensuel" : "annuel"}
+                {currentView === "monthly" 
+                  ? `Aperçu du budget pour ${currentMonthName}` 
+                  : "Aperçu du budget annuel"}
               </p>
             </div>
           </div>
@@ -170,7 +188,7 @@ const Dashboard = () => {
           </TabsList>
 
           <TabsContent value="monthly" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               <RevenueCard 
                 totalRevenue={totalRevenue} 
                 contributorShares={getCumulativeContributionPercentages(totalRevenue)} 
@@ -180,6 +198,17 @@ const Dashboard = () => {
                 contributorShares={getCumulativeExpensePercentages(monthlyExpenses)} 
               />
               <SavingsCard totalMonthlySavings={totalMonthlySavings} savingsGoal={savingsGoal} />
+              <Card>
+                <CardHeader className="py-[16px]">
+                  <CardTitle className="text-2xl">Solde</CardTitle>
+                  <CardDescription>Montant restant après charges et épargne</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className={`text-2xl font-bold ${monthlyBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {monthlyBalance.toFixed(2)} €
+                  </p>
+                </CardContent>
+              </Card>
             </div>
             <div className="grid gap-6 md:grid-cols-2">
               <RecurringExpensesPieChart recurringExpenses={getExpensesForPieChart()} totalExpenses={monthlyExpenses} />
@@ -188,7 +217,7 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="yearly" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               <RevenueCard 
                 totalRevenue={yearlyRevenue} 
                 contributorShares={getCumulativeContributionPercentages(totalRevenue)} 
@@ -198,6 +227,17 @@ const Dashboard = () => {
                 contributorShares={getCumulativeExpensePercentages(yearlyExpenses)} 
               />
               <SavingsCard totalMonthlySavings={yearlyMonthlySavings} savingsGoal={savingsGoal} />
+              <Card>
+                <CardHeader className="py-[16px]">
+                  <CardTitle className="text-2xl">Solde</CardTitle>
+                  <CardDescription>Montant restant après charges et épargne</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className={`text-2xl font-bold ${yearlyBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {yearlyBalance.toFixed(2)} €
+                  </p>
+                </CardContent>
+              </Card>
             </div>
             <div className="grid gap-6 md:grid-cols-2">
               <RecurringExpensesPieChart 
