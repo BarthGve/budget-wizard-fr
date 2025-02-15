@@ -17,10 +17,10 @@ export const SavingsCard = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <p className="font-bold text-2xl">
-            <span className="text-primary text-2xl">{Math.round(totalMonthlySavings)} €</span>
+          <p className="font-bold text-xl">
+            <span className="text-primary text-xl">{Math.round(totalMonthlySavings)} €</span>
             {" "}/{" "}
-            <span className="text-2xl">{Math.round(savingsGoal)} €</span>
+            <span className="text-xl">{Math.round(savingsGoal)} €</span>
           </p>
           <Progress value={savingsGoal > 0 ? totalMonthlySavings / savingsGoal * 100 : 0} className="h-2 bg-slate-400 [&>div]:bg-primary" />
         </div>
