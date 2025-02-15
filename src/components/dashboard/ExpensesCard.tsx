@@ -25,6 +25,7 @@ export const ExpensesCard = ({
   }, 0);
 
   const progressPercentage = (paidExpenses / totalExpenses) * 100;
+  const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
 
   return <Card className="bg-white my-[4px]">
   <CardHeader className="py-[16px]">
