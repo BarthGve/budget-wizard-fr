@@ -1,9 +1,15 @@
-
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Search, Tags, Repeat } from "lucide-react";
+import { ArrowUpDown, Search, Tags, Repeat, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +29,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Edit2, Trash2 } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface RecurringExpense {
   id: string;
@@ -64,12 +79,12 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
   } | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [periodicityFilter, setPeriodicityFilter] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Get unique categories and periodicities for filters
   const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category)));
   const uniquePeriodicities = Array.from(new Set(expenses.map(expense => expense.periodicity)));
 
-  // Sorting function
   const sortData = (data: RecurringExpense[]) => {
     if (!sortConfig) return data;
 
@@ -84,7 +99,6 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
     });
   };
 
-  // Filtering function
   const filterData = (data: RecurringExpense[]) => {
     return data.filter(expense => {
       const matchesSearch = expense.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,6 +118,18 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
   };
 
   const filteredAndSortedData = sortData(filterData(expenses));
+  const totalPages = Math.ceil(filteredAndSortedData.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const paginatedData = filteredAndSortedData.slice(startIndex, startIndex + rowsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleRowsPerPageChange = (value: string) => {
+    setRowsPerPage(Number(value));
+    setCurrentPage(1); // Reset to first page when changing rows per page
+  };
 
   return (
     <div className="space-y-4">
@@ -203,7 +229,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredAndSortedData.map((expense) => (
+            {paginatedData.map((expense) => (
               <TableRow key={expense.id}>
                 <TableCell className="font-medium">{expense.name}</TableCell>
                 <TableCell>{expense.category}</TableCell>
@@ -250,6 +276,107 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             ))}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span>{filteredAndSortedData.length} résultat{filteredAndSortedData.length > 1 ? 's' : ''}</span>
+          <Select
+            value={rowsPerPage.toString()}
+            onValueChange={handleRowsPerPageChange}
+          >
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue placeholder={rowsPerPage} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {[10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <span>par page</span>
+        </div>
+
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </PaginationLink>
+            </PaginationItem>
+
+            {/* Pages before current page */}
+            {currentPage > 2 && (
+              <PaginationItem>
+                <PaginationLink onClick={() => handlePageChange(1)}>
+                  1
+                </PaginationLink>
+              </PaginationItem>
+            )}
+            {currentPage > 3 && <PaginationEllipsis />}
+            {currentPage > 1 && (
+              <PaginationItem>
+                <PaginationLink onClick={() => handlePageChange(currentPage - 1)}>
+                  {currentPage - 1}
+                </PaginationLink>
+              </PaginationItem>
+            )}
+
+            {/* Current page */}
+            <PaginationItem>
+              <PaginationLink isActive>
+                {currentPage}
+              </PaginationLink>
+            </PaginationItem>
+
+            {/* Pages after current page */}
+            {currentPage < totalPages && (
+              <PaginationItem>
+                <PaginationLink onClick={() => handlePageChange(currentPage + 1)}>
+                  {currentPage + 1}
+                </PaginationLink>
+              </PaginationItem>
+            )}
+            {currentPage < totalPages - 2 && <PaginationEllipsis />}
+            {currentPage < totalPages - 1 && (
+              <PaginationItem>
+                <PaginationLink onClick={() => handlePageChange(totalPages)}>
+                  {totalPages}
+                </PaginationLink>
+              </PaginationItem>
+            )}
+
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </PaginationLink>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
