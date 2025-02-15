@@ -12,6 +12,11 @@ interface DashboardTabContentProps {
   savings: number;
   balance: number;
   savingsGoal: number;
+  contributors: Array<{
+    name: string;
+    total_contribution: number;
+    percentage_contribution: number;
+  }>;
   contributorShares: Array<{
     name: string;
     start: number;
@@ -44,7 +49,9 @@ export const DashboardTabContent = ({
   savings,
   balance,
   savingsGoal,
+  contributors,
   contributorShares,
+  expenseShares,
   recurringExpenses,
   monthlySavings,
 }: DashboardTabContentProps) => {
