@@ -10,7 +10,22 @@ export const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   amount: z.string().min(1, "Le montant est requis").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Le montant doit être un nombre positif"),
   category: z.string().min(1, "La catégorie est requise"),
-  periodicity: z.enum(["monthly", "quarterly", "yearly"])
+  periodicity: z.enum(["monthly", "quarterly", "yearly"]),
+  debit_day: z.string().min(1, "Le jour de prélèvement est requis").refine(
+    (val) => {
+      const day = parseInt(val);
+      return !isNaN(day) && day >= 1 && day <= 31;
+    },
+    "Le jour doit être entre 1 et 31"
+  ),
+  debit_month: z.string().nullable().refine(
+    (val) => {
+      if (val === null || val === "") return true;
+      const month = parseInt(val);
+      return !isNaN(month) && month >= 1 && month <= 12;
+    },
+    "Le mois doit être entre 1 et 12"
+  )
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -22,6 +37,8 @@ interface UseRecurringExpenseFormProps {
     amount: number;
     category: string;
     periodicity: "monthly" | "quarterly" | "yearly";
+    debit_day: number;
+    debit_month: number | null;
   };
   onSuccess: () => void;
 }
@@ -35,7 +52,9 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
       name: expense?.name || "",
       amount: expense?.amount?.toString() || "",
       category: expense?.category || "",
-      periodicity: expense?.periodicity || "monthly"
+      periodicity: expense?.periodicity || "monthly",
+      debit_day: expense?.debit_day?.toString() || "1",
+      debit_month: expense?.debit_month?.toString() || ""
     },
   });
 
@@ -49,25 +68,32 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
         return;
       }
 
+      // Gérer le debit_month en fonction de la périodicité
+      let debit_month = values.debit_month ? parseInt(values.debit_month) : null;
+      if (values.periodicity === "monthly") {
+        debit_month = null;
+      }
+
+      const expenseData = {
+        name: values.name,
+        amount: Number(values.amount),
+        category: values.category,
+        periodicity: values.periodicity,
+        debit_day: parseInt(values.debit_day),
+        debit_month: debit_month,
+      };
+
       if (expense) {
         const { error } = await supabase
           .from("recurring_expenses")
-          .update({
-            name: values.name,
-            amount: Number(values.amount),
-            category: values.category,
-            periodicity: values.periodicity
-          })
+          .update(expenseData)
           .eq("id", expense.id);
 
         if (error) throw error;
         toast.success("Charge récurrente mise à jour avec succès");
       } else {
         const { error } = await supabase.from("recurring_expenses").insert({
-          name: values.name,
-          amount: Number(values.amount),
-          category: values.category,
-          periodicity: values.periodicity,
+          ...expenseData,
           profile_id: user.id,
         });
 

@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,12 +26,25 @@ const periodicityLabels = {
   yearly: "Annuelle"
 };
 
+const formatDebitDate = (debit_day: number, debit_month: number | null, periodicity: string) => {
+  const day = debit_day.toString().padStart(2, '0');
+  
+  if (periodicity === "monthly") {
+    return `Le ${day} de chaque mois`;
+  } else {
+    const monthName = new Date(0, debit_month! - 1).toLocaleString('fr-FR', { month: 'long' });
+    return `Le ${day} ${monthName}`;
+  }
+};
+
 interface RecurringExpense {
   id: string;
   name: string;
   amount: number;
   category: string;
   periodicity: "monthly" | "quarterly" | "yearly";
+  debit_day: number;
+  debit_month: number | null;
 }
 
 const RecurringExpenses = () => {
@@ -76,6 +88,8 @@ const RecurringExpenses = () => {
         amount: number;
         category: string;
         periodicity: "monthly" | "quarterly" | "yearly";
+        debit_day: number;
+        debit_month: number | null;
       }>;
     }
   });
@@ -135,6 +149,8 @@ const RecurringExpenses = () => {
                       <span>Catégorie: {expense.category}</span>
                       <span>•</span>
                       <span>Périodicité: {periodicityLabels[expense.periodicity]}</span>
+                      <span>•</span>
+                      <span>Prélèvement: {formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">

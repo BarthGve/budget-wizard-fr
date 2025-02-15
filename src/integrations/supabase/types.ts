@@ -286,6 +286,8 @@ export type Database = {
           amount: number
           category: string
           created_at: string
+          debit_day: number
+          debit_month: number | null
           id: string
           name: string
           periodicity: string
@@ -296,6 +298,8 @@ export type Database = {
           amount?: number
           category: string
           created_at?: string
+          debit_day?: number
+          debit_month?: number | null
           id?: string
           name: string
           periodicity?: string
@@ -306,6 +310,8 @@ export type Database = {
           amount?: number
           category?: string
           created_at?: string
+          debit_day?: number
+          debit_month?: number | null
           id?: string
           name?: string
           periodicity?: string

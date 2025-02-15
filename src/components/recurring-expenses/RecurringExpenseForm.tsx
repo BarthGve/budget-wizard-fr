@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRecurringExpenseForm } from "./hooks/useRecurringExpenseForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 interface RecurringExpenseFormProps {
   expense?: {
@@ -14,6 +15,8 @@ interface RecurringExpenseFormProps {
     amount: number;
     category: string;
     periodicity: "monthly" | "quarterly" | "yearly";
+    debit_day: number;
+    debit_month: number | null;
   };
   onSuccess: () => void;
   onCancel: () => void;
@@ -24,6 +27,11 @@ const periodicityOptions = [
   { value: "quarterly", label: "Trimestrielle" },
   { value: "yearly", label: "Annuelle" }
 ];
+
+const monthOptions = Array.from({ length: 12 }, (_, i) => ({
+  value: (i + 1).toString(),
+  label: new Date(0, i).toLocaleString('fr-FR', { month: 'long' })
+}));
 
 export function RecurringExpenseForm({
   expense,
@@ -46,6 +54,21 @@ export function RecurringExpenseForm({
       return data;
     }
   });
+
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "periodicity") {
+        const periodicity = value.periodicity;
+        if (periodicity === "monthly") {
+          form.setValue("debit_month", "");
+        } else if (!value.debit_month) {
+          form.setValue("debit_month", "1");
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   return (
     <Form {...form}>
@@ -132,6 +155,53 @@ export function RecurringExpenseForm({
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="debit_day"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Jour du prélèvement</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  min="1"
+                  max="31"
+                  placeholder="Ex: 15"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {form.watch("periodicity") !== "monthly" && (
+          <FormField
+            control={form.control}
+            name="debit_month"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mois du prélèvement</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value || ""}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez le mois" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {monthOptions.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <div className="flex justify-end space-x-2">
           <Button type="button" variant="outline" onClick={onCancel}>
