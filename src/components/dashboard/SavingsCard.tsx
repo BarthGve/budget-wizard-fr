@@ -16,14 +16,14 @@ export const SavingsCard = ({
         <CardDescription>Progression mensuelle</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          <p className="font-bold text-xl">
-            <span className="text-primary text-xl">{Math.round(totalMonthlySavings)} €</span>
-            {" "}/{" "}
-            <span className="text-xl">{Math.round(savingsGoal)} €</span>
-          </p>
-          <Progress value={savingsGoal > 0 ? totalMonthlySavings / savingsGoal * 100 : 0} className="h-2 bg-slate-400 [&>div]:bg-primary" />
-        </div>
+      <div className="space-y-4">
+  <p className="font-bold text-xl flex items-center gap-x-1">
+    <span className="text-primary text-xl">{Math.round(totalMonthlySavings)} €</span>
+    <span>/</span>
+    <span className="text-xl">{Math.round(savingsGoal)} €</span>
+  </p>
+  <Progress value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0} className="h-2 bg-slate-400 [&>div]:bg-primary" />
+</div>
       </CardContent>
     </Card>;
 };
