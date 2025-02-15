@@ -89,10 +89,10 @@ const Dashboard = () => {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Tableau de bord</h1>
               <p className="text-muted-foreground">
-                {currentView === "monthly" 
-                  ? `Aperçu du budget pour ${currentMonthName}` 
-                  : "Aperçu du budget annuel"}
-              </p>
+  {currentView === "monthly" 
+    ? `Aperçu du budget pour le mois de ${currentMonthName} ${new Date().getFullYear()}` 
+    : `Aperçu du budget annuel ${new Date().getFullYear()}`}
+</p>
             </div>
           </div>
         </div>
