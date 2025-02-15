@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableBody,
@@ -29,6 +28,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface MonthlySaving {
   id: string;
@@ -67,7 +77,6 @@ export const SavingsList = ({ monthlySavings, onSavingDeleted }: SavingsListProp
     onSavingDeleted();
   };
 
-  // Calcul pour la pagination
   const totalPages = Math.ceil(monthlySavings.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedSavings = monthlySavings.slice(startIndex, startIndex + itemsPerPage);
@@ -96,13 +105,27 @@ export const SavingsList = ({ monthlySavings, onSavingDeleted }: SavingsListProp
                   <TableCell>{saving.description || "-"}</TableCell>
                   <TableCell className="text-right">{saving.amount}€</TableCell>
                   <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteMonthlySaving(saving.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Cette action ne peut pas être annulée. Cela supprimera définitivement ce versement d'épargne.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => deleteMonthlySaving(saving.id)}>
+                            Supprimer
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               ))}

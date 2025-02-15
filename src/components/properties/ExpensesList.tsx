@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableBody,
@@ -160,16 +159,16 @@ export function ExpensesList({ expenses, onExpenseDeleted, onExpenseEdit }: Expe
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                        <AlertDialogTitle>Supprimer la dépense</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Cette action ne peut pas être annulée. Cette dépense sera définitivement supprimée.
+                          Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action ne peut pas être annulée.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction
+                        <AlertDialogAction 
                           onClick={() => handleDelete(expense.id)}
-                          className="bg-destructive hover:bg-destructive/90"
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                           Supprimer
                         </AlertDialogAction>
