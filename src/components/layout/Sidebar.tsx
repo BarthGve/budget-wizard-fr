@@ -101,7 +101,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
             "font-bold text-primary transition-all duration-300",
             collapsed ? "text-sm" : "text-xl"
           )}>
-            {collapsed ? "SBW" : "Shared Budget Wizard"}
+            {collapsed ? "BW" : "Budget Wizard"}
           </h1>
           <button
             onClick={() => setCollapsed(!collapsed)}
