@@ -11,19 +11,22 @@ export const SavingsCard = ({
   savingsGoal
 }: SavingsCardProps) => {
   return <Card className="bg-white py-0 my-[2px]">
-      <CardHeader className="py-[16px]">
-        <CardTitle className="text-2xl">Objectif d'épargne</CardTitle>
-        <CardDescription>Progression mensuelle</CardDescription>
-      </CardHeader>
-      <CardContent>
-      <div className="space-y-4">
-  <p className="font-bold text-xl flex items-center gap-x-1">
-    <span className="text-primary text-xl">{Math.round(totalMonthlySavings)} €</span>
-    <span>/</span>
-    <span className="text-xl">{Math.round(savingsGoal)} €</span>
-  </p>
-  <Progress value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0} className="h-2 bg-slate-400 [&>div]:bg-primary" />
-</div>
-      </CardContent>
-    </Card>;
+  <CardHeader className="py-[16px]">
+    <CardTitle className="text-2xl">Objectif d'épargne</CardTitle>
+    <CardDescription>Progression mensuelle</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <div className="flex items-center gap-x-4">
+      <div className="whitespace-nowrap font-bold text-xl flex items-center gap-x-1">
+        <span className="text-primary">{Math.round(totalMonthlySavings)} €</span>
+        <span>/</span>
+        <span>{Math.round(savingsGoal)} €</span>
+      </div>
+      <Progress 
+        value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0} 
+        className="h-2 flex-grow bg-slate-400 [&>div]:bg-primary" 
+      />
+    </div>
+  </CardContent>
+</Card>;
 };
