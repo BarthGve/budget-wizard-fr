@@ -303,16 +303,16 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           <PaginationContent>
             <PaginationItem>
               <PaginationLink
-                onClick={() => handlePageChange(1)}
-                disabled={currentPage === 1}
+                onClick={() => currentPage !== 1 && handlePageChange(1)}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
               >
                 <ChevronsLeft className="h-4 w-4" />
               </PaginationLink>
             </PaginationItem>
             <PaginationItem>
               <PaginationLink
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
+                onClick={() => currentPage !== 1 && handlePageChange(currentPage - 1)}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
               >
                 <ChevronLeft className="h-4 w-4" />
               </PaginationLink>
@@ -361,16 +361,16 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
 
             <PaginationItem>
               <PaginationLink
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                onClick={() => currentPage !== totalPages && handlePageChange(currentPage + 1)}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
               >
                 <ChevronRight className="h-4 w-4" />
               </PaginationLink>
             </PaginationItem>
             <PaginationItem>
               <PaginationLink
-                onClick={() => handlePageChange(totalPages)}
-                disabled={currentPage === totalPages}
+                onClick={() => currentPage !== totalPages && handlePageChange(totalPages)}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
               >
                 <ChevronsRight className="h-4 w-4" />
               </PaginationLink>
