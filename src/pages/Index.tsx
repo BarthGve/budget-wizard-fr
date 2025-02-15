@@ -114,6 +114,7 @@ const Dashboard = () => {
               expenseShares={getCumulativeExpensePercentages(contributors, monthlyExpenses)}
               recurringExpenses={getExpensesForPieChart()}
               monthlySavings={monthlySavings || []}
+              contributors={contributors || []}
             />
           </TabsContent>
 
@@ -128,6 +129,7 @@ const Dashboard = () => {
               expenseShares={getCumulativeExpensePercentages(contributors, yearlyExpenses)}
               recurringExpenses={getExpensesForPieChart()}
               monthlySavings={getSavingsForPieChart()}
+              contributors={contributors || []}
             />
           </TabsContent>
         </Tabs>
