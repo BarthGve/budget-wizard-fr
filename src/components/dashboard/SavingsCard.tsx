@@ -24,10 +24,10 @@ export const SavingsCard = ({
       <div className="whitespace-nowrap font-bold text-xl flex items-center gap-x-1">
         <span>{Math.round(savingsGoal)} €</span>
       </div>
-      <Progress 
-        value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0} 
-        className="flex-grow" 
-      />
+      <Progress
+  value={savingsGoal > 0 ? Math.min(100, (totalMonthlySavings / savingsGoal) * 100) : 0}
+  className="flex-grow"
+/>
     </div>
     <div className="flex justify-between text-sm text-muted-foreground">
         <span>Provisionné : {Math.round(totalMonthlySavings)} €</span>
