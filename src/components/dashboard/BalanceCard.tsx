@@ -13,7 +13,7 @@ export const BalanceCard = ({
         <CardDescription>Montant disponible</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className={`text-2xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+        <p className="text-primary-xl font-bold ">
           {balance.toFixed(2)} €
         </p>
       </CardContent>
