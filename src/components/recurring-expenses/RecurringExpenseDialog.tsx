@@ -10,6 +10,8 @@ interface RecurringExpenseDialogProps {
     amount: number;
     category: string;
     periodicity: "monthly" | "quarterly" | "yearly";
+    debit_day: number;
+    debit_month: number | null;
   };
   trigger: React.ReactNode;
 }
