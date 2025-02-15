@@ -13,32 +13,29 @@ export const SavingsCard = ({
 }: SavingsCardProps) => {
   return <Card className="bg-white py-0 my-[2px]">
   <CardHeader className="py-[16px]">
-    <div className="flex items-center gap-x-2">
-      <PiggyBank className="w-6 h-6 text-primary" />
-      <CardTitle className="text-2xl">Objectif d'épargne</CardTitle>
+  <div className="flex items-center gap-x-2">
+  <PiggyBank className="w-6 h-6 text-primary" />
+    <CardTitle className="text-2xl">Objectif d'épargne</CardTitle>
     </div>
     <CardDescription>Progression mensuelle</CardDescription>
   </CardHeader>
   <CardContent>
-    <div className="space-y-2">
-      <div className="flex items-center gap-x-4">
-        <div className="whitespace-nowrap font-bold text-xl flex items-center gap-x-1">
-          <span>{Math.round(savingsGoal)} €</span>
-        </div>
-        <Progress
-          value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0}
-          className="flex-grow h-2 bg-slate-200 [&>div]:bg-primary"
-        />
+    <div className="flex items-center gap-x-4">
+      <div className="whitespace-nowrap font-bold text-xl flex items-center gap-x-1">
+        <span>{Math.round(savingsGoal)} €</span>
       </div>
-      <div className="flex justify-between text-sm text-muted-foreground">
+      <Progress 
+        value={savingsGoal > 0 ? (totalMonthlySavings / savingsGoal) * 100 : 0} 
+        className="flex-grow" 
+      />
+    </div>
+    <div className="flex justify-between text-sm text-muted-foreground">
         <span>Provisionné : {Math.round(totalMonthlySavings)} €</span>
-        <span>
-          Reste : <span className={`font-medium ${(savingsGoal - totalMonthlySavings) <= 0 ? 'text-green-600' : 'text-red-600'}`}>
+        <span> Reste : <span className={`font-medium ${(savingsGoal - totalMonthlySavings) <= 0 ? 'text-green-600' : 'text-red-600'}`}>
             {Math.round(savingsGoal - totalMonthlySavings)} €
           </span>
-        </span>
+          </span>
       </div>
-    </div>
   </CardContent>
 </Card>;
 };
