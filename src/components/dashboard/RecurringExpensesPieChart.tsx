@@ -41,7 +41,7 @@ export const RecurringExpensesPieChart = ({
   return <Card className="col-span-full md:col-span-1 bg-white">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div>
-          <CardTitle>Prévisions des dépenses</CardTitle>
+          <CardTitle>Ventilation des charges</CardTitle>
           <CardDescription>Vue d'ensemble par catégorie</CardDescription>
         </div>
         <Button variant="outline" size="sm" asChild>
