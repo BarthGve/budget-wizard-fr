@@ -1,29 +1,25 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {ShoppingBasket} from 'lucide-react'  
-
-interface ContributorShare {
-  name: string;
-  start: number;
-  end: number;
-  amount: number;
-}
+import { ShoppingBasket } from 'lucide-react'  
 
 interface ExpensesCardProps {
   totalExpenses: number;
-  contributorShares: ContributorShare[];
+  recurringExpenses: Array<{
+    amount: number;
+    debit_day: number;
+  }>;
 }
 
 export const ExpensesCard = ({
   totalExpenses,
-  contributorShares,
+  recurringExpenses,
 }: ExpensesCardProps) => {
   const currentDay = new Date().getDate();
-  const paidExpenses = contributorShares.reduce((sum, share) => {
+  const paidExpenses = recurringExpenses.reduce((sum, expense) => {
     // Si nous sommes après le jour de prélèvement, on considère que c'est payé
-    if (currentDay >= share.debit_day) {
-      return sum + share.amount;
+    if (currentDay >= expense.debit_day) {
+      return sum + expense.amount;
     }
     return sum;
   }, 0);
@@ -32,10 +28,10 @@ export const ExpensesCard = ({
 
   return <Card className="bg-white my-[4px]">
       <CardHeader className="py-[16px]">
-      <div className="flex items-center gap-x-2">
-  <ShoppingBasket className="w-6 h-6 text-primary" />
-    <CardTitle className="text-2xl">Charges</CardTitle>
-    </div>
+        <div className="flex items-center gap-x-2">
+          <ShoppingBasket className="w-6 h-6 text-primary" />
+          <CardTitle className="text-2xl">Charges</CardTitle>
+        </div>
         <CardDescription>Total des charges mensuelles</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

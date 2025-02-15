@@ -5,7 +5,6 @@ import { SavingsCard } from "./SavingsCard";
 import { BalanceCard } from "./BalanceCard";
 import { RecurringExpensesPieChart } from "./RecurringExpensesPieChart";
 import { SavingsPieChart } from "./SavingsPieChart";
-import { ContributorsTable } from "./ContributorsTable";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -30,16 +29,12 @@ interface DashboardTabContentProps {
     name: string;
     amount: number;
     category: string;
+    debit_day: number;
   }>;
   monthlySavings: Array<{
     id: string;
     name: string;
     amount: number;
-  }>;
-  contributors: Array<{
-    name: string;
-    total_contribution: number;
-    percentage_contribution: number;
   }>;
 }
 
@@ -50,10 +45,8 @@ export const DashboardTabContent = ({
   balance,
   savingsGoal,
   contributorShares,
-  expenseShares,
   recurringExpenses,
   monthlySavings,
-  contributors,
 }: DashboardTabContentProps) => {
   return (
     <div className="space-y-6">
@@ -64,7 +57,7 @@ export const DashboardTabContent = ({
         />
         <ExpensesCard
           totalExpenses={expenses}
-          contributorShares={expenseShares}
+          recurringExpenses={recurringExpenses}
         />
         <SavingsCard
           totalMonthlySavings={savings}
@@ -72,10 +65,6 @@ export const DashboardTabContent = ({
         />
         <BalanceCard balance={balance} />
       </div>
-      <ContributorsTable 
-        contributors={contributors} 
-        totalExpenses={expenses}
-      />
       <div className="grid gap-6 md:grid-cols-2">
         <RecurringExpensesPieChart
           recurringExpenses={recurringExpenses}
