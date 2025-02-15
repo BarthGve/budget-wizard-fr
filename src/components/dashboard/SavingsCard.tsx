@@ -12,6 +12,7 @@ export const SavingsCard = ({
 }: SavingsCardProps) => {
   return <Card className="bg-white py-0 my-[2px]">
   <CardHeader className="py-[16px]">
+  <PiggyBank className="w-6 h-6 text-primary" />
     <CardTitle className="text-2xl">Objectif d'épargne</CardTitle>
     <CardDescription>Progression mensuelle</CardDescription>
   </CardHeader>
