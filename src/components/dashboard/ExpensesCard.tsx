@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {ShoppingBasket} from 'lucide-react'  
 interface ContributorShare {
   name: string;
   start: number;
@@ -14,7 +15,10 @@ export const ExpensesCard = ({
 }: ExpensesCardProps) => {
   return <Card className="bg-white my-[4px]">
       <CardHeader className="py-[16px]">
-        <CardTitle className="text-2xl">Charges </CardTitle>
+      <div className="flex items-center gap-x-2">
+  <ShoppingBasket className="w-6 h-6 text-primary" />
+    <CardTitle className="text-2xl">Charges</CardTitle>
+    </div>
         <CardDescription>Total des charges mensuelles</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

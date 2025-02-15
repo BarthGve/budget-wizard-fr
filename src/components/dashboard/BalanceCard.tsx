@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {Scale} from 'lucide-react'  
 interface BalanceCardProps {
   balance: number;
   isMonthly?: boolean;
@@ -9,7 +10,10 @@ export const BalanceCard = ({
 }: BalanceCardProps) => {
   return <Card>
       <CardHeader className="py-[16px]">
-        <CardTitle className="text-2xl">Solde</CardTitle>
+      <div className="flex items-center gap-x-2">
+  <Scale className="w-6 h-6 text-primary" />
+    <CardTitle className="text-2xl">Charges</CardTitle>
+    </div>
         <CardDescription>Montant disponible</CardDescription>
       </CardHeader>
       <CardContent>
