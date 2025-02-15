@@ -33,7 +33,7 @@ export const ExpensesCard = ({
       <ShoppingBasket className="w-6 h-6 text-primary" />
       <CardTitle className="text-2xl">Charges</CardTitle>
     </div>
-    <CardDescription>A payer en ${currentMonthName} ${new Date().getFullYear()}</CardDescription>
+    <CardDescription>Du mois de {currentMonthName} {new Date().getFullYear()}</CardDescription>
   </CardHeader>
   <CardContent>
     <div className="space-y-2">
