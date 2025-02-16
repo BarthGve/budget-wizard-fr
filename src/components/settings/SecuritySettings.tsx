@@ -122,7 +122,7 @@ export const SecuritySettings = () => {
 <Card className="mt-6 border-destructive">
   <CardHeader>
   <div className="flex items-center space-x-2">
-      <TriangleAlert className="h-5 w-5" /> 
+      <TriangleAlert className="h-5 w-5 text-destructive" /> 
       <CardTitle className="text-destructive">Zone de danger</CardTitle>
     </div>
     <CardDescription>Actions irréversibles pour votre compte</CardDescription>
