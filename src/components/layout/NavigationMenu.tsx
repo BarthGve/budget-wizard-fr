@@ -42,15 +42,13 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
               className={({ isActive }) =>
                 cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
-                  "hover:bg-gray-100",
-                  isActive
-                    ? "bg-primary text-primary-foreground hover:bg-primary-hover"
-                    : "text-gray-700"
+                  "hover:bg-primary/10",
+                  isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )
               }
             >
               <item.icon className="h-5 w-5" />
-              {!collapsed && <span>{item.title}</span>}
+              {!collapsed && <span className="ml-3">{item.title}</span>}
             </NavLink>
           </li>
         ))}
