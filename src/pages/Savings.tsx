@@ -41,7 +41,7 @@ const Savings = () => {
             totalMonthlyAmount={totalMonthlyAmount}
           />
 
-          <MonthlyTotal totalMonthlyAmount={totalMonthlyAmount} />
+      
         </div>
 
         <SavingsList
