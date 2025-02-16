@@ -18,11 +18,8 @@ export const BalanceCard = ({
       </CardHeader> */}
       
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <div className="flex items-center gap-x-2">
           <CardTitle className="text-2xl">Solde</CardTitle>
           <Scale className="h-6 w-6 text-muted-foreground" />
-      </div>
-      <CardDescription>Montant disponible</CardDescription>
         </CardHeader>
       
       
