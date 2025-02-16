@@ -6,9 +6,10 @@ import {
   PiggyBank,
   ClipboardList,
   Home,
-  Shield,
+  
   TrendingUp,
   Mailbox,
+  MessageSquare
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
@@ -21,23 +22,21 @@ interface NavigationMenuProps {
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
 
-  const menuItems = isAdmin ? [
-    // Menu items for admin users
-    { title: "Administration", icon: Shield, path: "/admin" },
-    { title: "Feedbacks", icon: MessageSquare, path: "/admin/feedbacks" }
-  ] : [
-    // Menu items for regular users
+  const adminMenu = [
+    { title: "Gestion des utilisateurs", icon: Users, path: "/admin" },
+    { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks" }
+  ];
+  
+  const userMenu = [
     { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
     { title: "Contributeurs", icon: Users, path: "/contributors" },
     { title: "Épargne", icon: PiggyBank, path: "/savings" },
     { title: "Bourse", icon: TrendingUp, path: "/stocks" },
     { title: "Immobilier", icon: Home, path: "/properties" },
-    { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
-    ...(isAdmin ? [
-      { title: "Gestion des utilisateurs", icon: Users, path: "/admin" },
-      { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks" }
-    ] : []),
+    { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" }
   ];
+  
+  const menuItems = isAdmin ? [...adminMenu] : [...userMenu, ...adminMenu];
 
   return (
     <nav className="flex-1 p-4">
