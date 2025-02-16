@@ -114,7 +114,8 @@ export const SavingsGoal = ({
   const remainingToTarget = targetMonthlySavings - totalMonthlyAmount;
 
   return (
-    <Card>
+    <div className="flex flex-col md:flex-row gap-4">
+      <Card className="flex-1">
       <CardHeader>
         <div className="flex items-center gap-2">
           <Target className="h-5 w-5 text-primary" />
@@ -167,5 +168,6 @@ export const SavingsGoal = ({
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 };
