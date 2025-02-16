@@ -8,13 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, StarHalf, Eye } from "lucide-react";
+import { Star, StarHalf } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Feedback } from "@/types/feedback";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FeedbacksTableProps {
   feedbacks: Feedback[];
@@ -33,6 +33,22 @@ export const FeedbacksTable = ({ feedbacks, onViewDetails }: FeedbacksTableProps
     });
   };
 
+  const handleRowClick = async (feedback: Feedback) => {
+    if (feedback.status === "pending") {
+      try {
+        const { error } = await supabase
+          .from("feedbacks")
+          .update({ status: "in_progress" })
+          .eq("id", feedback.id);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error("Error updating status:", error);
+      }
+    }
+    onViewDetails(feedback);
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -41,12 +57,15 @@ export const FeedbacksTable = ({ feedbacks, onViewDetails }: FeedbacksTableProps
           <TableHead>Titre</TableHead>
           <TableHead>Note & Date</TableHead>
           <TableHead>Statut</TableHead>
-          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {feedbacks.map((feedback) => (
-          <TableRow key={feedback.id}>
+          <TableRow 
+            key={feedback.id}
+            className="cursor-pointer hover:bg-muted/50"
+            onClick={() => handleRowClick(feedback)}
+          >
             <TableCell>
               <div className="flex items-center space-x-3">
                 <Avatar>
@@ -85,16 +104,6 @@ export const FeedbacksTable = ({ feedbacks, onViewDetails }: FeedbacksTableProps
                 {feedback.status === "in_progress" && "En cours"}
                 {feedback.status === "completed" && "Terminé"}
               </div>
-            </TableCell>
-            <TableCell>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onViewDetails(feedback)}
-                className="hover:bg-primary/10"
-              >
-                <Eye className="h-4 w-4" />
-              </Button>
             </TableCell>
           </TableRow>
         ))}

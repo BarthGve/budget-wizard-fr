@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { LayoutGrid, Table2, Star } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FeedbacksTable } from "@/components/admin/FeedbacksTable";
 import { FeedbacksKanban } from "@/components/admin/FeedbacksKanban";
@@ -41,6 +39,8 @@ export const AdminFeedbacks = () => {
   const [sortColumn, setSortColumn] = useState<string>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
+
+  const queryClient = useQueryClient();
 
   const { data: feedbacks, isLoading } = useQuery({
     queryKey: ["feedbacks", page, statusFilter, sortColumn, sortDirection],
@@ -87,6 +87,8 @@ export const AdminFeedbacks = () => {
         .eq("id", id);
 
       if (error) throw error;
+      
+      await queryClient.invalidateQueries({ queryKey: ["feedbacks"] });
       toast.success("Statut mis à jour");
     } catch (error) {
       console.error("Error updating status:", error);
