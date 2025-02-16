@@ -30,11 +30,10 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const userMenu = [
     { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
     { title: "Contributeurs", icon: Users, path: "/contributors" },
-    { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" }
+    { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
     { title: "Épargne", icon: PiggyBank, path: "/savings" },
     { title: "Bourse", icon: TrendingUp, path: "/stocks" },
     { title: "Immobilier", icon: Home, path: "/properties" },
-   
   ];
   
   const menuItems = isAdmin ? [...adminMenu] : [...userMenu];
