@@ -16,7 +16,7 @@ import {
   Star,
   UserCircle2,
   CreditCard,
-  ChevronUpDown,
+  ChevronsUpDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,7 +54,12 @@ export const Sidebar = ({ className }: SidebarProps) => {
 
       if (error) throw error;
 
-      return data as Profile;
+      const profileData = {
+        ...data,
+        email: user?.email
+      } as Profile;
+
+      return profileData;
     },
   });
 
@@ -173,7 +178,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
                         <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
                         <span className="text-xs text-muted-foreground">{profile?.email}</span>
                       </div>
-                      <ChevronUpDown className="h-4 w-4 text-muted-foreground" />
+                      <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
                     </div>
                   )}
                 </div>
