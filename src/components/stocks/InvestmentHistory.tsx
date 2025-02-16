@@ -24,7 +24,12 @@ export const InvestmentHistory = ({ data }: InvestmentHistoryProps) => {
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
    
-              <XAxis dataKey="year" />
+              <XAxis dataKey="year"
+            
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) => value.slice(0, 3)} />
           
               <Tooltip 
                 formatter={(value) => 
