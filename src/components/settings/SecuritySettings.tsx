@@ -79,6 +79,7 @@ export const SecuritySettings = () => {
   };
 
   return (
+    <>
     <Card>
       <CardHeader>
         <div className="flex items-center space-x-2">
@@ -159,5 +160,35 @@ export const SecuritySettings = () => {
         </div>
       </CardContent>
     </Card>
+
+<Card className="mt-6 border-destructive">
+<CardHeader>
+  <h4 className="text-sm font-medium text-destructive">Zone de danger</h4>
+  <CardDescription>Actions irréversibles pour votre compte</CardDescription>
+</CardHeader>
+<CardContent>
+  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <DialogTrigger asChild>
+      <Button variant="destructive" className="w-full">
+        Supprimer mon compte
+      </Button>
+    </DialogTrigger>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Êtes-vous sûr de vouloir supprimer votre compte ?</DialogTitle>
+        <DialogDescription>
+          Cette action est irréversible. Toutes vos données seront définitivement supprimées.
+        </DialogDescription>
+      </DialogHeader>
+      <DialogFooter>
+        <Button variant="destructive" onClick={handleDeleteAccount} disabled={isDeleting}>
+          {isDeleting ? "Suppression..." : "Oui, supprimer mon compte"}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</CardContent>
+</Card>
+</>
   );
 };
