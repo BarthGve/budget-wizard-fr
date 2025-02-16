@@ -18,7 +18,7 @@ export const BalanceCard = ({
       </CardHeader> */}
       
       <CardHeader className="py-[16px]">
-      <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <div className="flex flex-row items-center justify-between ">
           <CardTitle className="text-2xl">Solde</CardTitle>
           <Scale className="h-6 w-6 text-muted-foreground" />
           </div>
