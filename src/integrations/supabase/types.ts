@@ -74,6 +74,47 @@ export type Database = {
           },
         ]
       }
+      feedbacks: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          profile_id: string
+          rating: number | null
+          status: Database["public"]["Enums"]["feedback_status"] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          profile_id: string
+          rating?: number | null
+          status?: Database["public"]["Enums"]["feedback_status"] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+          rating?: number | null
+          status?: Database["public"]["Enums"]["feedback_status"] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedbacks_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       monthly_savings: {
         Row: {
           amount: number
@@ -455,6 +496,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      feedback_status: "pending" | "in_progress" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
