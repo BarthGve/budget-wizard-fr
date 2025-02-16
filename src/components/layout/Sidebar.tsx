@@ -184,7 +184,12 @@ export const Sidebar = ({ className }: SidebarProps) => {
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[240px]">
+            <DropdownMenuContent
+              align="end"
+              side="right"
+              sideOffset={20}
+              className="w-[240px]"
+            >
               <div className="flex items-center gap-3 p-2 border-b">
                 <Avatar>
                   <AvatarImage
