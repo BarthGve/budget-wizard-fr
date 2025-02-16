@@ -19,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Profile } from "@/types/profile";
-import { FeedbackDialog } from "../feedback/FeedbackDialog";
 
 interface UserDropdownProps {
   collapsed: boolean;
@@ -106,7 +105,6 @@ export const UserDropdown = ({ collapsed, profile }: UserDropdownProps) => {
             <Bell className="mr-2 h-4 w-4" />
             <span>Notifications</span>
           </DropdownMenuItem>
-          <FeedbackDialog />
           <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Se déconnecter</span>

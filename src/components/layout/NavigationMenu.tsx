@@ -11,6 +11,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FeedbackDialog } from "../feedback/FeedbackDialog";
 
 interface NavigationMenuProps {
   collapsed: boolean;
@@ -54,6 +55,10 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
           </li>
         ))}
       </ul>
+      
+      <div className="mt-4 border-t border-gray-200 pt-4">
+        <FeedbackDialog />
+      </div>
     </nav>
   );
 };
