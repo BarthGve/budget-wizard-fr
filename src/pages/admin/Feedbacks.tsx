@@ -1,32 +1,17 @@
 
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { LayoutGrid, Table2, Star } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FeedbacksTable } from "@/components/admin/FeedbacksTable";
 import { FeedbacksKanban } from "@/components/admin/FeedbacksKanban";
 import { Feedback } from "@/types/feedback";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Pagination } from "@/components/ui/pagination";
+import { FeedbackSearch } from "@/components/admin/FeedbackSearch";
+import { FeedbackViewToggle } from "@/components/admin/FeedbackViewToggle";
+import { FeedbackDetailsDialog } from "@/components/admin/FeedbackDetailsDialog";
+import { FeedbackPagination } from "@/components/admin/FeedbackPagination";
 
 const ITEMS_PER_PAGE = 15;
 
@@ -41,8 +26,6 @@ export const AdminFeedbacks = () => {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
   const [localFeedbacks, setLocalFeedbacks] = useState<Feedback[]>([]);
-
-  const queryClient = useQueryClient();
 
   const { data: feedbacks, isLoading } = useQuery({
     queryKey: ["feedbacks", page, statusFilter, sortColumn, sortDirection],
@@ -100,7 +83,6 @@ export const AdminFeedbacks = () => {
 
       if (error) throw error;
       
-      // Mettre à jour l'état local
       setLocalFeedbacks(prevFeedbacks =>
         prevFeedbacks.map(feedback =>
           feedback.id === id ? { ...feedback, status: newStatus } : feedback
@@ -139,47 +121,19 @@ export const AdminFeedbacks = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Liste des feedbacks</CardTitle>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant={view === "table" ? "secondary" : "ghost"}
-                  size="sm"
-                  onClick={() => setView("table")}
-                >
-                  <Table2 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={view === "kanban" ? "secondary" : "ghost"}
-                  size="sm"
-                  onClick={() => setView("kanban")}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                </Button>
-              </div>
+              <FeedbackViewToggle 
+                view={view}
+                onViewChange={setView}
+              />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="mb-6 flex gap-4">
-              <Input
-                placeholder="Rechercher..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="max-w-sm"
-              />
-              <Select
-                value={statusFilter}
-                onValueChange={(value: StatusFilter) => setStatusFilter(value)}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Tous les statuts" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous les statuts</SelectItem>
-                  <SelectItem value="pending">En attente</SelectItem>
-                  <SelectItem value="in_progress">En cours</SelectItem>
-                  <SelectItem value="completed">Terminé</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <FeedbackSearch
+              search={search}
+              onSearchChange={setSearch}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+            />
 
             {view === "table" ? (
               <FeedbacksTable
@@ -194,81 +148,18 @@ export const AdminFeedbacks = () => {
               />
             )}
 
-            <div className="mt-4 flex items-center justify-center">
-              <Pagination>
-                <Button
-                  variant="outline"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                >
-                  Précédent
-                </Button>
-                <span className="mx-4">
-                  Page {page} sur {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                >
-                  Suivant
-                </Button>
-              </Pagination>
-            </div>
+            <FeedbackPagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
           </CardContent>
         </Card>
 
-        <Dialog open={!!selectedFeedback} onOpenChange={() => setSelectedFeedback(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Détails du feedback</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              {selectedFeedback && (
-                <>
-                  <div className="flex items-center space-x-3">
-                    <Avatar>
-                      <AvatarImage src={selectedFeedback.profile.avatar_url || undefined} />
-                      <AvatarFallback>
-                        {selectedFeedback.profile.full_name?.[0]?.toUpperCase() || "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-medium">{selectedFeedback.profile.full_name}</div>
-                      <div className="text-sm text-gray-500">
-                        {new Date(selectedFeedback.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-medium">Titre</h3>
-                    <p>{selectedFeedback.title}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-medium">Contenu</h3>
-                    <p>{selectedFeedback.content}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-medium">Note</h3>
-                    <div className="flex space-x-1">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={cn(
-                            "h-4 w-4",
-                            i < selectedFeedback.rating
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-gray-300"
-                          )}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
+        <FeedbackDetailsDialog
+          feedback={selectedFeedback}
+          onOpenChange={() => setSelectedFeedback(null)}
+        />
       </div>
     </DashboardLayout>
   );
