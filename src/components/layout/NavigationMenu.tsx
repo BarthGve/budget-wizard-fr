@@ -23,7 +23,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
 
   const adminMenu = [
-    { title: "Gestion des utilisateurs", icon: Users, path: "/admin" },
+    { title: "Gestion utilisateurs", icon: Users, path: "/admin" },
     { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks" }
   ];
   
