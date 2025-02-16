@@ -96,7 +96,7 @@ const RecurringExpenses = () => {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
          
             <RecurringExpenseDialog trigger={
-              <Button variant="outline" size="sm" className="ml-auto bg-primary">
+              <Button variant="outline" size="sm" className="ml-auto bg-primary text-white">
                 <Plus className="mr-2 h-4 w-4" />
                 Ajouter une charge
               </Button>
