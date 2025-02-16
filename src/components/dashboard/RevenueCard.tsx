@@ -16,10 +16,10 @@ export const RevenueCard = ({
   return <Card className="bg-white my-[6px]">
  <CardHeader className="py-[16px]">
       <div className="flex flex-row items-center justify-between ">
-          <CardTitle className="text-2xl">Solde</CardTitle>
+          <CardTitle className="text-2xl">Revenus globaux</CardTitle>
           <Banknote className="h-6 w-6 text-muted-foreground" />
           </div>
-          <CardDescription>Revenus globaux</CardDescription>
+          <CardDescription>Somme de l'ensemble des revenus</CardDescription>
         </CardHeader>
 
       <CardContent className="space-y-4">
