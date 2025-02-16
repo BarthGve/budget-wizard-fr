@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { UserTable } from "@/components/admin/UserTable";
 import { UserStats } from "@/components/admin/UserStats";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -48,11 +47,6 @@ const Admin = () => {
           <TabsList>
             <TabsTrigger value="stats">Statistiques</TabsTrigger>
             <TabsTrigger value="users">Utilisateurs</TabsTrigger>
-            <TabsTrigger value="feedbacks">
-              <Button variant="ghost" onClick={() => navigate('/admin/feedbacks')}>
-                Feedbacks
-              </Button>
-            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="stats" className="space-y-4">

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -12,10 +13,11 @@ import {
   Shield,
   TrendingUp,
   Bell,
-  Star,
+  MessageSquare,
   UserCircle2,
   CreditCard,
   ChevronsUpDown,
+  Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +32,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Profile } from "@/types/profile";
-import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
 
 interface SidebarProps {
   className?: string;
@@ -86,7 +87,10 @@ export const Sidebar = ({ className }: SidebarProps) => {
     { title: "Bourse", icon: TrendingUp, path: "/stocks" },
     { title: "Immobilier", icon: Home, path: "/properties" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
-    ...(isAdmin ? [{ title: "Administration", icon: Shield, path: "/admin" }] : []),
+    ...(isAdmin ? [
+      { title: "Administration", icon: Shield, path: "/admin" },
+      { title: "Feedbacks", icon: MessageSquare, path: "/admin/feedbacks" }
+    ] : []),
   ];
 
   const handleLogout = async () => {
@@ -202,11 +206,22 @@ export const Sidebar = ({ className }: SidebarProps) => {
                   <span className="text-xs text-muted-foreground">{profile?.email}</span>
                 </div>
               </div>
+              <DropdownMenuItem className="cursor-pointer">
+                <Star className="mr-2 h-4 w-4" />
+                <span>Passer à Pro</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
+                <UserCircle2 className="mr-2 h-4 w-4" />
+                <span>Mon compte</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <CreditCard className="mr-2 h-4 w-4" />
+                <span>Facturation</span>
+              </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>
                 <Bell className="mr-2 h-4 w-4" />
                 <span>Notifications</span>
               </DropdownMenuItem>
-              <FeedbackDialog />
               <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Se déconnecter</span>
