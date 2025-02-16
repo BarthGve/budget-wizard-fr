@@ -22,12 +22,14 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
 
+type FeedbackStatus = "pending" | "in_progress" | "completed";
+
 type Feedback = {
   id: string;
   title: string;
   content: string;
   rating: number;
-  status: "pending" | "in_progress" | "completed";
+  status: FeedbackStatus;
   created_at: string;
   profile: {
     full_name: string;
@@ -35,7 +37,7 @@ type Feedback = {
 };
 
 export const AdminFeedbacks = () => {
-  const [statusFilter, setStatusFilter] = useState<string | undefined>();
+  const [statusFilter, setStatusFilter] = useState<FeedbackStatus | undefined>();
   const [search, setSearch] = useState("");
 
   const { data: feedbacks, isLoading } = useQuery({
@@ -59,7 +61,7 @@ export const AdminFeedbacks = () => {
     },
   });
 
-  const handleUpdateStatus = async (id: string, status: string) => {
+  const handleUpdateStatus = async (id: string, status: FeedbackStatus) => {
     try {
       const { error } = await supabase
         .from("feedbacks")
@@ -100,13 +102,12 @@ export const AdminFeedbacks = () => {
           />
           <Select
             value={statusFilter}
-            onValueChange={setStatusFilter}
+            onValueChange={(value: FeedbackStatus) => setStatusFilter(value)}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Tous les statuts" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous</SelectItem>
               <SelectItem value="pending">En attente</SelectItem>
               <SelectItem value="in_progress">En cours</SelectItem>
               <SelectItem value="completed">Terminé</SelectItem>
@@ -134,7 +135,7 @@ export const AdminFeedbacks = () => {
                 <TableCell>
                   <Select
                     value={feedback.status}
-                    onValueChange={(value) => handleUpdateStatus(feedback.id, value)}
+                    onValueChange={(value: FeedbackStatus) => handleUpdateStatus(feedback.id, value)}
                   >
                     <SelectTrigger>
                       <SelectValue />

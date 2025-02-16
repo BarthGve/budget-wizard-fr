@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Profile } from "@/types/profile";
+import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
 
 interface SidebarProps {
   className?: string;
@@ -110,7 +111,6 @@ export const Sidebar = ({ className }: SidebarProps) => {
       )}
     >
       <div className="flex flex-col flex-1">
-        {/* App Name and Collapse Button */}
         <div className="p-4 border-b rounded-r-xl border-gray-200 flex items-center justify-between">
           <h1 className={cn(
             "font-bold text-primary transition-all duration-300",
@@ -131,7 +131,6 @@ export const Sidebar = ({ className }: SidebarProps) => {
           </button>
         </div>
 
-        {/* Main Navigation */}
         <nav className="flex-1 p-4">
           <ul className="space-y-2">
             {menuItems.map((item) => (
@@ -156,7 +155,6 @@ export const Sidebar = ({ className }: SidebarProps) => {
           </ul>
         </nav>
 
-        {/* Profile and Logout Section */}
         <div className="mt-auto border-t border-gray-200 p-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
