@@ -14,14 +14,14 @@ export const RevenueCard = ({
   totalRevenue
 }: RevenueCardProps) => {
   return <Card className="bg-white my-[6px]">
-      <CardHeader className="py-[16px]">
-      <div className="flex items-center gap-x-2">
-  <Banknote className="w-6 h-6 text-primary" />
-    <CardTitle className="text-2xl">Revenus</CardTitle>
-    </div>
-        <CardDescription>Total des revenus mensuels</CardDescription>
-      </CardHeader>
->>>>>>> 8416c630fa3dd05f75664cf4ade87860723ff8e3
+ <CardHeader className="py-[16px]">
+      <div className="flex flex-row items-center justify-between ">
+          <CardTitle className="text-2xl">Solde</CardTitle>
+          <Banknote className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <CardDescription>Revenus globaux</CardDescription>
+        </CardHeader>
+
       <CardContent className="space-y-4">
         <p className="font-bold text-xl">{Math.round(totalRevenue)} €</p>
       </CardContent>
