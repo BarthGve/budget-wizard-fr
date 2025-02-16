@@ -28,13 +28,15 @@ export const ExpensesCard = ({
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
 
   return <Card className="bg-white my-[4px]">
+
+
   <CardHeader className="py-[16px]">
-    <div className="flex items-center gap-x-2">
-      <ShoppingBasket className="w-6 h-6 text-primary" />
-      <CardTitle className="text-2xl">Charges</CardTitle>
-    </div>
-    <CardDescription>Du mois de {currentMonthName}</CardDescription>
-  </CardHeader>
+      <div className="flex flex-row items-center justify-between ">
+          <CardTitle className="text-2xl">Charges</CardTitle>
+          <ShoppingBasket className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <CardDescription>Du mois de {currentMonthName}</CardDescription>
+        </CardHeader>
   <CardContent>
     <div className="space-y-2">
       <div className="flex items-center gap-x-4">
