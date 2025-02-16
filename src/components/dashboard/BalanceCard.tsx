@@ -22,7 +22,7 @@ export const BalanceCard = ({
           <Scale className="h-6 w-6 text-muted-foreground" />
         </CardHeader>
       
-      
+        <CardDescription>Montant disponible</CardDescription>
       
       
       <CardContent>
