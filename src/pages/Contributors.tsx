@@ -1,35 +1,22 @@
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AddContributorDialog } from "@/components/contributors/AddContributorDialog";
 import { ContributorCard } from "@/components/contributors/ContributorCard";
 import { useContributors } from "@/hooks/useContributors";
-
 const Contributors = () => {
   const {
     contributors,
     isLoading,
     addContributor,
     updateContributor,
-    deleteContributor,
+    deleteContributor
   } = useContributors();
-
   if (isLoading) {
-    return (
-      <DashboardLayout>
+    return <DashboardLayout>
         <div>Chargement...</div>
-      </DashboardLayout>
-    );
+      </DashboardLayout>;
   }
-
-  return (
-    <DashboardLayout>
+  return <DashboardLayout>
       <div className="grid gap-6">
         <div className="flex items-center justify-between">
           <div>
@@ -43,27 +30,18 @@ const Contributors = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Liste des contributeurs</CardTitle>
+            <CardTitle>Listing</CardTitle>
             <CardDescription>
               Tous les contributeurs participant au budget
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {contributors.map((contributor) => (
-                <ContributorCard
-                  key={contributor.id}
-                  contributor={contributor}
-                  onEdit={updateContributor}
-                  onDelete={deleteContributor}
-                />
-              ))}
+              {contributors.map(contributor => <ContributorCard key={contributor.id} contributor={contributor} onEdit={updateContributor} onDelete={deleteContributor} />)}
             </div>
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
-  );
+    </DashboardLayout>;
 };
-
 export default Contributors;
