@@ -33,13 +33,10 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     { title: "Bourse", icon: TrendingUp, path: "/stocks" },
     { title: "Immobilier", icon: Home, path: "/properties" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
-<<<<<<< HEAD
     ...(isAdmin ? [
       { title: "Gestion des utilisateurs", icon: Users, path: "/admin" },
       { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks" }
     ] : []),
-=======
->>>>>>> 1e8ee2f4111c1756edfd83627da006b4441f7997
   ];
 
   return (
