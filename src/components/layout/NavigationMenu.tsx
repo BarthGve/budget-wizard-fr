@@ -42,8 +42,10 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
               className={({ isActive }) =>
                 cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
-                  "hover:bg-primary/10",
-                  isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
+                  "hover:bg-[#9b87f5]/10",
+                  isActive 
+                    ? "bg-[#9b87f5] text-white hover:bg-[#8B5CF6]"
+                    : "hover:text-[#9b87f5]"
                 )
               }
             >
