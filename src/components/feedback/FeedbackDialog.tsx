@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { MessageSquare, Star } from "lucide-react";
+import { Send, Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -57,7 +57,7 @@ export const FeedbackDialog = () => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="w-full justify-start">
-          <MessageSquare className="mr-2 h-4 w-4" />
+          <Send  className="mr-2 h-4 w-4" />
           <span className="font-normal text-base">Laisser un avis</span>
         </Button>
       </DialogTrigger>
