@@ -9,7 +9,7 @@ import {
   
   TrendingUp,
   Mailbox,
-  MessageSquare
+
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
