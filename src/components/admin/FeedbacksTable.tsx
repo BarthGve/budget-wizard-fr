@@ -19,9 +19,10 @@ import { supabase } from "@/integrations/supabase/client";
 interface FeedbacksTableProps {
   feedbacks: Feedback[];
   onViewDetails: (feedback: Feedback) => void;
+  onStatusUpdate: (updatedFeedback: Feedback) => void;
 }
 
-export const FeedbacksTable = ({ feedbacks, onViewDetails }: FeedbacksTableProps) => {
+export const FeedbacksTable = ({ feedbacks, onViewDetails, onStatusUpdate }: FeedbacksTableProps) => {
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, index) => {
       if (index + 1 <= rating) {
@@ -42,11 +43,19 @@ export const FeedbacksTable = ({ feedbacks, onViewDetails }: FeedbacksTableProps
           .eq("id", feedback.id);
 
         if (error) throw error;
+
+        const updatedFeedback = {
+          ...feedback,
+          status: "in_progress" as const
+        };
+        onStatusUpdate(updatedFeedback);
+        onViewDetails(updatedFeedback);
       } catch (error) {
         console.error("Error updating status:", error);
       }
+    } else {
+      onViewDetails(feedback);
     }
-    onViewDetails(feedback);
   };
 
   return (

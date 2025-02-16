@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -39,6 +40,7 @@ export const AdminFeedbacks = () => {
   const [sortColumn, setSortColumn] = useState<string>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
+  const [localFeedbacks, setLocalFeedbacks] = useState<Feedback[]>([]);
 
   const queryClient = useQueryClient();
 
@@ -63,6 +65,8 @@ export const AdminFeedbacks = () => {
       const { data, error, count } = await query;
       if (error) throw error;
 
+      setLocalFeedbacks(data as Feedback[]);
+
       return {
         items: data as Feedback[],
         totalCount: count || 0,
@@ -70,7 +74,15 @@ export const AdminFeedbacks = () => {
     },
   });
 
-  const filteredFeedbacks = feedbacks?.items.filter(
+  const handleStatusUpdate = (updatedFeedback: Feedback) => {
+    setLocalFeedbacks(prevFeedbacks =>
+      prevFeedbacks.map(feedback =>
+        feedback.id === updatedFeedback.id ? updatedFeedback : feedback
+      )
+    );
+  };
+
+  const filteredFeedbacks = localFeedbacks.filter(
     (feedback) =>
       feedback.title.toLowerCase().includes(search.toLowerCase()) ||
       feedback.content.toLowerCase().includes(search.toLowerCase()) ||
@@ -88,7 +100,13 @@ export const AdminFeedbacks = () => {
 
       if (error) throw error;
       
-      await queryClient.invalidateQueries({ queryKey: ["feedbacks"] });
+      // Mettre à jour l'état local
+      setLocalFeedbacks(prevFeedbacks =>
+        prevFeedbacks.map(feedback =>
+          feedback.id === id ? { ...feedback, status: newStatus } : feedback
+        )
+      );
+      
       toast.success("Statut mis à jour");
     } catch (error) {
       console.error("Error updating status:", error);
@@ -165,12 +183,13 @@ export const AdminFeedbacks = () => {
 
             {view === "table" ? (
               <FeedbacksTable
-                feedbacks={filteredFeedbacks || []}
+                feedbacks={filteredFeedbacks}
                 onViewDetails={setSelectedFeedback}
+                onStatusUpdate={handleStatusUpdate}
               />
             ) : (
               <FeedbacksKanban
-                feedbacks={filteredFeedbacks || []}
+                feedbacks={filteredFeedbacks}
                 onDragEnd={handleDragEnd}
               />
             )}
