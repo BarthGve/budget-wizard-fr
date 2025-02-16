@@ -10,33 +10,26 @@ interface UserStats {
 }
 
 export const UserStats = () => {
-  // D'abord, vérifions les droits d'admin
-  const { data: isAdmin, isLoading: isLoadingAdmin } = useQuery({
-    queryKey: ["isAdmin"],
+  // Combine auth check and stats in a single query to ensure proper order
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ["userStats"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
-      
+      if (!user) throw new Error("Not authenticated");
+
       const { data: isAdmin } = await supabase.rpc('has_role', {
         user_id: user.id,
         role: 'admin'
       });
-      return isAdmin;
+      
+      if (!isAdmin) throw new Error("Not authorized");
+
+      const { data: userStats, error } = await supabase.rpc('get_user_stats');
+      if (error) throw error;
+      
+      return userStats as unknown as UserStats;
     }
   });
-
-  // Ensuite, seulement si nous sommes admin, récupérons les stats
-  const { data: stats, isLoading: isLoadingStats } = useQuery({
-    queryKey: ["userStats"],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_user_stats');
-      if (error) throw error;
-      return data as unknown as UserStats;
-    },
-    enabled: isAdmin === true // N'exécute la requête que si isAdmin est true
-  });
-
-  const isLoading = isLoadingAdmin || isLoadingStats;
 
   if (isLoading) {
     return (
@@ -51,7 +44,7 @@ export const UserStats = () => {
     );
   }
 
-  if (!isAdmin) {
+  if (!stats) {
     return null;
   }
 
@@ -63,7 +56,7 @@ export const UserStats = () => {
           <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats?.total_users || 0}</div>
+          <div className="text-2xl font-bold">{stats.total_users}</div>
         </CardContent>
       </Card>
       <Card>
@@ -72,7 +65,7 @@ export const UserStats = () => {
           <UserPlus className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats?.new_users || 0}</div>
+          <div className="text-2xl font-bold">{stats.new_users}</div>
         </CardContent>
       </Card>
     </div>
