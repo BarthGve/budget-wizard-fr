@@ -21,17 +21,18 @@ interface NavigationMenuProps {
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
 
-  const menuItems = [
+  const menuItems = isAdmin ? [
+    // Menu items for admin users
+    { title: "Administration", icon: Shield, path: "/admin" },
+    { title: "Feedbacks", icon: MessageSquare, path: "/admin/feedbacks" }
+  ] : [
+    // Menu items for regular users
     { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
     { title: "Contributeurs", icon: Users, path: "/contributors" },
     { title: "Épargne", icon: PiggyBank, path: "/savings" },
     { title: "Bourse", icon: TrendingUp, path: "/stocks" },
     { title: "Immobilier", icon: Home, path: "/properties" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
-    ...(isAdmin ? [
-      { title: "Administration", icon: Shield, path: "/admin" },
-      { title: "Feedbacks", icon: MessageSquare, path: "/admin/feedbacks" }
-    ] : []),
   ];
 
   return (

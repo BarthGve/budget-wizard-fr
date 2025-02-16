@@ -18,6 +18,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import Admin from "./pages/Admin";
 import AdminFeedbacks from "./pages/admin/Feedbacks";
 import Stocks from "./pages/Stocks";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -31,16 +32,21 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/contributors" element={<Contributors />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/savings" element={<Savings />} />
-          <Route path="/properties" element={<Properties />} />
-          <Route path="/properties/:id" element={<PropertyDetail />} />
-          <Route path="/recurring-expenses" element={<RecurringExpenses />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/feedbacks" element={<AdminFeedbacks />} />
-          <Route path="/stocks" element={<Stocks />} />
+          
+          {/* Routes protégées pour les utilisateurs normaux */}
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/contributors" element={<ProtectedRoute><Contributors /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />
+          <Route path="/properties" element={<ProtectedRoute><Properties /></ProtectedRoute>} />
+          <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />
+          <Route path="/recurring-expenses" element={<ProtectedRoute><RecurringExpenses /></ProtectedRoute>} />
+          <Route path="/stocks" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
+          
+          {/* Routes protégées pour les admins */}
+          <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
+          <Route path="/admin/feedbacks" element={<ProtectedRoute requireAdmin><AdminFeedbacks /></ProtectedRoute>} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
