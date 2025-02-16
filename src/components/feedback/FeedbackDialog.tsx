@@ -61,7 +61,7 @@ export const FeedbackDialog = () => {
           <span className="font-normal text-base">Laisser un avis</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">Donnez-nous votre avis</DialogTitle>
           <DialogDescription className="text-center text-base">
