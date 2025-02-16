@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -205,24 +204,11 @@ export const Sidebar = ({ className }: SidebarProps) => {
                   <span className="text-xs text-muted-foreground">{profile?.email}</span>
                 </div>
               </div>
-                 {/*
-              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/pro")}>
-                <Star className="mr-2 h-4 w-4" />
-                <span>Mise à niveau vers Pro</span>
-              </DropdownMenuItem>  */}
-              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
-                <UserCircle2 className="mr-2 h-4 w-4" />
-                <span>Compte</span>
-              </DropdownMenuItem>
-                {/*
-              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/billing")}>
-                <CreditCard className="mr-2 h-4 w-4" />
-                <span>Facturation</span>
-              </DropdownMenuItem>  */}
               <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>
                 <Bell className="mr-2 h-4 w-4" />
                 <span>Notifications</span>
               </DropdownMenuItem>
+              <FeedbackDialog />
               <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Se déconnecter</span>
