@@ -8,7 +8,15 @@ export const BalanceCard = ({
   balance,
   isMonthly = true
 }: BalanceCardProps) => {
-  return <Card>     
+  return <Card>
+      {/* <CardHeader className="py-[16px]">
+        <div className="flex items-center gap-x-2">
+          <Scale className="w-6 h-6 text-primary" />
+          <CardTitle className="text-2xl">Solde</CardTitle>
+        </div>
+        <CardDescription>Montant disponible</CardDescription>
+      </CardHeader> */}
+      
       <CardHeader className="py-[16px]">
       <div className="flex flex-row items-center justify-between ">
           <CardTitle className="text-2xl">Solde</CardTitle>
