@@ -36,7 +36,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" }
   ];
   
-  const menuItems = isAdmin ? [...adminMenu] : [...userMenu, ...adminMenu];
+  const menuItems = isAdmin ? [...adminMenu] : [...userMenu];
 
   return (
     <nav className="flex-1 p-4">
