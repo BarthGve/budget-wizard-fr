@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
@@ -13,12 +12,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { LayoutGrid, Table2 } from "lucide-react";
+import { LayoutGrid, Table2, Star } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FeedbacksTable } from "@/components/admin/FeedbacksTable";
 import { FeedbacksKanban } from "@/components/admin/FeedbacksKanban";
 import { Feedback } from "@/types/feedback";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +34,7 @@ export const AdminFeedbacks = () => {
   const [page, setPage] = useState(1);
   const [view, setView] = useState<"table" | "kanban">("table");
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<"" | "pending" | "in_progress" | "completed">("");
   const [sortColumn, setSortColumn] = useState<string>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
@@ -75,11 +76,11 @@ export const AdminFeedbacks = () => {
 
   const totalPages = Math.ceil((feedbacks?.totalCount || 0) / ITEMS_PER_PAGE);
 
-  const handleUpdateStatus = async (id: string, status: string) => {
+  const handleUpdateStatus = async (id: string, newStatus: "pending" | "in_progress" | "completed") => {
     try {
       const { error } = await supabase
         .from("feedbacks")
-        .update({ status })
+        .update({ status: newStatus })
         .eq("id", id);
 
       if (error) throw error;
