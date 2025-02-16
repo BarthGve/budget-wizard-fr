@@ -115,7 +115,7 @@ export const SavingsGoal = ({
 
   return (
     <div className="flex flex-col md:flex-row gap-4">
-      <Card className="flex-1">
+    <Card className="flex-1">
       <CardHeader>
         <div className="flex items-center gap-2">
           <Target className="h-5 w-5 text-primary" />
@@ -126,48 +126,54 @@ export const SavingsGoal = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Pourcentage d'épargne</Label>
-              <span className="text-sm font-medium">{localPercentage}%</span>
+        {/* Conteneur en flex pour le slider et la card sur fond gris */}
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          {/* Slider */}
+          <div className="flex-1 space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Pourcentage d'épargne</Label>
+                <span className="text-sm font-medium">{localPercentage}%</span>
+              </div>
+              <div className="px-1">
+                <Slider
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={[localPercentage]}
+                  onValueChange={handleValueChange}
+                  onValueCommit={handleValueCommit}
+                  className={paletteToText[colorPalette]}
+                  aria-label="Pourcentage d'épargne"
+                />
+              </div>
             </div>
-            <div className="px-1">
-              <Slider
-                min={0}
-                max={100}
-                step={1}
-                value={[localPercentage]}
-                onValueChange={handleValueChange}
-                onValueCommit={handleValueCommit}
-                className={paletteToText[colorPalette]}
-                aria-label="Pourcentage d'épargne"
-              />
+          </div>
+  
+          {/* Card sur fond gris */}
+          <div className="flex-1 space-y-2 rounded-lg bg-secondary p-4">
+            <div className="flex items-center justify-between text-sm">
+              <span>Revenu total</span>
+              <span className="font-medium">{totalIncome.toFixed(2)}€</span>
             </div>
-          </div>
-        </div>
-        <div className="space-y-2 rounded-lg bg-secondary p-4">
-          <div className="flex items-center justify-between text-sm">
-            <span>Revenu total</span>
-            <span className="font-medium">{totalIncome.toFixed(2)}€</span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span>Objectif mensuel</span>
-            <span className="font-medium">{targetMonthlySavings.toFixed(2)}€</span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span>Total épargné</span>
-            <span className="font-medium">{totalMonthlyAmount.toFixed(2)}€</span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span>Reste à épargner</span>
-            <span className={`font-medium ${remainingToTarget > 0 ? 'text-destructive' : 'text-green-500'}`}>
-              {remainingToTarget.toFixed(2)}€
-            </span>
+            <div className="flex items-center justify-between text-sm">
+              <span>Objectif mensuel</span>
+              <span className="font-medium">{targetMonthlySavings.toFixed(2)}€</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span>Total épargné</span>
+              <span className="font-medium">{totalMonthlyAmount.toFixed(2)}€</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span>Reste à épargner</span>
+              <span className={`font-medium ${remainingToTarget > 0 ? 'text-destructive' : 'text-green-500'}`}>
+                {remainingToTarget.toFixed(2)}€
+              </span>
+            </div>
           </div>
         </div>
       </CardContent>
     </Card>
-    </div>
+  </div>
   );
 };
