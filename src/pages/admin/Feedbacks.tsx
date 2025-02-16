@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 type FeedbackStatus = "pending" | "in_progress" | "completed";
@@ -40,7 +40,7 @@ export const AdminFeedbacks = () => {
   const [statusFilter, setStatusFilter] = useState<FeedbackStatus | undefined>();
   const [search, setSearch] = useState("");
 
-  const { data: feedbacks, isLoading } = useQuery({
+  const { data: feedbacks, isLoading, refetch } = useQuery({
     queryKey: ["feedbacks", statusFilter],
     queryFn: async () => {
       let query = supabase
@@ -60,6 +60,29 @@ export const AdminFeedbacks = () => {
       return data as Feedback[];
     },
   });
+
+  // S'abonner aux changements en temps réel
+  useEffect(() => {
+    const channel = supabase
+      .channel('feedbacks_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'feedbacks'
+        },
+        () => {
+          // Rafraîchir les données quand il y a un changement
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
 
   const handleUpdateStatus = async (id: string, status: FeedbackStatus) => {
     try {
