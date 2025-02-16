@@ -1,5 +1,5 @@
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -19,6 +19,8 @@ interface NavigationMenuProps {
 }
 
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
+  const location = useLocation();
+
   const menuItems = [
     { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
     { title: "Contributeurs", icon: Users, path: "/contributors" },
@@ -27,7 +29,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     { title: "Immobilier", icon: Home, path: "/properties" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
     ...(isAdmin ? [
-      { title: "Administration", icon: Shield, path: "/admin", end: true },
+      { title: "Administration", icon: Shield, path: "/admin" },
       { title: "Feedbacks", icon: MessageSquare, path: "/admin/feedbacks" }
     ] : []),
   ];
@@ -35,24 +37,26 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   return (
     <nav className="flex-1 p-4">
       <ul className="space-y-2">
-        {menuItems.map((item) => (
-          <li key={item.path}>
-            <NavLink
-              to={item.path}
-              end={item.end}
-              className={({ isActive }) =>
-                cn(
+        {menuItems.map((item) => {
+          const isExactMatch = location.pathname === item.path;
+          const isActive = item.path === "/admin" ? isExactMatch : location.pathname.startsWith(item.path);
+          
+          return (
+            <li key={item.path}>
+              <NavLink
+                to={item.path}
+                className={cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                   "hover:bg-primary/10",
                   isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
-                )
-              }
-            >
-              <item.icon className="h-5 w-5" />
-              {!collapsed && <span className="ml-3">{item.title}</span>}
-            </NavLink>
-          </li>
-        ))}
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                {!collapsed && <span className="ml-3">{item.title}</span>}
+              </NavLink>
+            </li>
+          );
+        })}
       </ul>
       
       {!isAdmin && (
