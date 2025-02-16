@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
@@ -30,11 +31,13 @@ import { Pagination } from "@/components/ui/pagination";
 
 const ITEMS_PER_PAGE = 15;
 
+type StatusFilter = "pending" | "in_progress" | "completed" | "all";
+
 export const AdminFeedbacks = () => {
   const [page, setPage] = useState(1);
   const [view, setView] = useState<"table" | "kanban">("table");
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"" | "pending" | "in_progress" | "completed">("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [sortColumn, setSortColumn] = useState<string>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
@@ -49,7 +52,7 @@ export const AdminFeedbacks = () => {
           profile:profiles(full_name, avatar_url)
         `, { count: "exact" });
 
-      if (statusFilter) {
+      if (statusFilter !== "all") {
         query = query.eq("status", statusFilter);
       }
 
@@ -97,7 +100,7 @@ export const AdminFeedbacks = () => {
     const feedbackId = result.draggableId;
     const newStatus = result.destination.droppableId;
 
-    await handleUpdateStatus(feedbackId, newStatus);
+    await handleUpdateStatus(feedbackId, newStatus as "pending" | "in_progress" | "completed");
   };
 
   if (isLoading) return <div>Chargement...</div>;
@@ -144,13 +147,13 @@ export const AdminFeedbacks = () => {
               />
               <Select
                 value={statusFilter}
-                onValueChange={setStatusFilter}
+                onValueChange={(value: StatusFilter) => setStatusFilter(value)}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Tous les statuts" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les statuts</SelectItem>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
                   <SelectItem value="pending">En attente</SelectItem>
                   <SelectItem value="in_progress">En cours</SelectItem>
                   <SelectItem value="completed">Terminé</SelectItem>
