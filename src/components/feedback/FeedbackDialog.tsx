@@ -52,7 +52,7 @@ export const FeedbackDialog = () => {
       <DialogTrigger asChild>
         <Button variant="ghost" className="w-full justify-start">
           <MessageSquare className="mr-2 h-4 w-4" />
-          <span className="font-normal text-base">Feedback</span>
+          <span className="font-normal text-base">Laisser un avis</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
