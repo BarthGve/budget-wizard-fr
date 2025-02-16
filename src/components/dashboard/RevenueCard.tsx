@@ -21,6 +21,7 @@ export const RevenueCard = ({
     </div>
         <CardDescription>Total des revenus mensuels</CardDescription>
       </CardHeader>
+>>>>>>> 8416c630fa3dd05f75664cf4ade87860723ff8e3
       <CardContent className="space-y-4">
         <p className="font-bold text-xl">{Math.round(totalRevenue)} €</p>
       </CardContent>
