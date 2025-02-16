@@ -12,6 +12,11 @@ import {
   Home,
   Shield,
   TrendingUp,
+  Bell,
+  Star,
+  UserCircle2,
+  CreditCard,
+  ChevronUpDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +24,12 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Profile } from "@/types/profile";
 
 interface SidebarProps {
@@ -142,43 +153,70 @@ export const Sidebar = ({ className }: SidebarProps) => {
         </nav>
 
         {/* Profile and Logout Section */}
-        <div className="mt-auto border-t border-gray-200">
-          <div className="p-4">
-            <div className={cn(
-              "flex items-center mb-4",
-              collapsed ? "justify-center" : "space-x-3"
-            )}>
-              <Avatar>
-                <AvatarImage
-                  src={profile?.avatar_url || undefined}
-                  alt={profile?.full_name || "Avatar"}
-                />
-                <AvatarFallback>
-                  {(profile?.full_name || "?")[0]?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {!collapsed && (
-                <div className="flex flex-col">
-                  <span className="font-medium">{profile?.full_name || "Utilisateur"}</span>
-                  <Button
-                    variant="link"
-                    className="h-auto p-0 text-sm text-primary hover:text-primary-hover"
-                    onClick={() => navigate("/settings")}
-                  >
-                    Gérer le profil
-                  </Button>
+        <div className="mt-auto border-t border-gray-200 p-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="w-full justify-start p-2 h-auto hover:bg-gray-100">
+                <div className="flex items-center gap-3 w-full">
+                  <Avatar>
+                    <AvatarImage
+                      src={profile?.avatar_url || undefined}
+                      alt={profile?.full_name || "Avatar"}
+                    />
+                    <AvatarFallback>
+                      {(profile?.full_name || "?")[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {!collapsed && (
+                    <div className="flex items-center justify-between flex-1">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
+                        <span className="text-xs text-muted-foreground">{profile?.email}</span>
+                      </div>
+                      <ChevronUpDown className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              className="w-full justify-start hover:bg-primary/10 hover:text-primary"
-              onClick={handleLogout}
-            >
-              <LogOut className="h-5 w-5 mr-2" />
-              {!collapsed && <span>Déconnexion</span>}
-            </Button>
-          </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[240px]">
+              <div className="flex items-center gap-3 p-2 border-b">
+                <Avatar>
+                  <AvatarImage
+                    src={profile?.avatar_url || undefined}
+                    alt={profile?.full_name || "Avatar"}
+                  />
+                  <AvatarFallback>
+                    {(profile?.full_name || "?")[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
+                  <span className="text-xs text-muted-foreground">{profile?.email}</span>
+                </div>
+              </div>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/pro")}>
+                <Star className="mr-2 h-4 w-4" />
+                <span>Mise à niveau vers Pro</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
+                <UserCircle2 className="mr-2 h-4 w-4" />
+                <span>Compte</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/billing")}>
+                <CreditCard className="mr-2 h-4 w-4" />
+                <span>Facturation</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>
+                <Bell className="mr-2 h-4 w-4" />
+                <span>Notifications</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Se déconnecter</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </aside>
