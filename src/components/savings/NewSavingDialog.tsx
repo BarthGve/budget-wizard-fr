@@ -100,7 +100,7 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-primary text-primary-foreground hover:bg-primary-hover">
+        <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary-hover gap-2">
           <Plus className="mr-2 h-4 w-4" />
           Nouveau versement
         </Button>

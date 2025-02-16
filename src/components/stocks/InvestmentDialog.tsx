@@ -83,7 +83,7 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="bg-primary text-primary-foreground hover:bg-primary-hover gap-2">
+        <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary-hover gap-2">
           <Plus className="h-4 w-4" />
           Nouvel investissement
         </Button>
