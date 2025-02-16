@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock } from "lucide-react";
+import { TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -121,7 +121,10 @@ export const SecuritySettings = () => {
 
 <Card className="mt-6 border-destructive">
   <CardHeader>
-    <h4 className="text-sm font-medium text-destructive">Zone de danger</h4>
+  <div className="flex items-center space-x-2">
+      <TriangleAlert className="h-5 w-5" /> 
+      <CardTitle className="text-destructive">Zone de danger</CardTitle>
+    </div>
     <CardDescription>Actions irréversibles pour votre compte</CardDescription>
   </CardHeader>
   <CardContent>
