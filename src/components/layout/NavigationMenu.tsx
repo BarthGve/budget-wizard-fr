@@ -56,9 +56,11 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
         ))}
       </ul>
       
-      <div className="mt-4 border-t border-gray-200 pt-4">
-        <FeedbackDialog />
-      </div>
+      {!isAdmin && (
+        <div className="mt-4 border-t border-gray-200 pt-4">
+          <FeedbackDialog />
+        </div>
+      )}
     </nav>
   );
 };
