@@ -5,6 +5,7 @@ import { SavingsCard } from "./SavingsCard";
 import { BalanceCard } from "./BalanceCard";
 import { RecurringExpensesPieChart } from "./RecurringExpensesPieChart";
 import { SavingsPieChart } from "./SavingsPieChart";
+import { ContributorsTable } from "./ContributorsTable";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -82,6 +83,10 @@ export const DashboardTabContent = ({
           totalSavings={savings}
         />
       </div>
+      <ContributorsTable 
+        contributors={contributors}
+        totalExpenses={expenses}
+      />
     </div>
   );
 };
