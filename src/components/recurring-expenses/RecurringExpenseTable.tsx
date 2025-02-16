@@ -185,97 +185,85 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
       </div>
 
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort("name")}
-                >
-                  Nom
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
+      <Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>
+        <Button variant="ghost" onClick={() => handleSort("name")}>
+          Nom
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </TableHead>
+      <TableHead className="text-center">
+        <Button variant="ghost" onClick={() => handleSort("category")}>
+          Catégorie
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </TableHead>
+      <TableHead className="text-center">
+        <Button variant="ghost" onClick={() => handleSort("periodicity")}>
+          Périodicité
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </TableHead>
+      <TableHead className="text-center">Prélèvement</TableHead>
+      <TableHead className="text-center">
+        <Button variant="ghost" onClick={() => handleSort("amount")}>
+          Montant
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </TableHead>
+      <TableHead className="text-right">Actions</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {paginatedData.map((expense) => (
+      <TableRow key={expense.id}>
+        <TableCell className="font-medium">{expense.name}</TableCell>
+        <TableCell className="text-center">{expense.category}</TableCell>
+        <TableCell className="text-center">{periodicityLabels[expense.periodicity]}</TableCell>
+        <TableCell className="text-center">{formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}</TableCell>
+        <TableCell className="text-center">{expense.amount} €</TableCell>
+        <TableCell className="text-right">
+          <div className="flex justify-end space-x-2">
+            <RecurringExpenseDialog
+              expense={expense}
+              trigger={
+                <Button variant="ghost" size="sm">
+                  <Edit2 className="h-4 w-4" />
                 </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort("category")}
-                >
-                  Catégorie
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
+              }
+            />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort("periodicity")}
-                >
-                  Périodicité
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead>Prélèvement</TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort("amount")}
-                >
-                  Montant
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedData.map((expense) => (
-              <TableRow key={expense.id}>
-                <TableCell className="font-medium">{expense.name}</TableCell>
-                <TableCell>{expense.category}</TableCell>
-                <TableCell>{periodicityLabels[expense.periodicity]}</TableCell>
-                <TableCell>{formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}</TableCell>
-                <TableCell>{expense.amount} €</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end space-x-2">
-                    <RecurringExpenseDialog 
-                      expense={expense} 
-                      trigger={
-                        <Button variant="ghost" size="sm">
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                      } 
-                    />
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Supprimer la charge</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette charge ? Cette action ne peut pas être annulée.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Annuler</AlertDialogCancel>
-                          <AlertDialogAction 
-                            onClick={() => onDeleteExpense(expense.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Supprimer
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Supprimer la charge</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Êtes-vous sûr de vouloir supprimer cette charge ? Cette action ne peut pas être annulée.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => onDeleteExpense(expense.id)}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Supprimer
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
       </div>
 
       <div className="flex items-center justify-between">
