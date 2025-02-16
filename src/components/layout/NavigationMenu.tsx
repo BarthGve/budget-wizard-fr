@@ -27,7 +27,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     { title: "Immobilier", icon: Home, path: "/properties" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
     ...(isAdmin ? [
-      { title: "Administration", icon: Shield, path: "/admin" },
+      { title: "Administration", icon: Shield, path: "/admin", end: true },
       { title: "Feedbacks", icon: MessageSquare, path: "/admin/feedbacks" }
     ] : []),
   ];
@@ -39,13 +39,12 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
           <li key={item.path}>
             <NavLink
               to={item.path}
+              end={item.end}
               className={({ isActive }) =>
                 cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
-                  "hover:bg-[#9b87f5]/10",
-                  isActive 
-                    ? "bg-[#9b87f5] text-white hover:bg-[#8B5CF6]"
-                    : "hover:text-[#9b87f5]"
+                  "hover:bg-primary/10",
+                  isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )
               }
             >
