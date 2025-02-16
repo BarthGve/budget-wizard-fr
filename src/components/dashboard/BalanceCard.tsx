@@ -9,13 +9,22 @@ export const BalanceCard = ({
   isMonthly = true
 }: BalanceCardProps) => {
   return <Card>
-      <CardHeader className="py-[16px]">
-      <div className="flex items-center gap-x-2">
-  <Scale className="w-6 h-6 text-primary" />
-    <CardTitle className="text-2xl">Solde</CardTitle>
-    </div>
+      {/* <CardHeader className="py-[16px]">
+        <div className="flex items-center gap-x-2">
+          <Scale className="w-6 h-6 text-primary" />
+          <CardTitle className="text-2xl">Solde</CardTitle>
+        </div>
         <CardDescription>Montant disponible</CardDescription>
-      </CardHeader>
+      </CardHeader> */}
+      
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Solde</CardTitle>
+          <Scale className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+      
+      
+      
+      
       <CardContent>
         <p className={`text-xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
           {balance.toFixed(0)} €
