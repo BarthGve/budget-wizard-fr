@@ -63,7 +63,7 @@ export const FeedbackDialog = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold">Donnez-nous votre avis</DialogTitle>
+          <DialogTitle className="text-center text-2xl font-bold">⭐️ Donnez-nous votre avis ⭐️</DialogTitle>
           <DialogDescription className="text-center text-base">
             Aidez-nous à améliorer notre produit en partageant vos impressions
           </DialogDescription>
