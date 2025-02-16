@@ -23,7 +23,7 @@ export const InvestmentHistory = ({ data }: InvestmentHistoryProps) => {
               data={data.slice(-5)}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+   
               <XAxis dataKey="year" />
           
               <Tooltip 
