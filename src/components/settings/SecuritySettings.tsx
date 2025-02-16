@@ -80,115 +80,74 @@ export const SecuritySettings = () => {
 
   return (
     <>
-    <Card>
-      <CardHeader>
-        <div className="flex items-center space-x-2">
-          <Lock className="h-5 w-5" />
-          <CardTitle>Sécurité</CardTitle>
+ <Card>
+  <CardHeader>
+    <div className="flex items-center space-x-2">
+      <Lock className="h-5 w-5" />
+      <CardTitle>Sécurité</CardTitle>
+    </div>
+    <CardDescription>Gérez vos paramètres de sécurité et mot de passe</CardDescription>
+  </CardHeader>
+  <CardContent className="space-y-6">
+    <form onSubmit={handleUpdatePassword} className="space-y-4">
+      <div className="grid gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="new-password">Nouveau mot de passe</Label>
+          <Input
+            id="new-password"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="Entrez votre nouveau mot de passe"
+          />
         </div>
-        <CardDescription>Gérez vos paramètres de sécurité et mot de passe</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <form onSubmit={handleUpdatePassword} className="space-y-4">
-          <div className="grid gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="new-password">Nouveau mot de passe</Label>
-              <Input
-                id="new-password"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Entrez votre nouveau mot de passe"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirmez votre nouveau mot de passe"
-              />
-            </div>
-          </div>
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={isUpdating}
-          >
-            {isUpdating ? "Mise à jour..." : "Mettre à jour le mot de passe"}
-          </Button>
-        </form>
-
-        <div className="space-y-4">
-          <Separator className="my-4" />
-          
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium text-destructive mb-1">Zone de danger</h4>
-              <p className="text-sm text-muted-foreground">
-                Actions irréversibles pour votre compte
-              </p>
-            </div>
-
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="destructive" className="w-full">
-                  Supprimer mon compte
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Êtes-vous sûr de vouloir supprimer votre compte ?</DialogTitle>
-                  <DialogDescription>
-                    Cette action est irréversible. Toutes vos données seront définitivement supprimées.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button
-                    variant="destructive"
-                    onClick={handleDeleteAccount}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? "Suppression..." : "Oui, supprimer mon compte"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
+          <Input
+            id="confirm-password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirmez votre nouveau mot de passe"
+          />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <Button type="submit" className="w-full" disabled={isUpdating}>
+        {isUpdating ? "Mise à jour..." : "Mettre à jour le mot de passe"}
+      </Button>
+    </form>
+  </CardContent>
+</Card>
 
 <Card className="mt-6 border-destructive">
-<CardHeader>
-  <h4 className="text-sm font-medium text-destructive">Zone de danger</h4>
-  <CardDescription>Actions irréversibles pour votre compte</CardDescription>
-</CardHeader>
-<CardContent>
-  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-    <DialogTrigger asChild>
-      <Button variant="destructive" className="w-full">
-        Supprimer mon compte
-      </Button>
-    </DialogTrigger>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Êtes-vous sûr de vouloir supprimer votre compte ?</DialogTitle>
-        <DialogDescription>
-          Cette action est irréversible. Toutes vos données seront définitivement supprimées.
-        </DialogDescription>
-      </DialogHeader>
-      <DialogFooter>
-        <Button variant="destructive" onClick={handleDeleteAccount} disabled={isDeleting}>
-          {isDeleting ? "Suppression..." : "Oui, supprimer mon compte"}
+  <CardHeader>
+    <h4 className="text-sm font-medium text-destructive">Zone de danger</h4>
+    <CardDescription>Actions irréversibles pour votre compte</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <Button variant="destructive" className="w-full">
+          Supprimer mon compte
         </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
-</CardContent>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Êtes-vous sûr de vouloir supprimer votre compte ?</DialogTitle>
+          <DialogDescription>
+            Cette action est irréversible. Toutes vos données seront définitivement supprimées.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="destructive" onClick={handleDeleteAccount} disabled={isDeleting}>
+            {isDeleting ? "Suppression..." : "Oui, supprimer mon compte"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </CardContent>
 </Card>
+
 </>
   );
 };
