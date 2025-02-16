@@ -35,7 +35,7 @@ const Savings = () => {
           <NewSavingDialog onSavingAdded={handleSavingAdded} />
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div >
           <SavingsGoal
             savingsPercentage={profile?.savings_goal_percentage || 0}
             totalMonthlyAmount={totalMonthlyAmount}
