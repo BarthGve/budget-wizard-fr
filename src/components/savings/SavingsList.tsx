@@ -58,7 +58,7 @@ export const SavingsList = ({ monthlySavings, onSavingDeleted }: SavingsListProp
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedSaving, setEditedSaving] = useState<MonthlySaving | null>(null);
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
 
   const deleteMonthlySaving = async (id: string) => {
     const { error } = await supabase.from("monthly_savings").delete().eq("id", id);
