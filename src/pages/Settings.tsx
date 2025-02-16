@@ -15,7 +15,7 @@ const Settings = () => {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-[2fr,3fr]">
+        <div className="grid gap-6 md:grid-cols-[2fr,1fr]">
   <div className="md:col-span-2 space-y-6">
     <ProfileSettings />
     <SecuritySettings />
