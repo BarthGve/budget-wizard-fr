@@ -17,6 +17,7 @@ export const SecuritySettings = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
@@ -58,8 +59,9 @@ export const SecuritySettings = () => {
       const { error } = await supabase.rpc('delete_own_account');
       
       if (error) {
-        if (error.message.includes('last admin')) {
-          toast.error("Impossible de supprimer le dernier compte administrateur");
+        if (error.message?.includes('last admin')) {
+          toast.error("Impossible de supprimer le compte : vous êtes le dernier administrateur. Veuillez d'abord nommer un autre administrateur.");
+          setIsDialogOpen(false);
         } else {
           toast.error("Erreur lors de la suppression du compte");
         }
@@ -129,7 +131,7 @@ export const SecuritySettings = () => {
               </p>
             </div>
 
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="destructive" className="w-full">
                   Supprimer mon compte
