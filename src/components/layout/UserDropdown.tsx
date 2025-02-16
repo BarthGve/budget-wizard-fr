@@ -89,18 +89,12 @@ export const UserDropdown = ({ collapsed, profile }: UserDropdownProps) => {
               <span className="text-xs text-muted-foreground">{profile?.email}</span>
             </div>
           </div>
-          <DropdownMenuItem className="cursor-pointer">
-            <Star className="mr-2 h-4 w-4" />
-            <span>Passer à Pro</span>
-          </DropdownMenuItem>
+       
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
             <UserCircle2 className="mr-2 h-4 w-4" />
             <span>Mon compte</span>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
-            <CreditCard className="mr-2 h-4 w-4" />
-            <span>Facturation</span>
-          </DropdownMenuItem>
+     
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>
             <Bell className="mr-2 h-4 w-4" />
             <span>Notifications</span>
