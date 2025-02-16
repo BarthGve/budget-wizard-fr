@@ -17,12 +17,15 @@ export const BalanceCard = ({
         <CardDescription>Montant disponible</CardDescription>
       </CardHeader> */}
       
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="py-[16px]">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-2xl">Solde</CardTitle>
           <Scale className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <CardDescription>Montant disponible</CardDescription>
         </CardHeader>
       
-        <CardDescription>Montant disponible</CardDescription>
+      
       
       
       <CardContent>
