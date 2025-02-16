@@ -1,0 +1,59 @@
+
+import { NavLink } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Users,
+  PiggyBank,
+  ClipboardList,
+  Home,
+  Shield,
+  TrendingUp,
+  MessageSquare,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface NavigationMenuProps {
+  collapsed: boolean;
+  isAdmin: boolean;
+}
+
+export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
+  const menuItems = [
+    { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
+    { title: "Contributeurs", icon: Users, path: "/contributors" },
+    { title: "Épargne", icon: PiggyBank, path: "/savings" },
+    { title: "Bourse", icon: TrendingUp, path: "/stocks" },
+    { title: "Immobilier", icon: Home, path: "/properties" },
+    { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
+    ...(isAdmin ? [
+      { title: "Administration", icon: Shield, path: "/admin" },
+      { title: "Feedbacks", icon: MessageSquare, path: "/admin/feedbacks" }
+    ] : []),
+  ];
+
+  return (
+    <nav className="flex-1 p-4">
+      <ul className="space-y-2">
+        {menuItems.map((item) => (
+          <li key={item.path}>
+            <NavLink
+              to={item.path}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
+                  "hover:bg-gray-100",
+                  isActive
+                    ? "bg-primary text-primary-foreground hover:bg-primary-hover"
+                    : "text-gray-700"
+                )
+              }
+            >
+              <item.icon className="h-5 w-5" />
+              {!collapsed && <span>{item.title}</span>}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+};
