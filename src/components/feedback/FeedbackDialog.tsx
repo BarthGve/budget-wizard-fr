@@ -116,7 +116,8 @@ export const FeedbackDialog = () => {
             disabled={isSubmitting}
             className="w-full bg-primary hover:bg-primary-hover"
           >
-            {isSubmitting ? "Envoi..." : "Envoyer le feedback"}
+            <Send/>
+            {isSubmitting ? "Envoi..." : "Envoyer"}
           </Button>
         </div>
       </DialogContent>
