@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Banknote } from 'lucide-react';
 interface ContributorShare {
@@ -13,17 +14,17 @@ interface RevenueCardProps {
 export const RevenueCard = ({
   totalRevenue
 }: RevenueCardProps) => {
-  return <Card className="bg-white my-[6px]">
- <CardHeader className="py-[16px]">
+  return <Card className="bg-background">
+    <CardHeader className="py-[16px]">
       <div className="flex flex-row items-center justify-between ">
           <CardTitle className="text-2xl">Revenus globaux</CardTitle>
           <Banknote className="h-6 w-6 text-muted-foreground" />
-          </div>
-          <CardDescription>Somme de l'ensemble des revenus</CardDescription>
-        </CardHeader>
+      </div>
+      <CardDescription>Somme de l'ensemble des revenus</CardDescription>
+    </CardHeader>
 
-      <CardContent className="space-y-4">
-        <p className="font-bold text-xl">{Math.round(totalRevenue)} €</p>
-      </CardContent>
-    </Card>;
+    <CardContent className="space-y-4">
+      <p className="font-bold text-xl">{Math.round(totalRevenue)} €</p>
+    </CardContent>
+  </Card>;
 };
