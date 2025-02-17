@@ -1,12 +1,16 @@
 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRecurringExpenseForm } from "./hooks/useRecurringExpenseForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
+import { NameField } from "./form-fields/NameField";
+import { AmountField } from "./form-fields/AmountField";
+import { CategoryField } from "./form-fields/CategoryField";
+import { PeriodicityField } from "./form-fields/PeriodicityField";
+import { DebitDayField } from "./form-fields/DebitDayField";
+import { DebitMonthField } from "./form-fields/DebitMonthField";
 
 interface RecurringExpenseFormProps {
   expense?: {
@@ -21,17 +25,6 @@ interface RecurringExpenseFormProps {
   onSuccess: () => void;
   onCancel: () => void;
 }
-
-const periodicityOptions = [
-  { value: "monthly", label: "Mensuelle" },
-  { value: "quarterly", label: "Trimestrielle" },
-  { value: "yearly", label: "Annuelle" }
-];
-
-const monthOptions = Array.from({ length: 12 }, (_, i) => ({
-  value: (i + 1).toString(),
-  label: new Date(0, i).toLocaleString('fr-FR', { month: 'long' })
-}));
 
 export function RecurringExpenseForm({
   expense,
@@ -73,134 +66,14 @@ export function RecurringExpenseForm({
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Loyer" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="amount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Montant (€)</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="Ex: 1200"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Catégorie</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez une catégorie" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {categories?.map(category => (
-                    <SelectItem key={category.id} value={category.name}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="periodicity"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Périodicité</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez la périodicité" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {periodicityOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="debit_day"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Jour du prélèvement</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min="1"
-                  max="31"
-                  placeholder="Ex: 15"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
+        <NameField form={form} />
+        <AmountField form={form} />
+        <CategoryField form={form} categories={categories || []} />
+        <PeriodicityField form={form} />
+        <DebitDayField form={form} />
+        
         {form.watch("periodicity") !== "monthly" && (
-          <FormField
-            control={form.control}
-            name="debit_month"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mois du prélèvement</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value || ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez le mois" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {monthOptions.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <DebitMonthField form={form} />
         )}
 
         <div className="flex justify-end space-x-2">
