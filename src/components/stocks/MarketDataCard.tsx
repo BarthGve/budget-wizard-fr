@@ -36,7 +36,7 @@ export const MarketDataCard = ({
   };
   let displayName = "";
   let isCAC = false;
-  if (symbol === 'MC.PA') {
+  if (symbol === 'AAPL') {
     displayName = 'CAC 40';
     isCAC = true;
   } else if (symbol === 'AAPL') {
