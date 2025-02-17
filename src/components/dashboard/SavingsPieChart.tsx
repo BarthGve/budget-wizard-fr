@@ -57,7 +57,7 @@ export const SavingsPieChart = ({
   };
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>Prévision d'épargne</CardTitle>
         <CardDescription>Vue d'ensemble par catégorie</CardDescription>
