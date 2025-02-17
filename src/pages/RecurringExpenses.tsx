@@ -97,21 +97,10 @@ const RecurringExpenses = () => {
             </Button>
           } />
         </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Listing</CardTitle>
-            <CardDescription>
-              Toutes les charges récurrentes enregistrées
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
             <RecurringExpenseTable 
               expenses={recurringExpenses || []}
               onDeleteExpense={handleDeleteExpense}
-            />
-          </CardContent>
-        </Card>
+            />   
       </div>
     </DashboardLayout>
   );
