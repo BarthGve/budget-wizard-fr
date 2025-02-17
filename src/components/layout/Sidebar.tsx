@@ -74,7 +74,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       <div className="flex flex-col flex-1">
         <div className="p-4 border-b rounded-r-xl border-border flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <div className="flex flex-col">
+            <div className="flex items-center gap-2">
               <h1 className={cn(
                 "font-bold text-foreground transition-all duration-300",
                 collapsed ? "text-sm" : "text-xl"
@@ -82,7 +82,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
                 {collapsed ? "BW" : appConfig.name}
               </h1>
               {!collapsed && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground self-end mb-1">
                   {appConfig.version}
                 </span>
               )}
