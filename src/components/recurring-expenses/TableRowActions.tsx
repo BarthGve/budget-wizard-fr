@@ -16,6 +16,7 @@ interface TableRowActionsProps {
 export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleDelete = async () => {
@@ -39,17 +40,12 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
           }}>
             Détails
           </DropdownMenuItem>
-          <RecurringExpenseDialog
-            expense={expense}
-            trigger={
-              <DropdownMenuItem onClick={(e) => {
-                e.preventDefault();
-                setDropdownOpen(false);
-              }}>
-                Modifier
-              </DropdownMenuItem>
-            }
-          />
+          <DropdownMenuItem onClick={() => {
+            setShowEditDialog(true);
+            setDropdownOpen(false);
+          }}>
+            Modifier
+          </DropdownMenuItem>
           <DropdownMenuItem>
             Dupliquer
           </DropdownMenuItem>
@@ -69,6 +65,12 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
         expense={expense}
         open={showDetailsDialog}
         onOpenChange={setShowDetailsDialog}
+      />
+
+      <RecurringExpenseDialog 
+        expense={expense}
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
       />
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

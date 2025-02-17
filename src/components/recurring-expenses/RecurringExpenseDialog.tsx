@@ -13,15 +13,26 @@ interface RecurringExpenseDialogProps {
     debit_day: number;
     debit_month: number | null;
   };
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDialogProps) {
-  const [open, setOpen] = useState(false);
+export function RecurringExpenseDialog({ 
+  expense, 
+  trigger,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange 
+}: RecurringExpenseDialogProps) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+  const onOpenChange = isControlled ? controlledOnOpenChange : setUncontrolledOpen;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
@@ -35,8 +46,8 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
         </DialogHeader>
         <RecurringExpenseForm
           expense={expense}
-          onSuccess={() => setOpen(false)}
-          onCancel={() => setOpen(false)}
+          onSuccess={() => onOpenChange?.(false)}
+          onCancel={() => onOpenChange?.(false)}
         />
       </DialogContent>
     </Dialog>
