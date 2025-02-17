@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ export const SavingsPieChart = ({
     value: saving.amount
   }));
   const COLORS = ['rgb(34, 197, 94)', 'rgb(99, 102, 241)', 'rgb(249, 115, 22)', 'rgb(236, 72, 153)', 'rgb(234, 179, 8)'];
-  return <Card className="col-span-full md:col-span-1 bg-white">
+  return <Card className="col-span-full md:col-span-1 bg-background">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div>
           <CardTitle>Prévision d'épargne</CardTitle>
@@ -46,10 +47,11 @@ export const SavingsPieChart = ({
                 style: 'currency',
                 currency: 'EUR'
               }).format(value)} contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--border)',
                 borderRadius: '0.375rem',
-                padding: '0.5rem'
+                padding: '0.5rem',
+                color: 'var(--foreground)'
               }} />
               </PieChart>
             </ResponsiveContainer>
@@ -62,7 +64,7 @@ export const SavingsPieChart = ({
               }} />
                   <span className="text-sm font-medium">{saving.name}</span>
                 </div>
-                <span className="text-sm text-slate-600">
+                <span className="text-sm text-muted-foreground">
                   {(saving.amount / totalSavings * 100).toFixed(1)}%
                 </span>
               </div>)}
