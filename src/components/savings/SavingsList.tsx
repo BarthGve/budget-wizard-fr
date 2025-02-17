@@ -52,7 +52,7 @@ export const SavingsList = ({ monthlySavings, onSavingDeleted }: SavingsListProp
             {monthlySavings.map((saving) => (
               <div
                 key={saving.id}
-                className="flex items-center justify-between p-4 border rounded-lg"
+                className="flex items-center justify-between p-2 border rounded-lg"
               >
                 <div className="flex items-center gap-4">
                   <img
