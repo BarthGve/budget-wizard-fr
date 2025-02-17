@@ -22,18 +22,32 @@ interface RecurringExpenseFormProps {
     periodicity: "monthly" | "quarterly" | "yearly";
     debit_day: number;
     debit_month: number | null;
+    logo_url?: string;
   };
   onSuccess: () => void;
   onCancel: () => void;
 }
+
+const extractDomainFromLogoUrl = (logoUrl?: string) => {
+  if (!logoUrl || logoUrl === "/placeholder.svg") return "";
+  try {
+    const domain = logoUrl.replace("https://logo.clearbit.com/", "");
+    return domain;
+  } catch {
+    return "";
+  }
+};
 
 export function RecurringExpenseForm({
   expense,
   onSuccess,
   onCancel,
 }: RecurringExpenseFormProps) {
+  const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
+  
   const { form, onSubmit } = useRecurringExpenseForm({
     expense,
+    initialDomain,
     onSuccess
   });
 

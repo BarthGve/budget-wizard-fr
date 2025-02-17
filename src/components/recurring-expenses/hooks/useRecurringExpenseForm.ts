@@ -42,6 +42,7 @@ interface UseRecurringExpenseFormProps {
     debit_month: number | null;
     logo_url?: string;
   };
+  initialDomain?: string;
   onSuccess: () => void;
 }
 
@@ -51,14 +52,14 @@ const getFaviconUrl = (domain: string) => {
   return `https://logo.clearbit.com/${cleanDomain}`;
 };
 
-export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpenseFormProps) => {
+export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess }: UseRecurringExpenseFormProps) => {
   const queryClient = useQueryClient();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: expense?.name || "",
-      domain: "",
+      domain: initialDomain,
       amount: expense?.amount?.toString() || "",
       category: expense?.category || "",
       periodicity: expense?.periodicity || "monthly",
