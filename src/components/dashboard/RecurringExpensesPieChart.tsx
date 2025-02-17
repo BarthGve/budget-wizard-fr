@@ -38,7 +38,7 @@ export const RecurringExpensesPieChart = ({
     name: category.category,
     value: category.amount
   }));
-  const COLORS = ['rgb(34, 197, 94)', 'rgb(99, 102, 241)', 'rgb(249, 115, 22)', 'rgb(236, 72, 153)', 'rgb(234, 179, 8)'];
+  const  COLORS = ['#9b87f5', '#7E69AB', '#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#8E9196'];
   return <Card className="col-span-full md:col-span-1 bg-background">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div>
