@@ -72,7 +72,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
     )}
   >
     <div className="flex flex-col flex-1">
-      <div className="p-4 border-b rounded-r-xl border-border">
+      <div className="p-4 border-b rounded-r-xl border-border padding-bottom: 8px !important">
         <div className="flex flex-col ">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
