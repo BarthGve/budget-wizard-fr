@@ -12,6 +12,7 @@ interface SavingsListProps {
     id: string;
     name: string;
     amount: number;
+    logo_url?: string;
   }>;
   onSavingDeleted: () => void;
 }
@@ -47,11 +48,22 @@ export const SavingsList = ({ monthlySavings, onSavingDeleted }: SavingsListProp
                 key={saving.id}
                 className="flex items-center justify-between p-4 border rounded-lg"
               >
-                <div>
-                  <h4 className="font-medium">{saving.name}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {formatCurrency(saving.amount)} / mois
-                  </p>
+                <div className="flex items-center gap-4">
+                  <img
+                    src={saving.logo_url || "/placeholder.svg"}
+                    alt={saving.name}
+                    className="w-8 h-8 rounded-full object-contain"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/placeholder.svg";
+                    }}
+                  />
+                  <div>
+                    <h4 className="font-medium">{saving.name}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {formatCurrency(saving.amount)} / mois
+                    </p>
+                  </div>
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

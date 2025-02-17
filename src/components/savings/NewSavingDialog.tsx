@@ -28,6 +28,7 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
   const [newSavingName, setNewSavingName] = useState("");
   const [newSavingAmount, setNewSavingAmount] = useState(0);
   const [newSavingDescription, setNewSavingDescription] = useState("");
+  const [domain, setDomain] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -53,6 +54,7 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
     setNewSavingName("");
     setNewSavingAmount(0);
     setNewSavingDescription("");
+    setDomain("");
   };
 
   const addNewMonthlySaving = async () => {
@@ -71,11 +73,18 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
       return;
     }
 
+    let logoUrl = '/placeholder.svg';
+    if (domain.trim()) {
+      // Si un domaine est fourni, on utilise l'API Clearbit
+      logoUrl = `https://logo.clearbit.com/${domain.trim()}`;
+    }
+
     const { error } = await supabase.from("monthly_savings").insert({
       name: newSavingName,
       amount: newSavingAmount,
       description: newSavingDescription,
       profile_id: session.session.user.id,
+      logo_url: logoUrl,
     });
 
     if (error) {
@@ -121,6 +130,18 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
               onChange={(e) => setNewSavingName(e.target.value)}
               placeholder="Ex: Assurance Vie, PEL..."
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="domain">Domaine de l'organisme (optionnel)</Label>
+            <Input
+              id="domain"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              placeholder="Ex: boursorama.com, fortuneo.fr..."
+            />
+            <p className="text-sm text-muted-foreground">
+              Le logo sera automatiquement récupéré à partir du domaine
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="saving-amount">Montant mensuel (€)</Label>
