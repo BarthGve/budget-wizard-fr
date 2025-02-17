@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { RecurringExpenseForm } from "./RecurringExpenseForm";
 
 interface RecurringExpenseDialogProps {
@@ -22,11 +22,16 @@ export function RecurringExpenseDialog({ expense, trigger }: RecurringExpenseDia
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
             {expense ? "Modifier la charge récurrente" : "Ajouter une charge récurrente"}
           </DialogTitle>
+          <DialogDescription>
+            {expense 
+              ? "Modifiez les informations de votre charge récurrente. Les modifications seront appliquées immédiatement."
+              : "Ajoutez une nouvelle charge récurrente en remplissant les informations ci-dessous. Un logo sera automatiquement ajouté si disponible."}
+          </DialogDescription>
         </DialogHeader>
         <RecurringExpenseForm
           expense={expense}
