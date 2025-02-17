@@ -48,7 +48,7 @@ export const SavingsList = ({ monthlySavings, onSavingDeleted }: SavingsListProp
           <CardTitle>Mes versements mensuels d'épargne</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-2">
             {monthlySavings.map((saving) => (
               <div
                 key={saving.id}
