@@ -5,6 +5,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { RecurringExpenseDialog } from "./RecurringExpenseDialog";
 import { RecurringExpense } from "./types";
+import { useState } from "react";
 
 interface TableRowActionsProps {
   expense: RecurringExpense;
@@ -12,8 +13,10 @@ interface TableRowActionsProps {
 }
 
 export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsProps) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   return (
-    <AlertDialog>
+    <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
@@ -24,7 +27,7 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
           <RecurringExpenseDialog
             expense={expense}
             trigger={
-              <DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 Modifier
               </DropdownMenuItem>
             }
@@ -32,30 +35,37 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
           <DropdownMenuItem>
             Dupliquer
           </DropdownMenuItem>
-          <AlertDialogTrigger asChild>
-            <DropdownMenuItem className="text-destructive">
-              Supprimer
-            </DropdownMenuItem>
-          </AlertDialogTrigger>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Supprimer la charge</AlertDialogTitle>
-          <AlertDialogDescription>
-            Êtes-vous sûr de vouloir supprimer cette charge ? Cette action ne peut pas être annulée.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Annuler</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => onDeleteExpense(expense.id)}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          <DropdownMenuItem 
+            className="text-destructive"
+            onSelect={() => setShowDeleteDialog(true)}
           >
             Supprimer
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer la charge</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir supprimer cette charge ? Cette action ne peut pas être annulée.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onDeleteExpense(expense.id);
+                setShowDeleteDialog(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
