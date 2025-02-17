@@ -123,22 +123,7 @@ export const SavingsPieChart = ({
             </Pie>
           </PieChart>
         </ChartContainer>
-        <div className="mt-4 space-y-1">
-          {chartData.map((item, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div
-                  className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: item.fill }}
-                />
-                <span className="text-sm font-medium">{item.name}</span>
-              </div>
-              <span className="text-sm text-muted-foreground">
-                {((item.value / totalSavings) * 100).toFixed(1)}%
-              </span>
-            </div>
-          ))}
-        </div>
+    
       </CardContent>
     </Card>
   );
