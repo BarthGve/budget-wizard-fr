@@ -108,7 +108,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[220px]">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Catégorie" />
             </SelectTrigger>
@@ -120,7 +120,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             </SelectContent>
           </Select>
           <Select value={periodicityFilter} onValueChange={setPeriodicityFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[220px]">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Périodicité" />
             </SelectTrigger>
@@ -133,7 +133,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           </Select>
         </div>
         <Select value={sortField} onValueChange={(value: keyof RecurringExpense) => handleSort(value)}>
-          <SelectTrigger className="w-[220px]">
+          <SelectTrigger className="w-[180px]">
             <ArrowUpDown className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Trier par" />
           </SelectTrigger>
