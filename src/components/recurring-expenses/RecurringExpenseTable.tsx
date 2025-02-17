@@ -133,7 +133,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           </Select>
         </div>
         <Select value={sortField} onValueChange={(value: keyof RecurringExpense) => handleSort(value)}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[220px]">
             <ArrowUpDown className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Trier par" />
           </SelectTrigger>
@@ -148,7 +148,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
       <div className="space-y-2">
         <Table>
           <TableHeader>
-            <TableRow className="border-0">
+            <TableRow >
               <TableHead >Nom</TableHead>
               <TableHead >Catégorie</TableHead>
               <TableHead >Périodicité</TableHead>
