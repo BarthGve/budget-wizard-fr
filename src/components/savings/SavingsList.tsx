@@ -52,7 +52,7 @@ export const SavingsList = ({ monthlySavings, onSavingDeleted }: SavingsListProp
                   <img
                     src={saving.logo_url || "/placeholder.svg"}
                     alt={saving.name}
-                    className="w-16 h-16 rounded-full object-contain"
+                    className="w-14 h-14 rounded-full object-contain"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = "/placeholder.svg";
