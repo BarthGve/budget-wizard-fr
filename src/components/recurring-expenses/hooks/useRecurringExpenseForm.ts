@@ -25,8 +25,7 @@ export const formSchema = z.object({
       return !isNaN(month) && month >= 1 && month <= 12;
     },
     "Le mois doit être entre 1 et 12"
-  ),
-  logo_url: z.string().optional()
+  )
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -61,8 +60,7 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
       category: expense?.category || "",
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
-      debit_month: expense?.debit_month?.toString() || "",
-      logo_url: expense?.logo_url || ""
+      debit_month: expense?.debit_month?.toString() || ""
     },
   });
 
@@ -81,8 +79,8 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
         debit_month = null;
       }
 
-      // Utiliser l'URL fournie ou générer via Clearbit
-      const logo_url = values.logo_url || getFaviconUrl(values.name);
+      // Générer l'URL du logo
+      const logo_url = getFaviconUrl(values.name);
 
       const expenseData = {
         name: values.name,

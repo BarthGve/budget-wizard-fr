@@ -11,7 +11,6 @@ import { CategoryField } from "./form-fields/CategoryField";
 import { PeriodicityField } from "./form-fields/PeriodicityField";
 import { DebitDayField } from "./form-fields/DebitDayField";
 import { DebitMonthField } from "./form-fields/DebitMonthField";
-import { LogoUrlField } from "./form-fields/LogoUrlField";
 
 interface RecurringExpenseFormProps {
   expense?: {
@@ -22,7 +21,6 @@ interface RecurringExpenseFormProps {
     periodicity: "monthly" | "quarterly" | "yearly";
     debit_day: number;
     debit_month: number | null;
-    logo_url?: string;
   };
   onSuccess: () => void;
   onCancel: () => void;
@@ -69,7 +67,6 @@ export function RecurringExpenseForm({
     <Form {...form}>
       <form onSubmit={onSubmit} className="space-y-4">
         <NameField form={form} />
-        <LogoUrlField form={form} />
         <AmountField form={form} />
         <CategoryField form={form} categories={categories || []} />
         <PeriodicityField form={form} />
