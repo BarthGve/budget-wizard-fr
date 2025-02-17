@@ -69,7 +69,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
       </div>
 
       <div className="space-y-2">
-        <Table>
+        <Table className="border-separate border-spacing-y-2"e>
           <TableHeader>
             <TableRow className="border-0">
               <TableHead className="text-card-foreground dark:text-card-foreground">Nom</TableHead>
@@ -81,7 +81,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
               <TableHead className="text-card-foreground dark:text-card-foreground text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="flex flex-col gap-2">
+          <TableBody >
             {sortedExpenses.map((expense) => (
               <TableRow 
                 key={expense.id}
