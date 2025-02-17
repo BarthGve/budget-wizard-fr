@@ -109,7 +109,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[220px]">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Catégorie" />
             </SelectTrigger>
@@ -121,7 +121,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             </SelectContent>
           </Select>
           <Select value={periodicityFilter} onValueChange={setPeriodicityFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[220px]">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Périodicité" />
             </SelectTrigger>
