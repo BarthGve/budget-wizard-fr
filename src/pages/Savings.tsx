@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
 import { SavingsList } from "@/components/savings/SavingsList";
+import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
 import { useDashboardData } from "@/hooks/useDashboardData";
 
 const Savings = () => {
@@ -34,19 +35,23 @@ const Savings = () => {
           <NewSavingDialog onSavingAdded={handleSavingAdded} />
         </div>
 
-        <div >
+        <div>
           <SavingsGoal
             savingsPercentage={profile?.savings_goal_percentage || 0}
             totalMonthlyAmount={totalMonthlyAmount}
           />
-
-      
         </div>
 
-        <SavingsList
-          monthlySavings={monthlySavings || []}
-          onSavingDeleted={handleSavingDeleted}
-        />
+        <div className="grid gap-4 md:grid-cols-2">
+          <SavingsList
+            monthlySavings={monthlySavings || []}
+            onSavingDeleted={handleSavingDeleted}
+          />
+          <SavingsPieChart
+            monthlySavings={monthlySavings || []}
+            totalSavings={totalMonthlyAmount}
+          />
+        </div>
       </div>
     </DashboardLayout>
   );
