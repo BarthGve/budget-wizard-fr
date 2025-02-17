@@ -65,10 +65,13 @@ const formatDebitDate = (debit_day: number, debit_month: number | null, periodic
   }
 };
 
+const ALL_CATEGORIES = "all_categories";
+const ALL_PERIODICITIES = "all_periodicities";
+
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-  const [periodicityFilter, setPeriodicityFilter] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string>(ALL_CATEGORIES);
+  const [periodicityFilter, setPeriodicityFilter] = useState<string>(ALL_PERIODICITIES);
   const [sortField, setSortField] = useState<keyof RecurringExpense>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
@@ -85,8 +88,8 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
 
   const filteredExpenses = expenses.filter(expense => {
     const matchesSearch = expense.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !categoryFilter || expense.category === categoryFilter;
-    const matchesPeriodicity = !periodicityFilter || expense.periodicity === periodicityFilter;
+    const matchesCategory = categoryFilter === ALL_CATEGORIES || expense.category === categoryFilter;
+    const matchesPeriodicity = periodicityFilter === ALL_PERIODICITIES || expense.periodicity === periodicityFilter;
     return matchesSearch && matchesCategory && matchesPeriodicity;
   });
 
@@ -111,25 +114,25 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
               className="pl-8 w-[250px]"
             />
           </div>
-          <Select value={categoryFilter || ""} onValueChange={(value) => setCategoryFilter(value || null)}>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-[180px]">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Catégorie" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Toutes les catégories</SelectItem>
+              <SelectItem value={ALL_CATEGORIES}>Toutes les catégories</SelectItem>
               {uniqueCategories.map((category) => (
                 <SelectItem key={category} value={category}>{category}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select value={periodicityFilter || ""} onValueChange={(value) => setPeriodicityFilter(value || null)}>
+          <Select value={periodicityFilter} onValueChange={setPeriodicityFilter}>
             <SelectTrigger className="w-[180px]">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Périodicité" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Toutes les périodicités</SelectItem>
+              <SelectItem value={ALL_PERIODICITIES}>Toutes les périodicités</SelectItem>
               {Object.entries(periodicityLabels).map(([key, label]) => (
                 <SelectItem key={key} value={key}>{label}</SelectItem>
               ))}
