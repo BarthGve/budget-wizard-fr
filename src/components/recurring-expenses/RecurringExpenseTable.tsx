@@ -150,20 +150,20 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
         <Table>
           <TableHeader>
             <TableRow className="border-0">
-              <TableHead className="rounded-l-lg bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Nom</TableHead>
-              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Catégorie</TableHead>
-              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Périodicité</TableHead>
-              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Prélèvement</TableHead>
-              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Montant</TableHead>
-              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Créé le</TableHead>
-              <TableHead className="rounded-r-lg bg-card text-card-foreground dark:bg-card dark:text-card-foreground text-right">Actions</TableHead>
+              <TableHead className="  text-card-foreground  dark:text-card-foreground">Nom</TableHead>
+              <TableHead className=" text-card-foreground  dark:text-card-foreground">Catégorie</TableHead>
+              <TableHead className=" text-card-foreground  dark:text-card-foreground">Périodicité</TableHead>
+              <TableHead className=" text-card-foreground  dark:text-card-foreground">Prélèvement</TableHead>
+              <TableHead className=" text-card-foreground  dark:text-card-foreground">Montant</TableHead>
+              <TableHead className=" text-card-foreground  dark:text-card-foreground">Créé le</TableHead>
+              <TableHead className=" text-card-foreground  dark:text-card-foreground text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="space-y-2">
             {sortedExpenses.map((expense) => (
               <TableRow 
                 key={expense.id}
-                className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
+                className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors gap-2"
               >
                 <TableCell className="rounded-l-lg">{expense.name}</TableCell>
                 <TableCell>{expense.category}</TableCell>
