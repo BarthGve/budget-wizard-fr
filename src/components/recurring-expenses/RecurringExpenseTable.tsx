@@ -105,7 +105,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                 </TableCell>
                 <TableCell>{expense.category}</TableCell>
                 <TableCell>{periodicityLabels[expense.periodicity]}</TableCell>
-                <TableCell>{expense.amount.toLocaleString('fr-FR')} €</TableCell>
+                <TableCell className="text-center">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
                 <TableCell className="rounded-r-lg text-right">
                   <TableRowActions expense={expense} onDeleteExpense={onDeleteExpense} />
                 </TableCell>
