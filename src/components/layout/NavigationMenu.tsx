@@ -6,10 +6,8 @@ import {
   PiggyBank,
   ClipboardList,
   Home,
-  
   TrendingUp,
   Mailbox,
-
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
@@ -52,11 +50,12 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
                 className={cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                   "hover:bg-primary/10",
+                  collapsed && "justify-center",
                   isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )}
               >
-                <item.icon className="h-5 w-5" />
-                {!collapsed && <span className="ml-3">{item.title}</span>}
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                {!collapsed && <span className="truncate">{item.title}</span>}
               </NavLink>
             </li>
           );
@@ -64,8 +63,11 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
       </ul>
       
       {!isAdmin && (
-        <div className="mt-4 border-t border-gray-200 pt-4">
-          <FeedbackDialog />
+        <div className={cn(
+          "mt-4 border-t border-gray-200 pt-4",
+          collapsed && "flex justify-center"
+        )}>
+          <FeedbackDialog collapsed={collapsed} />
         </div>
       )}
     </nav>

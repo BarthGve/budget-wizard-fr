@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -10,7 +9,11 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
-export const FeedbackDialog = () => {
+interface FeedbackDialogProps {
+  collapsed?: boolean;
+}
+
+export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -56,9 +59,15 @@ export const FeedbackDialog = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start">
-          <Send  className="mr-2 h-4 w-4" />
-          <span className="font-normal text-base">Laisser un avis</span>
+        <Button 
+          variant="ghost" 
+          className={cn(
+            "w-full",
+            collapsed ? "w-10 px-0 justify-center" : "justify-start"
+          )}
+        >
+          <Send className="h-4 w-4" />
+          {!collapsed && <span className="ml-2 font-normal text-base">Laisser un avis</span>}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
