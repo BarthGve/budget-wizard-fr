@@ -7,6 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Profile } from "@/types/profile";
 import { NavigationMenu } from "./NavigationMenu";
 import { UserDropdown } from "./UserDropdown";
+import { ThemeToggle } from "../theme/ThemeToggle";
+import { appConfig } from "@/config/app.config";
+import { ThemeProvider } from "next-themes";
 
 interface SidebarProps {
   className?: string;
@@ -55,37 +58,51 @@ export const Sidebar = ({ className }: SidebarProps) => {
   });
 
   return (
-    <aside
-      className={cn(
-        "h-screen bg-white border-r rounded-r-xl border-gray-200 transition-all duration-300 flex flex-col",
-        collapsed ? "w-20" : "w-64",
-        className
-      )}
-    >
-      <div className="flex flex-col flex-1">
-        <div className="p-4 border-b rounded-r-xl border-gray-200 flex items-center justify-between">
-          <h1 className={cn(
-            "font-bold text-primary transition-all duration-300",
-            collapsed ? "text-sm" : "text-xl"
-          )}>
-            {collapsed ? "BW" : "Budget Wizard"}
-          </h1>
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {collapsed ? (
-              <ChevronRight className="h-5 w-5 text-gray-500" />
-            ) : (
-              <ChevronLeft className="h-5 w-5 text-gray-500" />
-            )}
-          </button>
-        </div>
+    <ThemeProvider defaultTheme="system" enableSystem>
+      <aside
+        className={cn(
+          "h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col",
+          collapsed ? "w-20" : "w-64",
+          className
+        )}
+      >
+        <div className="flex flex-col flex-1">
+          <div className="p-4 border-b rounded-r-xl border-border flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <h1 className={cn(
+                  "font-bold text-foreground transition-all duration-300",
+                  collapsed ? "text-sm" : "text-xl"
+                )}>
+                  {collapsed ? "BW" : appConfig.name}
+                </h1>
+                {!collapsed && (
+                  <span className="text-xs text-muted-foreground">
+                    {appConfig.version}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <ThemeToggle collapsed={collapsed} />
+                <button
+                  onClick={() => setCollapsed(!collapsed)}
+                  className="p-1 rounded-lg hover:bg-accent transition-colors"
+                  aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                >
+                  {collapsed ? (
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  ) : (
+                    <ChevronLeft className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
 
-        <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
-        <UserDropdown collapsed={collapsed} profile={profile} />
-      </div>
-    </aside>
+          <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
+          <UserDropdown collapsed={collapsed} profile={profile} />
+        </div>
+      </aside>
+    </ThemeProvider>
   );
 };
