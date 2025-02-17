@@ -84,7 +84,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                 className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors p-2"
               >
                 <TableCell className="rounded-l-lg">
-                  <div className="flex items-center gap-3 p-2">
+                  <div className="flex items-center gap-3">
                     {expense.logo_url && (
                       <img
                         src={expense.logo_url}
