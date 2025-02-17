@@ -151,7 +151,7 @@ export const ContributorCard = ({
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Trash2 className="h-4 w-4 text-red-500" />
+                  <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -168,7 +168,7 @@ export const ContributorCard = ({
                   <AlertDialogCancel>Annuler</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => onDelete(contributor.id)}
-                    className="bg-red-500 hover:bg-red-600"
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
                     Supprimer
                   </AlertDialogAction>
