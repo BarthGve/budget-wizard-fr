@@ -85,15 +85,15 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             {sortedExpenses.map((expense) => (
               <TableRow 
                 key={expense.id}
-                className="border bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
+                className="border rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
               >
-                <TableCell >{expense.name}</TableCell>
+                <TableCell className="rounded-l-lg" >{expense.name}</TableCell>
                 <TableCell>{expense.category}</TableCell>
                 <TableCell>{periodicityLabels[expense.periodicity]}</TableCell>
                 <TableCell>{formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}</TableCell>
                 <TableCell>{expense.amount.toLocaleString('fr-FR')} €</TableCell>
                 <TableCell>{format(new Date(expense.created_at), 'dd/MM/yyyy', { locale: fr })}</TableCell>
-                <TableCell >
+                <TableCell className="rounded-r-lg">
                   <TableRowActions expense={expense} onDeleteExpense={onDeleteExpense} />
                 </TableCell>
               </TableRow>
