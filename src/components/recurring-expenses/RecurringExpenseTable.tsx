@@ -149,13 +149,13 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
         <Table>
           <TableHeader>
             <TableRow className="border-0">
-              <TableHead className="rounded-l-lg bg-white">Nom</TableHead>
-              <TableHead className="bg-white">Catégorie</TableHead>
-              <TableHead className="bg-white">Périodicité</TableHead>
-              <TableHead className="bg-white">Prélèvement</TableHead>
-              <TableHead className="bg-white">Montant</TableHead>
-              <TableHead className="bg-white">Créé le</TableHead>
-              <TableHead className="rounded-r-lg bg-white text-right">Actions</TableHead>
+              <TableHead >Nom</TableHead>
+              <TableHead >Catégorie</TableHead>
+              <TableHead >Périodicité</TableHead>
+              <TableHead >Prélèvement</TableHead>
+              <TableHead >Montant</TableHead>
+              <TableHead >Créé le</TableHead>
+              <TableHead className=" text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="space-y-2">
