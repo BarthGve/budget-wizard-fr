@@ -41,6 +41,21 @@ export const SavingsPieChart = ({
     fill: COLORS[index % COLORS.length]
   }));
 
+  const chartConfig = {
+    value: {
+      label: "Montant",
+    },
+    ...Object.fromEntries(
+      monthlySavings.map((saving, index) => [
+        saving.name,
+        {
+          label: saving.name,
+          color: COLORS[index % COLORS.length],
+        },
+      ])
+    ),
+  };
+
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
@@ -48,7 +63,7 @@ export const SavingsPieChart = ({
         <CardDescription>Vue d'ensemble par catégorie</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
-        <ChartContainer className="mx-auto aspect-square max-h-[250px]">
+        <ChartContainer className="mx-auto aspect-square max-h-[250px]" config={chartConfig}>
           <PieChart>
             <ChartTooltip
               cursor={false}
