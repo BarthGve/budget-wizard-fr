@@ -35,21 +35,25 @@ const Savings = () => {
           <NewSavingDialog onSavingAdded={handleSavingAdded} />
         </div>
 
-        <div>
-          <SavingsGoal
-            savingsPercentage={profile?.savings_goal_percentage || 0}
-            totalMonthlyAmount={totalMonthlyAmount}
-          />
+        <div className="grid gap-4 grid-cols-12">
+          <div className="col-span-8">
+            <SavingsGoal
+              savingsPercentage={profile?.savings_goal_percentage || 0}
+              totalMonthlyAmount={totalMonthlyAmount}
+            />
+          </div>
+          <div className="col-span-4">
+            <SavingsPieChart
+              monthlySavings={monthlySavings || []}
+              totalSavings={totalMonthlyAmount}
+            />
+          </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div>
           <SavingsList
             monthlySavings={monthlySavings || []}
             onSavingDeleted={handleSavingDeleted}
-          />
-          <SavingsPieChart
-            monthlySavings={monthlySavings || []}
-            totalSavings={totalMonthlyAmount}
           />
         </div>
       </div>
