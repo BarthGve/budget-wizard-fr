@@ -81,7 +81,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
               <TableRow 
                 key={expense.id}
             
-                className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors p-2"
+                className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
               >
                 <TableCell className="rounded-l-lg">
                   <div className="flex items-center gap-3">
