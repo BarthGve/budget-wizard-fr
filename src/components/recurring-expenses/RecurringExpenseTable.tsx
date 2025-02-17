@@ -80,15 +80,11 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             {sortedExpenses.map((expense) => (
               <TableRow 
                 key={expense.id}
-                style={{
-                  borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                }}
+            
                 className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors p-2"
               >
                 <TableCell className="rounded-l-lg">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 p-2">
                     {expense.logo_url && (
                       <img
                         src={expense.logo_url}
