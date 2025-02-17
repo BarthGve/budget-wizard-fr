@@ -1,8 +1,9 @@
+
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Search, Tags, Repeat, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from "lucide-react";
+import { MoreHorizontal, Search, Filter, ArrowUpDown, Edit2, Trash2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -28,16 +29,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Edit2, Trash2 } from "lucide-react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface RecurringExpense {
   id: string;
@@ -47,6 +40,7 @@ interface RecurringExpense {
   periodicity: "monthly" | "quarterly" | "yearly";
   debit_day: number;
   debit_month: number | null;
+  created_at: string;
 }
 
 interface RecurringExpenseTableProps {
@@ -73,298 +67,154 @@ const formatDebitDate = (debit_day: number, debit_month: number | null, periodic
 
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof RecurringExpense;
-    direction: "asc" | "desc";
-  } | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [periodicityFilter, setPeriodicityFilter] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [sortField, setSortField] = useState<keyof RecurringExpense>("created_at");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category)));
-  const uniquePeriodicities = Array.from(new Set(expenses.map(expense => expense.periodicity)));
 
-  const sortData = (data: RecurringExpense[]) => {
-    if (!sortConfig) return data;
-
-    return [...data].sort((a, b) => {
-      if (a[sortConfig.key] < b[sortConfig.key]) {
-        return sortConfig.direction === "asc" ? -1 : 1;
-      }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
-        return sortConfig.direction === "asc" ? 1 : -1;
-      }
-      return 0;
-    });
+  const handleSort = (field: keyof RecurringExpense) => {
+    if (field === sortField) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
   };
 
-  const filterData = (data: RecurringExpense[]) => {
-    return data.filter(expense => {
-      const matchesSearch = expense.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          expense.category.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = !categoryFilter || expense.category === categoryFilter;
-      const matchesPeriodicity = !periodicityFilter || expense.periodicity === periodicityFilter;
+  const filteredExpenses = expenses.filter(expense => {
+    const matchesSearch = expense.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !categoryFilter || expense.category === categoryFilter;
+    const matchesPeriodicity = !periodicityFilter || expense.periodicity === periodicityFilter;
+    return matchesSearch && matchesCategory && matchesPeriodicity;
+  });
 
-      return matchesSearch && matchesCategory && matchesPeriodicity;
-    });
-  };
-
-  const handleSort = (key: keyof RecurringExpense) => {
-    setSortConfig({
-      key,
-      direction: sortConfig?.key === key && sortConfig.direction === "asc" ? "desc" : "asc",
-    });
-  };
-
-  const filteredAndSortedData = sortData(filterData(expenses));
-  const totalPages = Math.ceil(filteredAndSortedData.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const paginatedData = filteredAndSortedData.slice(startIndex, startIndex + rowsPerPage);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleRowsPerPageChange = (value: string) => {
-    setRowsPerPage(Number(value));
-    setCurrentPage(1); // Reset to first page when changing rows per page
-  };
+  const sortedExpenses = [...filteredExpenses].sort((a, b) => {
+    const multiplier = sortDirection === "asc" ? 1 : -1;
+    if (sortField === "amount") {
+      return (a[sortField] - b[sortField]) * multiplier;
+    }
+    return String(a[sortField]).localeCompare(String(b[sortField])) * multiplier;
+  });
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher une charge..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
-          />
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Tags className="mr-2 h-4 w-4" />
-              Catégories
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setCategoryFilter(null)}>
-              Toutes les catégories
-            </DropdownMenuItem>
-            {uniqueCategories.map((category) => (
-              <DropdownMenuItem key={category} onClick={() => setCategoryFilter(category)}>
-                {category}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Repeat className="mr-2 h-4 w-4" />
-              Périodicité
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setPeriodicityFilter(null)}>
-              Toutes les périodicités
-            </DropdownMenuItem>
-            {uniquePeriodicities.map((periodicity) => (
-              <DropdownMenuItem 
-                key={periodicity} 
-                onClick={() => setPeriodicityFilter(periodicity)}
-              >
-                {periodicityLabels[periodicity as keyof typeof periodicityLabels]}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <div className="rounded-md border">
-      <Table>
-  <TableHeader>
-    <TableRow>
-      <TableHead>
-        <Button variant="ghost" onClick={() => handleSort("name")}>
-          Nom
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      </TableHead>
-      <TableHead className="text-center">
-        <Button variant="ghost" onClick={() => handleSort("category")}>
-          Catégorie
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      </TableHead>
-      <TableHead className="text-center">
-        <Button variant="ghost" onClick={() => handleSort("periodicity")}>
-          Périodicité
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      </TableHead>
-      <TableHead className="text-center">Prélèvement</TableHead>
-      <TableHead className="text-center">
-        <Button variant="ghost" onClick={() => handleSort("amount")}>
-          Montant
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      </TableHead>
-      <TableHead className="text-right">Actions</TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>
-    {paginatedData.map((expense) => (
-      <TableRow key={expense.id}>
-        <TableCell className="font-medium">{expense.name}</TableCell>
-        <TableCell className="text-center">{expense.category}</TableCell>
-        <TableCell className="text-center">{periodicityLabels[expense.periodicity]}</TableCell>
-        <TableCell className="text-center">{formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}</TableCell>
-        <TableCell className="text-center">{expense.amount} €</TableCell>
-        <TableCell className="text-right">
-          <div className="flex justify-end space-x-2">
-            <RecurringExpenseDialog
-              expense={expense}
-              trigger={
-                <Button variant="ghost" size="sm">
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-              }
-            />
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Supprimer la charge</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer cette charge ? Cette action ne peut pas être annulée.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => onDeleteExpense(expense.id)}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Supprimer
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </TableCell>
-      </TableRow>
-    ))}
-  </TableBody>
-</Table>
-      </div>
-
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>{filteredAndSortedData.length} résultat{filteredAndSortedData.length > 1 ? 's' : ''}</span>
-          <Select
-            value={rowsPerPage.toString()}
-            onValueChange={handleRowsPerPageChange}
-          >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={rowsPerPage} />
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher par nom..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8 w-[250px]"
+            />
+          </div>
+          <Select value={categoryFilter || ""} onValueChange={(value) => setCategoryFilter(value || null)}>
+            <SelectTrigger className="w-[180px]">
+              <Filter className="mr-2 h-4 w-4" />
+              <SelectValue placeholder="Catégorie" />
             </SelectTrigger>
-            <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={pageSize.toString()}>
-                  {pageSize}
-                </SelectItem>
+            <SelectContent>
+              <SelectItem value="">Toutes les catégories</SelectItem>
+              {uniqueCategories.map((category) => (
+                <SelectItem key={category} value={category}>{category}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <span>par page</span>
+          <Select value={periodicityFilter || ""} onValueChange={(value) => setPeriodicityFilter(value || null)}>
+            <SelectTrigger className="w-[180px]">
+              <Filter className="mr-2 h-4 w-4" />
+              <SelectValue placeholder="Périodicité" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Toutes les périodicités</SelectItem>
+              {Object.entries(periodicityLabels).map(([key, label]) => (
+                <SelectItem key={key} value={key}>{label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
+        <Select value={sortField} onValueChange={(value: keyof RecurringExpense) => handleSort(value)}>
+          <SelectTrigger className="w-[180px]">
+            <ArrowUpDown className="mr-2 h-4 w-4" />
+            <SelectValue placeholder="Trier par" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="name">Nom</SelectItem>
+            <SelectItem value="amount">Montant</SelectItem>
+            <SelectItem value="created_at">Date de création</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => currentPage !== 1 && handlePageChange(1)}
-                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => currentPage !== 1 && handlePageChange(currentPage - 1)}
-                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </PaginationLink>
-            </PaginationItem>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nom</TableHead>
+              <TableHead>Catégorie</TableHead>
+              <TableHead>Périodicité</TableHead>
+              <TableHead>Prélèvement</TableHead>
+              <TableHead>Montant</TableHead>
+              <TableHead>Créé le</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sortedExpenses.map((expense) => (
+              <TableRow key={expense.id}>
+                <TableCell>{expense.name}</TableCell>
+                <TableCell>{expense.category}</TableCell>
+                <TableCell>{periodicityLabels[expense.periodicity]}</TableCell>
+                <TableCell>{formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}</TableCell>
+                <TableCell>{expense.amount.toLocaleString('fr-FR')} €</TableCell>
+                <TableCell>{format(new Date(expense.created_at), 'dd/MM/yyyy', { locale: fr })}</TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <RecurringExpenseDialog
+                      expense={expense}
+                      trigger={
+                        <Button variant="ghost" size="icon">
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                      }
+                    />
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Supprimer la charge</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Êtes-vous sûr de vouloir supprimer cette charge ? Cette action ne peut pas être annulée.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => onDeleteExpense(expense.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Supprimer
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
-            {/* Pages before current page */}
-            {currentPage > 2 && (
-              <PaginationItem>
-                <PaginationLink onClick={() => handlePageChange(1)}>
-                  1
-                </PaginationLink>
-              </PaginationItem>
-            )}
-            {currentPage > 3 && <PaginationEllipsis />}
-            {currentPage > 1 && (
-              <PaginationItem>
-                <PaginationLink onClick={() => handlePageChange(currentPage - 1)}>
-                  {currentPage - 1}
-                </PaginationLink>
-              </PaginationItem>
-            )}
-
-            {/* Current page */}
-            <PaginationItem>
-              <PaginationLink isActive>
-                {currentPage}
-              </PaginationLink>
-            </PaginationItem>
-
-            {/* Pages after current page */}
-            {currentPage < totalPages && (
-              <PaginationItem>
-                <PaginationLink onClick={() => handlePageChange(currentPage + 1)}>
-                  {currentPage + 1}
-                </PaginationLink>
-              </PaginationItem>
-            )}
-            {currentPage < totalPages - 2 && <PaginationEllipsis />}
-            {currentPage < totalPages - 1 && (
-              <PaginationItem>
-                <PaginationLink onClick={() => handlePageChange(totalPages)}>
-                  {totalPages}
-                </PaginationLink>
-              </PaginationItem>
-            )}
-
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => currentPage !== totalPages && handlePageChange(currentPage + 1)}
-                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => currentPage !== totalPages && handlePageChange(totalPages)}
-                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </PaginationLink>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+      <div className="text-sm text-muted-foreground">
+        {filteredExpenses.length} résultat{filteredExpenses.length !== 1 ? 's' : ''}
       </div>
     </div>
   );
