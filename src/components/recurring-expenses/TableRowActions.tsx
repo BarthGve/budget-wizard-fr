@@ -17,16 +17,21 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
+  const handleSelect = (callback: () => void) => (event: Event) => {
+    event.preventDefault();
+    callback();
+  };
+
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" className="relative">
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">
-          <DropdownMenuItem onSelect={() => setShowDetailsDialog(true)}>
+          <DropdownMenuItem onSelect={handleSelect(() => setShowDetailsDialog(true))}>
             Détails
           </DropdownMenuItem>
           <RecurringExpenseDialog
@@ -42,7 +47,7 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
           </DropdownMenuItem>
           <DropdownMenuItem 
             className="text-destructive"
-            onSelect={() => setShowDeleteDialog(true)}
+            onSelect={handleSelect(() => setShowDeleteDialog(true))}
           >
             Supprimer
           </DropdownMenuItem>
