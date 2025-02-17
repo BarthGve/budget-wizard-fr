@@ -48,6 +48,7 @@ export const UserTableRow = ({ user, onRoleChange, onDelete }: UserTableRowProps
       </div>
       <UserActions
         userId={user.id}
+        userEmail={user.email}
         currentRole={user.role}
         onRoleChange={onRoleChange}
         onDelete={onDelete}

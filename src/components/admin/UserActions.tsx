@@ -8,9 +8,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface UserActionsProps {
   userId: string;
+  userEmail: string;
   currentRole: "user" | "admin";
   onRoleChange: (userId: string, newRole: "user" | "admin") => void;
   onDelete: (userId: string) => void;
@@ -18,6 +30,7 @@ interface UserActionsProps {
 
 export const UserActions = ({
   userId,
+  userEmail,
   currentRole,
   onRoleChange,
   onDelete,
@@ -37,14 +50,35 @@ export const UserActions = ({
           <SelectItem value="admin">Administrateur</SelectItem>
         </SelectContent>
       </Select>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => onDelete(userId)}
-        className="text-gray-500 hover:text-red-600 hover:bg-red-50"
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-gray-500 hover:text-red-600 hover:bg-red-50"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer l'utilisateur</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir supprimer l'utilisateur {userEmail} ? Cette action ne peut pas être annulée 
+              et supprimera toutes les données associées à cet utilisateur.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => onDelete(userId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
