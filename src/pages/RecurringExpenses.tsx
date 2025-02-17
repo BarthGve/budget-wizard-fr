@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,7 @@ interface RecurringExpense {
   periodicity: "monthly" | "quarterly" | "yearly";
   debit_day: number;
   debit_month: number | null;
+  created_at: string;
 }
 
 const RecurringExpenses = () => {
