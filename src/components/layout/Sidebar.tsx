@@ -66,7 +66,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
   return (
     <aside
       className={cn(
-        "h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col",
+        "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col",
         collapsed ? "w-20" : "w-64",
         className
       )}
@@ -89,17 +89,6 @@ export const Sidebar = ({ className }: SidebarProps) => {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle collapsed={collapsed} />
-              <button
-                onClick={() => setCollapsed(!collapsed)}
-                className="p-1 rounded-lg hover:bg-accent transition-colors"
-                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-              >
-                {collapsed ? (
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                ) : (
-                  <ChevronLeft className="h-5 w-5 text-muted-foreground" />
-                )}
-              </button>
             </div>
           </div>
         </div>
@@ -107,6 +96,21 @@ export const Sidebar = ({ className }: SidebarProps) => {
         <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
         <UserDropdown collapsed={collapsed} profile={profile} />
       </div>
+      
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className={cn(
+          "absolute -right-3 top-5 p-1 rounded-full bg-background border border-border hover:bg-accent transition-colors",
+          "z-50 shadow-sm"
+        )}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        {collapsed ? (
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        ) : (
+          <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+        )}
+      </button>
     </aside>
   );
 };
