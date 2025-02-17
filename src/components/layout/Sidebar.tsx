@@ -65,54 +65,56 @@ export const Sidebar = ({ className }: SidebarProps) => {
 
   return (
     <aside
-      className={cn(
-        "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col",
-        collapsed ? "w-20" : "w-64",
-        className
-      )}
-    >
-      <div className="flex flex-col flex-1">
-        <div className="p-4 border-b rounded-r-xl border-border">
+    className={cn(
+      "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col",
+      collapsed ? "w-20" : "w-64",
+      className
+    )}
+  >
+    <div className="flex flex-col flex-1">
+      <div className="p-4 border-b rounded-r-xl border-border">
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h1 className={cn(
-                "font-bold text-foreground transition-all duration-300",
-                collapsed ? "text-sm" : "text-xl"
-              )}>
+              <h1
+                className={cn(
+                  "font-bold text-foreground transition-all duration-300",
+                  collapsed ? "text-sm" : "text-xl"
+                )}
+              >
                 {collapsed ? "BW" : appConfig.name}
               </h1>
-              {!collapsed && (
-                <span className="text-xs text-muted-foreground self-end mb-1">
-                  {appConfig.version}
-                </span>
-              )}
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle collapsed={collapsed} />
             </div>
           </div>
+          {!collapsed && (
+            <span className="text-xs text-muted-foreground self-start">
+              {appConfig.version}
+            </span>
+          )}
         </div>
-        </div>
-
-        <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
-        <UserDropdown collapsed={collapsed} profile={profile} />
       </div>
-      
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className={cn(
-          "absolute -right-3 top-5 p-1 rounded-full bg-background border border-border hover:bg-accent transition-colors",
-          "z-50 shadow-sm"
-        )}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        {collapsed ? (
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <ChevronLeft className="h-4 w-4 text-muted-foreground" />
-        )}
-      </button>
-    </aside>
+  
+      <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
+      <UserDropdown collapsed={collapsed} profile={profile} />
+    </div>
+  
+    <button
+      onClick={() => setCollapsed(!collapsed)}
+      className={cn(
+        "absolute -right-3 top-5 p-1 rounded-full bg-background border border-border hover:bg-accent transition-colors",
+        "z-50 shadow-sm"
+      )}
+      aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+    >
+      {collapsed ? (
+        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+      ) : (
+        <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+      )}
+    </button>
+  </aside>
   );
 };
