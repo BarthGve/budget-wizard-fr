@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -108,7 +109,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[220px]">
+            <SelectTrigger className="w-[180px]">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Catégorie" />
             </SelectTrigger>
@@ -120,7 +121,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             </SelectContent>
           </Select>
           <Select value={periodicityFilter} onValueChange={setPeriodicityFilter}>
-            <SelectTrigger className="w-[220px]">
+            <SelectTrigger className="w-[180px]">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Périodicité" />
             </SelectTrigger>
@@ -148,29 +149,29 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
       <div className="space-y-2">
         <Table>
           <TableHeader>
-            <TableRow >
-              <TableHead >Nom</TableHead>
-              <TableHead >Catégorie</TableHead>
-              <TableHead >Périodicité</TableHead>
-              <TableHead >Prélèvement</TableHead>
-              <TableHead >Montant</TableHead>
-              <TableHead >Créé le</TableHead>
-              <TableHead className=" text-right">Actions</TableHead>
+            <TableRow className="border-0">
+              <TableHead className="rounded-l-lg bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Nom</TableHead>
+              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Catégorie</TableHead>
+              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Périodicité</TableHead>
+              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Prélèvement</TableHead>
+              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Montant</TableHead>
+              <TableHead className="bg-card text-card-foreground dark:bg-card dark:text-card-foreground">Créé le</TableHead>
+              <TableHead className="rounded-r-lg bg-card text-card-foreground dark:bg-card dark:text-card-foreground text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="space-y-2">
             {sortedExpenses.map((expense) => (
-             <TableRow
-             key={expense.id}
-             className=" border-rounded border-slate-200 bg-white p-4 pr-8 shadow-sm transition-all duration-200 ease-in-out hover:border-slate-400 hover:bg-slate-50"
-           >
-                <TableCell>{expense.name}</TableCell>
+              <TableRow 
+                key={expense.id}
+                className="border rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
+              >
+                <TableCell className="rounded-l-lg">{expense.name}</TableCell>
                 <TableCell>{expense.category}</TableCell>
                 <TableCell>{periodicityLabels[expense.periodicity]}</TableCell>
                 <TableCell>{formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}</TableCell>
                 <TableCell>{expense.amount.toLocaleString('fr-FR')} €</TableCell>
                 <TableCell>{format(new Date(expense.created_at), 'dd/MM/yyyy', { locale: fr })}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="rounded-r-lg text-right">
                   <div className="flex justify-end gap-2">
                     <RecurringExpenseDialog
                       expense={expense}
