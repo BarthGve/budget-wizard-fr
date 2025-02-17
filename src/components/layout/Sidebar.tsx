@@ -72,7 +72,8 @@ export const Sidebar = ({ className }: SidebarProps) => {
       )}
     >
       <div className="flex flex-col flex-1">
-        <div className="p-4 border-b rounded-r-xl border-border flex flex-col gap-2">
+        <div className="p-4 border-b rounded-r-xl border-border">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h1 className={cn(
@@ -91,6 +92,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
               <ThemeToggle collapsed={collapsed} />
             </div>
           </div>
+        </div>
         </div>
 
         <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
