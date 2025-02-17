@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, ArrowUpDown, Edit2, Trash2 } from "lucide-react";
+import { Search, Filter, ArrowUpDown, Edit2, Trash2, MoreVertical } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -25,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface RecurringExpense {
   id: string;
@@ -147,7 +147,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
       </div>
 
       <div className="space-y-2">
-        <Table className="border-separate border-spacing-y-2">
+        <Table>
           <TableHeader>
             <TableRow className="border-0">
               <TableHead className="  text-card-foreground  dark:text-card-foreground">Nom</TableHead>
@@ -159,11 +159,11 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
               <TableHead className=" text-card-foreground  dark:text-card-foreground text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="space-y-4">
+          <TableBody className="space-y-2">
             {sortedExpenses.map((expense) => (
               <TableRow 
                 key={expense.id}
-                className="border rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors my-2"
+                className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
               >
                 <TableCell className="rounded-l-lg">{expense.name}</TableCell>
                 <TableCell>{expense.category}</TableCell>
@@ -172,40 +172,50 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                 <TableCell>{expense.amount.toLocaleString('fr-FR')} €</TableCell>
                 <TableCell>{format(new Date(expense.created_at), 'dd/MM/yyyy', { locale: fr })}</TableCell>
                 <TableCell className="rounded-r-lg text-right">
-                  <div className="flex justify-end gap-2">
-                    <RecurringExpenseDialog
-                      expense={expense}
-                      trigger={
+                  <AlertDialog>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
-                          <Edit2 className="h-4 w-4" />
+                          <MoreVertical className="h-4 w-4" />
                         </Button>
-                      }
-                    />
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Supprimer la charge</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cette charge ? Cette action ne peut pas être annulée.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Annuler</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => onDeleteExpense(expense.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-[200px]">
+                        <RecurringExpenseDialog
+                          expense={expense}
+                          trigger={
+                            <DropdownMenuItem>
+                              Modifier
+                            </DropdownMenuItem>
+                          }
+                        />
+                        <DropdownMenuItem>
+                          Dupliquer
+                        </DropdownMenuItem>
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem className="text-destructive">
                             Supprimer
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Supprimer la charge</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Êtes-vous sûr de vouloir supprimer cette charge ? Cette action ne peut pas être annulée.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => onDeleteExpense(expense.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Supprimer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))}
