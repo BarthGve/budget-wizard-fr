@@ -85,6 +85,11 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             {sortedExpenses.map((expense) => (
               <TableRow 
                 key={expense.id}
+                style={{
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1', /* Slate-300 en hexadécimal */
+                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)', /* Équivalent à shadow-sm */
+                }}
                 className="border-2 border-slate-200 rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
               >
                 <TableCell className="rounded-l-lg" >{expense.name}</TableCell>
