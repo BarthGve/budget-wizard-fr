@@ -11,6 +11,7 @@ import { CategoryField } from "./form-fields/CategoryField";
 import { PeriodicityField } from "./form-fields/PeriodicityField";
 import { DebitDayField } from "./form-fields/DebitDayField";
 import { DebitMonthField } from "./form-fields/DebitMonthField";
+import { DomainField } from "./form-fields/DomainField";
 
 interface RecurringExpenseFormProps {
   expense?: {
@@ -67,6 +68,7 @@ export function RecurringExpenseForm({
     <Form {...form}>
       <form onSubmit={onSubmit} className="space-y-4">
         <NameField form={form} />
+        <DomainField form={form} />
         <AmountField form={form} />
         <CategoryField form={form} categories={categories || []} />
         <PeriodicityField form={form} />

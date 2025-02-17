@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 export const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
+  domain: z.string().optional(),
   amount: z.string().min(1, "Le montant est requis").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Le montant doit être un nombre positif"),
   category: z.string().min(1, "La catégorie est requise"),
   periodicity: z.enum(["monthly", "quarterly", "yearly"]),
@@ -44,9 +45,10 @@ interface UseRecurringExpenseFormProps {
   onSuccess: () => void;
 }
 
-const getFaviconUrl = (name: string) => {
-  const domain = name.toLowerCase().replace(/[^a-z0-9]/g, "");
-  return `https://logo.clearbit.com/${domain}.com`;
+const getFaviconUrl = (domain: string) => {
+  if (!domain) return "/placeholder.svg";
+  const cleanDomain = domain.trim().toLowerCase();
+  return `https://logo.clearbit.com/${cleanDomain}`;
 };
 
 export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpenseFormProps) => {
@@ -56,6 +58,7 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: expense?.name || "",
+      domain: "",
       amount: expense?.amount?.toString() || "",
       category: expense?.category || "",
       periodicity: expense?.periodicity || "monthly",
@@ -79,8 +82,8 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
         debit_month = null;
       }
 
-      // Générer l'URL du logo
-      const logo_url = getFaviconUrl(values.name);
+      // Générer l'URL du logo à partir du domaine
+      const logo_url = getFaviconUrl(values.domain || "");
 
       const expenseData = {
         name: values.name,
