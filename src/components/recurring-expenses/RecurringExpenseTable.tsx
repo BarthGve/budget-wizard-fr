@@ -99,10 +99,10 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                     <span>{expense.name}</span>
                   </div>
                 </TableCell>
-                <TableCell>{expense.category}</TableCell>
-                <TableCell>{periodicityLabels[expense.periodicity]}</TableCell>
-                <TableCell className="text-center">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
-                <TableCell className="rounded-r-lg text-right">
+                <TableCell className="py-2">{expense.category}</TableCell>
+                <TableCell className="py-2">{periodicityLabels[expense.periodicity]}</TableCell>
+                <TableCell className="text-center py-2">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
+                <TableCell className="rounded-r-lg text-right py-2">
                   <TableRowActions expense={expense} onDeleteExpense={onDeleteExpense} />
                 </TableCell>
               </TableRow>
