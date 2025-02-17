@@ -39,9 +39,15 @@ interface UseRecurringExpenseFormProps {
     periodicity: "monthly" | "quarterly" | "yearly";
     debit_day: number;
     debit_month: number | null;
+    logo_url?: string;
   };
   onSuccess: () => void;
 }
+
+const getFaviconUrl = (name: string) => {
+  const domain = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return `https://logo.clearbit.com/${domain}.com`;
+};
 
 export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpenseFormProps) => {
   const queryClient = useQueryClient();
@@ -68,11 +74,13 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
         return;
       }
 
-      // Gérer le debit_month en fonction de la périodicité
       let debit_month = values.debit_month ? parseInt(values.debit_month) : null;
       if (values.periodicity === "monthly") {
         debit_month = null;
       }
+
+      // Générer l'URL du logo
+      const logo_url = getFaviconUrl(values.name);
 
       const expenseData = {
         name: values.name,
@@ -81,6 +89,7 @@ export const useRecurringExpenseForm = ({ expense, onSuccess }: UseRecurringExpe
         periodicity: values.periodicity,
         debit_day: parseInt(values.debit_day),
         debit_month: debit_month,
+        logo_url,
       };
 
       if (expense) {

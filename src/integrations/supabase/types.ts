@@ -333,6 +333,7 @@ export type Database = {
           debit_day: number
           debit_month: number | null
           id: string
+          logo_url: string | null
           name: string
           periodicity: string
           profile_id: string
@@ -345,6 +346,7 @@ export type Database = {
           debit_day?: number
           debit_month?: number | null
           id?: string
+          logo_url?: string | null
           name: string
           periodicity?: string
           profile_id: string
@@ -357,6 +359,7 @@ export type Database = {
           debit_day?: number
           debit_month?: number | null
           id?: string
+          logo_url?: string | null
           name?: string
           periodicity?: string
           profile_id?: string

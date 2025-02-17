@@ -8,6 +8,7 @@ export interface RecurringExpense {
   debit_day: number;
   debit_month: number | null;
   created_at: string;
+  logo_url?: string;
 }
 
 export interface RecurringExpenseTableProps {

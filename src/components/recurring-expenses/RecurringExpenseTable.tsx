@@ -3,10 +3,7 @@ import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowUpDown } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, ALL_PERIODICITIES, periodicityLabels } from "./types";
-import { formatDebitDate } from "./utils";
 import { TableFilters } from "./TableFilters";
 import { TableRowActions } from "./TableRowActions";
 
@@ -72,12 +69,10 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
         <Table className="border-separate border-spacing-y-1">
           <TableHeader>
             <TableRow className="border-0">
-              <TableHead className="text-card-foreground dark:text-card-foreground">Nom</TableHead>
+              <TableHead className="text-card-foreground dark:text-card-foreground">Charge</TableHead>
               <TableHead className="text-card-foreground dark:text-card-foreground">Catégorie</TableHead>
               <TableHead className="text-card-foreground dark:text-card-foreground">Périodicité</TableHead>
-              <TableHead className="text-card-foreground dark:text-card-foreground">Prélèvement</TableHead>
               <TableHead className="text-card-foreground dark:text-card-foreground">Montant</TableHead>
-              <TableHead className="text-card-foreground dark:text-card-foreground">Créé le</TableHead>
               <TableHead className="text-card-foreground dark:text-card-foreground text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -87,17 +82,30 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                 key={expense.id}
                 style={{
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1', /* Slate-300 en hexadécimal */
-                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)', /* Équivalent à shadow-sm */
+                  border: '1px solid #cbd5e1',
+                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
                 }}
                 className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
               >
-                <TableCell className="rounded-l-lg" >{expense.name}</TableCell>
+                <TableCell className="rounded-l-lg">
+                  <div className="flex items-center gap-3">
+                    {expense.logo_url && (
+                      <img
+                        src={expense.logo_url}
+                        alt={expense.name}
+                        className="w-8 h-8 rounded-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder.svg";
+                        }}
+                      />
+                    )}
+                    <span>{expense.name}</span>
+                  </div>
+                </TableCell>
                 <TableCell>{expense.category}</TableCell>
                 <TableCell>{periodicityLabels[expense.periodicity]}</TableCell>
-                <TableCell>{formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}</TableCell>
                 <TableCell>{expense.amount.toLocaleString('fr-FR')} €</TableCell>
-                <TableCell>{format(new Date(expense.created_at), 'dd/MM/yyyy', { locale: fr })}</TableCell>
                 <TableCell className="rounded-r-lg">
                   <TableRowActions expense={expense} onDeleteExpense={onDeleteExpense} />
                 </TableCell>

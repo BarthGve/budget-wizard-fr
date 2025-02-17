@@ -1,9 +1,10 @@
 
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { RecurringExpenseDialog } from "./RecurringExpenseDialog";
+import { RecurringExpenseDetails } from "./RecurringExpenseDetails";
 import { RecurringExpense } from "./types";
 import { useState } from "react";
 
@@ -14,6 +15,7 @@ interface TableRowActionsProps {
 
 export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
   return (
     <>
@@ -24,6 +26,9 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">
+          <DropdownMenuItem onSelect={() => setShowDetailsDialog(true)}>
+            Détails
+          </DropdownMenuItem>
           <RecurringExpenseDialog
             expense={expense}
             trigger={
@@ -43,6 +48,12 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <RecurringExpenseDetails 
+        expense={expense}
+        open={showDetailsDialog}
+        onOpenChange={setShowDetailsDialog}
+      />
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
