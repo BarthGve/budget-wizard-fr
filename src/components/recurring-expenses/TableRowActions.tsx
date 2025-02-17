@@ -16,28 +16,36 @@ interface TableRowActionsProps {
 export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleSelect = (callback: () => void) => (event: Event) => {
-    event.preventDefault();
-    callback();
+  const handleDelete = async () => {
+    await onDeleteExpense(expense.id);
+    setShowDeleteDialog(false);
+    setDropdownOpen(false);
   };
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon" className="relative">
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">
-          <DropdownMenuItem onSelect={handleSelect(() => setShowDetailsDialog(true))}>
+          <DropdownMenuItem onClick={() => {
+            setShowDetailsDialog(true);
+            setDropdownOpen(false);
+          }}>
             Détails
           </DropdownMenuItem>
           <RecurringExpenseDialog
             expense={expense}
             trigger={
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <DropdownMenuItem onClick={(e) => {
+                e.preventDefault();
+                setDropdownOpen(false);
+              }}>
                 Modifier
               </DropdownMenuItem>
             }
@@ -47,7 +55,10 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
           </DropdownMenuItem>
           <DropdownMenuItem 
             className="text-destructive"
-            onSelect={handleSelect(() => setShowDeleteDialog(true))}
+            onClick={() => {
+              setShowDeleteDialog(true);
+              setDropdownOpen(false);
+            }}
           >
             Supprimer
           </DropdownMenuItem>
@@ -71,10 +82,7 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                onDeleteExpense(expense.id);
-                setShowDeleteDialog(false);
-              }}
+              onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Supprimer
