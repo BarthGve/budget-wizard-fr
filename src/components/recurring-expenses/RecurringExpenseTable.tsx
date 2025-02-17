@@ -85,7 +85,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                   border: '1px solid #cbd5e1',
                   boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
                 }}
-                className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
+                className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors p-2"
               >
                 <TableCell className="rounded-l-lg">
                   <div className="flex items-center gap-3">
