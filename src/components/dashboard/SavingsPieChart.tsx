@@ -63,7 +63,7 @@ export const SavingsPieChart = ({
         <CardDescription>Vue d'ensemble par catégorie</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
-        <ChartContainer className="mx-auto aspect-square max-h-[250px]" config={chartConfig}>
+        <ChartContainer className="mx-auto aspect-square max-h-[150px]" config={chartConfig}>
           <PieChart>
             <ChartTooltip
               cursor={false}
