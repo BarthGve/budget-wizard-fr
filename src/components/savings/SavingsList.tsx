@@ -74,16 +74,13 @@ export const SavingsList = ({ monthlySavings, onSavingDeleted }: SavingsListProp
                 <AlertDialog>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="outline" size="icon">
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[200px]">
                       <DropdownMenuItem>
                         Modifier
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        Dupliquer
                       </DropdownMenuItem>
                       <AlertDialogTrigger asChild>
                         <DropdownMenuItem className="text-destructive">
