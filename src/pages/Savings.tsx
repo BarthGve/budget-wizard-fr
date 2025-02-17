@@ -1,7 +1,6 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
-import { MonthlyTotal } from "@/components/savings/MonthlyTotal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
 import { SavingsList } from "@/components/savings/SavingsList";
 import { useDashboardData } from "@/hooks/useDashboardData";
