@@ -24,7 +24,7 @@ const Savings = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projets_epargne")
-        .select("*")
+        .select("*, added_to_recurring")
         .order("created_at", { ascending: true });
 
       if (error) throw error;
@@ -74,7 +74,11 @@ const Savings = () => {
           </div>
         </div>
 
-        <SavingsProjectsList projects={projects || []} />
+        <SavingsProjectsList 
+          projects={projects || []} 
+          onProjectDeleted={refetchProjects}
+          onProjectEdit={(project) => console.log('Edit project:', project)}
+        />
 
         <SavingsList
           monthlySavings={monthlySavings || []}

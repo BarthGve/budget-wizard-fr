@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { PencilIcon, Trash2Icon, CircleDotDashed } from "lucide-react";
+import { CircleDotDashed, MoreVertical, Pencil, Copy, Link2, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +16,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -89,39 +95,55 @@ export const SavingsProjectsList = ({
                       Fin estimée : {format(new Date(project.date_estimee), "MMMM yyyy", { locale: fr })}
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => onProjectEdit(project)}
-                    >
-                      <PencilIcon className="h-4 w-4" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="icon">
-                          <Trash2Icon className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Supprimer le projet</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer ce projet d&apos;épargne ?
-                            Cette action est irréversible.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Annuler</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDeleteProject(project.id)}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => onProjectEdit(project)}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Modifier
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Copy className="mr-2 h-4 w-4" />
+                        Dupliquer
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link2 className="mr-2 h-4 w-4" />
+                        Copier le lien
+                      </DropdownMenuItem>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem
+                            onClick={(e) => e.preventDefault()}
+                            className="text-destructive"
                           >
+                            <Trash2 className="mr-2 h-4 w-4" />
                             Supprimer
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Supprimer le projet</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Êtes-vous sûr de vouloir supprimer ce projet d&apos;épargne ?
+                              Cette action est irréversible.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteProject(project.id)}
+                            >
+                              Supprimer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             </div>
