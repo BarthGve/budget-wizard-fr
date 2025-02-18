@@ -11,6 +11,16 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
+interface SavingsProject {
+  id: string;
+  nom_projet: string;
+  montant_total: number;
+  montant_mensuel: number;
+  date_estimee: string;
+  mode_planification: "par_date" | "par_mensualite";
+  added_to_recurring: boolean;
+}
+
 const Savings = () => {
   const { monthlySavings, profile, refetch } = useDashboardData();
 
@@ -19,12 +29,12 @@ const Savings = () => {
     0
   ) || 0;
 
-  const { data: projects, refetch: refetchProjects } = useQuery({
+  const { data: projects, refetch: refetchProjects } = useQuery<SavingsProject[]>({
     queryKey: ["savings-projects"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projets_epargne")
-        .select("*, added_to_recurring")
+        .select("*")
         .order("created_at", { ascending: true });
 
       if (error) throw error;
