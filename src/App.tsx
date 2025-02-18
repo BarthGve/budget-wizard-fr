@@ -19,6 +19,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import Admin from "./pages/Admin";
 import AdminFeedbacks from "./pages/admin/Feedbacks";
 import Stocks from "./pages/Stocks";
+import Credits from "./pages/Credits";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />
             <Route path="/recurring-expenses" element={<ProtectedRoute><RecurringExpenses /></ProtectedRoute>} />
             <Route path="/stocks" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
+            <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
             
             {/* Routes protégées pour les admins */}
             <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
