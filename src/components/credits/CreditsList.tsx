@@ -1,6 +1,5 @@
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -20,6 +19,7 @@ import {
   PaginationPrevious 
 } from "@/components/ui/pagination";
 import { useState } from "react";
+import { CreditDetails } from "./CreditDetails";
 
 interface Credit {
   id: string;
@@ -36,6 +36,9 @@ const ITEMS_PER_PAGE = 10;
 
 export function CreditsList() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedCredit, setSelectedCredit] = useState<Credit | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: credits, isLoading } = useQuery({
     queryKey: ["credits", currentPage],
@@ -81,11 +84,30 @@ export function CreditsList() {
         .eq("id", creditId);
 
       if (error) throw error;
+
+      // Supprimer également la charge récurrente associée
+      await supabase
+        .from("recurring_expenses")
+        .delete()
+        .eq("name", `Crédit - ${selectedCredit?.nom_credit}`);
+
+      queryClient.invalidateQueries({ queryKey: ["credits"] });
+      queryClient.invalidateQueries({ queryKey: ["recurring-expenses"] });
       toast.success("Crédit supprimé avec succès");
     } catch (error) {
       console.error("Error deleting credit:", error);
       toast.error("Erreur lors de la suppression du crédit");
     }
+  };
+
+  const handleEditCredit = async (credit: Credit) => {
+    setSelectedCredit(credit);
+    setEditOpen(true);
+  };
+
+  const handleViewDetails = (credit: Credit) => {
+    setSelectedCredit(credit);
+    setDetailsOpen(true);
   };
 
   const CreditTable = ({ credits, title, showActions = false }: { 
@@ -146,14 +168,14 @@ export function CreditsList() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
                         className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => toast.info("Modification du crédit - Fonctionnalité à venir")}
+                        onClick={() => handleEditCredit(credit)}
                       >
                         <Pencil className="h-4 w-4" />
                         Modifier
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => toast.info("Détails du crédit - Fonctionnalité à venir")}
+                        onClick={() => handleViewDetails(credit)}
                       >
                         <Eye className="h-4 w-4" />
                         Voir les détails
@@ -239,6 +261,13 @@ export function CreditsList() {
         credits={paidCredits} 
         title="Historique des crédits remboursés" 
       />
+      {selectedCredit && (
+        <CreditDetails
+          credit={selectedCredit}
+          open={detailsOpen}
+          onOpenChange={setDetailsOpen}
+        />
+      )}
     </div>
   );
 }
