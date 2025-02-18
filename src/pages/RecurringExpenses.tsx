@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -10,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RecurringExpenseTable } from "@/components/recurring-expenses/RecurringExpenseTable";
 import { CreditDialog } from "@/components/credits/CreditDialog";
+import { CreditsList } from "@/components/credits/CreditsList";
 
 interface RecurringExpense {
   id: string;
@@ -112,6 +112,7 @@ const RecurringExpenses = () => {
           expenses={recurringExpenses || []}
           onDeleteExpense={handleDeleteExpense}
         />
+        <CreditsList />
         <CreditDialog 
           open={creditDialogOpen} 
           onOpenChange={setCreditDialogOpen}
