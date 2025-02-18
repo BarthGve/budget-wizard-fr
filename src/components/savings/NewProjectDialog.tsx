@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,11 +33,16 @@ export const NewProjectDialog = ({ onProjectAdded }: NewProjectDialogProps) => {
   const [planificationType, setPlanificationType] = useState<"par_date" | "par_mensualite">("par_date");
   const [montantMensuel, setMontantMensuel] = useState("");
   const [dateObjectif, setDateObjectif] = useState<Date>();
+  const [dateString, setDateString] = useState("");
   const [addToRecurring, setAddToRecurring] = useState(false);
 
   const calculerMontantMensuel = (montantTotal: number, dateObjectif: Date) => {
     const today = new Date();
-    const diffMois = (dateObjectif.getFullYear() - today.getFullYear()) * 12 + (dateObjectif.getMonth() - today.getMonth());
+    const diffMois = Math.max(
+      1,
+      (dateObjectif.getFullYear() - today.getFullYear()) * 12 + 
+      (dateObjectif.getMonth() - today.getMonth())
+    );
     return Math.ceil(montantTotal / diffMois);
   };
 
@@ -47,6 +51,25 @@ export const NewProjectDialog = ({ onProjectAdded }: NewProjectDialogProps) => {
     const dateEstimee = new Date();
     dateEstimee.setMonth(dateEstimee.getMonth() + nombreMois);
     return dateEstimee;
+  };
+
+  const handleDateInput = (value: string) => {
+    setDateString(value);
+    // Format attendu : MM/YYYY
+    const [month, year] = value.split('/');
+    if (month && year && month.length === 2 && year.length === 4) {
+      const date = new Date(parseInt(year), parseInt(month) - 1);
+      if (!isNaN(date.getTime()) && date > new Date()) {
+        setDateObjectif(date);
+      }
+    }
+  };
+
+  const handleCalendarSelect = (date: Date | undefined) => {
+    if (date) {
+      setDateObjectif(date);
+      setDateString(format(date, 'MM/yyyy'));
+    }
   };
 
   const handleSubmit = async () => {
@@ -128,6 +151,7 @@ export const NewProjectDialog = ({ onProjectAdded }: NewProjectDialogProps) => {
     setPlanificationType("par_date");
     setMontantMensuel("");
     setDateObjectif(undefined);
+    setDateString("");
     setAddToRecurring(false);
   };
 
@@ -183,32 +207,33 @@ export const NewProjectDialog = ({ onProjectAdded }: NewProjectDialogProps) => {
           {planificationType === "par_date" ? (
             <div className="space-y-2">
               <Label>Date objectif</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !dateObjectif && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateObjectif ? format(dateObjectif, "MMMM yyyy", { locale: fr }) : "Sélectionner une date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={dateObjectif}
-                    onSelect={setDateObjectif}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              {dateObjectif && montantTotal && (
+              <div className="flex gap-2">
+                <Input
+                  placeholder="MM/YYYY"
+                  value={dateString}
+                  onChange={(e) => handleDateInput(e.target.value)}
+                  className="flex-1"
+                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <CalendarIcon className="h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={dateObjectif}
+                      onSelect={handleCalendarSelect}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              {dateObjectif && montantTotal && parseFloat(montantTotal) > 0 && (
                 <p className="text-sm text-muted-foreground">
-                  Montant mensuel nécessaire : {calculerMontantMensuel(parseFloat(montantTotal), dateObjectif)}€
+                  Montant mensuel nécessaire : {formatCurrency(calculerMontantMensuel(parseFloat(montantTotal), dateObjectif))}
                 </p>
               )}
             </div>
@@ -222,9 +247,18 @@ export const NewProjectDialog = ({ onProjectAdded }: NewProjectDialogProps) => {
                 onChange={(e) => setMontantMensuel(e.target.value)}
                 placeholder="Ex: 500"
               />
-              {montantMensuel && montantTotal && (
+              {montantMensuel && montantTotal && 
+               parseFloat(montantMensuel) > 0 && 
+               parseFloat(montantTotal) > 0 && (
                 <p className="text-sm text-muted-foreground">
-                  Date estimée : {format(calculerDateEstimee(parseFloat(montantTotal), parseFloat(montantMensuel)), "MMMM yyyy", { locale: fr })}
+                  Date estimée : {format(
+                    calculerDateEstimee(
+                      parseFloat(montantTotal), 
+                      parseFloat(montantMensuel)
+                    ), 
+                    "MMMM yyyy", 
+                    { locale: fr }
+                  )}
                 </p>
               )}
             </div>
