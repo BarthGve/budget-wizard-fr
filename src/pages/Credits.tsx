@@ -106,7 +106,7 @@ const Credits = () => {
           {credits?.map((credit, index) => (
             <Card key={credit.id} className="overflow-hidden border  bg-card dark:bg-card">
               <div className="flex flex-col md:flex-row md:items-center">
-                <div className="flex items-center gap-4 md:w-1/3">
+                <div className="flex items-center px-4 gap-4 md:w-1/3">
            
                     {credit.logo_url ? (
                       <img
