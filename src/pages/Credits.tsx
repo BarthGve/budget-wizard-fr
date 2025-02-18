@@ -107,7 +107,7 @@ const Credits = () => {
             <Card key={credit.id} className="overflow-hidden border  bg-card dark:bg-card">
               <div className="flex flex-col md:flex-row md:items-center">
                 <div className="flex items-center gap-4 p-2 md:w-1/3">
-                  <div className="bg-violet-50 p-3 ">
+           
                     {credit.logo_url ? (
                       <img
                       src={credit.logo_url}
@@ -121,7 +121,7 @@ const Credits = () => {
                     ) : (
                       <div className="w-8 h-8 bg-violet-100 rounded-full" />
                     )}
-                  </div>
+                  
                   <div>
                     <h3 className="font-semibold text-lg">{credit.nom_credit}</h3>
                   </div>
