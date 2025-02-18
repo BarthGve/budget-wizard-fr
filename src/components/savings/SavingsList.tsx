@@ -60,7 +60,7 @@ export const SavingsList = ({
         <CardContent>
           <div className="space-y-2">
             {monthlySavings.map(saving => (
-              <div key={saving.id} className="flex items-center justify-between p-2 border rounded-lg">
+              <div key={saving.id} className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card">
                 <div className="flex items-center gap-4">
                   <img 
                     src={saving.logo_url || "/placeholder.svg"} 
