@@ -107,12 +107,12 @@ const Credits = () => {
             <Card key={credit.id} className="overflow-hidden border  bg-card dark:bg-card">
               <div className="flex flex-col md:flex-row md:items-center">
                 <div className="flex items-center gap-4 p-2 md:w-1/3">
-                  <div className="bg-violet-50 p-3 rounded-full">
+                  <div className="bg-violet-50 p-3 ">
                     {credit.logo_url ? (
                       <img
                         src={credit.logo_url}
                         alt={credit.nom_credit}
-                        className="w-8 h-8 object-contain"
+                        className="w-8 h-8 rounded-full object-contain"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = "/placeholder.svg";
