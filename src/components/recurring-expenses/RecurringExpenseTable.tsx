@@ -83,7 +83,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             
                 className="rounded-lg bg-card dark:bg-card hover:bg-accent/50 dark:hover:bg-accent/50 transition-colors"
               >
-                <TableCell className="border-t border-b border-l border-slate-300 rounded-l-lg py-2">
+                <TableCell className="border-t border-b border-l rounded-l-lg py-2">
                   <div className="flex items-center gap-3">
                     {expense.logo_url && (
                       <img
@@ -99,10 +99,10 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                     <span className="font-semibold">{expense.name}</span>
                   </div>
                 </TableCell>
-                <TableCell className="border-t border-b  border-slate-200  py-2">{expense.category}</TableCell>
-                <TableCell className="border-t border-b  border-slate-200  py-2">{periodicityLabels[expense.periodicity]}</TableCell>
-                <TableCell className="border-t border-b border-slate-200 text-center py-2">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
-                <TableCell className="border-t border-b border-r border-slate-200 rounded-r-lg text-right py-2">
+                <TableCell className="border-t border-b    py-2">{expense.category}</TableCell>
+                <TableCell className="border-t border-b   py-2">{periodicityLabels[expense.periodicity]}</TableCell>
+                <TableCell className="border-t border-b  text-center py-2">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
+                <TableCell className="border-t border-b border-r  rounded-r-lg text-right py-2">
                   <TableRowActions expense={expense} onDeleteExpense={onDeleteExpense} />
                 </TableCell>
               </TableRow>
