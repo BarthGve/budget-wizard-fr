@@ -52,12 +52,12 @@ export const SavingsList = ({
   };
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-2">
      
         <CardHeader>
           <CardTitle>Versements mensuels</CardTitle>
         </CardHeader>
-        <CardContent>
+     
           <div className="space-y-2">
             {monthlySavings.map(saving => (
               <div key={saving.id} className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card">
@@ -105,7 +105,7 @@ export const SavingsList = ({
               </p>
             )}
           </div>
-        </CardContent>
+      
      
 
       <NewSavingDialog 
