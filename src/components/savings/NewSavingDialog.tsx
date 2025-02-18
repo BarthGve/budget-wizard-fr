@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,9 +27,11 @@ interface NewSavingDialogProps {
     amount: number;
     logo_url?: string;
   };
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const NewSavingDialog = ({ onSavingAdded, trigger, saving }: NewSavingDialogProps) => {
+export const NewSavingDialog = ({ onSavingAdded, trigger, saving, open: controlledOpen, onOpenChange }: NewSavingDialogProps) => {
   const [open, setOpen] = useState(false);
   const [newSavingName, setNewSavingName] = useState("");
   const [newSavingAmount, setNewSavingAmount] = useState(0);
@@ -43,12 +44,21 @@ export const NewSavingDialog = ({ onSavingAdded, trigger, saving }: NewSavingDia
     if (saving) {
       setNewSavingName(saving.name);
       setNewSavingAmount(saving.amount);
-      // Extraire le domaine de l'URL du logo si disponible
       if (saving.logo_url && saving.logo_url !== "/placeholder.svg") {
         setDomain(saving.logo_url.replace("https://logo.clearbit.com/", ""));
       }
     }
   }, [saving]);
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(newOpen);
+    } else {
+      setOpen(newOpen);
+    }
+  };
+
+  const isOpen = controlledOpen !== undefined ? controlledOpen : open;
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
@@ -105,7 +115,6 @@ export const NewSavingDialog = ({ onSavingAdded, trigger, saving }: NewSavingDia
     };
 
     if (saving) {
-      // Mise à jour
       const { error } = await supabase
         .from("monthly_savings")
         .update(savingData)
@@ -125,7 +134,6 @@ export const NewSavingDialog = ({ onSavingAdded, trigger, saving }: NewSavingDia
         description: "Versement mensuel modifié",
       });
     } else {
-      // Création
       const { error } = await supabase
         .from("monthly_savings")
         .insert(savingData);
@@ -146,20 +154,13 @@ export const NewSavingDialog = ({ onSavingAdded, trigger, saving }: NewSavingDia
     }
 
     resetForm();
-    setOpen(false);
+    handleOpenChange(false);
     onSavingAdded();
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary-hover gap-2">
-            <Plus className="mr-2 h-4 w-4" />
-            Nouveau versement
-          </Button>
-        )}
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      {!controlledOpen && trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{saving ? "Modifier le versement mensuel" : "Nouveau versement mensuel"}</DialogTitle>
@@ -210,7 +211,7 @@ export const NewSavingDialog = ({ onSavingAdded, trigger, saving }: NewSavingDia
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
+          <Button variant="outline" onClick={() => handleOpenChange(false)}>Annuler</Button>
           <Button 
             onClick={addNewMonthlySaving}
             className="bg-primary text-primary-foreground hover:bg-primary-hover"

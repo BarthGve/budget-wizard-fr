@@ -27,6 +27,7 @@ export const SavingsList = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedSaving, setSelectedSaving] = useState<{id: string, name: string, amount: number, logo_url?: string} | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [editSaving, setEditSaving] = useState<{id: string, name: string, amount: number, logo_url?: string} | null>(null);
 
   const handleDelete = async (id: string) => {
     try {
@@ -70,30 +71,21 @@ export const SavingsList = ({
                   </div>
                 </div>
 
-                <DropdownMenu open={openMenuId === saving.id} onOpenChange={(open) => setOpenMenuId(open ? saving.id : null)}>
+                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="icon">
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-[200px]">
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <NewSavingDialog 
-                        saving={saving}
-                        trigger={
-                          <DropdownMenuItem>
-                            Modifier
-                          </DropdownMenuItem>
-                        }
-                        onSavingAdded={onSavingDeleted}
-                      />
-                    </div>
+                    <DropdownMenuItem onSelect={() => setEditSaving(saving)}>
+                      Modifier
+                    </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="text-destructive"
                       onSelect={() => {
                         setSelectedSaving(saving);
                         setShowDeleteDialog(true);
-                        setOpenMenuId(null);
                       }}
                     >
                       Supprimer
@@ -110,6 +102,20 @@ export const SavingsList = ({
           </div>
         </CardContent>
       </Card>
+
+      {editSaving && (
+        <NewSavingDialog 
+          saving={editSaving}
+          onSavingAdded={() => {
+            onSavingDeleted();
+            setEditSaving(null);
+          }}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setEditSaving(null);
+          }}
+        />
+      )}
 
       <AlertDialog 
         open={showDeleteDialog} 
@@ -133,7 +139,7 @@ export const SavingsList = ({
             >
               Supprimer
             </AlertDialogAction>
-          </AlertDialogFooter>
+          </DialogDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
