@@ -9,6 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
+import { CreditDialog } from "@/components/credits/CreditDialog";
 
 const Credits = () => {
   const queryClient = useQueryClient();
@@ -79,10 +80,14 @@ const Credits = () => {
               Gérez vos crédits et leurs échéances
             </p>
           </div>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary-hover">
-            <Plus className="mr-2 h-4 w-4" />
-            Ajouter un crédit
-          </Button>
+          <CreditDialog
+            trigger={
+              <Button className="bg-primary text-primary-foreground hover:bg-primary-hover">
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter un crédit
+              </Button>
+            }
+          />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {credits?.map((credit) => (
