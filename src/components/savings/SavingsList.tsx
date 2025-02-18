@@ -48,7 +48,7 @@ export const SavingsList = ({
                   <div>
                     <h4 className="font-medium">{saving.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {formatCurrency(saving.amount)} / mois
+                      {formatCurrency(saving.amount).toFixed(0)} / mois
                     </p>
                   </div>
                 </div>
