@@ -185,6 +185,7 @@ export type Database = {
       }
       projets_epargne: {
         Row: {
+          added_to_recurring: boolean | null
           created_at: string
           date_estimee: string | null
           id: string
@@ -197,6 +198,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          added_to_recurring?: boolean | null
           created_at?: string
           date_estimee?: string | null
           id?: string
@@ -209,6 +211,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          added_to_recurring?: boolean | null
           created_at?: string
           date_estimee?: string | null
           id?: string

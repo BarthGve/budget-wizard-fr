@@ -29,7 +29,7 @@ const Savings = () => {
     0
   ) || 0;
 
-  const { data: projects, refetch: refetchProjects } = useQuery<SavingsProject[]>({
+  const { data: projects, refetch: refetchProjects } = useQuery({
     queryKey: ["savings-projects"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -38,7 +38,17 @@ const Savings = () => {
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      return data;
+
+      // Transform the data to ensure all required fields are present
+      return (data || []).map(project => ({
+        id: project.id,
+        nom_projet: project.nom_projet,
+        montant_total: project.montant_total,
+        montant_mensuel: project.montant_mensuel || 0,
+        date_estimee: project.date_estimee || new Date().toISOString(),
+        mode_planification: project.mode_planification,
+        added_to_recurring: project.added_to_recurring || false
+      })) as SavingsProject[];
     },
   });
 
