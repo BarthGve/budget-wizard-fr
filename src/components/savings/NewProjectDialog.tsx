@@ -21,6 +21,7 @@ import { fr } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
+import { formatCurrency } from "@/utils/format";
 
 interface NewProjectDialogProps {
   onProjectAdded: () => void;
@@ -55,7 +56,6 @@ export const NewProjectDialog = ({ onProjectAdded }: NewProjectDialogProps) => {
 
   const handleDateInput = (value: string) => {
     setDateString(value);
-    // Format attendu : MM/YYYY
     const [month, year] = value.split('/');
     if (month && year && month.length === 2 && year.length === 4) {
       const date = new Date(parseInt(year), parseInt(month) - 1);
