@@ -4,7 +4,11 @@ import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
 import { SavingsList } from "@/components/savings/SavingsList";
 import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
+import { NewProjectDialog } from "@/components/savings/NewProjectDialog";
+import { SavingsProjectsList } from "@/components/savings/SavingsProjectsList";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Savings = () => {
   const { monthlySavings, profile, refetch } = useDashboardData();
@@ -14,12 +18,21 @@ const Savings = () => {
     0
   ) || 0;
 
-  const handleSavingAdded = () => {
-    refetch();
-  };
+  const { data: projects, refetch: refetchProjects } = useQuery({
+    queryKey: ["savings-projects"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projets_epargne")
+        .select("*")
+        .order("created_at", { ascending: true });
 
-  const handleSavingDeleted = () => {
-    refetch();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const handleProjectAdded = () => {
+    refetchProjects();
   };
 
   return (
@@ -29,10 +42,20 @@ const Savings = () => {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Épargne</h1>
             <p className="text-muted-foreground">
-              Prévoyez vos versements mensuels d'épargne
+              Gérez vos projets et versements mensuels d&apos;épargne
             </p>
           </div>
-          <NewSavingDialog onSavingAdded={handleSavingAdded} />
+          <div className="flex gap-2">
+            <NewProjectDialog onProjectAdded={handleProjectAdded} />
+            <NewSavingDialog 
+              onSavingAdded={refetch}
+              trigger={
+                <Button variant="outline">
+                  Nouveau Versement
+                </Button>
+              }
+            />
+          </div>
         </div>
 
         <div className="grid gap-4 grid-cols-12">
@@ -50,12 +73,12 @@ const Savings = () => {
           </div>
         </div>
 
-        <div>
-          <SavingsList
-            monthlySavings={monthlySavings || []}
-            onSavingDeleted={handleSavingDeleted}
-          />
-        </div>
+        <SavingsProjectsList projects={projects || []} />
+
+        <SavingsList
+          monthlySavings={monthlySavings || []}
+          onSavingDeleted={refetch}
+        />
       </div>
     </DashboardLayout>
   );
