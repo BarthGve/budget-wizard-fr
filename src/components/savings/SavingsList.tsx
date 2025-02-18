@@ -42,6 +42,15 @@ export const SavingsList = ({
     }
   };
 
+  const handleEdit = (saving: {id: string, name: string, amount: number, logo_url?: string}) => {
+    setEditSaving(saving);
+  };
+
+  const handleOpenDelete = (saving: {id: string, name: string, amount: number, logo_url?: string}) => {
+    setSelectedSaving(saving);
+    setShowDeleteDialog(true);
+  };
+
   return (
     <div className="grid gap-4">
       <Card>
@@ -70,22 +79,19 @@ export const SavingsList = ({
                   </div>
                 </div>
 
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="icon">
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-[200px]">
-                    <DropdownMenuItem onSelect={() => setEditSaving(saving)}>
+                    <DropdownMenuItem onClick={() => handleEdit(saving)}>
                       Modifier
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="text-destructive"
-                      onSelect={() => {
-                        setSelectedSaving(saving);
-                        setShowDeleteDialog(true);
-                      }}
+                      onClick={() => handleOpenDelete(saving)}
                     >
                       Supprimer
                     </DropdownMenuItem>
@@ -102,19 +108,17 @@ export const SavingsList = ({
         </CardContent>
       </Card>
 
-      {editSaving && (
-        <NewSavingDialog 
-          saving={editSaving}
-          onSavingAdded={() => {
-            onSavingDeleted();
-            setEditSaving(null);
-          }}
-          open={true}
-          onOpenChange={(open) => {
-            if (!open) setEditSaving(null);
-          }}
-        />
-      )}
+      <NewSavingDialog 
+        saving={editSaving || undefined}
+        onSavingAdded={() => {
+          onSavingDeleted();
+          setEditSaving(null);
+        }}
+        open={!!editSaving}
+        onOpenChange={(open) => {
+          if (!open) setEditSaving(null);
+        }}
+      />
 
       <AlertDialog 
         open={showDeleteDialog} 
