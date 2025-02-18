@@ -77,18 +77,17 @@ export const SavingsList = ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-[200px]">
-                    <NewSavingDialog 
-                      saving={saving}
-                      trigger={
-                        <DropdownMenuItem onSelect={(e) => {
-                          e.preventDefault();
-                          setOpenMenuId(null);
-                        }}>
-                          Modifier
-                        </DropdownMenuItem>
-                      }
-                      onSavingAdded={onSavingDeleted}
-                    />
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <NewSavingDialog 
+                        saving={saving}
+                        trigger={
+                          <DropdownMenuItem>
+                            Modifier
+                          </DropdownMenuItem>
+                        }
+                        onSavingAdded={onSavingDeleted}
+                      />
+                    </div>
                     <DropdownMenuItem 
                       className="text-destructive"
                       onSelect={() => {
