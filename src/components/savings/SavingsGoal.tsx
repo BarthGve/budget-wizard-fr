@@ -154,20 +154,20 @@ export const SavingsGoal = ({
           <div className="flex-1 space-y-2 rounded-lg bg-secondary p-4">
             <div className="flex items-center justify-between text-sm">
               <span>Revenu total</span>
-              <span className="font-medium">{totalIncome.toFixed(2)}€</span>
+              <span className="font-medium">{totalIncome.toFixed(0)}€</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span>Objectif mensuel</span>
-              <span className="font-medium">{targetMonthlySavings.toFixed(2)}€</span>
+              <span className="font-medium">{targetMonthlySavings.toFixed(0)}€</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span>Total épargné</span>
-              <span className="font-medium">{totalMonthlyAmount.toFixed(2)}€</span>
+              <span className="font-medium">{totalMonthlyAmount.toFixed(0)}€</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span>Reste à épargner</span>
               <span className={`font-medium ${remainingToTarget > 0 ? 'text-destructive' : 'text-green-500'}`}>
-                {remainingToTarget.toFixed(2)}€
+                {remainingToTarget.toFixed(0)}€
               </span>
             </div>
           </div>
