@@ -23,18 +23,28 @@ type FormValues = z.infer<typeof formSchema>;
 interface CreditFormProps {
   onSubmit: (values: FormValues) => Promise<void>;
   onCancel: () => void;
+  initialValues?: {
+    nom_credit: string;
+    nom_domaine: string;
+    montant_mensualite: number;
+    date_derniere_mensualite: string;
+  };
 }
 
-export function CreditForm({ onSubmit, onCancel }: CreditFormProps) {
-  const [previewLogoUrl, setPreviewLogoUrl] = useState("/placeholder.svg");
+export function CreditForm({ onSubmit, onCancel, initialValues }: CreditFormProps) {
+  const [previewLogoUrl, setPreviewLogoUrl] = useState(() => 
+    initialValues?.nom_domaine 
+      ? `https://logo.clearbit.com/${initialValues.nom_domaine}`
+      : "/placeholder.svg"
+  );
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nom_credit: "",
-      nom_domaine: "",
-      montant_mensualite: "",
-      date_derniere_mensualite: "",
+      nom_credit: initialValues?.nom_credit ?? "",
+      nom_domaine: initialValues?.nom_domaine ?? "",
+      montant_mensualite: initialValues?.montant_mensualite.toString() ?? "",
+      date_derniere_mensualite: initialValues?.date_derniere_mensualite ?? "",
     },
   });
 
@@ -126,7 +136,7 @@ export function CreditForm({ onSubmit, onCancel }: CreditFormProps) {
             Annuler
           </Button>
           <Button type="submit">
-            Ajouter
+            {initialValues ? "Modifier" : "Ajouter"}
           </Button>
         </div>
       </form>

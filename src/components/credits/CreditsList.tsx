@@ -1,4 +1,3 @@
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +20,13 @@ import {
 } from "@/components/ui/pagination";
 import { useState } from "react";
 import { CreditDetails } from "./CreditDetails";
+import { CreditForm } from "./CreditForm";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Credit {
   id: string;
@@ -105,6 +111,47 @@ export function CreditsList() {
   const handleEditCredit = async (credit: Credit) => {
     setSelectedCredit(credit);
     setEditOpen(true);
+  };
+
+  const handleEditSubmit = async (values: {
+    nom_credit: string;
+    nom_domaine: string;
+    montant_mensualite: string;
+    date_derniere_mensualite: string;
+  }) => {
+    if (!selectedCredit) return;
+
+    try {
+      const { error } = await supabase
+        .from("credits")
+        .update({
+          nom_credit: values.nom_credit,
+          nom_domaine: values.nom_domaine,
+          logo_url: `https://logo.clearbit.com/${values.nom_domaine}`,
+          montant_mensualite: Number(values.montant_mensualite),
+          date_derniere_mensualite: values.date_derniere_mensualite,
+        })
+        .eq("id", selectedCredit.id);
+
+      if (error) throw error;
+
+      // Mettre à jour également la charge récurrente associée
+      await supabase
+        .from("recurring_expenses")
+        .update({
+          name: `Crédit - ${values.nom_credit}`,
+          amount: Number(values.montant_mensualite),
+        })
+        .eq("name", `Crédit - ${selectedCredit.nom_credit}`);
+
+      queryClient.invalidateQueries({ queryKey: ["credits"] });
+      queryClient.invalidateQueries({ queryKey: ["recurring-expenses"] });
+      setEditOpen(false);
+      toast.success("Crédit modifié avec succès");
+    } catch (error) {
+      console.error("Error updating credit:", error);
+      toast.error("Erreur lors de la modification du crédit");
+    }
   };
 
   const handleViewDetails = (credit: Credit) => {
@@ -264,11 +311,30 @@ export function CreditsList() {
         title="Historique des crédits remboursés" 
       />
       {selectedCredit && (
-        <CreditDetails
-          credit={selectedCredit}
-          open={detailsOpen}
-          onOpenChange={setDetailsOpen}
-        />
+        <>
+          <CreditDetails
+            credit={selectedCredit}
+            open={detailsOpen}
+            onOpenChange={setDetailsOpen}
+          />
+          <Dialog open={editOpen} onOpenChange={setEditOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Modifier le crédit</DialogTitle>
+              </DialogHeader>
+              <CreditForm
+                initialValues={{
+                  nom_credit: selectedCredit.nom_credit,
+                  nom_domaine: selectedCredit.nom_domaine,
+                  montant_mensualite: selectedCredit.montant_mensualite,
+                  date_derniere_mensualite: selectedCredit.date_derniere_mensualite,
+                }}
+                onSubmit={handleEditSubmit}
+                onCancel={() => setEditOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        </>
       )}
     </div>
   );
