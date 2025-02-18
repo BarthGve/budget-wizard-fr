@@ -53,7 +53,7 @@ export const SavingsList = ({
 
   return (
     <div className="grid gap-4">
-      <Card>
+      <Card className="border-0 bg-transparent">
         <CardHeader>
           <CardTitle>Versements mensuels</CardTitle>
         </CardHeader>
