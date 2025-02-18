@@ -1,14 +1,15 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RecurringExpenseDialog } from "@/components/recurring-expenses/RecurringExpenseDialog";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RecurringExpenseTable } from "@/components/recurring-expenses/RecurringExpenseTable";
+import { CreditDialog } from "@/components/credits/CreditDialog";
 
 interface RecurringExpense {
   id: string;
@@ -24,6 +25,7 @@ interface RecurringExpense {
 const RecurringExpenses = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -90,17 +92,30 @@ const RecurringExpenses = () => {
               Gérez vos dépenses mensuelles récurrentes
             </p>
           </div>
-          <RecurringExpenseDialog trigger={
-            <Button className="bg-primary text-primary-foreground hover:bg-primary-hover">
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setCreditDialogOpen(true)}
+              className="bg-violet-600 hover:bg-violet-500"
+            >
               <Plus className="mr-2 h-4 w-4" />
-              Ajouter une charge
+              Nouveau Crédit
             </Button>
-          } />
+            <RecurringExpenseDialog trigger={
+              <Button className="bg-primary text-primary-foreground hover:bg-primary-hover">
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter une charge
+              </Button>
+            } />
+          </div>
         </div>
-            <RecurringExpenseTable 
-              expenses={recurringExpenses || []}
-              onDeleteExpense={handleDeleteExpense}
-            />   
+        <RecurringExpenseTable 
+          expenses={recurringExpenses || []}
+          onDeleteExpense={handleDeleteExpense}
+        />
+        <CreditDialog 
+          open={creditDialogOpen} 
+          onOpenChange={setCreditDialogOpen}
+        />
       </div>
     </DashboardLayout>
   );

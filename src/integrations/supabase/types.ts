@@ -74,6 +74,53 @@ export type Database = {
           },
         ]
       }
+      credits: {
+        Row: {
+          created_at: string
+          date_derniere_mensualite: string
+          id: string
+          logo_url: string | null
+          montant_mensualite: number
+          nom_credit: string
+          nom_domaine: string
+          profile_id: string
+          statut: Database["public"]["Enums"]["credit_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_derniere_mensualite: string
+          id?: string
+          logo_url?: string | null
+          montant_mensualite: number
+          nom_credit: string
+          nom_domaine: string
+          profile_id: string
+          statut?: Database["public"]["Enums"]["credit_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_derniere_mensualite?: string
+          id?: string
+          logo_url?: string | null
+          montant_mensualite?: number
+          nom_credit?: string
+          nom_domaine?: string
+          profile_id?: string
+          statut?: Database["public"]["Enums"]["credit_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credits_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedbacks: {
         Row: {
           content: string
@@ -149,6 +196,57 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "monthly_savings_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          credit_id: string | null
+          date_envoi: string
+          id: string
+          message: string
+          profile_id: string
+          statut: Database["public"]["Enums"]["notification_status"]
+          type: Database["public"]["Enums"]["notification_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          credit_id?: string | null
+          date_envoi?: string
+          id?: string
+          message: string
+          profile_id: string
+          statut?: Database["public"]["Enums"]["notification_status"]
+          type: Database["public"]["Enums"]["notification_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          credit_id?: string | null
+          date_envoi?: string
+          id?: string
+          message?: string
+          profile_id?: string
+          statut?: Database["public"]["Enums"]["notification_status"]
+          type?: Database["public"]["Enums"]["notification_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_credit_id_fkey"
+            columns: ["credit_id"]
+            isOneToOne: false
+            referencedRelation: "credits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -492,6 +590,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_expired_credits: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       create_admin_user: {
         Args: {
           email: string
@@ -552,8 +654,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      credit_status: "actif" | "remboursé"
       feedback_status: "pending" | "in_progress" | "completed"
       mode_planification_type: "par_date" | "par_mensualite"
+      notification_status: "non_lu" | "lu"
+      notification_type: "credit_echeance" | "autre"
     }
     CompositeTypes: {
       [_ in never]: never
