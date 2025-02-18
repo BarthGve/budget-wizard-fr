@@ -123,7 +123,7 @@ const Credits = () => {
                     )}
                   
                   <div>
-                    <h3 className="font-semibold ">{credit.nom_credit}</h3>
+                    <h4 className="font-medium ">{credit.nom_credit}</h4>
                   </div>
                 </div>
                 
@@ -137,7 +137,7 @@ const Credits = () => {
                   
                   <div className="flex flex-col">
                     <span className="text-sm text-muted-foreground">Dernière échéance</span>
-                    <span className="font-semibold">
+                    <span className="font-medium">
                       {new Date(credit.date_derniere_mensualite).toLocaleDateString('fr-FR')}
                     </span>
                   </div>
