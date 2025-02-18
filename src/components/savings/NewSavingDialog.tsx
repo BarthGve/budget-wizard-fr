@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -21,9 +21,16 @@ import { useQuery } from "@tanstack/react-query";
 
 interface NewSavingDialogProps {
   onSavingAdded: () => void;
+  trigger?: React.ReactNode;
+  saving?: {
+    id: string;
+    name: string;
+    amount: number;
+    logo_url?: string;
+  };
 }
 
-export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
+export const NewSavingDialog = ({ onSavingAdded, trigger, saving }: NewSavingDialogProps) => {
   const [open, setOpen] = useState(false);
   const [newSavingName, setNewSavingName] = useState("");
   const [newSavingAmount, setNewSavingAmount] = useState(0);
@@ -31,6 +38,17 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
   const [domain, setDomain] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (saving) {
+      setNewSavingName(saving.name);
+      setNewSavingAmount(saving.amount);
+      // Extraire le domaine de l'URL du logo si disponible
+      if (saving.logo_url && saving.logo_url !== "/placeholder.svg") {
+        setDomain(saving.logo_url.replace("https://logo.clearbit.com/", ""));
+      }
+    }
+  }, [saving]);
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
@@ -75,31 +93,57 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
 
     let logoUrl = '/placeholder.svg';
     if (domain.trim()) {
-      // Si un domaine est fourni, on utilise l'API Clearbit
       logoUrl = `https://logo.clearbit.com/${domain.trim()}`;
     }
 
-    const { error } = await supabase.from("monthly_savings").insert({
+    const savingData = {
       name: newSavingName,
       amount: newSavingAmount,
       description: newSavingDescription,
       profile_id: session.session.user.id,
       logo_url: logoUrl,
-    });
+    };
 
-    if (error) {
+    if (saving) {
+      // Mise à jour
+      const { error } = await supabase
+        .from("monthly_savings")
+        .update(savingData)
+        .eq("id", saving.id);
+
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de modifier le versement mensuel",
+          variant: "destructive",
+        });
+        return;
+      }
+
       toast({
-        title: "Erreur",
-        description: "Impossible d'ajouter le versement mensuel",
-        variant: "destructive",
+        title: "Succès",
+        description: "Versement mensuel modifié",
       });
-      return;
-    }
+    } else {
+      // Création
+      const { error } = await supabase
+        .from("monthly_savings")
+        .insert(savingData);
 
-    toast({
-      title: "Succès",
-      description: "Versement mensuel ajouté",
-    });
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible d'ajouter le versement mensuel",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Succès",
+        description: "Versement mensuel ajouté",
+      });
+    }
 
     resetForm();
     setOpen(false);
@@ -109,16 +153,18 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary-hover gap-2">
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau versement
-        </Button>
+        {trigger || (
+          <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary-hover gap-2">
+            <Plus className="mr-2 h-4 w-4" />
+            Nouveau versement
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Nouveau versement mensuel</DialogTitle>
+          <DialogTitle>{saving ? "Modifier le versement mensuel" : "Nouveau versement mensuel"}</DialogTitle>
           <DialogDescription>
-            Ajoutez un nouveau versement mensuel d'épargne
+            {saving ? "Modifiez les informations de votre versement mensuel" : "Ajoutez un nouveau versement mensuel d'épargne"}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -169,7 +215,7 @@ export const NewSavingDialog = ({ onSavingAdded }: NewSavingDialogProps) => {
             onClick={addNewMonthlySaving}
             className="bg-primary text-primary-foreground hover:bg-primary-hover"
           >
-            Ajouter
+            {saving ? "Mettre à jour" : "Ajouter"}
           </Button>
         </DialogFooter>
       </DialogContent>
