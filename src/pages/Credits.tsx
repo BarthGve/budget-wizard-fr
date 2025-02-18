@@ -127,7 +127,7 @@ const Credits = () => {
                   </div>
                 </div>
                 
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-2 bg-gray-50 md:bg-white">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-2 bg-card dark:bg-card">
                   <div className="flex flex-col">
                     <span className="text-sm text-muted-foreground">Mensualité</span>
                     <span className="font-semibold text-lg">
