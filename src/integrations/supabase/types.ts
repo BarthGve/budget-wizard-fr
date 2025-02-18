@@ -183,56 +183,6 @@ export type Database = {
         }
         Relationships: []
       }
-      projets_epargne: {
-        Row: {
-          added_to_recurring: boolean | null
-          created_at: string
-          date_estimee: string | null
-          id: string
-          mode_planification: Database["public"]["Enums"]["mode_planification_type"]
-          montant_mensuel: number | null
-          montant_total: number
-          nom_projet: string
-          nombre_mois: number | null
-          profile_id: string
-          updated_at: string
-        }
-        Insert: {
-          added_to_recurring?: boolean | null
-          created_at?: string
-          date_estimee?: string | null
-          id?: string
-          mode_planification: Database["public"]["Enums"]["mode_planification_type"]
-          montant_mensuel?: number | null
-          montant_total: number
-          nom_projet: string
-          nombre_mois?: number | null
-          profile_id: string
-          updated_at?: string
-        }
-        Update: {
-          added_to_recurring?: boolean | null
-          created_at?: string
-          date_estimee?: string | null
-          id?: string
-          mode_planification?: Database["public"]["Enums"]["mode_planification_type"]
-          montant_mensuel?: number | null
-          montant_total?: number
-          nom_projet?: string
-          nombre_mois?: number | null
-          profile_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "projets_epargne_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       properties: {
         Row: {
           address: string
@@ -553,7 +503,6 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       feedback_status: "pending" | "in_progress" | "completed"
-      mode_planification_type: "par_date" | "par_mensualite"
     }
     CompositeTypes: {
       [_ in never]: never
