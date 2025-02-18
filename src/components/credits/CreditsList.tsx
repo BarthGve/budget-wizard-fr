@@ -1,3 +1,4 @@
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +39,7 @@ export function CreditsList() {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedCredit, setSelectedCredit] = useState<Credit | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: credits, isLoading } = useQuery({
