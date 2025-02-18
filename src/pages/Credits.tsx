@@ -50,19 +50,12 @@ const Credits = () => {
     }
   });
 
-  const handleDeleteCredit = async (id: string) => {
-    try {
-      const { error } = await supabase.from("credits").delete().eq("id", id);
-      if (error) throw error;
-      queryClient.invalidateQueries({
-        queryKey: ["credits"]
-      });
-      toast.success("Crédit supprimé avec succès");
-    } catch (error) {
-      console.error("Error deleting credit:", error);
-      toast.error("Erreur lors de la suppression du crédit");
+  const totalMensualites = credits?.reduce((total, credit) => {
+    if (credit.statut === 'actif') {
+      return total + credit.montant_mensualite;
     }
-  };
+    return total;
+  }, 0) || 0;
 
   if (isLoading) {
     return <DashboardLayout>
@@ -72,7 +65,7 @@ const Credits = () => {
 
   return (
     <DashboardLayout>
-      <div className="grid gap-6">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Crédits</h1>
@@ -89,46 +82,84 @@ const Credits = () => {
             }
           />
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {credits?.map((credit) => (
-            <Card key={credit.id}>
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  {credit.logo_url && (
-                    <img
-                      src={credit.logo_url}
-                      alt={credit.nom_credit}
-                      className="w-8 h-8 rounded-full object-contain"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/placeholder.svg";
-                      }}
-                    />
-                  )}
+
+        {/* Carte récapitulative */}
+        <Card className="bg-gradient-to-br from-violet-500 to-violet-600">
+          <CardHeader>
+            <CardTitle className="text-white">Total des mensualités actives</CardTitle>
+            <CardDescription className="text-violet-100">
+              Montant total dû pour le mois en cours
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-white">
+              {totalMensualites.toLocaleString('fr-FR')} €
+            </div>
+            <div className="text-violet-100 mt-2">
+              {credits?.filter(credit => credit.statut === 'actif').length || 0} crédit(s) actif(s)
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Liste des crédits */}
+        <div className="grid gap-6">
+          {credits?.map((credit, index) => (
+            <Card key={credit.id} className="overflow-hidden border-0 shadow-md bg-white">
+              <div className="flex flex-col md:flex-row md:items-center">
+                <div className="flex items-center gap-4 p-6 md:w-1/3">
+                  <div className="bg-violet-50 p-3 rounded-full">
+                    {credit.logo_url ? (
+                      <img
+                        src={credit.logo_url}
+                        alt={credit.nom_credit}
+                        className="w-8 h-8 object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder.svg";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-violet-100 rounded-full" />
+                    )}
+                  </div>
                   <div>
-                    <CardTitle>{credit.nom_credit}</CardTitle>
-                    <CardDescription>{credit.nom_domaine}</CardDescription>
+                    <h3 className="font-semibold text-lg">{credit.nom_credit}</h3>
+                    <p className="text-sm text-muted-foreground">{credit.nom_domaine}</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Mensualité:</span>
-                    <span className="font-medium">{credit.montant_mensualite.toLocaleString('fr-FR')} €</span>
+                
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-gray-50 md:bg-white">
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">Mensualité</span>
+                    <span className="font-semibold text-lg">
+                      {credit.montant_mensualite.toLocaleString('fr-FR')} €
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Dernière échéance:</span>
-                    <span className="font-medium">{new Date(credit.date_derniere_mensualite).toLocaleDateString('fr-FR')}</span>
+                  
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">Dernière échéance</span>
+                    <span className="font-semibold">
+                      {new Date(credit.date_derniere_mensualite).toLocaleDateString('fr-FR')}
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Statut:</span>
-                    <span className={`font-medium ${credit.statut === 'actif' ? 'text-green-600' : 'text-gray-600'}`}>
+                  
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">Statut</span>
+                    <span className={`inline-flex items-center ${
+                      credit.statut === 'actif' 
+                        ? 'text-green-600' 
+                        : 'text-gray-600'
+                    }`}>
+                      <span className={`w-2 h-2 rounded-full mr-2 ${
+                        credit.statut === 'actif' 
+                          ? 'bg-green-600' 
+                          : 'bg-gray-600'
+                      }`} />
                       {credit.statut === 'actif' ? 'Actif' : 'Remboursé'}
                     </span>
                   </div>
                 </div>
-              </CardContent>
+              </div>
             </Card>
           ))}
         </div>
