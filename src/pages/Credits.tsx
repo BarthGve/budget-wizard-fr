@@ -106,7 +106,7 @@ const Credits = () => {
           {credits?.map((credit, index) => (
             <Card key={credit.id} className="overflow-hidden border-0 shadow-md bg-white">
               <div className="flex flex-col md:flex-row md:items-center">
-                <div className="flex items-center gap-4 p-6 md:w-1/3">
+                <div className="flex items-center gap-4 p-2 md:w-1/3">
                   <div className="bg-violet-50 p-3 rounded-full">
                     {credit.logo_url ? (
                       <img
@@ -124,7 +124,6 @@ const Credits = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">{credit.nom_credit}</h3>
-                    <p className="text-sm text-muted-foreground">{credit.nom_domaine}</p>
                   </div>
                 </div>
                 
