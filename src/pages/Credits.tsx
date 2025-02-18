@@ -102,7 +102,7 @@ const Credits = () => {
         </Card>
 
         {/* Liste des crédits */}
-        <div className="grid gap-6">
+        <div className="grid gap-2">
           {credits?.map((credit, index) => (
             <Card key={credit.id} className="overflow-hidden border-0 shadow-md bg-white">
               <div className="flex flex-col md:flex-row md:items-center">
