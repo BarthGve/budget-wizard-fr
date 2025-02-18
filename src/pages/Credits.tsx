@@ -111,7 +111,7 @@ const Credits = () => {
                     {credit.logo_url ? (
                       <img
                       src={credit.logo_url}
-                      alt={credit.name}
+                      alt={credit.nom_credit}
                       className="w-8 h-8 rounded-full object-contain"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
