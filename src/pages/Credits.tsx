@@ -130,9 +130,9 @@ const Credits = () => {
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-2 bg-card dark:bg-card">
                   <div className="flex flex-col">
                     <span className="text-sm text-muted-foreground">Mensualité</span>
-                    <span className="font-semibold ">
+                    <h4 className="font-medium">
                       {credit.montant_mensualite.toLocaleString('fr-FR')} €
-                    </span>
+                    </h4>
                   </div>
                   
                   <div className="flex flex-col">
