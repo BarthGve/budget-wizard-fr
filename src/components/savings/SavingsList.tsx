@@ -54,9 +54,9 @@ export const SavingsList = ({
   return (
     <div className="grid gap-2">
      
-        <CardHeader>
+       
           <CardTitle>Versements mensuels</CardTitle>
-        </CardHeader>
+       
      
           <div className="space-y-2">
             {monthlySavings.map(saving => (
