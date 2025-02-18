@@ -110,14 +110,14 @@ const Credits = () => {
                   <div className="bg-violet-50 p-3 ">
                     {credit.logo_url ? (
                       <img
-                        src={credit.logo_url}
-                        alt={credit.nom_credit}
-                        className="w-8 h-8 rounded-full object-contain"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/placeholder.svg";
-                        }}
-                      />
+                      src={credit.logo_url}
+                      alt={credit.name}
+                      className="w-8 h-8 rounded-full object-contain"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.svg";
+                      }}
+                    />
                     ) : (
                       <div className="w-8 h-8 bg-violet-100 rounded-full" />
                     )}
