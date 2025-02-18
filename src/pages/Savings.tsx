@@ -9,6 +9,7 @@ import { SavingsProjectsList } from "@/components/savings/SavingsProjectsList";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 const Savings = () => {
   const { monthlySavings, profile, refetch } = useDashboardData();
