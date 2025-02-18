@@ -26,7 +26,6 @@ export const SavingsList = ({
 }: SavingsListProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedSaving, setSelectedSaving] = useState<{id: string, name: string, amount: number, logo_url?: string} | null>(null);
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [editSaving, setEditSaving] = useState<{id: string, name: string, amount: number, logo_url?: string} | null>(null);
 
   const handleDelete = async (id: string) => {
@@ -126,7 +125,7 @@ export const SavingsList = ({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer l'épargne</AlertDialogTitle>
+            <AlertDialogTitle>Supprimer l&apos;épargne</AlertDialogTitle>
             <AlertDialogDescription>
               Êtes-vous sûr de vouloir supprimer cette épargne ? Cette action ne peut pas être annulée.
             </AlertDialogDescription>
@@ -139,7 +138,7 @@ export const SavingsList = ({
             >
               Supprimer
             </AlertDialogAction>
-          </DialogDialogFooter>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
