@@ -4,6 +4,7 @@ import { subYears, format, parseISO, isWithinInterval, startOfYear, endOfYear } 
 import { fr } from "date-fns/locale";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCurrency } from "@/utils/format";
 
 interface Expense {
   id: string;
@@ -58,11 +59,32 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
     }))
     .sort((a, b) => a.year.localeCompare(b.year));
 
+  if (chartData.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="h-[100px] mt-4">
+    <div className="h-[200px] mt-6">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-          <Bar dataKey="total" fill="#000000" radius={[2, 2, 0, 0]} />
+        <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
+          <XAxis 
+            dataKey="year" 
+            angle={-45}
+            textAnchor="end"
+            height={50}
+          />
+          <YAxis 
+            tickFormatter={(value) => formatCurrency(value)}
+          />
+          <Tooltip 
+            formatter={(value: number) => formatCurrency(value)}
+            labelFormatter={(label) => `Année ${label}`}
+          />
+          <Bar 
+            dataKey="total" 
+            fill="#000000" 
+            radius={[4, 4, 0, 0]} 
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>
