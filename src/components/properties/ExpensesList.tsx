@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -10,12 +11,12 @@ import {
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { formatCurrency } from "@/utils/format";
-import { Edit2, Trash2, ChevronDown, ChevronUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useState, useMemo } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { PaginationControls } from "./expenses/PaginationControls";
+import { SortableTableHeader } from "./expenses/SortableTableHeader";
+import { TableActions } from "./expenses/TableActions";
 
 interface PropertyExpense {
   id: string;
@@ -49,7 +50,7 @@ export function ExpensesList({ expenses, onExpenseDeleted, onExpenseEdit }: Expe
     if (field === sortField) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field);
+      setSortField(field as keyof PropertyExpense);
       setSortDirection("asc");
     }
   };
@@ -91,45 +92,41 @@ export function ExpensesList({ expenses, onExpenseDeleted, onExpenseEdit }: Expe
     }
   };
 
-  const SortIcon = ({ field }: { field: keyof PropertyExpense }) => {
-    if (field !== sortField) return null;
-    return sortDirection === "asc" ? (
-      <ChevronUp className="h-4 w-4 inline ml-1" />
-    ) : (
-      <ChevronDown className="h-4 w-4 inline ml-1" />
-    );
-  };
-
   return (
     <div className="space-y-4">
       <Table>
         <TableCaption>Liste des dépenses</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead 
-              className="cursor-pointer hover:text-primary transition-colors"
-              onClick={() => handleSort("date")}
-            >
-              Date <SortIcon field="date" />
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer hover:text-primary transition-colors"
-              onClick={() => handleSort("category")}
-            >
-              Catégorie <SortIcon field="category" />
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer hover:text-primary transition-colors"
-              onClick={() => handleSort("description")}
-            >
-              Description <SortIcon field="description" />
-            </TableHead>
-            <TableHead 
-              className="text-right cursor-pointer hover:text-primary transition-colors"
-              onClick={() => handleSort("amount")}
-            >
-              Montant <SortIcon field="amount" />
-            </TableHead>
+            <SortableTableHeader
+              field="date"
+              label="Date"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
+            <SortableTableHeader
+              field="category"
+              label="Catégorie"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
+            <SortableTableHeader
+              field="description"
+              label="Description"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
+            <SortableTableHeader
+              field="amount"
+              label="Montant"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+              className="text-right"
+            />
             <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -143,39 +140,10 @@ export function ExpensesList({ expenses, onExpenseDeleted, onExpenseEdit }: Expe
               <TableCell>{expense.description}</TableCell>
               <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
               <TableCell>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onExpenseEdit(expense)}
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer la dépense</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action ne peut pas être annulée.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction 
-                          onClick={() => handleDelete(expense.id)}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Supprimer
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+                <TableActions
+                  onEdit={() => onExpenseEdit(expense)}
+                  onDelete={() => handleDelete(expense.id)}
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -190,25 +158,11 @@ export function ExpensesList({ expenses, onExpenseDeleted, onExpenseEdit }: Expe
       </Table>
 
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-4">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-          >
-            Précédent
-          </Button>
-          <span className="flex items-center px-4">
-            Page {currentPage} sur {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-          >
-            Suivant
-          </Button>
-        </div>
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       )}
     </div>
   );
