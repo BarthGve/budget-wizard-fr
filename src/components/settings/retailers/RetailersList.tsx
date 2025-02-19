@@ -22,42 +22,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-type DialogState = {
-  type: 'initial' | 'final' | null;
-  retailerId: string | null;
-};
-
 export function RetailersList() {
   const { retailers, isLoading: isLoadingRetailers } = useRetailers();
-  const [dialogState, setDialogState] = useState<DialogState>({
-    type: null,
-    retailerId: null
-  });
+  const [initialDialogOpen, setInitialDialogOpen] = useState(false);
+  const [finalDialogOpen, setFinalDialogOpen] = useState(false);
+  const [selectedRetailerId, setSelectedRetailerId] = useState<string | null>(null);
 
-  const { deleteRetailer, isDeleting } = useDeleteRetailer(() => {
-    setDialogState({ type: null, retailerId: null });
-  });
-
-  const handleInitialDelete = (retailerId: string) => {
-    setDialogState({ type: 'initial', retailerId });
+  const resetState = () => {
+    setInitialDialogOpen(false);
+    setFinalDialogOpen(false);
+    setSelectedRetailerId(null);
   };
 
-  const handleFinalConfirmation = () => {
-    setDialogState(prev => ({ type: 'final', retailerId: prev.retailerId }));
-  };
-
-  const handleCancel = () => {
-    setDialogState({ type: null, retailerId: null });
-  };
+  const { deleteRetailer, isDeleting } = useDeleteRetailer(resetState);
 
   const handleDelete = () => {
-    if (dialogState.retailerId) {
-      deleteRetailer(dialogState.retailerId);
+    if (selectedRetailerId) {
+      deleteRetailer(selectedRetailerId);
     }
   };
 
-  const currentRetailer = dialogState.retailerId 
-    ? retailers?.find(r => r.id === dialogState.retailerId) 
+  const currentRetailer = selectedRetailerId 
+    ? retailers?.find(r => r.id === selectedRetailerId) 
     : null;
 
   if (isLoadingRetailers) {
@@ -97,7 +83,10 @@ export function RetailersList() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       className="text-destructive focus:text-destructive"
-                      onClick={() => handleInitialDelete(retailer.id)}
+                      onClick={() => {
+                        setSelectedRetailerId(retailer.id);
+                        setInitialDialogOpen(true);
+                      }}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
                       Supprimer
@@ -110,10 +99,11 @@ export function RetailersList() {
         </TableBody>
       </Table>
 
-      {/* Initial Confirmation Dialog */}
       <AlertDialog 
-        open={dialogState.type === 'initial'} 
-        onOpenChange={(open) => !open && handleCancel()}
+        open={initialDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) resetState();
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -121,22 +111,21 @@ export function RetailersList() {
               Attention - Suppression d'enseigne
             </AlertDialogTitle>
           </AlertDialogHeader>
-          <AlertDialogDescription asChild>
-            <div className="space-y-2">
-              Vous êtes sur le point de supprimer l'enseigne <strong>{currentRetailer?.name}</strong>.
-              <br />
-              Cette action supprimera également toutes les dépenses associées à cette enseigne.
-              <br />
-              Êtes-vous sûr de vouloir continuer ?
-            </div>
+          <AlertDialogDescription className="space-y-2">
+            Vous êtes sur le point de supprimer l'enseigne <strong>{currentRetailer?.name}</strong>.
+            Cette action supprimera également toutes les dépenses associées à cette enseigne.
+            Êtes-vous sûr de vouloir continuer ?
           </AlertDialogDescription>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancel}>
+            <AlertDialogCancel onClick={resetState}>
               Annuler
             </AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={handleFinalConfirmation}
+              onClick={() => {
+                setInitialDialogOpen(false);
+                setFinalDialogOpen(true);
+              }}
             >
               Continuer
             </AlertDialogAction>
@@ -144,10 +133,11 @@ export function RetailersList() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Final Confirmation Dialog */}
       <AlertDialog 
-        open={dialogState.type === 'final'}
-        onOpenChange={(open) => !open && handleCancel()}
+        open={finalDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) resetState();
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -155,21 +145,18 @@ export function RetailersList() {
               Confirmation finale
             </AlertDialogTitle>
           </AlertDialogHeader>
-          <AlertDialogDescription asChild>
-            <div className="space-y-2">
-              Cette action est <strong>irréversible</strong>.
-              <br />
-              Toutes les dépenses associées à l'enseigne <strong>{currentRetailer?.name}</strong> seront définitivement supprimées.
-              <br />
-              Confirmez-vous vouloir supprimer :
-              <ul className="list-disc list-inside pl-4 text-destructive mt-2">
-                <li>L'enseigne {currentRetailer?.name}</li>
-                <li>Toutes les dépenses associées</li>
-              </ul>
-            </div>
+          <AlertDialogDescription className="space-y-2">
+            Cette action est <strong>irréversible</strong>.
+            Toutes les dépenses associées à l'enseigne <strong>{currentRetailer?.name}</strong> seront définitivement supprimées.
+            
+            <p className="mt-4">Confirmez-vous vouloir supprimer :</p>
+            <ul className="list-disc list-inside pl-4 text-destructive">
+              <li>L'enseigne {currentRetailer?.name}</li>
+              <li>Toutes les dépenses associées</li>
+            </ul>
           </AlertDialogDescription>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancel}>
+            <AlertDialogCancel onClick={resetState}>
               Annuler
             </AlertDialogCancel>
             <AlertDialogAction
