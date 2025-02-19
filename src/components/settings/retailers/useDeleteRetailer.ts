@@ -36,19 +36,16 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       console.log("Retailer deleted successfully:", retailerId);
       return retailerId;
     },
-    onSuccess: async (deletedRetailerId) => {
-      // Forcer une revalidation complète immédiatement
-      await queryClient.invalidateQueries({ 
-        queryKey: ["retailers"],
-        refetchType: "all",
-        exact: true
-      });
-      
-      toast.success("Enseigne supprimée avec succès");
+    onSettled: async () => {
+      // On force un rafraîchissement complet que la suppression ait réussi ou échoué
+      await queryClient.resetQueries({ queryKey: ["retailers"] });
       
       if (onSuccess) {
         onSuccess();
       }
+    },
+    onSuccess: () => {
+      toast.success("Enseigne supprimée avec succès");
     },
     onError: (error) => {
       console.error("Error in delete mutation:", error);
