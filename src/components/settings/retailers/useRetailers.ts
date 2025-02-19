@@ -20,7 +20,8 @@ export const useRetailers = () => {
       }
 
       return data as Retailer[];
-    }
+    },
+    refetchOnWindowFocus: false
   });
 
   return {
