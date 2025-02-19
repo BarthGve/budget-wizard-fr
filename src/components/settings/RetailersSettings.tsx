@@ -5,16 +5,10 @@ import { Plus } from "lucide-react";
 import { RetailerDialog } from "./retailers/RetailerDialog";
 import { useRetailers } from "./retailers/useRetailers";
 import { RetailersList } from "./retailers/RetailersList";
-import { toast } from "sonner";
 
 export const RetailersSettings = () => {
   const [open, setOpen] = useState(false);
-  const { retailers, isLoading, refetchRetailers } = useRetailers();
-
-  const handleRetailerSaved = async () => {
-    await refetchRetailers();
-    setOpen(false);
-  };
+  const { retailers, isLoading } = useRetailers();
 
   if (isLoading) {
     return <div>Chargement...</div>;
@@ -38,7 +32,7 @@ export const RetailersSettings = () => {
               Ajouter une enseigne
             </Button>
           }
-          onRetailerSaved={handleRetailerSaved}
+          onRetailerSaved={() => setOpen(false)}
         />
       </div>
       <RetailersList />
