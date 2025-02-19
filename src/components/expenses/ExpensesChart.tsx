@@ -1,4 +1,3 @@
-
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import { subYears, format, parseISO, isWithinInterval, startOfYear, endOfYear } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -78,7 +77,7 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
     <div className="bg-card rounded-lg p-4 mt-4">
       <ChartContainer config={chartConfig}>
         <ResponsiveContainer width="100%" height={150}>
-          <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
+          <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 20 }}>
             <CartesianGrid vertical={false} stroke="hsl(var(--border))" opacity={0.1} />
             <XAxis 
               dataKey="year" 
@@ -87,15 +86,6 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
               stroke="hsl(var(--muted-foreground))"
               fontSize={12}
               tickMargin={10}
-            />
-            <YAxis 
-              tickFormatter={(value) => formatCurrency(value)}
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              axisLine={false}
-              tickLine={false}
-              tickMargin={10}
-              width={60}
             />
             <ChartTooltip
               content={
