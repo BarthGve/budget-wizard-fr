@@ -26,6 +26,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { EditExpenseDialog } from "./EditExpenseDialog";
 
 interface RetailerExpensesDialogProps {
   retailer: {
@@ -53,6 +54,7 @@ export function RetailerExpensesDialog({
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedExpense, setSelectedExpense] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const itemsPerPage = 5;
   
   const totalPages = Math.ceil(expenses.length / itemsPerPage);
@@ -77,6 +79,10 @@ export function RetailerExpensesDialog({
       toast.error("Erreur lors de la suppression de la dépense");
     }
   };
+
+  const currentExpense = selectedExpense 
+    ? expenses.find(e => e.id === selectedExpense)
+    : null;
 
   return (
     <>
@@ -114,8 +120,8 @@ export function RetailerExpensesDialog({
                         <DropdownMenuContent align="end" className="w-[200px]">
                           <DropdownMenuItem 
                             onClick={() => {
-                              // TODO: Implement edit functionality
-                              console.log("Edit expense:", expense.id);
+                              setSelectedExpense(expense.id);
+                              setShowEditDialog(true);
                             }}
                           >
                             <SquarePen className="mr-2 h-4 w-4" />
@@ -175,6 +181,20 @@ export function RetailerExpensesDialog({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {currentExpense && (
+        <EditExpenseDialog 
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          expense={currentExpense}
+          retailerId={retailer.id}
+          onSuccess={() => {
+            onExpenseUpdated();
+            setShowEditDialog(false);
+            setSelectedExpense(null);
+          }}
+        />
+      )}
     </>
   );
 }
