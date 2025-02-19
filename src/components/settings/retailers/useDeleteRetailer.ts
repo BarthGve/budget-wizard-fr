@@ -16,7 +16,7 @@ export const useDeleteRetailer = ({ onSuccess }: UseDeleteRetailerProps) => {
 
       // Vérifier si l'enseigne a des dépenses associées
       const { data: hasExpenses, error: checkError } = await supabase
-        .rpc('retailer_has_expenses', { retailer_id: retailerId });
+        .rpc('retailer_has_expenses', { p_retailer_id: retailerId });
 
       if (checkError) throw checkError;
 
