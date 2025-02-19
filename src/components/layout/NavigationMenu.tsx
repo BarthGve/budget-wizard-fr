@@ -9,6 +9,7 @@ import {
   TrendingUp,
   Mailbox,
   CreditCard,
+  Receipt,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
@@ -29,6 +30,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const userMenu = [
     { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
     { title: "Contributeurs", icon: Users, path: "/contributors" },
+    { title: "Dépenses", icon: Receipt, path: "/expenses" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
     { title: "Crédits", icon: CreditCard, path: "/credits" },
     { title: "Épargne", icon: PiggyBank, path: "/savings" },

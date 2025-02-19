@@ -20,6 +20,7 @@ import Admin from "./pages/Admin";
 import AdminFeedbacks from "./pages/admin/Feedbacks";
 import Stocks from "./pages/Stocks";
 import Credits from "./pages/Credits";
+import Expenses from "./pages/Expenses";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/properties" element={<ProtectedRoute><Properties /></ProtectedRoute>} />
             <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />
             <Route path="/recurring-expenses" element={<ProtectedRoute><RecurringExpenses /></ProtectedRoute>} />
+            <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
             <Route path="/stocks" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
             <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
             
