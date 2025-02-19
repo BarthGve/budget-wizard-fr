@@ -2,7 +2,7 @@
 import { RevenueCard } from "./RevenueCard";
 import { ExpensesCard } from "./ExpensesCard";
 import { SavingsCard } from "./SavingsCard";
-import { BalanceCard } from "./BalanceCard";
+import { CreditCard } from "./CreditCard";
 import { RecurringExpensesPieChart } from "./RecurringExpensesPieChart";
 import { SavingsPieChart } from "./SavingsPieChart";
 import { ContributorsTable } from "./ContributorsTable";
@@ -56,6 +56,11 @@ export const DashboardTabContent = ({
   recurringExpenses,
   monthlySavings,
 }: DashboardTabContentProps) => {
+  // Calculer le total des mensualités de crédit
+  const totalMensualites = recurringExpenses
+    .filter(expense => expense.category === "Crédit")
+    .reduce((sum, expense) => sum + expense.amount, 0);
+
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -71,7 +76,10 @@ export const DashboardTabContent = ({
           totalMonthlySavings={savings}
           savingsGoal={savingsGoal}
         />
-        <BalanceCard balance={balance} />
+        <CreditCard
+          totalMensualites={totalMensualites}
+          totalRevenue={revenue}
+        />
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <RecurringExpensesPieChart
