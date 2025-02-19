@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { MoreVertical, Plus, SquarePen, Trash2 } from "lucide-react";
