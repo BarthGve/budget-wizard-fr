@@ -25,12 +25,16 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       if (retailerError) throw retailerError;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["retailers"] });
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
-      toast.success("Enseigne supprimée avec succès");
-      if (onSuccess) {
-        onSuccess();
-      }
+      // Invalider les requêtes après la suppression
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["retailers"] }),
+        queryClient.invalidateQueries({ queryKey: ["expenses"] })
+      ]).then(() => {
+        toast.success("Enseigne supprimée avec succès");
+        if (onSuccess) {
+          onSuccess();
+        }
+      });
     },
     onError: (error) => {
       console.error("Error deleting retailer:", error);

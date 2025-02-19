@@ -31,15 +31,15 @@ export function RetailersList() {
   const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
   const { deleteRetailer, isDeleting } = useDeleteRetailer(() => {
+    setShowFinalConfirmation(false);
+    setShowDeleteConfirmation(false);
+    setSelectedRetailer(null);
     refetchRetailers();
   });
 
   const handleDelete = () => {
     if (selectedRetailer) {
       deleteRetailer(selectedRetailer);
-      setShowFinalConfirmation(false);
-      setShowDeleteConfirmation(false);
-      setSelectedRetailer(null);
     }
   };
 
