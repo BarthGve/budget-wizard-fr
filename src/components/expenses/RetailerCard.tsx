@@ -55,7 +55,7 @@ export function RetailerCard({ retailer, expenses }: RetailerCardProps) {
   }
 
   return (
-    <Card className="p-6">
+    <Card className="pb-0 pt-6 px-6">
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold">{retailer.name}</h3>
         {retailer.logo_url && (
