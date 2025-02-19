@@ -34,7 +34,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-primary text-primary-foreground hover:bg-primary-hover">
+        <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md ">
           <UserPlus className="mr-2 h-4 w-4" />
           Ajouter un contributeur
         </Button>
