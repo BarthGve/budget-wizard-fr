@@ -44,7 +44,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="sticky top-0 z-10 p-4 flex justify-end  animate-fade-in">
-        <div className="w-auto max-w-md">
+        <div className="w-auto max-w-lg">
           <GlobalBalanceCard balance={globalBalance} />
         </div>
         </div>
