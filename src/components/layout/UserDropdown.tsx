@@ -45,7 +45,7 @@ export const UserDropdown = ({ collapsed, profile }: UserDropdownProps) => {
     <div className="mt-auto border-t border-gray-200 p-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-full justify-start p-2 h-auto hover:bg-gray-100">
+          <Button variant="ghost" className="w-full justify-start p-2 h-auto">
             <div className="flex items-center gap-3 w-full">
               <Avatar>
                 <AvatarImage
