@@ -12,8 +12,7 @@ import {
   AlertDialogDescription, 
   AlertDialogFooter, 
   AlertDialogHeader, 
-  AlertDialogTitle,
-  AlertDialogTrigger
+  AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { useDeleteRetailer } from "./useDeleteRetailer";
 import {
@@ -27,14 +26,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export function RetailersList() {
   const { retailers, isLoading: isLoadingRetailers, refetchRetailers } = useRetailers();
   const [showNewRetailerDialog, setShowNewRetailerDialog] = useState(false);
-  const { deleteRetailer, isDeleting } = useDeleteRetailer();
   const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
+  const { deleteRetailer, isDeleting } = useDeleteRetailer(() => {
+    refetchRetailers();
+  });
+
   const handleDelete = async () => {
     if (selectedRetailer) {
-      await deleteRetailer(selectedRetailer);
+      deleteRetailer(selectedRetailer);
       setShowFinalConfirmation(false);
       setShowDeleteConfirmation(false);
       setSelectedRetailer(null);
