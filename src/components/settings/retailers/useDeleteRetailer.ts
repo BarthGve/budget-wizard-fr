@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Retailer } from "./types";
 
 export const useDeleteRetailer = (onSuccess?: () => void) => {
   const queryClient = useQueryClient();
@@ -35,11 +36,11 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       console.log("Retailer deleted successfully:", retailerId);
       return retailerId;
     },
-    onSuccess: async () => {
+    onSuccess: async (deletedRetailerId) => {
       // Immédiatement mettre à jour le cache local
-      queryClient.setQueryData(["retailers"], (oldData: any) => {
-        if (!Array.isArray(oldData)) return [];
-        return oldData.filter((retailer: Retailer) => retailer.id !== selectedRetailerId);
+      queryClient.setQueryData(["retailers"], (oldData: Retailer[] | undefined) => {
+        if (!oldData) return [];
+        return oldData.filter((retailer) => retailer.id !== deletedRetailerId);
       });
 
       // Forcer une revalidation complète
