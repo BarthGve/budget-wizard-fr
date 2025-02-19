@@ -66,24 +66,40 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
   return (
     <div className="h-[200px] mt-6">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
+        <BarChart data={chartData} margin={{ top: 10, right: 10, left: 40, bottom: 20 }}>
           <XAxis 
             dataKey="year" 
             angle={-45}
             textAnchor="end"
             height={50}
+            stroke="#888888"
+            fontSize={12}
           />
           <YAxis 
             tickFormatter={(value) => formatCurrency(value)}
+            stroke="#888888"
+            fontSize={12}
           />
           <Tooltip 
             formatter={(value: number) => formatCurrency(value)}
             labelFormatter={(label) => `Année ${label}`}
+            contentStyle={{
+              backgroundColor: "hsl(var(--background))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: "8px",
+            }}
+            itemStyle={{
+              color: "hsl(var(--foreground))",
+            }}
+            labelStyle={{
+              color: "hsl(var(--foreground))",
+              fontWeight: "bold",
+            }}
           />
           <Bar 
             dataKey="total" 
-            fill="#000000" 
-            radius={[4, 4, 0, 0]} 
+            fill="#8B5CF6"
+            radius={[4, 4, 0, 0]}
           />
         </BarChart>
       </ResponsiveContainer>
