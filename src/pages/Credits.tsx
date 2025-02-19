@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
 import { CreditDialog } from "@/components/credits/CreditDialog";
+import { CreditActions } from "@/components/credits/CreditActions";
 
 const Credits = () => {
   const queryClient = useQueryClient();
@@ -57,6 +58,10 @@ const Credits = () => {
     return total;
   }, 0) || 0;
 
+  const handleCreditDeleted = () => {
+    queryClient.invalidateQueries({ queryKey: ["credits"] });
+  };
+
   if (isLoading) {
     return <DashboardLayout>
       <div>Chargement...</div>
@@ -75,7 +80,7 @@ const Credits = () => {
           </div>
           <CreditDialog
             trigger={
-              <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-mdr">
+              <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
                 <Plus className="mr-2 h-4 w-4" />
                 Ajouter un crédit
               </Button>
@@ -103,13 +108,12 @@ const Credits = () => {
 
         {/* Liste des crédits */}
         <div className="grid gap-2">
-          {credits?.map((credit, index) => (
+          {credits?.map((credit) => (
             <Card key={credit.id} className="overflow-hidden border bg-card dark:bg-card">
-              <div className="flex flex-col md:flex-row md:items-center">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center px-4 gap-4 md:w-1/3">
-           
-                    {credit.logo_url ? (
-                      <img
+                  {credit.logo_url ? (
+                    <img
                       src={credit.logo_url}
                       alt={credit.nom_credit}
                       className="w-8 h-8 rounded-full object-contain"
@@ -118,12 +122,11 @@ const Credits = () => {
                         target.src = "/placeholder.svg";
                       }}
                     />
-                    ) : (
-                      <div className="w-8 h-8 bg-violet-100 rounded-full" />
-                    )}
-                  
+                  ) : (
+                    <div className="w-8 h-8 bg-violet-100 rounded-full" />
+                  )}
                   <div>
-                    <h4 className="font-medium ">{credit.nom_credit}</h4>
+                    <h4 className="font-medium">{credit.nom_credit}</h4>
                   </div>
                 </div>
                 
@@ -157,6 +160,10 @@ const Credits = () => {
                       {credit.statut === 'actif' ? 'Actif' : 'Remboursé'}
                     </span>
                   </div>
+                </div>
+
+                <div className="px-4 py-2">
+                  <CreditActions credit={credit} onCreditDeleted={handleCreditDeleted} />
                 </div>
               </div>
             </Card>
