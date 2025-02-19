@@ -20,6 +20,7 @@ export const LastPaymentDateField = ({ form }: LastPaymentDateFieldProps) => {
             <Input
               type="date"
               {...field}
+              min={new Date().toISOString().split('T')[0]}
             />
           </FormControl>
           <FormMessage />
