@@ -4,6 +4,7 @@ import { Label, Pie, PieChart } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useNavigate } from "react-router-dom";
 
 interface Credit {
   nom_credit: string;
@@ -21,6 +22,7 @@ export const CreditsPieChart = ({
   credits,
   totalMensualites
 }: CreditsPieChartProps) => {
+  const navigate = useNavigate();
   const chartData = credits.map((credit, index) => ({
     name: credit.nom_credit,
     value: credit.montant_mensualite,
@@ -38,7 +40,10 @@ export const CreditsPieChart = ({
   };
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card 
+      className="flex flex-col h-full cursor-pointer hover:bg-accent/10 transition-colors"
+      onClick={() => navigate("/credits")}
+    >
       <CardHeader className="items-center pb-0">
         <CardTitle>Crédits</CardTitle>
         <CardDescription>Vue d'ensemble des mensualités</CardDescription>

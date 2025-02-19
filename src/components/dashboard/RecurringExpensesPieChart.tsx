@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label, Pie, PieChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { formatCurrency } from "@/utils/format";
+import { useNavigate } from "react-router-dom";
 
 interface RecurringExpense {
   id: string;
@@ -27,6 +28,7 @@ export const RecurringExpensesPieChart = ({
   recurringExpenses,
   totalExpenses
 }: RecurringExpensesPieChartProps) => {
+  const navigate = useNavigate();
   const categoryTotals = recurringExpenses.reduce<CategoryTotal[]>((acc, expense) => {
     const existingCategory = acc.find(cat => cat.category === expense.category);
     if (existingCategory) {
@@ -57,7 +59,10 @@ export const RecurringExpensesPieChart = ({
   };
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card 
+      className="flex flex-col h-full cursor-pointer hover:bg-accent/10 transition-colors"
+      onClick={() => navigate("/recurring-expenses")}
+    >
       <CardHeader className="items-center pb-0">
         <CardTitle>Charges</CardTitle>
         <CardDescription>Vue d'ensemble par catégorie</CardDescription>

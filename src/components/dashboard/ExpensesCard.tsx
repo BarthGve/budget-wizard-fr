@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ShoppingBasket } from 'lucide-react'  
+import { useNavigate } from "react-router-dom";
 
 interface ExpensesCardProps {
   totalExpenses: number;
@@ -15,6 +16,7 @@ export const ExpensesCard = ({
   totalExpenses,
   recurringExpenses,
 }: ExpensesCardProps) => {
+  const navigate = useNavigate();
   const currentDay = new Date().getDate();
   const paidExpenses = recurringExpenses.reduce((sum, expense) => {
     if (currentDay >= expense.debit_day) {
@@ -26,7 +28,10 @@ export const ExpensesCard = ({
   const progressPercentage = (paidExpenses / totalExpenses) * 100;
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
 
-  return <Card className="bg-background">
+  return <Card 
+    className="bg-background cursor-pointer hover:bg-accent/10 transition-colors"
+    onClick={() => navigate("/recurring-expenses")}
+  >
     <CardHeader className="py-[16px]">
       <div className="flex flex-row items-center justify-between ">
           <CardTitle className="text-2xl">Charges</CardTitle>
