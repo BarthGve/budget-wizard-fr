@@ -51,7 +51,7 @@ export const ContributorCard = ({
   };
 
   return (
-    <div className="flex items-center justify-between p-2 border rounded-lg hover:bg-gray-50 transition-colors">
+    <div className="flex items-center justify-between p-2 border rounded-lg">
       <div className="flex items-center space-x-4">
         <Avatar>
           <AvatarFallback>
