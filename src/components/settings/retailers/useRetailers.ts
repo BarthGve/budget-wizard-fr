@@ -24,7 +24,7 @@ export const useRetailers = () => {
       return data as Retailer[];
     },
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0,
     refetchOnMount: true,
     refetchOnWindowFocus: true
   });
