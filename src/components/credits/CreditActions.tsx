@@ -48,13 +48,7 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">
-          <DropdownMenuItem onClick={() => {
-            setShowDetailsDialog(true);
-            setDropdownOpen(false);
-          }}>
-            <Eye className="mr-2 h-4 w-4" />
-            Voir détails
-          </DropdownMenuItem>
+      
           <DropdownMenuItem onClick={() => {
             setShowEditDialog(true);
             setDropdownOpen(false);
