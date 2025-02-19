@@ -43,10 +43,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
-        <div className="sticky top-0 z-10 p-4 animate-fade-in">
-        <div className="w-auto max-w-xs">
+        <div className="sticky top-0 z-10 p-4 justify-end animate-fade-in">
+        
           <GlobalBalanceCard balance={globalBalance} />
-        </div>
+       
         </div>
         <div className="container mx-auto p-6">
           <div className="page-transition">{children}</div>
