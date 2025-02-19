@@ -1,14 +1,15 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { formatCurrency } from "@/utils/format";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { MoreVertical, Plus } from "lucide-react";
+import { MoreVertical, Plus, SquarePen, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { NewSavingDialog } from "./NewSavingDialog";
+
+
 
 interface SavingsListProps {
   monthlySavings: Array<{
@@ -93,6 +94,7 @@ export const SavingsList = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[200px]">
+              <SquarePen className="mr-2 h-4 w-4" />
                 <DropdownMenuItem onClick={() => handleEdit(saving)}>
                   Modifier
                 </DropdownMenuItem>
@@ -100,6 +102,7 @@ export const SavingsList = ({
                   className="text-destructive"
                   onClick={() => handleOpenDelete(saving)}
                 >
+                         <Trash2 className="mr-2 h-4 w-4" />
                   Supprimer
                 </DropdownMenuItem>
               </DropdownMenuContent>
