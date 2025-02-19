@@ -1,9 +1,11 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const useDeleteRetailer = (onSuccess?: () => void) => {
+  const queryClient = useQueryClient();
+
   const { mutate: deleteRetailer, isPending: isDeleting } = useMutation({
     mutationFn: async (retailerId: string) => {
       // Suppression des dépenses associées d'abord
@@ -25,6 +27,7 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       return retailerId;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["retailers"] });
       toast.success("Enseigne supprimée avec succès");
       if (onSuccess) {
         onSuccess();

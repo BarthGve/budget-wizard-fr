@@ -30,28 +30,16 @@ export function RetailersList() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
-  const handleSuccess = () => {
+  const { deleteRetailer, isDeleting } = useDeleteRetailer(() => {
     setShowFinalConfirmation(false);
     setShowDeleteConfirmation(false);
     setSelectedRetailer(null);
     refetchRetailers();
-  };
+  });
 
-  const handleError = () => {
-    setShowFinalConfirmation(false);
-    setShowDeleteConfirmation(false);
-    setSelectedRetailer(null);
-  };
-
-  const { deleteRetailer, isDeleting } = useDeleteRetailer(handleSuccess);
-
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (selectedRetailer) {
-      try {
-        await deleteRetailer(selectedRetailer);
-      } catch (error) {
-        handleError();
-      }
+      deleteRetailer(selectedRetailer);
     }
   };
 
@@ -134,9 +122,7 @@ export function RetailersList() {
 
       <AlertDialog 
         open={showDeleteConfirmation} 
-        onOpenChange={(open) => {
-          if (!open) handleDeleteCancel();
-        }}
+        onOpenChange={setShowDeleteConfirmation}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -164,9 +150,7 @@ export function RetailersList() {
 
       <AlertDialog 
         open={showFinalConfirmation}
-        onOpenChange={(open) => {
-          if (!open) handleDeleteCancel();
-        }}
+        onOpenChange={setShowFinalConfirmation}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -182,9 +166,7 @@ export function RetailersList() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleDeleteCancel} disabled={isDeleting}>
-              Annuler
-            </AlertDialogCancel>
+            <AlertDialogCancel onClick={handleDeleteCancel}>Annuler</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleDelete}
