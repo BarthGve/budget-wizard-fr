@@ -64,8 +64,8 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
   }
 
   return (
-    <div className="bg-card rounded-lg p-6 mt-6">
-      <ResponsiveContainer width="100%" height={300}>
+    <div className="bg-card rounded-lg p-4 mt-4">
+      <ResponsiveContainer width="100%" height={150}>
         <BarChart data={chartData} margin={{ top: 20, right: 20, left: 40, bottom: 30 }}>
           <XAxis 
             dataKey="year" 
