@@ -739,7 +739,7 @@ export type Database = {
       }
       retailer_has_expenses: {
         Args: {
-          retailer_id: string
+          p_retailer_id: string
         }
         Returns: boolean
       }
