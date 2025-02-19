@@ -34,10 +34,7 @@ export const RetailersSettings = () => {
           onRetailerSaved={refetchRetailers}
         />
       </div>
-      <RetailersList 
-        retailers={retailers} 
-        onRetailerUpdated={refetchRetailers}
-      />
+      <RetailersList />
     </div>
   );
 };

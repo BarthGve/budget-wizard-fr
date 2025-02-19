@@ -3,10 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { RetailerForm } from "./RetailerForm";
 import { Retailer } from "./types";
 
-interface RetailerDialogProps {
-  trigger: React.ReactNode;
+export interface RetailerDialogProps {
+  trigger?: React.ReactNode;
   retailer?: Retailer;
-  onRetailerSaved: () => void;
+  onRetailerSaved?: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -18,14 +18,12 @@ export function RetailerDialog({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange 
 }: RetailerDialogProps) {
-  const isControlled = controlledOpen !== undefined;
-
   return (
     <Dialog 
       open={controlledOpen} 
       onOpenChange={controlledOnOpenChange}
     >
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
@@ -35,7 +33,9 @@ export function RetailerDialog({
         <RetailerForm
           retailer={retailer}
           onSuccess={() => {
-            onRetailerSaved();
+            if (onRetailerSaved) {
+              onRetailerSaved();
+            }
             if (controlledOnOpenChange) {
               controlledOnOpenChange(false);
             }
