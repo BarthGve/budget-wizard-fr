@@ -25,11 +25,10 @@ export const useRetailers = () => {
       console.log("✅ Retailers fetched successfully, count:", data?.length);
       return data as Retailer[];
     },
-    onError: (error) => {
-      console.error("❌ Query error:", error);
-    },
-    onSuccess: (data) => {
-      console.log("✨ Query completed successfully, retailers count:", data?.length);
+    meta: {
+      onError: (error: Error) => {
+        console.error("❌ Query error:", error);
+      }
     }
   });
 
