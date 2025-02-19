@@ -1,136 +1,169 @@
 
-import { Card } from "@/components/ui/card";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, PlusCircle, Trash2 } from "lucide-react";
+import { useRetailers } from "./useRetailers";
 import { Button } from "@/components/ui/button";
+import { RetailerDialog } from "./RetailerDialog";
+import { useState } from "react";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
+import { useDeleteRetailer } from "./useDeleteRetailer";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useState } from "react";
-import { Retailer } from "./types";
-import { RetailerDialog } from "./RetailerDialog";
-import { useDeleteRetailer } from "./useDeleteRetailer";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-interface RetailersListProps {
-  retailers: Retailer[];
-  onRetailerUpdated: () => void;
-}
+export function RetailersList() {
+  const { retailers, isLoading: isLoadingRetailers } = useRetailers();
+  const [showNewRetailerDialog, setShowNewRetailerDialog] = useState(false);
+  const { deleteRetailer, isDeleting } = useDeleteRetailer();
+  const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
-export function RetailersList({ retailers, onRetailerUpdated }: RetailersListProps) {
-  const [retailerToDelete, setRetailerToDelete] = useState<Retailer | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedRetailer, setSelectedRetailer] = useState<Retailer | null>(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  
-  const { deleteRetailer, isDeleting } = useDeleteRetailer({
-    onSuccess: () => {
-      setRetailerToDelete(null);
-      onRetailerUpdated();
+  const handleDelete = async () => {
+    if (selectedRetailer) {
+      await deleteRetailer(selectedRetailer);
+      setShowFinalConfirmation(false);
+      setShowDeleteConfirmation(false);
+      setSelectedRetailer(null);
     }
-  });
-
-  const handleEditClick = (retailer: Retailer) => {
-    setSelectedRetailer(retailer);
-    setEditDialogOpen(true);
-    setDropdownOpen(false);
   };
 
-  const handleDeleteClick = (retailer: Retailer) => {
-    setRetailerToDelete(retailer);
-    setDropdownOpen(false);
+  const handleInitialDelete = (retailerId: string) => {
+    setSelectedRetailer(retailerId);
+    setShowDeleteConfirmation(true);
   };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirmation(false);
+    setShowFinalConfirmation(false);
+    setSelectedRetailer(null);
+  };
+
+  const currentRetailer = selectedRetailer ? retailers?.find(r => r.id === selectedRetailer) : null;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {retailers.map((retailer) => (
-        <Card key={retailer.id} className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              {retailer.logo_url && (
-                <img
-                  src={retailer.logo_url}
-                  alt={retailer.name}
-                  className="h-8 w-8 rounded-full"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                  }}
-                />
-              )}
-              <span className="font-medium">{retailer.name}</span>
-            </div>
-            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleEditClick(retailer)}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Modifier
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => handleDeleteClick(retailer)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Supprimer
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </Card>
-      ))}
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-lg font-medium">Liste des enseignes</h2>
+        <Button onClick={() => setShowNewRetailerDialog(true)}>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Ajouter une enseigne
+        </Button>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Nom</TableHead>
+            <TableHead>Logo</TableHead>
+            <TableHead className="w-[100px]"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {retailers?.map((retailer) => (
+            <TableRow key={retailer.id}>
+              <TableCell>{retailer.name}</TableCell>
+              <TableCell>
+                {retailer.logo_url && (
+                  <img 
+                    src={retailer.logo_url} 
+                    alt={retailer.name} 
+                    className="h-8 w-8 object-contain"
+                  />
+                )}
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive"
+                      onClick={() => handleInitialDelete(retailer.id)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Supprimer
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       <RetailerDialog
-        retailer={selectedRetailer || undefined}
-        open={editDialogOpen}
-        onOpenChange={(open) => {
-          setEditDialogOpen(open);
-          if (!open) {
-            setSelectedRetailer(null);
-          }
-        }}
-        onRetailerSaved={() => {
-          setEditDialogOpen(false);
-          setSelectedRetailer(null);
-          onRetailerUpdated();
-        }}
-        trigger={<></>}
+        open={showNewRetailerDialog}
+        onOpenChange={setShowNewRetailerDialog}
       />
 
-      <AlertDialog 
-        open={!!retailerToDelete} 
-        onOpenChange={(open) => !open && setRetailerToDelete(null)}
-      >
+      {/* Première boîte de dialogue de confirmation */}
+      <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer l'enseigne</AlertDialogTitle>
-            <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer cette enseigne ? Cette action est irréversible.
+            <AlertDialogTitle>Attention - Suppression d'enseigne</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>Vous êtes sur le point de supprimer l'enseigne <strong>{currentRetailer?.name}</strong>.</p>
+              <p className="font-medium text-destructive">Cette action supprimera également toutes les dépenses associées à cette enseigne.</p>
+              <p>Êtes-vous sûr de vouloir continuer ?</p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel onClick={handleDeleteCancel}>Annuler</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => retailerToDelete && deleteRetailer(retailerToDelete.id)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                setShowDeleteConfirmation(false);
+                setShowFinalConfirmation(true);
+              }}
+            >
+              Continuer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Deuxième boîte de dialogue de confirmation finale */}
+      <AlertDialog open={showFinalConfirmation} onOpenChange={setShowFinalConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmation finale</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>Cette action est <strong>irréversible</strong>.</p>
+              <p>Toutes les dépenses associées à l'enseigne <strong>{currentRetailer?.name}</strong> seront définitivement supprimées.</p>
+              <p>Confirmez-vous vouloir supprimer :</p>
+              <ul className="list-disc list-inside pl-4 text-destructive">
+                <li>L'enseigne {currentRetailer?.name}</li>
+                <li>Toutes les dépenses associées</li>
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteCancel} disabled={isDeleting}>
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? "Suppression..." : "Supprimer"}
+              {isDeleting ? "Suppression..." : "Confirmer la suppression"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
