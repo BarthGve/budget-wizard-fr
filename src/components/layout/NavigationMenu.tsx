@@ -10,6 +10,7 @@ import {
   Mailbox,
   CreditCard,
   Receipt,
+  Tags
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
@@ -33,6 +34,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     { title: "Dépenses", icon: Receipt, path: "/expenses" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
     { title: "Crédits", icon: CreditCard, path: "/credits" },
+    { title: "Classification", icon: Tags, path: "/classification" },
     { title: "Épargne", icon: PiggyBank, path: "/savings" },
     { title: "Bourse", icon: TrendingUp, path: "/stocks" },
     { title: "Immobilier", icon: Home, path: "/properties" },

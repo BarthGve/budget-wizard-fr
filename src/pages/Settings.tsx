@@ -1,11 +1,9 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { ExpenseCategoriesSettings } from "@/components/settings/ExpenseCategoriesSettings";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { PaymentSettings } from "@/components/settings/PaymentSettings";
 import { PrivacySettings } from "@/components/settings/PrivacySettings";
 import { ProfileSettings } from "@/components/settings/ProfileSettings";
-import { RetailersSettings } from "@/components/settings/RetailersSettings";
 import { SecuritySettings } from "@/components/settings/SecuritySettings";
 
 const Settings = () => {
@@ -21,8 +19,6 @@ const Settings = () => {
 
         <div className="space-y-10">
           <ProfileSettings />
-          <RetailersSettings />
-          <ExpenseCategoriesSettings />
           <SecuritySettings />
           <NotificationSettings />
           <PaymentSettings />
