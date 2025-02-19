@@ -16,9 +16,14 @@ interface ContributorsTableProps {
     percentage_contribution: number;
   }>;
   totalExpenses: number;
+  totalCredits: number;
 }
 
-export const ContributorsTable = ({ contributors, totalExpenses }: ContributorsTableProps) => {
+export const ContributorsTable = ({ 
+  contributors, 
+  totalExpenses,
+  totalCredits 
+}: ContributorsTableProps) => {
   if (contributors.length <= 1) return null;
 
   return (
@@ -36,11 +41,13 @@ export const ContributorsTable = ({ contributors, totalExpenses }: ContributorsT
                 <TableHead className="text-right">Revenus mensuels</TableHead>
                 <TableHead className="text-right">Part des revenus</TableHead>
                 <TableHead className="text-right">Participation aux charges</TableHead>
+                <TableHead className="text-right">Participation aux crédits</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {contributors.map((contributor) => {
                 const expenseShare = (totalExpenses * contributor.percentage_contribution) / 100;
+                const creditShare = (totalCredits * contributor.percentage_contribution) / 100;
                 
                 return (
                   <TableRow key={contributor.name}>
@@ -48,6 +55,7 @@ export const ContributorsTable = ({ contributors, totalExpenses }: ContributorsT
                     <TableCell className="text-right">{contributor.total_contribution.toFixed(2)} €</TableCell>
                     <TableCell className="text-right">{contributor.percentage_contribution.toFixed(1)}%</TableCell>
                     <TableCell className="text-right">{expenseShare.toFixed(2)} €</TableCell>
+                    <TableCell className="text-right">{creditShare.toFixed(2)} €</TableCell>
                   </TableRow>
                 );
               })}

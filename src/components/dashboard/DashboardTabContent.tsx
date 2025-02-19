@@ -5,6 +5,7 @@ import { SavingsCard } from "./SavingsCard";
 import { CreditCard } from "./CreditCard";
 import { RecurringExpensesPieChart } from "./RecurringExpensesPieChart";
 import { SavingsPieChart } from "./SavingsPieChart";
+import { CreditsPieChart } from "./CreditsPieChart";
 import { ContributorsTable } from "./ContributorsTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -91,7 +92,7 @@ export const DashboardTabContent = ({
           totalExpenses={expenses}
           recurringExpenses={recurringExpenses}
         />
-          <CreditCard
+        <CreditCard
           totalMensualites={totalMensualites}
           totalRevenue={revenue}
         />
@@ -100,7 +101,7 @@ export const DashboardTabContent = ({
           savingsGoal={savingsGoal}
         />
       </div>
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-3">
         <RecurringExpensesPieChart
           recurringExpenses={recurringExpenses}
           totalExpenses={expenses}
@@ -109,10 +110,17 @@ export const DashboardTabContent = ({
           monthlySavings={monthlySavings}
           totalSavings={savings}
         />
+        {credits && credits.length > 0 && (
+          <CreditsPieChart
+            credits={credits}
+            totalMensualites={totalMensualites}
+          />
+        )}
       </div>
       <ContributorsTable 
         contributors={contributors}
         totalExpenses={expenses}
+        totalCredits={totalMensualites}
       />
     </div>
   );
