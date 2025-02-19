@@ -7,6 +7,7 @@ import {
   CreditCard,
   ChevronsUpDown,
   Star,
+  Tag,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -90,9 +91,14 @@ export const UserDropdown = ({ collapsed, profile }: UserDropdownProps) => {
             </div>
           </div>
        
-          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
+          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/user-settings")}>
             <UserCircle2 className="mr-2 h-4 w-4" />
             <span>Mon compte</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
+            <Tag className="mr-2 h-4 w-4" />
+            <span>Classification</span>
           </DropdownMenuItem>
      
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>

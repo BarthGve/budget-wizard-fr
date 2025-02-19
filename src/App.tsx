@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +22,7 @@ import Credits from "./pages/Credits";
 import Expenses from "./pages/Expenses";
 import Classification from "./pages/Classification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import UserSettings from "./pages/UserSettings";
 
 const queryClient = new QueryClient();
 
@@ -41,8 +41,8 @@ const App = () => (
             {/* Routes protégées pour les utilisateurs normaux */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/contributors" element={<ProtectedRoute><Contributors /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-            <Route path="/classification" element={<ProtectedRoute><Classification /></ProtectedRoute>} />
+            <Route path="/user-settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Classification /></ProtectedRoute>} />
             <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />
             <Route path="/properties" element={<ProtectedRoute><Properties /></ProtectedRoute>} />
             <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />
