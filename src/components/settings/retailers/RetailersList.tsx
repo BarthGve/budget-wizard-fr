@@ -22,51 +22,47 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
+type DialogState = {
+  type: 'initial' | 'final' | null;
+  retailerId: string | null;
+};
+
 export function RetailersList() {
   const { retailers, isLoading: isLoadingRetailers } = useRetailers();
-  const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
-
-  const handleCancelDelete = () => {
-    console.log("🔄 Resetting delete state...");
-    setSelectedRetailer(null);
-    setShowDeleteConfirmation(false);
-    setShowFinalConfirmation(false);
-  };
+  const [dialogState, setDialogState] = useState<DialogState>({
+    type: null,
+    retailerId: null
+  });
 
   const { deleteRetailer, isDeleting } = useDeleteRetailer(() => {
-    console.log("✅ Delete successful, resetting state...");
-    handleCancelDelete();
+    setDialogState({ type: null, retailerId: null });
   });
 
   const handleInitialDelete = (retailerId: string) => {
-    console.log("🎯 Initial delete triggered for retailer:", retailerId);
-    setSelectedRetailer(retailerId);
-    setShowDeleteConfirmation(true);
+    setDialogState({ type: 'initial', retailerId });
   };
 
   const handleFinalConfirmation = () => {
-    console.log("🔄 Moving to final confirmation...");
-    setShowDeleteConfirmation(false);
-    setShowFinalConfirmation(true);
+    setDialogState(prev => ({ type: 'final', retailerId: prev.retailerId }));
+  };
+
+  const handleCancel = () => {
+    setDialogState({ type: null, retailerId: null });
   };
 
   const handleDelete = () => {
-    console.log("🚀 Executing delete for retailerId:", selectedRetailer);
-    if (selectedRetailer) {
-      deleteRetailer(selectedRetailer);
+    if (dialogState.retailerId) {
+      deleteRetailer(dialogState.retailerId);
     }
   };
 
-  const currentRetailer = selectedRetailer ? retailers?.find(r => r.id === selectedRetailer) : null;
+  const currentRetailer = dialogState.retailerId 
+    ? retailers?.find(r => r.id === dialogState.retailerId) 
+    : null;
 
   if (isLoadingRetailers) {
-    console.log("⏳ Loading retailers...");
     return <div>Chargement...</div>;
   }
-
-  console.log("📊 Current retailers count:", retailers?.length);
 
   return (
     <div className="space-y-4">
@@ -114,25 +110,30 @@ export function RetailersList() {
         </TableBody>
       </Table>
 
+      {/* Initial Confirmation Dialog */}
       <AlertDialog 
-        open={showDeleteConfirmation} 
-        onOpenChange={(open) => {
-          if (!open) handleCancelDelete();
-        }}
+        open={dialogState.type === 'initial'} 
+        onOpenChange={(open) => !open && handleCancel()}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Attention - Suppression d'enseigne</AlertDialogTitle>
-            <AlertDialogDescription>
-              <div className="space-y-2">
-                <p>Vous êtes sur le point de supprimer l'enseigne <strong>{currentRetailer?.name}</strong>.</p>
-                <p className="font-medium text-destructive">Cette action supprimera également toutes les dépenses associées à cette enseigne.</p>
-                <p>Êtes-vous sûr de vouloir continuer ?</p>
-              </div>
-            </AlertDialogDescription>
+            <AlertDialogTitle>
+              Attention - Suppression d'enseigne
+            </AlertDialogTitle>
           </AlertDialogHeader>
+          <AlertDialogDescription asChild>
+            <div className="space-y-2">
+              Vous êtes sur le point de supprimer l'enseigne <strong>{currentRetailer?.name}</strong>.
+              <br />
+              Cette action supprimera également toutes les dépenses associées à cette enseigne.
+              <br />
+              Êtes-vous sûr de vouloir continuer ?
+            </div>
+          </AlertDialogDescription>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancelDelete}>Annuler</AlertDialogCancel>
+            <AlertDialogCancel onClick={handleCancel}>
+              Annuler
+            </AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleFinalConfirmation}
@@ -143,29 +144,34 @@ export function RetailersList() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Final Confirmation Dialog */}
       <AlertDialog 
-        open={showFinalConfirmation}
-        onOpenChange={(open) => {
-          if (!open) handleCancelDelete();
-        }}
+        open={dialogState.type === 'final'}
+        onOpenChange={(open) => !open && handleCancel()}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmation finale</AlertDialogTitle>
-            <AlertDialogDescription>
-              <div className="space-y-2">
-                <p>Cette action est <strong>irréversible</strong>.</p>
-                <p>Toutes les dépenses associées à l'enseigne <strong>{currentRetailer?.name}</strong> seront définitivement supprimées.</p>
-                <p>Confirmez-vous vouloir supprimer :</p>
-                <ul className="list-disc list-inside pl-4 text-destructive">
-                  <li>L'enseigne {currentRetailer?.name}</li>
-                  <li>Toutes les dépenses associées</li>
-                </ul>
-              </div>
-            </AlertDialogDescription>
+            <AlertDialogTitle>
+              Confirmation finale
+            </AlertDialogTitle>
           </AlertDialogHeader>
+          <AlertDialogDescription asChild>
+            <div className="space-y-2">
+              Cette action est <strong>irréversible</strong>.
+              <br />
+              Toutes les dépenses associées à l'enseigne <strong>{currentRetailer?.name}</strong> seront définitivement supprimées.
+              <br />
+              Confirmez-vous vouloir supprimer :
+              <ul className="list-disc list-inside pl-4 text-destructive mt-2">
+                <li>L'enseigne {currentRetailer?.name}</li>
+                <li>Toutes les dépenses associées</li>
+              </ul>
+            </div>
+          </AlertDialogDescription>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancelDelete}>Annuler</AlertDialogCancel>
+            <AlertDialogCancel onClick={handleCancel}>
+              Annuler
+            </AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleDelete}
