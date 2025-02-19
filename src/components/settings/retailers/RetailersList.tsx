@@ -23,21 +23,20 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export function RetailersList() {
-  const { retailers, isLoading: isLoadingRetailers, refetchRetailers } = useRetailers();
+  const { retailers, isLoading: isLoadingRetailers } = useRetailers();
   const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
-  const resetState = async () => {
+  const resetState = () => {
     setShowFinalConfirmation(false);
     setShowDeleteConfirmation(false);
     setSelectedRetailer(null);
-    await refetchRetailers();
   };
 
   const { deleteRetailer, isDeleting } = useDeleteRetailer(resetState);
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (selectedRetailer) {
       console.log("Initiating delete for retailer:", selectedRetailer);
       deleteRetailer(selectedRetailer);
