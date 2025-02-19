@@ -8,6 +8,7 @@ export const useRetailers = () => {
   const { data: retailers, isLoading, refetch } = useQuery({
     queryKey: ["retailers"],
     queryFn: async () => {
+      console.log("Fetching retailers...");
       const { data, error } = await supabase
         .from("retailers")
         .select("*")
@@ -19,9 +20,13 @@ export const useRetailers = () => {
         throw error;
       }
 
+      console.log("Retailers fetched:", data);
       return data as Retailer[];
     },
-    refetchOnWindowFocus: false
+    staleTime: 0,
+    cacheTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   return {
