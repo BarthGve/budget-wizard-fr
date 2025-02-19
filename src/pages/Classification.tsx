@@ -1,7 +1,7 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { RetailersSettings } from "@/components/settings/RetailersSettings";
-import { ExpenseCategoriesSettings } from "@/components/settings/ExpenseCategoriesSettings";
+import { ExpenseCategoriesSettings } from "@/components/settings/expense-categories/ExpenseCategoriesSettings";
 
 const Classification = () => {
   return (
