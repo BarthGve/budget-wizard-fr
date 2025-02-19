@@ -30,16 +30,28 @@ export function RetailersList() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
-  const { deleteRetailer, isDeleting } = useDeleteRetailer(() => {
+  const handleSuccess = () => {
     setShowFinalConfirmation(false);
     setShowDeleteConfirmation(false);
     setSelectedRetailer(null);
     refetchRetailers();
-  });
+  };
 
-  const handleDelete = () => {
+  const handleError = () => {
+    setShowFinalConfirmation(false);
+    setShowDeleteConfirmation(false);
+    setSelectedRetailer(null);
+  };
+
+  const { deleteRetailer, isDeleting } = useDeleteRetailer(handleSuccess);
+
+  const handleDelete = async () => {
     if (selectedRetailer) {
-      deleteRetailer(selectedRetailer);
+      try {
+        await deleteRetailer(selectedRetailer);
+      } catch (error) {
+        handleError();
+      }
     }
   };
 
@@ -55,6 +67,10 @@ export function RetailersList() {
   };
 
   const currentRetailer = selectedRetailer ? retailers?.find(r => r.id === selectedRetailer) : null;
+
+  if (isLoadingRetailers) {
+    return <div>Chargement...</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -116,8 +132,12 @@ export function RetailersList() {
         onRetailerSaved={refetchRetailers}
       />
 
-      {/* Première boîte de dialogue de confirmation */}
-      <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
+      <AlertDialog 
+        open={showDeleteConfirmation} 
+        onOpenChange={(open) => {
+          if (!open) handleDeleteCancel();
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Attention - Suppression d'enseigne</AlertDialogTitle>
@@ -142,8 +162,12 @@ export function RetailersList() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Deuxième boîte de dialogue de confirmation finale */}
-      <AlertDialog open={showFinalConfirmation} onOpenChange={setShowFinalConfirmation}>
+      <AlertDialog 
+        open={showFinalConfirmation}
+        onOpenChange={(open) => {
+          if (!open) handleDeleteCancel();
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmation finale</AlertDialogTitle>
