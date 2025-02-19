@@ -35,20 +35,22 @@ export const CreditCard = ({
         </div>
         <CardDescription>Mensualités et taux d'endettement</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
-          <p className="text-sm text-muted-foreground">Mensualités</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant={getBadgeVariant(tauxEndettement)}>
-            {Math.round(tauxEndettement)}%
-          </Badge>
-          <span className="text-sm text-muted-foreground">
-            {getBadgeText(tauxEndettement)}
-          </span>
-        </div>
-      </CardContent>
+      <CardContent>
+  <div className="flex justify-between items-center">
+    <div>
+      <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
+      <p className="text-sm text-muted-foreground">Mensualités</p>
+    </div>
+    <div className="flex items-center gap-2">
+      <Badge variant={getBadgeVariant(tauxEndettement)}>
+        {Math.round(tauxEndettement)}%
+      </Badge>
+      <span className="text-sm text-muted-foreground">
+        {getBadgeText(tauxEndettement)}
+      </span>
+    </div>
+  </div>
+</CardContent>
     </Card>
   );
 };
