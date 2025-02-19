@@ -106,16 +106,17 @@ export const DashboardTabContent = ({
           recurringExpenses={recurringExpenses}
           totalExpenses={expenses}
         />
-        <SavingsPieChart
-          monthlySavings={monthlySavings}
-          totalSavings={savings}
-        />
         {credits && credits.length > 0 && (
           <CreditsPieChart
             credits={credits}
             totalMensualites={totalMensualites}
           />
         )}
+        <SavingsPieChart
+          monthlySavings={monthlySavings}
+          totalSavings={savings}
+        />
+        
       </div>
       <ContributorsTable 
         contributors={contributors}
