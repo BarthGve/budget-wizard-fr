@@ -5,6 +5,7 @@ import { RetailerCard } from "@/components/expenses/RetailerCard";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
+import { useCallback } from "react";
 
 const Expenses = () => {
   const queryClient = useQueryClient();
@@ -13,6 +14,7 @@ const Expenses = () => {
   const { data: expenses } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
+      console.log("Fetching expenses...");
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
@@ -22,13 +24,17 @@ const Expenses = () => {
         .eq("profile_id", user.id);
 
       if (error) throw error;
+      console.log("Expenses fetched:", data?.length);
       return data;
     },
+    staleTime: 0, // Toujours refetch lors de l'invalidation
+    cacheTime: 0, // Ne pas garder en cache
   });
 
-  const handleExpenseUpdated = () => {
-    queryClient.invalidateQueries({ queryKey: ["expenses"] });
-  };
+  const handleExpenseUpdated = useCallback(() => {
+    console.log("Invalidating expenses query...");
+    queryClient.invalidateQueries({ queryKey: ["expenses"], exact: true });
+  }, [queryClient]);
 
   const expensesByRetailer = retailers?.map(retailer => ({
     retailer,
@@ -43,11 +49,11 @@ const Expenses = () => {
           <AddExpenseDialog onExpenseAdded={handleExpenseUpdated} />
         </div>
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {expensesByRetailer?.map(({ retailer, expenses }) => (
+          {expensesByRetailer?.map(({ retailer, expenses: retailerExpenses }) => (
             <RetailerCard 
               key={retailer.id}
               retailer={retailer}
-              expenses={expenses}
+              expenses={retailerExpenses}
               onExpenseUpdated={handleExpenseUpdated}
             />
           ))}

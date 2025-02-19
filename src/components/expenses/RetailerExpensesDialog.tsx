@@ -63,10 +63,11 @@ export function RetailerExpensesDialog({
   const paginatedExpenses = expenses.slice(startIndex, startIndex + itemsPerPage);
 
   const handleDelete = async (expenseId: string) => {
-    if (isDeleting) return; // Empêcher les clics multiples
+    if (isDeleting) return;
 
     setIsDeleting(true);
     try {
+      console.log("Deleting expense:", expenseId);
       const { error } = await supabase
         .from('expenses')
         .delete()
@@ -74,14 +75,21 @@ export function RetailerExpensesDialog({
 
       if (error) throw error;
 
+      console.log("Expense deleted successfully");
+      toast.success("Dépense supprimée avec succès");
+      
+      // Fermer les dialogues et réinitialiser les états
       setShowDeleteDialog(false);
       setSelectedExpense(null);
-      onExpenseUpdated();
-      toast.success("Dépense supprimée avec succès");
+      
+      // Attendre un peu avant de rafraîchir les données
+      setTimeout(() => {
+        onExpenseUpdated();
+        setIsDeleting(false);
+      }, 100);
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error("Erreur lors de la suppression de la dépense");
-    } finally {
       setIsDeleting(false);
     }
   };
