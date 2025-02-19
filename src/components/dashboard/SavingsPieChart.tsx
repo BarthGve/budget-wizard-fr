@@ -36,7 +36,7 @@ export const SavingsPieChart = ({
   };
   return <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Ventilation</CardTitle>
+        <CardTitle>Epargne</CardTitle>
         <CardDescription>Vue d'ensemble par catégorie</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
