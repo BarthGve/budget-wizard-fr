@@ -30,14 +30,18 @@ export function RetailersList() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
-  const { deleteRetailer, isDeleting } = useDeleteRetailer();
+  const resetState = () => {
+    setShowFinalConfirmation(false);
+    setShowDeleteConfirmation(false);
+    setSelectedRetailer(null);
+  };
+
+  const { deleteRetailer, isDeleting } = useDeleteRetailer(resetState);
 
   const handleDelete = () => {
     if (selectedRetailer) {
+      console.log("Initiating delete for retailer:", selectedRetailer);
       deleteRetailer(selectedRetailer);
-      setShowFinalConfirmation(false);
-      setShowDeleteConfirmation(false);
-      setSelectedRetailer(null);
     }
   };
 
@@ -47,9 +51,7 @@ export function RetailersList() {
   };
 
   const handleDeleteCancel = () => {
-    setShowDeleteConfirmation(false);
-    setShowFinalConfirmation(false);
-    setSelectedRetailer(null);
+    resetState();
   };
 
   const currentRetailer = selectedRetailer ? retailers?.find(r => r.id === selectedRetailer) : null;
