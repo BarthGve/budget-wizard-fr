@@ -33,7 +33,7 @@ export const SavingsCard = ({
       <div className="flex justify-between text-sm text-muted-foreground">
         <span>Cible : {Math.round(savingsGoal)} €</span>
         <span>
-          Reste : <span className={`font-medium ${(savingsGoal - totalMonthlySavings) <= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+          Reste : <span className={`font-medium ${(savingsGoal - totalMonthlySavings) <= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}>
             {Math.max(0, Math.round(savingsGoal - totalMonthlySavings))} €
           </span>
         </span>
