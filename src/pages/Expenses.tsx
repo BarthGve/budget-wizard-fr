@@ -27,8 +27,8 @@ const Expenses = () => {
       console.log("Expenses fetched:", data?.length);
       return data;
     },
-    staleTime: 0, // Toujours refetch lors de l'invalidation
-    cacheTime: 0, // Ne pas garder en cache
+    staleTime: 1000, // 1 seconde
+    gcTime: 0, // Pas de garbage collection
   });
 
   const handleExpenseUpdated = useCallback(() => {
