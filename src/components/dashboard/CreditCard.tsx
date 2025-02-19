@@ -16,7 +16,7 @@ export const CreditCard = ({
   
   const getBadgeVariant = (taux: number) => {
     if (taux < 30) return "default";
-    if (taux < 40) return "warning";
+    if (taux < 40) return "secondary";
     return "destructive";
   };
 
