@@ -95,8 +95,9 @@ export const SavingsList = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[200px]">
-              <SquarePen className="mr-2 h-4 w-4" />
+             
                 <DropdownMenuItem onClick={() => handleEdit(saving)}>
+                <SquarePen className="mr-2 h-4 w-4" />
                   Modifier
                 </DropdownMenuItem>
                 <DropdownMenuItem 
