@@ -10,7 +10,13 @@ export const formSchema = z.object({
   nom_credit: z.string().min(1, "Le nom est requis"),
   nom_domaine: z.string().min(1, "Le domaine est requis"),
   montant_mensualite: z.string().min(1, "Le montant est requis").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Le montant doit être un nombre positif"),
-  date_derniere_mensualite: z.string().min(1, "La date de dernière mensualité est requise"),
+  date_derniere_mensualite: z.string().min(1, "La date de dernière mensualité est requise")
+    .refine((date) => {
+      const selectedDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return selectedDate > today;
+    }, "La date de dernière mensualité doit être dans le futur"),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
