@@ -36,12 +36,12 @@ export const CreditCard = ({
         <CardDescription>Mensualités et taux d'endettement</CardDescription>
       </CardHeader>
       <CardContent>
-  <div className="flex justify-between items-center">
+  <div>
     <div className="flex items-center gap-2">
       <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
       <p className="text-sm text-muted-foreground">Mensualités</p>
     </div>
-    <div className="flex items-center gap-2">
+    <div >
       <Badge variant={getBadgeVariant(tauxEndettement)}>
         {Math.round(tauxEndettement)}%
       </Badge>
