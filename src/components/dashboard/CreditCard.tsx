@@ -29,7 +29,7 @@ export const CreditCard = ({
   return (
     <Card className="bg-background">
       <CardHeader className="py-[16px]">
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center gap-2">
           <CardTitle className="text-2xl">Crédits</CardTitle>
           <CreditCardIcon className="h-6 w-6 text-muted-foreground" />
         </div>
@@ -45,9 +45,6 @@ export const CreditCard = ({
       <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
         {Math.round(tauxEndettement)}%
       </Badge>
-      <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1 text-xs text-muted-foreground whitespace-nowrap">
-        {getBadgeText(tauxEndettement)}
-      </span>
     </div>
   </div>
 </CardContent>
