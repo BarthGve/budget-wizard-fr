@@ -76,8 +76,8 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
 
   return (
     <div className="bg-card rounded-lg p-4 mt-4">
-      <ChartContainer config={chartConfig} className="w-full aspect-[4/1]">
-        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 40, bottom: 30 }}>
+      <ChartContainer config={chartConfig} className="w-full h-[150px]">
+        <BarChart data={chartData} margin={{ top: 10, right: 10, left: 40, bottom: 20 }}>
           <CartesianGrid vertical={false} stroke="hsl(var(--border))" opacity={0.1} />
           <XAxis 
             dataKey="year" 
