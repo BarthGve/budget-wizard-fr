@@ -6,6 +6,9 @@ import { CreditCard } from "./CreditCard";
 import { RecurringExpensesPieChart } from "./RecurringExpensesPieChart";
 import { SavingsPieChart } from "./SavingsPieChart";
 import { ContributorsTable } from "./ContributorsTable";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Credit } from "@/components/credits/types";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -56,10 +59,26 @@ export const DashboardTabContent = ({
   recurringExpenses,
   monthlySavings,
 }: DashboardTabContentProps) => {
+  // Récupérer les crédits actifs
+  const { data: credits } = useQuery({
+    queryKey: ["credits"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("credits")
+        .select("*")
+        .eq("statut", "actif");
+
+      if (error) {
+        console.error("Error fetching credits:", error);
+        return [];
+      }
+
+      return data as Credit[];
+    }
+  });
+
   // Calculer le total des mensualités de crédit
-  const totalMensualites = recurringExpenses
-    .filter(expense => expense.category === "Crédit")
-    .reduce((sum, expense) => sum + expense.amount, 0);
+  const totalMensualites = credits?.reduce((sum, credit) => sum + credit.montant_mensualite, 0) || 0;
 
   return (
     <div className="space-y-6">
