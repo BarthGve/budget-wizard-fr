@@ -34,7 +34,7 @@ export function RetailersList() {
     refetchRetailers();
   });
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (selectedRetailer) {
       deleteRetailer(selectedRetailer);
       setShowFinalConfirmation(false);

@@ -8,15 +8,25 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
 
   const { mutate: deleteRetailer, isPending: isDeleting } = useMutation({
     mutationFn: async (retailerId: string) => {
-      const { error } = await supabase
+      // Suppression des dépenses associées d'abord
+      const { error: expensesError } = await supabase
+        .from("expenses")
+        .delete()
+        .eq("retailer_id", retailerId);
+
+      if (expensesError) throw expensesError;
+
+      // Puis suppression de l'enseigne
+      const { error: retailerError } = await supabase
         .from("retailers")
         .delete()
         .eq("id", retailerId);
 
-      if (error) throw error;
+      if (retailerError) throw retailerError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["retailers"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
       toast.success("Enseigne supprimée avec succès");
       if (onSuccess) {
         onSuccess();
