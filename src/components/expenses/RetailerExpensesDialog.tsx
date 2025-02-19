@@ -71,9 +71,9 @@ export function RetailerExpensesDialog({
       if (error) throw error;
 
       toast.success("Dépense supprimée avec succès");
-      onExpenseUpdated();
       setShowDeleteDialog(false);
       setSelectedExpense(null);
+      onExpenseUpdated();
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error("Erreur lors de la suppression de la dépense");
