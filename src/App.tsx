@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,7 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Dashboard from "./pages/Index";
 import Contributors from "./pages/Contributors";
-import Settings from "./pages/Settings";
+import UserSettings from "./pages/UserSettings";
 import Savings from "./pages/Savings";
 import NotFound from "./pages/NotFound";
 import RecurringExpenses from "./pages/RecurringExpenses";
@@ -22,7 +23,6 @@ import Credits from "./pages/Credits";
 import Expenses from "./pages/Expenses";
 import Classification from "./pages/Classification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import UserSettings from "./pages/UserSettings";
 
 const queryClient = new QueryClient();
 
