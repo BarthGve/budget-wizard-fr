@@ -99,7 +99,7 @@ export const UserDropdown = ({ collapsed, profile }: UserDropdownProps) => {
             <Bell className="mr-2 h-4 w-4" />
             <span>Notifications</span>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
+          <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Se déconnecter</span>
           </DropdownMenuItem>
