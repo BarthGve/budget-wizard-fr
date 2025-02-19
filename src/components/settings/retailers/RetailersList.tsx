@@ -29,34 +29,44 @@ export function RetailersList() {
   const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
   const resetState = () => {
+    console.log("🔄 Resetting component state...");
     setShowFinalConfirmation(false);
     setShowDeleteConfirmation(false);
     setSelectedRetailer(null);
+    console.log("✅ Component state reset complete");
   };
 
   const { deleteRetailer, isDeleting } = useDeleteRetailer(resetState);
 
   const handleDelete = () => {
+    console.log("🚀 Handle delete triggered");
     if (selectedRetailer) {
-      console.log("Initiating delete for retailer:", selectedRetailer);
+      console.log("📝 Starting deletion for retailer:", selectedRetailer);
       deleteRetailer(selectedRetailer);
+    } else {
+      console.warn("⚠️ Handle delete called without selected retailer");
     }
   };
 
   const handleInitialDelete = (retailerId: string) => {
+    console.log("🎯 Initial delete triggered for retailer:", retailerId);
     setSelectedRetailer(retailerId);
     setShowDeleteConfirmation(true);
   };
 
   const handleDeleteCancel = () => {
+    console.log("❌ Delete operation cancelled");
     resetState();
   };
 
   const currentRetailer = selectedRetailer ? retailers?.find(r => r.id === selectedRetailer) : null;
 
   if (isLoadingRetailers) {
+    console.log("⏳ Loading retailers...");
     return <div>Chargement...</div>;
   }
+
+  console.log("📊 Current retailers count:", retailers?.length);
 
   return (
     <div className="space-y-4">
