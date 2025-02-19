@@ -21,9 +21,9 @@ export const CreditCard = ({
   };
 
   const getBadgeText = (taux: number) => {
-    if (taux < 30) return "Endettement faible";
-    if (taux < 40) return "Endettement modéré";
-    return "Endettement élevé";
+    if (taux < 30) return "faible";
+    if (taux < 40) return "modéré";
+    return "élevé";
   };
 
   return (
@@ -38,7 +38,7 @@ export const CreditCard = ({
       <CardContent className="space-y-4">
         <div>
           <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
-          <p className="text-sm text-muted-foreground">Total mensualités</p>
+          <p className="text-sm text-muted-foreground">Mensualités</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant={getBadgeVariant(tauxEndettement)}>
