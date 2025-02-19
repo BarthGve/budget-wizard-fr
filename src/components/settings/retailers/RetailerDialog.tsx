@@ -1,47 +1,27 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RetailerForm } from "./RetailerForm";
-import { Retailer } from "./types";
+import { ReactNode } from "react";
 
-export interface RetailerDialogProps {
-  trigger?: React.ReactNode;
-  retailer?: Retailer;
-  onRetailerSaved?: () => void;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+interface RetailerDialogProps {
+  trigger: ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onRetailerSaved: () => void;
 }
 
-export function RetailerDialog({ 
-  trigger, 
-  retailer, 
-  onRetailerSaved,
-  open: controlledOpen,
-  onOpenChange: controlledOnOpenChange 
-}: RetailerDialogProps) {
+export const RetailerDialog = ({ trigger, open, onOpenChange, onRetailerSaved }: RetailerDialogProps) => {
   return (
-    <Dialog 
-      open={controlledOpen} 
-      onOpenChange={controlledOnOpenChange}
-    >
-      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>
+        {trigger}
+      </DialogTrigger>
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {retailer ? "Modifier l'enseigne" : "Ajouter une enseigne"}
-          </DialogTitle>
+          <DialogTitle>Ajouter une enseigne</DialogTitle>
         </DialogHeader>
-        <RetailerForm
-          retailer={retailer}
-          onSuccess={() => {
-            if (onRetailerSaved) {
-              onRetailerSaved();
-            }
-            if (controlledOnOpenChange) {
-              controlledOnOpenChange(false);
-            }
-          }}
-        />
+        <RetailerForm onSuccess={onRetailerSaved} />
       </DialogContent>
     </Dialog>
   );
-}
+};

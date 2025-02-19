@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Retailer, RetailerFormData } from "./types";
+import { useQueryClient } from "@tanstack/react-query";
 
 const getFaviconUrl = (domain: string) => {
   if (!domain) return null;
@@ -17,11 +18,12 @@ interface UseRetailerFormProps {
 
 export const useRetailerForm = ({ retailer, onSuccess }: UseRetailerFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const onSubmit = async (data: RetailerFormData) => {
     try {
       setIsLoading(true);
-      const logo_url = getFaviconUrl(data.domain);
+      const logo_url = getFaviconUrl(data.domain || "");
 
       const {
         data: { user },
@@ -54,6 +56,8 @@ export const useRetailerForm = ({ retailer, onSuccess }: UseRetailerFormProps) =
         toast.success("Enseigne ajoutée avec succès");
       }
 
+      // Invalider le cache pour forcer le rechargement des données
+      await queryClient.invalidateQueries({ queryKey: ["retailers"] });
       onSuccess();
     } catch (error) {
       console.error("Error saving retailer:", error);

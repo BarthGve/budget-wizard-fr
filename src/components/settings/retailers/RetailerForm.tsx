@@ -2,35 +2,39 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Retailer, RetailerFormData } from "./types";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { useRetailerForm } from "./useRetailerForm";
 
 const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
-  domain: z.string().min(1, "Le domaine est requis")
+  domain: z.string().optional(),
 });
 
+type RetailerFormData = z.infer<typeof formSchema>;
+
 interface RetailerFormProps {
-  retailer?: Retailer;
   onSuccess: () => void;
 }
 
-export function RetailerForm({ retailer, onSuccess }: RetailerFormProps) {
+export const RetailerForm = ({ onSuccess }: RetailerFormProps) => {
   const form = useForm<RetailerFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: retailer?.name || "",
+      name: "",
       domain: "",
-    }
+    },
   });
 
-  const { onSubmit, isLoading } = useRetailerForm({
-    retailer,
-    onSuccess
-  });
+  const { onSubmit, isLoading } = useRetailerForm({ onSuccess });
 
   return (
     <Form {...form}>
@@ -40,9 +44,9 @@ export function RetailerForm({ retailer, onSuccess }: RetailerFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nom de l'enseigne</FormLabel>
+              <FormLabel>Nom</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: Carrefour" {...field} />
+                <Input placeholder="Carrefour" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -54,24 +58,19 @@ export function RetailerForm({ retailer, onSuccess }: RetailerFormProps) {
           name="domain"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Domaine</FormLabel>
+              <FormLabel>Domaine (optionnel)</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="Ex: carrefour.fr" 
-                  {...field} 
-                />
+                <Input placeholder="carrefour.fr" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div className="flex justify-end gap-4">
-          <Button type="submit" disabled={isLoading}>
-            {retailer ? "Modifier" : "Ajouter"}
-          </Button>
-        </div>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Enregistrement..." : "Enregistrer"}
+        </Button>
       </form>
     </Form>
   );
-}
+};
