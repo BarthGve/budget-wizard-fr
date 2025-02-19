@@ -24,7 +24,7 @@ export const useRetailers = () => {
       return data as Retailer[];
     },
     staleTime: 0, // Les données sont toujours considérées comme périmées
-    cacheTime: 0, // Pas de mise en cache
+    gcTime: 0, // Pas de mise en cache (anciennement cacheTime)
     refetchOnMount: true,
     refetchOnWindowFocus: true
   });
