@@ -37,11 +37,11 @@ export const CreditCard = ({
       </CardHeader>
       <CardContent>
   <div>
-    <div className="flex items-center gap-2">
+    <div>
       <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
       <p className="text-sm text-muted-foreground">Mensualités</p>
     </div>
-    <div >
+    <div className="flex items-center gap-2">
       <Badge variant={getBadgeVariant(tauxEndettement)}>
         {Math.round(tauxEndettement)}%
       </Badge>
