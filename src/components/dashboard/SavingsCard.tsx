@@ -20,6 +20,7 @@ export const SavingsCard = ({
       <CardDescription>Suivi d'objectif</CardDescription>
     </CardHeader>
     <CardContent>
+    <div className="space-y-2">
       <div className="flex items-center gap-x-4">
         <div className="whitespace-nowrap font-bold text-xl flex items-center gap-x-1">
           <span>{Math.round(savingsGoal)} €</span>
@@ -36,6 +37,7 @@ export const SavingsCard = ({
             {Math.max(0, Math.round(savingsGoal - totalMonthlySavings))} €
           </span>
         </span>
+      </div>
       </div>
     </CardContent>
   </Card>;
