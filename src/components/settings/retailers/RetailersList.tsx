@@ -24,22 +24,20 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export function RetailersList() {
-  const { retailers, isLoading: isLoadingRetailers, refetchRetailers } = useRetailers();
+  const { retailers, isLoading: isLoadingRetailers } = useRetailers();
   const [showNewRetailerDialog, setShowNewRetailerDialog] = useState(false);
   const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
-  const { deleteRetailer, isDeleting } = useDeleteRetailer(() => {
-    setShowFinalConfirmation(false);
-    setShowDeleteConfirmation(false);
-    setSelectedRetailer(null);
-    refetchRetailers();
-  });
+  const { deleteRetailer, isDeleting } = useDeleteRetailer();
 
   const handleDelete = () => {
     if (selectedRetailer) {
       deleteRetailer(selectedRetailer);
+      setShowFinalConfirmation(false);
+      setShowDeleteConfirmation(false);
+      setSelectedRetailer(null);
     }
   };
 
@@ -117,7 +115,7 @@ export function RetailersList() {
       <RetailerDialog
         open={showNewRetailerDialog}
         onOpenChange={setShowNewRetailerDialog}
-        onRetailerSaved={refetchRetailers}
+        onRetailerSaved={() => setShowNewRetailerDialog(false)}
       />
 
       <AlertDialog 
