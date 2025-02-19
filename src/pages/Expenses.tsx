@@ -5,11 +5,14 @@ import { RetailerCard } from "@/components/expenses/RetailerCard";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const Expenses = () => {
   const queryClient = useQueryClient();
   const { retailers } = useRetailers();
+  const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
 
   const { data: expenses } = useQuery({
     queryKey: ["expenses"],
@@ -41,7 +44,19 @@ const Expenses = () => {
       <div className="container mx-auto p-4 space-y-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Dépenses</h1>
-          <AddExpenseDialog onExpenseAdded={handleExpenseUpdated} />
+          <div className="flex items-center gap-8">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="view-mode"
+                checked={viewMode === 'yearly'}
+                onCheckedChange={(checked) => setViewMode(checked ? 'yearly' : 'monthly')}
+              />
+              <Label htmlFor="view-mode">
+                Vue annuelle
+              </Label>
+            </div>
+            <AddExpenseDialog onExpenseAdded={handleExpenseUpdated} />
+          </div>
         </div>
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {expensesByRetailer?.map(({ retailer, expenses: retailerExpenses }) => (
@@ -50,6 +65,7 @@ const Expenses = () => {
               retailer={retailer}
               expenses={retailerExpenses}
               onExpenseUpdated={handleExpenseUpdated}
+              viewMode={viewMode}
             />
           ))}
         </div>

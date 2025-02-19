@@ -2,7 +2,7 @@
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { ExpensesChart } from "./ExpensesChart";
-import { startOfYear, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { startOfYear, endOfYear, subYears } from "date-fns";
 import { useState } from "react";
 import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 
@@ -19,47 +19,37 @@ interface RetailerCardProps {
     comment?: string;
   }>;
   onExpenseUpdated: () => void;
+  viewMode: 'monthly' | 'yearly';
 }
 
-export function RetailerCard({ retailer, expenses, onExpenseUpdated }: RetailerCardProps) {
+export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const now = new Date();
-  const currentYear = now.getFullYear();
   
-  const currentYearExpenses = expenses.filter(
-    expense => new Date(expense.date).getFullYear() === currentYear
-  );
+  // Calcul du total de l'année en cours
+  const currentYearExpenses = expenses.filter(expense => {
+    const expenseDate = new Date(expense.date);
+    return expenseDate >= startOfYear(now) && expenseDate <= endOfYear(now);
+  });
   const totalCurrentYear = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-  const currentMonth = now.getMonth();
-  const lastMonth = subMonths(now, 1);
-
-  const currentMonthExpenses = expenses.filter(expense => {
+  // Calcul du total de l'année précédente
+  const lastYearStart = startOfYear(subYears(now, 1));
+  const lastYearEnd = endOfYear(subYears(now, 1));
+  const lastYearExpenses = expenses.filter(expense => {
     const expenseDate = new Date(expense.date);
-    return isWithinMonth(expenseDate, now);
+    return expenseDate >= lastYearStart && expenseDate <= lastYearEnd;
   });
+  const totalLastYear = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-  const lastMonthExpenses = expenses.filter(expense => {
-    const expenseDate = new Date(expense.date);
-    return isWithinMonth(expenseDate, lastMonth);
-  });
-
-  const totalCurrentMonth = currentMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const totalLastMonth = lastMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-
-  const percentageChange = totalLastMonth === 0 
+  // Calcul du pourcentage de variation entre l'année en cours et l'année précédente
+  const percentageChange = totalLastYear === 0 
     ? 100 
-    : ((totalCurrentMonth - totalLastMonth) / totalLastMonth) * 100;
-
-  function isWithinMonth(date: Date, monthDate: Date) {
-    const start = startOfMonth(monthDate);
-    const end = endOfMonth(monthDate);
-    return date >= start && date <= end;
-  }
+    : ((totalCurrentYear - totalLastYear) / totalLastYear) * 100;
 
   const handleExpenseUpdated = () => {
-    setDialogOpen(false); // Fermer la modale avant de rafraîchir les données
-    onExpenseUpdated(); // Ensuite rafraîchir les données
+    setDialogOpen(false);
+    onExpenseUpdated();
   };
 
   return (
@@ -84,10 +74,10 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated }: RetailerC
           </div>
           <div className="text-sm text-muted-foreground">
             {percentageChange > 0 ? "+" : ""}
-            {percentageChange.toFixed(1)}% par rapport au mois dernier
+            {percentageChange.toFixed(1)}% par rapport à l'année précédente
           </div>
         </div>
-        <ExpensesChart expenses={expenses} />
+        <ExpensesChart expenses={expenses} viewMode={viewMode} />
       </Card>
 
       <RetailerExpensesDialog

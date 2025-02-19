@@ -2,13 +2,8 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import { subYears, format, parseISO, isWithinInterval, startOfYear, endOfYear, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/utils/format";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Toggle } from "@/components/ui/toggle";
-import { CalendarClock, CalendarDays } from "lucide-react";
-import { useState } from "react";
 
 interface Expense {
   id: string;
@@ -18,6 +13,7 @@ interface Expense {
 
 interface ExpensesChartProps {
   expenses: Expense[];
+  viewMode: 'monthly' | 'yearly';
 }
 
 const chartConfig = {
@@ -30,25 +26,7 @@ const chartConfig = {
   }
 };
 
-export function ExpensesChart({ expenses }: ExpensesChartProps) {
-  const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
-  const { data: profile } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user?.id)
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
+export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   const today = new Date();
   const startOfCurrentYear = startOfYear(today);
 
@@ -105,20 +83,6 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
 
   return (
     <div className="bg-card rounded-lg p-4 mt-4">
-      <div className="flex justify-end mb-4">
-        <Toggle
-          pressed={viewMode === 'yearly'}
-          onPressedChange={(pressed) => setViewMode(pressed ? 'yearly' : 'monthly')}
-          aria-label="Basculer entre vue mensuelle et annuelle"
-        >
-          {viewMode === 'monthly' ? (
-            <CalendarDays className="h-4 w-4" />
-          ) : (
-            <CalendarClock className="h-4 w-4" />
-          )}
-        </Toggle>
-      </div>
-
       <ChartContainer config={chartConfig}>
         <ResponsiveContainer width="100%" height={150}>
           <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 20 }}>
