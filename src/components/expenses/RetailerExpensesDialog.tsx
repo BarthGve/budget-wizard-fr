@@ -55,6 +55,7 @@ export function RetailerExpensesDialog({
   const [selectedExpense, setSelectedExpense] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const itemsPerPage = 5;
   
   const totalPages = Math.ceil(expenses.length / itemsPerPage);
@@ -62,6 +63,9 @@ export function RetailerExpensesDialog({
   const paginatedExpenses = expenses.slice(startIndex, startIndex + itemsPerPage);
 
   const handleDelete = async (expenseId: string) => {
+    if (isDeleting) return; // Empêcher les clics multiples
+
+    setIsDeleting(true);
     try {
       const { error } = await supabase
         .from('expenses')
@@ -70,21 +74,22 @@ export function RetailerExpensesDialog({
 
       if (error) throw error;
 
-      // Fermer d'abord la boîte de dialogue de confirmation
       setShowDeleteDialog(false);
-      // Réinitialiser l'état de l'expense sélectionnée
       setSelectedExpense(null);
-      // Notifier le succès
-      toast.success("Dépense supprimée avec succès");
-      // Rafraîchir les données
       onExpenseUpdated();
+      toast.success("Dépense supprimée avec succès");
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error("Erreur lors de la suppression de la dépense");
-      // En cas d'erreur, on réinitialise quand même les états
-      setShowDeleteDialog(false);
-      setSelectedExpense(null);
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleEditSuccess = () => {
+    setShowEditDialog(false);
+    setSelectedExpense(null);
+    onExpenseUpdated();
   };
 
   const currentExpense = selectedExpense 
@@ -164,10 +169,12 @@ export function RetailerExpensesDialog({
       </Dialog>
 
       <AlertDialog 
-        open={showDeleteDialog} 
+        open={showDeleteDialog}
         onOpenChange={(open) => {
-          setShowDeleteDialog(open);
-          if (!open) setSelectedExpense(null);
+          if (!isDeleting) {
+            setShowDeleteDialog(open);
+            if (!open) setSelectedExpense(null);
+          }
         }}
       >
         <AlertDialogContent>
@@ -178,12 +185,13 @@ export function RetailerExpensesDialog({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
             <AlertDialogAction 
               onClick={() => selectedExpense && handleDelete(selectedExpense)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeleting}
             >
-              Supprimer
+              {isDeleting ? "Suppression..." : "Supprimer"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -195,11 +203,7 @@ export function RetailerExpensesDialog({
           onOpenChange={setShowEditDialog}
           expense={currentExpense}
           retailerId={retailer.id}
-          onSuccess={() => {
-            onExpenseUpdated();
-            setShowEditDialog(false);
-            setSelectedExpense(null);
-          }}
+          onSuccess={handleEditSuccess}
         />
       )}
     </>
