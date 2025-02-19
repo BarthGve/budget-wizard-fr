@@ -64,21 +64,25 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
   }
 
   return (
-    <div className="h-[200px] mt-6">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData} margin={{ top: 10, right: 10, left: 40, bottom: 20 }}>
+    <div className="bg-card rounded-lg p-6 mt-6">
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 40, bottom: 30 }}>
           <XAxis 
             dataKey="year" 
-            angle={-45}
-            textAnchor="end"
-            height={50}
-            stroke="#888888"
+            angle={0}
+            axisLine={false}
+            tickLine={false}
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
+            dy={10}
           />
           <YAxis 
             tickFormatter={(value) => formatCurrency(value)}
-            stroke="#888888"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
+            axisLine={false}
+            tickLine={false}
+            dx={-10}
           />
           <Tooltip 
             formatter={(value: number) => formatCurrency(value)}
@@ -87,19 +91,23 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
               backgroundColor: "hsl(var(--background))",
               border: "1px solid hsl(var(--border))",
               borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
             }}
             itemStyle={{
               color: "hsl(var(--foreground))",
+              fontSize: "12px",
             }}
             labelStyle={{
               color: "hsl(var(--foreground))",
               fontWeight: "bold",
+              marginBottom: "4px",
             }}
           />
           <Bar 
             dataKey="total" 
-            fill="#8B5CF6"
+            fill="hsl(var(--primary))"
             radius={[4, 4, 0, 0]}
+            maxBarSize={50}
           />
         </BarChart>
       </ResponsiveContainer>
