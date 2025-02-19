@@ -6,12 +6,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Calendar as CalendarIcon } from "lucide-react";
-import { format, parse } from "date-fns";
-import { fr } from "date-fns/locale";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { Plus } from "lucide-react";
+import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
 import { useToast } from "@/hooks/use-toast";
@@ -142,41 +138,13 @@ export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Date</FormLabel>
-                  <div className="flex gap-2">
-                    <FormControl>
-                      <Input
-                        type="date"
-                        {...field}
-                        max={format(new Date(), "yyyy-MM-dd")}
-                      />
-                    </FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-10 p-0",
-                            field.value && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="h-4 w-4" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="end">
-                        <Calendar
-                          mode="single"
-                          selected={typeof field.value === 'string' ? parse(field.value, "yyyy-MM-dd", new Date()) : new Date()}
-                          onSelect={(date) => {
-                            if (date) {
-                              field.onChange(format(date, "yyyy-MM-dd"));
-                            }
-                          }}
-                          disabled={(date) => date > new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      {...field}
+                      max={format(new Date(), "yyyy-MM-dd")}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
