@@ -37,14 +37,12 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       return retailerId;
     },
     onSuccess: async (deletedRetailerId) => {
-      // Immédiatement mettre à jour le cache local
-      queryClient.setQueryData(["retailers"], (oldData: Retailer[] | undefined) => {
-        if (!oldData) return [];
-        return oldData.filter((retailer) => retailer.id !== deletedRetailerId);
+      // Forcer une revalidation complète immédiatement
+      await queryClient.invalidateQueries({ 
+        queryKey: ["retailers"],
+        refetchType: "all",
+        exact: true
       });
-
-      // Forcer une revalidation complète
-      await queryClient.invalidateQueries({ queryKey: ["retailers"] });
       
       toast.success("Enseigne supprimée avec succès");
       
