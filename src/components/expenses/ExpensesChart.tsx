@@ -76,41 +76,43 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
 
   return (
     <div className="bg-card rounded-lg p-4 mt-4">
-      <ResponsiveContainer width="100%" height={150}>
-        <BarChart data={chartData} margin={{ top: 10, right: 10, left: 40, bottom: 20 }}>
-          <CartesianGrid vertical={false} stroke="hsl(var(--border))" opacity={0.1} />
-          <XAxis 
-            dataKey="year" 
-            axisLine={false}
-            tickLine={false}
-            stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
-            tickMargin={10}
-          />
-          <YAxis 
-            tickFormatter={(value) => formatCurrency(value)}
-            stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
-            axisLine={false}
-            tickLine={false}
-            tickMargin={10}
-          />
-          <ChartTooltip
-            content={
-              <ChartTooltipContent 
-                formatter={(value: number) => formatCurrency(value)}
-                labelFormatter={(label) => `Année ${label}`}
-              />
-            }
-          />
-          <Bar 
-            dataKey="total" 
-            fill="#8B5CF6"
-            radius={[4, 4, 0, 0]}
-            maxBarSize={50}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+      <ChartContainer config={chartConfig}>
+        <ResponsiveContainer width="100%" height={150}>
+          <BarChart data={chartData} margin={{ top: 10, right: 10, left: 40, bottom: 20 }}>
+            <CartesianGrid vertical={false} stroke="hsl(var(--border))" opacity={0.1} />
+            <XAxis 
+              dataKey="year" 
+              axisLine={false}
+              tickLine={false}
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+              tickMargin={10}
+            />
+            <YAxis 
+              tickFormatter={(value) => formatCurrency(value)}
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+              axisLine={false}
+              tickLine={false}
+              tickMargin={10}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent 
+                  formatter={(value: number) => formatCurrency(value)}
+                  labelFormatter={(label) => `Année ${label}`}
+                />
+              }
+            />
+            <Bar 
+              dataKey="total" 
+              fill="#8B5CF6"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={50}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartContainer>
     </div>
   );
 }
