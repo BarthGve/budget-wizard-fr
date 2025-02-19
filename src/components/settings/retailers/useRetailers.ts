@@ -23,10 +23,9 @@ export const useRetailers = () => {
       console.log("Retailers fetched:", data);
       return data as Retailer[];
     },
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    retry: 3
   });
 
   return {

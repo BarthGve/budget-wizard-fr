@@ -35,21 +35,19 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       console.log("Retailer deleted successfully:", retailerId);
       return retailerId;
     },
-    onSuccess: async (deletedRetailerId) => {
-      console.log("Starting onSuccess callback...");
-      
-      // Force invalidate the cache
+    onSuccess: async () => {
+      // Immédiatement mettre à jour le cache local
+      queryClient.setQueryData(["retailers"], (oldData: any) => {
+        if (!Array.isArray(oldData)) return [];
+        return oldData.filter((retailer: Retailer) => retailer.id !== selectedRetailerId);
+      });
+
+      // Forcer une revalidation complète
       await queryClient.invalidateQueries({ queryKey: ["retailers"] });
-      
-      // Force refetch
-      await queryClient.refetchQueries({ queryKey: ["retailers"] });
-      
-      console.log("Queries invalidated and refetched");
       
       toast.success("Enseigne supprimée avec succès");
       
       if (onSuccess) {
-        console.log("Calling onSuccess callback...");
         onSuccess();
       }
     },
