@@ -32,6 +32,7 @@ export function RetailersList({ retailers, onRetailerUpdated }: RetailersListPro
   const [retailerToDelete, setRetailerToDelete] = useState<Retailer | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedRetailer, setSelectedRetailer] = useState<Retailer | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   
   const { deleteRetailer, isDeleting } = useDeleteRetailer({
     onSuccess: () => {
@@ -39,6 +40,17 @@ export function RetailersList({ retailers, onRetailerUpdated }: RetailersListPro
       onRetailerUpdated();
     }
   });
+
+  const handleEditClick = (retailer: Retailer) => {
+    setSelectedRetailer(retailer);
+    setEditDialogOpen(true);
+    setDropdownOpen(false);
+  };
+
+  const handleDeleteClick = (retailer: Retailer) => {
+    setRetailerToDelete(retailer);
+    setDropdownOpen(false);
+  };
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -59,25 +71,20 @@ export function RetailersList({ retailers, onRetailerUpdated }: RetailersListPro
               )}
               <span className="font-medium">{retailer.name}</span>
             </div>
-            <DropdownMenu>
+            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => {
-                    setSelectedRetailer(retailer);
-                    setEditDialogOpen(true);
-                  }}
-                >
+                <DropdownMenuItem onClick={() => handleEditClick(retailer)}>
                   <Pencil className="mr-2 h-4 w-4" />
                   Modifier
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-destructive"
-                  onClick={() => setRetailerToDelete(retailer)}
+                  onClick={() => handleDeleteClick(retailer)}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Supprimer
@@ -93,7 +100,9 @@ export function RetailersList({ retailers, onRetailerUpdated }: RetailersListPro
         open={editDialogOpen}
         onOpenChange={(open) => {
           setEditDialogOpen(open);
-          if (!open) setSelectedRetailer(null);
+          if (!open) {
+            setSelectedRetailer(null);
+          }
         }}
         onRetailerSaved={() => {
           setEditDialogOpen(false);
