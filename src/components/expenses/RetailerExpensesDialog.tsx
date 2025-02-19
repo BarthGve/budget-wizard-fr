@@ -67,7 +67,6 @@ export function RetailerExpensesDialog({
 
     setIsDeleting(true);
     try {
-      console.log("Deleting expense:", expenseId);
       const { error } = await supabase
         .from('expenses')
         .delete()
@@ -75,21 +74,17 @@ export function RetailerExpensesDialog({
 
       if (error) throw error;
 
-      console.log("Expense deleted successfully");
-      toast.success("Dépense supprimée avec succès");
-      
-      // Fermer les dialogues et réinitialiser les états
+      // Fermer immédiatement la boîte de dialogue de confirmation
       setShowDeleteDialog(false);
       setSelectedExpense(null);
       
-      // Attendre un peu avant de rafraîchir les données
-      setTimeout(() => {
-        onExpenseUpdated();
-        setIsDeleting(false);
-      }, 100);
+      // Rafraîchir les données et afficher la confirmation
+      onExpenseUpdated();
+      toast.success("Dépense supprimée avec succès");
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error("Erreur lors de la suppression de la dépense");
+    } finally {
       setIsDeleting(false);
     }
   };

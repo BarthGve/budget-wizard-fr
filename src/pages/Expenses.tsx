@@ -14,7 +14,6 @@ const Expenses = () => {
   const { data: expenses } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
-      console.log("Fetching expenses...");
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
@@ -24,16 +23,12 @@ const Expenses = () => {
         .eq("profile_id", user.id);
 
       if (error) throw error;
-      console.log("Expenses fetched:", data?.length);
       return data;
     },
-    staleTime: 1000, // 1 seconde
-    gcTime: 0, // Pas de garbage collection
   });
 
   const handleExpenseUpdated = useCallback(() => {
-    console.log("Invalidating expenses query...");
-    queryClient.invalidateQueries({ queryKey: ["expenses"], exact: true });
+    queryClient.invalidateQueries({ queryKey: ["expenses"] });
   }, [queryClient]);
 
   const expensesByRetailer = retailers?.map(retailer => ({
