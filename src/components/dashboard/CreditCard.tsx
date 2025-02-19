@@ -39,7 +39,7 @@ export const CreditCard = ({
   <div className="flex items-center gap-4">
     <div>
       <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
-      <p className="text-sm text-muted-foreground">Mensualités</p>
+      
     </div>
     <div className="relative">
       <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
