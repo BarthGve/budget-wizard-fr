@@ -29,14 +29,14 @@ export const CreditCard = ({
   return (
     <Card className="bg-background">
       <CardHeader className="py-[16px]">
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center justify-between">
           <CardTitle className="text-2xl">Crédits</CardTitle>
           <CreditCardIcon className="h-6 w-6 text-muted-foreground" />
         </div>
         <CardDescription>Mensualités et taux d'endettement</CardDescription>
       </CardHeader>
       <CardContent>
-  <div className="flex justify-between items-center">
+  <div className="flex items-center gap-4">
     <div>
       <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
       <p className="text-sm text-muted-foreground">Mensualités</p>
