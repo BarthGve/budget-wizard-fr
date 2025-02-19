@@ -21,8 +21,8 @@ const chartConfig = {
   expenses: {
     label: "Dépenses",
     theme: {
-      light: "hsl(var(--primary))",
-      dark: "hsl(var(--primary))"
+      light: "#8B5CF6",
+      dark: "#8B5CF6"
     }
   }
 };
@@ -105,7 +105,7 @@ export function ExpensesChart({ expenses }: ExpensesChartProps) {
           />
           <Bar 
             dataKey="total" 
-            fill="hsl(var(--primary))"
+            fill="#8B5CF6"
             radius={[4, 4, 0, 0]}
             maxBarSize={50}
           />
