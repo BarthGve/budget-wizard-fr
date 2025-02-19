@@ -1,23 +1,28 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { BarChart } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { Label, Pie, PieChart } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { formatCurrency } from "@/utils/format";
+
 interface RecurringExpense {
   id: string;
   name: string;
   amount: number;
   category: string;
 }
+
 interface RecurringExpensesPieChartProps {
   recurringExpenses: RecurringExpense[];
   totalExpenses: number;
 }
+
 interface CategoryTotal {
   category: string;
   amount: number;
 }
+
+const COLORS = ['#9b87f5', '#7E69AB', '#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#8E9196'];
+
 export const RecurringExpensesPieChart = ({
   recurringExpenses,
   totalExpenses
@@ -34,59 +39,78 @@ export const RecurringExpensesPieChart = ({
     }
     return acc;
   }, []);
-  const chartData = categoryTotals.map(category => ({
+
+  const chartData = categoryTotals.map((category, index) => ({
     name: category.category,
-    value: category.amount
+    value: category.amount,
+    fill: COLORS[index % COLORS.length]
   }));
-  const  COLORS = ['#9b87f5', '#7E69AB', '#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#8E9196'];
-  return <Card className="col-span-full md:col-span-1 bg-background">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <div>
-          <CardTitle>Ventilation des charges</CardTitle>
-          <CardDescription>Vue d'ensemble par catégorie</CardDescription>
-        </div>
-        <Button variant="outline" size="sm" asChild>
-          <Link to="/recurring-expenses">
-            <BarChart className="mr-2 h-4 w-4" />
-            Gérer les charges
-          </Link>
-        </Button>
+
+  const chartConfig = {
+    value: {
+      label: "Montant"
+    },
+    ...Object.fromEntries(categoryTotals.map((category, index) => [category.category, {
+      label: category.category,
+      color: COLORS[index % COLORS.length]
+    }]))
+  };
+
+  return (
+    <Card className="flex flex-col h-full">
+      <CardHeader className="items-center pb-0">
+        <CardTitle>Charges</CardTitle>
+        <CardDescription>Vue d'ensemble par catégorie</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-8">
-          <div className="w-[200px]">
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {chartData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(value: number) => new Intl.NumberFormat('fr-FR', {
-                style: 'currency',
-                currency: 'EUR'
-              }).format(value)} contentStyle={{
-                backgroundColor: 'var(--background)',
-                border: '1px solid var(--border)',
-                borderRadius: '0.375rem',
-                padding: '0.5rem',
-                color: 'var(--foreground)'
+      <CardContent className="flex-1">
+        <ChartContainer className="mx-auto aspect-square max-h-[200px]" config={chartConfig}>
+          <PieChart>
+            <ChartTooltip cursor={false} content={({
+              active,
+              payload
+            }) => {
+              if (active && payload && payload.length) {
+                return (
+                  <div className="rounded-lg border bg-background p-2 shadow-sm">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="font-medium">{payload[0].name}</div>
+                      <div className="text-right font-medium">
+                        {formatCurrency(payload[0].value as number)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            }} />
+            <Pie 
+              data={chartData} 
+              dataKey="value" 
+              nameKey="name" 
+              innerRadius={60} 
+              outerRadius={80} 
+              paddingAngle={5}
+            >
+              <Label content={({
+                viewBox
+              }) => {
+                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                  return (
+                    <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                      <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-2xl font-bold">
+                        {formatCurrency(totalExpenses)}
+                      </tspan>
+                      <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground text-sm">
+                        par mois
+                      </tspan>
+                    </text>
+                  );
+                }
               }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="flex-1 space-y-2">
-            {categoryTotals.map((category, index) => <div key={category.category} className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="mr-2 h-3 w-3 rounded-full" style={{
-                backgroundColor: COLORS[index % COLORS.length]
-              }} />
-                  <span className="text-sm font-medium">{category.category}</span>
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  {(category.amount / totalExpenses * 100).toFixed(1)}%
-                </span>
-              </div>)}
-          </div>
-        </div>
+            </Pie>
+          </PieChart>
+        </ChartContainer>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };
