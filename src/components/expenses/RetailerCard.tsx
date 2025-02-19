@@ -26,13 +26,11 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated }: RetailerC
   const now = new Date();
   const currentYear = now.getFullYear();
   
-  // Calculer le total des dépenses pour l'année en cours
   const currentYearExpenses = expenses.filter(
     expense => new Date(expense.date).getFullYear() === currentYear
   );
   const totalCurrentYear = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-  // Calculer la variation par rapport au mois précédent
   const currentMonth = now.getMonth();
   const lastMonth = subMonths(now, 1);
 
@@ -58,6 +56,11 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated }: RetailerC
     const end = endOfMonth(monthDate);
     return date >= start && date <= end;
   }
+
+  const handleExpenseUpdated = () => {
+    setDialogOpen(false); // Fermer la modale avant de rafraîchir les données
+    onExpenseUpdated(); // Ensuite rafraîchir les données
+  };
 
   return (
     <>
@@ -92,7 +95,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated }: RetailerC
         expenses={expenses}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        onExpenseUpdated={onExpenseUpdated}
+        onExpenseUpdated={handleExpenseUpdated}
       />
     </>
   );

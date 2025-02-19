@@ -70,13 +70,20 @@ export function RetailerExpensesDialog({
 
       if (error) throw error;
 
-      toast.success("Dépense supprimée avec succès");
+      // Fermer d'abord la boîte de dialogue de confirmation
       setShowDeleteDialog(false);
+      // Réinitialiser l'état de l'expense sélectionnée
       setSelectedExpense(null);
+      // Notifier le succès
+      toast.success("Dépense supprimée avec succès");
+      // Rafraîchir les données
       onExpenseUpdated();
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error("Erreur lors de la suppression de la dépense");
+      // En cas d'erreur, on réinitialise quand même les états
+      setShowDeleteDialog(false);
+      setSelectedExpense(null);
     }
   };
 
