@@ -36,7 +36,6 @@ export default {
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
-          dark: "#B91C1C",
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
