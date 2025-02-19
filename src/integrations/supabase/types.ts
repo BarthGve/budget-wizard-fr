@@ -121,6 +121,54 @@ export type Database = {
           },
         ]
       }
+      expenses: {
+        Row: {
+          amount: number
+          comment: string | null
+          created_at: string
+          date: string
+          id: string
+          profile_id: string
+          retailer_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          comment?: string | null
+          created_at?: string
+          date: string
+          id?: string
+          profile_id: string
+          retailer_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          comment?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          profile_id?: string
+          retailer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedbacks: {
         Row: {
           content: string
@@ -523,6 +571,41 @@ export type Database = {
           },
         ]
       }
+      retailers: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retailers_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stock_investments: {
         Row: {
           amount: number
@@ -620,6 +703,15 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_yearly_expenses_stats: {
+        Args: {
+          p_profile_id: string
+        }
+        Returns: {
+          year: number
+          total_amount: number
+        }[]
+      }
       has_role: {
         Args: {
           user_id: string
@@ -644,6 +736,12 @@ export type Database = {
           function_name: string
         }
         Returns: undefined
+      }
+      retailer_has_expenses: {
+        Args: {
+          retailer_id: string
+        }
+        Returns: boolean
       }
       update_contributor_percentages: {
         Args: {
