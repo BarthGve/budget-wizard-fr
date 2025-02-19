@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { ExpensesChart } from "./ExpensesChart";
 import { startOfYear, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { useState } from "react";
+import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 
 interface RetailerCardProps {
   retailer: {
@@ -14,10 +16,13 @@ interface RetailerCardProps {
     id: string;
     date: string;
     amount: number;
+    comment?: string;
   }>;
+  onExpenseUpdated: () => void;
 }
 
-export function RetailerCard({ retailer, expenses }: RetailerCardProps) {
+export function RetailerCard({ retailer, expenses, onExpenseUpdated }: RetailerCardProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const now = new Date();
   const currentYear = now.getFullYear();
   
@@ -55,27 +60,40 @@ export function RetailerCard({ retailer, expenses }: RetailerCardProps) {
   }
 
   return (
-    <Card className="pb-0 pt-6 px-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold">{retailer.name}</h3>
-        {retailer.logo_url && (
-          <img 
-            src={retailer.logo_url} 
-            alt={retailer.name} 
-            className="h-8 w-8 object-contain"
-          />
-        )}
-      </div>
-      <div className="mt-4">
-        <div className="text-4xl font-bold">
-          {formatCurrency(totalCurrentYear)}
+    <>
+      <Card 
+        className="pb-0 pt-6 px-6 cursor-pointer hover:shadow-md transition-shadow"
+        onClick={() => setDialogOpen(true)}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold">{retailer.name}</h3>
+          {retailer.logo_url && (
+            <img 
+              src={retailer.logo_url} 
+              alt={retailer.name} 
+              className="h-8 w-8 object-contain"
+            />
+          )}
         </div>
-        <div className="text-sm text-muted-foreground">
-          {percentageChange > 0 ? "+" : ""}
-          {percentageChange.toFixed(1)}% par rapport au mois dernier
+        <div className="mt-4">
+          <div className="text-4xl font-bold">
+            {formatCurrency(totalCurrentYear)}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {percentageChange > 0 ? "+" : ""}
+            {percentageChange.toFixed(1)}% par rapport au mois dernier
+          </div>
         </div>
-      </div>
-      <ExpensesChart expenses={expenses} />
-    </Card>
+        <ExpensesChart expenses={expenses} />
+      </Card>
+
+      <RetailerExpensesDialog
+        retailer={retailer}
+        expenses={expenses}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onExpenseUpdated={onExpenseUpdated}
+      />
+    </>
   );
 }

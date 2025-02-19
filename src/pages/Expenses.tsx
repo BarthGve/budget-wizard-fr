@@ -43,6 +43,7 @@ const Expenses = () => {
               key={retailer.id}
               retailer={retailer}
               expenses={expenses}
+              onExpenseUpdated={refetchExpenses}
             />
           ))}
         </div>
