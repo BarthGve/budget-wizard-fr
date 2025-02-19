@@ -91,13 +91,13 @@ export const DashboardTabContent = ({
           totalExpenses={expenses}
           recurringExpenses={recurringExpenses}
         />
+          <CreditCard
+          totalMensualites={totalMensualites}
+          totalRevenue={revenue}
+        />
         <SavingsCard
           totalMonthlySavings={savings}
           savingsGoal={savingsGoal}
-        />
-        <CreditCard
-          totalMensualites={totalMensualites}
-          totalRevenue={revenue}
         />
       </div>
       <div className="grid gap-6 md:grid-cols-2">
