@@ -165,7 +165,7 @@ export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
                       <PopoverContent className="w-auto p-0" align="end">
                         <Calendar
                           mode="single"
-                          selected={parse(field.value, "yyyy-MM-dd", new Date())}
+                          selected={typeof field.value === 'string' ? parse(field.value, "yyyy-MM-dd", new Date()) : new Date()}
                           onSelect={(date) => {
                             if (date) {
                               field.onChange(format(date, "yyyy-MM-dd"));
