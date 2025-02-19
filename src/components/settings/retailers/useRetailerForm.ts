@@ -23,6 +23,13 @@ export const useRetailerForm = ({ retailer, onSuccess }: UseRetailerFormProps) =
       setIsLoading(true);
       const logo_url = getFaviconUrl(data.domain);
 
+      const {
+        data: { user },
+        error: userError
+      } = await supabase.auth.getUser();
+
+      if (userError) throw userError;
+
       if (retailer) {
         const { error } = await supabase
           .from("retailers")
@@ -39,7 +46,8 @@ export const useRetailerForm = ({ retailer, onSuccess }: UseRetailerFormProps) =
           .from("retailers")
           .insert({
             name: data.name,
-            logo_url
+            logo_url,
+            profile_id: user.id
           });
 
         if (error) throw error;
