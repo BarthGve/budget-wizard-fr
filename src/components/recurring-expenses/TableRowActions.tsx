@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { MoreVertical, SquarePen, Trash2 } from "lucide-react";
+import { MoreVertical, SquarePen, Trash2, Info } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { RecurringExpenseDialog } from "./RecurringExpenseDialog";
@@ -38,6 +38,7 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
             setShowDetailsDialog(true);
             setDropdownOpen(false);
           }}>
+            <Info className="mr-2 h-4 w-4"/>
             Détails
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => {
@@ -47,9 +48,7 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
              <SquarePen className="mr-2 h-4 w-4" />
             Modifier
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Dupliquer
-          </DropdownMenuItem>
+       
           <DropdownMenuItem 
             className="text-destructive"
             onClick={() => {
