@@ -6,8 +6,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
-import { format } from "date-fns";
+import { Plus, Calendar as CalendarIcon } from "lucide-react";
+import { format, parse } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -29,7 +29,7 @@ export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
     defaultValues: {
       retailerId: "",
       amount: "",
-      date: new Date(),
+      date: format(new Date(), "yyyy-MM-dd"),
       comment: "",
     },
   });
@@ -51,7 +51,7 @@ export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
         .insert({
           retailer_id: values.retailerId,
           amount: Number(values.amount),
-          date: format(values.date, "yyyy-MM-dd"),
+          date: values.date,
           comment: values.comment,
           profile_id: session.session.user.id,
         });
@@ -140,37 +140,43 @@ export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
               name="date"
               rules={{ required: "La date est requise" }}
               render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem>
                   <FormLabel>Date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        type="date"
+                        {...field}
+                        max={format(new Date(), "yyyy-MM-dd")}
+                      />
+                    </FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
                         <Button
-                          variant={"outline"}
+                          variant="outline"
                           className={cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            "w-10 p-0",
+                            field.value && "text-muted-foreground"
                           )}
                         >
-                          {field.value ? (
-                            format(field.value, "P", { locale: fr })
-                          ) : (
-                            <span>Choisir une date</span>
-                          )}
+                          <CalendarIcon className="h-4 w-4" />
                         </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date > new Date()}
-                        locale={fr}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="end">
+                        <Calendar
+                          mode="single"
+                          selected={parse(field.value, "yyyy-MM-dd", new Date())}
+                          onSelect={(date) => {
+                            if (date) {
+                              field.onChange(format(date, "yyyy-MM-dd"));
+                            }
+                          }}
+                          disabled={(date) => date > new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
