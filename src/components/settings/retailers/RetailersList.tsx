@@ -1,8 +1,7 @@
 
-import { MoreVertical, PlusCircle, Trash2 } from "lucide-react";
+import { MoreVertical, Trash2 } from "lucide-react";
 import { useRetailers } from "./useRetailers";
 import { Button } from "@/components/ui/button";
-import { RetailerDialog } from "./RetailerDialog";
 import { useState } from "react";
 import { 
   AlertDialog, 
@@ -24,21 +23,21 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export function RetailersList() {
-  const { retailers, isLoading: isLoadingRetailers } = useRetailers();
-  const [showNewRetailerDialog, setShowNewRetailerDialog] = useState(false);
+  const { retailers, isLoading: isLoadingRetailers, refetchRetailers } = useRetailers();
   const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showFinalConfirmation, setShowFinalConfirmation] = useState(false);
 
-  const resetState = () => {
+  const resetState = async () => {
     setShowFinalConfirmation(false);
     setShowDeleteConfirmation(false);
     setSelectedRetailer(null);
+    await refetchRetailers();
   };
 
   const { deleteRetailer, isDeleting } = useDeleteRetailer(resetState);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedRetailer) {
       console.log("Initiating delete for retailer:", selectedRetailer);
       deleteRetailer(selectedRetailer);
@@ -62,14 +61,6 @@ export function RetailersList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-medium">Liste des enseignes</h2>
-        <Button onClick={() => setShowNewRetailerDialog(true)}>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Ajouter une enseigne
-        </Button>
-      </div>
-
       <Table>
         <TableHeader>
           <TableRow>
@@ -113,12 +104,6 @@ export function RetailersList() {
           ))}
         </TableBody>
       </Table>
-
-      <RetailerDialog
-        open={showNewRetailerDialog}
-        onOpenChange={setShowNewRetailerDialog}
-        onRetailerSaved={() => setShowNewRetailerDialog(false)}
-      />
 
       <AlertDialog 
         open={showDeleteConfirmation} 
