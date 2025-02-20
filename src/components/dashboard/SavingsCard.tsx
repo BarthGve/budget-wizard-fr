@@ -7,16 +7,18 @@ import { useNavigate } from "react-router-dom";
 interface SavingsCardProps {
   totalMonthlySavings: number;
   savingsGoal: number;
+  className?: string;
 }
 
 export const SavingsCard = ({
   totalMonthlySavings,
-  savingsGoal
+  savingsGoal,
+  className
 }: SavingsCardProps) => {
   const navigate = useNavigate();
 
   return <Card 
-    className="bg-background cursor-pointer hover:bg-accent/10 transition-colors"
+    className={className}
     onClick={() => navigate("/savings")}
   >
     <CardHeader className="py-[16px]">
