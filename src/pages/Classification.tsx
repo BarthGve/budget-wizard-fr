@@ -1,14 +1,11 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { RetailersSettings } from "@/components/settings/RetailersSettings";
 import { ExpenseCategoriesSettings } from "@/components/settings/expense-categories/ExpenseCategoriesSettings";
-
 const Classification = () => {
-  return (
-    <DashboardLayout>
+  return <DashboardLayout>
       <div className="space-y-10">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Classification</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Paramétrages</h2>
           <p className="text-muted-foreground">
             Gérez vos enseignes et catégories de dépenses
           </p>
@@ -19,8 +16,6 @@ const Classification = () => {
           <ExpenseCategoriesSettings />
         </div>
       </div>
-    </DashboardLayout>
-  );
+    </DashboardLayout>;
 };
-
 export default Classification;
