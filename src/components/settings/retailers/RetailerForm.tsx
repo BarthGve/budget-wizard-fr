@@ -140,7 +140,7 @@ export const RetailerForm = ({ onSuccess }: RetailerFormProps) => {
                     <img
                       src={previewLogoUrl}
                       alt="Logo preview"
-                      className="w-8 h-8 object-contain"
+                      className="w-8 h-8 rounded-full object-contain"
                     />
                   ) : domain ? (
                     <div className="text-xs text-muted-foreground text-center">
