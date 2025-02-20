@@ -96,7 +96,7 @@ const RecurringExpenses = () => {
       <div className="grid gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Charges Récurrentes</h1>
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Charges Récurrentes</h1>
             <p className="text-muted-foreground">
               Gérez vos dépenses mensuelles récurrentes
             </p>
