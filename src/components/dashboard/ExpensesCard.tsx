@@ -3,12 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { ShoppingBasket } from 'lucide-react'  
 import { useNavigate } from "react-router-dom";
+import { RecurringExpense } from "@/components/recurring-expenses/types";
 
 interface ExpensesCardProps {
   totalExpenses: number;
   recurringExpenses: Array<{
     amount: number;
     debit_day: number;
+    debit_month: number | null;
+    periodicity: "monthly" | "quarterly" | "yearly";
   }>;
 }
 
@@ -18,11 +21,23 @@ export const ExpensesCard = ({
 }: ExpensesCardProps) => {
   const navigate = useNavigate();
   const currentDay = new Date().getDate();
+  const currentMonth = new Date().getMonth() + 1; // Les mois commencent à 0
+
   const paidExpenses = recurringExpenses.reduce((sum, expense) => {
-    if (currentDay >= expense.debit_day) {
-      return sum + expense.amount;
-    }
-    return sum;
+    const shouldIncludeExpense = () => {
+      switch (expense.periodicity) {
+        case "monthly":
+          return currentDay >= expense.debit_day;
+        case "quarterly":
+          return expense.debit_month === currentMonth && currentDay >= expense.debit_day;
+        case "yearly":
+          return expense.debit_month === currentMonth && currentDay >= expense.debit_day;
+        default:
+          return false;
+      }
+    };
+
+    return shouldIncludeExpense() ? sum + expense.amount : sum;
   }, 0);
 
   const progressPercentage = (paidExpenses / totalExpenses) * 100;

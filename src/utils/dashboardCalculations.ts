@@ -1,4 +1,3 @@
-
 export const calculateTotalRevenue = (contributors: any[] | null) => {
   return contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
 };
@@ -12,10 +11,7 @@ export const calculateMonthlyExpenses = (recurringExpenses: any[] | null) => {
       case "monthly":
         return sum + expense.amount;
       case "quarterly":
-        const quarterMonths = expense.debit_month ? 
-          [expense.debit_month, ((expense.debit_month + 2) % 12) + 1, ((expense.debit_month + 5) % 12) + 1] : 
-          [1, 4, 7, 10];
-        return sum + (quarterMonths.includes(currentMonth) ? expense.amount : 0);
+        return sum + (expense.debit_month === currentMonth ? expense.amount : 0);
       case "yearly":
         return sum + (expense.debit_month === currentMonth ? expense.amount : 0);
       default:
