@@ -43,7 +43,7 @@ export const SavingsPieChart = ({
 
   return (
     <Card 
-      className="flex flex-col h-full cursor-pointer hover:bg-accent/10 transition-colors"
+      className="flex flex-col h-full cursor-pointer "
       onClick={() => navigate("/savings")}
     >
       <CardHeader className="items-center pb-0">
