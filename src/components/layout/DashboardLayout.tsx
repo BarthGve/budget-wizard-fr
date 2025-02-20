@@ -34,7 +34,22 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   // Calculer le solde global
   const totalRevenue = contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
-  const totalExpenses = recurringExpenses?.reduce((sum, expense) => sum + expense.amount, 0) || 0;
+  
+  // Calculer le total des charges en tenant compte de la périodicité
+  const currentMonth = new Date().getMonth() + 1;
+  const totalExpenses = recurringExpenses?.reduce((sum, expense) => {
+    switch (expense.periodicity) {
+      case "monthly":
+        return sum + expense.amount;
+      case "quarterly":
+        return sum + (expense.debit_month === currentMonth ? expense.amount : 0);
+      case "yearly":
+        return sum + (expense.debit_month === currentMonth ? expense.amount : 0);
+      default:
+        return sum;
+    }
+  }, 0) || 0;
+
   const totalSavings = monthlySavings?.reduce((sum, saving) => sum + saving.amount, 0) || 0;
   const totalCredits = credits?.reduce((sum, credit) => sum + credit.montant_mensualite, 0) || 0;
   const globalBalance = totalRevenue - totalExpenses - totalSavings - totalCredits;
@@ -44,9 +59,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="sticky top-0 z-10 p-4 justify-end animate-fade-in">
-        <div className="w-auto">        
-          <GlobalBalanceCard balance={globalBalance} />
-       </div>
+          <div className="w-auto">        
+            <GlobalBalanceCard balance={globalBalance} />
+          </div>
         </div>
         <div className="container mx-auto p-6">
           <div className="page-transition">{children}</div>
