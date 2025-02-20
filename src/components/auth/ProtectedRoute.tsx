@@ -19,7 +19,6 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
 
-      // Vérifier si l'utilisateur est admin
       const { data: isAdmin, error } = await supabase.rpc('has_role', {
         user_id: user.id,
         role: 'admin'
@@ -40,6 +39,9 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     return <Navigate to="/login" replace />;
   }
 
+  // Liste des routes toujours accessibles une fois connecté
+  const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
+  
   // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
   if (authData.isAdmin && location.pathname === '/dashboard') {
     return <Navigate to="/admin" replace />;
@@ -49,6 +51,12 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     return <Navigate to="/dashboard" replace />;
   }
 
+  // Permettre l'accès aux routes toujours accessibles
+  if (alwaysAccessibleRoutes.includes(location.pathname)) {
+    return <>{children}</>;
+  }
+
+  // Vérifier les permissions pour les autres routes
   if (!canAccessPage(location.pathname)) {
     return <Navigate to="/dashboard" replace />;
   }
