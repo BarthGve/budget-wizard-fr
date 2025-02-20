@@ -2,7 +2,7 @@
 import { MoreVertical, Trash2 } from "lucide-react";
 import { useRetailers } from "./useRetailers";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -24,34 +24,32 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 export function RetailersList() {
   const { retailers, isLoading } = useRetailers();
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [retailerToDelete, setRetailerToDelete] = useState<string | null>(null);
 
-  const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer(() => {
-    setConfirmationOpen(false);
+  const closeDialog = useCallback(() => {
+    console.log("🔄 Closing dialog");
+    setDialogOpen(false);
     setRetailerToDelete(null);
-  });
+  }, []);
+
+  const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer(closeDialog);
 
   if (isLoading) {
     return <div>Chargement...</div>;
   }
 
   const handleDelete = (retailerId: string) => {
+    console.log("🎯 Opening delete dialog for retailer:", retailerId);
     setRetailerToDelete(retailerId);
-    setConfirmationOpen(true);
+    setDialogOpen(true);
   };
 
   const handleConfirmDelete = () => {
+    console.log("✅ Confirming deletion for retailer:", retailerToDelete);
     if (retailerToDelete) {
       deleteRetailer(retailerToDelete);
     }
-  };
-
-  const handleDialogChange = (open: boolean) => {
-    if (!open) {
-      setRetailerToDelete(null);
-    }
-    setConfirmationOpen(open);
   };
 
   return (
@@ -100,7 +98,13 @@ export function RetailersList() {
         </TableBody>
       </Table>
 
-      <AlertDialog open={confirmationOpen} onOpenChange={handleDialogChange}>
+      <AlertDialog 
+        open={dialogOpen} 
+        onOpenChange={(open) => {
+          console.log("🔄 Dialog state changing to:", open);
+          if (!open) closeDialog();
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
@@ -114,10 +118,11 @@ export function RetailersList() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>
+            <AlertDialogCancel type="button">
               Annuler
             </AlertDialogCancel>
             <AlertDialogAction
+              type="button"
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleConfirmDelete}
               disabled={isDeleting}
