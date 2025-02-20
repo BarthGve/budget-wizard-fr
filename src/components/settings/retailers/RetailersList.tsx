@@ -2,7 +2,7 @@
 import { MoreVertical, Trash2 } from "lucide-react";
 import { useRetailers } from "./useRetailers";
 import { Button } from "@/components/ui/button";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -26,14 +26,7 @@ export function RetailersList() {
   const { retailers, isLoading } = useRetailers();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [retailerToDelete, setRetailerToDelete] = useState<string | null>(null);
-
-  const closeDialog = useCallback(() => {
-    console.log("🔄 Closing dialog");
-    setDialogOpen(false);
-    setRetailerToDelete(null);
-  }, []);
-
-  const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer(closeDialog);
+  const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer();
 
   if (isLoading) {
     return <div>Chargement...</div>;
@@ -49,6 +42,8 @@ export function RetailersList() {
     console.log("✅ Confirming deletion for retailer:", retailerToDelete);
     if (retailerToDelete) {
       deleteRetailer(retailerToDelete);
+      setDialogOpen(false);
+      setRetailerToDelete(null);
     }
   };
 
@@ -100,10 +95,7 @@ export function RetailersList() {
 
       <AlertDialog 
         open={dialogOpen} 
-        onOpenChange={(open) => {
-          console.log("🔄 Dialog state changing to:", open);
-          if (!open) closeDialog();
-        }}
+        onOpenChange={setDialogOpen}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -118,11 +110,10 @@ export function RetailersList() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel type="button">
+            <AlertDialogCancel>
               Annuler
             </AlertDialogCancel>
             <AlertDialogAction
-              type="button"
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleConfirmDelete}
               disabled={isDeleting}

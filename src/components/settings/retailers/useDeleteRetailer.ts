@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const useDeleteRetailer = (onSuccess?: () => void) => {
+export const useDeleteRetailer = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -48,21 +48,13 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       console.log("✅ Retailer deleted successfully");
       return retailerId;
     },
-    onSuccess: (retailerId) => {
-      console.log("✅ Mutation completed successfully for retailer:", retailerId);
-      if (onSuccess) {
-        console.log("🔄 Calling onSuccess callback");
-        onSuccess();
-      }
+    onSuccess: () => {
+      console.log("✅ Mutation completed successfully");
       queryClient.invalidateQueries({ queryKey: ["retailers"] });
       toast.success("Enseigne supprimée avec succès");
     },
     onError: (error) => {
       console.error("❌ Mutation error:", error);
-      if (onSuccess) {
-        console.log("🔄 Calling onSuccess callback even though there was an error");
-        onSuccess();
-      }
       toast.error("Erreur lors de la suppression de l'enseigne");
     }
   });
