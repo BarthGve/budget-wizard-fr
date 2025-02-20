@@ -9,9 +9,15 @@ export const useRetailers = () => {
     queryKey: ["retailers"],
     queryFn: async () => {
       console.log("🔄 Fetching retailers...");
+      
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      
       const { data, error } = await supabase
         .from("retailers")
         .select("*")
+        .eq('profile_id', user?.id)
         .order("name");
 
       if (error) {
@@ -22,9 +28,7 @@ export const useRetailers = () => {
 
       console.log("✅ Retailers fetched successfully, count:", data?.length);
       return data as Retailer[];
-    },
-    gcTime: 0,
-    staleTime: 0
+    }
   });
 
   return {
