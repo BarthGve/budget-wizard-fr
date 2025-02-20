@@ -36,6 +36,22 @@ export function RetailersList() {
     return <div>Chargement...</div>;
   }
 
+  const handleDelete = (retailerId: string) => {
+    setRetailerToDelete(retailerId);
+    setConfirmationOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (retailerToDelete) {
+      deleteRetailer(retailerToDelete);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmationOpen(false);
+    setRetailerToDelete(null);
+  };
+
   return (
     <div className="space-y-4">
       <Table>
@@ -69,10 +85,7 @@ export function RetailersList() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       className="text-destructive focus:text-destructive"
-                      onClick={() => {
-                        setRetailerToDelete(retailer.id);
-                        setConfirmationOpen(true);
-                      }}
+                      onClick={() => handleDelete(retailer.id)}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
                       Supprimer
@@ -85,41 +98,27 @@ export function RetailersList() {
         </TableBody>
       </Table>
 
-      <AlertDialog 
-        open={confirmationOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            setConfirmationOpen(false);
-            setRetailerToDelete(null);
-          }
-        }}
-      >
+      <AlertDialog open={confirmationOpen} onOpenChange={setConfirmationOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
               Confirmation de suppression
             </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              Voulez-vous vraiment supprimer cette enseigne ?
+              
+              <div className="text-destructive">
+                Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.
+              </div>
+            </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogDescription>
-            <p>Voulez-vous vraiment supprimer cette enseigne ?</p>
-            <p className="text-destructive mt-2">
-              Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.
-            </p>
-          </AlertDialogDescription>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setConfirmationOpen(false);
-              setRetailerToDelete(null);
-            }}>
+            <AlertDialogCancel onClick={handleCancelDelete}>
               Annuler
             </AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => {
-                if (retailerToDelete) {
-                  deleteRetailer(retailerToDelete);
-                }
-              }}
+              onClick={handleConfirmDelete}
               disabled={isDeleting}
             >
               {isDeleting ? "Suppression..." : "Supprimer"}
