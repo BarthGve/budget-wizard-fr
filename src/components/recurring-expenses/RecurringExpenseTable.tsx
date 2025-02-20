@@ -69,6 +69,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
         <Table className="border-separate border-spacing-y-1">
           <TableHeader>
             <TableRow className="border-0">
+            <div className="absolute inset-0 rounded-xl p-[2px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 -z-10"></div>
               <TableHead className="text-card-foreground dark:text-card-foreground">Charge</TableHead>
               <TableHead className="text-card-foreground dark:text-card-foreground">Catégorie</TableHead>
               <TableHead className="text-card-foreground dark:text-card-foreground">Périodicité</TableHead>
