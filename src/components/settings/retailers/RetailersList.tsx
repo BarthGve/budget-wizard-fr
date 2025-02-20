@@ -11,7 +11,8 @@ import {
   AlertDialogDescription, 
   AlertDialogFooter, 
   AlertDialogHeader, 
-  AlertDialogTitle
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useDeleteRetailer } from "./useDeleteRetailer";
 import {
@@ -24,7 +25,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 export function RetailersList() {
   const { retailers, isLoading } = useRetailers();
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [retailerToDelete, setRetailerToDelete] = useState<string | null>(null);
   const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer();
 
@@ -35,14 +35,12 @@ export function RetailersList() {
   const handleDelete = (retailerId: string) => {
     console.log("🎯 Opening delete dialog for retailer:", retailerId);
     setRetailerToDelete(retailerId);
-    setDialogOpen(true);
   };
 
   const handleConfirmDelete = () => {
     console.log("✅ Confirming deletion for retailer:", retailerToDelete);
     if (retailerToDelete) {
       deleteRetailer(retailerToDelete);
-      setDialogOpen(false);
       setRetailerToDelete(null);
     }
   };
@@ -71,58 +69,57 @@ export function RetailersList() {
                 )}
               </TableCell>
               <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => handleDelete(retailer.id)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Supprimer
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <AlertDialog>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => handleDelete(retailer.id)}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Supprimer
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Confirmation de suppression
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Voulez-vous vraiment supprimer cette enseigne ?
+                      </AlertDialogDescription>
+                      <AlertDialogDescription className="text-destructive">
+                        Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>
+                        Annuler
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        onClick={handleConfirmDelete}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? "Suppression..." : "Supprimer"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-
-      <AlertDialog 
-        open={dialogOpen} 
-        onOpenChange={setDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Confirmation de suppression
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Voulez-vous vraiment supprimer cette enseigne ?
-            </AlertDialogDescription>
-            <AlertDialogDescription className="text-destructive">
-              Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>
-              Annuler
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={handleConfirmDelete}
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Suppression..." : "Supprimer"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
