@@ -102,21 +102,24 @@ export const DashboardTabContent = ({
         />
       </div>
       <div className="grid gap-6 md:grid-cols-3">
-        <RecurringExpensesPieChart
-          recurringExpenses={recurringExpenses}
-          totalExpenses={expenses}
-        />
+        {recurringExpenses.length > 0 && (
+          <RecurringExpensesPieChart
+            recurringExpenses={recurringExpenses}
+            totalExpenses={expenses}
+          />
+        )}
         {credits && credits.length > 0 && (
           <CreditsPieChart
             credits={credits}
             totalMensualites={totalMensualites}
           />
         )}
-        <SavingsPieChart
-          monthlySavings={monthlySavings}
-          totalSavings={savings}
-        />
-        
+        {monthlySavings.length > 0 && (
+          <SavingsPieChart
+            monthlySavings={monthlySavings}
+            totalSavings={savings}
+          />
+        )}
       </div>
       <ContributorsTable 
         contributors={contributors}
