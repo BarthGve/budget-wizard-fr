@@ -45,6 +45,13 @@ export function RetailersList() {
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      console.log("🚫 Closing delete confirmation dialog");
+      setRetailerToDelete(null);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <Table>
@@ -91,7 +98,10 @@ export function RetailersList() {
         </TableBody>
       </Table>
 
-      <AlertDialog open={retailerToDelete !== null} onOpenChange={(open) => !open && setRetailerToDelete(null)}>
+      <AlertDialog 
+        open={retailerToDelete !== null} 
+        onOpenChange={handleOpenChange}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmation de suppression</AlertDialogTitle>
