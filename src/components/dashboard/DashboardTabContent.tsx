@@ -40,6 +40,8 @@ interface DashboardTabContentProps {
     amount: number;
     category: string;
     debit_day: number;
+    debit_month: number | null;
+    periodicity: "monthly" | "quarterly" | "yearly";
   }>;
   monthlySavings: Array<{
     id: string;
@@ -90,7 +92,12 @@ export const DashboardTabContent = ({
         />
         <ExpensesCard
           totalExpenses={expenses}
-          recurringExpenses={recurringExpenses}
+          recurringExpenses={recurringExpenses.map(expense => ({
+            amount: expense.amount,
+            debit_day: expense.debit_day,
+            debit_month: expense.debit_month,
+            periodicity: expense.periodicity
+          }))}
         />
         <CreditCard
           totalMensualites={totalMensualites}
