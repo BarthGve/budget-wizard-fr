@@ -6,10 +6,11 @@ import type { User } from "@/hooks/useUsers";
 interface UserTableRowProps {
   user: User;
   onRoleChange: (userId: string, newRole: "user" | "admin") => void;
+  onProfileChange: (userId: string, newProfile: "basic" | "pro") => void;
   onDelete: (userId: string) => void;
 }
 
-export const UserTableRow = ({ user, onRoleChange, onDelete }: UserTableRowProps) => {
+export const UserTableRow = ({ user, onRoleChange, onProfileChange, onDelete }: UserTableRowProps) => {
   const getInitials = (email: string) => {
     return email
       .split('@')[0]
@@ -50,7 +51,9 @@ export const UserTableRow = ({ user, onRoleChange, onDelete }: UserTableRowProps
         userId={user.id}
         userEmail={user.email}
         currentRole={user.role}
+        currentProfile={user.profile_type}
         onRoleChange={onRoleChange}
+        onProfileChange={onProfileChange}
         onDelete={onDelete}
       />
     </div>

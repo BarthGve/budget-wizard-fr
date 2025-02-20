@@ -62,7 +62,6 @@ export const DashboardTabContent = ({
   recurringExpenses,
   monthlySavings,
 }: DashboardTabContentProps) => {
-  // Récupérer les crédits actifs
   const { data: credits } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
@@ -80,8 +79,9 @@ export const DashboardTabContent = ({
     }
   });
 
-  // Calculer le total des mensualités de crédit
   const totalMensualites = credits?.reduce((sum, credit) => sum + credit.montant_mensualite, 0) || 0;
+
+  const baseCardStyle = "hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02]";
 
   return (
     <div className="space-y-8">
@@ -89,7 +89,6 @@ export const DashboardTabContent = ({
         <RevenueCard
           totalRevenue={revenue}
           contributorShares={contributorShares}
-          className="hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10"
         />
         <ExpensesCard
           totalExpenses={expenses}
@@ -99,17 +98,14 @@ export const DashboardTabContent = ({
             debit_month: expense.debit_month,
             periodicity: expense.periodicity
           }))}
-          className="hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-pink-500/10 via-rose-500/10 to-red-500/10"
         />
         <CreditCard
           totalMensualites={totalMensualites}
           totalRevenue={revenue}
-          className="hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-blue-500/10 via-cyan-500/10 to-teal-500/10"
         />
         <SavingsCard
           totalMonthlySavings={savings}
           savingsGoal={savingsGoal}
-          className="hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10"
         />
       </div>
       <div className="grid gap-6 md:grid-cols-3">
