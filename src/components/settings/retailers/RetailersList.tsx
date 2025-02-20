@@ -106,12 +106,11 @@ export function RetailersList() {
             <AlertDialogTitle>
               Confirmation de suppression
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
+            <AlertDialogDescription>
               Voulez-vous vraiment supprimer cette enseigne ?
-              
-              <div className="text-destructive">
-                Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.
-              </div>
+            </AlertDialogDescription>
+            <AlertDialogDescription className="text-destructive">
+              Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
