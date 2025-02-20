@@ -83,11 +83,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <main className="flex-1 overflow-y-auto">
         <div className="sticky top-0 z-10 p-4 justify-end animate-fade-in">
           <div className="flex items-center justify-between gap-4">
-            {userProfile?.profile_type === "pro" && (
-              <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600">
-                Version Pro
-              </Badge>
-            )}
+           
             {!userProfile?.isAdmin && (
               <div className="flex-1">
                 <GlobalBalanceCard balance={globalBalance} />

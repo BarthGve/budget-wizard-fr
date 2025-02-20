@@ -110,7 +110,7 @@ export const DashboardTabContent = ({
       </div>
       <div className="grid gap-6 md:grid-cols-3">
         {recurringExpenses.length > 0 && (
-          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 ">
+          <div className="hover:shadow-xl transition-shadow duration-300 ">
             <RecurringExpensesPieChart
               recurringExpenses={recurringExpenses}
               totalExpenses={expenses}
