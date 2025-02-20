@@ -29,12 +29,18 @@ interface RetailerFormProps {
 const getFaviconUrl = (domain: string) => {
   if (!domain) return null;
   const cleanDomain = domain.trim().toLowerCase();
-  return `https://logo.clearbit.com/${cleanDomain}`;
+  // Ajout du protocole si non présent pour éviter les erreurs CORS
+  if (!cleanDomain.startsWith('http')) {
+    return `https://logo.clearbit.com/${cleanDomain}`;
+  }
+  const url = new URL(cleanDomain);
+  return `https://logo.clearbit.com/${url.hostname}`;
 };
 
 export const RetailerForm = ({ onSuccess }: RetailerFormProps) => {
   const [previewLogoUrl, setPreviewLogoUrl] = useState<string | null>(null);
   const [isLogoValid, setIsLogoValid] = useState(true);
+  const [isCheckingLogo, setIsCheckingLogo] = useState(false);
 
   const form = useForm<RetailerFormData>({
     resolver: zodResolver(formSchema),
@@ -48,19 +54,54 @@ export const RetailerForm = ({ onSuccess }: RetailerFormProps) => {
   const domain = form.watch("domain");
 
   useEffect(() => {
-    if (domain) {
-      const logoUrl = getFaviconUrl(domain);
-      setPreviewLogoUrl(logoUrl);
-      
-      // Vérifier si l'image est valide
-      const img = new Image();
-      img.onload = () => setIsLogoValid(true);
-      img.onerror = () => setIsLogoValid(false);
-      img.src = logoUrl || "";
-    } else {
-      setPreviewLogoUrl(null);
-      setIsLogoValid(true);
-    }
+    let timeoutId: NodeJS.Timeout;
+
+    const checkLogo = async () => {
+      if (!domain?.trim()) {
+        setPreviewLogoUrl(null);
+        setIsLogoValid(true);
+        setIsCheckingLogo(false);
+        return;
+      }
+
+      try {
+        setIsCheckingLogo(true);
+        const logoUrl = getFaviconUrl(domain);
+        
+        if (!logoUrl) {
+          setPreviewLogoUrl(null);
+          setIsLogoValid(false);
+          return;
+        }
+
+        setPreviewLogoUrl(logoUrl);
+
+        // Créer une promesse pour charger l'image
+        const loadImage = () => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => reject(false);
+            img.src = logoUrl;
+          });
+        };
+
+        await loadImage();
+        setIsLogoValid(true);
+      } catch (error) {
+        console.error("Error loading logo:", error);
+        setIsLogoValid(false);
+      } finally {
+        setIsCheckingLogo(false);
+      }
+    };
+
+    // Attendre que l'utilisateur arrête de taper
+    timeoutId = setTimeout(checkLogo, 500);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [domain]);
 
   return (
@@ -90,21 +131,23 @@ export const RetailerForm = ({ onSuccess }: RetailerFormProps) => {
                 <FormControl>
                   <Input placeholder="carrefour.fr" {...field} />
                 </FormControl>
-                {previewLogoUrl && (
-                  <div className="flex-shrink-0 w-10 h-10 border rounded flex items-center justify-center bg-white">
-                    {isLogoValid ? (
-                      <img
-                        src={previewLogoUrl}
-                        alt="Logo preview"
-                        className="w-8 h-8 object-contain"
-                      />
-                    ) : (
-                      <div className="text-xs text-muted-foreground text-center">
-                        Logo non trouvé
-                      </div>
-                    )}
-                  </div>
-                )}
+                <div className="flex-shrink-0 w-10 h-10 border rounded flex items-center justify-center bg-white">
+                  {isCheckingLogo ? (
+                    <div className="text-xs text-muted-foreground text-center">
+                      Chargement...
+                    </div>
+                  ) : previewLogoUrl && isLogoValid ? (
+                    <img
+                      src={previewLogoUrl}
+                      alt="Logo preview"
+                      className="w-8 h-8 object-contain"
+                    />
+                  ) : domain ? (
+                    <div className="text-xs text-muted-foreground text-center">
+                      Logo non trouvé
+                    </div>
+                  ) : null}
+                </div>
               </div>
               <FormMessage />
             </FormItem>
