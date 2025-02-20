@@ -111,7 +111,7 @@ const RecurringExpenses = () => {
 
         {/* Cards de résumé */}
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="bg-background">
+          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
             <CardHeader className="py-[16px]">
               <div className="flex flex-row items-center justify-between">
                 <CardTitle className="text-2xl">Charges Mensuelles</CardTitle>
@@ -124,7 +124,7 @@ const RecurringExpenses = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-background">
+          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
             <CardHeader className="py-[16px]">
               <div className="flex flex-row items-center justify-between">
                 <CardTitle className="text-2xl">Charges Trimestrielles</CardTitle>
@@ -137,7 +137,7 @@ const RecurringExpenses = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-background">
+          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
             <CardHeader className="py-[16px]">
               <div className="flex flex-row items-center justify-between">
                 <CardTitle className="text-2xl">Charges Annuelles</CardTitle>
