@@ -69,7 +69,7 @@ export const UserDropdown = ({
           </DropdownMenuItem>
 
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
-            <StoreSettings2 className="mr-2 h-4 w-4" />
+            <Settings2 className="mr-2 h-4 w-4" />
             <span>Paramétrage</span>
           </DropdownMenuItem>
      
