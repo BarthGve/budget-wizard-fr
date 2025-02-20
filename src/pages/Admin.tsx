@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserTable } from "@/components/admin/UserTable";
 import { UserStats } from "@/components/admin/UserStats";
+import { PagePermissionsTable } from "@/components/admin/PagePermissionsTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Admin = () => {
@@ -47,6 +48,7 @@ const Admin = () => {
           <TabsList>
             <TabsTrigger value="stats">Statistiques</TabsTrigger>
             <TabsTrigger value="users">Utilisateurs</TabsTrigger>
+            <TabsTrigger value="permissions">Permissions</TabsTrigger>
           </TabsList>
           
           <TabsContent value="stats" className="space-y-4">
@@ -55,6 +57,10 @@ const Admin = () => {
           
           <TabsContent value="users">
             <UserTable />
+          </TabsContent>
+
+          <TabsContent value="permissions">
+            <PagePermissionsTable />
           </TabsContent>
         </Tabs>
       </div>
