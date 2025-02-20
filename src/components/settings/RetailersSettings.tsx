@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Tag } from "lucide-react";
+import { Plus, Store } from "lucide-react";
 import { RetailerDialog } from "./retailers/RetailerDialog";
 import { RetailersList } from "./retailers/RetailersList";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +14,7 @@ export const RetailersSettings = () => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Tag className="h-5 w-5" />
+            <Store className="h-5 w-5" />
             <CardTitle>Enseignes</CardTitle>
           </div>
           <RetailerDialog 

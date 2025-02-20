@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { LogOut, Bell, UserCircle2, CreditCard, ChevronsUpDown, Star, Tag } from "lucide-react";
+import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -69,7 +69,7 @@ export const UserDropdown = ({
           </DropdownMenuItem>
 
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
-            <Tag className="mr-2 h-4 w-4" />
+            <StoreSettings2 className="mr-2 h-4 w-4" />
             <span>Paramétrage</span>
           </DropdownMenuItem>
      
