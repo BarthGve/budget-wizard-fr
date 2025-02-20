@@ -23,26 +23,14 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export function RetailersList() {
-  const { retailers, isLoading: isLoadingRetailers } = useRetailers();
+  const { data: retailers, isLoading: isLoadingRetailers } = useRetailers();
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [retailerToDelete, setRetailerToDelete] = useState<string | null>(null);
 
-  const handleClose = () => {
+  const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer(() => {
     setConfirmationOpen(false);
     setRetailerToDelete(null);
-  };
-
-  const { deleteRetailer, isDeleting } = useDeleteRetailer(handleClose);
-
-  const handleDelete = () => {
-    if (retailerToDelete) {
-      deleteRetailer(retailerToDelete);
-    }
-  };
-
-  const currentRetailer = retailerToDelete 
-    ? retailers?.find(r => r.id === retailerToDelete) 
-    : null;
+  });
 
   if (isLoadingRetailers) {
     return <div>Chargement...</div>;
@@ -100,7 +88,10 @@ export function RetailersList() {
       <AlertDialog 
         open={confirmationOpen}
         onOpenChange={(open) => {
-          if (!open) handleClose();
+          if (!open) {
+            setConfirmationOpen(false);
+            setRetailerToDelete(null);
+          }
         }}
       >
         <AlertDialogContent>
@@ -110,16 +101,25 @@ export function RetailersList() {
             </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogDescription>
-            <p>Voulez-vous vraiment supprimer l'enseigne <strong>{currentRetailer?.name}</strong> ?</p>
-            <p className="text-destructive mt-2">Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.</p>
+            <p>Voulez-vous vraiment supprimer cette enseigne ?</p>
+            <p className="text-destructive mt-2">
+              Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.
+            </p>
           </AlertDialogDescription>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleClose}>
+            <AlertDialogCancel onClick={() => {
+              setConfirmationOpen(false);
+              setRetailerToDelete(null);
+            }}>
               Annuler
             </AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={handleDelete}
+              onClick={() => {
+                if (retailerToDelete) {
+                  deleteRetailer(retailerToDelete);
+                }
+              }}
               disabled={isDeleting}
             >
               {isDeleting ? "Suppression..." : "Supprimer"}

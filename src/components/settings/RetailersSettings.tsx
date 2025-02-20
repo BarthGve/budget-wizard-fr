@@ -26,7 +26,9 @@ export const RetailersSettings = () => {
                 Ajouter une enseigne
               </Button>
             }
-            onRetailerSaved={() => setOpen(false)}
+            onRetailerSaved={() => {
+              setOpen(false);
+            }}
           />
         </div>
         <CardDescription>
@@ -34,7 +36,7 @@ export const RetailersSettings = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <RetailersList />
+        <RetailersList key="retailers-list" />
       </CardContent>
     </Card>
   );
