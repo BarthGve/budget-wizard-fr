@@ -104,7 +104,7 @@ const RecurringExpenses = () => {
           <RecurringExpenseDialog trigger={
             <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
               <Plus className="mr-2 h-4 w-4" />
-              Ajouter une charge
+              Nouvelle charge
             </Button>
           } />
         </div>
