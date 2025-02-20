@@ -1,7 +1,8 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Calendar, CalendarDays, CalendarRange } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -74,6 +75,16 @@ const RecurringExpenses = () => {
     }
   };
 
+  // Calculer les sommes par périodicité
+  const monthlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "monthly")
+    .reduce((sum, expense) => sum + expense.amount, 0) || 0;
+
+  const quarterlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "quarterly")
+    .reduce((sum, expense) => sum + expense.amount, 0) || 0;
+
+  const yearlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "yearly")
+    .reduce((sum, expense) => sum + expense.amount, 0) || 0;
+
   if (isLoading) {
     return <DashboardLayout>
       <div>Chargement...</div>
@@ -97,10 +108,53 @@ const RecurringExpenses = () => {
             </Button>
           } />
         </div>
-            <RecurringExpenseTable 
-              expenses={recurringExpenses || []}
-              onDeleteExpense={handleDeleteExpense}
-            />   
+
+        {/* Cards de résumé */}
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card className="bg-background">
+            <CardHeader className="py-[16px]">
+              <div className="flex flex-row items-center justify-between">
+                <CardTitle className="text-2xl">Charges Mensuelles</CardTitle>
+                <Calendar className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <CardDescription>Total des charges mensuelles</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xl font-bold">{Math.round(monthlyTotal)} €</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-background">
+            <CardHeader className="py-[16px]">
+              <div className="flex flex-row items-center justify-between">
+                <CardTitle className="text-2xl">Charges Trimestrielles</CardTitle>
+                <CalendarDays className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <CardDescription>Total des charges trimestrielles</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xl font-bold">{Math.round(quarterlyTotal)} €</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-background">
+            <CardHeader className="py-[16px]">
+              <div className="flex flex-row items-center justify-between">
+                <CardTitle className="text-2xl">Charges Annuelles</CardTitle>
+                <CalendarRange className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <CardDescription>Total des charges annuelles</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xl font-bold">{Math.round(yearlyTotal)} €</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <RecurringExpenseTable 
+          expenses={recurringExpenses || []}
+          onDeleteExpense={handleDeleteExpense}
+        />   
       </div>
     </DashboardLayout>
   );
