@@ -20,6 +20,7 @@ interface AddContributorDialogProps {
 }
 
 export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [newContributor, setNewContributor] = useState<NewContributor>({
     name: "",
     email: "",
@@ -29,10 +30,11 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
   const handleAdd = () => {
     onAdd(newContributor);
     setNewContributor({ name: "", email: "", total_contribution: "" });
+    setIsOpen(false);
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md ">
           <UserPlus className="mr-2 h-4 w-4" />
@@ -90,7 +92,13 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setNewContributor({ name: "", email: "", total_contribution: "" })}>
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              setNewContributor({ name: "", email: "", total_contribution: "" });
+              setIsOpen(false);
+            }}
+          >
             Annuler
           </Button>
           <Button 
