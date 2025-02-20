@@ -1,8 +1,15 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { RetailersSettings } from "@/components/settings/RetailersSettings";
 import { ExpenseCategoriesSettings } from "@/components/settings/expense-categories/ExpenseCategoriesSettings";
+import { usePagePermissions } from "@/hooks/usePagePermissions";
+
 const Classification = () => {
-  return <DashboardLayout>
+  const { canAccessPage } = usePagePermissions();
+  const canAccessExpenses = canAccessPage('/expenses');
+
+  return (
+    <DashboardLayout>
       <div className="space-y-10">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Paramétrage</h2>
@@ -12,10 +19,12 @@ const Classification = () => {
         </div>
 
         <div className="space-y-10">
-          <RetailersSettings />
+          {canAccessExpenses && <RetailersSettings />}
           <ExpenseCategoriesSettings />
         </div>
       </div>
-    </DashboardLayout>;
+    </DashboardLayout>
+  );
 };
+
 export default Classification;
