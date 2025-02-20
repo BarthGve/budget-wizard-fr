@@ -8,11 +8,16 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
 
   return useMutation({
     mutationFn: async (retailerId: string) => {
-      console.log("🚀 Deleting retailer:", retailerId);
+      console.log("🚀 Starting retailer deletion process:", retailerId);
       
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw new Error(userError.message);
+      if (userError) {
+        console.error("❌ User error:", userError);
+        throw userError;
+      }
+      
+      console.log("✅ User found, proceeding with deletion");
       
       // Delete associated expenses first
       const { error: expensesError } = await supabase
@@ -23,8 +28,10 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
 
       if (expensesError) {
         console.error("❌ Error deleting expenses:", expensesError);
-        throw new Error(expensesError.message);
+        throw expensesError;
       }
+
+      console.log("✅ Associated expenses deleted");
 
       // Then delete the retailer
       const { error: retailerError } = await supabase
@@ -35,20 +42,24 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
 
       if (retailerError) {
         console.error("❌ Error deleting retailer:", retailerError);
-        throw new Error(retailerError.message);
+        throw retailerError;
       }
 
       console.log("✅ Retailer deleted successfully");
-      return { id: retailerId };
+      return retailerId;
     },
-    onSuccess: () => {
+    onError: (error) => {
+      console.error("❌ Mutation error:", error);
+      toast.error("Erreur lors de la suppression de l'enseigne");
+    },
+    onSuccess: (retailerId) => {
+      console.log("✅ Mutation completed successfully for retailer:", retailerId);
       queryClient.invalidateQueries({ queryKey: ["retailers"] });
       toast.success("Enseigne supprimée avec succès");
-      if (onSuccess) onSuccess();
-    },
-    onError: (error: Error) => {
-      console.error("❌ Error in deletion:", error);
-      toast.error("Erreur lors de la suppression de l'enseigne");
+      if (onSuccess) {
+        console.log("🔄 Calling onSuccess callback");
+        onSuccess();
+      }
     }
   });
 };
