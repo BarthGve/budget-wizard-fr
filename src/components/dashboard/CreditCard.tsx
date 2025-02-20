@@ -7,13 +7,11 @@ import { useNavigate } from "react-router-dom";
 interface CreditCardProps {
   totalMensualites: number;
   totalRevenue: number;
-  className?: string;
 }
 
 export const CreditCard = ({
   totalMensualites,
-  totalRevenue,
-  className
+  totalRevenue
 }: CreditCardProps) => {
   const navigate = useNavigate();
   const tauxEndettement = totalRevenue > 0 ? (totalMensualites / totalRevenue) * 100 : 0;
@@ -24,9 +22,15 @@ export const CreditCard = ({
     return "destructive";
   };
 
+  const getBadgeText = (taux: number) => {
+    if (taux < 30) return "faible";
+    if (taux < 40) return "modéré";
+    return "élevé";
+  };
+
   return (
     <Card 
-      className={className}
+      className="bg-background cursor-pointer hover:bg-accent/10 transition-colors"
       onClick={() => navigate("/credits")}
     >
       <CardHeader className="py-[16px]">

@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { ShoppingBasket } from 'lucide-react'  
 import { useNavigate } from "react-router-dom";
+import { RecurringExpense } from "@/components/recurring-expenses/types";
 
 interface ExpensesCardProps {
   totalExpenses: number;
@@ -12,13 +13,11 @@ interface ExpensesCardProps {
     debit_month: number | null;
     periodicity: "monthly" | "quarterly" | "yearly";
   }>;
-  className?: string;
 }
 
 export const ExpensesCard = ({
   totalExpenses,
   recurringExpenses,
-  className
 }: ExpensesCardProps) => {
   const navigate = useNavigate();
   const currentDay = new Date().getDate();
@@ -45,7 +44,7 @@ export const ExpensesCard = ({
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
 
   return <Card 
-    className={className}
+    className="bg-background cursor-pointer hover:bg-accent/10 transition-colors"
     onClick={() => navigate("/recurring-expenses")}
   >
     <CardHeader className="py-[16px]">
