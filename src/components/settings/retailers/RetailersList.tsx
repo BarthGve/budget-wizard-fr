@@ -3,25 +3,46 @@ import { MoreVertical, Trash2 } from "lucide-react";
 import { useRetailers } from "./useRetailers";
 import { Button } from "@/components/ui/button";
 import { useDeleteRetailer } from "./useDeleteRetailer";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Retailer } from "./types";
 
 export function RetailersList() {
   const { retailers, isLoading } = useRetailers();
   const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer();
+  const [retailerToDelete, setRetailerToDelete] = useState<Retailer | null>(null);
 
   if (isLoading) {
     return <div>Chargement...</div>;
   }
 
-  const handleDelete = (retailerId: string) => {
-    console.log("🎯 Deleting retailer:", retailerId);
-    deleteRetailer(retailerId);
+  const handleDeleteClick = (retailer: Retailer) => {
+    console.log("🎯 Opening delete confirmation for retailer:", retailer.id);
+    setRetailerToDelete(retailer);
+  };
+
+  const handleConfirmDelete = () => {
+    if (retailerToDelete) {
+      console.log("✅ Confirming deletion for retailer:", retailerToDelete.id);
+      deleteRetailer(retailerToDelete.id);
+      setRetailerToDelete(null);
+    }
   };
 
   return (
@@ -57,11 +78,10 @@ export function RetailersList() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       className="text-destructive focus:text-destructive"
-                      onClick={() => handleDelete(retailer.id)}
-                      disabled={isDeleting}
+                      onClick={() => handleDeleteClick(retailer)}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      {isDeleting ? "Suppression..." : "Supprimer"}
+                      Supprimer
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -70,6 +90,30 @@ export function RetailersList() {
           ))}
         </TableBody>
       </Table>
+
+      <AlertDialog open={retailerToDelete !== null} onOpenChange={(open) => !open && setRetailerToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmation de suppression</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir supprimer l'enseigne "{retailerToDelete?.name}" ?
+            </AlertDialogDescription>
+            <AlertDialogDescription className="text-destructive">
+              Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Suppression..." : "Supprimer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
