@@ -23,7 +23,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export function RetailersList() {
-  const { data: retailers, isLoading: isLoadingRetailers } = useRetailers();
+  const { retailers, isLoading } = useRetailers();
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [retailerToDelete, setRetailerToDelete] = useState<string | null>(null);
 
@@ -32,7 +32,7 @@ export function RetailersList() {
     setRetailerToDelete(null);
   });
 
-  if (isLoadingRetailers) {
+  if (isLoading) {
     return <div>Chargement...</div>;
   }
 
@@ -47,7 +47,7 @@ export function RetailersList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {retailers?.map((retailer) => (
+          {retailers.map((retailer) => (
             <TableRow key={retailer.id}>
               <TableCell>{retailer.name}</TableCell>
               <TableCell>
