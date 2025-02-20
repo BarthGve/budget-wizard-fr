@@ -89,7 +89,7 @@ const Credits = () => {
         </div>
 
         {/* Carte récapitulative */}
-        <Card className="bg-gradient-to-br from-violet-500 to-violet-600">
+        <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md hover:shadow-xl transition-shadow duration-300">
           <CardHeader>
             <CardTitle className="text-white">Total des mensualités actives</CardTitle>
             <CardDescription className="text-violet-100">
