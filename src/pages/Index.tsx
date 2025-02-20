@@ -92,7 +92,9 @@ const Dashboard = () => {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Tableau de bord</h1>
+              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
+                Tableau de bord
+              </h1>
               <p className="text-muted-foreground">
                 {currentView === "monthly" 
                   ? `Aperçu du budget pour le mois de ${currentMonthName} ${new Date().getFullYear()}` 
@@ -102,13 +104,30 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="monthly" onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}>
-          <TabsList>
-            <TabsTrigger value="monthly">Vue mensuelle</TabsTrigger>
-            <TabsTrigger value="yearly">Vue annuelle</TabsTrigger>
+        <Tabs 
+          defaultValue="monthly" 
+          onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
+          className="space-y-4"
+        >
+          <TabsList className="grid w-full max-w-md grid-cols-2 mb-4 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-lg p-1">
+            <TabsTrigger 
+              value="monthly"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:via-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300"
+            >
+              Vue mensuelle
+            </TabsTrigger>
+            <TabsTrigger 
+              value="yearly"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:via-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300"
+            >
+              Vue annuelle
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="monthly">
+          <TabsContent 
+            value="monthly"
+            className="space-y-4 animate-fade-up [animation-fill-mode:forwards] motion-reduce:animate-none"
+          >
             <DashboardTabContent
               revenue={totalRevenue}
               expenses={monthlyExpenses}
@@ -123,7 +142,10 @@ const Dashboard = () => {
             />
           </TabsContent>
 
-          <TabsContent value="yearly">
+          <TabsContent 
+            value="yearly"
+            className="space-y-4 animate-fade-up [animation-fill-mode:forwards] motion-reduce:animate-none"
+          >
             <DashboardTabContent
               revenue={yearlyRevenue}
               expenses={yearlyExpenses}

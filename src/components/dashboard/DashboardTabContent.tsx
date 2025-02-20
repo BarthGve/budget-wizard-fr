@@ -84,11 +84,12 @@ export const DashboardTabContent = ({
   const totalMensualites = credits?.reduce((sum, credit) => sum + credit.montant_mensualite, 0) || 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <RevenueCard
           totalRevenue={revenue}
           contributorShares={contributorShares}
+          className="hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10"
         />
         <ExpensesCard
           totalExpenses={expenses}
@@ -98,41 +99,52 @@ export const DashboardTabContent = ({
             debit_month: expense.debit_month,
             periodicity: expense.periodicity
           }))}
+          className="hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-pink-500/10 via-rose-500/10 to-red-500/10"
         />
         <CreditCard
           totalMensualites={totalMensualites}
           totalRevenue={revenue}
+          className="hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-blue-500/10 via-cyan-500/10 to-teal-500/10"
         />
         <SavingsCard
           totalMonthlySavings={savings}
           savingsGoal={savingsGoal}
+          className="hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10"
         />
       </div>
       <div className="grid gap-6 md:grid-cols-3">
         {recurringExpenses.length > 0 && (
-          <RecurringExpensesPieChart
-            recurringExpenses={recurringExpenses}
-            totalExpenses={expenses}
-          />
+          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5">
+            <RecurringExpensesPieChart
+              recurringExpenses={recurringExpenses}
+              totalExpenses={expenses}
+            />
+          </div>
         )}
         {credits && credits.length > 0 && (
-          <CreditsPieChart
-            credits={credits}
-            totalMensualites={totalMensualites}
-          />
+          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-blue-500/5 via-cyan-500/5 to-teal-500/5">
+            <CreditsPieChart
+              credits={credits}
+              totalMensualites={totalMensualites}
+            />
+          </div>
         )}
         {monthlySavings.length > 0 && (
-          <SavingsPieChart
-            monthlySavings={monthlySavings}
-            totalSavings={savings}
-          />
+          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-green-500/5 via-emerald-500/5 to-teal-500/5">
+            <SavingsPieChart
+              monthlySavings={monthlySavings}
+              totalSavings={savings}
+            />
+          </div>
         )}
       </div>
-      <ContributorsTable 
-        contributors={contributors}
-        totalExpenses={expenses}
-        totalCredits={totalMensualites}
-      />
+      <div className="rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 bg-gradient-to-br from-slate-500/5 via-gray-500/5 to-zinc-500/5 p-6">
+        <ContributorsTable 
+          contributors={contributors}
+          totalExpenses={expenses}
+          totalCredits={totalMensualites}
+        />
+      </div>
     </div>
   );
 };
