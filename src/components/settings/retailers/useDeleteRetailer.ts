@@ -35,9 +35,13 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       console.log("✅ Retailer deleted successfully");
       return retailerId;
     },
-    onSuccess: () => {
-      // Invalider le cache et forcer un rechargement immédiat
-      queryClient.resetQueries({ queryKey: ["retailers"] });
+    onSettled: async () => {
+      // Force un rafraîchissement complet du cache
+      await queryClient.invalidateQueries({ 
+        queryKey: ["retailers"],
+        exact: true,
+        refetchType: 'active'
+      });
       
       toast.success("Enseigne supprimée avec succès");
       if (onSuccess) onSuccess();

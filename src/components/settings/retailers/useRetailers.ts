@@ -23,9 +23,8 @@ export const useRetailers = () => {
       console.log("✅ Retailers fetched successfully, count:", data?.length);
       return data as Retailer[];
     },
-    refetchInterval: false,
-    refetchOnWindowFocus: false,
-    refetchOnMount: true
+    gcTime: 0,
+    staleTime: 0
   });
 
   return {
