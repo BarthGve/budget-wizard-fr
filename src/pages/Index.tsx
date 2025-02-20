@@ -45,26 +45,31 @@ const Dashboard = () => {
   const getExpensesForPieChart = () => {
     if (!recurringExpenses) return [];
 
-    if (currentView === "yearly") {
-      return recurringExpenses.map(expense => {
-        let amount = expense.amount;
+    return recurringExpenses.map(expense => {
+      let amount = expense.amount;
+      if (currentView === "yearly") {
         if (expense.periodicity === "monthly") {
           amount = expense.amount * 12;
         } else if (expense.periodicity === "quarterly") {
           amount = expense.amount * 4;
         }
-        return { ...expense, amount };
-      });
-    }
-    
-    return recurringExpenses.map(expense => {
-      let amount = expense.amount;
-      if (expense.periodicity === "quarterly") {
-        amount = expense.amount / 3;
-      } else if (expense.periodicity === "yearly") {
-        amount = expense.amount / 12;
+      } else {
+        if (expense.periodicity === "quarterly") {
+          amount = expense.amount / 3;
+        } else if (expense.periodicity === "yearly") {
+          amount = expense.amount / 12;
+        }
       }
-      return { ...expense, amount };
+      
+      return {
+        id: expense.id,
+        name: expense.name,
+        amount,
+        category: expense.category,
+        debit_day: expense.debit_day,
+        debit_month: expense.debit_month,
+        periodicity: expense.periodicity as "monthly" | "quarterly" | "yearly"
+      };
     });
   };
 
@@ -89,10 +94,10 @@ const Dashboard = () => {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Tableau de bord</h1>
               <p className="text-muted-foreground">
-  {currentView === "monthly" 
-    ? `Aperçu du budget pour le mois de ${currentMonthName} ${new Date().getFullYear()}` 
-    : `Aperçu du budget annuel ${new Date().getFullYear()}`}
-</p>
+                {currentView === "monthly" 
+                  ? `Aperçu du budget pour le mois de ${currentMonthName} ${new Date().getFullYear()}` 
+                  : `Aperçu du budget annuel ${new Date().getFullYear()}`}
+              </p>
             </div>
           </div>
         </div>
