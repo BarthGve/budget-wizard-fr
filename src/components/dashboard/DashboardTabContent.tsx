@@ -118,7 +118,7 @@ export const DashboardTabContent = ({
           </div>
         )}
         {credits && credits.length > 0 && (
-          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 ">
+          <div>
             <CreditsPieChart
               credits={credits}
               totalMensualites={totalMensualites}
@@ -126,12 +126,12 @@ export const DashboardTabContent = ({
           </div>
         )}
         {monthlySavings.length > 0 && (
-          <div>
+         
             <SavingsPieChart
               monthlySavings={monthlySavings}
               totalSavings={savings}
             />
-          </div>
+        
         )}
       </div>
       <div >
