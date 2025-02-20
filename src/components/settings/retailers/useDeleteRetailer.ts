@@ -38,18 +38,20 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
 
       return retailerId;
     },
-    onSuccess: (deletedRetailerId) => {
-      console.log("✨ Deletion successful, updating cache...");
+    onSuccess: async () => {
+      console.log("✨ Deletion successful, invalidating queries...");
       
-      // Mettre à jour le cache en filtrant le retailer supprimé
-      queryClient.setQueryData<any[]>(["retailers"], (oldData) => {
-        if (!oldData) return [];
-        return oldData.filter(retailer => retailer.id !== deletedRetailerId);
-      });
+      // Invalider toutes les queries liées aux retailers et aux expenses
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["retailers"] }),
+        queryClient.invalidateQueries({ queryKey: ["expenses"] })
+      ]);
 
+      console.log("✅ Queries invalidated");
       toast.success("Enseigne supprimée avec succès");
       
       if (onSuccess) {
+        console.log("📞 Calling onSuccess callback...");
         onSuccess();
       }
     },
