@@ -8,36 +8,42 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
 
   return useMutation({
     mutationFn: async (retailerId: string) => {
-      // Suppression des dépenses d'abord
+      console.log("🚀 Deleting retailer:", retailerId);
+      
+      // Delete associated expenses first
       const { error: expensesError } = await supabase
         .from("expenses")
         .delete()
         .eq("retailer_id", retailerId);
 
-      if (expensesError) throw expensesError;
+      if (expensesError) {
+        console.error("❌ Error deleting expenses:", expensesError);
+        throw expensesError;
+      }
 
-      // Puis suppression de l'enseigne
+      // Then delete the retailer
       const { error: retailerError } = await supabase
         .from("retailers")
         .delete()
         .eq("id", retailerId);
 
-      if (retailerError) throw retailerError;
+      if (retailerError) {
+        console.error("❌ Error deleting retailer:", retailerError);
+        throw retailerError;
+      }
 
       return retailerId;
     },
-    onSuccess: () => {
-      // Force un refetch immédiat
-      queryClient.refetchQueries({
-        queryKey: ["retailers"],
-        exact: true,
-        type: 'all'
-      });
+    onSuccess: (_, retailerId) => {
+      // Invalider le cache pour forcer un rechargement
+      queryClient.invalidateQueries({ queryKey: ["retailers"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
       
       toast.success("Enseigne supprimée avec succès");
       if (onSuccess) onSuccess();
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("❌ Error in deletion:", error);
       toast.error("Erreur lors de la suppression de l'enseigne");
     }
   });

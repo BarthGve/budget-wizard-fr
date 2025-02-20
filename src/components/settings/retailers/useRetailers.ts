@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Retailer } from "./types";
 
 export const useRetailers = () => {
-  const query = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["retailers"],
     queryFn: async () => {
       console.log("🔄 Fetching retailers...");
@@ -22,16 +22,13 @@ export const useRetailers = () => {
 
       console.log("✅ Retailers fetched successfully, count:", data?.length);
       return data as Retailer[];
-    },
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true
+    }
   });
 
   return {
-    retailers: query.data || [],
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error
+    retailers: data || [],
+    isLoading,
+    isError,
+    error
   };
 };
