@@ -47,9 +47,11 @@ export function RetailersList() {
     }
   };
 
-  const handleCancelDelete = () => {
-    setConfirmationOpen(false);
-    setRetailerToDelete(null);
+  const handleDialogChange = (open: boolean) => {
+    if (!open) {
+      setRetailerToDelete(null);
+    }
+    setConfirmationOpen(open);
   };
 
   return (
@@ -98,7 +100,7 @@ export function RetailersList() {
         </TableBody>
       </Table>
 
-      <AlertDialog open={confirmationOpen} onOpenChange={setConfirmationOpen}>
+      <AlertDialog open={confirmationOpen} onOpenChange={handleDialogChange}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
@@ -113,7 +115,7 @@ export function RetailersList() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancelDelete}>
+            <AlertDialogCancel>
               Annuler
             </AlertDialogCancel>
             <AlertDialogAction
