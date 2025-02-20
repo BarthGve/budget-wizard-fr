@@ -126,12 +126,12 @@ export const DashboardTabContent = ({
           </div>
         )}
         {monthlySavings.length > 0 && (
-         
+         <div>
             <SavingsPieChart
               monthlySavings={monthlySavings}
               totalSavings={savings}
             />
-        
+        </div>
         )}
       </div>
       <div >
