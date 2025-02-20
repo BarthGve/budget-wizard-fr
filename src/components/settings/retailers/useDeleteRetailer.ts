@@ -32,12 +32,12 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
         throw retailerError;
       }
 
+      console.log("✅ Retailer deleted successfully");
       return retailerId;
     },
-    onSuccess: (_, retailerId) => {
-      // Invalider le cache pour forcer un rechargement
-      queryClient.invalidateQueries({ queryKey: ["retailers"] });
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+    onSuccess: () => {
+      // Invalider le cache et forcer un rechargement immédiat
+      queryClient.resetQueries({ queryKey: ["retailers"] });
       
       toast.success("Enseigne supprimée avec succès");
       if (onSuccess) onSuccess();
