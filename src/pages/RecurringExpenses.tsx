@@ -133,20 +133,20 @@ const RecurringExpenses = () => {
               <CardDescription className="text-white">Total des charges trimestrielles</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-xl-white font-bold">{Math.round(quarterlyTotal)} €</p>
+              <p className="text-xl text-white font-bold">{Math.round(quarterlyTotal)} €</p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
             <CardHeader className="py-[16px]">
               <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-2xl-white">Annuel</CardTitle>
+                <CardTitle className="text-2xl text-white">Annuel</CardTitle>
                 <CalendarRange className="h-6 w-6 text-white" />
               </div>
               <CardDescription className="text-white">Total des charges annuelles</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-xl-white font-bold">{Math.round(yearlyTotal)} €</p>
+              <p className="text-xl text-white font-bold">{Math.round(yearlyTotal)} €</p>
             </CardContent>
           </Card>
         </div>
