@@ -24,26 +24,24 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 export function RetailersList() {
   const { retailers, isLoading: isLoadingRetailers } = useRetailers();
-  const [initialDialogOpen, setInitialDialogOpen] = useState(false);
-  const [finalDialogOpen, setFinalDialogOpen] = useState(false);
-  const [selectedRetailerId, setSelectedRetailerId] = useState<string | null>(null);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [retailerToDelete, setRetailerToDelete] = useState<string | null>(null);
 
-  const resetState = () => {
-    setInitialDialogOpen(false);
-    setFinalDialogOpen(false);
-    setSelectedRetailerId(null);
+  const handleClose = () => {
+    setConfirmationOpen(false);
+    setRetailerToDelete(null);
   };
 
-  const { deleteRetailer, isDeleting } = useDeleteRetailer(resetState);
+  const { deleteRetailer, isDeleting } = useDeleteRetailer(handleClose);
 
   const handleDelete = () => {
-    if (selectedRetailerId) {
-      deleteRetailer(selectedRetailerId);
+    if (retailerToDelete) {
+      deleteRetailer(retailerToDelete);
     }
   };
 
-  const currentRetailer = selectedRetailerId 
-    ? retailers?.find(r => r.id === selectedRetailerId) 
+  const currentRetailer = retailerToDelete 
+    ? retailers?.find(r => r.id === retailerToDelete) 
     : null;
 
   if (isLoadingRetailers) {
@@ -84,8 +82,8 @@ export function RetailersList() {
                     <DropdownMenuItem
                       className="text-destructive focus:text-destructive"
                       onClick={() => {
-                        setSelectedRetailerId(retailer.id);
-                        setInitialDialogOpen(true);
+                        setRetailerToDelete(retailer.id);
+                        setConfirmationOpen(true);
                       }}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
@@ -100,63 +98,23 @@ export function RetailersList() {
       </Table>
 
       <AlertDialog 
-        open={initialDialogOpen}
+        open={confirmationOpen}
         onOpenChange={(open) => {
-          if (!open) resetState();
+          if (!open) handleClose();
         }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Attention - Suppression d'enseigne
+              Confirmation de suppression
             </AlertDialogTitle>
           </AlertDialogHeader>
-          <AlertDialogDescription className="space-y-2">
-            Vous êtes sur le point de supprimer l'enseigne <strong>{currentRetailer?.name}</strong>.
-            Cette action supprimera également toutes les dépenses associées à cette enseigne.
-            Êtes-vous sûr de vouloir continuer ?
+          <AlertDialogDescription>
+            <p>Voulez-vous vraiment supprimer l'enseigne <strong>{currentRetailer?.name}</strong> ?</p>
+            <p className="text-destructive mt-2">Cette action supprimera également toutes les dépenses associées et ne peut pas être annulée.</p>
           </AlertDialogDescription>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={resetState}>
-              Annuler
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => {
-                setInitialDialogOpen(false);
-                setFinalDialogOpen(true);
-              }}
-            >
-              Continuer
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog 
-        open={finalDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) resetState();
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Confirmation finale
-            </AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogDescription className="space-y-2">
-            Cette action est <strong>irréversible</strong>.
-            Toutes les dépenses associées à l'enseigne <strong>{currentRetailer?.name}</strong> seront définitivement supprimées.
-            
-            <p className="mt-4">Confirmez-vous vouloir supprimer :</p>
-            <ul className="list-disc list-inside pl-4 text-destructive">
-              <li>L'enseigne {currentRetailer?.name}</li>
-              <li>Toutes les dépenses associées</li>
-            </ul>
-          </AlertDialogDescription>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={resetState}>
+            <AlertDialogCancel onClick={handleClose}>
               Annuler
             </AlertDialogCancel>
             <AlertDialogAction
@@ -164,7 +122,7 @@ export function RetailersList() {
               onClick={handleDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? "Suppression..." : "Confirmer la suppression"}
+              {isDeleting ? "Suppression..." : "Supprimer"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
