@@ -12,7 +12,7 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
+      if (userError) throw new Error(userError.message);
       
       // Delete associated expenses first
       const { error: expensesError } = await supabase
@@ -23,7 +23,7 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
 
       if (expensesError) {
         console.error("❌ Error deleting expenses:", expensesError);
-        throw expensesError;
+        throw new Error(expensesError.message);
       }
 
       // Then delete the retailer
@@ -35,18 +35,18 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
 
       if (retailerError) {
         console.error("❌ Error deleting retailer:", retailerError);
-        throw retailerError;
+        throw new Error(retailerError.message);
       }
 
       console.log("✅ Retailer deleted successfully");
-      return retailerId;
+      return { id: retailerId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["retailers"] });
       toast.success("Enseigne supprimée avec succès");
       if (onSuccess) onSuccess();
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error("❌ Error in deletion:", error);
       toast.error("Erreur lors de la suppression de l'enseigne");
     }
