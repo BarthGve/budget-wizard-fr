@@ -1,4 +1,6 @@
 
+export type ProfileType = 'basic' | 'pro';
+
 export interface Profile {
   id: string;
   full_name: string | null;
@@ -7,4 +9,5 @@ export interface Profile {
   savings_goal_percentage: number | null;
   updated_at: string | null;
   email: string | null;
+  profile_type: ProfileType;
 }

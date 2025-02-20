@@ -302,12 +302,40 @@ export type Database = {
           },
         ]
       }
+      page_permissions: {
+        Row: {
+          created_at: string
+          id: string
+          page_name: string
+          page_path: string
+          required_profile: Database["public"]["Enums"]["user_profile_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          page_name: string
+          page_path: string
+          required_profile?: Database["public"]["Enums"]["user_profile_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          page_name?: string
+          page_path?: string
+          required_profile?: Database["public"]["Enums"]["user_profile_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           color_palette: string | null
           full_name: string | null
           id: string
+          profile_type: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage: number | null
           updated_at: string | null
         }
@@ -316,6 +344,7 @@ export type Database = {
           color_palette?: string | null
           full_name?: string | null
           id: string
+          profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
           updated_at?: string | null
         }
@@ -324,6 +353,7 @@ export type Database = {
           color_palette?: string | null
           full_name?: string | null
           id?: string
+          profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
           updated_at?: string | null
         }
@@ -667,6 +697,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_page: {
+        Args: {
+          user_id: string
+          page_path: string
+        }
+        Returns: boolean
+      }
       can_delete_account: {
         Args: {
           user_id_to_check: string
@@ -749,6 +786,13 @@ export type Database = {
         }
         Returns: undefined
       }
+      update_user_profile: {
+        Args: {
+          target_user_id: string
+          new_profile: Database["public"]["Enums"]["user_profile_type"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "user"
@@ -757,6 +801,7 @@ export type Database = {
       mode_planification_type: "par_date" | "par_mensualite"
       notification_status: "non_lu" | "lu"
       notification_type: "credit_echeance" | "autre"
+      user_profile_type: "basic" | "pro"
     }
     CompositeTypes: {
       [_ in never]: never

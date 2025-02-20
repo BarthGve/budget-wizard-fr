@@ -2,11 +2,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ProfileType } from "@/types/profile";
 
 export interface User {
   id: string;
   email: string;
   role: "user" | "admin";
+  profile_type: ProfileType;
   created_at: string;
   avatar_url: string | null;
 }
@@ -20,7 +22,6 @@ export const useUsers = (page: number, pageSize: number) => {
     try {
       setLoading(true);
       
-      // Get users using our secure RPC function
       const { data: usersData, error: usersError } = await supabase
         .rpc('list_users', { 
           page_number: page - 1,
@@ -29,28 +30,40 @@ export const useUsers = (page: number, pageSize: number) => {
 
       if (usersError) throw usersError;
 
-      // Get total users count
       const { data: totalUsers, error: countError } = await supabase
         .rpc('get_total_users');
 
       if (countError) throw countError;
 
-      // Get roles for these users
       const userIds = usersData?.map(user => user.id) || [];
+      
+      // Get roles
       const { data: rolesData } = await supabase
         .from('user_roles')
         .select('user_id, role')
         .in('user_id', userIds);
+
+      // Get profiles
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, profile_type')
+        .in('id', userIds);
 
       const roleMap = new Map();
       rolesData?.forEach(role => {
         roleMap.set(role.user_id, role.role);
       });
 
+      const profileMap = new Map();
+      profilesData?.forEach(profile => {
+        profileMap.set(profile.id, profile.profile_type);
+      });
+
       const formattedUsers = usersData?.map(user => ({
         id: user.id,
         email: user.email || '',
         role: roleMap.get(user.id) || "user",
+        profile_type: profileMap.get(user.id) || "basic",
         created_at: user.created_at,
         avatar_url: user.avatar_url
       })) || [];
@@ -91,6 +104,23 @@ export const useUsers = (page: number, pageSize: number) => {
     }
   };
 
+  const handleProfileChange = async (userId: string, newProfile: ProfileType) => {
+    try {
+      const { error } = await supabase.rpc('update_user_profile', {
+        target_user_id: userId,
+        new_profile: newProfile
+      });
+
+      if (error) throw error;
+
+      toast.success("Profil mis à jour avec succès");
+      fetchUsers();
+    } catch (error: any) {
+      toast.error("Erreur lors de la mise à jour du profil");
+      console.error("Error updating profile:", error);
+    }
+  };
+
   const handleDeleteUser = async (userId: string) => {
     try {
       const { error } = await supabase.rpc('delete_user', {
@@ -116,6 +146,7 @@ export const useUsers = (page: number, pageSize: number) => {
     totalPages,
     loading,
     handleRoleChange,
+    handleProfileChange,
     handleDeleteUser,
     refreshUsers: fetchUsers
   };

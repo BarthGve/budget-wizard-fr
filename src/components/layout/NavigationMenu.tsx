@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
+import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 interface NavigationMenuProps {
   collapsed: boolean;
@@ -21,6 +22,7 @@ interface NavigationMenuProps {
 
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
+  const { canAccessPage } = usePagePermissions();
 
   const adminMenu = [
     { title: "Gestion utilisateurs", icon: Users, path: "/admin" },
@@ -38,7 +40,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     { title: "Immobilier", icon: Home, path: "/properties" },
   ];
   
-  const menuItems = isAdmin ? [...adminMenu] : [...userMenu];
+  const menuItems = isAdmin ? [...adminMenu] : userMenu.filter(item => canAccessPage(item.path));
 
   return (
     <nav className="flex-1 p-4">

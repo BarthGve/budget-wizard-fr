@@ -19,12 +19,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { ProfileType } from "@/types/profile";
 
 interface UserActionsProps {
   userId: string;
   userEmail: string;
   currentRole: "user" | "admin";
+  currentProfile: ProfileType;
   onRoleChange: (userId: string, newRole: "user" | "admin") => void;
+  onProfileChange: (userId: string, newProfile: ProfileType) => void;
   onDelete: (userId: string) => void;
 }
 
@@ -32,7 +35,9 @@ export const UserActions = ({
   userId,
   userEmail,
   currentRole,
+  currentProfile,
   onRoleChange,
+  onProfileChange,
   onDelete,
 }: UserActionsProps) => {
   return (
@@ -50,6 +55,23 @@ export const UserActions = ({
           <SelectItem value="admin">Administrateur</SelectItem>
         </SelectContent>
       </Select>
+
+      {currentRole === "user" && (
+        <Select
+          value={currentProfile}
+          onValueChange={(value: ProfileType) => onProfileChange(userId, value)}
+        >
+          <SelectTrigger className="w-[100px] bg-white border-gray-200">
+            <SelectValue />
+            <ChevronDown className="h-4 w-4 opacity-50" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="basic">Basic</SelectItem>
+            <SelectItem value="pro">Pro</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
+
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
