@@ -48,18 +48,22 @@ export const useDeleteRetailer = (onSuccess?: () => void) => {
       console.log("✅ Retailer deleted successfully");
       return retailerId;
     },
-    onError: (error) => {
-      console.error("❌ Mutation error:", error);
-      toast.error("Erreur lors de la suppression de l'enseigne");
-    },
     onSuccess: (retailerId) => {
       console.log("✅ Mutation completed successfully for retailer:", retailerId);
-      queryClient.invalidateQueries({ queryKey: ["retailers"] });
-      toast.success("Enseigne supprimée avec succès");
       if (onSuccess) {
         console.log("🔄 Calling onSuccess callback");
         onSuccess();
       }
+      queryClient.invalidateQueries({ queryKey: ["retailers"] });
+      toast.success("Enseigne supprimée avec succès");
+    },
+    onError: (error) => {
+      console.error("❌ Mutation error:", error);
+      if (onSuccess) {
+        console.log("🔄 Calling onSuccess callback even though there was an error");
+        onSuccess();
+      }
+      toast.error("Erreur lors de la suppression de l'enseigne");
     }
   });
 };
