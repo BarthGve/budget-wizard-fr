@@ -18,7 +18,17 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
-      return { isAuthenticated: true };
+
+      // Vérifier si l'utilisateur est admin
+      const { data: isAdmin, error } = await supabase.rpc('has_role', {
+        user_id: user.id,
+        role: 'admin'
+      });
+
+      return { 
+        isAuthenticated: true,
+        isAdmin
+      };
     }
   });
 
@@ -28,6 +38,11 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
 
   if (!authData?.isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
+  if (authData.isAdmin && location.pathname === '/dashboard') {
+    return <Navigate to="/admin" replace />;
   }
 
   if (requireAdmin && !isAdmin) {

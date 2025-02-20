@@ -6,6 +6,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "@/components/credits/types";
+import { Badge } from "@/components/ui/badge";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -14,7 +15,6 @@ interface DashboardLayoutProps {
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
 
-  // Récupérer les crédits actifs
   const { data: credits } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
@@ -32,10 +32,33 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     }
   });
 
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      const { data: isAdmin } = await supabase.rpc('has_role', {
+        user_id: user.id,
+        role: 'admin'
+      });
+
+      return { 
+        ...profile, 
+        isAdmin
+      };
+    }
+  });
+
   // Calculer le solde global
   const totalRevenue = contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
   
-  // Calculer le total des charges en tenant compte de la périodicité
   const currentMonth = new Date().getMonth() + 1;
   const totalExpenses = recurringExpenses?.reduce((sum, expense) => {
     switch (expense.periodicity) {
@@ -59,8 +82,17 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="sticky top-0 z-10 p-4 justify-end animate-fade-in">
-          <div className="w-auto">        
-            <GlobalBalanceCard balance={globalBalance} />
+          <div className="flex items-center justify-between gap-4">
+            {userProfile?.profile_type === "pro" && (
+              <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600">
+                Version Pro
+              </Badge>
+            )}
+            {!userProfile?.isAdmin && (
+              <div className="flex-1">
+                <GlobalBalanceCard balance={globalBalance} />
+              </div>
+            )}
           </div>
         </div>
         <div className="container mx-auto p-6">
