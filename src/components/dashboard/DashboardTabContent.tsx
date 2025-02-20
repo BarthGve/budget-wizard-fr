@@ -126,7 +126,7 @@ export const DashboardTabContent = ({
           </div>
         )}
         {monthlySavings.length > 0 && (
-          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 ">
+          <div>
             <SavingsPieChart
               monthlySavings={monthlySavings}
               totalSavings={savings}
