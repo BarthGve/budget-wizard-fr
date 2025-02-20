@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,12 +32,26 @@ interface NewSavingDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+const getFaviconUrl = (domain: string) => {
+  if (!domain) return null;
+  const cleanDomain = domain.trim().toLowerCase();
+  // Ajout du protocole si non présent pour éviter les erreurs CORS
+  if (!cleanDomain.startsWith('http')) {
+    return `https://logo.clearbit.com/${cleanDomain}`;
+  }
+  const url = new URL(cleanDomain);
+  return `https://logo.clearbit.com/${url.hostname}`;
+};
+
 export const NewSavingDialog = ({ onSavingAdded, trigger, saving, open: controlledOpen, onOpenChange }: NewSavingDialogProps) => {
   const [open, setOpen] = useState(false);
   const [newSavingName, setNewSavingName] = useState("");
   const [newSavingAmount, setNewSavingAmount] = useState(0);
   const [newSavingDescription, setNewSavingDescription] = useState("");
   const [domain, setDomain] = useState("");
+  const [previewLogoUrl, setPreviewLogoUrl] = useState<string | null>(null);
+  const [isLogoValid, setIsLogoValid] = useState(true);
+  const [isCheckingLogo, setIsCheckingLogo] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -49,6 +64,56 @@ export const NewSavingDialog = ({ onSavingAdded, trigger, saving, open: controll
       }
     }
   }, [saving]);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const checkLogo = async () => {
+      if (!domain?.trim()) {
+        setPreviewLogoUrl(null);
+        setIsLogoValid(true);
+        setIsCheckingLogo(false);
+        return;
+      }
+
+      try {
+        setIsCheckingLogo(true);
+        const logoUrl = getFaviconUrl(domain);
+        
+        if (!logoUrl) {
+          setPreviewLogoUrl(null);
+          setIsLogoValid(false);
+          return;
+        }
+
+        setPreviewLogoUrl(logoUrl);
+
+        // Créer une promesse pour charger l'image
+        const loadImage = () => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => reject(false);
+            img.src = logoUrl;
+          });
+        };
+
+        await loadImage();
+        setIsLogoValid(true);
+      } catch (error) {
+        console.error("Error loading logo:", error);
+        setIsLogoValid(false);
+      } finally {
+        setIsCheckingLogo(false);
+      }
+    };
+
+    timeoutId = setTimeout(checkLogo, 500);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [domain]);
 
   const handleOpenChange = (newOpen: boolean) => {
     if (onOpenChange) {
@@ -83,6 +148,8 @@ export const NewSavingDialog = ({ onSavingAdded, trigger, saving, open: controll
     setNewSavingAmount(0);
     setNewSavingDescription("");
     setDomain("");
+    setPreviewLogoUrl(null);
+    setIsLogoValid(true);
   };
 
   const addNewMonthlySaving = async () => {
@@ -102,8 +169,8 @@ export const NewSavingDialog = ({ onSavingAdded, trigger, saving, open: controll
     }
 
     let logoUrl = '/placeholder.svg';
-    if (domain.trim()) {
-      logoUrl = `https://logo.clearbit.com/${domain.trim()}`;
+    if (domain.trim() && isLogoValid && previewLogoUrl) {
+      logoUrl = previewLogoUrl;
     }
 
     const savingData = {
@@ -180,12 +247,31 @@ export const NewSavingDialog = ({ onSavingAdded, trigger, saving, open: controll
           </div>
           <div className="space-y-2">
             <Label htmlFor="domain">Domaine de l'organisme (optionnel)</Label>
-            <Input
-              id="domain"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              placeholder="Ex: boursorama.com, fortuneo.fr..."
-            />
+            <div className="flex items-center gap-4">
+              <Input
+                id="domain"
+                value={domain}
+                onChange={(e) => setDomain(e.target.value)}
+                placeholder="Ex: boursorama.com, fortuneo.fr..."
+              />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full border border-border flex items-center justify-center bg-white overflow-hidden">
+                {isCheckingLogo ? (
+                  <div className="text-xs text-muted-foreground text-center">
+                    Chargement...
+                  </div>
+                ) : previewLogoUrl && isLogoValid ? (
+                  <img
+                    src={previewLogoUrl}
+                    alt="Logo preview"
+                    className="w-8 h-8 object-contain"
+                  />
+                ) : domain ? (
+                  <div className="text-xs text-muted-foreground text-center">
+                    Logo non trouvé
+                  </div>
+                ) : null}
+              </div>
+            </div>
             <p className="text-sm text-muted-foreground">
               Le logo sera automatiquement récupéré à partir du domaine
             </p>
