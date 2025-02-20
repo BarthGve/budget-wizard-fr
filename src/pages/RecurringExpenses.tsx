@@ -114,7 +114,7 @@ const RecurringExpenses = () => {
           <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
             <CardHeader className="py-[16px]">
               <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-2xl">Charges Mensuelles</CardTitle>
+                <CardTitle className="text-white-2xl">Charges Mensuelles</CardTitle>
                 <Calendar className="h-6 w-6 text-muted-foreground" />
               </div>
               <CardDescription>Total des charges mensuelles</CardDescription>
