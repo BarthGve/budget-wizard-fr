@@ -110,7 +110,7 @@ export const DashboardTabContent = ({
       </div>
       <div className="grid gap-6 md:grid-cols-3">
         {recurringExpenses.length > 0 && (
-          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5">
+          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 ">
             <RecurringExpensesPieChart
               recurringExpenses={recurringExpenses}
               totalExpenses={expenses}
@@ -118,7 +118,7 @@ export const DashboardTabContent = ({
           </div>
         )}
         {credits && credits.length > 0 && (
-          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-blue-500/5 via-cyan-500/5 to-teal-500/5">
+          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 ">
             <CreditsPieChart
               credits={credits}
               totalMensualites={totalMensualites}
@@ -126,7 +126,7 @@ export const DashboardTabContent = ({
           </div>
         )}
         {monthlySavings.length > 0 && (
-          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02] bg-gradient-to-br from-green-500/5 via-emerald-500/5 to-teal-500/5">
+          <div className="p-6 rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 ">
             <SavingsPieChart
               monthlySavings={monthlySavings}
               totalSavings={savings}
@@ -134,7 +134,7 @@ export const DashboardTabContent = ({
           </div>
         )}
       </div>
-      <div className="rounded-lg bg-card hover:shadow-xl transition-shadow duration-300 bg-gradient-to-br from-slate-500/5 via-gray-500/5 to-zinc-500/5 p-6">
+      <div className="rounded-lg bg-card hover:shadow-xl transition-shadow  p-6">
         <ContributorsTable 
           contributors={contributors}
           totalExpenses={expenses}

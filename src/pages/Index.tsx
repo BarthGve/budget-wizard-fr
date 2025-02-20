@@ -104,30 +104,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <Tabs 
-          defaultValue="monthly" 
-          onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
-          className="space-y-4"
-        >
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-4 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-lg p-1">
-            <TabsTrigger 
-              value="monthly"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:via-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300"
-            >
-              Vue mensuelle
-            </TabsTrigger>
-            <TabsTrigger 
-              value="yearly"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:via-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300"
-            >
-              Vue annuelle
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent 
-            value="monthly"
-            className="space-y-4 animate-fade-up [animation-fill-mode:forwards] motion-reduce:animate-none"
-          >
+        
             <DashboardTabContent
               revenue={totalRevenue}
               expenses={monthlyExpenses}
@@ -140,26 +117,7 @@ const Dashboard = () => {
               monthlySavings={monthlySavings || []}
               contributors={contributors || []}
             />
-          </TabsContent>
-
-          <TabsContent 
-            value="yearly"
-            className="space-y-4 animate-fade-up [animation-fill-mode:forwards] motion-reduce:animate-none"
-          >
-            <DashboardTabContent
-              revenue={yearlyRevenue}
-              expenses={yearlyExpenses}
-              savings={yearlyMonthlySavings}
-              balance={yearlyBalance}
-              savingsGoal={savingsGoal}
-              contributorShares={getCumulativeContributionPercentages(contributors, totalRevenue)}
-              expenseShares={getCumulativeExpensePercentages(contributors, yearlyExpenses)}
-              recurringExpenses={getExpensesForPieChart()}
-              monthlySavings={getSavingsForPieChart()}
-              contributors={contributors || []}
-            />
-          </TabsContent>
-        </Tabs>
+         
       </div>
     </DashboardLayout>
   );
