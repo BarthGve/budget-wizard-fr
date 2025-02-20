@@ -1,39 +1,26 @@
-
 import { useNavigate } from "react-router-dom";
-import {
-  LogOut,
-  Bell,
-  UserCircle2,
-  CreditCard,
-  ChevronsUpDown,
-  Star,
-  Tag,
-} from "lucide-react";
+import { LogOut, Bell, UserCircle2, CreditCard, ChevronsUpDown, Star, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Profile } from "@/types/profile";
-
 interface UserDropdownProps {
   collapsed: boolean;
   profile?: Profile;
 }
-
-export const UserDropdown = ({ collapsed, profile }: UserDropdownProps) => {
+export const UserDropdown = ({
+  collapsed,
+  profile
+}: UserDropdownProps) => {
   const navigate = useNavigate();
-
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
+      const {
+        error
+      } = await supabase.auth.signOut();
       if (error) throw error;
-      
       toast.success("Déconnexion réussie");
       navigate("/login");
     } catch (error: any) {
@@ -41,46 +28,31 @@ export const UserDropdown = ({ collapsed, profile }: UserDropdownProps) => {
       console.error("Logout error:", error);
     }
   };
-
-  return (
-    <div className="mt-auto border-t border-gray-200 p-4">
+  return <div className="mt-auto border-t border-gray-200 p-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="w-full justify-start p-2 h-auto">
             <div className="flex items-center gap-3 w-full">
               <Avatar>
-                <AvatarImage
-                  src={profile?.avatar_url || undefined}
-                  alt={profile?.full_name || "Avatar"}
-                />
+                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
                 <AvatarFallback>
                   {(profile?.full_name || "?")[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {!collapsed && (
-                <div className="flex items-center justify-between flex-1">
+              {!collapsed && <div className="flex items-center justify-between flex-1">
                   <div className="flex flex-col items-start">
                     <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
                     <span className="text-xs text-muted-foreground">{profile?.email}</span>
                   </div>
                   <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
-                </div>
-              )}
+                </div>}
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          side="right"
-          sideOffset={20}
-          className="w-[240px]"
-        >
+        <DropdownMenuContent align="end" side="right" sideOffset={20} className="w-[240px]">
           <div className="flex items-center gap-3 p-2 border-b">
             <Avatar>
-              <AvatarImage
-                src={profile?.avatar_url || undefined}
-                alt={profile?.full_name || "Avatar"}
-              />
+              <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
               <AvatarFallback>
                 {(profile?.full_name || "?")[0]?.toUpperCase()}
               </AvatarFallback>
@@ -98,7 +70,7 @@ export const UserDropdown = ({ collapsed, profile }: UserDropdownProps) => {
 
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
             <Tag className="mr-2 h-4 w-4" />
-            <span>Classification</span>
+            <span>Paramétrage</span>
           </DropdownMenuItem>
      
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>
@@ -111,6 +83,5 @@ export const UserDropdown = ({ collapsed, profile }: UserDropdownProps) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
-  );
+    </div>;
 };
