@@ -1,13 +1,7 @@
 
 import { Button } from "@/components/ui/button";
-import { Trash2, ChevronDown } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Trash2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +13,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ProfileType } from "@/types/profile";
 
 interface UserActionsProps {
@@ -41,14 +42,13 @@ export const UserActions = ({
   onDelete,
 }: UserActionsProps) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-4">
       <Select
         value={currentRole}
         onValueChange={(value: "user" | "admin") => onRoleChange(userId, value)}
       >
         <SelectTrigger className="w-[130px] bg-white border-gray-200">
           <SelectValue />
-          <ChevronDown className="h-4 w-4 opacity-50" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="user">Membre</SelectItem>
@@ -57,19 +57,15 @@ export const UserActions = ({
       </Select>
 
       {currentRole === "user" && (
-        <Select
-          value={currentProfile}
-          onValueChange={(value: ProfileType) => onProfileChange(userId, value)}
-        >
-          <SelectTrigger className="w-[100px] bg-white border-gray-200">
-            <SelectValue />
-            <ChevronDown className="h-4 w-4 opacity-50" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="basic">Basic</SelectItem>
-            <SelectItem value="pro">Pro</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center space-x-2">
+          <Switch
+            checked={currentProfile === "pro"}
+            onCheckedChange={(checked) => onProfileChange(userId, checked ? "pro" : "basic")}
+          />
+          <span className="text-sm text-muted-foreground">
+            {currentProfile === "pro" ? "Pro" : "Basic"}
+          </span>
+        </div>
       )}
 
       <AlertDialog>

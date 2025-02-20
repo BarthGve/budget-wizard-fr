@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { ProfileType } from "@/types/profile";
 
@@ -34,11 +34,17 @@ export const PagePermissionsTable = () => {
     },
   });
 
-  const handleProfileChange = async (permissionId: string, newProfile: ProfileType) => {
+  const handleProfileChange = async (permissionId: string, isPro: boolean) => {
+    // Ne pas permettre le changement si c'est le tableau de bord
+    if (permissions?.find(p => p.id === permissionId)?.page_path === '/dashboard') {
+      toast.error("Le tableau de bord doit rester accessible à tous les utilisateurs");
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("page_permissions")
-        .update({ required_profile: newProfile })
+        .update({ required_profile: isPro ? "pro" : "basic" })
         .eq("id", permissionId);
 
       if (error) throw error;
@@ -56,7 +62,7 @@ export const PagePermissionsTable = () => {
       <div>
         <h2 className="text-xl font-semibold">Permissions des pages</h2>
         <p className="text-sm text-muted-foreground">
-          Gérez les niveaux d'accès requis pour chaque page
+          Gérez les niveaux d'accès requis pour chaque page. Le tableau de bord est accessible à tous les utilisateurs.
         </p>
       </div>
 
@@ -66,7 +72,7 @@ export const PagePermissionsTable = () => {
             <TableRow>
               <TableHead>Page</TableHead>
               <TableHead>Chemin</TableHead>
-              <TableHead>Profil requis</TableHead>
+              <TableHead>Version Pro requise</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -75,20 +81,16 @@ export const PagePermissionsTable = () => {
                 <TableCell className="font-medium">{permission.page_name}</TableCell>
                 <TableCell>{permission.page_path}</TableCell>
                 <TableCell>
-                  <Select
-                    value={permission.required_profile}
-                    onValueChange={(value: ProfileType) =>
-                      handleProfileChange(permission.id, value)
-                    }
-                  >
-                    <SelectTrigger className="w-[100px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="basic">Basic</SelectItem>
-                      <SelectItem value="pro">Pro</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={permission.required_profile === "pro"}
+                      onCheckedChange={(checked) => handleProfileChange(permission.id, checked)}
+                      disabled={permission.page_path === '/dashboard'}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {permission.required_profile === "pro" ? "Pro" : "Basic"}
+                    </span>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
