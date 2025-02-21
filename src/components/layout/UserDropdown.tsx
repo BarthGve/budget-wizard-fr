@@ -46,9 +46,9 @@ export const UserDropdown = ({
                   </AvatarFallback>
                 </Avatar>
                 {profile?.profile_type === "pro" && (
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
+                  <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
                     Pro
-                  </div>
+                  </Badge>
                 )}
               </div>
               {!collapsed && (
