@@ -42,10 +42,10 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
         .getPublicUrl(filePath);
 
       onChange({ ...data, image_url: publicUrl });
-      toast.success("Image téléchargée avec succès");
+      toast.success("Image uploaded successfully");
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.error("Erreur lors du téléchargement de l'image");
+      toast.error("Error uploading image");
     } finally {
       setUploading(false);
     }
@@ -54,12 +54,12 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="project-name">Nom du projet</Label>
+        <Label htmlFor="project-name">Project name</Label>
         <Input
           id="project-name"
           value={data.name}
           onChange={(e) => onChange({ ...data, name: e.target.value })}
-          placeholder="Ex: Achat immobilier, Voyage..."
+          placeholder="Ex: Property purchase, Travel..."
         />
       </div>
 
@@ -69,12 +69,12 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
           id="project-description"
           value={data.description}
           onChange={(e) => onChange({ ...data, description: e.target.value })}
-          placeholder="Décrivez votre projet..."
+          placeholder="Describe your project..."
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Image d'illustration</Label>
+        <Label>Illustration image</Label>
         <div className="flex items-center gap-4">
           <img
             src={data.image_url || "/placeholder.svg"}
@@ -84,7 +84,7 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
           <Button variant="outline" size="sm" className="w-32">
             <label className="cursor-pointer flex items-center gap-2">
               <ImagePlus className="h-4 w-4" />
-              {uploading ? 'Envoi...' : 'Choisir'}
+              {uploading ? 'Uploading...' : 'Choose'}
               <input
                 type="file"
                 className="hidden"

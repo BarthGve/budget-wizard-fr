@@ -366,6 +366,7 @@ export type Database = {
           date_estimee: string | null
           description: string | null
           id: string
+          image_url: string | null
           mode_planification: Database["public"]["Enums"]["mode_planification_type"]
           montant_mensuel: number | null
           montant_total: number
@@ -380,6 +381,7 @@ export type Database = {
           date_estimee?: string | null
           description?: string | null
           id?: string
+          image_url?: string | null
           mode_planification: Database["public"]["Enums"]["mode_planification_type"]
           montant_mensuel?: number | null
           montant_total: number
@@ -394,6 +396,7 @@ export type Database = {
           date_estimee?: string | null
           description?: string | null
           id?: string
+          image_url?: string | null
           mode_planification?: Database["public"]["Enums"]["mode_planification_type"]
           montant_mensuel?: number | null
           montant_total?: number
