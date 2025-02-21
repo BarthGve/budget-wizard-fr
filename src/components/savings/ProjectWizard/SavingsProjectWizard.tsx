@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SavingsMode, SavingsProject } from '@/types/savings-project';
@@ -10,6 +11,7 @@ import { StepFive } from './steps/StepFive';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
+import { X } from 'lucide-react';
 
 interface SavingsProjectWizardProps {
   onClose: () => void;
@@ -152,7 +154,15 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   };
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-4 top-4"
+        onClick={onClose}
+      >
+        <X className="h-4 w-4" />
+      </Button>
       <CardHeader>
         <CardTitle>Nouveau projet d'épargne</CardTitle>
       </CardHeader>
@@ -161,20 +171,28 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         {renderStep()}
         
         <div className="flex justify-between mt-6">
-          {currentStep > 1 && (
-            <Button onClick={handlePrevious} variant="outline">
-              Précédent
-            </Button>
-          )}
-          {currentStep < steps.length ? (
-            <Button onClick={handleNext} className="ml-auto">
-              Suivant
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} className="ml-auto">
-              Créer le projet
-            </Button>
-          )}
+          <Button 
+            variant="outline" 
+            onClick={onClose}
+          >
+            Annuler
+          </Button>
+          <div className="space-x-2">
+            {currentStep > 1 && (
+              <Button onClick={handlePrevious} variant="outline">
+                Précédent
+              </Button>
+            )}
+            {currentStep < steps.length ? (
+              <Button onClick={handleNext}>
+                Suivant
+              </Button>
+            ) : (
+              <Button onClick={handleSubmit}>
+                Créer le projet
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

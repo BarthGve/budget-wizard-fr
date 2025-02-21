@@ -6,7 +6,7 @@ import { SavingsList } from "@/components/savings/SavingsList";
 import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SavingsProjectWizard } from "@/components/savings/ProjectWizard/SavingsProjectWizard";
 import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
 import { useQuery } from "@tanstack/react-query";
@@ -14,12 +14,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PlusCircle } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { Navigate } from "react-router-dom";
 
 const Savings = () => {
   const { monthlySavings, profile, refetch } = useDashboardData();
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
-  const { profile: userProfile } = usePagePermissions();
+  const { profile: userProfile, canAccessPage } = usePagePermissions();
+
+  // Vérifier si l'utilisateur peut accéder à la page
+  if (!canAccessPage('/savings')) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const { data: projects = [], refetch: refetchProjects } = useQuery({
     queryKey: ["savings-projects"],
