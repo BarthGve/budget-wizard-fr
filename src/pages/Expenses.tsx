@@ -39,6 +39,12 @@ const Expenses = () => {
     expenses: expenses?.filter(expense => expense.retailer_id === retailer.id) || []
   }));
 
+  if (isLoading) {
+    return <DashboardLayout>
+      <div>Chargement...</div>
+    </DashboardLayout>;
+  }
+
   return (
     <DashboardLayout>
       <div className="grid gap-6">
