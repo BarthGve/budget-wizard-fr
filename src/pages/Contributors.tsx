@@ -26,7 +26,7 @@ const Contributors = () => {
        
         </div>
 
-        <Card >
+        <div className="flex items-center justify-between">
   <CardHeader className="flex flex-row items-center justify-between">
     <div>
       <CardTitle>Listing</CardTitle>
@@ -41,7 +41,7 @@ const Contributors = () => {
       {contributors.map(contributor => <ContributorCard key={contributor.id} contributor={contributor} onEdit={updateContributor} onDelete={deleteContributor} />)}
     </div>
   </CardContent>
-</Card>
+</div>
       </div>
     </DashboardLayout>;
 };
