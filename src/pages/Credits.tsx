@@ -52,8 +52,12 @@ const Credits = () => {
   });
 
   const totalMensualites = credits?.reduce((total, credit) => {
-    const isDateValid = new Date(credit.date_derniere_mensualite) > new Date();
-    if (credit.statut === 'actif' && isDateValid) {
+    const today = new Date();
+    const lastPaymentDate = new Date(credit.date_derniere_mensualite);
+    const isInCurrentMonth = lastPaymentDate.getMonth() === today.getMonth() && 
+                           lastPaymentDate.getFullYear() === today.getFullYear();
+    
+    if (credit.statut === 'actif' || isInCurrentMonth) {
       return total + credit.montant_mensualite;
     }
     return total;
