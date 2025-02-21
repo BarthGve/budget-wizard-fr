@@ -48,7 +48,7 @@ export const SavingsPieChart = ({
     >
       <CardHeader className="items-center pb-0">
         <CardTitle>Epargne</CardTitle>
-        <CardDescription>Vue d'ensemble par catégorie</CardDescription>
+        <CardDescription>Vue d'ensemble par versement</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
         <ChartContainer className="mx-auto aspect-square max-h-[200px]" config={chartConfig}>

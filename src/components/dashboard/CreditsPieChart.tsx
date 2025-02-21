@@ -97,7 +97,7 @@ export const CreditsPieChart = ({
                         {formatCurrency(totalMensualites)}
                       </tspan>
                       <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground text-sm">
-                        par mois
+                        pour le mois
                       </tspan>
                     </text>
                   );
