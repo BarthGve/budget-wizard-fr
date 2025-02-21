@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,6 @@ import { RecurringExpenseDialog } from "@/components/recurring-expenses/Recurrin
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RecurringExpenseTable } from "@/components/recurring-expenses/RecurringExpenseTable";
-
 interface RecurringExpense {
   id: string;
   name: string;
@@ -21,49 +19,58 @@ interface RecurringExpense {
   debit_month: number | null;
   created_at: string;
 }
-
 const RecurringExpenses = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) {
         navigate("/login");
       }
     };
     checkAuth();
   }, [navigate]);
-
-  const { data: recurringExpenses, isLoading } = useQuery({
+  const {
+    data: recurringExpenses,
+    isLoading
+  } = useQuery({
     queryKey: ["recurring-expenses"],
     queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        },
+        error: userError
+      } = await supabase.auth.getUser();
       if (userError) throw userError;
       if (!user) {
         toast.error("Vous devez être connecté pour voir vos charges récurrentes");
         throw new Error("Not authenticated");
       }
-
-      const { data, error } = await supabase
-        .from("recurring_expenses")
-        .select("*")
-        .order("created_at", { ascending: true });
-
+      const {
+        data,
+        error
+      } = await supabase.from("recurring_expenses").select("*").order("created_at", {
+        ascending: true
+      });
       if (error) {
         console.error("Error fetching recurring expenses:", error);
         toast.error("Erreur lors du chargement des charges récurrentes");
         throw error;
       }
-
       return data as RecurringExpense[];
     }
   });
-
   const handleDeleteExpense = async (id: string) => {
     try {
-      const { error } = await supabase.from("recurring_expenses").delete().eq("id", id);
+      const {
+        error
+      } = await supabase.from("recurring_expenses").delete().eq("id", id);
       if (error) throw error;
       queryClient.invalidateQueries({
         queryKey: ["recurring-expenses"]
@@ -76,37 +83,25 @@ const RecurringExpenses = () => {
   };
 
   // Calculer les sommes par périodicité
-  const monthlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "monthly")
-    .reduce((sum, expense) => sum + expense.amount, 0) || 0;
-
-  const quarterlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "quarterly")
-    .reduce((sum, expense) => sum + expense.amount, 0) || 0;
-
-  const yearlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "yearly")
-    .reduce((sum, expense) => sum + expense.amount, 0) || 0;
-
+  const monthlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "monthly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
+  const quarterlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "quarterly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
+  const yearlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "yearly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
   if (isLoading) {
     return <DashboardLayout>
       <div>Chargement...</div>
     </DashboardLayout>;
   }
-
-  return (
-    <DashboardLayout>
+  return <DashboardLayout>
       <div className="grid gap-6">
         <div className="flex items-center justify-between">
           <div>
           <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Charges Récurrentes</h1>
-            <p className="text-muted-foreground">
-              Gérez vos dépenses mensuelles récurrentes
-            </p>
+            <p className="text-muted-foreground">Gérez vos dépenses mensuelles régulières</p>
           </div>
-          <RecurringExpenseDialog trigger={
-            <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
+          <RecurringExpenseDialog trigger={<Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
               <Plus className="mr-2 h-4 w-4" />
               Nouvelle charge
-            </Button>
-          } />
+            </Button>} />
         </div>
 
         {/* Cards de résumé */}
@@ -151,13 +146,8 @@ const RecurringExpenses = () => {
           </Card>
         </div>
 
-        <RecurringExpenseTable 
-          expenses={recurringExpenses || []}
-          onDeleteExpense={handleDeleteExpense}
-        />   
+        <RecurringExpenseTable expenses={recurringExpenses || []} onDeleteExpense={handleDeleteExpense} />   
       </div>
-    </DashboardLayout>
-  );
+    </DashboardLayout>;
 };
-
 export default RecurringExpenses;
