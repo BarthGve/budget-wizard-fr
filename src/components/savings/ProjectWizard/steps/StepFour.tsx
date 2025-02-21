@@ -52,7 +52,7 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
 
   return (
     <div className="space-y-6">
-      {mode === 'target_date' ? (
+      {mode === 'par_date' ? (
         <div className="space-y-2">
           <Label>Date cible</Label>
           <Calendar
