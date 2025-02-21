@@ -27,21 +27,21 @@ const Contributors = () => {
         </div>
 
         <Card className="bg-transparent border-0">
-          <CardHeader className="flex justify-between" >
-            <div >
-            <CardTitle>Listing</CardTitle>
-            <CardDescription>
-              Tous les contributeurs participant au budget
-            </CardDescription>
-            </div>
-            <AddContributorDialog onAdd={addContributor} />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {contributors.map(contributor => <ContributorCard key={contributor.id} contributor={contributor} onEdit={updateContributor} onDelete={deleteContributor} />)}
-            </div>
-          </CardContent>
-        </Card>
+  <CardHeader className="flex flex-row items-center justify-between">
+    <div>
+      <CardTitle>Listing</CardTitle>
+      <CardDescription>
+        Tous les contributeurs participant au budget
+      </CardDescription>
+    </div>
+    <AddContributorDialog onAdd={addContributor} />
+  </CardHeader>
+  <CardContent>
+    <div className="space-y-4">
+      {contributors.map(contributor => <ContributorCard key={contributor.id} contributor={contributor} onEdit={updateContributor} onDelete={deleteContributor} />)}
+    </div>
+  </CardContent>
+</Card>
       </div>
     </DashboardLayout>;
 };
