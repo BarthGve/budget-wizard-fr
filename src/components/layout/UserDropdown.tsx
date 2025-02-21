@@ -71,14 +71,14 @@ export const UserDropdown = ({
           </div>
        
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/user-settings")}>
-            <UserCircle2 className="mr-2 h-4 w-4" />
-            <span>Mon compte</span>
-            {profile?.profile_type === "pro" && (
-              <Badge variant="secondary" className="ml-auto bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
-                Pro
-              </Badge>
-            )}
-          </DropdownMenuItem>
+  <UserCircle2 className="mr-2 h-4 w-4" />
+  <span>Mon compte</span>
+  {profile?.profile_type === "pro" && (
+    <Badge variant="secondary" className="ml-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
+      Pro
+    </Badge>
+  )}
+</DropdownMenuItem>
 
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
             <Settings2 className="mr-2 h-4 w-4" />
