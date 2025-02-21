@@ -14,6 +14,9 @@ interface StepOneProps {
   onChange: (data: Partial<SavingsProject>) => void;
 }
 
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB en bytes
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
 export const StepOne = ({ data, onChange }: StepOneProps) => {
   const [uploading, setUploading] = useState(false);
 
@@ -22,9 +25,23 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
       if (!event.target.files || event.target.files.length === 0) {
         return;
       }
+      
+      const file = event.target.files[0];
+      
+      // Vérification du type de fichier
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        toast.error("Format de fichier non autorisé. Utilisez JPG, PNG, GIF ou WEBP.");
+        return;
+      }
+      
+      // Vérification de la taille
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("L'image ne doit pas dépasser 2 Mo");
+        return;
+      }
+
       setUploading(true);
 
-      const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
       const filePath = `${fileName}`;
@@ -42,24 +59,24 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
         .getPublicUrl(filePath);
 
       onChange({ ...data, image_url: publicUrl });
-      toast.success("Image uploaded successfully");
+      toast.success("Image téléchargée avec succès");
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.error("Error uploading image");
+      toast.error("Erreur lors du téléchargement de l'image");
     } finally {
       setUploading(false);
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-2xl mx-auto">
       <div className="space-y-2">
-        <Label htmlFor="project-name">Project name</Label>
+        <Label htmlFor="project-name">Nom du projet</Label>
         <Input
           id="project-name"
           value={data.nom_projet}
           onChange={(e) => onChange({ ...data, nom_projet: e.target.value })}
-          placeholder="Ex: Property purchase, Travel..."
+          placeholder="Ex: Achat immobilier, Voyage..."
         />
       </div>
 
@@ -69,32 +86,35 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
           id="project-description"
           value={data.description}
           onChange={(e) => onChange({ ...data, description: e.target.value })}
-          placeholder="Describe your project..."
+          placeholder="Décrivez votre projet..."
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Illustration image</Label>
+        <Label>Image d'illustration</Label>
         <div className="flex items-center gap-4">
           <img
             src={data.image_url || "/placeholder.svg"}
-            alt={data.nom_projet || 'Project image'}
+            alt={data.nom_projet || 'Image du projet'}
             className="w-32 h-32 object-cover rounded-lg bg-accent"
           />
           <Button variant="outline" size="sm" className="w-32">
             <label className="cursor-pointer flex items-center gap-2">
               <ImagePlus className="h-4 w-4" />
-              {uploading ? 'Uploading...' : 'Choose'}
+              {uploading ? 'Envoi...' : 'Choisir'}
               <input
                 type="file"
                 className="hidden"
-                accept="image/*"
+                accept={ALLOWED_FILE_TYPES.join(',')}
                 onChange={handleImageUpload}
                 disabled={uploading}
               />
             </label>
           </Button>
         </div>
+        <p className="text-xs text-muted-foreground">
+          Formats acceptés : JPG, PNG, GIF, WEBP. Taille maximale : 2 Mo
+        </p>
       </div>
     </div>
   );

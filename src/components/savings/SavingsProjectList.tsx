@@ -71,9 +71,9 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
   return (
     <div className="space-y-4">
       <CardTitle className="py-4">Projets d'épargne</CardTitle>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-8">
         {projects.map((project) => (
-          <Card key={project.id}>
+          <Card key={project.id} className="flex flex-col">
             <div className="aspect-video relative">
               <img
                 src={project.image_url || "/placeholder.svg"}
@@ -85,31 +85,31 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
                 }}
               />
             </div>
-            <CardContent className="pt-4">
+            <CardContent className="pt-4 flex-1 flex flex-col">
               <div className="flex justify-between items-start mb-2">
-                <h3 className="font-semibold">{project.nom_projet}</h3>
+                <h3 className="font-semibold truncate">{project.nom_projet}</h3>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive flex-shrink-0"
                   onClick={() => setProjectToDelete(project)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
               {project.description && (
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                   {project.description}
                 </p>
               )}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mt-auto">
                 <div>
                   <p className="text-sm font-medium">Objectif:</p>
                   <p className="text-lg font-bold">
                     {formatCurrency(project.montant_total)}
                   </p>
                 </div>
-                <Badge variant={project.added_to_recurring ? "default" : "outline"}>
+                <Badge variant={project.added_to_recurring ? "default" : "outline"} className="flex-shrink-0">
                   {project.added_to_recurring ? "Actif" : "En attente"}
                 </Badge>
               </div>

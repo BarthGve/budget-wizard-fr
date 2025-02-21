@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
@@ -58,6 +57,15 @@ const Savings = () => {
     refetchProjects();
   };
 
+  if (showProjectWizard) {
+    return (
+      <SavingsProjectWizard 
+        onClose={() => setShowProjectWizard(false)}
+        onProjectCreated={handleProjectCreated}
+      />
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -109,15 +117,6 @@ const Savings = () => {
             onSavingDeleted={handleSavingDeleted}
           />
         </div>
-
-        <Dialog open={showProjectWizard} onOpenChange={setShowProjectWizard}>
-          <DialogContent className="max-w-4xl">
-            <SavingsProjectWizard 
-              onClose={() => setShowProjectWizard(false)}
-              onProjectCreated={handleProjectCreated}
-            />
-          </DialogContent>
-        </Dialog>
       </div>
     </DashboardLayout>
   );

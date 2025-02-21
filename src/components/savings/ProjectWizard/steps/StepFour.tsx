@@ -2,9 +2,8 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SavingsMode, SavingsProject } from "@/types/savings-project";
-import { Calendar } from "@/components/ui/calendar";
+import { addMonths, differenceInMonths, parseISO } from "date-fns";
 import { useState } from "react";
-import { addMonths, differenceInMonths } from "date-fns";
 
 interface StepFourProps {
   data: Partial<SavingsProject>;
@@ -13,19 +12,20 @@ interface StepFourProps {
 }
 
 export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
-  const [date, setDate] = useState<Date | undefined>(
-    data.date_estimee ? new Date(data.date_estimee) : undefined
+  const [date, setDate] = useState<string>(
+    data.date_estimee ? new Date(data.date_estimee).toISOString().split('T')[0] : ''
   );
 
-  const handleDateChange = (newDate: Date | undefined) => {
+  const handleDateChange = (newDate: string) => {
     if (newDate) {
+      const dateObj = parseISO(newDate);
       setDate(newDate);
-      const months = differenceInMonths(newDate, new Date());
+      const months = differenceInMonths(dateObj, new Date());
       const monthlyAmount = data.montant_total ? data.montant_total / months : 0;
       
       onChange({
         ...data,
-        date_estimee: newDate.toISOString(),
+        date_estimee: dateObj.toISOString(),
         montant_mensuel: Math.ceil(monthlyAmount)
       });
     }
@@ -35,7 +35,7 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
     if (amount > 0 && data.montant_total) {
       const months = data.montant_total / amount;
       const targetDate = addMonths(new Date(), Math.ceil(months));
-      setDate(targetDate);
+      setDate(targetDate.toISOString().split('T')[0]);
       
       onChange({
         ...data,
@@ -55,12 +55,11 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
       {mode === 'par_date' ? (
         <div className="space-y-2">
           <Label>Date cible</Label>
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={handleDateChange}
-            disabled={(date) => date < new Date()}
-            className="rounded-md border"
+          <Input
+            type="date"
+            value={date}
+            onChange={(e) => handleDateChange(e.target.value)}
+            min={new Date().toISOString().split('T')[0]}
           />
           {data.montant_mensuel && (
             <div className="mt-4 p-4 bg-muted rounded-lg">
@@ -84,7 +83,7 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
             <div className="mt-4 p-4 bg-muted rounded-lg">
               <p>Date estimée d'atteinte de l'objectif :</p>
               <p className="text-2xl font-bold">
-                {date.toLocaleDateString('fr-FR', {
+                {new Date(date).toLocaleDateString('fr-FR', {
                   month: 'long',
                   year: 'numeric'
                 })}
