@@ -98,7 +98,7 @@ export const PagePermissionsTable = () => {
               <TableRow key={permission.id} className="group">
                 <TableCell className="font-medium">
                   {permission.page_name}
-                  {permission.page_path === '/savings' && (
+                  {permission.required_profile === "pro" && (
                     <Badge variant="secondary" className="ml-2">
                       Premium
                     </Badge>
