@@ -10,7 +10,7 @@ export const GlobalBalanceCard = ({
   className
 }: GlobalBalanceCardProps) => {
   return(
-  <div className="flex justify-end w-full">
+ 
   <Card className={cn("bg-background/60 backdrop-blur-sm transition-all hover:bg-background/80", className)}>
       <CardContent className="p-4 mx-0 ">
         <div className="flex items-center justify-between">
@@ -24,6 +24,6 @@ export const GlobalBalanceCard = ({
         </div>
       </CardContent>
     </Card>
-    </div>
+   
   )
 };
