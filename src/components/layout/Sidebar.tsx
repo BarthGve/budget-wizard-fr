@@ -83,7 +83,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
                     collapsed ? "text-sm" : "text-xl"
                   )}
                 >
-                  {collapsed ? "BW" : appConfig.name}
+                  {collapsed ? appConfig.initiales : appConfig.name}
                 </h1>
               </div>
               <div className="flex items-center gap-2">
