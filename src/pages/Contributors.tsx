@@ -26,7 +26,7 @@ const Contributors = () => {
        
         </div>
 
-        <Card className="bg-transparent border-0">
+        <Card >
   <CardHeader className="flex flex-row items-center justify-between">
     <div>
       <CardTitle>Listing</CardTitle>
