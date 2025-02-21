@@ -102,7 +102,7 @@ const Credits = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white">
+            <div className="text-2xl font-bold text-white">
               {totalMensualites.toLocaleString('fr-FR')} €
             </div>
             <div className="text-violet-100 mt-2">
