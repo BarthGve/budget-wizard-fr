@@ -47,7 +47,7 @@ export const UserDropdown = ({
                 </Avatar>
                 {profile?.profile_type === "pro" && (
                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
-                    PRO
+                    Pro
                   </div>
                 )}
               </div>
@@ -74,7 +74,7 @@ export const UserDropdown = ({
               </Avatar>
               {profile?.profile_type === "pro" && (
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
-                  PRO
+                  Pro
                 </div>
               )}
             </div>
