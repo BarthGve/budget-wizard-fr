@@ -20,5 +20,4 @@ export interface SavingsProject {
   added_to_recurring?: boolean;
 }
 
-export type SavingsMode = 'target_date' | 'monthly_amount';
-
+export type SavingsMode = "par_date" | "par_mensualite";

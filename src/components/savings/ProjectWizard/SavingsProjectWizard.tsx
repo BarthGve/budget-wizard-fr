@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SavingsMode, SavingsProject } from '@/types/savings-project';
@@ -23,7 +22,7 @@ export const SavingsProjectWizard = () => {
     target_amount: 0,
     convert_to_monthly: false
   });
-  const [savingsMode, setSavingsMode] = useState<SavingsMode>('target_date');
+  const [savingsMode, setSavingsMode] = useState<SavingsMode>("par_date");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -55,7 +54,7 @@ export const SavingsProjectWizard = () => {
       const supabaseProject = {
         id: projectData.id,
         profile_id: user.id,
-        mode_planification: savingsMode === 'target_date' ? 'par_date' : 'par_mensualite',
+        mode_planification: savingsMode,
         montant_total: projectData.target_amount || 0,
         nom_projet: projectData.name || '',
         description: projectData.description,
@@ -176,4 +175,3 @@ export const SavingsProjectWizard = () => {
     </Card>
   );
 };
-
