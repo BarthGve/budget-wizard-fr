@@ -13,7 +13,7 @@ export const GlobalBalanceCard = ({
   className
 }: GlobalBalanceCardProps) => {
   return(
-    <Card className={cn("bg-background/60 backdrop-blur-sm transition-all hover:bg-background/80 w-fit ml-auto", className)}>
+    <Card className={cn("bg-background/60 backdrop-blur-sm transition-all hover:bg-background/80 w-fit", className)}>
       <CardContent className="p-4">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
