@@ -38,12 +38,19 @@ export const UserDropdown = ({
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="w-full justify-start p-2 h-auto">
             <div className="flex items-center gap-3 w-full">
-              <Avatar>
-                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
-                <AvatarFallback>
-                  {(profile?.full_name || "?")[0]?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar>
+                  <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
+                  <AvatarFallback>
+                    {(profile?.full_name || "?")[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                {profile?.profile_type === "pro" && (
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
+                    PRO
+                  </div>
+                )}
+              </div>
               {!collapsed && (
                 <div className="flex items-center justify-between flex-1">
                   <div className="flex flex-col items-start">
@@ -58,12 +65,19 @@ export const UserDropdown = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="right" sideOffset={20} className="w-[240px]">
           <div className="flex items-center gap-3 p-2 border-b">
-            <Avatar>
-              <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
-              <AvatarFallback>
-                {(profile?.full_name || "?")[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar>
+                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
+                <AvatarFallback>
+                  {(profile?.full_name || "?")[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {profile?.profile_type === "pro" && (
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
+                  PRO
+                </div>
+              )}
+            </div>
             <div className="flex flex-col">
               <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
               <span className="text-xs text-muted-foreground">{profile?.email}</span>
@@ -71,14 +85,14 @@ export const UserDropdown = ({
           </div>
        
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/user-settings")}>
-  <UserCircle2 className="mr-2 h-4 w-4" />
-  <span>Mon compte</span>
-  {profile?.profile_type === "pro" && (
-    <Badge variant="secondary" className="ml-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
-      Pro
-    </Badge>
-  )}
-</DropdownMenuItem>
+            <UserCircle2 className="mr-2 h-4 w-4" />
+            <span>Mon compte</span>
+            {profile?.profile_type === "pro" && (
+              <Badge variant="secondary" className="ml-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
+                Pro
+              </Badge>
+            )}
+          </DropdownMenuItem>
 
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
             <Settings2 className="mr-2 h-4 w-4" />
