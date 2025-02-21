@@ -91,16 +91,16 @@ export const Sidebar = ({ className }: SidebarProps) => {
               </div>
             </div>
             {!collapsed && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground self-start">
-                  {appConfig.version}
-                </span>
-                {profile?.profile_type === "pro" && (
-                  <Badge variant="secondary" className="text-xs bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
-                    Pro
-                  </Badge>
-                )}
-              </div>
+             <div className="flex items-baseline gap-2">
+             <span className="text-xs text-muted-foreground">
+               {appConfig.version}
+             </span>
+             {profile?.profile_type === "pro" && (
+               <Badge variant="secondary" className="text-xs bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
+                 Pro
+               </Badge>
+             )}
+           </div>
             )}
           </div>
         </div>
