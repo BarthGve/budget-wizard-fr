@@ -5,7 +5,7 @@ import { ExpensesChart } from "./ExpensesChart";
 import { startOfYear, endOfYear, subYears } from "date-fns";
 import { useState } from "react";
 import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RetailerCardProps {
@@ -77,9 +77,9 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
           {totalLastYear > 0 && (
             <div className="flex items-center gap-1 mt-1">
               {percentageChange > 0 ? (
-                <ArrowUpIcon className="h-4 w-4 text-red-500" />
+                <MoveUpRight className="h-4 w-4 text-red-500" />
               ) : (
-                <ArrowDownIcon className="h-4 w-4 text-green-500" />
+                <MoveDownRight className="h-4 w-4 text-green-500" />
               )}
               <span className={cn("text-sm", 
                 percentageChange > 0 ? "text-red-500" : "text-green-500"

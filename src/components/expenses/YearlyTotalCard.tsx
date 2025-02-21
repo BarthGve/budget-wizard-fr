@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { MoveUpRight, MoveDownRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/format";
 
@@ -33,9 +33,9 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal }: YearlyT
           </p>
           <div className="flex items-center gap-1">
             {isIncrease ? (
-              <ArrowUpIcon className="h-4 w-4 text-red-400" />
+              <MoveUpRight className="h-4 w-4 text-red-400" />
             ) : (
-              <ArrowDownIcon className="h-4 w-4 text-green-400" />
+              <MoveDownRight className="h-4 w-4 text-green-400" />
             )}
             <span className={cn("font-medium", 
               isIncrease ? "text-red-400" : "text-green-400"
