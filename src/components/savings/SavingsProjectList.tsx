@@ -3,12 +3,71 @@ import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SavingsProject } from "@/types/savings-project";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface SavingsProjectListProps {
   projects: SavingsProject[];
+  onProjectDeleted: () => void;
 }
 
-export const SavingsProjectList = ({ projects }: SavingsProjectListProps) => {
+export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjectListProps) => {
+  const [projectToDelete, setProjectToDelete] = useState<SavingsProject | null>(null);
+  const { toast } = useToast();
+
+  const handleDelete = async () => {
+    if (!projectToDelete) return;
+
+    try {
+      // Si le projet a été converti en versement mensuel, on le supprime aussi
+      if (projectToDelete.added_to_recurring) {
+        const { error: monthlySavingError } = await supabase
+          .from('monthly_savings')
+          .delete()
+          .eq('name', projectToDelete.nom_projet);
+
+        if (monthlySavingError) throw monthlySavingError;
+      }
+
+      // Suppression du projet
+      const { error: projectError } = await supabase
+        .from('projets_epargne')
+        .delete()
+        .eq('id', projectToDelete.id);
+
+      if (projectError) throw projectError;
+
+      toast({
+        title: "Projet supprimé",
+        description: "Le projet d'épargne a été supprimé avec succès"
+      });
+
+      onProjectDeleted();
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le projet",
+        variant: "destructive"
+      });
+    } finally {
+      setProjectToDelete(null);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <CardTitle className="py-4">Projets d'épargne</CardTitle>
@@ -27,7 +86,17 @@ export const SavingsProjectList = ({ projects }: SavingsProjectListProps) => {
               />
             </div>
             <CardContent className="pt-4">
-              <h3 className="font-semibold mb-2">{project.nom_projet}</h3>
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-semibold">{project.nom_projet}</h3>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                  onClick={() => setProjectToDelete(project)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
               {project.description && (
                 <p className="text-sm text-muted-foreground mb-4">
                   {project.description}
@@ -58,6 +127,22 @@ export const SavingsProjectList = ({ projects }: SavingsProjectListProps) => {
           </p>
         )}
       </div>
+
+      <AlertDialog open={!!projectToDelete} onOpenChange={() => setProjectToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. Cela supprimera définitivement le projet
+              {projectToDelete?.added_to_recurring && " et son versement mensuel associé"}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Supprimer</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

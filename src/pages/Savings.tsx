@@ -18,7 +18,7 @@ const Savings = () => {
   const { monthlySavings, profile, refetch } = useDashboardData();
   const [showProjectWizard, setShowProjectWizard] = useState(false);
 
-  const { data: projects = [] } = useQuery({
+  const { data: projects = [], refetch: refetchProjects } = useQuery({
     queryKey: ["savings-projects"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -50,6 +50,12 @@ const Savings = () => {
 
   const handleProjectCreated = () => {
     refetch();
+    refetchProjects();
+  };
+
+  const handleProjectDeleted = () => {
+    refetch();
+    refetchProjects();
   };
 
   return (
@@ -92,7 +98,10 @@ const Savings = () => {
           </div>
         </div>
 
-        <SavingsProjectList projects={projects} />
+        <SavingsProjectList
+          projects={projects}
+          onProjectDeleted={handleProjectDeleted}
+        />
 
         <div>
           <SavingsList
