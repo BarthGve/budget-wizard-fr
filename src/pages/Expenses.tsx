@@ -14,7 +14,7 @@ const Expenses = () => {
   const { retailers } = useRetailers();
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
 
-  const { data: expenses } = useQuery({
+  const { data: expenses, isLoading } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
