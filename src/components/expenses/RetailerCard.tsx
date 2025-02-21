@@ -86,6 +86,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
               )}>
                 {Math.abs(percentageChange).toFixed(1)}%
               </span>
+              <span className="text-white opacity-80"> par rapport à A-1</span>
             </div>
           )}
         </div>
