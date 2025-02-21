@@ -95,11 +95,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
              <span className="text-xs text-muted-foreground">
                {appConfig.version}
              </span>
-             {profile?.profile_type === "pro" && (
-               <Badge variant="secondary" className="text-xs bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
-                 Pro
-               </Badge>
-             )}
+            
            </div>
             )}
           </div>
