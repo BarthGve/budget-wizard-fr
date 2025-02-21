@@ -10,10 +10,30 @@ import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { SavingsProjectWizard } from "@/components/savings/ProjectWizard/SavingsProjectWizard";
+import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Savings = () => {
   const { monthlySavings, profile, refetch } = useDashboardData();
   const [showProjectWizard, setShowProjectWizard] = useState(false);
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ["savings-projects"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projets_epargne")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching savings projects:", error);
+        throw error;
+      }
+
+      return data;
+    },
+  });
 
   const totalMonthlyAmount = monthlySavings?.reduce(
     (acc, saving) => acc + saving.amount,
@@ -71,6 +91,8 @@ const Savings = () => {
             />
           </div>
         </div>
+
+        <SavingsProjectList projects={projects} />
 
         <div>
           <SavingsList
