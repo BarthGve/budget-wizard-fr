@@ -37,7 +37,7 @@ const Contributors = () => {
     <AddContributorDialog onAdd={addContributor} />
   </CardHeader>
   <CardContent>
-    <div className="space-y-4">
+    <div className="space-y-2">
       {contributors.map(contributor => <ContributorCard key={contributor.id} contributor={contributor} onEdit={updateContributor} onDelete={deleteContributor} />)}
     </div>
   </CardContent>
