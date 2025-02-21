@@ -64,7 +64,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
             <img 
               src={retailer.logo_url} 
               alt={retailer.name} 
-                className="w-8 h-8 rounded-full object-contain"
+                className="w-10 h-10 rounded-full object-contain"
             />
           )}
         </div>
