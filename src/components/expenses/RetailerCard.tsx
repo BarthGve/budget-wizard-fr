@@ -69,7 +69,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
           )}
         </div>
         <div className="mt-4">
-          <div className="text-4xl font-bold">
+          <div className="text-2xl font-bold">
             {formatCurrency(totalCurrentYear)}
           </div>
           <div className="text-sm text-muted-foreground">
