@@ -104,7 +104,7 @@ export function RetailerExpensesDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Dépenses - {retailer.name}</DialogTitle>
+            <DialogTitle className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Dépenses - {retailer.name}</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
