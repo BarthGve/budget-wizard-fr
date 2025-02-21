@@ -45,6 +45,7 @@ const Expenses = () => {
       <div className="space-y-2">
         <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Dépenses</h1>
+        <p className="text-muted-foreground">Suivez les dépenses que vous réalisez auprès de certaines enseignes</p>
           <div className="flex items-center gap-8">
             <div className="flex items-center space-x-2">
               <Switch
