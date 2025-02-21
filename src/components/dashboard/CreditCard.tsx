@@ -30,7 +30,7 @@ export const CreditCard = ({
 
   return (
     <Card 
-      className="bg-background cursor-pointer hover:bg-accent/10 transition-colors"
+      className="bg-background cursor-pointer hover:shadow-md transition-shadow"
       onClick={() => navigate("/credits")}
     >
       <CardHeader className="py-[16px]">

@@ -44,7 +44,7 @@ export const ExpensesCard = ({
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
 
   return <Card 
-    className="bg-background cursor-pointer hover:bg-accent/10 transition-colors"
+    className="bg-background cursor-pointer hover:shadow-md transition-shadow"
     onClick={() => navigate("/recurring-expenses")}
   >
     <CardHeader className="py-[16px]">

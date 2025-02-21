@@ -16,7 +16,7 @@ export const SavingsCard = ({
   const navigate = useNavigate();
 
   return <Card 
-    className="bg-background cursor-pointer hover:bg-accent/10 transition-colors"
+    className="bg-background cursor-pointer cursor-pointer hover:shadow-md transition-shadow"
     onClick={() => navigate("/savings")}
   >
     <CardHeader className="py-[16px]">
