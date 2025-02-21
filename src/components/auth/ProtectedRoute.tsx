@@ -56,6 +56,15 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     return <>{children}</>;
   }
 
+  // Gestion spéciale pour les routes de détail des propriétés
+  if (location.pathname.startsWith('/properties/')) {
+    // Si c'est la page principale des propriétés ou si l'utilisateur peut accéder à /properties
+    const canAccessProperties = canAccessPage('/properties');
+    if (canAccessProperties) {
+      return <>{children}</>;
+    }
+  }
+
   // Vérifier les permissions pour les autres routes
   if (!canAccessPage(location.pathname)) {
     return <Navigate to="/dashboard" replace />;
