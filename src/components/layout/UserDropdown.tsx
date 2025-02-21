@@ -73,9 +73,9 @@ export const UserDropdown = ({
                 </AvatarFallback>
               </Avatar>
               {profile?.profile_type === "pro" && (
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
+                <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
                   Pro
-                </div>
+                </Badge>
               )}
             </div>
             <div className="flex flex-col">
@@ -87,11 +87,7 @@ export const UserDropdown = ({
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/user-settings")}>
             <UserCircle2 className="mr-2 h-4 w-4" />
             <span>Mon compte</span>
-            {profile?.profile_type === "pro" && (
-              <Badge variant="secondary" className="ml-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
-                Pro
-              </Badge>
-            )}
+           
           </DropdownMenuItem>
 
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
