@@ -16,8 +16,8 @@ export const StepTwo = ({ data, onChange }: StepTwoProps) => {
         <Input
           id="target-amount"
           type="number"
-          value={data.target_amount || ''}
-          onChange={(e) => onChange({ ...data, target_amount: Number(e.target.value) })}
+          value={data.montant_total || ''}
+          onChange={(e) => onChange({ ...data, montant_total: Number(e.target.value) })}
           placeholder="Montant total nécessaire"
           min="0"
           step="100"

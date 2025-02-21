@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SavingsMode, SavingsProject } from '@/types/savings-project';
@@ -11,7 +10,6 @@ import { StepFive } from './steps/StepFive';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
-import { useNavigate } from 'react-router-dom';
 
 interface SavingsProjectWizardProps {
   onClose: () => void;
@@ -22,15 +20,14 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   const [currentStep, setCurrentStep] = useState(1);
   const [projectData, setProjectData] = useState<Partial<SavingsProject>>({
     id: uuidv4(),
-    name: '',
+    nom_projet: '',
     description: '',
     image_url: '/placeholder.svg',
-    target_amount: 0,
-    convert_to_monthly: false
+    montant_total: 0,
+    added_to_recurring: false
   });
   const [savingsMode, setSavingsMode] = useState<SavingsMode>("par_date");
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const steps = [
     { title: "Informations", component: StepOne },
@@ -61,12 +58,12 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         id: projectData.id,
         profile_id: user.id,
         mode_planification: savingsMode,
-        montant_total: projectData.target_amount || 0,
-        nom_projet: projectData.name || '',
+        montant_total: projectData.montant_total || 0,
+        nom_projet: projectData.nom_projet || '',
         description: projectData.description,
-        montant_mensuel: projectData.monthly_amount,
-        date_estimee: projectData.target_date,
-        added_to_recurring: projectData.convert_to_monthly,
+        montant_mensuel: projectData.montant_mensuel,
+        date_estimee: projectData.date_estimee,
+        added_to_recurring: projectData.added_to_recurring,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         image_url: projectData.image_url
@@ -78,13 +75,13 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
 
       if (projectError) throw projectError;
 
-      if (projectData.convert_to_monthly && projectData.monthly_amount) {
+      if (projectData.added_to_recurring && projectData.montant_mensuel) {
         const { error: savingError } = await supabase
           .from('monthly_savings')
           .insert({
             profile_id: user.id,
-            name: projectData.name,
-            amount: projectData.monthly_amount,
+            name: projectData.nom_projet,
+            amount: projectData.montant_mensuel,
             description: projectData.description,
             logo_url: projectData.image_url
           });

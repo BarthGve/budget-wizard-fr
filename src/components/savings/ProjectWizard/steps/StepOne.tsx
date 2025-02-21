@@ -57,8 +57,8 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
         <Label htmlFor="project-name">Project name</Label>
         <Input
           id="project-name"
-          value={data.name}
-          onChange={(e) => onChange({ ...data, name: e.target.value })}
+          value={data.nom_projet}
+          onChange={(e) => onChange({ ...data, nom_projet: e.target.value })}
           placeholder="Ex: Property purchase, Travel..."
         />
       </div>
@@ -78,7 +78,7 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
         <div className="flex items-center gap-4">
           <img
             src={data.image_url || "/placeholder.svg"}
-            alt={data.name || 'Project image'}
+            alt={data.nom_projet || 'Project image'}
             className="w-32 h-32 object-cover rounded-lg bg-accent"
           />
           <Button variant="outline" size="sm" className="w-32">

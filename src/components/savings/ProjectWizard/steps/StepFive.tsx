@@ -14,9 +14,9 @@ export const StepFive = ({ data, onChange }: StepFiveProps) => {
       <div className="flex items-center space-x-2">
         <Switch
           id="convert-monthly"
-          checked={data.convert_to_monthly}
+          checked={data.added_to_recurring}
           onCheckedChange={(checked) =>
-            onChange({ ...data, convert_to_monthly: checked })
+            onChange({ ...data, added_to_recurring: checked })
           }
         />
         <Label htmlFor="convert-monthly">
@@ -24,12 +24,12 @@ export const StepFive = ({ data, onChange }: StepFiveProps) => {
         </Label>
       </div>
 
-      {data.convert_to_monthly && (
+      {data.added_to_recurring && (
         <div className="p-4 bg-muted rounded-lg space-y-2">
           <p className="font-medium">Résumé du versement mensuel :</p>
           <ul className="space-y-1 text-sm">
-            <li>Nom : {data.name}</li>
-            <li>Montant : {data.monthly_amount} € / mois</li>
+            <li>Nom : {data.nom_projet}</li>
+            <li>Montant : {data.montant_mensuel} € / mois</li>
             <li>Description : {data.description}</li>
           </ul>
         </div>
