@@ -60,7 +60,7 @@ const Expenses = () => {
             <AddExpenseDialog onExpenseAdded={handleExpenseUpdated} />
           </div>
         </div>
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
           {expensesByRetailer?.map(({ retailer, expenses: retailerExpenses }) => (
             <RetailerCard 
               key={retailer.id}
