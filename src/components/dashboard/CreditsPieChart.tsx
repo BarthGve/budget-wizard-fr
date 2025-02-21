@@ -1,4 +1,3 @@
-
 import { PiggyBank } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 import { formatCurrency } from "@/utils/format";
@@ -9,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 interface Credit {
   nom_credit: string;
   montant_mensualite: number;
+  date_derniere_mensualite: string;
+  statut: string;
 }
 
 interface CreditsPieChartProps {
@@ -23,11 +24,16 @@ export const CreditsPieChart = ({
   totalMensualites
 }: CreditsPieChartProps) => {
   const navigate = useNavigate();
-  const chartData = credits.map((credit, index) => ({
-    name: credit.nom_credit,
-    value: credit.montant_mensualite,
-    fill: COLORS[index % COLORS.length]
-  }));
+  const chartData = credits
+    .filter(credit => {
+      const isDateValid = new Date(credit.date_derniere_mensualite) > new Date();
+      return credit.statut === 'actif' && isDateValid;
+    })
+    .map((credit, index) => ({
+      name: credit.nom_credit,
+      value: credit.montant_mensualite,
+      fill: COLORS[index % COLORS.length]
+    }));
 
   const chartConfig = {
     value: {

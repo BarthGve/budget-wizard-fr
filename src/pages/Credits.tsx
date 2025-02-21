@@ -52,7 +52,8 @@ const Credits = () => {
   });
 
   const totalMensualites = credits?.reduce((total, credit) => {
-    if (credit.statut === 'actif') {
+    const isDateValid = new Date(credit.date_derniere_mensualite) > new Date();
+    if (credit.statut === 'actif' && isDateValid) {
       return total + credit.montant_mensualite;
     }
     return total;
