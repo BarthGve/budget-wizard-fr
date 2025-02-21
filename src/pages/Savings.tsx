@@ -5,9 +5,15 @@ import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
 import { SavingsList } from "@/components/savings/SavingsList";
 import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { SavingsProjectWizard } from "@/components/savings/ProjectWizard/SavingsProjectWizard";
 
 const Savings = () => {
   const { monthlySavings, profile, refetch } = useDashboardData();
+  const [showProjectWizard, setShowProjectWizard] = useState(false);
 
   const totalMonthlyAmount = monthlySavings?.reduce(
     (acc, saving) => acc + saving.amount,
@@ -27,12 +33,24 @@ const Savings = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Épargne</h1>
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
+              Épargne
+            </h1>
             <p className="text-muted-foreground">
               Prévoyez vos versements mensuels d'épargne
             </p>
           </div>
-          <NewSavingDialog onSavingAdded={handleSavingAdded} />
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowProjectWizard(true)}
+              variant="outline"
+              className="gap-2"
+            >
+              <PlusCircle className="h-4 w-4" />
+              Nouveau projet
+            </Button>
+            <NewSavingDialog onSavingAdded={handleSavingAdded} />
+          </div>
         </div>
 
         <div className="grid gap-4 grid-cols-12">
@@ -56,6 +74,12 @@ const Savings = () => {
             onSavingDeleted={handleSavingDeleted}
           />
         </div>
+
+        <Dialog open={showProjectWizard} onOpenChange={setShowProjectWizard}>
+          <DialogContent className="max-w-4xl">
+            <SavingsProjectWizard />
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );
