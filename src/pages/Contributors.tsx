@@ -27,8 +27,8 @@ const Contributors = () => {
         </div>
 
         <Card className="bg-transparent border-0">
-          <CardHeader >
-            <div className="flex items-center justify-between">
+          <CardHeader className="flex justify-between" >
+            <div >
             <CardTitle>Listing</CardTitle>
             <CardDescription>
               Tous les contributeurs participant au budget
