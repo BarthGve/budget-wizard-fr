@@ -82,7 +82,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="sticky top-0 z-10 p-4 justify-end animate-fade-in">
-        <div className="flex items-center justify-end gap-4 w-1/4">
+        <div className="flex items-center justify-end gap-4 w-full">
            
             {!userProfile?.isAdmin && (
               <div className="flex-1">
