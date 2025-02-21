@@ -364,6 +364,7 @@ export type Database = {
           added_to_recurring: boolean | null
           created_at: string
           date_estimee: string | null
+          description: string | null
           id: string
           mode_planification: Database["public"]["Enums"]["mode_planification_type"]
           montant_mensuel: number | null
@@ -377,6 +378,7 @@ export type Database = {
           added_to_recurring?: boolean | null
           created_at?: string
           date_estimee?: string | null
+          description?: string | null
           id?: string
           mode_planification: Database["public"]["Enums"]["mode_planification_type"]
           montant_mensuel?: number | null
@@ -390,6 +392,7 @@ export type Database = {
           added_to_recurring?: boolean | null
           created_at?: string
           date_estimee?: string | null
+          description?: string | null
           id?: string
           mode_planification?: Database["public"]["Enums"]["mode_planification_type"]
           montant_mensuel?: number | null
