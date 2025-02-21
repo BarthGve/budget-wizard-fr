@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
@@ -5,17 +6,20 @@ import { SavingsList } from "@/components/savings/SavingsList";
 import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
 import { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { SavingsProjectWizard } from "@/components/savings/ProjectWizard/SavingsProjectWizard";
 import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PlusCircle } from "lucide-react";
+import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 const Savings = () => {
   const { monthlySavings, profile, refetch } = useDashboardData();
   const [showProjectWizard, setShowProjectWizard] = useState(false);
+  const [showProModal, setShowProModal] = useState(false);
+  const { profile: userProfile } = usePagePermissions();
 
   const { data: projects = [], refetch: refetchProjects } = useQuery({
     queryKey: ["savings-projects"],
@@ -57,12 +61,24 @@ const Savings = () => {
     refetchProjects();
   };
 
+  const handleNewProjectClick = () => {
+    if (userProfile?.profile_type === 'pro') {
+      setShowProjectWizard(true);
+    } else {
+      setShowProModal(true);
+    }
+  };
+
   if (showProjectWizard) {
     return (
-      <SavingsProjectWizard 
-        onClose={() => setShowProjectWizard(false)}
-        onProjectCreated={handleProjectCreated}
-      />
+      <div className="fixed inset-0 flex items-center justify-center bg-background/80 z-50">
+        <div className="w-full max-w-4xl">
+          <SavingsProjectWizard 
+            onClose={() => setShowProjectWizard(false)}
+            onProjectCreated={handleProjectCreated}
+          />
+        </div>
+      </div>
     );
   }
 
@@ -78,17 +94,7 @@ const Savings = () => {
               Prévoyez vos versements mensuels d'épargne
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => setShowProjectWizard(true)}
-              variant="outline"
-              className="gap-2"
-            >
-              <PlusCircle className="h-4 w-4" />
-              Nouveau projet
-            </Button>
-            <NewSavingDialog onSavingAdded={handleSavingAdded} />
-          </div>
+          <NewSavingDialog onSavingAdded={handleSavingAdded} />
         </div>
 
         <div className="grid gap-4 grid-cols-12">
@@ -106,6 +112,17 @@ const Savings = () => {
           </div>
         </div>
 
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold">Projets d'épargne</h2>
+          <Button
+            onClick={handleNewProjectClick}
+            className="gap-2"
+          >
+            <PlusCircle className="h-4 w-4" />
+            Nouveau projet
+          </Button>
+        </div>
+
         <SavingsProjectList
           projects={projects}
           onProjectDeleted={handleProjectDeleted}
@@ -118,6 +135,15 @@ const Savings = () => {
           />
         </div>
       </div>
+
+      <Dialog open={showProModal} onOpenChange={setShowProModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Fonctionnalité Pro</DialogTitle>
+          </DialogHeader>
+          <p>Cette fonctionnalité est réservée aux utilisateurs pro. Passez à l'offre pro pour créer des projets d'épargne.</p>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };

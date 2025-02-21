@@ -18,6 +18,8 @@ import {
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface SavingsProjectListProps {
   projects: SavingsProject[];
@@ -70,8 +72,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
 
   return (
     <div className="space-y-4">
-      <CardTitle className="py-4">Projets d'épargne</CardTitle>
-      <div className="grid gap-4 grid-cols-8">
+      <div className="grid gap-4 grid-cols-6">
         {projects.map((project) => (
           <Card key={project.id} className="flex flex-col">
             <div className="aspect-video relative">
@@ -116,6 +117,11 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
               {project.montant_mensuel && (
                 <div className="mt-2 text-sm text-muted-foreground">
                   {formatCurrency(project.montant_mensuel)} / mois
+                </div>
+              )}
+              {project.date_estimee && (
+                <div className="mt-2 text-sm text-muted-foreground">
+                  Objectif atteint en {format(new Date(project.date_estimee), 'MMMM yyyy', { locale: fr })}
                 </div>
               )}
             </CardContent>
