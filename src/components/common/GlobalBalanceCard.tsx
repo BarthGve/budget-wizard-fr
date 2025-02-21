@@ -11,9 +11,9 @@ export const GlobalBalanceCard = ({
 }: GlobalBalanceCardProps) => {
   return(
   <div className="flex justify-end w-full">
-  <Card className={cn("w-1/4 bg-background/60 backdrop-blur-sm transition-all hover:bg-background/80", className)}>
+  <Card className={cn("bg-background/60 backdrop-blur-sm transition-all hover:bg-background/80", className)}>
       <CardContent className="p-4 mx-0 ">
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Scale className="h-5 w-5 text-muted-foreground" />
             <span className="text-lg font-medium">Solde global</span>
