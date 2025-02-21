@@ -73,7 +73,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
               <SelectValue placeholder="Lignes par page" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="15">15 lignes</SelectItem>
+              <SelectItem value="10">10 lignes</SelectItem>
               <SelectItem value="25">25 lignes</SelectItem>
               <SelectItem value="50">50 lignes</SelectItem>
               <SelectItem value="-1">Toutes les lignes</SelectItem>
