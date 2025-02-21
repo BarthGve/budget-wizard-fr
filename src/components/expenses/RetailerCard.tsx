@@ -72,7 +72,9 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
         </div>
         <div className="mt-4">
           <div className="text-2xl font-bold">
-            {formatCurrency(totalCurrentYear)}  {totalLastYear > 0 && (
+            {formatCurrency(totalCurrentYear)}
+          </div>
+          {totalLastYear > 0 && (
             <div className="flex items-center gap-1 mt-1">
               {percentageChange > 0 ? (
                 <MoveUpRight className="h-4 w-4 text-red-500" />
@@ -84,9 +86,6 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
               )}>
                 {Math.abs(percentageChange).toFixed(1)}%
               </span>
-          </div>
-         
-            
             </div>
           )}
         </div>
