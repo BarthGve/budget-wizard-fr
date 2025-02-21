@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ImagePlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface StepOneProps {
   data: Partial<SavingsProject>;
@@ -25,7 +26,8 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const filePath = `${data.id}/${Math.random()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('savings_projects')
@@ -40,8 +42,10 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
         .getPublicUrl(filePath);
 
       onChange({ ...data, image_url: publicUrl });
+      toast.success("Image téléchargée avec succès");
     } catch (error) {
       console.error('Error uploading image:', error);
+      toast.error("Erreur lors du téléchargement de l'image");
     } finally {
       setUploading(false);
     }
@@ -73,9 +77,9 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
         <Label>Image d'illustration</Label>
         <div className="flex items-center gap-4">
           <img
-            src={data.image_url}
+            src={data.image_url || "/placeholder.svg"}
             alt={data.name || 'Project image'}
-            className="w-32 h-32 object-cover rounded-lg"
+            className="w-32 h-32 object-cover rounded-lg bg-accent"
           />
           <Button variant="outline" size="sm" className="w-32">
             <label className="cursor-pointer flex items-center gap-2">

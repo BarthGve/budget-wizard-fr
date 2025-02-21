@@ -28,6 +28,10 @@ const Savings = () => {
     refetch();
   };
 
+  const handleProjectCreated = () => {
+    refetch();
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -77,7 +81,10 @@ const Savings = () => {
 
         <Dialog open={showProjectWizard} onOpenChange={setShowProjectWizard}>
           <DialogContent className="max-w-4xl">
-            <SavingsProjectWizard />
+            <SavingsProjectWizard 
+              onClose={() => setShowProjectWizard(false)}
+              onProjectCreated={handleProjectCreated}
+            />
           </DialogContent>
         </Dialog>
       </div>

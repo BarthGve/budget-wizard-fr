@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SavingsMode, SavingsProject } from '@/types/savings-project';
@@ -12,7 +13,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 
-export const SavingsProjectWizard = () => {
+interface SavingsProjectWizardProps {
+  onClose: () => void;
+  onProjectCreated: () => void;
+}
+
+export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProjectWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [projectData, setProjectData] = useState<Partial<SavingsProject>>({
     id: uuidv4(),
@@ -62,7 +68,8 @@ export const SavingsProjectWizard = () => {
         date_estimee: projectData.target_date,
         added_to_recurring: projectData.convert_to_monthly,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        image_url: projectData.image_url
       };
 
       const { error: projectError } = await supabase
@@ -90,7 +97,8 @@ export const SavingsProjectWizard = () => {
         description: "Votre projet d'épargne a été enregistré"
       });
 
-      navigate('/savings');
+      onProjectCreated();
+      onClose();
     } catch (error) {
       console.error('Error creating project:', error);
       toast({
