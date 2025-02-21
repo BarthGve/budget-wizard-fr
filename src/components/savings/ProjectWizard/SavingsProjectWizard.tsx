@@ -27,8 +27,16 @@ export const SavingsProjectWizard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const steps = [
+    { title: "Informations", component: StepOne },
+    { title: "Objectif", component: StepTwo },
+    { title: "Mode d'épargne", component: StepThree },
+    { title: "Planification", component: StepFour },
+    { title: "Configuration", component: StepFive }
+  ];
+
   const handleNext = () => {
-    if (currentStep < 5) {
+    if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -44,29 +52,35 @@ export const SavingsProjectWizard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const finalProject: SavingsProject = {
-        ...projectData as SavingsProject,
+      const supabaseProject = {
+        id: projectData.id,
         profile_id: user.id,
+        mode_planification: savingsMode === 'target_date' ? 'par_date' : 'par_mensualite',
+        montant_total: projectData.target_amount || 0,
+        nom_projet: projectData.name || '',
+        description: projectData.description,
+        montant_mensuel: projectData.monthly_amount,
+        date_estimee: projectData.target_date,
+        added_to_recurring: projectData.convert_to_monthly,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
 
       const { error: projectError } = await supabase
         .from('projets_epargne')
-        .insert(finalProject);
+        .insert(supabaseProject);
 
       if (projectError) throw projectError;
 
-      // Si l'utilisateur a choisi de convertir en versement mensuel
-      if (finalProject.convert_to_monthly && finalProject.monthly_amount) {
+      if (projectData.convert_to_monthly && projectData.monthly_amount) {
         const { error: savingError } = await supabase
           .from('monthly_savings')
           .insert({
             profile_id: user.id,
-            name: finalProject.name,
-            amount: finalProject.monthly_amount,
-            description: finalProject.description,
-            logo_url: finalProject.image_url
+            name: projectData.name,
+            amount: projectData.monthly_amount,
+            description: projectData.description,
+            logo_url: projectData.image_url
           });
 
         if (savingError) throw savingError;
@@ -88,45 +102,58 @@ export const SavingsProjectWizard = () => {
     }
   };
 
+  const renderStepper = () => (
+    <div className="mb-8">
+      <div className="flex justify-between">
+        {steps.map((step, index) => (
+          <div key={index} className="flex items-center">
+            <div 
+              className={`rounded-full h-8 w-8 flex items-center justify-center border-2 
+                ${currentStep > index + 1 ? 'bg-primary text-white border-primary' : 
+                  currentStep === index + 1 ? 'border-primary text-primary' : 
+                  'border-gray-300 text-gray-300'}`}
+            >
+              {index + 1}
+            </div>
+            {index < steps.length - 1 && (
+              <div 
+                className={`h-[2px] w-24 mx-2 ${
+                  currentStep > index + 1 ? 'bg-primary' : 'bg-gray-300'
+                }`}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-between mt-2">
+        {steps.map((step, index) => (
+          <div key={index} className="text-sm text-center" style={{ width: '100px' }}>
+            {step.title}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   const renderStep = () => {
-    switch (currentStep) {
-      case 1:
-        return <StepOne
-          data={projectData}
-          onChange={setProjectData}
-        />;
-      case 2:
-        return <StepTwo
-          data={projectData}
-          onChange={setProjectData}
-        />;
-      case 3:
-        return <StepThree
-          mode={savingsMode}
-          onModeChange={setSavingsMode}
-        />;
-      case 4:
-        return <StepFour
-          data={projectData}
-          mode={savingsMode}
-          onChange={setProjectData}
-        />;
-      case 5:
-        return <StepFive
-          data={projectData}
-          onChange={setProjectData}
-        />;
-      default:
-        return null;
-    }
+    const StepComponent = steps[currentStep - 1].component;
+    return (
+      <StepComponent
+        data={projectData}
+        onChange={setProjectData}
+        mode={savingsMode}
+        onModeChange={setSavingsMode}
+      />
+    );
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>Nouveau projet d'épargne</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        {renderStepper()}
         {renderStep()}
         
         <div className="flex justify-between mt-6">
@@ -135,7 +162,7 @@ export const SavingsProjectWizard = () => {
               Précédent
             </Button>
           )}
-          {currentStep < 5 ? (
+          {currentStep < steps.length ? (
             <Button onClick={handleNext} className="ml-auto">
               Suivant
             </Button>
@@ -149,3 +176,4 @@ export const SavingsProjectWizard = () => {
     </Card>
   );
 };
+

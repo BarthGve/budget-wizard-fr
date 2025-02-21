@@ -11,6 +11,14 @@ export interface SavingsProject {
   created_at: string;
   updated_at: string;
   convert_to_monthly: boolean;
+  mode_planification: "par_date" | "par_mensualite";
+  montant_total: number;
+  nom_projet: string;
+  nombre_mois?: number;
+  date_estimee?: string;
+  montant_mensuel?: number;
+  added_to_recurring?: boolean;
 }
 
 export type SavingsMode = 'target_date' | 'monthly_amount';
+
