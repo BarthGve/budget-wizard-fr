@@ -27,13 +27,7 @@ export function RetailersList() {
   return (
     <div className="space-y-4">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nom</TableHead>
-            <TableHead>Logo</TableHead>
-            <TableHead className="w-[100px]"></TableHead>
-          </TableRow>
-        </TableHeader>
+       
         <TableBody>
           {retailers.map((retailer) => (
             <TableRow key={retailer.id}>
