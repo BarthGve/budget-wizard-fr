@@ -12,7 +12,7 @@ export const RetailersSettings = () => {
   return (
     <Card>
       <CardHeader>
-        
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Store className="h-5 w-5" />
             <CardTitle>Enseignes</CardTitle>
@@ -31,7 +31,7 @@ export const RetailersSettings = () => {
               setOpen(false);
             }}
           />
-       
+        </div>
         <CardDescription>
           Gérez vos enseignes pour le suivi des dépenses
         </CardDescription>
