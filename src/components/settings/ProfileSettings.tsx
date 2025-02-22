@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,6 @@ import { Profile } from "@/types/profile";
 export const ProfileSettings = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
-  const [fullName, setFullName] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -31,11 +29,19 @@ export const ProfileSettings = () => {
         .single();
 
       if (error) throw error;
-
-      setFullName(data.full_name || "");
       return data as Profile;
     },
   });
+
+  // Utiliser le nom du profil directement depuis l'objet profile
+  const [fullName, setFullName] = useState(profile?.full_name || "");
+
+  // Mettre à jour fullName quand profile change
+  useEffect(() => {
+    if (profile?.full_name) {
+      setFullName(profile.full_name);
+    }
+  }, [profile]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
