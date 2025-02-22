@@ -5,6 +5,8 @@ export interface AddExpenseDialogProps {
     id: string;
     name: string;
   };
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export interface ExpenseFormData {

@@ -106,6 +106,8 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
       <AddExpenseDialog
         onExpenseAdded={handleExpenseUpdated}
         preSelectedRetailer={retailer}
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
       />
     </>
   );

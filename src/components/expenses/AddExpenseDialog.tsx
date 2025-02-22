@@ -19,25 +19,24 @@ import { ExpenseForm } from "./ExpenseForm";
 import { useExpenseForm } from "./useExpenseForm";
 import { AddExpenseDialogProps } from "./types";
 
-export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer }: AddExpenseDialogProps) {
-  const [open, setOpen] = useState(false);
+export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, onOpenChange }: AddExpenseDialogProps) {
   const [showNoRetailerAlert, setShowNoRetailerAlert] = useState(false);
   const { retailers } = useRetailers();
   const navigate = useNavigate();
   const { handleSubmit } = useExpenseForm(onExpenseAdded);
-
+  
   const onSubmit = async (values: any) => {
     const success = await handleSubmit(values);
-    if (success) {
-      setOpen(false);
+    if (success && onOpenChange) {
+      onOpenChange(false);
     }
   };
 
   const handleAddClick = () => {
     if (!retailers?.length && !preSelectedRetailer) {
       setShowNoRetailerAlert(true);
-    } else {
-      setOpen(true);
+    } else if (onOpenChange) {
+      onOpenChange(true);
     }
   };
 
@@ -50,7 +49,7 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer }: AddExp
         </Button>
       )}
 
-      <Dialog open={preSelectedRetailer ? open : undefined} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Ajouter une dépense</DialogTitle>
