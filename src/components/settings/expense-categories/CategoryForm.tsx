@@ -15,7 +15,7 @@ export const CategoryForm = () => {
   };
 
   return (
-    <div className="flex space-x-2">
+    <div className="flex items-center space-x-2">
       <Input
         placeholder="Nouvelle catégorie"
         value={newCategory}
