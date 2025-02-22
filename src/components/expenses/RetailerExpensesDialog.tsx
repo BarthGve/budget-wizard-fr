@@ -74,16 +74,13 @@ export function RetailerExpensesDialog({
 
       if (error) throw error;
 
-      // Notification de succès avant de fermer les dialogues
-      toast.success("Dépense supprimée avec succès");
-      
-      // Mise à jour des données
-      onExpenseUpdated();
-
-      // Réinitialisation des états et fermeture des dialogues
+      // Fermer immédiatement la boîte de dialogue de confirmation
       setShowDeleteDialog(false);
       setSelectedExpense(null);
       
+      // Rafraîchir les données et afficher la confirmation
+      onExpenseUpdated();
+      toast.success("Dépense supprimée avec succès");
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error("Erreur lors de la suppression de la dépense");
@@ -107,9 +104,7 @@ export function RetailerExpensesDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
-              Dépenses - {retailer.name}
-            </DialogTitle>
+            <DialogTitle className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Dépenses - {retailer.name}</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
@@ -178,14 +173,10 @@ export function RetailerExpensesDialog({
 
       <AlertDialog 
         open={showDeleteDialog}
-        onOpenChange={(isOpen) => {
-          // Empêcher la fermeture pendant la suppression
-          if (isDeleting) return;
-          
-          setShowDeleteDialog(isOpen);
-          if (!isOpen) {
-            // Réinitialiser l'état seulement si on ferme la modale
-            setSelectedExpense(null);
+        onOpenChange={(open) => {
+          if (!isDeleting) {
+            setShowDeleteDialog(open);
+            if (!open) setSelectedExpense(null);
           }
         }}
       >

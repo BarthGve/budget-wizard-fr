@@ -20,7 +20,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const { data: { user }, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -29,13 +29,8 @@ const Login = () => {
         throw error;
       }
 
-      if (user) {
-        // Attendre un court instant pour permettre la mise à jour du contexte d'authentification
-        setTimeout(() => {
-          toast.success("Connexion réussie");
-          navigate("/dashboard");
-        }, 500);
-      }
+      toast.success("Connexion réussie");
+      navigate("/dashboard");
     } catch (error: any) {
       console.error("Login error:", error);
       toast.error(
@@ -106,4 +101,3 @@ const Login = () => {
 };
 
 export default Login;
-
