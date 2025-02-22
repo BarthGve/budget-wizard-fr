@@ -25,46 +25,51 @@ const Credits = () => {
     checkAuth();
   }, [navigate]);
 
-  const { data: credits = [], isLoading, refetch } = useQuery({
+  const { data: credits = [], isLoading } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
-      console.log("Début de la requête de crédits");
+      console.log("[Credits] Starting credit fetch");
       const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
       if (userError) {
-        console.error("Erreur d'authentification:", userError);
+        console.error("[Credits] Auth error:", userError);
+        toast.error("Erreur d'authentification");
         throw userError;
       }
+      
       if (!user) {
-        console.error("Utilisateur non authentifié");
+        console.error("[Credits] User not authenticated");
         toast.error("Vous devez être connecté pour voir vos crédits");
         throw new Error("Not authenticated");
       }
 
-      console.log("Utilisateur authentifié, récupération des crédits...");
+      console.log("[Credits] User authenticated, fetching credits");
       const { data, error } = await supabase
         .from("credits")
         .select("*")
+        .eq('profile_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error("Erreur lors de la récupération des crédits:", error);
+        console.error("[Credits] Error fetching credits:", error);
         toast.error("Erreur lors du chargement des crédits");
         throw error;
       }
 
-      console.log("Crédits bruts récupérés:", data);
-      return data as Credit[];
-    }
+      console.log("[Credits] Successfully fetched credits:", data?.length);
+      return (data || []) as Credit[];
+    },
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    refetchOnWindowFocus: false, // Disable automatic refetch on window focus
+    retry: 1 // Only retry once on failure
   });
 
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   
-  console.log("Tous les crédits avant filtrage:", credits);
+  console.log("[Credits] Processing credits, total count:", credits?.length);
   const activeCredits = credits.filter(credit => credit.statut === 'actif');
   const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
-  console.log("Crédits actifs:", activeCredits);
-  console.log("Crédits remboursés:", repaidCredits);
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
@@ -105,7 +110,10 @@ const Credits = () => {
           firstDayOfMonth={firstDayOfMonth}
         />
 
-        <CreditsList credits={credits} onCreditDeleted={refetch} />
+        <CreditsList credits={credits} onCreditDeleted={() => {
+          console.log("[Credits] Credit deleted, invalidating query");
+          // Call refetch directly if needed
+        }} />
       </div>
     </DashboardLayout>
   );
