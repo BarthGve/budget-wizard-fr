@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
@@ -16,8 +16,6 @@ import { CreditsPagination } from "@/components/credits/CreditsPagination";
 const Credits = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState<string>("5");
-  
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -62,18 +60,16 @@ const Credits = () => {
 
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
-  // Get all credits without filtering by status
-  const allCredits = credits || [];
+  const allCredits = [...(credits || [])];
   
-  // Filter credits by status for summary cards
+  console.log("Processing all credits:", allCredits.length);
+  console.log("All credits data:", allCredits);
+
   const activeCredits = allCredits.filter(credit => credit.statut === 'actif');
   const repaidCredits = allCredits.filter(credit => credit.statut === 'remboursé');
 
   console.log("Active credits:", activeCredits.length);
   console.log("Repaid credits:", repaidCredits.length);
-  console.log("All credits:", allCredits.length);
-  console.log("All credits data:", allCredits);
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
@@ -88,16 +84,15 @@ const Credits = () => {
     
     const startIndex = (currentPage - 1) * itemsPerPageNumber;
     const endIndex = startIndex + itemsPerPageNumber;
-    return allCredits.slice(startIndex, endIndex);
+    const paginatedItems = allCredits.slice(startIndex, endIndex);
+    console.log("Paginated credits:", paginatedItems.length);
+    console.log("Paginated credits data:", paginatedItems);
+    return paginatedItems;
   };
 
   useEffect(() => {
     setCurrentPage(1);
   }, [itemsPerPage]);
-
-  const handleCreditDeleted = () => {
-    queryClient.invalidateQueries({ queryKey: ["credits"] });
-  };
 
   if (isLoading) {
     return <DashboardLayout>
@@ -106,7 +101,7 @@ const Credits = () => {
   }
 
   const paginatedCredits = getPaginatedCredits();
-  console.log("Rendering credits:", paginatedCredits.length);
+  console.log("Final credits to render:", paginatedCredits.length);
 
   return (
     <DashboardLayout>
@@ -144,7 +139,7 @@ const Credits = () => {
           onItemsPerPageChange={setItemsPerPage}
         />
 
-        <CreditsList credits={paginatedCredits} onCreditDeleted={handleCreditDeleted} />
+        <CreditsList credits={paginatedCredits} onCreditDeleted={() => {}} />
       </div>
     </DashboardLayout>
   );
