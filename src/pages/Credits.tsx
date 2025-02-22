@@ -49,10 +49,10 @@ const Credits = () => {
 
       return data as Credit[];
     },
-    staleTime: Infinity,
-    gcTime: Infinity,
+    staleTime: 0, // Always fetch fresh data
+    gcTime: 0,    // Don't cache
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnReconnect: false,
     retry: false
   });
