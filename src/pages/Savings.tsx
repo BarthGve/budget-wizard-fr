@@ -123,13 +123,13 @@ const Savings = () => {
         {canAccessFeature('/savings', 'new_project') && (
           <>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Projets d'épargne</h2>
+              <h2 className="text-2xl font-bold">Projets</h2>
               <Button
                 onClick={handleNewProjectClick}
                 className="gap-2"
               >
                 <Rocket className="h-4 w-4" />
-                Nouveau projet
+                Nouveau
               </Button>
             </div>
 
@@ -148,14 +148,7 @@ const Savings = () => {
         </div>
       </div>
 
-      <Dialog open={showProModal} onOpenChange={setShowProModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Fonctionnalité Pro</DialogTitle>
-          </DialogHeader>
-          <p>Cette fonctionnalité est réservée aux utilisateurs pro. Passez à l'offre pro pour créer des projets d'épargne.</p>
-        </DialogContent>
-      </Dialog>
+     
     </DashboardLayout>
   );
 };
