@@ -14,7 +14,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
   const [periodicityFilter, setPeriodicityFilter] = useState<string>(ALL_PERIODICITIES);
   const [sortField, setSortField] = useState<keyof RecurringExpense>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [rowsPerPage, setRowsPerPage] = useState<number>(15);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState(1);
 
   const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category)));
