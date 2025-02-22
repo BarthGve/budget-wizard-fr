@@ -9,6 +9,8 @@ interface CreditsListProps {
 }
 
 export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
+  console.log("CreditsList received credits:", credits.map(c => ({id: c.id, status: c.statut})));
+  
   return (
     <div className="grid gap-2">
       {credits.map((credit) => (
@@ -74,4 +76,3 @@ export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
     </div>
   );
 };
-

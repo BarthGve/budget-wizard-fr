@@ -33,6 +33,7 @@ const Credits = () => {
   const { data: credits = [], isLoading } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
+      console.log("Fetching credits...");
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       if (!user) {
@@ -51,6 +52,7 @@ const Credits = () => {
         throw error;
       }
 
+      console.log("Credits fetched:", data);
       return data as Credit[];
     }
   });
@@ -61,6 +63,10 @@ const Credits = () => {
   const activeCredits = credits.filter(credit => credit.statut === 'actif');
   const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
   const allCredits = [...activeCredits, ...repaidCredits];
+
+  console.log("Active credits:", activeCredits.length);
+  console.log("Repaid credits:", repaidCredits.length);
+  console.log("All credits:", allCredits.length);
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
@@ -75,11 +81,12 @@ const Credits = () => {
     
     const startIndex = (currentPage - 1) * itemsPerPageNumber;
     const endIndex = startIndex + itemsPerPageNumber;
-    return allCredits.slice(startIndex, endIndex);
+    const paginatedCredits = allCredits.slice(startIndex, endIndex);
+    console.log("Paginated credits:", paginatedCredits.length);
+    return paginatedCredits;
   };
 
   useEffect(() => {
-    // Reset to first page when changing items per page
     setCurrentPage(1);
   }, [itemsPerPage]);
 
@@ -92,6 +99,9 @@ const Credits = () => {
       <div>Chargement...</div>
     </DashboardLayout>;
   }
+
+  const paginatedCredits = getPaginatedCredits();
+  console.log("Rendering credits:", paginatedCredits.length);
 
   return (
     <DashboardLayout>
@@ -126,12 +136,10 @@ const Credits = () => {
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}
           onPageChange={setCurrentPage}
-          onItemsPerPageChange={(value: string) => {
-            setItemsPerPage(value);
-          }}
+          onItemsPerPageChange={setItemsPerPage}
         />
 
-        <CreditsList credits={getPaginatedCredits()} onCreditDeleted={handleCreditDeleted} />
+        <CreditsList credits={paginatedCredits} onCreditDeleted={handleCreditDeleted} />
       </div>
     </DashboardLayout>
   );
