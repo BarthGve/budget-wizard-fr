@@ -11,7 +11,7 @@ interface DomainFieldProps {
 }
 
 export const DomainField = ({ form }: DomainFieldProps) => {
-  const domain = form.watch("domain") || "";
+  const domain = form.watch("nom_domaine") || "";
   const { previewLogoUrl, isLogoValid, isCheckingLogo } = useLogoPreview(domain);
 
   return (
@@ -20,26 +20,26 @@ export const DomainField = ({ form }: DomainFieldProps) => {
       name="nom_domaine"
       render={({ field }) => (
         <FormItem>
-        <FormLabel>Domaine de l'organisme (optionnel)</FormLabel>
-        <div className="flex items-center gap-4">
-          <FormControl>
-            <Input
-              {...field}
-              placeholder="Ex: paypal.com, fortuneo.fr..."
+          <FormLabel>Domaine de l'organisme (optionnel)</FormLabel>
+          <div className="flex items-center gap-4">
+            <FormControl>
+              <Input
+                {...field}
+                placeholder="Ex: paypal.com, fortuneo.fr..."
+              />
+            </FormControl>
+            <LogoPreview
+              url={previewLogoUrl}
+              isValid={isLogoValid}
+              isChecking={isCheckingLogo}
+              domain={domain}
             />
-          </FormControl>
-          <LogoPreview
-            url={previewLogoUrl}
-            isValid={isLogoValid}
-            isChecking={isCheckingLogo}
-            domain={domain}
-          />
-        </div>
-        <FormDescription>
-          Le logo sera automatiquement récupéré à partir du domaine
-        </FormDescription>
-        <FormMessage />
-      </FormItem>
+          </div>
+          <FormDescription>
+            Le logo sera automatiquement récupéré à partir du domaine
+          </FormDescription>
+          <FormMessage />
+        </FormItem>
       )}
     />
   );
