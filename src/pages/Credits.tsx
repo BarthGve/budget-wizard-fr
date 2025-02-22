@@ -1,6 +1,5 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -10,22 +9,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
 import { CreditDialog } from "@/components/credits/CreditDialog";
-import { CreditActions } from "@/components/credits/CreditActions";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
-const ITEMS_PER_PAGE_OPTIONS = [
-  { value: "5", label: "5 crédits" },
-  { value: "15", label: "15 crédits" },
-  { value: "all", label: "Tous les crédits" }
-];
+import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
+import { CreditsList } from "@/components/credits/CreditsList";
+import { CreditsPagination } from "@/components/credits/CreditsPagination";
 
 const Credits = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -93,10 +79,6 @@ const Credits = () => {
     return [...activeCredits, ...repaidCredits].slice(startIndex, endIndex);
   };
 
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
-
   if (isLoading) {
     return <DashboardLayout>
       <div>Chargement...</div>
@@ -123,160 +105,26 @@ const Credits = () => {
           />
         </div>
 
-        {/* Récapitulatif des crédits */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
-            <CardHeader>
-              <CardTitle>Crédits actifs</CardTitle>
-              <CardDescription className="text-violet-100">
-                {activeCredits.length} crédit(s) en cours
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {totalActiveMensualites.toLocaleString('fr-FR')} €
-              </div>
-              <div className="text-violet-100 mt-2">
-                Mensualités totales
-              </div>
-            </CardContent>
-          </Card>
+        <CreditSummaryCards 
+          activeCredits={activeCredits}
+          repaidCredits={repaidCredits}
+          totalActiveMensualites={totalActiveMensualites}
+          totalRepaidMensualites={totalRepaidMensualites}
+          firstDayOfMonth={firstDayOfMonth}
+        />
 
-          <Card className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 text-white">
-            <CardHeader>
-              <CardTitle>Crédits remboursés ce mois</CardTitle>
-              <CardDescription className="text-emerald-100">
-                {repaidCredits.filter(credit => new Date(credit.date_derniere_mensualite) >= firstDayOfMonth).length} crédit(s) remboursé(s)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {totalRepaidMensualites.toLocaleString('fr-FR')} €
-              </div>
-              <div className="text-emerald-100 mt-2">
-                Mensualités remboursées
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <CreditsPagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={(value: string) => {
+            setItemsPerPage(value);
+            setCurrentPage(1);
+          }}
+        />
 
-        {/* Contrôles de pagination */}
-        <div className="flex justify-between items-center mb-4">
-          <Select
-            value={itemsPerPage}
-            onValueChange={(value: string) => {
-              setItemsPerPage(value);
-              setCurrentPage(1);
-            }}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Crédits par page" />
-            </SelectTrigger>
-            <SelectContent>
-              {ITEMS_PER_PAGE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Liste des crédits */}
-        <div className="grid gap-2">
-          {getPaginatedCredits().map((credit) => (
-            <Card key={credit.id} className="overflow-hidden border bg-card dark:bg-card">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center px-4 gap-4 md:w-1/3">
-                  {credit.logo_url ? (
-                    <img
-                      src={credit.logo_url}
-                      alt={credit.nom_credit}
-                      className="w-8 h-8 rounded-full object-contain"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/placeholder.svg";
-                      }}
-                    />
-                  ) : (
-                    <div className="w-8 h-8 bg-violet-100 rounded-full" />
-                  )}
-                  <div>
-                    <h4 className="font-medium">{credit.nom_credit}</h4>
-                  </div>
-                </div>
-                
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-2 bg-card dark:bg-card">
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">Mensualité</span>
-                    <h4 className="font-medium">
-                      {credit.montant_mensualite.toLocaleString('fr-FR')} €
-                    </h4>
-                  </div>
-                  
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">Dernière échéance</span>
-                    <span className="font-medium">
-                      {new Date(credit.date_derniere_mensualite).toLocaleDateString('fr-FR')}
-                    </span>
-                  </div>
-                  
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">Statut</span>
-                    <span className={`inline-flex items-center ${
-                      credit.statut === 'actif' 
-                        ? 'text-green-600' 
-                        : 'text-gray-600'
-                    }`}>
-                      <span className={`w-2 h-2 rounded-full mr-2 ${
-                        credit.statut === 'actif' 
-                          ? 'bg-green-600' 
-                          : 'bg-gray-600'
-                      }`} />
-                      {credit.statut === 'actif' ? 'Actif' : 'Remboursé'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="px-4 py-2">
-                  <CreditActions credit={credit} onCreditDeleted={() => {}} />
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        {/* Pagination */}
-        {itemsPerPage !== "all" && totalPages > 1 && (
-          <Pagination className="mt-4">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious 
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
-              </PaginationItem>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                    onClick={() => handlePageChange(page)}
-                    isActive={currentPage === page}
-                  >
-                    {page}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+        <CreditsList credits={getPaginatedCredits()} />
       </div>
     </DashboardLayout>
   );
