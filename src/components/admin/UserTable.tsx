@@ -35,7 +35,7 @@ export const UserTable = () => {
         </Button>
       </div>
 
-      <div className="bg-white rounded-lg border shadow-sm">
+      <div className="rounded-lg border shadow-sm">
         <div className="divide-y">
           {users.map(user => (
             <UserTableRow 
