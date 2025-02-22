@@ -41,11 +41,11 @@ export function ExpenseForm({ onSubmit, defaultValues, preSelectedRetailer }: Ex
             <FormItem>
               <FormLabel>Enseigne</FormLabel>
               {preSelectedRetailer ? (
-                <Input 
-                  value={preSelectedRetailer.name} 
-                  disabled 
-                  className="bg-gray-100"
-                />
+             <Input
+             value={preSelectedRetailer.name}
+             disabled
+             className="bg-muted text-muted-foreground"
+           />
               ) : (
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
