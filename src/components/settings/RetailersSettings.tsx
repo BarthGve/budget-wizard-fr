@@ -11,7 +11,7 @@ export const RetailersSettings = () => {
 
   return (
     <Card>
-  <CardHeader className="space-y-1">
+  <CardHeader className="space-y-0.5">
   <div className="flex items-center justify-between">
     <div className="flex items-center space-x-2">
       <Store className="h-5 w-5" />
