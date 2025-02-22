@@ -10,19 +10,22 @@ const Classification = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-10">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Paramétrage</h2>
-          <p className="text-muted-foreground">
-            Gérez vos enseignes et catégories de dépenses
-          </p>
-        </div>
-
-        <div className="space-y-10">
-          {canAccessExpenses && <RetailersSettings />}
-          <ExpenseCategoriesSettings />
-        </div>
-      </div>
+<div className="space-y-10">
+  <div>
+    <h2 className="text-2xl font-bold tracking-tight">Paramétrage</h2>
+    <p className="text-muted-foreground">
+      Gérez vos enseignes et catégories de dépenses
+    </p>
+  </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="w-full">
+      <ExpenseCategoriesSettings />
+    </div>
+    <div className="w-full">
+      {canAccessExpenses && <RetailersSettings />}
+    </div>
+  </div>
+</div>
     </DashboardLayout>
   );
 };
