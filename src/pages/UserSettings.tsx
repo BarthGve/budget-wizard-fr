@@ -9,8 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RetailersSettings } from "@/components/settings/RetailersSettings";
 import { ExpenseCategoriesSettings } from "@/components/settings/expense-categories/ExpenseCategoriesSettings";
 import { User, Settings2 } from "lucide-react";
+import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 const UserSettings = () => {
+  const { profile, canAccessFeature } = usePagePermissions();
+
+  // Vérifier si l'utilisateur peut accéder à la fonctionnalité Retailers
+  const canAccessRetailers = profile?.profile_type === 'pro' || canAccessFeature('/user-settings', 'retailers');
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -42,7 +48,7 @@ const UserSettings = () => {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <RetailersSettings />
+            {canAccessRetailers && <RetailersSettings />}
             <ExpenseCategoriesSettings />
           </TabsContent>
         </Tabs>
