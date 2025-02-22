@@ -60,14 +60,14 @@ const Credits = () => {
 
   const activeCredits = credits.filter(credit => credit.statut === 'actif');
   const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
+  const allCredits = [...activeCredits, ...repaidCredits];
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
     new Date(credit.date_derniere_mensualite) >= firstDayOfMonth ? sum + credit.montant_mensualite : sum, 0
   );
 
-  const itemsPerPageNumber = itemsPerPage === "all" ? credits.length : parseInt(itemsPerPage);
-  const allCredits = [...activeCredits, ...repaidCredits];
+  const itemsPerPageNumber = itemsPerPage === "all" ? allCredits.length : parseInt(itemsPerPage);
   const totalPages = Math.ceil(allCredits.length / itemsPerPageNumber);
   
   const getPaginatedCredits = () => {
@@ -77,6 +77,11 @@ const Credits = () => {
     const endIndex = startIndex + itemsPerPageNumber;
     return allCredits.slice(startIndex, endIndex);
   };
+
+  useEffect(() => {
+    // Reset to first page when changing items per page
+    setCurrentPage(1);
+  }, [itemsPerPage]);
 
   const handleCreditDeleted = () => {
     queryClient.invalidateQueries({ queryKey: ["credits"] });
@@ -123,7 +128,6 @@ const Credits = () => {
           onPageChange={setCurrentPage}
           onItemsPerPageChange={(value: string) => {
             setItemsPerPage(value);
-            setCurrentPage(1);
           }}
         />
 
