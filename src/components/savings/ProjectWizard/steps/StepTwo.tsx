@@ -12,7 +12,7 @@ export const StepTwo = ({ data, onChange }: StepTwoProps) => {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="target-amount">Objectif financier (€)</Label>
+        <Label htmlFor="target-amount">Objectif financier (€) *</Label>
         <Input
           id="target-amount"
           type="number"
@@ -21,6 +21,7 @@ export const StepTwo = ({ data, onChange }: StepTwoProps) => {
           placeholder="Montant total nécessaire"
           min="0"
           step="100"
+          required
         />
       </div>
     </div>

@@ -70,10 +70,12 @@ export const SavingsProjectCard = ({ project, onDelete, onSelect }: SavingsProje
         </div>
         
         <div className="space-y-4">
-          <div>
-            <p className="text-sm font-medium mb-2">Progression:</p>
-            <Progress value={calculateProgress(project)} className="h-2" />
-          </div>
+          {project.added_to_recurring && (
+            <div>
+              <p className="text-sm font-medium mb-2">Progression:</p>
+              <Progress value={calculateProgress(project)} className="h-2" />
+            </div>
+          )}
           
           <div className="flex items-center justify-between">
             <div>

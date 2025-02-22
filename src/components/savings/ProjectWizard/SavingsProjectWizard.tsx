@@ -38,14 +38,47 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   ];
 
   const handleNext = () => {
+    // Validation du nom du projet et du montant total
+    if (currentStep === 1 && !projectData.nom_projet) {
+      toast({
+        title: "Champ requis",
+        description: "Le nom du projet est obligatoire",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (currentStep === 2 && (!projectData.montant_total || projectData.montant_total <= 0)) {
+      toast({
+        title: "Champ requis",
+        description: "L'objectif financier est obligatoire et doit être supérieur à 0",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validation de la date ou du montant mensuel selon le mode
+    if (currentStep === 4) {
+      if (savingsMode === 'par_date' && !projectData.date_estimee) {
+        toast({
+          title: "Champ requis",
+          description: "La date cible est obligatoire",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (savingsMode === 'par_mensualite' && (!projectData.montant_mensuel || projectData.montant_mensuel <= 0)) {
+        toast({
+          title: "Champ requis",
+          description: "Le montant mensuel est obligatoire et doit être supérieur à 0",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -55,18 +88,13 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       if (!user) throw new Error('User not authenticated');
 
       const supabaseProject = {
+        ...projectData,
         id: projectData.id,
         profile_id: user.id,
         mode_planification: savingsMode,
-        montant_total: projectData.montant_total || 0,
-        nom_projet: projectData.nom_projet || '',
-        description: projectData.description,
-        montant_mensuel: projectData.montant_mensuel,
-        date_estimee: projectData.date_estimee,
-        added_to_recurring: projectData.added_to_recurring,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        image_url: projectData.image_url
+        statut: projectData.added_to_recurring ? 'actif' : 'en_attente'
       };
 
       const { error: projectError } = await supabase

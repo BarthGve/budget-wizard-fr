@@ -1,9 +1,9 @@
-
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SavingsMode, SavingsProject } from "@/types/savings-project";
 import { addMonths, differenceInMonths, parseISO } from "date-fns";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 interface StepFourProps {
   data: Partial<SavingsProject>;
@@ -19,6 +19,14 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
   const handleDateChange = (newDate: string) => {
     if (newDate) {
       const dateObj = parseISO(newDate);
+      if (dateObj < new Date()) {
+        toast({
+          title: "Date invalide",
+          description: "La date cible doit être dans le futur",
+          variant: "destructive"
+        });
+        return;
+      }
       setDate(newDate);
       const months = differenceInMonths(dateObj, new Date());
       const monthlyAmount = data.montant_total ? data.montant_total / months : 0;
@@ -32,6 +40,15 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
   };
 
   const handleMonthlyAmountChange = (amount: number) => {
+    if (amount <= 0) {
+      toast({
+        title: "Montant invalide",
+        description: "Le montant mensuel doit être supérieur à 0",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (amount > 0 && data.montant_total) {
       const months = data.montant_total / amount;
       const targetDate = addMonths(new Date(), Math.ceil(months));
@@ -54,12 +71,13 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
     <div className="space-y-6">
       {mode === 'par_date' ? (
         <div className="space-y-2">
-          <Label>Date cible</Label>
+          <Label>Date cible *</Label>
           <Input
             type="date"
             value={date}
             onChange={(e) => handleDateChange(e.target.value)}
             min={new Date().toISOString().split('T')[0]}
+            required
           />
           {data.montant_mensuel && (
             <div className="mt-4 p-4 bg-muted rounded-lg">
@@ -70,14 +88,15 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
         </div>
       ) : (
         <div className="space-y-2">
-          <Label htmlFor="monthly-amount">Montant mensuel (€)</Label>
+          <Label htmlFor="monthly-amount">Montant mensuel (€) *</Label>
           <Input
             id="monthly-amount"
             type="number"
             value={data.montant_mensuel || ''}
             onChange={(e) => handleMonthlyAmountChange(Number(e.target.value))}
-            min="0"
+            min="1"
             placeholder="Montant mensuel souhaité"
+            required
           />
           {date && (
             <div className="mt-4 p-4 bg-muted rounded-lg">

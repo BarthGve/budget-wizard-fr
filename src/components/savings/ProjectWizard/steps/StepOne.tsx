@@ -71,12 +71,13 @@ export const StepOne = ({ data, onChange }: StepOneProps) => {
   return (
     <div className="space-y-4 max-w-2xl mx-auto">
       <div className="space-y-2">
-        <Label htmlFor="project-name">Nom du projet</Label>
+        <Label htmlFor="project-name">Nom du projet *</Label>
         <Input
           id="project-name"
           value={data.nom_projet}
           onChange={(e) => onChange({ ...data, nom_projet: e.target.value })}
           placeholder="Ex: Achat immobilier, Voyage..."
+          required
         />
       </div>
 

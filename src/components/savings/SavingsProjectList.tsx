@@ -21,7 +21,6 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
     if (!projectToDelete) return;
 
     try {
-      // Si le projet a été converti en versement mensuel, on le supprime aussi
       if (projectToDelete.added_to_recurring) {
         const { error: monthlySavingError } = await supabase
           .from('monthly_savings')
@@ -29,9 +28,19 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
           .eq('name', projectToDelete.nom_projet);
 
         if (monthlySavingError) throw monthlySavingError;
+
+        // Mettre à jour le statut du projet en "en attente"
+        const { error: updateError } = await supabase
+          .from('projets_epargne')
+          .update({ 
+            added_to_recurring: false,
+            statut: 'en_attente'
+          })
+          .eq('id', projectToDelete.id);
+
+        if (updateError) throw updateError;
       }
 
-      // Suppression du projet
       const { error: projectError } = await supabase
         .from('projets_epargne')
         .delete()
