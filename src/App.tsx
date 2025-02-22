@@ -21,7 +21,6 @@ import AdminFeedbacks from "./pages/admin/Feedbacks";
 import Stocks from "./pages/Stocks";
 import Credits from "./pages/Credits";
 import Expenses from "./pages/Expenses";
-import Classification from "./pages/Classification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -42,7 +41,6 @@ const App = () => (
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/contributors" element={<ProtectedRoute><Contributors /></ProtectedRoute>} />
             <Route path="/user-settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><Classification /></ProtectedRoute>} />
             <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />
             <Route path="/properties" element={<ProtectedRoute><Properties /></ProtectedRoute>} />
             <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />

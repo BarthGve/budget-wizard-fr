@@ -87,12 +87,6 @@ export const UserDropdown = ({
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/user-settings")}>
             <UserCircle2 className="mr-2 h-4 w-4" />
             <span>Mon compte</span>
-           
-          </DropdownMenuItem>
-
-          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
-            <Settings2 className="mr-2 h-4 w-4" />
-            <span>Paramétrage</span>
           </DropdownMenuItem>
      
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>
@@ -109,4 +103,3 @@ export const UserDropdown = ({
     </div>
   );
 };
-

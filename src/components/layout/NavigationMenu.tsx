@@ -31,7 +31,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   
   const userMenu = [
     { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
-    { title: "Contributeurs", icon: Users, path: "/contributors" },
+    { title: "Revenus", icon: Users, path: "/contributors" },
     { title: "Dépenses", icon: Receipt, path: "/expenses" },
     { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
     { title: "Crédits", icon: CreditCard, path: "/credits" },
