@@ -52,7 +52,7 @@ const Credits = () => {
         throw error;
       }
 
-      console.log("Credits fetched:", data);
+      console.log("All credits fetched:", data);
       return data as Credit[];
     }
   });
@@ -63,13 +63,14 @@ const Credits = () => {
   // Get all credits without filtering by status
   const allCredits = credits || [];
   
-  // Only filter for display in the summary cards
+  // Filter credits by status for summary cards
   const activeCredits = allCredits.filter(credit => credit.statut === 'actif');
   const repaidCredits = allCredits.filter(credit => credit.statut === 'remboursé');
 
   console.log("Active credits:", activeCredits.length);
   console.log("Repaid credits:", repaidCredits.length);
   console.log("All credits:", allCredits.length);
+  console.log("All credits data:", allCredits);
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
