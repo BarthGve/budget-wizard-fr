@@ -30,7 +30,7 @@ export function RetailersList() {
        
         <TableBody>
           {retailers.map((retailer) => (
-            <TableRow key={retailer.id} className="flex items-center justify-between">
+            <TableRow key={retailer.id} className="flex  justify-between">
               <TableCell className="text-base">{retailer.name}</TableCell>
               <TableCell>
                 {retailer.logo_url && (
