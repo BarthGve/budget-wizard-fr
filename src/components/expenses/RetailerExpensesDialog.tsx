@@ -74,15 +74,17 @@ export function RetailerExpensesDialog({
 
       if (error) throw error;
 
-      // Notification de succès avant de fermer les dialogues
+      // Fermer d'abord la modale de confirmation
+      setShowDeleteDialog(false);
+      
+      // Puis notifier le succès
       toast.success("Dépense supprimée avec succès");
       
-      // Mise à jour des données
-      onExpenseUpdated();
-
-      // Réinitialisation des états et fermeture des dialogues
-      setShowDeleteDialog(false);
+      // Réinitialiser l'état
       setSelectedExpense(null);
+      
+      // Et enfin mettre à jour les données
+      onExpenseUpdated();
       
     } catch (error) {
       console.error('Error deleting expense:', error);
@@ -176,19 +178,7 @@ export function RetailerExpensesDialog({
         </DialogContent>
       </Dialog>
 
-      <AlertDialog 
-        open={showDeleteDialog}
-        onOpenChange={(isOpen) => {
-          // Empêcher la fermeture pendant la suppression
-          if (isDeleting) return;
-          
-          setShowDeleteDialog(isOpen);
-          if (!isOpen) {
-            // Réinitialiser l'état seulement si on ferme la modale
-            setSelectedExpense(null);
-          }
-        }}
-      >
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer la dépense</AlertDialogTitle>
