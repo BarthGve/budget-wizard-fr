@@ -20,18 +20,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Database } from "@/integrations/supabase/types";
+
+type PagePermissionFeatures = {
+  [key: string]: {
+    required_profile: ProfileType;
+  };
+};
 
 interface PagePermission {
   id: string;
   page_path: string;
   page_name: string;
   required_profile: ProfileType;
-  feature_permissions: {
-    [key: string]: {
-      required_profile: ProfileType;
-    };
-  };
+  feature_permissions: PagePermissionFeatures;
 }
+
+type SupabasePagePermission = Database['public']['Tables']['page_permissions']['Row'];
 
 export const PagePermissionsTable = () => {
   const { data: permissions = [], refetch } = useQuery<PagePermission[]>({
@@ -44,11 +49,12 @@ export const PagePermissionsTable = () => {
 
       if (error) throw error;
 
-      // Ensure feature_permissions is properly typed
-      return data.map(permission => ({
+      // Transform the data to ensure feature_permissions has the correct type
+      return data.map((permission: SupabasePagePermission): PagePermission => ({
         ...permission,
-        feature_permissions: permission.feature_permissions || {}
-      })) as PagePermission[];
+        feature_permissions: (permission.feature_permissions as PagePermissionFeatures) || {},
+        required_profile: permission.required_profile as ProfileType,
+      }));
     },
   });
 
