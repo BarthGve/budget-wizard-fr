@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
@@ -14,7 +14,6 @@ import { CreditsList } from "@/components/credits/CreditsList";
 
 const Credits = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -26,11 +25,9 @@ const Credits = () => {
     checkAuth();
   }, [navigate]);
 
-  // Query for all credits
   const { data: credits = [], isLoading: isLoadingCredits } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
-      console.log("Fetching credits...");
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -50,14 +47,10 @@ const Credits = () => {
         throw error;
       }
 
-      console.log("Fetched credits:", data);
       return data as Credit[];
     },
-    staleTime: Infinity,
-    gcTime: 10 * 60 * 1000,
   });
 
-  // Query for monthly stats
   const { data: monthlyStats = { credits_rembourses_count: 0, total_mensualites_remboursees: 0 }, isLoading: isLoadingStats } = useQuery({
     queryKey: ["credits-monthly-stats"],
     queryFn: async () => {
@@ -75,23 +68,15 @@ const Credits = () => {
         throw error;
       }
 
-      // S'assurer que nous avons toujours un objet valide
-      const stats = data?.[0] || { credits_rembourses_count: 0, total_mensualites_remboursees: 0 };
-      console.log("Monthly stats:", stats);
-      return stats;
+      return data?.[0] || { credits_rembourses_count: 0, total_mensualites_remboursees: 0 };
     },
-    staleTime: Infinity,
-    gcTime: 10 * 60 * 1000,
   });
 
-  // Filtrer les crédits
-  const { activeCredits, repaidCredits, totalActiveMensualites } = credits.reduce((acc, credit) => ({
+  const { activeCredits, totalActiveMensualites } = credits.reduce((acc, credit) => ({
     activeCredits: credit.statut === 'actif' ? [...acc.activeCredits, credit] : acc.activeCredits,
-    repaidCredits: credit.statut === 'remboursé' ? [...acc.repaidCredits, credit] : acc.repaidCredits,
     totalActiveMensualites: credit.statut === 'actif' ? acc.totalActiveMensualites + credit.montant_mensualite : acc.totalActiveMensualites,
   }), {
     activeCredits: [] as Credit[],
-    repaidCredits: [] as Credit[],
     totalActiveMensualites: 0,
   });
 
@@ -141,8 +126,6 @@ const Credits = () => {
               }}
             />
           </div>
-
-          
         </div>
       </div>
     </DashboardLayout>
