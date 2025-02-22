@@ -12,10 +12,19 @@ import { User, Settings2 } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 const UserSettings = () => {
-  const { profile, canAccessFeature } = usePagePermissions();
+  const { profile, canAccessFeature, isAdmin } = usePagePermissions();
 
   // Vérifier si l'utilisateur peut accéder à la fonctionnalité Retailers
-  const canAccessRetailers = profile?.profile_type === 'pro' || canAccessFeature('/user-settings', 'retailers');
+  const canAccessRetailers = isAdmin || 
+    profile?.profile_type === 'pro' || 
+    (profile && canAccessFeature('/user-settings', 'retailers'));
+
+  console.log('Debug permissions:', {
+    isAdmin,
+    profileType: profile?.profile_type,
+    canAccessFeatureRetailers: canAccessFeature('/user-settings', 'retailers'),
+    finalAccess: canAccessRetailers
+  });
 
   return (
     <DashboardLayout>
