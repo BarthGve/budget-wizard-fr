@@ -56,20 +56,23 @@ const Credits = () => {
         throw error;
       }
 
-      console.log("[Credits] Successfully fetched credits:", data?.length);
+      console.log("[Credits] Raw fetched credits:", data);
       return (data || []) as Credit[];
     },
-    staleTime: 30000, // Consider data fresh for 30 seconds
+    staleTime: 1000 * 60, // Consider data fresh for 1 minute
     refetchOnWindowFocus: false, // Disable automatic refetch on window focus
-    retry: 1 // Only retry once on failure
+    retry: 1, // Only retry once on failure
+    refetchOnMount: false // Prevent refetch on component mount
   });
 
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   
-  console.log("[Credits] Processing credits, total count:", credits?.length);
+  console.log("[Credits] Processing all credits:", credits);
   const activeCredits = credits.filter(credit => credit.statut === 'actif');
   const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
+  console.log("[Credits] Active credits:", activeCredits);
+  console.log("[Credits] Repaid credits:", repaidCredits);
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
