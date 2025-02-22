@@ -3,6 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { CreditCard as CreditCardIcon } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface CreditCardProps {
   totalMensualites: number;
@@ -45,9 +50,17 @@ export const CreditCard = ({
     <p className="text-xl font-bold leading-none">{Math.round(totalMensualites)} €</p>
     <p className="text-sm text-muted-foreground mt-1">Mensualités totales</p>
   </div>
-  <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
-    {Math.round(tauxEndettement)}%
-  </Badge>
+  <Tooltip>
+    <TooltipTrigger>
+      <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
+        {Math.round(tauxEndettement)}%
+      </Badge>
+    </TooltipTrigger>
+    <TooltipContent>
+      <p>Taux d'endettement</p>
+    </TooltipContent>
+  </Tooltip>
+</div>
 </div>
       </CardContent>
     </Card>
