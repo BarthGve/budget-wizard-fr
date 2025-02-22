@@ -17,6 +17,7 @@ export const CategoryForm = () => {
   return (
     <div className="flex items-center justify-between space-x-2">
       <Input
+       className="w-64" 
         placeholder="Nouvelle catégorie"
         value={newCategory}
         onChange={(e) => setNewCategory(e.target.value)}
