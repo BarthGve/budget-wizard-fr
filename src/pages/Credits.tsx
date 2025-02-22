@@ -142,16 +142,7 @@ const Credits = () => {
             />
           </div>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Crédits remboursés</h2>
-            <CreditsList 
-              credits={repaidCredits}
-              onCreditDeleted={() => {
-                queryClient.invalidateQueries({ queryKey: ["credits"] });
-                queryClient.invalidateQueries({ queryKey: ["credits-monthly-stats"] });
-              }}
-            />
-          </div>
+          
         </div>
       </div>
     </DashboardLayout>
