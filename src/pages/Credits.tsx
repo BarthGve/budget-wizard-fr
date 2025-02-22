@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
@@ -14,7 +14,6 @@ import { CreditsList } from "@/components/credits/CreditsList";
 
 const Credits = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -29,6 +28,7 @@ const Credits = () => {
   const { data: credits = [], isLoading } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
+      console.log("Fetching credits...");
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -43,6 +43,7 @@ const Credits = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
+        console.error("Error fetching credits:", error);
         toast.error("Erreur lors du chargement des crédits");
         throw error;
       }
@@ -50,12 +51,8 @@ const Credits = () => {
       console.log("Fetched credits:", data);
       return data as Credit[];
     },
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    retry: false
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    cacheTime: 10 * 60 * 1000, // Keep data in cache for 10 minutes
   });
 
   const today = new Date();
@@ -63,6 +60,8 @@ const Credits = () => {
   
   const activeCredits = credits.filter(credit => credit.statut === 'actif');
   const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
+
+  console.log("Filtered credits - Active:", activeCredits.length, "Repaid:", repaidCredits.length);
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
