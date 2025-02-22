@@ -21,9 +21,11 @@ export const RetailersSettings = () => {
             open={open}
             onOpenChange={setOpen}
             trigger={
-              <Button className="text-primary-foreground rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
-                <Plus className="h-4 w-4" />
-              </Button>
+              <Button 
+            className="text-primary-foreground h-8 w-8 p-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
             }
             onRetailerSaved={() => {
               setOpen(false);
