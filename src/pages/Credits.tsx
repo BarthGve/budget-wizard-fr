@@ -67,14 +67,15 @@ const Credits = () => {
   );
 
   const itemsPerPageNumber = itemsPerPage === "all" ? credits.length : parseInt(itemsPerPage);
-  const totalPages = Math.ceil(credits.length / itemsPerPageNumber);
+  const allCredits = [...activeCredits, ...repaidCredits];
+  const totalPages = Math.ceil(allCredits.length / itemsPerPageNumber);
   
   const getPaginatedCredits = () => {
-    if (itemsPerPage === "all") return [...activeCredits, ...repaidCredits];
+    if (itemsPerPage === "all") return allCredits;
     
     const startIndex = (currentPage - 1) * itemsPerPageNumber;
     const endIndex = startIndex + itemsPerPageNumber;
-    return [...activeCredits, ...repaidCredits].slice(startIndex, endIndex);
+    return allCredits.slice(startIndex, endIndex);
   };
 
   const handleCreditDeleted = () => {
@@ -133,4 +134,3 @@ const Credits = () => {
 };
 
 export default Credits;
-
