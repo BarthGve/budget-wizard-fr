@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
@@ -17,7 +17,7 @@ const Credits = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState<string>("5");
   
-  const queryClient = useQuery;
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,7 +58,6 @@ const Credits = () => {
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-  // Séparer les crédits actifs et remboursés
   const activeCredits = credits.filter(credit => credit.statut === 'actif');
   const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
 
@@ -67,7 +66,6 @@ const Credits = () => {
     new Date(credit.date_derniere_mensualite) >= firstDayOfMonth ? sum + credit.montant_mensualite : sum, 0
   );
 
-  // Pagination logic
   const itemsPerPageNumber = itemsPerPage === "all" ? credits.length : parseInt(itemsPerPage);
   const totalPages = Math.ceil(credits.length / itemsPerPageNumber);
   
@@ -77,6 +75,10 @@ const Credits = () => {
     const startIndex = (currentPage - 1) * itemsPerPageNumber;
     const endIndex = startIndex + itemsPerPageNumber;
     return [...activeCredits, ...repaidCredits].slice(startIndex, endIndex);
+  };
+
+  const handleCreditDeleted = () => {
+    queryClient.invalidateQueries({ queryKey: ["credits"] });
   };
 
   if (isLoading) {
@@ -124,10 +126,11 @@ const Credits = () => {
           }}
         />
 
-        <CreditsList credits={getPaginatedCredits()} />
+        <CreditsList credits={getPaginatedCredits()} onCreditDeleted={handleCreditDeleted} />
       </div>
     </DashboardLayout>
   );
 };
 
 export default Credits;
+

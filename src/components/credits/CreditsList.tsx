@@ -5,9 +5,10 @@ import { CreditActions } from "./CreditActions";
 
 interface CreditsListProps {
   credits: Credit[];
+  onCreditDeleted: () => void;
 }
 
-export const CreditsList = ({ credits }: CreditsListProps) => {
+export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
   return (
     <div className="grid gap-2">
       {credits.map((credit) => (
@@ -65,7 +66,7 @@ export const CreditsList = ({ credits }: CreditsListProps) => {
             </div>
 
             <div className="px-4 py-2">
-              <CreditActions credit={credit} onCreditDeleted={() => {}} />
+              <CreditActions credit={credit} onCreditDeleted={onCreditDeleted} />
             </div>
           </div>
         </Card>
@@ -73,3 +74,4 @@ export const CreditsList = ({ credits }: CreditsListProps) => {
     </div>
   );
 };
+
