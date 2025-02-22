@@ -1,6 +1,6 @@
 
 import { formatCurrency } from "@/utils/format";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SavingsProject } from "@/types/savings-project";
 import { Trash2 } from "lucide-react";
@@ -15,11 +15,17 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { differenceInDays } from "date-fns";
 
 interface SavingsProjectListProps {
   projects: SavingsProject[];
@@ -28,6 +34,7 @@ interface SavingsProjectListProps {
 
 export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjectListProps) => {
   const [projectToDelete, setProjectToDelete] = useState<SavingsProject | null>(null);
+  const [selectedProject, setSelectedProject] = useState<SavingsProject | null>(null);
   const { toast } = useToast();
 
   const handleDelete = async () => {
@@ -70,12 +77,23 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
     }
   };
 
+  const calculateSavedAmount = (project: SavingsProject) => {
+    if (!project.montant_mensuel || !project.created_at) return 0;
+    
+    const daysSinceCreation = differenceInDays(new Date(), new Date(project.created_at));
+    const monthsSinceCreation = Math.floor(daysSinceCreation / 30);
+    return project.montant_mensuel * monthsSinceCreation;
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid gap-4 grid-cols-6">
         {projects.map((project) => (
           <Card key={project.id} className="flex flex-col">
-            <div className="aspect-video relative">
+            <div 
+              className="aspect-video relative cursor-pointer"
+              onClick={() => setSelectedProject(project)}
+            >
               <img
                 src={project.image_url || "/placeholder.svg"}
                 alt={project.nom_projet}
@@ -98,11 +116,6 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              {project.description && (
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                  {project.description}
-                </p>
-              )}
               <div className="flex items-center justify-between mt-auto">
                 <div>
                   <p className="text-sm font-medium">Objectif:</p>
@@ -114,16 +127,6 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
                   {project.added_to_recurring ? "Actif" : "En attente"}
                 </Badge>
               </div>
-              {project.montant_mensuel && (
-                <div className="mt-2 text-sm text-muted-foreground">
-                  {formatCurrency(project.montant_mensuel)} / mois
-                </div>
-              )}
-              {project.date_estimee && (
-                <div className="mt-2 text-sm text-muted-foreground">
-                  Objectif atteint en {format(new Date(project.date_estimee), 'MMMM yyyy', { locale: fr })}
-                </div>
-              )}
             </CardContent>
           </Card>
         ))}
@@ -149,6 +152,61 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{selectedProject?.nom_projet}</DialogTitle>
+          </DialogHeader>
+          {selectedProject && (
+            <div className="space-y-4">
+              <div className="aspect-video relative">
+                <img
+                  src={selectedProject.image_url || "/placeholder.svg"}
+                  alt={selectedProject.nom_projet}
+                  className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                />
+              </div>
+              
+              {selectedProject.description && (
+                <div>
+                  <h3 className="font-semibold mb-2">Description</h3>
+                  <p className="text-muted-foreground">{selectedProject.description}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-semibold mb-2">Objectif</h3>
+                  <p className="text-2xl font-bold">{formatCurrency(selectedProject.montant_total)}</p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold mb-2">Déjà épargné</h3>
+                  <p className="text-2xl font-bold">{formatCurrency(calculateSavedAmount(selectedProject))}</p>
+                </div>
+
+                {selectedProject.montant_mensuel && (
+                  <div>
+                    <h3 className="font-semibold mb-2">Versement mensuel</h3>
+                    <p>{formatCurrency(selectedProject.montant_mensuel)} / mois</p>
+                  </div>
+                )}
+
+                {selectedProject.date_estimee && (
+                  <div>
+                    <h3 className="font-semibold mb-2">Date d'objectif estimée</h3>
+                    <p>{new Date(selectedProject.date_estimee).toLocaleDateString('fr-FR', { 
+                      year: 'numeric', 
+                      month: 'long'
+                    })}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
