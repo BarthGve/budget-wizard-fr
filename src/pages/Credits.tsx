@@ -5,17 +5,14 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
 import { CreditDialog } from "@/components/credits/CreditDialog";
 import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
 import { CreditsList } from "@/components/credits/CreditsList";
-import { CreditsPagination } from "@/components/credits/CreditsPagination";
 
 const Credits = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState<string>("5");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,7 +28,6 @@ const Credits = () => {
   const { data: credits = [], isLoading } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
-      console.log("Fetching credits...");
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       if (!user) {
@@ -50,7 +46,7 @@ const Credits = () => {
         throw error;
       }
 
-      console.log("All credits fetched:", data);
+      console.log("Credits fetched:", data);
       return data as Credit[];
     },
     refetchOnMount: false,
@@ -60,48 +56,20 @@ const Credits = () => {
 
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const allCredits = [...(credits || [])];
   
-  console.log("Processing all credits:", allCredits.length);
-  console.log("All credits data:", allCredits);
-
-  const activeCredits = allCredits.filter(credit => credit.statut === 'actif');
-  const repaidCredits = allCredits.filter(credit => credit.statut === 'remboursé');
-
-  console.log("Active credits:", activeCredits.length);
-  console.log("Repaid credits:", repaidCredits.length);
+  const activeCredits = credits.filter(credit => credit.statut === 'actif');
+  const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
     new Date(credit.date_derniere_mensualite) >= firstDayOfMonth ? sum + credit.montant_mensualite : sum, 0
   );
 
-  const itemsPerPageNumber = itemsPerPage === "all" ? allCredits.length : parseInt(itemsPerPage);
-  const totalPages = Math.ceil(allCredits.length / itemsPerPageNumber);
-  
-  const getPaginatedCredits = () => {
-    if (itemsPerPage === "all") return allCredits;
-    
-    const startIndex = (currentPage - 1) * itemsPerPageNumber;
-    const endIndex = startIndex + itemsPerPageNumber;
-    const paginatedItems = allCredits.slice(startIndex, endIndex);
-    console.log("Paginated credits:", paginatedItems.length);
-    console.log("Paginated credits data:", paginatedItems);
-    return paginatedItems;
-  };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [itemsPerPage]);
-
   if (isLoading) {
     return <DashboardLayout>
       <div>Chargement...</div>
     </DashboardLayout>;
   }
-
-  const paginatedCredits = getPaginatedCredits();
-  console.log("Final credits to render:", paginatedCredits.length);
 
   return (
     <DashboardLayout>
@@ -131,15 +99,7 @@ const Credits = () => {
           firstDayOfMonth={firstDayOfMonth}
         />
 
-        <CreditsPagination 
-          currentPage={currentPage}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={setItemsPerPage}
-        />
-
-        <CreditsList credits={paginatedCredits} onCreditDeleted={() => {}} />
+        <CreditsList credits={credits} onCreditDeleted={() => {}} />
       </div>
     </DashboardLayout>
   );
