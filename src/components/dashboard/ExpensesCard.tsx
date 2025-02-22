@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ShoppingBasket } from 'lucide-react'  
+import { ClipboardList } from 'lucide-react'  
 import { useNavigate } from "react-router-dom";
 import { RecurringExpense } from "@/components/recurring-expenses/types";
 
@@ -50,7 +50,7 @@ export const ExpensesCard = ({
     <CardHeader className="py-[16px]">
       <div className="flex flex-row items-center justify-between ">
           <CardTitle className="text-2xl">Charges</CardTitle>
-          <ShoppingBasket className="h-6 w-6 text-muted-foreground" />
+          <ClipboardList className="h-6 w-6 text-muted-foreground" />
       </div>
       <CardDescription>Du mois de {currentMonthName}</CardDescription>
     </CardHeader>
