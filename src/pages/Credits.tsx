@@ -103,12 +103,27 @@ const Credits = () => {
           firstDayOfMonth={firstDayOfMonth}
         />
 
-        <CreditsList 
-          credits={credits}
-          onCreditDeleted={() => {
-            queryClient.invalidateQueries({ queryKey: ["credits"] });
-          }}
-        />
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Crédits en cours</h2>
+            <CreditsList 
+              credits={activeCredits}
+              onCreditDeleted={() => {
+                queryClient.invalidateQueries({ queryKey: ["credits"] });
+              }}
+            />
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Crédits remboursés</h2>
+            <CreditsList 
+              credits={repaidCredits}
+              onCreditDeleted={() => {
+                queryClient.invalidateQueries({ queryKey: ["credits"] });
+              }}
+            />
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );
