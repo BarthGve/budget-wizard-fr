@@ -4,18 +4,16 @@ import { Credit } from "./types";
 
 interface CreditSummaryCardsProps {
   activeCredits: Credit[];
-  repaidCredits: Credit[];
+  repaidThisMonth: number;
   totalActiveMensualites: number;
-  totalRepaidMensualites: number;
-  firstDayOfMonth: Date;
+  totalRepaidMensualitesThisMonth: number;
 }
 
 export const CreditSummaryCards = ({
   activeCredits,
-  repaidCredits,
+  repaidThisMonth,
   totalActiveMensualites,
-  totalRepaidMensualites,
-  firstDayOfMonth,
+  totalRepaidMensualitesThisMonth,
 }: CreditSummaryCardsProps) => {
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -40,12 +38,12 @@ export const CreditSummaryCards = ({
         <CardHeader>
           <CardTitle>Crédits remboursés ce mois</CardTitle>
           <CardDescription className="text-emerald-100">
-            {repaidCredits.length} crédit(s) à échéance
+            {repaidThisMonth} crédit(s) à échéance
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {totalRepaidMensualites.toLocaleString('fr-FR')} €
+            {totalRepaidMensualitesThisMonth.toLocaleString('fr-FR')} €
           </div>
           <div className="text-emerald-100 mt-2">
             Mensualités échues

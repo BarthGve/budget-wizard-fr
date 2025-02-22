@@ -744,6 +744,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      get_credits_stats_current_month: {
+        Args: {
+          p_profile_id: string
+        }
+        Returns: {
+          credits_rembourses_count: number
+          total_mensualites_remboursees: number
+        }[]
+      }
       get_total_users: {
         Args: Record<PropertyKey, never>
         Returns: number

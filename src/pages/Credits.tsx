@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
 import { CreditDialog } from "@/components/credits/CreditDialog";
@@ -26,7 +26,8 @@ const Credits = () => {
     checkAuth();
   }, [navigate]);
 
-  const { data: credits = [], isLoading } = useQuery({
+  // Query for all credits
+  const { data: credits = [], isLoading: isLoadingCredits } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
       console.log("Fetching credits...");
@@ -52,37 +53,45 @@ const Credits = () => {
       console.log("Fetched credits:", data);
       return data as Credit[];
     },
-    staleTime: Infinity, // Don't refetch automatically
-    gcTime: 10 * 60 * 1000, // Keep data in cache for 10 minutes
+    staleTime: Infinity,
+    gcTime: 10 * 60 * 1000,
   });
 
-  // Use useMemo to prevent unnecessary recalculations
-  const { activeCredits, repaidCredits, firstDayOfMonth, lastDayOfMonth, totalActiveMensualites, creditsRepaidThisMonth, totalRepaidMensualitesThisMonth } = useMemo(() => {
-    const today = new Date();
-    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    
-    const activeCredits = credits.filter(credit => credit.statut === 'actif');
-    const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
+  // Query for monthly stats
+  const { data: monthlyStats, isLoading: isLoadingStats } = useQuery({
+    queryKey: ["credits-monthly-stats"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
-    // Filtrer les crédits remboursés ce mois-ci en fonction de leur date d'échéance
-    const creditsRepaidThisMonth = repaidCredits.filter(credit => {
-      const dateEcheance = new Date(credit.date_derniere_mensualite);
-      return dateEcheance >= firstDayOfMonth && dateEcheance <= lastDayOfMonth;
-    });
+      const { data, error } = await supabase
+        .rpc('get_credits_stats_current_month', {
+          p_profile_id: user.id
+        });
 
-    console.log("Filtering credits - Active:", activeCredits.length, "Repaid this month:", creditsRepaidThisMonth.length);
+      if (error) {
+        console.error("Error fetching monthly stats:", error);
+        toast.error("Erreur lors du chargement des statistiques mensuelles");
+        throw error;
+      }
 
-    return {
-      activeCredits,
-      repaidCredits,
-      firstDayOfMonth,
-      lastDayOfMonth,
-      totalActiveMensualites: activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0),
-      creditsRepaidThisMonth,
-      totalRepaidMensualitesThisMonth: creditsRepaidThisMonth.reduce((sum, credit) => sum + credit.montant_mensualite, 0)
-    };
-  }, [credits]);
+      return data;
+    },
+    staleTime: Infinity,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const { activeCredits, repaidCredits, totalActiveMensualites } = credits.reduce((acc, credit) => ({
+    activeCredits: credit.statut === 'actif' ? [...acc.activeCredits, credit] : acc.activeCredits,
+    repaidCredits: credit.statut === 'remboursé' ? [...acc.repaidCredits, credit] : acc.repaidCredits,
+    totalActiveMensualites: credit.statut === 'actif' ? acc.totalActiveMensualites + credit.montant_mensualite : acc.totalActiveMensualites,
+  }), {
+    activeCredits: [] as Credit[],
+    repaidCredits: [] as Credit[],
+    totalActiveMensualites: 0,
+  });
+
+  const isLoading = isLoadingCredits || isLoadingStats;
 
   if (isLoading) {
     return <DashboardLayout>
@@ -112,10 +121,9 @@ const Credits = () => {
 
         <CreditSummaryCards 
           activeCredits={activeCredits}
-          repaidCredits={creditsRepaidThisMonth}
+          repaidThisMonth={monthlyStats?.credits_rembourses_count || 0}
           totalActiveMensualites={totalActiveMensualites}
-          totalRepaidMensualites={totalRepaidMensualitesThisMonth}
-          firstDayOfMonth={firstDayOfMonth}
+          totalRepaidMensualitesThisMonth={monthlyStats?.total_mensualites_remboursees || 0}
         />
 
         <div className="space-y-6">
@@ -125,6 +133,7 @@ const Credits = () => {
               credits={activeCredits}
               onCreditDeleted={() => {
                 queryClient.invalidateQueries({ queryKey: ["credits"] });
+                queryClient.invalidateQueries({ queryKey: ["credits-monthly-stats"] });
               }}
             />
           </div>
@@ -135,6 +144,7 @@ const Credits = () => {
               credits={repaidCredits}
               onCreditDeleted={() => {
                 queryClient.invalidateQueries({ queryKey: ["credits"] });
+                queryClient.invalidateQueries({ queryKey: ["credits-monthly-stats"] });
               }}
             />
           </div>
