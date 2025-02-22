@@ -12,7 +12,7 @@ import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, X } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 const Savings = () => {
@@ -72,7 +72,15 @@ const Savings = () => {
   if (showProjectWizard) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background/80 z-50">
-        <div className="w-full max-w-4xl">
+        <div className="w-full max-w-4xl relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-2 z-10"
+            onClick={() => setShowProjectWizard(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
           <SavingsProjectWizard 
             onClose={() => setShowProjectWizard(false)}
             onProjectCreated={handleProjectCreated}
@@ -112,21 +120,25 @@ const Savings = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Projets d'épargne</h2>
-          <Button
-            onClick={handleNewProjectClick}
-            className="gap-2"
-          >
-            <PlusCircle className="h-4 w-4" />
-            Nouveau projet
-          </Button>
-        </div>
+        {userProfile?.profile_type === 'pro' && (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Projets d'épargne</h2>
+              <Button
+                onClick={handleNewProjectClick}
+                className="gap-2"
+              >
+                <PlusCircle className="h-4 w-4" />
+                Nouveau projet
+              </Button>
+            </div>
 
-        <SavingsProjectList
-          projects={projects}
-          onProjectDeleted={handleProjectDeleted}
-        />
+            <SavingsProjectList
+              projects={projects}
+              onProjectDeleted={handleProjectDeleted}
+            />
+          </>
+        )}
 
         <div>
           <SavingsList
