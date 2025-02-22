@@ -25,7 +25,7 @@ const Credits = () => {
     checkAuth();
   }, [navigate]);
 
-  const { data: credits = [], isLoading } = useQuery({
+  const { data: credits = [], isLoading, refetch } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -38,7 +38,7 @@ const Credits = () => {
       const { data, error } = await supabase
         .from("credits")
         .select("*")
-        .order("date_derniere_mensualite", { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error("Error fetching credits:", error);
@@ -46,12 +46,11 @@ const Credits = () => {
         throw error;
       }
 
-      console.log("Credits fetched:", data);
+      console.log("Tous les crédits récupérés:", data);
       return data as Credit[];
     },
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    staleTime: Infinity
+    staleTime: 1000 * 60, // Rafraîchir après 1 minute
+    refetchOnWindowFocus: true
   });
 
   const today = new Date();
@@ -99,7 +98,7 @@ const Credits = () => {
           firstDayOfMonth={firstDayOfMonth}
         />
 
-        <CreditsList credits={credits} onCreditDeleted={() => {}} />
+        <CreditsList credits={credits} onCreditDeleted={refetch} />
       </div>
     </DashboardLayout>
   );
