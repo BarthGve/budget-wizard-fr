@@ -60,9 +60,12 @@ const Credits = () => {
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-  const activeCredits = credits.filter(credit => credit.statut === 'actif');
-  const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
-  const allCredits = [...activeCredits, ...repaidCredits];
+  // Get all credits without filtering by status
+  const allCredits = credits || [];
+  
+  // Only filter for display in the summary cards
+  const activeCredits = allCredits.filter(credit => credit.statut === 'actif');
+  const repaidCredits = allCredits.filter(credit => credit.statut === 'remboursé');
 
   console.log("Active credits:", activeCredits.length);
   console.log("Repaid credits:", repaidCredits.length);
@@ -81,9 +84,7 @@ const Credits = () => {
     
     const startIndex = (currentPage - 1) * itemsPerPageNumber;
     const endIndex = startIndex + itemsPerPageNumber;
-    const paginatedCredits = allCredits.slice(startIndex, endIndex);
-    console.log("Paginated credits:", paginatedCredits.length);
-    return paginatedCredits;
+    return allCredits.slice(startIndex, endIndex);
   };
 
   useEffect(() => {
