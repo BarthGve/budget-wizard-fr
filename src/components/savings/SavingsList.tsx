@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { MoreVertical, Plus, SquarePen, Trash2 } from "lucide-react";
+import { MoreVertical, HandCoins, SquarePen, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
@@ -61,8 +61,8 @@ export const SavingsList = ({
           onSavingAdded={onSavingDeleted}
           trigger={
             <Button className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter un versement
+              <HandCoins className="mr-2 h-4 w-4" />
+              Noubeau
             </Button>
           }
         />
