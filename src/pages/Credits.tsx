@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
 import { CreditDialog } from "@/components/credits/CreditDialog";
@@ -52,22 +52,30 @@ const Credits = () => {
       console.log("Fetched credits:", data);
       return data as Credit[];
     },
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    staleTime: Infinity, // Don't refetch automatically
     gcTime: 10 * 60 * 1000, // Keep data in cache for 10 minutes
   });
 
-  const today = new Date();
-  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  
-  const activeCredits = credits.filter(credit => credit.statut === 'actif');
-  const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
+  // Use useMemo to prevent unnecessary recalculations
+  const { activeCredits, repaidCredits, firstDayOfMonth, totalActiveMensualites, totalRepaidMensualites } = useMemo(() => {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    
+    const activeCredits = credits.filter(credit => credit.statut === 'actif');
+    const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
 
-  console.log("Filtered credits - Active:", activeCredits.length, "Repaid:", repaidCredits.length);
+    console.log("Filtering credits - Active:", activeCredits.length, "Repaid:", repaidCredits.length);
 
-  const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
-  const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
-    new Date(credit.date_derniere_mensualite) >= firstDayOfMonth ? sum + credit.montant_mensualite : sum, 0
-  );
+    return {
+      activeCredits,
+      repaidCredits,
+      firstDayOfMonth,
+      totalActiveMensualites: activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0),
+      totalRepaidMensualites: repaidCredits.reduce((sum, credit) => 
+        new Date(credit.date_derniere_mensualite) >= firstDayOfMonth ? sum + credit.montant_mensualite : sum, 0
+      )
+    };
+  }, [credits]);
 
   if (isLoading) {
     return <DashboardLayout>
