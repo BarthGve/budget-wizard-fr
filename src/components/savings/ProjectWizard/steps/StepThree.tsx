@@ -3,13 +3,14 @@ import { Label } from "@/components/ui/label";
 import { SavingsMode } from "@/types/savings-project";
 import { Button } from "@/components/ui/button";
 import { Calendar, PiggyBank } from "lucide-react";
+import { StepComponentProps } from "../types";
 
-interface StepThreeProps {
-  mode: SavingsMode;
-  onModeChange: (mode: SavingsMode) => void;
-}
+export const StepThree = ({ mode = "par_date", onModeChange }: StepComponentProps) => {
+  // If onModeChange is not provided, we don't want the component to crash
+  const handleModeChange = (newMode: SavingsMode) => {
+    onModeChange?.(newMode);
+  };
 
-export const StepThree = ({ mode, onModeChange }: StepThreeProps) => {
   return (
     <div className="space-y-4">
       <Label>Mode d'épargne</Label>
@@ -17,7 +18,7 @@ export const StepThree = ({ mode, onModeChange }: StepThreeProps) => {
         <Button
           variant={mode === 'par_date' ? 'default' : 'outline'}
           className="h-32 space-y-2"
-          onClick={() => onModeChange('par_date')}
+          onClick={() => handleModeChange('par_date')}
         >
           <Calendar className="h-8 w-8" />
           <div>Date cible</div>
@@ -26,7 +27,7 @@ export const StepThree = ({ mode, onModeChange }: StepThreeProps) => {
         <Button
           variant={mode === 'par_mensualite' ? 'default' : 'outline'}
           className="h-32 space-y-2"
-          onClick={() => onModeChange('par_mensualite')}
+          onClick={() => handleModeChange('par_mensualite')}
         >
           <PiggyBank className="h-8 w-8" />
           <div>Montant mensuel</div>
