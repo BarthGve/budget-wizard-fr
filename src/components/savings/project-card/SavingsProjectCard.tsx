@@ -30,13 +30,13 @@ export const SavingsProjectCard = ({ project, onDelete, onSelect }: SavingsProje
 
   const getBadgeVariant = (project: SavingsProject) => {
     if (project.statut === 'dépassé') return "destructive";
-    if (project.added_to_recurring) return "default";
+    if (project.statut === 'actif') return "default";
     return "outline";
   };
 
   const getBadgeText = (project: SavingsProject) => {
     if (project.statut === 'dépassé') return "Dépassé";
-    if (project.added_to_recurring) return "Actif";
+    if (project.statut === 'actif') return "Actif";
     return "En attente";
   };
 
@@ -70,7 +70,7 @@ export const SavingsProjectCard = ({ project, onDelete, onSelect }: SavingsProje
         </div>
         
         <div className="space-y-4">
-          {project.added_to_recurring && (
+          {project.statut === 'actif' && (
             <div>
               <p className="text-sm font-medium mb-2">Progression:</p>
               <Progress value={calculateProgress(project)} className="h-2" />

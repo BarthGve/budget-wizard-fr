@@ -376,6 +376,7 @@ export type Database = {
           nom_projet: string
           nombre_mois: number | null
           profile_id: string
+          statut: Database["public"]["Enums"]["projet_epargne_status"] | null
           updated_at: string
         }
         Insert: {
@@ -391,6 +392,7 @@ export type Database = {
           nom_projet: string
           nombre_mois?: number | null
           profile_id: string
+          statut?: Database["public"]["Enums"]["projet_epargne_status"] | null
           updated_at?: string
         }
         Update: {
@@ -406,6 +408,7 @@ export type Database = {
           nom_projet?: string
           nombre_mois?: number | null
           profile_id?: string
+          statut?: Database["public"]["Enums"]["projet_epargne_status"] | null
           updated_at?: string
         }
         Relationships: [
@@ -814,6 +817,7 @@ export type Database = {
       mode_planification_type: "par_date" | "par_mensualite"
       notification_status: "non_lu" | "lu"
       notification_type: "credit_echeance" | "autre"
+      projet_epargne_status: "actif" | "en_attente" | "dépassé"
       user_profile_type: "basic" | "pro"
     }
     CompositeTypes: {

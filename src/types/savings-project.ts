@@ -14,8 +14,7 @@ export interface SavingsProject {
   nombre_mois?: number;
   date_estimee?: string;
   added_to_recurring?: boolean;
-  statut?: "actif" | "dépassé";
+  statut: "actif" | "en_attente" | "dépassé";
 }
 
 export type SavingsMode = "par_date" | "par_mensualite";
-

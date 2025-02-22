@@ -18,7 +18,8 @@ export const useSavingsWizard = ({ onClose, onProjectCreated }: UseSavingsWizard
     description: '',
     image_url: '/placeholder.svg',
     montant_total: 0,
-    added_to_recurring: false
+    added_to_recurring: false,
+    statut: 'en_attente'
   });
   const [savingsMode, setSavingsMode] = useState<SavingsMode>("par_date");
   const { toast } = useToast();
