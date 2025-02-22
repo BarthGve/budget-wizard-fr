@@ -16,7 +16,9 @@ export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
     <div className="grid gap-2">
       {credits && credits.length > 0 ? (
         credits.map((credit) => (
-          <Card key={credit.id} className="overflow-hidden border bg-card dark:bg-card">
+          <Card key={credit.id} className={`overflow-hidden border bg-card dark:bg-card ${
+            credit.statut === 'remboursé' ? 'opacity-75' : ''
+          }`}>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
               <div className="flex items-center px-4 gap-4 md:w-1/3">
                 {credit.logo_url ? (
@@ -56,12 +58,12 @@ export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
                   <span className="text-sm text-muted-foreground">Statut</span>
                   <span className={`inline-flex items-center ${
                     credit.statut === 'actif' 
-                      ? 'text-green-600' 
+                      ? 'text-green-600'
                       : 'text-gray-600'
                   }`}>
                     <span className={`w-2 h-2 rounded-full mr-2 ${
-                      credit.statut === 'actif' 
-                        ? 'bg-green-600' 
+                      credit.statut === 'actif'
+                        ? 'bg-green-600'
                         : 'bg-gray-600'
                     }`} />
                     {credit.statut === 'actif' ? 'Actif' : 'Remboursé'}
