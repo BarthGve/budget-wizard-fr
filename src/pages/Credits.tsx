@@ -28,36 +28,43 @@ const Credits = () => {
   const { data: credits = [], isLoading, refetch } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
+      console.log("Début de la requête de crédits");
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
+      if (userError) {
+        console.error("Erreur d'authentification:", userError);
+        throw userError;
+      }
       if (!user) {
+        console.error("Utilisateur non authentifié");
         toast.error("Vous devez être connecté pour voir vos crédits");
         throw new Error("Not authenticated");
       }
 
+      console.log("Utilisateur authentifié, récupération des crédits...");
       const { data, error } = await supabase
         .from("credits")
         .select("*")
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error("Error fetching credits:", error);
+        console.error("Erreur lors de la récupération des crédits:", error);
         toast.error("Erreur lors du chargement des crédits");
         throw error;
       }
 
-      console.log("Tous les crédits récupérés:", data);
+      console.log("Crédits bruts récupérés:", data);
       return data as Credit[];
-    },
-    staleTime: 1000 * 60, // Rafraîchir après 1 minute
-    refetchOnWindowFocus: true
+    }
   });
 
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   
+  console.log("Tous les crédits avant filtrage:", credits);
   const activeCredits = credits.filter(credit => credit.statut === 'actif');
   const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
+  console.log("Crédits actifs:", activeCredits);
+  console.log("Crédits remboursés:", repaidCredits);
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
