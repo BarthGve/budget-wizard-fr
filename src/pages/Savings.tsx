@@ -129,7 +129,7 @@ const Savings = () => {
                 className="gap-2"
               >
                 <Rocket className="h-4 w-4" />
-                Nouveau
+                Créer
               </Button>
             </div>
 

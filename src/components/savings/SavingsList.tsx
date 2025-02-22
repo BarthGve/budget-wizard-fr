@@ -62,7 +62,7 @@ export const SavingsList = ({
           trigger={
             <Button className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
               <HandCoins className="mr-2 h-4 w-4" />
-              Noubeau
+              Ajouter
             </Button>
           }
         />
