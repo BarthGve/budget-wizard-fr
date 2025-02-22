@@ -19,9 +19,16 @@ export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
     );
   }
 
+  // Trier les crédits par la date de dernière mensualité (échéance)
+  const sortedCredits = credits.sort((a, b) => {
+    const dateA = new Date(a.date_derniere_mensualite);
+    const dateB = new Date(b.date_derniere_mensualite);
+    return dateA.getTime() - dateB.getTime(); // Tri croissant par date
+  });
+
   return (
     <div className="grid gap-2">
-      {credits.map((credit) => (
+      {sortedCredits.map((credit) => (
         <Card 
           key={credit.id} 
           className={`overflow-hidden border bg-card dark:bg-card ${
