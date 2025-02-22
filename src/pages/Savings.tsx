@@ -12,7 +12,7 @@ import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { PlusCircle, X } from "lucide-react";
+import { Rocket, X } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 const Savings = () => {
@@ -128,7 +128,7 @@ const Savings = () => {
                 onClick={handleNewProjectClick}
                 className="gap-2"
               >
-                <PlusCircle className="h-4 w-4" />
+                <Rocket className="h-4 w-4" />
                 Nouveau projet
               </Button>
             </div>
