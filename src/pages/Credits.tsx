@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
@@ -14,6 +14,7 @@ import { CreditsList } from "@/components/credits/CreditsList";
 
 const Credits = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -56,13 +57,15 @@ const Credits = () => {
         throw error;
       }
 
+      console.log("[Credits] Successfully fetched credits:", data?.length);
       console.log("[Credits] Raw fetched credits:", data);
       return (data || []) as Credit[];
     },
-    staleTime: 1000 * 60, // Consider data fresh for 1 minute
+    staleTime: Infinity, // Never consider data stale automatically
+    gcTime: Infinity, // Keep the data in cache indefinitely
     refetchOnWindowFocus: false, // Disable automatic refetch on window focus
-    retry: 1, // Only retry once on failure
-    refetchOnMount: false // Prevent refetch on component mount
+    refetchOnMount: false, // Prevent refetch on component mount
+    refetchOnReconnect: false // Prevent refetch on reconnect
   });
 
   const today = new Date();
@@ -114,8 +117,8 @@ const Credits = () => {
         />
 
         <CreditsList credits={credits} onCreditDeleted={() => {
-          console.log("[Credits] Credit deleted, invalidating query");
-          // Call refetch directly if needed
+          // Invalidate and refetch when a credit is deleted
+          queryClient.invalidateQueries({ queryKey: ["credits"] });
         }} />
       </div>
     </DashboardLayout>
