@@ -1,9 +1,10 @@
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SavingsMode, SavingsProject } from "@/types/savings-project";
 import { addMonths, differenceInMonths, parseISO } from "date-fns";
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { useToast } from "@/hooks/use-toast";
 
 interface StepFourProps {
   data: Partial<SavingsProject>;
@@ -15,6 +16,7 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
   const [date, setDate] = useState<string>(
     data.date_estimee ? new Date(data.date_estimee).toISOString().split('T')[0] : ''
   );
+  const { toast } = useToast();
 
   const handleDateChange = (newDate: string) => {
     if (newDate) {

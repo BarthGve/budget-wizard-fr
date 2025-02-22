@@ -82,6 +82,12 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     }
   };
 
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -92,6 +98,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         id: projectData.id,
         profile_id: user.id,
         mode_planification: savingsMode,
+        montant_total: projectData.montant_total || 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         statut: projectData.added_to_recurring ? 'actif' : 'en_attente'
