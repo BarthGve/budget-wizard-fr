@@ -49,8 +49,8 @@ const Credits = () => {
 
       return data as Credit[];
     },
-    staleTime: Infinity, // Keep data fresh indefinitely
-    gcTime: Infinity,    // Never remove from cache
+    staleTime: Infinity,
+    gcTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
@@ -103,10 +103,10 @@ const Credits = () => {
         />
 
         <CreditsList 
-          credits={credits} 
+          credits={credits}
           onCreditDeleted={() => {
             queryClient.invalidateQueries({ queryKey: ["credits"] });
-          }} 
+          }}
         />
       </div>
     </DashboardLayout>
