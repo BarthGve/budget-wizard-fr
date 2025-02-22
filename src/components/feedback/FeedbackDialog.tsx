@@ -67,7 +67,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
           )}
         >
           <Send className="h-4 w-4" />
-          {!collapsed && <span className="ml-2 font-normal text-base">Laissez nous avis</span>}
+          {!collapsed && <span className="ml-2 font-normal text-base">Laissez-nous un avis</span>}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
