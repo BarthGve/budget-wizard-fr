@@ -62,34 +62,44 @@ export function RetailerExpensesDialog({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedExpenses = expenses.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleDelete = async (expenseId: string) => {
-    if (isDeleting) return;
+  const handleDeleteClick = (expenseId: string) => {
+    setSelectedExpense(expenseId);
+    setShowDeleteDialog(true);
+  };
 
+  const handleCancelDelete = () => {
+    if (isDeleting) return;
+    setShowDeleteDialog(false);
+    setSelectedExpense(null);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedExpense || isDeleting) return;
+    
     setIsDeleting(true);
+
     try {
       const { error } = await supabase
         .from('expenses')
         .delete()
-        .eq('id', expenseId);
+        .eq('id', selectedExpense);
 
       if (error) throw error;
 
-      // Fermer d'abord la modale de confirmation
+      // Reset all states first
+      const expenseId = selectedExpense; // Keep a reference
       setShowDeleteDialog(false);
-      
-      // Puis notifier le succès
-      toast.success("Dépense supprimée avec succès");
-      
-      // Réinitialiser l'état
       setSelectedExpense(null);
-      
-      // Et enfin mettre à jour les données
+      setIsDeleting(false);
+
+      // Then show success message
+      toast.success("Dépense supprimée avec succès");
+
+      // Finally trigger the data refresh
       onExpenseUpdated();
-      
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error("Erreur lors de la suppression de la dépense");
-    } finally {
       setIsDeleting(false);
     }
   };
@@ -151,10 +161,7 @@ export function RetailerExpensesDialog({
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             className="text-destructive"
-                            onClick={() => {
-                              setSelectedExpense(expense.id);
-                              setShowDeleteDialog(true);
-                            }}
+                            onClick={() => handleDeleteClick(expense.id)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Supprimer
@@ -178,7 +185,7 @@ export function RetailerExpensesDialog({
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialog open={showDeleteDialog} onOpenChange={handleCancelDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer la dépense</AlertDialogTitle>
@@ -189,7 +196,7 @@ export function RetailerExpensesDialog({
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
             <AlertDialogAction 
-              onClick={() => selectedExpense && handleDelete(selectedExpense)}
+              onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isDeleting}
             >
