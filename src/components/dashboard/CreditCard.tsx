@@ -45,7 +45,7 @@ export const CreditCard = ({
             <p className="text-sm text-muted-foreground">Mensualités totales</p>
           </div>
           <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
-            {Math.round(tauxEndettement)}% d'endettement
+            {Math.round(tauxEndettement)}%
           </Badge>
         </div>
       </CardContent>
