@@ -26,6 +26,11 @@ interface PagePermission {
   page_path: string;
   page_name: string;
   required_profile: ProfileType;
+  feature_permissions: {
+    [key: string]: {
+      required_profile: ProfileType;
+    };
+  };
 }
 
 export const PagePermissionsTable = () => {
@@ -65,6 +70,33 @@ export const PagePermissionsTable = () => {
     }
   };
 
+  const handleFeaturePermissionChange = async (permissionId: string, featureKey: string, isPro: boolean) => {
+    const permission = permissions?.find(p => p.id === permissionId);
+    if (!permission) return;
+
+    const updatedFeaturePermissions = {
+      ...permission.feature_permissions,
+      [featureKey]: {
+        required_profile: isPro ? "pro" : "basic"
+      }
+    };
+
+    try {
+      const { error } = await supabase
+        .from("page_permissions")
+        .update({ feature_permissions: updatedFeaturePermissions })
+        .eq("id", permissionId);
+
+      if (error) throw error;
+
+      toast.success("Permission de fonctionnalité mise à jour avec succès");
+      refetch();
+    } catch (error) {
+      toast.error("Erreur lors de la mise à jour de la permission");
+      console.error("Error updating feature permission:", error);
+    }
+  };
+
   const getPageDescription = (pagePath: string) => {
     const descriptions: { [key: string]: string } = {
       '/savings': "Permet aux utilisateurs de gérer leurs projets d'épargne et leurs versements mensuels.",
@@ -72,6 +104,10 @@ export const PagePermissionsTable = () => {
       // Ajoutez d'autres descriptions au besoin
     };
     return descriptions[pagePath] || "Page de l'application";
+  };
+
+  const getFeaturePermission = (permission: PagePermission, featureKey: string) => {
+    return permission.feature_permissions?.[featureKey]?.required_profile === 'pro';
   };
 
   return (
@@ -91,6 +127,7 @@ export const PagePermissionsTable = () => {
               <TableHead>Chemin</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Version Pro requise</TableHead>
+              <TableHead>Fonctionnalités Pro</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -133,6 +170,19 @@ export const PagePermissionsTable = () => {
                       {permission.required_profile === "pro" ? "Pro" : "Basic"}
                     </span>
                   </div>
+                </TableCell>
+                <TableCell>
+                  {permission.page_path === '/savings' && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm">Projets d'épargne:</span>
+                      <Switch
+                        checked={getFeaturePermission(permission, 'savings_projects')}
+                        onCheckedChange={(checked) => 
+                          handleFeaturePermissionChange(permission.id, 'savings_projects', checked)
+                        }
+                      />
+                    </div>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
