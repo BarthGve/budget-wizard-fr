@@ -10,16 +10,6 @@ import { Button } from "@/components/ui/button";
 import { PaginationControls } from "@/components/properties/expenses/PaginationControls";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,7 +43,6 @@ export function RetailerExpensesDialog({
 }: RetailerExpensesDialogProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedExpense, setSelectedExpense] = useState<string | null>(null);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const itemsPerPage = 5;
@@ -62,19 +51,8 @@ export function RetailerExpensesDialog({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedExpenses = expenses.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleDeleteClick = (expenseId: string) => {
-    setSelectedExpense(expenseId);
-    setShowDeleteDialog(true);
-  };
-
-  const handleCancelDelete = () => {
+  const handleDelete = async (expenseId: string) => {
     if (isDeleting) return;
-    setShowDeleteDialog(false);
-    setSelectedExpense(null);
-  };
-
-  const handleDelete = async () => {
-    if (!selectedExpense || isDeleting) return;
     
     setIsDeleting(true);
 
@@ -82,24 +60,16 @@ export function RetailerExpensesDialog({
       const { error } = await supabase
         .from('expenses')
         .delete()
-        .eq('id', selectedExpense);
+        .eq('id', expenseId);
 
       if (error) throw error;
 
-      // Reset all states first
-      const expenseId = selectedExpense; // Keep a reference
-      setShowDeleteDialog(false);
-      setSelectedExpense(null);
-      setIsDeleting(false);
-
-      // Then show success message
       toast.success("Dépense supprimée avec succès");
-
-      // Finally trigger the data refresh
       onExpenseUpdated();
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error("Erreur lors de la suppression de la dépense");
+    } finally {
       setIsDeleting(false);
     }
   };
@@ -161,7 +131,8 @@ export function RetailerExpensesDialog({
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             className="text-destructive"
-                            onClick={() => handleDeleteClick(expense.id)}
+                            onClick={() => handleDelete(expense.id)}
+                            disabled={isDeleting}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Supprimer
@@ -184,27 +155,6 @@ export function RetailerExpensesDialog({
           </div>
         </DialogContent>
       </Dialog>
-
-      <AlertDialog open={showDeleteDialog} onOpenChange={handleCancelDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer la dépense</AlertDialogTitle>
-            <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action ne peut pas être annulée.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Suppression..." : "Supprimer"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {currentExpense && (
         <EditExpenseDialog 
