@@ -31,6 +31,8 @@ export const CreditCard = ({
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
+  const currentMonth = new Date().getMonth() + 1; // Les mois commencent à 0
+
   return (
     <Card 
       className="bg-background cursor-pointer hover:shadow-md transition-shadow"
@@ -41,14 +43,14 @@ export const CreditCard = ({
           <CardTitle className="text-2xl">Crédits</CardTitle>
           <CreditCardIcon className="h-6 w-6 text-muted-foreground" />
         </div>
-        <CardDescription>Vue d'ensemble des crédits</CardDescription>
+        <CardDescription>Total des mensualités dues en {currentMonth}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
         <div className="flex items-center justify-between">
   <div className="flex flex-col">
     <p className="text-xl font-bold leading-none">{Math.round(totalMensualites)} €</p>
-    <p className="text-sm text-muted-foreground mt-1">Mensualités totales</p>
+    
   </div>
   <Tooltip>
     <TooltipTrigger>
