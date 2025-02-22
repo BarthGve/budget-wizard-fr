@@ -19,7 +19,7 @@ const Savings = () => {
   const { monthlySavings, profile, refetch } = useDashboardData();
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
-  const { profile: userProfile, canAccessFeature } = usePagePermissions();
+  const { canAccessFeature } = usePagePermissions();
 
   const { data: projects = [], refetch: refetchProjects } = useQuery({
     queryKey: ["savings-projects"],
@@ -120,21 +120,25 @@ const Savings = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Projets d'épargne</h2>
-          <Button
-            onClick={handleNewProjectClick}
-            className="gap-2"
-          >
-            <PlusCircle className="h-4 w-4" />
-            Nouveau projet
-          </Button>
-        </div>
+        {canAccessFeature('/savings', 'new_project') && (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Projets d'épargne</h2>
+              <Button
+                onClick={handleNewProjectClick}
+                className="gap-2"
+              >
+                <PlusCircle className="h-4 w-4" />
+                Nouveau projet
+              </Button>
+            </div>
 
-        <SavingsProjectList
-          projects={projects}
-          onProjectDeleted={handleProjectDeleted}
-        />
+            <SavingsProjectList
+              projects={projects}
+              onProjectDeleted={handleProjectDeleted}
+            />
+          </>
+        )}
 
         <div>
           <SavingsList

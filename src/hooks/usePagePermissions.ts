@@ -36,7 +36,7 @@ export const usePagePermissions = () => {
     },
   });
 
-  const { data: permissions } = useQuery<PagePermission[]>({
+  const { data: permissions = [] } = useQuery<PagePermission[]>({
     queryKey: ["pagePermissions"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -44,7 +44,12 @@ export const usePagePermissions = () => {
         .select("*");
 
       if (error) throw error;
-      return data;
+      
+      // Convertir explicitement le champ feature_permissions en type correct
+      return data.map(permission => ({
+        ...permission,
+        feature_permissions: permission.feature_permissions as PagePermission['feature_permissions'] || {}
+      }));
     },
   });
 
@@ -69,7 +74,7 @@ export const usePagePermissions = () => {
     if (isAdmin) return true;
 
     const pagePermission = permissions.find(p => p.page_path === pagePath);
-    if (!pagePermission) return false;
+    if (!pagePermission) return true; // Si aucune permission n'est définie, on autorise l'accès
 
     return pagePermission.required_profile === 'basic' || 
            (pagePermission.required_profile === 'pro' && profile.profile_type === 'pro');
@@ -80,10 +85,10 @@ export const usePagePermissions = () => {
     if (isAdmin) return true;
 
     const pagePermission = permissions.find(p => p.page_path === pagePath);
-    if (!pagePermission) return false;
+    if (!pagePermission) return true; // Si aucune permission n'est définie, on autorise l'accès
 
     const featurePermission = pagePermission.feature_permissions?.[featureKey];
-    if (!featurePermission) return true; // If no specific permission is set, allow access
+    if (!featurePermission) return true; // Si aucune permission spécifique n'est définie, on autorise l'accès
 
     return featurePermission.required_profile === 'basic' ||
            (featurePermission.required_profile === 'pro' && profile.profile_type === 'pro');
@@ -97,3 +102,4 @@ export const usePagePermissions = () => {
     canAccessFeature
   };
 };
+
