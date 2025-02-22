@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -67,7 +66,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           />
           <Select value={String(rowsPerPage)} onValueChange={(value) => {
             setRowsPerPage(Number(value));
-            setCurrentPage(1);
+            setCurrentPage(1); // Remise à la première page lors du changement
           }}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Lignes par page"/>
