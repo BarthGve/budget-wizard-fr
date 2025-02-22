@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -26,9 +25,13 @@ import {
 
 interface AddExpenseDialogProps {
   onExpenseAdded: () => void;
+  preSelectedRetailer?: {
+    id: string;
+    name: string;
+  };
 }
 
-export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
+export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer }: AddExpenseDialogProps) {
   const [open, setOpen] = useState(false);
   const [showNoRetailerAlert, setShowNoRetailerAlert] = useState(false);
   const { retailers } = useRetailers();
@@ -36,7 +39,7 @@ export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
   
   const form = useForm({
     defaultValues: {
-      retailerId: "",
+      retailerId: preSelectedRetailer?.id || "",
       amount: "",
       date: format(new Date(), "yyyy-MM-dd"),
       comment: "",
@@ -74,7 +77,7 @@ export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
   };
 
   const handleAddClick = () => {
-    if (!retailers?.length) {
+    if (!retailers?.length && !preSelectedRetailer) {
       setShowNoRetailerAlert(true);
     } else {
       setOpen(true);
@@ -83,12 +86,14 @@ export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
 
   return (
     <>
-      <Button onClick={handleAddClick} className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
-        <Plus className="mr-2 h-4 w-4" />
-        Nouvelle dépense
-      </Button>
+      {!preSelectedRetailer && (
+        <Button onClick={handleAddClick} className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
+          <Plus className="mr-2 h-4 w-4" />
+          Nouvelle dépense
+        </Button>
+      )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={preSelectedRetailer ? open : undefined} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Ajouter une dépense</DialogTitle>
@@ -102,20 +107,28 @@ export function AddExpenseDialog({ onExpenseAdded }: AddExpenseDialogProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Enseigne</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez une enseigne" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {retailers?.map((retailer) => (
-                          <SelectItem key={retailer.id} value={retailer.id}>
-                            {retailer.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    {preSelectedRetailer ? (
+                      <Input 
+                        value={preSelectedRetailer.name} 
+                        disabled 
+                        className="bg-gray-100"
+                      />
+                    ) : (
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionnez une enseigne" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {retailers?.map((retailer) => (
+                            <SelectItem key={retailer.id} value={retailer.id}>
+                              {retailer.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

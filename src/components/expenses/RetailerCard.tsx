@@ -7,6 +7,7 @@ import { useState } from "react";
 import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AddExpenseDialog } from "./AddExpenseDialog";
 
 interface RetailerCardProps {
   retailer: {
@@ -25,17 +26,16 @@ interface RetailerCardProps {
 }
 
 export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
   const now = new Date();
   
-  // Calcul du total de l'année en cours
   const currentYearExpenses = expenses.filter(expense => {
     const expenseDate = new Date(expense.date);
     return expenseDate >= startOfYear(now) && expenseDate <= endOfYear(now);
   });
   const totalCurrentYear = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-  // Calcul du total de l'année précédente
   const lastYearStart = startOfYear(subYears(now, 1));
   const lastYearEnd = endOfYear(subYears(now, 1));
   const lastYearExpenses = expenses.filter(expense => {
@@ -44,33 +44,36 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
   });
   const totalLastYear = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-  // Calcul du pourcentage de variation entre l'année en cours et l'année précédente
   const percentageChange = totalLastYear === 0 
     ? 100 
     : ((totalCurrentYear - totalLastYear) / totalLastYear) * 100;
 
   const handleExpenseUpdated = () => {
-    setDialogOpen(false);
+    setExpensesDialogOpen(false);
+    setAddDialogOpen(false);
     onExpenseUpdated();
   };
 
   return (
     <>
-      <Card 
-        className="pb-0 pt-6 px-6 cursor-pointer hover:shadow-md transition-shadow"
-        onClick={() => setDialogOpen(true)}
-      >
-        <div className="flex items-center justify-between">
+      <Card className="pb-0 pt-6 px-6">
+        <div 
+          className="flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => setAddDialogOpen(true)}
+        >
           <h3 className="text-xl font-semibold">{retailer.name}</h3>
           {retailer.logo_url && (
             <img 
               src={retailer.logo_url} 
               alt={retailer.name} 
-                className="w-10 h-10 rounded-full object-contain"
+              className="w-10 h-10 rounded-full object-contain"
             />
           )}
         </div>
-        <div className="mt-4">
+        <div 
+          className="mt-4 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => setExpensesDialogOpen(true)}
+        >
           <div className="text-2xl font-bold">
             {formatCurrency(totalCurrentYear)}
           </div>
@@ -95,9 +98,14 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
       <RetailerExpensesDialog
         retailer={retailer}
         expenses={expenses}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        open={expensesDialogOpen}
+        onOpenChange={setExpensesDialogOpen}
         onExpenseUpdated={handleExpenseUpdated}
+      />
+
+      <AddExpenseDialog
+        onExpenseAdded={handleExpenseUpdated}
+        preSelectedRetailer={retailer}
       />
     </>
   );
