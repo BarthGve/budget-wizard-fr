@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { SavingsProject } from "@/types/savings-project";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -85,6 +86,23 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
     return project.montant_mensuel * monthsSinceCreation;
   };
 
+  const calculateProgress = (project: SavingsProject) => {
+    const savedAmount = calculateSavedAmount(project);
+    return Math.min((savedAmount / project.montant_total) * 100, 100);
+  };
+
+  const getBadgeVariant = (project: SavingsProject) => {
+    if (project.statut === 'dépassé') return "destructive";
+    if (project.added_to_recurring) return "default";
+    return "outline";
+  };
+
+  const getBadgeText = (project: SavingsProject) => {
+    if (project.statut === 'dépassé') return "Dépassé";
+    if (project.added_to_recurring) return "Actif";
+    return "En attente";
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid gap-4 grid-cols-6">
@@ -116,16 +134,24 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="flex items-center justify-between mt-auto">
+              
+              <div className="space-y-4">
                 <div>
-                  <p className="text-sm font-medium">Objectif:</p>
-                  <p className="text-lg font-bold">
-                    {formatCurrency(project.montant_total)}
-                  </p>
+                  <p className="text-sm font-medium mb-2">Progression:</p>
+                  <Progress value={calculateProgress(project)} className="h-2" />
                 </div>
-                <Badge variant={project.added_to_recurring ? "default" : "outline"} className="flex-shrink-0">
-                  {project.added_to_recurring ? "Actif" : "En attente"}
-                </Badge>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Objectif:</p>
+                    <p className="text-lg font-bold">
+                      {formatCurrency(project.montant_total)}
+                    </p>
+                  </div>
+                  <Badge variant={getBadgeVariant(project)} className="flex-shrink-0">
+                    {getBadgeText(project)}
+                  </Badge>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -202,6 +228,14 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
                     })}</p>
                   </div>
                 )}
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-2">Progression</h3>
+                <Progress value={calculateProgress(selectedProject)} className="h-2" />
+                <p className="text-sm text-muted-foreground mt-2">
+                  {Math.round(calculateProgress(selectedProject))}% de l'objectif atteint
+                </p>
               </div>
             </div>
           )}

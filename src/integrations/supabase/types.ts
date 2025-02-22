@@ -758,6 +758,10 @@ export type Database = {
           total_amount: number
         }[]
       }
+      handle_expired_savings_projects: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       has_role: {
         Args: {
           user_id: string
@@ -805,7 +809,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      credit_status: "actif" | "remboursé"
+      credit_status: "actif" | "remboursé" | "dépassé"
       feedback_status: "pending" | "in_progress" | "completed"
       mode_planification_type: "par_date" | "par_mensualite"
       notification_status: "non_lu" | "lu"
