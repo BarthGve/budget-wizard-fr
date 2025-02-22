@@ -48,7 +48,7 @@ export const UserActions = ({
       value={currentRole}
       onValueChange={(value: "user" | "admin") => onRoleChange(userId, value)}
     >
-      <SelectTrigger className="w-[130px] border-gray-200">
+      <SelectTrigger className="w-[150px] border-gray-200">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
