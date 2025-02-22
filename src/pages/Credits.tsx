@@ -75,7 +75,8 @@ const Credits = () => {
         throw error;
       }
 
-      return data;
+      // Assurons-nous que nous avons toujours un objet, même si data est vide
+      return data?.[0] || { credits_rembourses_count: 0, total_mensualites_remboursees: 0 };
     },
     staleTime: Infinity,
     gcTime: 10 * 60 * 1000,
