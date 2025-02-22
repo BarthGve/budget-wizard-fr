@@ -305,6 +305,7 @@ export type Database = {
       page_permissions: {
         Row: {
           created_at: string
+          feature_permissions: Json | null
           id: string
           page_name: string
           page_path: string
@@ -313,6 +314,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          feature_permissions?: Json | null
           id?: string
           page_name: string
           page_path: string
@@ -321,6 +323,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          feature_permissions?: Json | null
           id?: string
           page_name?: string
           page_path?: string
