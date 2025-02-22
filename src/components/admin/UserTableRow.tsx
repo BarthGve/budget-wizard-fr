@@ -21,7 +21,7 @@ export const UserTableRow = ({ user, onRoleChange, onProfileChange, onDelete }: 
   };
 
   return (
-    <div className="flex items-center justify-between p-4 hover:bg-gray-50">
+    <div className="flex items-center justify-between p-4">
       <div className="flex items-center space-x-4">
         <Avatar>
           {user.avatar_url ? (
