@@ -34,7 +34,7 @@ interface PagePermission {
 }
 
 export const PagePermissionsTable = () => {
-  const { data: permissions, refetch } = useQuery<PagePermission[]>({
+  const { data: permissions = [], refetch } = useQuery<PagePermission[]>({
     queryKey: ["pagePermissions"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -43,7 +43,12 @@ export const PagePermissionsTable = () => {
         .order("page_name");
 
       if (error) throw error;
-      return data;
+
+      // Ensure feature_permissions is properly typed
+      return data.map(permission => ({
+        ...permission,
+        feature_permissions: permission.feature_permissions || {}
+      })) as PagePermission[];
     },
   });
 
