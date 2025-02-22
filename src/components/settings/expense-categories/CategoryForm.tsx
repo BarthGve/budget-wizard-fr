@@ -22,7 +22,7 @@ export const CategoryForm = () => {
         onChange={(e) => setNewCategory(e.target.value)}
         onKeyPress={(e) => e.key === "Enter" && handleAddCategory()}
       />
-      <Button onClick={handleAddCategory} disabled={isAdding} className="text-primary-foreground h-10 w-10 p-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
+      <Button onClick={handleAddCategory} disabled={isAdding} className="flex items-center justify-center text-primary-foreground h-8 w-8 p-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
         <Plus className="h-4 w-4 " />
       </Button>
     </div>
