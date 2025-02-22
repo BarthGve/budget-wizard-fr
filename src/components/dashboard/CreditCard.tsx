@@ -40,14 +40,15 @@ export const CreditCard = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div>
-            <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
-            <p className="text-sm text-muted-foreground">Mensualités totales</p>
-          </div>
-          <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
-            {Math.round(tauxEndettement)}%
-          </Badge>
-        </div>
+        <div className="flex items-center justify-between">
+  <div className="flex flex-col">
+    <p className="text-xl font-bold leading-none">{Math.round(totalMensualites)} €</p>
+    <p className="text-sm text-muted-foreground mt-1">Mensualités totales</p>
+  </div>
+  <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
+    {Math.round(tauxEndettement)}%
+  </Badge>
+</div>
       </CardContent>
     </Card>
   );
