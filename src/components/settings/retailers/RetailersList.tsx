@@ -37,7 +37,7 @@ export function RetailersList() {
         <TableBody>
           {retailers.map((retailer) => (
             <TableRow key={retailer.id}>
-              <TableCell>{retailer.name}</TableCell>
+              <TableCell className="text-base">{retailer.name}</TableCell>
               <TableCell>
                 {retailer.logo_url && (
                   <img 
