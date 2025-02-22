@@ -55,7 +55,6 @@ const Credits = () => {
       console.log("All credits fetched:", data);
       return data as Credit[];
     },
-    // Désactivation du refetch automatique
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     staleTime: Infinity
