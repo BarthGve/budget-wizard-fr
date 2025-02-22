@@ -45,7 +45,6 @@ export const usePagePermissions = () => {
 
       if (error) throw error;
       
-      // Convertir explicitement le champ feature_permissions en type correct
       return data.map(permission => ({
         ...permission,
         feature_permissions: permission.feature_permissions as PagePermission['feature_permissions'] || {}
@@ -74,7 +73,7 @@ export const usePagePermissions = () => {
     if (isAdmin) return true;
 
     const pagePermission = permissions.find(p => p.page_path === pagePath);
-    if (!pagePermission) return true; // Si aucune permission n'est définie, on autorise l'accès
+    if (!pagePermission) return false; // Si aucune permission n'est définie, on refuse l'accès
 
     return pagePermission.required_profile === 'basic' || 
            (pagePermission.required_profile === 'pro' && profile.profile_type === 'pro');
@@ -85,10 +84,10 @@ export const usePagePermissions = () => {
     if (isAdmin) return true;
 
     const pagePermission = permissions.find(p => p.page_path === pagePath);
-    if (!pagePermission) return true; // Si aucune permission n'est définie, on autorise l'accès
+    if (!pagePermission) return false; // Si aucune permission n'est définie, on refuse l'accès
 
     const featurePermission = pagePermission.feature_permissions?.[featureKey];
-    if (!featurePermission) return true; // Si aucune permission spécifique n'est définie, on autorise l'accès
+    if (!featurePermission) return false; // Si aucune permission spécifique n'est définie, on refuse l'accès
 
     return featurePermission.required_profile === 'basic' ||
            (featurePermission.required_profile === 'pro' && profile.profile_type === 'pro');
@@ -102,4 +101,3 @@ export const usePagePermissions = () => {
     canAccessFeature
   };
 };
-
