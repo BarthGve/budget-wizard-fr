@@ -70,7 +70,7 @@ export const SavingsProjectCard = ({ project, onDelete, onSelect }: SavingsProje
         </div>
         
         <div className="space-y-4">
-          {project.statut === 'actif' && (
+          {project.montant_mensuel && project.montant_mensuel > 0 && project.statut === 'actif' && (
             <div>
               <p className="text-sm font-medium mb-2">Progression:</p>
               <Progress value={calculateProgress(project)} className="h-2" />

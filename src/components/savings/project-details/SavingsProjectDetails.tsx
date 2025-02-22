@@ -31,6 +31,14 @@ export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetail
     return Math.min((savedAmount / project.montant_total) * 100, 100);
   };
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   return (
     <Dialog open={!!project} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
@@ -60,15 +68,22 @@ export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetail
             </div>
 
             <div>
-              <h3 className="font-semibold mb-2">Déjà épargné</h3>
-              <p className="text-2xl font-bold">{formatCurrency(calculateSavedAmount(project))}</p>
+              <h3 className="font-semibold mb-2">Date de création</h3>
+              <p>{formatDate(project.created_at)}</p>
             </div>
 
             {project.montant_mensuel && (
-              <div>
-                <h3 className="font-semibold mb-2">Versement mensuel</h3>
-                <p>{formatCurrency(project.montant_mensuel)} / mois</p>
-              </div>
+              <>
+                <div>
+                  <h3 className="font-semibold mb-2">Déjà épargné</h3>
+                  <p className="text-2xl font-bold">{formatCurrency(calculateSavedAmount(project))}</p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold mb-2">Versement mensuel</h3>
+                  <p>{formatCurrency(project.montant_mensuel)} / mois</p>
+                </div>
+              </>
             )}
 
             {project.date_estimee && (
@@ -82,13 +97,15 @@ export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetail
             )}
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-2">Progression</h3>
-            <Progress value={calculateProgress(project)} className="h-2" />
-            <p className="text-sm text-muted-foreground mt-2">
-              {Math.round(calculateProgress(project))}% de l'objectif atteint
-            </p>
-          </div>
+          {project.montant_mensuel && project.montant_mensuel > 0 && (
+            <div>
+              <h3 className="font-semibold mb-2">Progression</h3>
+              <Progress value={calculateProgress(project)} className="h-2" />
+              <p className="text-sm text-muted-foreground mt-2">
+                {Math.round(calculateProgress(project))}% de l'objectif atteint
+              </p>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
