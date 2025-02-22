@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SavingsMode, SavingsProject } from '@/types/savings-project';
@@ -93,16 +94,31 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      if (!projectData.nom_projet) {
+        toast({
+          title: "Erreur",
+          description: "Le nom du projet est obligatoire",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const supabaseProject = {
-        ...projectData,
         id: projectData.id,
         profile_id: user.id,
+        nom_projet: projectData.nom_projet,
         mode_planification: savingsMode,
         montant_total: projectData.montant_total || 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        description: projectData.description || '',
+        image_url: projectData.image_url,
+        montant_mensuel: projectData.montant_mensuel,
+        date_estimee: projectData.date_estimee,
+        nombre_mois: projectData.nombre_mois,
+        added_to_recurring: projectData.added_to_recurring || false,
         statut: projectData.added_to_recurring ? 'actif' : 'en_attente'
-      };
+      } as const;
 
       const { error: projectError } = await supabase
         .from('projets_epargne')
