@@ -20,13 +20,13 @@ const Contributors = () => {
       <div className="grid gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Contributeurs</h1>
-            <p className="text-muted-foreground">Gérez les acteurs du budget</p>
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Revenus</h1>
+            <p className="text-muted-foreground">Indiquez vos rentrées d'argent régulières</p>
           </div>
        
         </div>
 
-        <Card >
+        <Card>
   <CardHeader className="flex flex-row items-center justify-between">
     <div>
       <CardTitle>Listing</CardTitle>
@@ -41,7 +41,7 @@ const Contributors = () => {
       {contributors.map(contributor => <ContributorCard key={contributor.id} contributor={contributor} onEdit={updateContributor} onDelete={deleteContributor} />)}
     </div>
   </CardContent>
-</Card>
+      </Card>
       </div>
     </DashboardLayout>;
 };
