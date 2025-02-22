@@ -5,15 +5,33 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
 import { CreditDialog } from "@/components/credits/CreditDialog";
 import { CreditActions } from "@/components/credits/CreditActions";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE_OPTIONS = [
+  { value: "5", label: "5 crédits" },
+  { value: "15", label: "15 crédits" },
+  { value: "all", label: "Tous les crédits" }
+];
 
 const Credits = () => {
-  const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState<string>("5");
+  
+  const queryClient = useQuery;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,7 +44,7 @@ const Credits = () => {
     checkAuth();
   }, [navigate]);
 
-  const { data: credits, isLoading } = useQuery({
+  const { data: credits = [], isLoading } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -39,7 +57,7 @@ const Credits = () => {
       const { data, error } = await supabase
         .from("credits")
         .select("*")
-        .order("created_at", { ascending: true });
+        .order("date_derniere_mensualite", { ascending: false });
 
       if (error) {
         console.error("Error fetching credits:", error);
@@ -53,18 +71,30 @@ const Credits = () => {
 
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  
-  const activeCredits = credits?.filter(credit => credit.statut === 'actif') || [];
-  const repaidThisMonth = credits?.filter(credit => {
-    const repaymentDate = new Date(credit.date_derniere_mensualite);
-    return credit.statut === 'remboursé' && repaymentDate >= firstDayOfMonth;
-  }) || [];
+
+  // Séparer les crédits actifs et remboursés
+  const activeCredits = credits.filter(credit => credit.statut === 'actif');
+  const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
 
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
-  const totalRepaidMensualites = repaidThisMonth.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
+  const totalRepaidMensualites = repaidCredits.reduce((sum, credit) => 
+    new Date(credit.date_derniere_mensualite) >= firstDayOfMonth ? sum + credit.montant_mensualite : sum, 0
+  );
 
-  const handleCreditDeleted = () => {
-    queryClient.invalidateQueries({ queryKey: ["credits"] });
+  // Pagination logic
+  const itemsPerPageNumber = itemsPerPage === "all" ? credits.length : parseInt(itemsPerPage);
+  const totalPages = Math.ceil(credits.length / itemsPerPageNumber);
+  
+  const getPaginatedCredits = () => {
+    if (itemsPerPage === "all") return [...activeCredits, ...repaidCredits];
+    
+    const startIndex = (currentPage - 1) * itemsPerPageNumber;
+    const endIndex = startIndex + itemsPerPageNumber;
+    return [...activeCredits, ...repaidCredits].slice(startIndex, endIndex);
+  };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
   };
 
   if (isLoading) {
@@ -78,7 +108,7 @@ const Credits = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Crédits</h1>
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Crédits</h1>
             <p className="text-muted-foreground">
               Gérez vos crédits et leurs échéances
             </p>
@@ -116,7 +146,7 @@ const Credits = () => {
             <CardHeader>
               <CardTitle>Crédits remboursés ce mois</CardTitle>
               <CardDescription className="text-emerald-100">
-                {repaidThisMonth.length} crédit(s) remboursé(s)
+                {repaidCredits.filter(credit => new Date(credit.date_derniere_mensualite) >= firstDayOfMonth).length} crédit(s) remboursé(s)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -130,9 +160,31 @@ const Credits = () => {
           </Card>
         </div>
 
+        {/* Contrôles de pagination */}
+        <div className="flex justify-between items-center mb-4">
+          <Select
+            value={itemsPerPage}
+            onValueChange={(value: string) => {
+              setItemsPerPage(value);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Crédits par page" />
+            </SelectTrigger>
+            <SelectContent>
+              {ITEMS_PER_PAGE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Liste des crédits */}
         <div className="grid gap-2">
-          {credits?.map((credit) => (
+          {getPaginatedCredits().map((credit) => (
             <Card key={credit.id} className="overflow-hidden border bg-card dark:bg-card">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center px-4 gap-4 md:w-1/3">
@@ -187,12 +239,44 @@ const Credits = () => {
                 </div>
 
                 <div className="px-4 py-2">
-                  <CreditActions credit={credit} onCreditDeleted={handleCreditDeleted} />
+                  <CreditActions credit={credit} onCreditDeleted={() => {}} />
                 </div>
               </div>
             </Card>
           ))}
         </div>
+
+        {/* Pagination */}
+        {itemsPerPage !== "all" && totalPages > 1 && (
+          <Pagination className="mt-4">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    onClick={() => handlePageChange(page)}
+                    isActive={currentPage === page}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </DashboardLayout>
   );
