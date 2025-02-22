@@ -51,17 +51,17 @@ const Credits = () => {
     }
   });
 
-  const totalMensualites = credits?.reduce((total, credit) => {
-    const today = new Date();
-    const lastPaymentDate = new Date(credit.date_derniere_mensualite);
-    const isInCurrentMonth = lastPaymentDate.getMonth() === today.getMonth() && 
-                           lastPaymentDate.getFullYear() === today.getFullYear();
-    
-    if (credit.statut === 'actif' || isInCurrentMonth) {
-      return total + credit.montant_mensualite;
-    }
-    return total;
-  }, 0) || 0;
+  const today = new Date();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  
+  const activeCredits = credits?.filter(credit => credit.statut === 'actif') || [];
+  const repaidThisMonth = credits?.filter(credit => {
+    const repaymentDate = new Date(credit.date_derniere_mensualite);
+    return credit.statut === 'remboursé' && repaymentDate >= firstDayOfMonth;
+  }) || [];
+
+  const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
+  const totalRepaidMensualites = repaidThisMonth.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
 
   const handleCreditDeleted = () => {
     queryClient.invalidateQueries({ queryKey: ["credits"] });
@@ -93,23 +93,42 @@ const Credits = () => {
           />
         </div>
 
-        {/* Carte récapitulative */}
-        <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md hover:shadow-xl transition-shadow duration-300">
-          <CardHeader>
-            <CardTitle className="text-white">Total des mensualités actives</CardTitle>
-            <CardDescription className="text-violet-100">
-              Montant total dû pour le mois en cours
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {totalMensualites.toLocaleString('fr-FR')} €
-            </div>
-            <div className="text-violet-100 mt-2">
-              {credits?.filter(credit => credit.statut === 'actif').length || 0} crédit(s) actif(s)
-            </div>
-          </CardContent>
-        </Card>
+        {/* Récapitulatif des crédits */}
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
+            <CardHeader>
+              <CardTitle>Crédits actifs</CardTitle>
+              <CardDescription className="text-violet-100">
+                {activeCredits.length} crédit(s) en cours
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {totalActiveMensualites.toLocaleString('fr-FR')} €
+              </div>
+              <div className="text-violet-100 mt-2">
+                Mensualités totales
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 text-white">
+            <CardHeader>
+              <CardTitle>Crédits remboursés ce mois</CardTitle>
+              <CardDescription className="text-emerald-100">
+                {repaidThisMonth.length} crédit(s) remboursé(s)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {totalRepaidMensualites.toLocaleString('fr-FR')} €
+              </div>
+              <div className="text-emerald-100 mt-2">
+                Mensualités remboursées
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Liste des crédits */}
         <div className="grid gap-2">

@@ -22,12 +22,6 @@ export const CreditCard = ({
     return "destructive";
   };
 
-  const getBadgeText = (taux: number) => {
-    if (taux < 30) return "faible";
-    if (taux < 40) return "modéré";
-    return "élevé";
-  };
-
   return (
     <Card 
       className="bg-background cursor-pointer hover:shadow-md transition-shadow"
@@ -38,18 +32,17 @@ export const CreditCard = ({
           <CardTitle className="text-2xl">Crédits</CardTitle>
           <CreditCardIcon className="h-6 w-6 text-muted-foreground" />
         </div>
-        <CardDescription>Mensualités et taux d'endettement</CardDescription>
+        <CardDescription>Vue d'ensemble des crédits</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center gap-4">
+        <div className="space-y-4">
           <div>
             <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
+            <p className="text-sm text-muted-foreground">Mensualités en cours</p>
           </div>
-          <div className="relative">
-            <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
-              {Math.round(tauxEndettement)}%
-            </Badge>
-          </div>
+          <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
+            {Math.round(tauxEndettement)}% d'endettement
+          </Badge>
         </div>
       </CardContent>
     </Card>
