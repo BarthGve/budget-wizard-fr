@@ -22,6 +22,10 @@ export const CreditCard = ({
     return "destructive";
   };
 
+  // Requête pour obtenir les crédits actifs et remboursés du mois en cours
+  const today = new Date();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
   return (
     <Card 
       className="bg-background cursor-pointer hover:shadow-md transition-shadow"
@@ -38,7 +42,7 @@ export const CreditCard = ({
         <div className="space-y-4">
           <div>
             <p className="text-xl font-bold">{Math.round(totalMensualites)} €</p>
-            <p className="text-sm text-muted-foreground">Mensualités en cours</p>
+            <p className="text-sm text-muted-foreground">Mensualités totales</p>
           </div>
           <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
             {Math.round(tauxEndettement)}% d'endettement

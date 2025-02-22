@@ -1,4 +1,3 @@
-
 import { RevenueCard } from "./RevenueCard";
 import { ExpensesCard } from "./ExpensesCard";
 import { SavingsCard } from "./SavingsCard";
@@ -62,13 +61,15 @@ export const DashboardTabContent = ({
   recurringExpenses,
   monthlySavings,
 }: DashboardTabContentProps) => {
+  const today = new Date();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
   const { data: credits } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("credits")
-        .select("*")
-        .eq("statut", "actif");
+        .select("*");
 
       if (error) {
         console.error("Error fetching credits:", error);
@@ -79,7 +80,16 @@ export const DashboardTabContent = ({
     }
   });
 
-  const totalMensualites = credits?.reduce((sum, credit) => sum + credit.montant_mensualite, 0) || 0;
+  const activeCredits = credits?.filter(credit => credit.statut === 'actif') || [];
+  const repaidThisMonth = credits?.filter(credit => {
+    const repaymentDate = new Date(credit.date_derniere_mensualite);
+    return credit.statut === 'remboursé' && repaymentDate >= firstDayOfMonth;
+  }) || [];
+
+  const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
+  const totalRepaidThisMonth = repaidThisMonth.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
+
+  const totalMensualites = totalActiveMensualites + totalRepaidThisMonth;
 
   const baseCardStyle = "hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02]";
 
