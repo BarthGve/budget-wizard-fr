@@ -3,12 +3,17 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescripti
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "../hooks/useCreditForm";
+import { LogoPreview } from "@/components/savings/LogoPreview";
+import { useLogoPreview } from "@/components/savings/hooks/useLogoPreview";
 
 interface DomainFieldProps {
   form: UseFormReturn<FormValues>;
 }
 
 export const DomainField = ({ form }: DomainFieldProps) => {
+  const domain = form.watch("domain") || "";
+  const { previewLogoUrl, isLogoValid, isCheckingLogo } = useLogoPreview(domain);
+
   return (
     <FormField
       control={form.control}
