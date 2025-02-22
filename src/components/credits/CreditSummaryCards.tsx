@@ -40,7 +40,7 @@ export const CreditSummaryCards = ({
         <CardHeader>
           <CardTitle>Crédits remboursés ce mois</CardTitle>
           <CardDescription className="text-emerald-100">
-            {repaidCredits.filter(credit => new Date(credit.date_derniere_mensualite) >= firstDayOfMonth).length} crédit(s) remboursé(s)
+            {repaidCredits.length} crédit(s) à échéance
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -48,7 +48,7 @@ export const CreditSummaryCards = ({
             {totalRepaidMensualites.toLocaleString('fr-FR')} €
           </div>
           <div className="text-emerald-100 mt-2">
-            Mensualités remboursées
+            Mensualités échues
           </div>
         </CardContent>
       </Card>

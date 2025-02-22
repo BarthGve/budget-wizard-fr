@@ -57,23 +57,30 @@ const Credits = () => {
   });
 
   // Use useMemo to prevent unnecessary recalculations
-  const { activeCredits, repaidCredits, firstDayOfMonth, totalActiveMensualites, totalRepaidMensualites } = useMemo(() => {
+  const { activeCredits, repaidCredits, firstDayOfMonth, lastDayOfMonth, totalActiveMensualites, creditsRepaidThisMonth, totalRepaidMensualitesThisMonth } = useMemo(() => {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     
     const activeCredits = credits.filter(credit => credit.statut === 'actif');
     const repaidCredits = credits.filter(credit => credit.statut === 'remboursé');
 
-    console.log("Filtering credits - Active:", activeCredits.length, "Repaid:", repaidCredits.length);
+    // Filtrer les crédits remboursés ce mois-ci en fonction de leur date d'échéance
+    const creditsRepaidThisMonth = repaidCredits.filter(credit => {
+      const dateEcheance = new Date(credit.date_derniere_mensualite);
+      return dateEcheance >= firstDayOfMonth && dateEcheance <= lastDayOfMonth;
+    });
+
+    console.log("Filtering credits - Active:", activeCredits.length, "Repaid this month:", creditsRepaidThisMonth.length);
 
     return {
       activeCredits,
       repaidCredits,
       firstDayOfMonth,
+      lastDayOfMonth,
       totalActiveMensualites: activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0),
-      totalRepaidMensualites: repaidCredits.reduce((sum, credit) => 
-        new Date(credit.date_derniere_mensualite) >= firstDayOfMonth ? sum + credit.montant_mensualite : sum, 0
-      )
+      creditsRepaidThisMonth,
+      totalRepaidMensualitesThisMonth: creditsRepaidThisMonth.reduce((sum, credit) => sum + credit.montant_mensualite, 0)
     };
   }, [credits]);
 
@@ -105,9 +112,9 @@ const Credits = () => {
 
         <CreditSummaryCards 
           activeCredits={activeCredits}
-          repaidCredits={repaidCredits}
+          repaidCredits={creditsRepaidThisMonth}
           totalActiveMensualites={totalActiveMensualites}
-          totalRepaidMensualites={totalRepaidMensualites}
+          totalRepaidMensualites={totalRepaidMensualitesThisMonth}
           firstDayOfMonth={firstDayOfMonth}
         />
 
