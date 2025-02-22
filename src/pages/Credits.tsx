@@ -47,6 +47,7 @@ const Credits = () => {
         throw error;
       }
 
+      console.log("Fetched credits:", data);
       return data as Credit[];
     },
     staleTime: Infinity,
