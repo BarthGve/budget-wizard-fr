@@ -85,3 +85,4 @@ export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
     </div>
   );
 };
+
