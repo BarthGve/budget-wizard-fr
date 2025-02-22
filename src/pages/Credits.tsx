@@ -58,7 +58,7 @@ const Credits = () => {
   });
 
   // Query for monthly stats
-  const { data: monthlyStats, isLoading: isLoadingStats } = useQuery({
+  const { data: monthlyStats = { credits_rembourses_count: 0, total_mensualites_remboursees: 0 }, isLoading: isLoadingStats } = useQuery({
     queryKey: ["credits-monthly-stats"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -75,13 +75,16 @@ const Credits = () => {
         throw error;
       }
 
-      // Assurons-nous que nous avons toujours un objet, même si data est vide
-      return data?.[0] || { credits_rembourses_count: 0, total_mensualites_remboursees: 0 };
+      // S'assurer que nous avons toujours un objet valide
+      const stats = data?.[0] || { credits_rembourses_count: 0, total_mensualites_remboursees: 0 };
+      console.log("Monthly stats:", stats);
+      return stats;
     },
     staleTime: Infinity,
     gcTime: 10 * 60 * 1000,
   });
 
+  // Filtrer les crédits
   const { activeCredits, repaidCredits, totalActiveMensualites } = credits.reduce((acc, credit) => ({
     activeCredits: credit.statut === 'actif' ? [...acc.activeCredits, credit] : acc.activeCredits,
     repaidCredits: credit.statut === 'remboursé' ? [...acc.repaidCredits, credit] : acc.repaidCredits,
@@ -122,9 +125,9 @@ const Credits = () => {
 
         <CreditSummaryCards 
           activeCredits={activeCredits}
-          repaidThisMonth={monthlyStats?.credits_rembourses_count || 0}
+          repaidThisMonth={monthlyStats.credits_rembourses_count}
           totalActiveMensualites={totalActiveMensualites}
-          totalRepaidMensualitesThisMonth={monthlyStats?.total_mensualites_remboursees || 0}
+          totalRepaidMensualitesThisMonth={monthlyStats.total_mensualites_remboursees}
         />
 
         <div className="space-y-6">
