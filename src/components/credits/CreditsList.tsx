@@ -16,9 +16,14 @@ export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
     <div className="grid gap-2">
       {credits && credits.length > 0 ? (
         credits.map((credit) => (
-          <Card key={credit.id} className={`overflow-hidden border bg-card dark:bg-card ${
-            credit.statut === 'remboursé' ? 'opacity-75' : ''
-          }`}>
+          <Card 
+            key={credit.id} 
+            className={`overflow-hidden border bg-card dark:bg-card ${
+              credit.statut === 'remboursé' 
+                ? 'border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/20' 
+                : ''
+            }`}
+          >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
               <div className="flex items-center px-4 gap-4 md:w-1/3">
                 {credit.logo_url ? (
