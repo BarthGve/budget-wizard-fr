@@ -15,6 +15,7 @@ const Expenses = () => {
   const queryClient = useQueryClient();
   const { retailers } = useRetailers();
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
+  const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
 
   const { data: expenses, isLoading } = useQuery({
     queryKey: ["expenses"],
@@ -34,6 +35,7 @@ const Expenses = () => {
 
   const handleExpenseUpdated = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["expenses"] });
+    setAddExpenseDialogOpen(false);
   }, [queryClient]);
 
   const expensesByRetailer = retailers?.map(retailer => ({
@@ -84,7 +86,11 @@ const Expenses = () => {
                   Vue annuelle
                 </Label>
               </div>
-              <AddExpenseDialog onExpenseAdded={handleExpenseUpdated} />
+              <AddExpenseDialog 
+                onExpenseAdded={handleExpenseUpdated} 
+                open={addExpenseDialogOpen}
+                onOpenChange={setAddExpenseDialogOpen}
+              />
             </div>
           </div>
           <div className="mt-8">
@@ -104,7 +110,6 @@ const Expenses = () => {
               />
             ))}
           </div>
-       
         </div>
       </div>
     </DashboardLayout>
