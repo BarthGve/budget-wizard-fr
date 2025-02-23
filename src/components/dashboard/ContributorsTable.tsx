@@ -19,10 +19,12 @@ import { Contributor } from "@/types/contributor";
 
 interface ContributorsTableProps {
   contributors: Array<{
+    id: string;
     name: string;
     total_contribution: number;
     percentage_contribution: number;
     is_owner?: boolean;
+    profile_id: string;
   }>;
   totalExpenses: number;
   totalCredits: number;
@@ -91,7 +93,12 @@ export const ContributorsTable = ({
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => {
                         setSelectedContributor({
-                          ...contributor,
+                          id: contributor.id,
+                          name: contributor.name,
+                          total_contribution: contributor.total_contribution,
+                          percentage_contribution: contributor.percentage_contribution,
+                          is_owner: contributor.is_owner || false,
+                          profile_id: contributor.profile_id,
                           expenseShare,
                           creditShare
                         });
