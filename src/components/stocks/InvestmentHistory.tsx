@@ -12,12 +12,9 @@ interface InvestmentHistoryProps {
 export const InvestmentHistory = ({ data }: InvestmentHistoryProps) => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Historique des Investissements</CardTitle>
-        <CardDescription>Évolution sur les 5 dernières années</CardDescription>
-      </CardHeader>
+    
       <CardContent>
-        <div className="h-[300px]">
+        <div className="h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={data.slice(-5)}

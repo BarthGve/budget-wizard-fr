@@ -136,9 +136,9 @@ const StocksPage = () => {
     <Card>
       <CardHeader>
         <CardTitle>Historique des investissements</CardTitle>
-        <CardDescription>Évolution de vos investissements par année</CardDescription>
+        <CardDescription>Évolution de vos investissements sur les 5 dernières années</CardDescription>
       </CardHeader>
-      <CardContent className="h-[400px]">
+      <CardContent className="h-[200px]">
         <div className="h-full">
           <InvestmentHistory data={yearlyData} />
         </div>
