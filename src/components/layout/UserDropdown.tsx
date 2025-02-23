@@ -39,7 +39,7 @@ export const UserDropdown = ({
           <Button variant="ghost" className="w-full justify-start p-2 h-auto">
             <div className="flex items-center gap-3 w-full">
               <div className="relative">
-                <Avatar className="h-14 w-14">
+                <Avatar className="h-12 w-12">
                   <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
                   <AvatarFallback>
                     {(profile?.full_name || "?")[0]?.toUpperCase()}
