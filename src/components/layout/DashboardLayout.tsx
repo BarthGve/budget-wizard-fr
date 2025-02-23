@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "@/components/credits/types";
 import { Badge } from "@/components/ui/badge";
+import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -20,8 +21,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("credits")
-        .select("*")
-        .eq("statut", "actif");
+        .select("*");
 
       if (error) {
         console.error("Error fetching credits:", error);
@@ -56,26 +56,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     }
   });
 
-  // Calculer le solde global
+  // Calculate global balance using the new utility function
   const totalRevenue = contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
-  
-  const currentMonth = new Date().getMonth() + 1;
-  const totalExpenses = recurringExpenses?.reduce((sum, expense) => {
-    switch (expense.periodicity) {
-      case "monthly":
-        return sum + expense.amount;
-      case "quarterly":
-        return sum + (expense.debit_month === currentMonth ? expense.amount : 0);
-      case "yearly":
-        return sum + (expense.debit_month === currentMonth ? expense.amount : 0);
-      default:
-        return sum;
-    }
-  }, 0) || 0;
-
-  const totalSavings = monthlySavings?.reduce((sum, saving) => sum + saving.amount, 0) || 0;
-  const totalCredits = credits?.reduce((sum, credit) => sum + credit.montant_mensualite, 0) || 0;
-  const globalBalance = totalRevenue - totalExpenses - totalSavings - totalCredits;
+  const globalBalance = calculateGlobalBalance(totalRevenue, recurringExpenses, monthlySavings, credits);
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">

@@ -77,3 +77,36 @@ export const getCumulativeExpensePercentages = (contributors: any[] | null, expe
     }];
   }, []) || [];
 };
+
+export const calculateGlobalBalance = (
+  totalRevenue: number,
+  recurringExpenses: any[] | null,
+  monthlySavings: any[] | null,
+  credits: any[] | null
+) => {
+  const today = new Date();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  // Calculate total expenses
+  const totalExpenses = calculateMonthlyExpenses(recurringExpenses);
+
+  // Calculate total savings
+  const totalSavings = calculateTotalSavings(monthlySavings);
+
+  // Calculate total credits (active + repaid this month)
+  const totalCredits = credits?.reduce((sum, credit) => {
+    if (credit.statut === 'actif') {
+      return sum + credit.montant_mensualite;
+    }
+    // Include repaid credits if they were repaid this month
+    if (credit.statut === 'remboursé') {
+      const repaymentDate = new Date(credit.date_derniere_mensualite);
+      if (repaymentDate >= firstDayOfMonth) {
+        return sum + credit.montant_mensualite;
+      }
+    }
+    return sum;
+  }, 0) || 0;
+
+  return totalRevenue - totalExpenses - totalSavings - totalCredits;
+};
