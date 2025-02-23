@@ -14,7 +14,7 @@ export const InvestmentHistory = ({ data }: InvestmentHistoryProps) => {
     <Card>
     
       <CardContent>
-        <div className="h-[200px]">
+        <div className="h-[180px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={data.slice(-5)}
