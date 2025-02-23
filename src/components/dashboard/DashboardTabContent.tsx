@@ -1,3 +1,4 @@
+
 import { RevenueCard } from "./RevenueCard";
 import { ExpensesCard } from "./ExpensesCard";
 import { SavingsCard } from "./SavingsCard";
@@ -17,9 +18,12 @@ interface DashboardTabContentProps {
   balance: number;
   savingsGoal: number;
   contributors: Array<{
+    id: string;
     name: string;
     total_contribution: number;
     percentage_contribution: number;
+    is_owner?: boolean;
+    profile_id: string;
   }>;
   contributorShares: Array<{
     name: string;
@@ -144,7 +148,7 @@ export const DashboardTabContent = ({
         </div>
         )}
       </div>
-      <div >
+      <div>
         <ContributorsTable 
           contributors={contributors}
           totalExpenses={expenses}
@@ -154,3 +158,4 @@ export const DashboardTabContent = ({
     </div>
   );
 };
+
