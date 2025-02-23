@@ -24,9 +24,9 @@ export function ContributorDetailsDialog({
 }: ContributorDetailsDialogProps) {
   const { theme } = useTheme();
   const isDarkTheme = theme === "dark";
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentExpensePage, setCurrentExpensePage] = useState(1);
+  const [currentCreditPage, setCurrentCreditPage] = useState(1);
 
-  // Fetch profile avatar if the contributor is the owner
   const { data: profile } = useQuery({
     queryKey: ["profile-avatar-details", contributor.is_owner],
     enabled: contributor.is_owner && open,
@@ -56,31 +56,44 @@ export function ContributorDetailsDialog({
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
 
-      const { data: expenses } = await supabase
-        .from("recurring_expenses")
-        .select("*")
-        .eq("profile_id", user.id);
+      const [{ data: expenses }, { data: credits }] = await Promise.all([
+        supabase
+          .from("recurring_expenses")
+          .select("*")
+          .eq("profile_id", user.id),
+        supabase
+          .from("credits")
+          .select("*")
+          .eq("profile_id", user.id)
+          .eq("statut", "actif")
+      ]);
 
       return {
         expenses: expenses || [],
+        credits: credits || []
       };
     },
   });
 
   const paginatedData = monthlyData ? {
     expenses: monthlyData.expenses.slice(
-      (currentPage - 1) * ITEMS_PER_PAGE,
-      currentPage * ITEMS_PER_PAGE
+      (currentExpensePage - 1) * ITEMS_PER_PAGE,
+      currentExpensePage * ITEMS_PER_PAGE
     ),
+    credits: monthlyData.credits.slice(
+      (currentCreditPage - 1) * ITEMS_PER_PAGE,
+      currentCreditPage * ITEMS_PER_PAGE
+    )
   } : null;
 
-  const totalPages = monthlyData 
-    ? Math.ceil(monthlyData.expenses.length / ITEMS_PER_PAGE)
-    : 1;
+  const totalPages = {
+    expenses: monthlyData ? Math.ceil(monthlyData.expenses.length / ITEMS_PER_PAGE) : 1,
+    credits: monthlyData ? Math.ceil(monthlyData.credits.length / ITEMS_PER_PAGE) : 1
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg w-[500px]">
+      <DialogContent className="max-w-5xl w-[1000px]">
         <DialogHeader>
           <ContributorDetailsHeader
             name={contributor.name}
@@ -91,20 +104,37 @@ export function ContributorDetailsDialog({
         </DialogHeader>
 
         <div className="mt-6 space-y-6">
-          <ContributorStatsChart
-            expenseShare={contributor.expenseShare || 0}
-            creditShare={contributor.creditShare || 0}
-          />
+          <div className="flex justify-start">
+            <div className="w-[300px]">
+              <ContributorStatsChart
+                expenseShare={contributor.expenseShare || 0}
+                creditShare={contributor.creditShare || 0}
+              />
+            </div>
+          </div>
 
-          {paginatedData && (
-            <ContributorMonthlyDetails
-              expenses={paginatedData.expenses}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              contributorPercentage={contributor.percentage_contribution}
-              onPageChange={setCurrentPage}
-            />
-          )}
+          <div className="grid grid-cols-2 gap-6">
+            {paginatedData && (
+              <>
+                <ContributorMonthlyDetails
+                  expenses={paginatedData.expenses}
+                  currentPage={currentExpensePage}
+                  totalPages={totalPages.expenses}
+                  contributorPercentage={contributor.percentage_contribution}
+                  onPageChange={setCurrentExpensePage}
+                />
+
+                <ContributorMonthlyDetails
+                  expenses={paginatedData.credits}
+                  currentPage={currentCreditPage}
+                  totalPages={totalPages.credits}
+                  contributorPercentage={contributor.percentage_contribution}
+                  onPageChange={setCurrentCreditPage}
+                  type="credit"
+                />
+              </>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
