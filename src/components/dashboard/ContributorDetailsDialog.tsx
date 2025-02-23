@@ -8,22 +8,8 @@ import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
-interface Contributor {
-  name: string;
-  expenseShare: number;
-  creditShare: number;
-  is_owner?: boolean;
-  percentage_contribution: number;
-  total_contribution: number;
-}
+import { PaginationControls } from "@/components/properties/expenses/PaginationControls";
+import { Contributor } from "@/types/contributor";
 
 interface ContributorDetailsDialogProps {
   contributor: Contributor;
@@ -99,11 +85,11 @@ export function ContributorDetailsDialog({
   const pieChartData = [
     {
       name: "Charges",
-      value: contributor.expenseShare,
+      value: contributor.expenseShare || 0,
     },
     {
       name: "Crédits",
-      value: contributor.creditShare,
+      value: contributor.creditShare || 0,
     },
   ];
 
@@ -123,6 +109,10 @@ export function ContributorDetailsDialog({
 
   const initials = getInitials(contributor.name);
   const avatarColors = getAvatarColor(contributor.name, isDarkTheme);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -200,29 +190,11 @@ export function ContributorDetailsDialog({
             </div>
 
             {totalPages > 1 && (
-              <div className="mt-4">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
-                        disabled={currentPage === 1}
-                      />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <span className="px-4">
-                        Page {currentPage} sur {totalPages}
-                      </span>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext
-                        onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
-                        disabled={currentPage === totalPages}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+              <PaginationControls
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             )}
           </Card>
         </div>

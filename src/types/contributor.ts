@@ -7,6 +7,8 @@ export interface Contributor {
   percentage_contribution: number;
   is_owner: boolean;
   profile_id: string;
+  expenseShare?: number;
+  creditShare?: number;
 }
 
 export interface NewContributor {
