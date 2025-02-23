@@ -1,3 +1,4 @@
+
 import { Contributor } from "@/types/contributor";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,11 @@ export const ContributorCard = ({
   const isDarkTheme = theme === "dark";
   const initials = getInitials(contributor.name);
   const avatarColors = getAvatarColor(contributor.name, isDarkTheme);
+
+  const handleUpdate = () => {
+    onEdit(editedContributor);
+    setIsEditDialogOpen(false);
+  };
 
   return (
     <div className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card">
