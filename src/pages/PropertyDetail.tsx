@@ -93,7 +93,7 @@ const PropertyDetail = () => {
 
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-3XL">{property.name}</h1>
+              <h1 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-3XL text-3xl">{property.name}</h1>
               <p className="text-muted-foreground">{property.address}</p>
             </div>
             <div className="flex items-center gap-6">
