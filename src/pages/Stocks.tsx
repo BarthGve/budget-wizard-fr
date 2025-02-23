@@ -104,7 +104,7 @@ const StocksPage = () => {
 
         <div className="flex justify-between items-center">
           <div>
-          <hZ className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Compte titre</h2>
+          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Compte titre</h2>
             <p className="text-muted-foreground">
               Renseigner les sommes investies dans votre portefeuille
             </p>
