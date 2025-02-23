@@ -13,6 +13,9 @@ import { getAvatarColor, getInitials } from "@/utils/avatarColors";
 import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { ContributorDetailsDialog } from "./ContributorDetailsDialog";
+import { useState } from "react";
+import { Contributor } from "@/types/contributor";
 
 interface ContributorsTableProps {
   contributors: Array<{
@@ -30,6 +33,9 @@ export const ContributorsTable = ({
   totalExpenses,
   totalCredits 
 }: ContributorsTableProps) => {
+  const [selectedContributor, setSelectedContributor] = useState<Contributor | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   if (contributors.length <= 1) return null;
 
   const { theme } = useTheme();
@@ -53,62 +59,82 @@ export const ContributorsTable = ({
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Répartition des charges</CardTitle>
-        <CardDescription>Détail des revenus et participations par contributeur</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Contributeur</TableHead>
-                <TableHead className="text-right">Revenus mensuels</TableHead>
-                <TableHead className="text-right">Part des revenus</TableHead>
-                <TableHead className="text-right">Participation aux charges</TableHead>
-                <TableHead className="text-right">Participation aux crédits</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {contributors.map((contributor) => {
-                const expenseShare = (totalExpenses * contributor.percentage_contribution) / 100;
-                const creditShare = (totalCredits * contributor.percentage_contribution) / 100;
-                const initials = getInitials(contributor.name);
-                const avatarColors = getAvatarColor(contributor.name, isDarkTheme);
-                const isOwner = contributor.is_owner;
-                
-                return (
-                  <TableRow key={contributor.name}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center space-x-3">
-                        <Avatar>
-                          {isOwner && profile?.avatar_url ? (
-                            <AvatarImage src={profile.avatar_url} alt={contributor.name} />
-                          ) : null}
-                          <AvatarFallback
-                            style={{
-                              backgroundColor: avatarColors.background,
-                              color: avatarColors.text,
-                            }}
-                          >
-                            {initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span>{contributor.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">{contributor.total_contribution.toFixed(2)} €</TableCell>
-                    <TableCell className="text-right">{contributor.percentage_contribution.toFixed(1)}%</TableCell>
-                    <TableCell className="text-right">{expenseShare.toFixed(2)} €</TableCell>
-                    <TableCell className="text-right">{creditShare.toFixed(2)} €</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Répartition des charges</CardTitle>
+          <CardDescription>Détail des revenus et participations par contributeur</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Contributeur</TableHead>
+                  <TableHead className="text-right">Revenus mensuels</TableHead>
+                  <TableHead className="text-right">Part des revenus</TableHead>
+                  <TableHead className="text-right">Participation aux charges</TableHead>
+                  <TableHead className="text-right">Participation aux crédits</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {contributors.map((contributor) => {
+                  const expenseShare = (totalExpenses * contributor.percentage_contribution) / 100;
+                  const creditShare = (totalCredits * contributor.percentage_contribution) / 100;
+                  const initials = getInitials(contributor.name);
+                  const avatarColors = getAvatarColor(contributor.name, isDarkTheme);
+                  const isOwner = contributor.is_owner;
+                  
+                  return (
+                    <TableRow 
+                      key={contributor.name} 
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => {
+                        setSelectedContributor({
+                          ...contributor,
+                          expenseShare,
+                          creditShare
+                        });
+                        setDialogOpen(true);
+                      }}
+                    >
+                      <TableCell className="font-medium">
+                        <div className="flex items-center space-x-3">
+                          <Avatar>
+                            {isOwner && profile?.avatar_url ? (
+                              <AvatarImage src={profile.avatar_url} alt={contributor.name} />
+                            ) : null}
+                            <AvatarFallback
+                              style={{
+                                backgroundColor: avatarColors.background,
+                                color: avatarColors.text,
+                              }}
+                            >
+                              {initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span>{contributor.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">{contributor.total_contribution.toFixed(2)} €</TableCell>
+                      <TableCell className="text-right">{contributor.percentage_contribution.toFixed(1)}%</TableCell>
+                      <TableCell className="text-right">{expenseShare.toFixed(2)} €</TableCell>
+                      <TableCell className="text-right">{creditShare.toFixed(2)} €</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+      {selectedContributor && (
+        <ContributorDetailsDialog 
+          contributor={selectedContributor}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+        />
+      )}
+    </>
   );
 };
