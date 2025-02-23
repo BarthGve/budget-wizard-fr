@@ -1,4 +1,3 @@
-
 import { Contributor } from "@/types/contributor";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAvatarColor, getInitials } from "@/utils/avatarColors";
+import { useTheme } from "next-themes";
 
 interface ContributorCardProps {
   contributor: Contributor;
@@ -40,25 +41,22 @@ export const ContributorCard = ({
 }: ContributorCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editedContributor, setEditedContributor] = useState(contributor);
-
-  const handleUpdate = () => {
-    const updatedContributor = {
-      ...editedContributor,
-      total_contribution: parseFloat(editedContributor.total_contribution.toString()),
-    };
-    onEdit(updatedContributor);
-    setIsEditDialogOpen(false);
-  };
+  const { theme } = useTheme();
+  const isDarkTheme = theme === "dark";
+  const initials = getInitials(contributor.name);
+  const avatarColors = getAvatarColor(contributor.name, isDarkTheme);
 
   return (
-    <div className="flex items-center justify-between p-2 border rounded-lg  bg-card dark:bg-card">
+    <div className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card">
       <div className="flex items-center space-x-4">
         <Avatar>
-          <AvatarFallback>
-            {contributor.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")}
+          <AvatarFallback 
+            style={{
+              backgroundColor: avatarColors.background,
+              color: avatarColors.text,
+            }}
+          >
+            {initials}
           </AvatarFallback>
         </Avatar>
         <div>

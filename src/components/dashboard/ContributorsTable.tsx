@@ -8,6 +8,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { getAvatarColor, getInitials } from "@/utils/avatarColors";
+import { useTheme } from "next-themes";
 
 interface ContributorsTableProps {
   contributors: Array<{
@@ -25,6 +28,9 @@ export const ContributorsTable = ({
   totalCredits 
 }: ContributorsTableProps) => {
   if (contributors.length <= 1) return null;
+
+  const { theme } = useTheme();
+  const isDarkTheme = theme === "dark";
 
   return (
     <Card>
@@ -48,10 +54,26 @@ export const ContributorsTable = ({
               {contributors.map((contributor) => {
                 const expenseShare = (totalExpenses * contributor.percentage_contribution) / 100;
                 const creditShare = (totalCredits * contributor.percentage_contribution) / 100;
+                const initials = getInitials(contributor.name);
+                const avatarColors = getAvatarColor(contributor.name, isDarkTheme);
                 
                 return (
                   <TableRow key={contributor.name}>
-                    <TableCell className="font-medium">{contributor.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center space-x-3">
+                        <Avatar>
+                          <AvatarFallback
+                            style={{
+                              backgroundColor: avatarColors.background,
+                              color: avatarColors.text,
+                            }}
+                          >
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span>{contributor.name}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-right">{contributor.total_contribution.toFixed(2)} €</TableCell>
                     <TableCell className="text-right">{contributor.percentage_contribution.toFixed(1)}%</TableCell>
                     <TableCell className="text-right">{expenseShare.toFixed(2)} €</TableCell>
