@@ -115,7 +115,7 @@ const PropertyDetail = () => {
             <h2 className="text-xl font-semibold mb-4">Détails</h2>
             <div className="grid gap-4">
               <div>
-                <span className="font-medium">Valeur du bien:</span>{" "}
+                <span className="font-medium">Valeur d'achat:</span>{" "}
                 {formatCurrency(property.purchase_value)}
               </div>
               <div>
