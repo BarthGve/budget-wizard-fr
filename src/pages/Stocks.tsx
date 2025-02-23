@@ -107,8 +107,8 @@ const StocksPage = () => {
 {/* Grid Container */}
 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
   {/* Colonne de gauche (1/3) avec les cards */}
-  <div className="flex flex-col gap-6">
-    <Card className="flex-1 cursor-pointer transition-colors hover:bg-accent/50" onClick={() => setCurrentYearDialogOpen(true)}>
+  <div className="space-y-6">
+    <Card className="cursor-pointer transition-colors hover:bg-accent/50" onClick={() => setCurrentYearDialogOpen(true)}>
       <CardHeader>
         <CardTitle>Total {currentYear}</CardTitle>
         <CardDescription>Montant total investi cette année</CardDescription>
@@ -119,7 +119,7 @@ const StocksPage = () => {
         </div>
       </CardContent>
     </Card>
-    <Card className="flex-1 cursor-pointer transition-colors hover:bg-accent/50" onClick={() => setYearlyTotalDialogOpen(true)}>
+    <Card className="cursor-pointer transition-colors hover:bg-accent/50" onClick={() => setYearlyTotalDialogOpen(true)}>
       <CardHeader>
         <CardTitle>Total global</CardTitle>
         <CardDescription>Montant total de tous les investissements</CardDescription>
@@ -138,8 +138,10 @@ const StocksPage = () => {
         <CardTitle>Historique des investissements</CardTitle>
         <CardDescription>Évolution de vos investissements par année</CardDescription>
       </CardHeader>
-      <CardContent>
-        <InvestmentHistory data={yearlyData} />
+      <CardContent className="h-[400px]">
+        <div className="h-full">
+          <InvestmentHistory data={yearlyData} />
+        </div>
       </CardContent>
     </Card>
   </div>
