@@ -8,15 +8,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarColor, getInitials } from "@/utils/avatarColors";
 import { useTheme } from "next-themes";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ContributorsTableProps {
   contributors: Array<{
     name: string;
     total_contribution: number;
     percentage_contribution: number;
+    is_owner?: boolean;
   }>;
   totalExpenses: number;
   totalCredits: number;
@@ -31,6 +34,23 @@ export const ContributorsTable = ({
 
   const { theme } = useTheme();
   const isDarkTheme = theme === "dark";
+
+  // Fetch profile avatar
+  const { data: profile } = useQuery({
+    queryKey: ["profile-avatar-table"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user.id)
+        .single();
+
+      return data;
+    },
+  });
 
   return (
     <Card>
@@ -56,12 +76,16 @@ export const ContributorsTable = ({
                 const creditShare = (totalCredits * contributor.percentage_contribution) / 100;
                 const initials = getInitials(contributor.name);
                 const avatarColors = getAvatarColor(contributor.name, isDarkTheme);
+                const isOwner = contributor.is_owner;
                 
                 return (
                   <TableRow key={contributor.name}>
                     <TableCell className="font-medium">
                       <div className="flex items-center space-x-3">
                         <Avatar>
+                          {isOwner && profile?.avatar_url ? (
+                            <AvatarImage src={profile.avatar_url} alt={contributor.name} />
+                          ) : null}
                           <AvatarFallback
                             style={{
                               backgroundColor: avatarColors.background,

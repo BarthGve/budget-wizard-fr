@@ -1,6 +1,6 @@
 
 import { Contributor } from "@/types/contributor";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,6 +28,8 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getAvatarColor, getInitials } from "@/utils/avatarColors";
 import { useTheme } from "next-themes";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ContributorCardProps {
   contributor: Contributor;
@@ -47,6 +49,24 @@ export const ContributorCard = ({
   const initials = getInitials(contributor.name);
   const avatarColors = getAvatarColor(contributor.name, isDarkTheme);
 
+  // Fetch profile avatar for owner
+  const { data: profile } = useQuery({
+    queryKey: ["profile-avatar", contributor.is_owner],
+    enabled: contributor.is_owner,
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user.id)
+        .single();
+
+      return data;
+    },
+  });
+
   const handleUpdate = () => {
     onEdit(editedContributor);
     setIsEditDialogOpen(false);
@@ -56,6 +76,9 @@ export const ContributorCard = ({
     <div className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card">
       <div className="flex items-center space-x-4">
         <Avatar>
+          {contributor.is_owner && profile?.avatar_url ? (
+            <AvatarImage src={profile.avatar_url} alt={contributor.name} />
+          ) : null}
           <AvatarFallback 
             style={{
               backgroundColor: avatarColors.background,
