@@ -35,15 +35,11 @@ export const ContributorsTable = ({
   totalExpenses,
   totalCredits 
 }: ContributorsTableProps) => {
+  const { theme } = useTheme();
   const [selectedContributor, setSelectedContributor] = useState<Contributor | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  if (contributors.length <= 1) return null;
-
-  const { theme } = useTheme();
-  const isDarkTheme = theme === "dark";
-
-  // Fetch profile avatar
+  // Move useQuery hook before the early return to maintain hook order
   const { data: profile } = useQuery({
     queryKey: ["profile-avatar-table"],
     queryFn: async () => {
@@ -59,6 +55,10 @@ export const ContributorsTable = ({
       return data;
     },
   });
+
+  if (contributors.length <= 1) return null;
+
+  const isDarkTheme = theme === "dark";
 
   return (
     <>
