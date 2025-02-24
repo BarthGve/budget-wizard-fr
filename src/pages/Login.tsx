@@ -14,35 +14,6 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isResettingPassword, setIsResettingPassword] = useState(false);
-
-  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/update-password`,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      toast.success(
-        "Un email de réinitialisation du mot de passe vous a été envoyé. Veuillez vérifier votre boîte de réception."
-      );
-      setIsResettingPassword(false);
-      setEmail("");
-    } catch (error: any) {
-      console.error("Reset password error:", error);
-      toast.error(
-        "Erreur lors de l'envoi de l'email de réinitialisation"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,20 +54,13 @@ const Login = () => {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Retour
           </Link>
-          <CardTitle>
-            {isResettingPassword ? "Réinitialisation du mot de passe" : "Connexion"}
-          </CardTitle>
+          <CardTitle>Connexion</CardTitle>
           <CardDescription>
-            {isResettingPassword
-              ? "Entrez votre email pour réinitialiser votre mot de passe"
-              : "Connectez-vous pour accéder à votre tableau de bord"}
+            Connectez-vous pour accéder à votre tableau de bord
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form 
-            className="space-y-4" 
-            onSubmit={isResettingPassword ? handleResetPassword : handleSubmit}
-          >
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -109,48 +73,26 @@ const Login = () => {
                 disabled={isLoading}
               />
             </div>
-            {!isResettingPassword && (
-              <div className="space-y-2">
-                <Label htmlFor="password">Mot de passe</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="password">Mot de passe</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading
-                ? isResettingPassword
-                  ? "Envoi en cours..."
-                  : "Connexion en cours..."
-                : isResettingPassword
-                ? "Envoyer le lien"
-                : "Se connecter"}
+              {isLoading ? "Connexion en cours..." : "Se connecter"}
             </Button>
           </form>
-          
-          <div className="mt-4 flex flex-col space-y-2 text-center text-sm text-muted-foreground">
-            <button
-              onClick={() => {
-                setIsResettingPassword(!isResettingPassword);
-                setPassword("");
-              }}
-              className="text-primary hover:underline cursor-pointer"
-            >
-              {isResettingPassword ? "Retour à la connexion" : "Mot de passe oublié ?"}
-            </button>
-            {!isResettingPassword && (
-              <div>
-                Pas encore de compte ?{" "}
-                <Link to="/register" className="text-primary hover:underline">
-                  Inscrivez-vous
-                </Link>
-              </div>
-            )}
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            Pas encore de compte ?{" "}
+            <Link to="/register" className="text-primary hover:underline">
+              Inscrivez-vous
+            </Link>
           </div>
         </CardContent>
       </Card>
