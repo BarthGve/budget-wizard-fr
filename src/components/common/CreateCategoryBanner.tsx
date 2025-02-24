@@ -8,10 +8,10 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const CreateCategoryBanner = () => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isDismissed, setIsDismissed] = useState(false);
   const navigate = useNavigate();
 
-  const { data: hasCategories } = useQuery({
+  const { data: hasCategories, isLoading } = useQuery({
     queryKey: ["has-categories"],
     queryFn: async () => {
       const { data: categories, error } = await supabase
@@ -28,7 +28,8 @@ export const CreateCategoryBanner = () => {
     },
   });
 
-  if (!isVisible || hasCategories) {
+  // Ne rien afficher pendant le chargement ou si le bandeau a été fermé
+  if (isLoading || isDismissed || hasCategories) {
     return null;
   }
 
@@ -37,7 +38,7 @@ export const CreateCategoryBanner = () => {
       <Button
         variant="ghost"
         className="absolute right-2 top-2 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20"
-        onClick={() => setIsVisible(false)}
+        onClick={() => setIsDismissed(true)}
       >
         <X className="h-4 w-4" />
       </Button>
