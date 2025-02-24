@@ -25,9 +25,12 @@ interface WebhookPayload {
   old_record: null | Record<string, any>;
 }
 
-serve(async (req) => {
+serve(async (req: Request) => {
+  console.log("Edge function notify-feedback called");
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log("Handling CORS preflight request");
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -47,12 +50,15 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("Missing Supabase environment variables");
       throw new Error('Missing Supabase environment variables');
     }
 
+    console.log("Creating Supabase client with URL:", SUPABASE_URL);
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Get the profile information
+    console.log("Fetching profile for ID:", payload.record.profile_id);
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
       .select('full_name')
@@ -64,6 +70,7 @@ serve(async (req) => {
     }
 
     const userName = profile?.full_name || 'Utilisateur';
+    console.log("User name resolved to:", userName);
 
     // Fetch admin roles
     console.log("Fetching admin roles...");
@@ -86,6 +93,7 @@ serve(async (req) => {
     console.log("Admin IDs:", adminIds);
 
     // Get admin users' emails
+    console.log("Fetching admin users...");
     const { data: adminUsers, error: adminUsersError } = await supabaseClient.auth.admin.listUsers();
     
     if (adminUsersError) {
@@ -105,6 +113,7 @@ serve(async (req) => {
     console.log("Admin emails:", adminEmails);
 
     // Send emails to administrators
+    console.log("Preparing to send emails...");
     const emailPromises = adminEmails.map(adminEmail =>
       resend.emails.send({
         from: 'Budget Wizard <notifications@vision2tech.fr>',
