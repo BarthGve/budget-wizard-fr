@@ -8,14 +8,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "@/components/credits/types";
 import { Badge } from "@/components/ui/badge";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { isMobile } = useMobile();
+  const isMobile = useIsMobile();
   const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
 
   const { data: credits } = useQuery({

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,14 +9,14 @@ import { UserDropdown } from "./UserDropdown";
 import { ThemeToggle } from "../theme/ThemeToggle";
 import { appConfig } from "@/config/app.config";
 import { Badge } from "@/components/ui/badge";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SidebarProps {
   className?: string;
 }
 
 export const Sidebar = ({ className }: SidebarProps) => {
-  const { isMobile } = useMobile();
+  const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
     return saved ? JSON.parse(saved) : (isMobile ? true : false);
