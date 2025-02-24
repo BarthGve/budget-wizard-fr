@@ -52,7 +52,20 @@ serve(async (req) => {
 
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Récupérer les administrateurs
+    // Get the profile information
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('full_name')
+      .eq('id', payload.record.profile_id)
+      .single();
+
+    if (profileError) {
+      console.error("Error fetching profile:", profileError);
+    }
+
+    const userName = profile?.full_name || 'Utilisateur';
+
+    // Fetch admin roles
     console.log("Fetching admin roles...");
     const { data: adminRoles, error: adminRolesError } = await supabaseClient
       .from('user_roles')
@@ -72,7 +85,7 @@ serve(async (req) => {
     const adminIds = adminRoles.map(role => role.user_id);
     console.log("Admin IDs:", adminIds);
 
-    // Récupérer les emails des administrateurs
+    // Get admin users' emails
     const { data: adminUsers, error: adminUsersError } = await supabaseClient.auth.admin.listUsers();
     
     if (adminUsersError) {
@@ -91,20 +104,7 @@ serve(async (req) => {
 
     console.log("Admin emails:", adminEmails);
 
-    // Récupérer les informations du profil
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('full_name')
-      .eq('id', payload.record.profile_id)
-      .single();
-
-    if (profileError) {
-      console.error("Error fetching profile:", profileError);
-    }
-
-    const userName = profile?.full_name || 'Utilisateur';
-
-    // Envoyer les emails aux administrateurs
+    // Send emails to administrators
     const emailPromises = adminEmails.map(adminEmail =>
       resend.emails.send({
         from: 'Budget Wizard <notifications@vision2tech.fr>',
@@ -128,7 +128,7 @@ serve(async (req) => {
     console.log("Sending emails...");
     const emailResults = await Promise.allSettled(emailPromises);
     
-    // Log des résultats d'envoi d'emails
+    // Log email sending results
     emailResults.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         console.log(`Email sent successfully to ${adminEmails[index]}`);
