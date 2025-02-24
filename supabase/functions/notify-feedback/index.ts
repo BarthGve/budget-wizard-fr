@@ -85,7 +85,7 @@ serve(async (req) => {
 
     const emailPromises = adminEmails.map(adminEmail =>
       resend.emails.send({
-        from: 'Budget Wizard <onboarding@resend.dev>',
+        from: 'Budget Wizard <notifications@vision2tech.fr>',
         to: adminEmail,
         subject: `Nouveau feedback : ${title}`,
         html: `
