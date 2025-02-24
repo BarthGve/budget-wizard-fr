@@ -40,6 +40,11 @@ interface RecurringExpense {
   debit_month?: number;
 }
 
+type QueryResult = {
+  data?: any;
+  error: Error | null;
+}
+
 export const useDashboardData = () => {
   const queryClient = useQueryClient();
 
@@ -86,80 +91,80 @@ export const useDashboardData = () => {
   }
 
   // Only fetch dependent data if we have a current user
-  const dependentQueries = useQueries({
-    queries: currentUser ? [
-      {
-        queryKey: ["contributors", currentUser.id],
-        queryFn: async () => {
-          const { data, error } = await supabase
-            .from("contributors")
-            .select("*")
-            .eq("profile_id", currentUser.id)
-            .order("created_at", { ascending: true });
-          if (error) throw error;
-          return (data || []) as Contributor[];
-        },
-        staleTime: 1000 * 60 * 5,
-        gcTime: 1000 * 60 * 30,
+  const queries = currentUser ? [
+    {
+      queryKey: ["contributors", currentUser.id],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("contributors")
+          .select("*")
+          .eq("profile_id", currentUser.id)
+          .order("created_at", { ascending: true });
+        if (error) throw error;
+        return (data || []) as Contributor[];
       },
-      {
-        queryKey: ["monthly-savings", currentUser.id],
-        queryFn: async () => {
-          const { data, error } = await supabase
-            .from("monthly_savings")
-            .select("*")
-            .eq("profile_id", currentUser.id)
-            .order("created_at", { ascending: true });
-          if (error) throw error;
-          return (data || []) as MonthlySaving[];
-        },
-        staleTime: 1000 * 60 * 5,
-        gcTime: 1000 * 60 * 30,
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+    },
+    {
+      queryKey: ["monthly-savings", currentUser.id],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("monthly_savings")
+          .select("*")
+          .eq("profile_id", currentUser.id)
+          .order("created_at", { ascending: true });
+        if (error) throw error;
+        return (data || []) as MonthlySaving[];
       },
-      {
-        queryKey: ["profile", currentUser.id],
-        queryFn: async () => {
-          const { data, error } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", currentUser.id)
-            .maybeSingle();
-          if (error) throw error;
-          return data as Profile | null;
-        },
-        staleTime: 1000 * 60 * 5,
-        gcTime: 1000 * 60 * 30,
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+    },
+    {
+      queryKey: ["profile", currentUser.id],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", currentUser.id)
+          .maybeSingle();
+        if (error) throw error;
+        return data as Profile | null;
       },
-      {
-        queryKey: ["recurring-expenses", currentUser.id],
-        queryFn: async () => {
-          const { data, error } = await supabase
-            .from("recurring_expenses")
-            .select("*")
-            .eq("profile_id", currentUser.id)
-            .order("created_at", { ascending: true });
-          if (error) throw error;
-          return (data || []) as RecurringExpense[];
-        },
-        staleTime: 1000 * 60 * 5,
-        gcTime: 1000 * 60 * 30,
-      }
-    ] : []
-  });
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+    },
+    {
+      queryKey: ["recurring-expenses", currentUser.id],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("recurring_expenses")
+          .select("*")
+          .eq("profile_id", currentUser.id)
+          .order("created_at", { ascending: true });
+        if (error) throw error;
+        return (data || []) as RecurringExpense[];
+      },
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+    }
+  ] : [];
+
+  const dependentQueries = useQueries({ queries });
 
   // Handle query errors
   dependentQueries.forEach((query) => {
-    if ('error' in query && query.error) {
+    if (query.error) {
       handleError(query.error, "des données du tableau de bord");
     }
   });
 
-  // Return data based on queries state
+  // Return data with proper type assertions
   return {
-    contributors: currentUser && dependentQueries[0]?.data ? dependentQueries[0].data : [],
-    monthlySavings: currentUser && dependentQueries[1]?.data ? dependentQueries[1].data : [],
-    profile: currentUser && dependentQueries[2]?.data ? dependentQueries[2].data : null,
-    recurringExpenses: currentUser && dependentQueries[3]?.data ? dependentQueries[3].data : [],
+    contributors: currentUser ? (dependentQueries[0]?.data as Contributor[] ?? []) : [],
+    monthlySavings: currentUser ? (dependentQueries[1]?.data as MonthlySaving[] ?? []) : [],
+    profile: currentUser ? (dependentQueries[2]?.data as Profile | null ?? null) : null,
+    recurringExpenses: currentUser ? (dependentQueries[3]?.data as RecurringExpense[] ?? []) : [],
     refetch,
   };
 };
