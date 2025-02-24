@@ -69,7 +69,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   <div className={`sticky top-0 z-20 p-4 justify-end animate-fade-in bg-transparent ${isMobile ? 'ios-top-safe' : ''}`}>
     <div className="flex items-center justify-end gap-4 container mx-auto">
       {!userProfile?.isAdmin && (
-        <div className="absolute top-4 right-6 bg-transparent z-30">
+        <div className="absolute top-4 right-6  z-30">
           <GlobalBalanceCard balance={globalBalance} />
         </div>
       )}
