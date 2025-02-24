@@ -10,7 +10,7 @@ import {
   TrendingUp,
   Mailbox,
   CreditCard,
- ShoppingBasket,
+  ShoppingBasket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
@@ -54,7 +54,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
             <li key={item.path}>
               <NavLink
                 to={item.path}
-                className={cn(
+                className={({ isActive }) => cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                   "hover:bg-primary/10",
                   collapsed && "justify-center",
