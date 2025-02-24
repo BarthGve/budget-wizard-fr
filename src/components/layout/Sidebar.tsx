@@ -10,20 +10,28 @@ import { UserDropdown } from "./UserDropdown";
 import { ThemeToggle } from "../theme/ThemeToggle";
 import { appConfig } from "@/config/app.config";
 import { Badge } from "@/components/ui/badge";
+import { useMobile } from "@/hooks/use-mobile";
 
 interface SidebarProps {
   className?: string;
 }
 
 export const Sidebar = ({ className }: SidebarProps) => {
+  const { isMobile } = useMobile();
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
-    return saved ? JSON.parse(saved) : false;
+    return saved ? JSON.parse(saved) : (isMobile ? true : false);
   });
 
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
   }, [collapsed]);
+
+  useEffect(() => {
+    if (isMobile) {
+      setCollapsed(true);
+    }
+  }, [isMobile]);
 
   const { data: profile } = useQuery<Profile>({
     queryKey: ["profile"],
@@ -67,14 +75,15 @@ export const Sidebar = ({ className }: SidebarProps) => {
   return (
     <aside
       className={cn(
-        "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col",
-        collapsed ? "w-20" : "w-64",
+        "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col touch-scroll",
+        collapsed ? "w-16" : "w-64",
+        isMobile && "fixed z-50 shadow-lg",
         className
       )}
     >
-      <div className="flex flex-col flex-1">
-        <div className="p-4 border-b rounded-r-xl border-border padding-bottom: 8px !important">
-          <div className="flex flex-col ">
+      <div className="flex flex-col flex-1 ios-top-safe">
+        <div className="p-4 border-b rounded-r-xl border-border">
+          <div className="flex flex-col">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <h1
@@ -92,11 +101,10 @@ export const Sidebar = ({ className }: SidebarProps) => {
             </div>
             {!collapsed && (
              <div className="flex items-baseline gap-2">
-             <span className="text-xs text-muted-foreground">
-               {appConfig.version}
-             </span>
-            
-           </div>
+               <span className="text-xs text-muted-foreground">
+                 {appConfig.version}
+               </span>
+             </div>
             )}
           </div>
         </div>
@@ -108,8 +116,9 @@ export const Sidebar = ({ className }: SidebarProps) => {
       <button
         onClick={() => setCollapsed(!collapsed)}
         className={cn(
-          "absolute -right-3 top-5 p-1 rounded-full bg-background border border-border hover:bg-accent transition-colors",
-          "z-50 shadow-sm"
+          "absolute -right-3 top-20 p-1.5 rounded-full bg-background border border-border hover:bg-accent transition-colors",
+          "z-50 shadow-sm touch-manipulation",
+          isMobile && "w-8 h-8 flex items-center justify-center"
         )}
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >

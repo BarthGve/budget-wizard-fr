@@ -57,6 +57,16 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overflow-x: hidden;
+  }
+}
+
+/* Optimisations tactiles */
+@supports (-webkit-touch-callout: none) {
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -69,7 +79,7 @@
 }
 
 .card-hover {
-  @apply transition-transform duration-300 hover:scale-[1.02];
+  @apply transition-transform duration-300 active:scale-95 hover:scale-[1.02];
 }
 
 .input-transition {
@@ -77,5 +87,24 @@
 }
 
 .button-hover {
-  @apply hover:opacity-90 transition-opacity duration-200;
+  @apply hover:opacity-90 active:scale-95 transition-all duration-200;
+}
+
+/* Amélioration du focus pour les appareils tactiles */
+@media (hover: none) {
+  .button-hover:active,
+  .card-hover:active {
+    @apply transform scale-95;
+  }
+}
+
+/* Optimisations pour iOS */
+@supports (-webkit-touch-callout: none) {
+  .ios-bottom-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .ios-top-safe {
+    padding-top: env(safe-area-inset-top);
+  }
 }
