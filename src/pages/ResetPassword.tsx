@@ -53,9 +53,13 @@ const ResetPassword = () => {
         return;
       }
 
-      // Update the password using updateUser
+      // Update the password using the token in the URL
       const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword
+      }, {
+        auth: {
+          persistSession: false
+        }
       });
 
       if (updateError) throw updateError;
@@ -141,3 +145,4 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
+
