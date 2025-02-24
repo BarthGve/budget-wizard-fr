@@ -45,7 +45,10 @@ const ResetPassword = () => {
 
       if (verifyError) throw verifyError;
 
-      if (!data?.is_valid || !data?.profile_id) {
+      // Access the first (and only) result from the array
+      const resetData = data?.[0];
+      
+      if (!resetData?.is_valid || !resetData?.profile_id) {
         toast.error("Le lien de réinitialisation est invalide ou a expiré");
         navigate('/login');
         return;
