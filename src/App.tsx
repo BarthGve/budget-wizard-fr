@@ -10,11 +10,12 @@ import Credits from "./pages/Credits";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import UpdatePassword from "./pages/UpdatePassword";
+import Landing from "./pages/Landing";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Login />,
+    element: <Landing />,
     errorElement: <NotFound />,
   },
   {
