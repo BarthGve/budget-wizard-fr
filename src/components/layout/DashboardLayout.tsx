@@ -66,7 +66,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Sidebar />
       <main className="flex-1 flex flex-col h-screen touch-scroll relative">
   {/* Barre du haut avec GlobalBalanceCard flottant */}
-  <div className={`sticky top-0 z-20 p-4 justify-end animate-fade-in bg-background/80 backdrop-blur-sm ${isMobile ? 'ios-top-safe' : ''}`}>
+  <div className={`sticky top-0 z-20 p-4 justify-end animate-fade-in bg-transparent ${isMobile ? 'ios-top-safe' : ''}`}>
     <div className="flex items-center justify-end gap-4 container mx-auto">
       {!userProfile?.isAdmin && (
         <div className="absolute top-4 right-6 bg-transparent z-30">
