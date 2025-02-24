@@ -18,18 +18,13 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      const { data: { success, message }, error } = await supabase
+      const { data, error } = await supabase
         .rpc('create_password_reset_token', { user_email: email });
 
       if (error) throw error;
 
-      if (success) {
-        toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
-      } else {
-        // Show same message even if email doesn't exist (security)
-        toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
-      }
-
+      // Show same message whether email exists or not (security)
+      toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
       setEmail("");
     } catch (error: any) {
       console.error("Password reset error:", error);

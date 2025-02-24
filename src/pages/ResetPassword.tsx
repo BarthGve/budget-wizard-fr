@@ -40,12 +40,12 @@ const ResetPassword = () => {
 
     try {
       // Verify token and get user id
-      const { data: { is_valid, profile_id }, error: verifyError } = await supabase
+      const { data, error: verifyError } = await supabase
         .rpc('verify_reset_token', { reset_token: token });
 
       if (verifyError) throw verifyError;
 
-      if (!is_valid || !profile_id) {
+      if (!data?.is_valid || !data?.profile_id) {
         toast.error("Le lien de réinitialisation est invalide ou a expiré");
         navigate('/login');
         return;
