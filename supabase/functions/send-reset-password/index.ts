@@ -33,7 +33,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Reset URL:", resetUrl);
 
     const emailResponse = await resend.emails.send({
-      from: "Budget Wizard <no-reply@votre-domaine-verifie.com>", // Remplacez par votre domaine vérifié
+      from: "Budget Wizard <no-reply@vision2tech.fr>", // Remplacez par votre domaine vérifié
       to: [email],
       subject: "Réinitialisation de votre mot de passe",
       html: `
