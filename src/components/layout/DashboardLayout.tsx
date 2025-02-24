@@ -6,7 +6,6 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "@/components/credits/types";
-import { Badge } from "@/components/ui/badge";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -64,25 +63,26 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
       <Sidebar />
-      <main className="flex-1 flex flex-col h-screen touch-scroll relative">
-  {/* Barre du haut avec GlobalBalanceCard flottant */}
-  <div className={`sticky top-0 z-20 p-4 justify-end animate-fade-in bg-transparent ${isMobile ? 'ios-top-safe' : ''}`}>
-    <div className="flex items-center justify-end gap-4 container mx-auto">
-      {!userProfile?.isAdmin && (
-        <div className="absolute top-4 right-6  z-30">
-          <GlobalBalanceCard balance={globalBalance} />
+      <main className="flex-1 flex flex-col h-screen touch-scroll">
+        {/* Header avec GlobalBalanceCard fixe */}
+        {!userProfile?.isAdmin && (
+          <div className={`fixed right-6 top-4 z-50 ${isMobile ? 'ios-top-safe pt-4' : ''}`}>
+            <GlobalBalanceCard 
+              balance={globalBalance} 
+              className="shadow-lg"
+            />
+          </div>
+        )}
+
+        {/* Contenu principal défilable */}
+        <div className={`flex-1 container mx-auto p-6 overflow-auto relative ${isMobile ? 'ios-top-safe pt-20' : 'pt-20'}`}>
+          <div className="page-transition">
+            {children}
+          </div>
         </div>
-      )}
-    </div>
-  </div>
 
-  {/* Contenu principal défilable */}
-  <div className="container mx-auto p-6 flex-1 overflow-auto touch-scroll relative z-10">
-    <div className="page-transition">{children}</div>
-  </div>
-
-  {isMobile && <div className="h-16 ios-bottom-safe" />}
-</main>
+        {isMobile && <div className="h-16 ios-bottom-safe" />}
+      </main>
       <Toaster />
     </div>
   );
