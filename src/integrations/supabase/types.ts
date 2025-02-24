@@ -879,6 +879,7 @@ export type Database = {
         Returns: {
           is_valid: boolean
           profile_id: string
+          email: string
         }[]
       }
     }

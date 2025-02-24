@@ -47,18 +47,19 @@ const ResetPassword = () => {
 
       const resetData = data?.[0];
       
-      if (!resetData?.is_valid) {
+      if (!resetData?.is_valid || !resetData.email) {
         toast.error("Le lien de réinitialisation est invalide ou a expiré");
         navigate('/login');
         return;
       }
 
-      // Update the password using the token in the URL
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword
-      });
+      // Reset password using the email from the token verification
+      const { error: resetError } = await supabase.auth
+        .resetPasswordForEmail(resetData.email, {
+          redirectTo: `${window.location.origin}/login`
+        });
 
-      if (updateError) throw updateError;
+      if (resetError) throw resetError;
 
       toast.success("Mot de passe mis à jour avec succès");
       navigate('/login');
