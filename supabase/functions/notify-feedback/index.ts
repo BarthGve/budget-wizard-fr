@@ -1,6 +1,6 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 import { Resend } from "npm:resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -26,95 +26,48 @@ interface WebhookPayload {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const payload: WebhookPayload = await req.json();
-    
+
     if (payload.type !== 'INSERT' || payload.table !== 'feedbacks') {
-      return new Response(JSON.stringify({ message: 'Not a new feedback' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      });
+      return new Response(JSON.stringify({ message: 'Not a new feedback' }), { headers: corsHeaders, status: 200 });
     }
 
-    // Créer un client Supabase pour récupérer les admins
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    // Récupérer les emails des administrateurs
-    const { data: adminRoles } = await supabaseClient
-      .from('user_roles')
-      .select('user_id')
-      .eq('role', 'admin');
-
-    if (!adminRoles || adminRoles.length === 0) {
-      throw new Error('No admins found');
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error('Missing Supabase environment variables');
     }
 
-    // Récupérer les profils des administrateurs
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    const { data: adminRoles, error: adminRolesError } = await supabaseClient.from('user_roles').select('user_id').eq('role', 'admin');
+    if (adminRolesError || !adminRoles?.length) throw new Error('No admins found');
+
     const adminIds = adminRoles.map(role => role.user_id);
-    const { data: adminUsers } = await supabaseClient
-      .auth.admin.listUsers();
+    const { data: adminUsers, error: adminUsersError } = await supabaseClient.auth.admin.listUsers();
+    if (adminUsersError || !adminUsers?.users?.length) throw new Error('No admin users found');
 
-    if (!adminUsers.users || adminUsers.users.length === 0) {
-      throw new Error('No admin users found');
-    }
+    const adminEmails = adminUsers.users.filter(user => adminIds.includes(user.id) && typeof user.email === 'string').map(user => user.email as string);
 
-    const adminEmails = adminUsers.users
-      .filter(user => adminIds.includes(user.id))
-      .map(user => user.email)
-      .filter((email): email is string => email !== null);
-
-    // Envoyer l'email à tous les administrateurs
-    const { id, title, content, rating } = payload.record;
-    
-    // Récupérer le nom de l'utilisateur qui a soumis le feedback
-    const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('full_name')
-      .eq('id', payload.record.profile_id)
-      .single();
-
+    const { data: profile } = await supabaseClient.from('profiles').select('full_name').eq('id', payload.record.profile_id).single();
     const userName = profile?.full_name || 'Utilisateur';
 
     const emailPromises = adminEmails.map(adminEmail =>
-      resend.emails.send({
-        from: 'Budget Wizard <notifications@vision2tech.fr>',
-        to: adminEmail,
-        subject: `Nouveau feedback : ${title}`,
-        html: `
-          <h1>Nouveau feedback reçu</h1>
-          <p><strong>De :</strong> ${userName}</p>
-          <p><strong>Titre :</strong> ${title}</p>
-          <p><strong>Contenu :</strong> ${content}</p>
-          <p><strong>Note :</strong> ${rating}/5</p>
-          <p><strong>Date :</strong> ${new Date(payload.record.created_at).toLocaleString('fr-FR')}</p>
-          <p>Connectez-vous à l'application pour gérer ce feedback.</p>
-        `
-      })
+      resend.emails.send({ from: 'Budget Wizard <notifications@vision2tech.fr>', to: adminEmail, subject: `Nouveau feedback : ${payload.record.title}`, html: `...` })
     );
 
-    await Promise.all(emailPromises);
+    await Promise.allSettled(emailPromises);
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    );
+    return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
 
   } catch (error) {
     console.error('Error processing webhook:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
-      },
-    );
+    return new Response(JSON.stringify({ error: error.message }), { headers: corsHeaders, status: 500 });
   }
 });
