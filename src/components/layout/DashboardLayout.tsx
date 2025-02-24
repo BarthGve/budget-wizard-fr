@@ -9,8 +9,11 @@ import { Credit } from "@/components/credits/types";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import { Button } from "@/components/ui/button";
+
+// Memoization du Sidebar pour éviter les re-renders inutiles
+const MemoizedSidebar = memo(Sidebar);
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -21,6 +24,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
 
+  // Optimisation de la requête des crédits avec staleTime
   const { data: credits } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
@@ -34,9 +38,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       }
 
       return data as Credit[];
-    }
+    },
+    staleTime: 1000 * 60 * 2 // Cache de 2 minutes
   });
 
+  // Gestion optimisée du profil utilisateur
   const { data: userProfile } = useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
@@ -58,24 +64,53 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         ...profile, 
         isAdmin
       };
-    }
+    },
+    staleTime: 1000 * 60 * 5 // Cache de 5 minutes pour le profil
   });
 
-  const totalRevenue = contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
-  const globalBalance = calculateGlobalBalance(totalRevenue, recurringExpenses, monthlySavings, credits);
+  // Calculs memoizés pour éviter les recalculs inutiles
+  const totalRevenue = useMemo(() => 
+    contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0,
+    [contributors]
+  );
+
+  const globalBalance = useMemo(() => 
+    calculateGlobalBalance(totalRevenue, recurringExpenses, monthlySavings, credits),
+    [totalRevenue, recurringExpenses, monthlySavings, credits]
+  );
 
   const toggleSidebar = () => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
-      {/* Sidebar avec condition d'affichage sur mobile */}
-      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'}`}>
-        <Sidebar onClose={() => setShowMobileSidebar(false)} />
+  // Optimisation du rendu avec un conteneur memoizé
+  const MemoizedContent = useMemo(() => (
+    <main className="flex-1 flex flex-col h-screen touch-scroll">
+      {!userProfile?.isAdmin && (
+        <div className={`fixed right-6 top-4 z-50 ${isMobile ? 'ios-top-safe pt-4' : ''}`}>
+          <GlobalBalanceCard 
+            balance={globalBalance} 
+            className="shadow-lg"
+          />
+        </div>
+      )}
+
+      <div className={`flex-1 container mx-auto p-6 overflow-auto relative ${isMobile ? 'ios-top-safe pt-20' : 'pt-20'}`}>
+        <div className="page-transition">
+          {children}
+        </div>
       </div>
 
-      {/* Bouton hamburger flottant sur mobile */}
+      {isMobile && <div className="h-16 ios-bottom-safe" />}
+    </main>
+  ), [userProfile?.isAdmin, isMobile, globalBalance, children]);
+
+  return (
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
+      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'}`}>
+        <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
+      </div>
+
       {isMobile && (
         <Button
           variant="outline"
@@ -87,24 +122,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </Button>
       )}
 
-      <main className="flex-1 flex flex-col h-screen touch-scroll">
-        {!userProfile?.isAdmin && (
-          <div className={`fixed right-6 top-4 z-50 ${isMobile ? 'ios-top-safe pt-4' : ''}`}>
-            <GlobalBalanceCard 
-              balance={globalBalance} 
-              className="shadow-lg"
-            />
-          </div>
-        )}
-
-        <div className={`flex-1 container mx-auto p-6 overflow-auto relative ${isMobile ? 'ios-top-safe pt-20' : 'pt-20'}`}>
-          <div className="page-transition">
-            {children}
-          </div>
-        </div>
-
-        {isMobile && <div className="h-16 ios-bottom-safe" />}
-      </main>
+      {MemoizedContent}
       <Toaster />
     </div>
   );

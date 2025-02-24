@@ -4,114 +4,96 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const useDashboardData = () => {
-  // Fetch contributors data
-  const { data: contributors, refetch: refetchContributors } = useQuery({
-    queryKey: ["contributors"],
+  // Utilisation d'une clé partagée pour le user
+  const { data: currentUser } = useQuery({
+    queryKey: ["current-user"],
     queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) throw error;
       if (!user) throw new Error("Non authentifié");
+      return user;
+    },
+    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour l'utilisateur
+  });
 
-      const { data, error } = await supabase
-        .from("contributors")
-        .select("*")
-        .eq("profile_id", user.id)
-        .order("created_at", { ascending: true });
+  // Optimisation des requêtes avec staleTime et regroupement des données
+  const { data: dashboardData, refetch: refetchDashboard } = useQuery({
+    queryKey: ["dashboard-data", currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) throw new Error("User ID requis");
 
-      if (error) {
-        console.error("Error fetching contributors:", error);
+      // Requêtes parallèles pour optimiser le chargement
+      const [
+        { data: contributors, error: contributorsError },
+        { data: monthlySavings, error: savingsError },
+        { data: profile, error: profileError },
+        { data: recurringExpenses, error: expensesError }
+      ] = await Promise.all([
+        supabase
+          .from("contributors")
+          .select("*")
+          .eq("profile_id", currentUser.id)
+          .order("created_at"),
+        supabase
+          .from("monthly_savings")
+          .select("*")
+          .eq("profile_id", currentUser.id)
+          .order("created_at"),
+        supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", currentUser.id)
+          .single(),
+        supabase
+          .from("recurring_expenses")
+          .select("*")
+          .eq("profile_id", currentUser.id)
+          .order("created_at")
+      ]);
+
+      // Gestion centralisée des erreurs
+      if (contributorsError) {
+        console.error("Error fetching contributors:", contributorsError);
         toast.error("Erreur lors du chargement des contributeurs");
-        throw error;
+        throw contributorsError;
       }
-
-      return data || [];
-    },
-  });
-
-  // Fetch monthly savings data
-  const { data: monthlySavings, refetch: refetchMonthlySavings } = useQuery({
-    queryKey: ["monthly-savings"],
-    queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-      if (!user) throw new Error("Non authentifié");
-
-      const { data, error } = await supabase
-        .from("monthly_savings")
-        .select("*")
-        .eq("profile_id", user.id)
-        .order("created_at", { ascending: true });
-
-      if (error) {
-        console.error("Error fetching monthly savings:", error);
+      if (savingsError) {
+        console.error("Error fetching monthly savings:", savingsError);
         toast.error("Erreur lors du chargement de l'épargne mensuelle");
-        throw error;
+        throw savingsError;
       }
-
-      return data || [];
-    },
-  });
-
-  // Fetch user profile
-  const { data: profile, refetch: refetchProfile } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-      if (!user) throw new Error("Non authentifié");
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching profile:", error);
+      if (profileError) {
+        console.error("Error fetching profile:", profileError);
         toast.error("Erreur lors du chargement du profil");
-        throw error;
+        throw profileError;
       }
-
-      return data;
-    },
-  });
-
-  // Fetch recurring expenses - Suppression du filtre sur les charges mensuelles
-  const { data: recurringExpenses, refetch: refetchRecurringExpenses } = useQuery({
-    queryKey: ["recurring-expenses"],
-    queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-      if (!user) throw new Error("Non authentifié");
-      
-      const { data, error } = await supabase
-        .from("recurring_expenses")
-        .select("*")
-        .eq("profile_id", user.id)
-        .order("created_at", { ascending: true });
-
-      if (error) {
-        console.error("Error fetching recurring expenses:", error);
+      if (expensesError) {
+        console.error("Error fetching recurring expenses:", expensesError);
         toast.error("Erreur lors du chargement des charges récurrentes");
-        throw error;
+        throw expensesError;
       }
 
-      return data;
+      return {
+        contributors: contributors || [],
+        monthlySavings: monthlySavings || [],
+        profile,
+        recurringExpenses: recurringExpenses || []
+      };
     },
+    enabled: !!currentUser?.id,
+    staleTime: 1000 * 60 * 2, // Cache de 2 minutes pour les données du dashboard
+    retry: 1 // Limite les tentatives de reconnexion
   });
 
   const refetch = () => {
-    refetchContributors();
-    refetchMonthlySavings();
-    refetchProfile();
-    refetchRecurringExpenses();
+    refetchDashboard();
   };
 
   return {
-    contributors,
-    monthlySavings,
-    profile,
-    recurringExpenses,
+    contributors: dashboardData?.contributors || [],
+    monthlySavings: dashboardData?.monthlySavings || [],
+    profile: dashboardData?.profile,
+    recurringExpenses: dashboardData?.recurringExpenses || [],
     refetch,
   };
 };
