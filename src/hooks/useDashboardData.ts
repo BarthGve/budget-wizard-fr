@@ -1,5 +1,5 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -40,6 +40,8 @@ interface RecurringExpense {
 }
 
 export const useDashboardData = () => {
+  const queryClient = useQueryClient();
+  
   const { data: currentUser } = useQuery({
     queryKey: ["current-user"],
     queryFn: async () => {
@@ -114,10 +116,28 @@ export const useDashboardData = () => {
     enabled: !!currentUser?.id
   });
 
+  const refetch = () => {
+    if (!currentUser?.id) return;
+    
+    queryClient.invalidateQueries({
+      queryKey: ["contributors", currentUser.id]
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["monthly-savings", currentUser.id]
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["profile", currentUser.id]
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["recurring-expenses", currentUser.id]
+    });
+  };
+
   return {
     contributors,
     monthlySavings,
     profile,
     recurringExpenses,
+    refetch,
   };
 };
