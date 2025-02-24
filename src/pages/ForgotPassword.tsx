@@ -18,47 +18,20 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      console.log("Requesting password reset for:", email);
-      
-      // 1. Créer le token de réinitialisation
-      const { data, error } = await supabase
-        .rpc('create_password_reset_token', { user_email: email });
+      // Utiliser directement resetPasswordForEmail au lieu d'une fonction personnalisée
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
 
-      console.log("Token creation response:", { data, error });
+      if (error) throw error;
 
-      if (error) {
-        if (error.message.includes('rate limit exceeded')) {
-          toast.error("Veuillez patienter quelques minutes avant de demander un nouveau lien de réinitialisation");
-          return;
-        }
-        throw error;
-      }
-
-      // 2. Si le token est créé avec succès, envoyer l'email
-      if (data && Array.isArray(data) && data[0] && data[0].success) {
-        console.log("Calling send-reset-password function with token");
-        
-        const response = await supabase.functions.invoke('send-reset-password', {
-          body: {
-            email,
-            token: data[0].token
-          }
-        });
-
-        console.log("Email sending response:", response);
-
-        if (response.error) throw response.error;
-
-        toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
-        setEmail("");
-      } else {
-        console.log("Token creation unsuccessful or unexpected response format");
-        // Ne pas révéler si l'email existe ou non
-        toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
-      }
+      toast.success("Un email de réinitialisation vous a été envoyé");
+      setEmail("");
     } catch (error: any) {
       console.error("Password reset error:", error);
-      toast.error("Une erreur est survenue lors de la réinitialisation du mot de passe");
+      toast.error(
+        error.message || "Erreur lors de l'envoi de l'email de réinitialisation"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -73,11 +46,11 @@ const ForgotPassword = () => {
             className="text-muted-foreground hover:text-foreground transition-colors mb-4 inline-flex items-center"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour
+            Retour à la connexion
           </Link>
           <CardTitle>Mot de passe oublié</CardTitle>
           <CardDescription>
-            Entrez votre adresse email pour recevoir un lien de réinitialisation
+            Entrez votre email pour recevoir un lien de réinitialisation
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -95,7 +68,7 @@ const ForgotPassword = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Envoi en cours..." : "Envoyer le lien de réinitialisation"}
+              {isLoading ? "Envoi en cours..." : "Envoyer le lien"}
             </Button>
           </form>
         </CardContent>
