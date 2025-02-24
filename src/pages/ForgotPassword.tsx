@@ -18,22 +18,29 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
+      // 1. Demander la création d'un token
       const { data, error } = await supabase
         .rpc('create_password_reset_token', { user_email: email });
 
       if (error) throw error;
 
-      // La fonction retourne { success, message, token }
-      if (data && Array.isArray(data) && data[0]) {
-        const { success, message } = data[0];
-        
-        // Afficher le message approprié en fonction du succès ou non
-        if (success) {
-          toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
-          setEmail("");
-        } else {
-          toast.error(message || "Une erreur est survenue lors de la réinitialisation du mot de passe");
-        }
+      // 2. Si le token est créé avec succès, envoyer l'email
+      if (data && Array.isArray(data) && data[0] && data[0].success) {
+        // Appeler l'edge function pour envoyer l'email
+        const response = await supabase.functions.invoke('send-reset-password', {
+          body: {
+            email,
+            token: data[0].token
+          }
+        });
+
+        if (response.error) throw response.error;
+
+        toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
+        setEmail("");
+      } else {
+        // Ne pas révéler si l'email existe ou non
+        toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
       }
     } catch (error: any) {
       console.error("Password reset error:", error);
