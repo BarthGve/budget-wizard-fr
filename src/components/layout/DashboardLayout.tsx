@@ -1,3 +1,4 @@
+
 import { memo } from "react";
 import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,6 +17,7 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+// Memoize GlobalBalanceCard since it only depends on balance
 const MemoizedGlobalBalanceCard = memo(GlobalBalanceCard);
 
 export const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
@@ -38,7 +40,7 @@ export const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
       return data as Credit[];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    cacheTime: 1000 * 60 * 30, // 30 minutes
   });
 
   const { data: userProfile } = useQuery({
@@ -64,7 +66,7 @@ export const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
       };
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    cacheTime: 1000 * 60 * 30, // 30 minutes
   });
 
   const totalRevenue = contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
