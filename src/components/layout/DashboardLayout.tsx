@@ -65,8 +65,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
       <Sidebar />
       <main className="flex-1 flex flex-col h-screen touch-scroll">
-        <div className={`sticky top-0 z-10 p-4 justify-end backdrop-blur-sm ${isMobile ? 'ios-top-safe' : ''}`}>
-          <div className="flex bg-none items-center justify-end gap-4 container mx-auto">
+        <div className={`sticky top-0 z-10 justify-end ${isMobile ? 'ios-top-safe' : ''}`}>
+          <div className="flex items-center justify-end gap-4 container mx-auto p-4">
             {!userProfile?.isAdmin && (
               <GlobalBalanceCard balance={globalBalance} />
             )}
