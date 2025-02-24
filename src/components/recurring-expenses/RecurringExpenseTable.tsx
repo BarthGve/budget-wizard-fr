@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -52,9 +53,9 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+    <div className="space-y-4 w-full">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center w-full sm:w-auto">
           <TableFilters
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
@@ -66,9 +67,9 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           />
           <Select value={String(rowsPerPage)} onValueChange={(value) => {
             setRowsPerPage(Number(value));
-            setCurrentPage(1); // Remise à la première page lors du changement
+            setCurrentPage(1);
           }}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Lignes par page"/>
             </SelectTrigger>
             <SelectContent>
@@ -79,7 +80,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           </Select>
         </div>
         <Select value={sortField} onValueChange={(value: keyof RecurringExpense) => handleSort(value)}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <ArrowUpDown className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Trier par" />
           </SelectTrigger>
@@ -91,15 +92,15 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
         </Select>
       </div>
 
-      <div className="space-y-2">
-        <Table className="border-separate border-spacing-y-1">
+      <div className="space-y-2 overflow-x-auto">
+        <Table className="border-separate border-spacing-y-1 min-w-[800px]">
           <TableHeader>
             <TableRow className="border-0">
-              <TableHead className="text-card-foreground dark:text-card-foreground">Charge</TableHead>
-              <TableHead className="text-card-foreground dark:text-card-foreground">Catégorie</TableHead>
-              <TableHead className="text-card-foreground dark:text-card-foreground">Périodicité</TableHead>
-              <TableHead className="text-card-foreground dark:text-card-foreground text-center">Montant</TableHead>
-              <TableHead className="text-card-foreground dark:text-card-foreground text-right"></TableHead>
+              <TableHead className="text-card-foreground dark:text-card-foreground w-1/3">Charge</TableHead>
+              <TableHead className="text-card-foreground dark:text-card-foreground w-1/6">Catégorie</TableHead>
+              <TableHead className="text-card-foreground dark:text-card-foreground w-1/6">Périodicité</TableHead>
+              <TableHead className="text-card-foreground dark:text-card-foreground text-center w-1/6">Montant</TableHead>
+              <TableHead className="text-card-foreground dark:text-card-foreground text-right w-1/6"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -136,37 +137,39 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
         </Table>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="text-sm text-muted-foreground order-2 sm:order-1">
           {filteredExpenses.length} résultat{filteredExpenses.length !== 1 ? 's' : ''}
         </div>
         {totalPages > 1 && (
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious 
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
-              </PaginationItem>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                    onClick={() => handlePageChange(page)}
-                    isActive={currentPage === page}
-                  >
-                    {page}
-                  </PaginationLink>
+          <div className="order-1 sm:order-2 w-full sm:w-auto flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
                 </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         )}
       </div>
     </div>
