@@ -30,9 +30,10 @@ const Login = () => {
       }
 
       toast.success(
-        "Un email de réinitialisation du mot de passe vous a été envoyé"
+        "Un email de réinitialisation du mot de passe vous a été envoyé. Veuillez vérifier votre boîte de réception."
       );
       setIsResettingPassword(false);
+      setEmail("");
     } catch (error: any) {
       console.error("Reset password error:", error);
       toast.error(
@@ -134,7 +135,10 @@ const Login = () => {
           
           <div className="mt-4 flex flex-col space-y-2 text-center text-sm text-muted-foreground">
             <button
-              onClick={() => setIsResettingPassword(!isResettingPassword)}
+              onClick={() => {
+                setIsResettingPassword(!isResettingPassword);
+                setPassword("");
+              }}
               className="text-primary hover:underline cursor-pointer"
             >
               {isResettingPassword ? "Retour à la connexion" : "Mot de passe oublié ?"}
