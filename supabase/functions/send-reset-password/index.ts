@@ -16,7 +16,6 @@ interface ResetPasswordEmailRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, {
       headers: corsHeaders
@@ -26,14 +25,15 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email, token }: ResetPasswordEmailRequest = await req.json();
     
-    // Construire l'URL de réinitialisation avec le token
-    const resetUrl = `${new URL(req.url).origin.replace('/functions/v1', '')}/reset-password?token=${token}`;
+    // Construction de l'URL de réinitialisation en utilisant l'origine de la requête
+    const origin = req.headers.get("origin") || "http://localhost:5173";
+    const resetUrl = `${origin}/reset-password?token=${token}`;
 
     console.log("Sending reset password email to:", email);
     console.log("Reset URL:", resetUrl);
 
     const emailResponse = await resend.emails.send({
-      from: "Budget Wizard <no-reply@vision2tech.fr>", // Remplacez par votre domaine vérifié
+      from: "Budget Wizard <no-reply@vision2tech.fr>",
       to: [email],
       subject: "Réinitialisation de votre mot de passe",
       html: `
