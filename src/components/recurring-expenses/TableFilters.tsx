@@ -30,18 +30,18 @@ export const TableFilters = ({
   uniqueCategories,
 }: TableFiltersProps) => {
   return (
-    <div className="flex items-center gap-2">
-      <div className="relative">
+    <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+      <div className="relative w-full sm:w-[250px]">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Rechercher par nom..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-8 w-[250px]"
+          className="pl-8"
         />
       </div>
       <Select value={categoryFilter} onValueChange={onCategoryFilterChange}>
-        <SelectTrigger className="w-[220px]">
+        <SelectTrigger className="w-full sm:w-[220px]">
           <Filter className="mr-2 h-4 w-4" />
           <SelectValue placeholder="Catégorie" />
         </SelectTrigger>
@@ -53,7 +53,7 @@ export const TableFilters = ({
         </SelectContent>
       </Select>
       <Select value={periodicityFilter} onValueChange={onPeriodicityFilterChange}>
-        <SelectTrigger className="w-[220px]">
+        <SelectTrigger className="w-full sm:w-[220px]">
           <Filter className="mr-2 h-4 w-4" />
           <SelectValue placeholder="Périodicité" />
         </SelectTrigger>
