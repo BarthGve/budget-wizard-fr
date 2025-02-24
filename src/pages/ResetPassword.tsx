@@ -53,15 +53,12 @@ const ResetPassword = () => {
         return;
       }
 
-      // Reset the password
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-        newPassword,
-        {
-          redirectTo: `${window.location.origin}/login`
-        }
-      );
+      // Update the password using updateUser
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword
+      });
 
-      if (resetError) throw resetError;
+      if (updateError) throw updateError;
 
       toast.success("Mot de passe mis à jour avec succès");
       navigate('/login');
