@@ -1,40 +1,14 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Pencil, Trash } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-interface Investment {
-  id: string;
-  investment_date: string;
-  amount: number;
-}
-
-interface CurrentYearInvestmentsDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  investments: Investment[];
-  onSuccess: () => void;
-}
+import { InvestmentEditForm } from "./investment-table/InvestmentEditForm";
+import { InvestmentActions } from "./investment-table/InvestmentActions";
+import { CurrentYearInvestmentsDialogProps, Investment } from "./types/investments";
 
 export const CurrentYearInvestmentsDialog = ({
   open,
@@ -118,41 +92,21 @@ export const CurrentYearInvestmentsDialog = ({
               <TableRow key={investment.id}>
                 <TableCell>
                   {editingId === investment.id ? (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !editDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {editDate ? format(editDate, 'dd MMMM yyyy', { locale: fr }) : "Sélectionner une date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={editDate}
-                          onSelect={setEditDate}
-                          initialFocus
-                          locale={fr}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <InvestmentEditForm
+                      editDate={editDate}
+                      setEditDate={setEditDate}
+                      editAmount={editAmount}
+                      setEditAmount={setEditAmount}
+                      onSave={() => handleUpdate(investment.id)}
+                      onCancel={cancelEditing}
+                    />
                   ) : (
                     format(new Date(investment.investment_date), 'dd MMMM yyyy', { locale: fr })
                   )}
                 </TableCell>
                 <TableCell>
                   {editingId === investment.id ? (
-                    <Input
-                      type="number"
-                      value={editAmount}
-                      onChange={(e) => setEditAmount(e.target.value)}
-                      className="max-w-[150px]"
-                    />
+                    <span></span>
                   ) : (
                     new Intl.NumberFormat('fr-FR', {
                       style: 'currency',
@@ -162,52 +116,12 @@ export const CurrentYearInvestmentsDialog = ({
                 </TableCell>
                 <TableCell className="text-right">
                   {editingId === investment.id ? (
-                    <div className="flex justify-end gap-2">
-                      <Button onClick={() => handleUpdate(investment.id)} size="sm">
-                        Sauvegarder
-                      </Button>
-                      <Button onClick={cancelEditing} variant="outline" size="sm">
-                        Annuler
-                      </Button>
-                    </div>
+                    <span></span>
                   ) : (
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        onClick={() => startEditing(investment)}
-                        variant="ghost"
-                        size="icon"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer l'investissement</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Êtes-vous sûr de vouloir supprimer cet investissement ? Cette action ne peut pas être annulée.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={() => handleDelete(investment.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              Supprimer
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
+                    <InvestmentActions
+                      onEdit={() => startEditing(investment)}
+                      onDelete={() => handleDelete(investment.id)}
+                    />
                   )}
                 </TableCell>
               </TableRow>
