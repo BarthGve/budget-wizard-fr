@@ -9,6 +9,7 @@ import { RecurringExpenseDialog } from "@/components/recurring-expenses/Recurrin
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RecurringExpenseTable } from "@/components/recurring-expenses/RecurringExpenseTable";
+import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 interface RecurringExpense {
   id: string;
   name: string;
@@ -92,19 +93,22 @@ const RecurringExpenses = () => {
     </DashboardLayout>;
   }
   return <DashboardLayout>
-      <div className="grid gap-6">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Charges Récurrentes</h1>
-            <p className="text-muted-foreground">Gérez vos dépenses mensuelles régulières</p>
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Charges récurrentes</h1>
+            <p className="text-muted-foreground">
+              Gérez vos charges récurrentes et leurs échéances
+            </p>
           </div>
           <RecurringExpenseDialog trigger={<Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Nouvelle charge
-            </Button>} />
+                <Plus className="mr-2 h-4 w-4" />
+                Nouvelle charge
+              </Button>} />
         </div>
 
-        {/* Cards de résumé */}
+        <CreateCategoryBanner />
+
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
             <CardHeader className="py-[16px]">
@@ -146,8 +150,9 @@ const RecurringExpenses = () => {
           </Card>
         </div>
 
-        <RecurringExpenseTable expenses={recurringExpenses || []} onDeleteExpense={handleDeleteExpense} />   
+        <RecurringExpenseTable expenses={recurringExpenses || []} onDeleteExpense={handleDeleteExpense} />
       </div>
     </DashboardLayout>;
 };
+
 export default RecurringExpenses;
