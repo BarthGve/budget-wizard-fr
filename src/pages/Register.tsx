@@ -53,7 +53,7 @@ const Register = () => {
 
       if (signUpData.user) {
         toast.success("Inscription réussie ! Vérifiez votre email pour confirmer votre compte.");
-        navigate("/login");
+        navigate("/");
       }
     } catch (error: any) {
       console.error("Error: ", error);
