@@ -20,6 +20,16 @@ export const useDashboardData = () => {
     gcTime: 1000 * 60 * 30, // 30 minutes
   });
 
+  // Define refetch callback outside conditions
+  const refetch = useCallback(() => {
+    if (currentUser?.id) {
+      queryClient.invalidateQueries({ queryKey: ["contributors", currentUser.id] });
+      queryClient.invalidateQueries({ queryKey: ["monthly-savings", currentUser.id] });
+      queryClient.invalidateQueries({ queryKey: ["profile", currentUser.id] });
+      queryClient.invalidateQueries({ queryKey: ["recurring-expenses", currentUser.id] });
+    }
+  }, [queryClient, currentUser?.id]);
+
   // Optimized error handling
   const handleError = useCallback((error: any, message: string) => {
     console.error(`Error ${message}:`, error);
@@ -27,9 +37,21 @@ export const useDashboardData = () => {
     throw error;
   }, []);
 
+  // Handle authentication error
+  if (userError) {
+    handleError(userError, "de l'authentification");
+    return {
+      contributors: [],
+      monthlySavings: [],
+      profile: null,
+      recurringExpenses: [],
+      refetch,
+    };
+  }
+
   // Only fetch dependent data if we have a current user
-  const queries = useQueries({
-    queries: currentUser ? [
+  const dependentQueries = useQueries({
+    queries: !currentUser ? [] : [
       {
         queryKey: ["contributors", currentUser.id],
         queryFn: async () => {
@@ -86,54 +108,22 @@ export const useDashboardData = () => {
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 30,
       }
-    ] : [],
+    ],
   });
 
-  // Handle authentication error
-  if (userError) {
-    handleError(userError, "de l'authentification");
-    return {
-      contributors: [],
-      monthlySavings: [],
-      profile: null,
-      recurringExpenses: [],
-      refetch: () => {},
-    };
-  }
+  // Handle query errors
+  dependentQueries.forEach(query => {
+    if (query.error) {
+      handleError(query.error, "des données du tableau de bord");
+    }
+  });
 
-  // Only process queries if we have a current user
-  if (currentUser && queries.length > 0) {
-    const [contributorsQuery, savingsQuery, profileQuery, expensesQuery] = queries;
-
-    // Handle any errors in the queries
-    queries.forEach(query => {
-      if (query.error) {
-        handleError(query.error, "des données du tableau de bord");
-      }
-    });
-
-    const refetch = useCallback(() => {
-      queryClient.invalidateQueries({ queryKey: ["contributors", currentUser.id] });
-      queryClient.invalidateQueries({ queryKey: ["monthly-savings", currentUser.id] });
-      queryClient.invalidateQueries({ queryKey: ["profile", currentUser.id] });
-      queryClient.invalidateQueries({ queryKey: ["recurring-expenses", currentUser.id] });
-    }, [queryClient, currentUser.id]);
-
-    return {
-      contributors: contributorsQuery.data || [],
-      monthlySavings: savingsQuery.data || [],
-      profile: profileQuery.data,
-      recurringExpenses: expensesQuery.data || [],
-      refetch,
-    };
-  }
-
-  // Return empty data if no user is authenticated
+  // Return data based on queries state
   return {
-    contributors: [],
-    monthlySavings: [],
-    profile: null,
-    recurringExpenses: [],
-    refetch: () => {},
+    contributors: currentUser ? (dependentQueries[0]?.data || []) : [],
+    monthlySavings: currentUser ? (dependentQueries[1]?.data || []) : [],
+    profile: currentUser ? dependentQueries[2]?.data || null : null,
+    recurringExpenses: currentUser ? (dependentQueries[3]?.data || []) : [],
+    refetch,
   };
 };
