@@ -18,12 +18,15 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      // 1. Demander la création d'un token
+      console.log("Requesting password reset for:", email);
+      
+      // 1. Créer le token de réinitialisation
       const { data, error } = await supabase
         .rpc('create_password_reset_token', { user_email: email });
 
+      console.log("Token creation response:", { data, error });
+
       if (error) {
-        // Gérer spécifiquement l'erreur de rate limit
         if (error.message.includes('rate limit exceeded')) {
           toast.error("Veuillez patienter quelques minutes avant de demander un nouveau lien de réinitialisation");
           return;
@@ -33,7 +36,8 @@ const ForgotPassword = () => {
 
       // 2. Si le token est créé avec succès, envoyer l'email
       if (data && Array.isArray(data) && data[0] && data[0].success) {
-        // Appeler l'edge function pour envoyer l'email
+        console.log("Calling send-reset-password function with token");
+        
         const response = await supabase.functions.invoke('send-reset-password', {
           body: {
             email,
@@ -41,11 +45,14 @@ const ForgotPassword = () => {
           }
         });
 
+        console.log("Email sending response:", response);
+
         if (response.error) throw response.error;
 
         toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
         setEmail("");
       } else {
+        console.log("Token creation unsuccessful or unexpected response format");
         // Ne pas révéler si l'email existe ou non
         toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
       }
