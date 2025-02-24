@@ -332,6 +332,50 @@ export type Database = {
         }
         Relationships: []
       }
+      password_reset_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          profile_id: string
+          status:
+            | Database["public"]["Enums"]["password_reset_token_status"]
+            | null
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          profile_id: string
+          status?:
+            | Database["public"]["Enums"]["password_reset_token_status"]
+            | null
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          profile_id?: string
+          status?:
+            | Database["public"]["Enums"]["password_reset_token_status"]
+            | null
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "password_reset_tokens_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -734,6 +778,16 @@ export type Database = {
         }
         Returns: Json
       }
+      create_password_reset_token: {
+        Args: {
+          user_email: string
+        }
+        Returns: {
+          success: boolean
+          message: string
+          token: string
+        }[]
+      }
       delete_own_account: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -818,6 +872,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      verify_reset_token: {
+        Args: {
+          reset_token: string
+        }
+        Returns: {
+          is_valid: boolean
+          profile_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
@@ -826,6 +889,7 @@ export type Database = {
       mode_planification_type: "par_date" | "par_mensualite"
       notification_status: "non_lu" | "lu"
       notification_type: "credit_echeance" | "autre"
+      password_reset_token_status: "active" | "used" | "expired"
       projet_epargne_status: "actif" | "en_attente" | "dépassé"
       user_profile_type: "basic" | "pro"
     }

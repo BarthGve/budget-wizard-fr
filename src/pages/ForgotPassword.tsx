@@ -4,40 +4,36 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const Login = () => {
-  const navigate = useNavigate();
+const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data: { success, message }, error } = await supabase
+        .rpc('create_password_reset_token', { user_email: email });
 
-      if (error) {
-        throw error;
+      if (error) throw error;
+
+      if (success) {
+        toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
+      } else {
+        // Show same message even if email doesn't exist (security)
+        toast.success("Si l'adresse email existe, un lien de réinitialisation vous sera envoyé.");
       }
 
-      toast.success("Connexion réussie");
-      navigate("/dashboard");
+      setEmail("");
     } catch (error: any) {
-      console.error("Login error:", error);
-      toast.error(
-        error.message === "Invalid login credentials"
-          ? "Email ou mot de passe incorrect"
-          : "Erreur lors de la connexion"
-      );
+      console.error("Password reset error:", error);
+      toast.error("Une erreur est survenue lors de la réinitialisation du mot de passe");
     } finally {
       setIsLoading(false);
     }
@@ -48,15 +44,15 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <Link
-            to="/"
+            to="/login"
             className="text-muted-foreground hover:text-foreground transition-colors mb-4 inline-flex items-center"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Retour
           </Link>
-          <CardTitle>Connexion</CardTitle>
+          <CardTitle>Mot de passe oublié</CardTitle>
           <CardDescription>
-            Connectez-vous pour accéder à votre tableau de bord
+            Entrez votre adresse email pour recevoir un lien de réinitialisation
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -73,39 +69,14 @@ const Login = () => {
                 disabled={isLoading}
               />
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Mot de passe</Label>
-                <Link 
-                  to="/forgot-password" 
-                  className="text-sm text-primary hover:underline"
-                >
-                  Mot de passe oublié ?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Connexion en cours..." : "Se connecter"}
+              {isLoading ? "Envoi en cours..." : "Envoyer le lien de réinitialisation"}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm text-muted-foreground">
-            Pas encore de compte ?{" "}
-            <Link to="/register" className="text-primary hover:underline">
-              Inscrivez-vous
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </div>
   );
 };
 
-export default Login;
+export default ForgotPassword;
