@@ -85,7 +85,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   // Optimisation du rendu avec un conteneur memoizé
   const MemoizedContent = useMemo(() => (
-    <main className="flex-1 flex flex-col h-screen touch-scroll">
+    <main className="mb-4 flex-1 flex flex-col h-screen touch-scroll">
       {!userProfile?.isAdmin && (
         <div className={`fixed right-6 top-4 z-50 ${isMobile ? 'ios-top-safe pt-4' : ''}`}>
           <GlobalBalanceCard 
