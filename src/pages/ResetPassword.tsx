@@ -39,27 +39,29 @@ const ResetPassword = () => {
     setIsLoading(true);
 
     try {
-      // Verify token and get user id
+      // Verify the token first
       const { data, error: verifyError } = await supabase
         .rpc('verify_reset_token', { reset_token: token });
 
       if (verifyError) throw verifyError;
 
-      // Access the first (and only) result from the array
       const resetData = data?.[0];
       
-      if (!resetData?.is_valid || !resetData?.profile_id) {
+      if (!resetData?.is_valid) {
         toast.error("Le lien de réinitialisation est invalide ou a expiré");
         navigate('/login');
         return;
       }
 
-      // Update password using Supabase Auth
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword
-      });
+      // Reset the password
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        newPassword,
+        {
+          redirectTo: `${window.location.origin}/login`
+        }
+      );
 
-      if (updateError) throw updateError;
+      if (resetError) throw resetError;
 
       toast.success("Mot de passe mis à jour avec succès");
       navigate('/login');
