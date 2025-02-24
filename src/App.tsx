@@ -1,8 +1,8 @@
+
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Settings from "./pages/Settings";
+import UserSettings from "./pages/UserSettings";
 import Properties from "./pages/Properties";
 import Contributors from "./pages/Contributors";
 import Savings from "./pages/Savings";
@@ -26,12 +26,8 @@ const router = createBrowserRouter([
     element: <Register />,
   },
   {
-    path: "/dashboard",
-    element: <Dashboard />,
-  },
-  {
     path: "/settings",
-    element: <Settings />,
+    element: <UserSettings />,
   },
   {
     path: "/properties",
