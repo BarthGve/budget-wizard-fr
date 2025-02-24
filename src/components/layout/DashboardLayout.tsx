@@ -64,19 +64,25 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
       <Sidebar />
-      <main className="flex-1 flex flex-col h-screen touch-scroll">
-        <div className={`sticky top-0 z-10 justify-end ${isMobile ? 'ios-top-safe' : ''}`}>
-          <div className="flex items-center justify-end gap-4 container mx-auto p-4">
-            {!userProfile?.isAdmin && (
-              <GlobalBalanceCard balance={globalBalance} />
-            )}
-          </div>
+      <main className="flex-1 flex flex-col h-screen touch-scroll relative">
+  {/* Barre du haut avec GlobalBalanceCard flottant */}
+  <div className={`sticky top-0 z-20 p-4 justify-end animate-fade-in bg-background/80 backdrop-blur-sm ${isMobile ? 'ios-top-safe' : ''}`}>
+    <div className="flex items-center justify-end gap-4 container mx-auto">
+      {!userProfile?.isAdmin && (
+        <div className="absolute top-4 right-6 bg-transparent z-30">
+          <GlobalBalanceCard balance={globalBalance} />
         </div>
-        <div className="container mx-auto p-6 flex-1 overflow-auto touch-scroll">
-          <div className="page-transition">{children}</div>
-        </div>
-        {isMobile && <div className="h-16 ios-bottom-safe" />}
-      </main>
+      )}
+    </div>
+  </div>
+
+  {/* Contenu principal défilable */}
+  <div className="container mx-auto p-6 flex-1 overflow-auto touch-scroll relative z-10">
+    <div className="page-transition">{children}</div>
+  </div>
+
+  {isMobile && <div className="h-16 ios-bottom-safe" />}
+</main>
       <Toaster />
     </div>
   );
