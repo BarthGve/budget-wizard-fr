@@ -8,6 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "@/components/credits/types";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Menu } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -15,6 +18,7 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isMobile = useIsMobile();
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
 
   const { data: credits } = useQuery({
@@ -60,11 +64,30 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const totalRevenue = contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
   const globalBalance = calculateGlobalBalance(totalRevenue, recurringExpenses, monthlySavings, credits);
 
+  const toggleSidebar = () => {
+    setShowMobileSidebar(!showMobileSidebar);
+  };
+
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
-      <Sidebar />
+      {/* Sidebar avec condition d'affichage sur mobile */}
+      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'}`}>
+        <Sidebar onClose={() => setShowMobileSidebar(false)} />
+      </div>
+
+      {/* Bouton hamburger flottant sur mobile */}
+      {isMobile && (
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleSidebar}
+          className="fixed left-4 top-4 z-50 rounded-full shadow-lg bg-background hover:bg-accent ios-top-safe"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+      )}
+
       <main className="flex-1 flex flex-col h-screen touch-scroll">
-        {/* Header avec GlobalBalanceCard fixe */}
         {!userProfile?.isAdmin && (
           <div className={`fixed right-6 top-4 z-50 ${isMobile ? 'ios-top-safe pt-4' : ''}`}>
             <GlobalBalanceCard 
@@ -74,7 +97,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </div>
         )}
 
-        {/* Contenu principal défilable */}
         <div className={`flex-1 container mx-auto p-6 overflow-auto relative ${isMobile ? 'ios-top-safe pt-20' : 'pt-20'}`}>
           <div className="page-transition">
             {children}

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,9 +14,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SidebarProps {
   className?: string;
+  onClose?: () => void;
 }
 
-export const Sidebar = ({ className }: SidebarProps) => {
+export const Sidebar = ({ className, onClose }: SidebarProps) => {
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
@@ -71,10 +73,25 @@ export const Sidebar = ({ className }: SidebarProps) => {
     }
   });
 
+  const handleClickOutside = (e: MouseEvent) => {
+    if (isMobile && onClose && (e.target as HTMLElement).closest('.sidebar-content') === null) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (isMobile) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isMobile, onClose]);
+
   return (
     <aside
       className={cn(
-        "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col touch-scroll",
+        "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col touch-scroll sidebar-content",
         collapsed ? "w-16" : "w-64",
         isMobile && "fixed z-50 shadow-lg",
         className
@@ -112,21 +129,22 @@ export const Sidebar = ({ className }: SidebarProps) => {
         <UserDropdown collapsed={collapsed} profile={profile} />
       </div>
   
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className={cn(
-          "absolute -right-3 top-20 p-1.5 rounded-full bg-background border border-border hover:bg-accent transition-colors",
-          "z-50 shadow-sm touch-manipulation",
-          isMobile && "w-8 h-8 flex items-center justify-center"
-        )}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        {collapsed ? (
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <ChevronLeft className="h-4 w-4 text-muted-foreground" />
-        )}
-      </button>
+      {!isMobile && (
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className={cn(
+            "absolute -right-3 top-20 p-1.5 rounded-full bg-background border border-border hover:bg-accent transition-colors",
+            "z-50 shadow-sm touch-manipulation"
+          )}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+          )}
+        </button>
+      )}
     </aside>
   );
 };
