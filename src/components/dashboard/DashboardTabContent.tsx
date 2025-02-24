@@ -22,7 +22,7 @@ interface DashboardTabContentProps {
     name: string;
     total_contribution: number;
     percentage_contribution: number;
-    is_owner?: boolean;
+    is_owner: boolean; // Changed from optional to required
     profile_id: string;
   }>;
   contributorShares: Array<{
@@ -97,6 +97,14 @@ export const DashboardTabContent = ({
 
   const baseCardStyle = "hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02]";
 
+  // Map contributors to ensure all required properties are present
+  const mappedContributors = contributors.map(contributor => ({
+    ...contributor,
+    is_owner: contributor.is_owner ?? false, // Provide a default value if is_owner is undefined
+    expenseShare: 0, // Add default values for required Contributor properties
+    creditShare: 0
+  }));
+
   return (
     <div className="space-y-8">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -150,7 +158,7 @@ export const DashboardTabContent = ({
       </div>
       <div>
         <ContributorsTable 
-          contributors={contributors}
+          contributors={mappedContributors}
           totalExpenses={expenses}
           totalCredits={totalMensualites}
         />
@@ -158,4 +166,3 @@ export const DashboardTabContent = ({
     </div>
   );
 };
-
