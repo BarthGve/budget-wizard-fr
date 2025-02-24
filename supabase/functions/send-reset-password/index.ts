@@ -16,32 +16,35 @@ interface ResetPasswordEmailRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      headers: corsHeaders
-    });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { email, token }: ResetPasswordEmailRequest = await req.json();
-    
-    // Construction de l'URL de réinitialisation en utilisant l'origine de la requête
-    const origin = req.headers.get("origin") || "http://localhost:5173";
-    const resetUrl = `${origin}/reset-password?token=${token}`;
 
-    console.log("Sending reset password email to:", email);
-    console.log("Reset URL:", resetUrl);
+    // Construire l'URL de réinitialisation avec le token
+    const resetUrl = new URL(req.headers.get("origin") || "");
+    resetUrl.pathname = "/reset-password";
+    resetUrl.searchParams.set("token", token);
 
     const emailResponse = await resend.emails.send({
-      from: "Budget Wizard <no-reply@vision2tech.fr>",
+      from: "Budget Partagé <password-reset@budget-partage.app>",
       to: [email],
       subject: "Réinitialisation de votre mot de passe",
       html: `
         <h1>Réinitialisation de votre mot de passe</h1>
-        <p>Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le lien ci-dessous pour procéder :</p>
-        <p><a href="${resetUrl}">Réinitialiser mon mot de passe</a></p>
-        <p>Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email.</p>
-        <p>Ce lien expirera dans 1 heure.</p>
+        <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
+        <p>Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :</p>
+        <p>
+          <a href="${resetUrl.toString()}" style="display: inline-block; padding: 10px 20px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 5px;">
+            Réinitialiser mon mot de passe
+          </a>
+        </p>
+        <p>Ce lien est valable pendant 1 heure.</p>
+        <p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité.</p>
+        <p>Cordialement,<br>L'équipe Budget Partagé</p>
       `,
     });
 
@@ -55,7 +58,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
-    console.error("Error sending reset password email:", error);
+    console.error("Error in send-reset-password function:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {

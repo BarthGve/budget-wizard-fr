@@ -53,13 +53,12 @@ const ResetPassword = () => {
         return;
       }
 
-      // Reset password using the email from the token verification
-      const { error: resetError } = await supabase.auth
-        .resetPasswordForEmail(resetData.email, {
-          redirectTo: `${window.location.origin}/login`
-        });
+      // Mettre à jour directement le mot de passe
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword
+      });
 
-      if (resetError) throw resetError;
+      if (updateError) throw updateError;
 
       toast.success("Mot de passe mis à jour avec succès");
       navigate('/login');
