@@ -4,6 +4,42 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useCallback } from "react";
 
+interface Contributor {
+  id: string;
+  name: string;
+  email: string;
+  is_owner: boolean;
+  created_at: string;
+  percentage_contribution: number;
+  total_contribution: number;
+  profile_id: string;
+}
+
+interface MonthlySaving {
+  id: string;
+  amount: number;
+  name: string;
+  description?: string;
+  logo_url?: string;
+}
+
+interface Profile {
+  id: string;
+  full_name?: string;
+  avatar_url?: string;
+  savings_goal_percentage?: number;
+}
+
+interface RecurringExpense {
+  id: string;
+  name: string;
+  amount: number;
+  category: string;
+  periodicity: string;
+  debit_day: number;
+  debit_month?: number;
+}
+
 export const useDashboardData = () => {
   const queryClient = useQueryClient();
 
@@ -41,17 +77,17 @@ export const useDashboardData = () => {
   if (userError) {
     handleError(userError, "de l'authentification");
     return {
-      contributors: [],
-      monthlySavings: [],
-      profile: null,
-      recurringExpenses: [],
+      contributors: [] as Contributor[],
+      monthlySavings: [] as MonthlySaving[],
+      profile: null as Profile | null,
+      recurringExpenses: [] as RecurringExpense[],
       refetch,
     };
   }
 
   // Only fetch dependent data if we have a current user
   const dependentQueries = useQueries({
-    queries: !currentUser ? [] : [
+    queries: currentUser ? [
       {
         queryKey: ["contributors", currentUser.id],
         queryFn: async () => {
@@ -61,7 +97,7 @@ export const useDashboardData = () => {
             .eq("profile_id", currentUser.id)
             .order("created_at", { ascending: true });
           if (error) throw error;
-          return data || [];
+          return (data || []) as Contributor[];
         },
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 30,
@@ -75,7 +111,7 @@ export const useDashboardData = () => {
             .eq("profile_id", currentUser.id)
             .order("created_at", { ascending: true });
           if (error) throw error;
-          return data || [];
+          return (data || []) as MonthlySaving[];
         },
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 30,
@@ -89,7 +125,7 @@ export const useDashboardData = () => {
             .eq("id", currentUser.id)
             .maybeSingle();
           if (error) throw error;
-          return data;
+          return data as Profile | null;
         },
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 30,
@@ -103,27 +139,27 @@ export const useDashboardData = () => {
             .eq("profile_id", currentUser.id)
             .order("created_at", { ascending: true });
           if (error) throw error;
-          return data || [];
+          return (data || []) as RecurringExpense[];
         },
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 30,
       }
-    ],
+    ] : []
   });
 
   // Handle query errors
-  dependentQueries.forEach(query => {
-    if (query.error) {
+  dependentQueries.forEach((query) => {
+    if ('error' in query && query.error) {
       handleError(query.error, "des données du tableau de bord");
     }
   });
 
   // Return data based on queries state
   return {
-    contributors: currentUser ? (dependentQueries[0]?.data || []) : [],
-    monthlySavings: currentUser ? (dependentQueries[1]?.data || []) : [],
-    profile: currentUser ? dependentQueries[2]?.data || null : null,
-    recurringExpenses: currentUser ? (dependentQueries[3]?.data || []) : [],
+    contributors: currentUser && dependentQueries[0]?.data ? dependentQueries[0].data : [],
+    monthlySavings: currentUser && dependentQueries[1]?.data ? dependentQueries[1].data : [],
+    profile: currentUser && dependentQueries[2]?.data ? dependentQueries[2].data : null,
+    recurringExpenses: currentUser && dependentQueries[3]?.data ? dependentQueries[3].data : [],
     refetch,
   };
 };
