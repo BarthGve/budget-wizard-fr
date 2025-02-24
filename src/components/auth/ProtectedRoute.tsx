@@ -1,8 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
-import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -11,24 +10,25 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const location = useLocation();
-  const { canAccessPage, isAdmin } = usePagePermissions();
-  
+
   const { data: authData, isLoading } = useQuery({
-    queryKey: ["auth"],
+    queryKey: ["auth-status"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { isAuthenticated: false };
+      if (!user) return { isAuthenticated: false, isAdmin: false };
 
-      const { data: isAdmin, error } = await supabase.rpc('has_role', {
+      const { data: isAdmin } = await supabase.rpc('has_role', {
         user_id: user.id,
         role: 'admin'
       });
 
       return { 
         isAuthenticated: true,
-        isAdmin
+        isAdmin: !!isAdmin
       };
-    }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 30, // 30 minutes
   });
 
   if (isLoading) {
@@ -47,7 +47,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     return <Navigate to="/admin" replace />;
   }
 
-  if (requireAdmin && !isAdmin) {
+  if (requireAdmin && !authData.isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -56,19 +56,13 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     return <>{children}</>;
   }
 
-  // Gestion spéciale pour les routes de détail des propriétés
+  // For property detail routes
   if (location.pathname.startsWith('/properties/')) {
-    // Si c'est la page principale des propriétés ou si l'utilisateur peut accéder à /properties
-    const canAccessProperties = canAccessPage('/properties');
-    if (canAccessProperties) {
-      return <>{children}</>;
-    }
+    // Allow access if it's a valid property route
+    return <>{children}</>;
   }
 
-  // Vérifier les permissions pour les autres routes
-  if (!canAccessPage(location.pathname)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
+  // Default case: allow access
   return <>{children}</>;
 };
+
