@@ -26,7 +26,7 @@ export const UserDropdown = ({
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       toast.success("Déconnexion réussie");
-      navigate("/login");
+      navigate("/");
     } catch (error: any) {
       toast.error("Erreur lors de la déconnexion");
       console.error("Logout error:", error);
