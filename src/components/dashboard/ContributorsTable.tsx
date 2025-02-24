@@ -8,14 +8,7 @@ import { ContributorsTableList } from "./contributor-table/ContributorsTableList
 import { useProfileAvatar } from "@/hooks/useProfileAvatar";
 
 interface ContributorsTableProps {
-  contributors: Array<{
-    id: string;
-    name: string;
-    total_contribution: number;
-    percentage_contribution: number;
-    is_owner?: boolean;
-    profile_id: string;
-  }>;
+  contributors: Array<Contributor>;
   totalExpenses: number;
   totalCredits: number;
 }
