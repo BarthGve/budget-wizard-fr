@@ -22,7 +22,14 @@ const ForgotPassword = () => {
       const { data, error } = await supabase
         .rpc('create_password_reset_token', { user_email: email });
 
-      if (error) throw error;
+      if (error) {
+        // Gérer spécifiquement l'erreur de rate limit
+        if (error.message.includes('rate limit exceeded')) {
+          toast.error("Veuillez patienter quelques minutes avant de demander un nouveau lien de réinitialisation");
+          return;
+        }
+        throw error;
+      }
 
       // 2. Si le token est créé avec succès, envoyer l'email
       if (data && Array.isArray(data) && data[0] && data[0].success) {
