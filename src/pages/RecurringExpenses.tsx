@@ -93,65 +93,94 @@ const RecurringExpenses = () => {
     </DashboardLayout>;
   }
   return <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Charges récurrentes</h1>
-            <p className="text-muted-foreground">
-              Gérez vos charges récurrentes et leurs échéances
-            </p>
-          </div>
-          <RecurringExpenseDialog trigger={<Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
-                <Plus className="mr-2 h-4 w-4" />
-                Nouvelle charge
-              </Button>} />
+       <div className="p-4 md:p-6 space-y-6 w-full max-w-7xl mx-auto">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
+            Charges récurrentes
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Gérez vos charges récurrentes et leurs échéances
+          </p>
         </div>
-
-        <CreateCategoryBanner />
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
-            <CardHeader className="py-[16px]">
-              <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-2xl text-white">Mensuel</CardTitle>
-                <Calendar className="h-6 w-6 text-white" />
-              </div>
-              <CardDescription className="text-white">Total des charges mensuelles</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl text-white font-bold">{Math.round(monthlyTotal)} €</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
-            <CardHeader className="py-[16px]">
-              <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-2xl text-white">Trimestriel</CardTitle>
-                <CalendarDays className="h-6 w-6 text-white" />
-              </div>
-              <CardDescription className="text-white">Total des charges trimestrielles</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl text-white font-bold">{Math.round(quarterlyTotal)} €</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
-            <CardHeader className="py-[16px]">
-              <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-2xl text-white">Annuel</CardTitle>
-                <CalendarRange className="h-6 w-6 text-white" />
-              </div>
-              <CardDescription className="text-white">Total des charges annuelles</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl text-white font-bold">{Math.round(yearlyTotal)} €</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <RecurringExpenseTable expenses={recurringExpenses || []} onDeleteExpense={handleDeleteExpense} />
+        <RecurringExpenseDialog 
+          trigger={
+            <Button className="w-full sm:w-auto text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
+              <Plus className="mr-2 h-4 w-4" />
+              Nouvelle charge
+            </Button>
+          } 
+        />
       </div>
+
+      <CreateCategoryBanner />
+
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Monthly Card */}
+        <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300 hover:shadow-lg">
+          <CardHeader className="py-3 sm:py-4">
+            <div className="flex flex-row items-center justify-between">
+              <CardTitle className="text-xl sm:text-2xl text-white">Mensuel</CardTitle>
+              <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+            </div>
+            <CardDescription className="text-sm sm:text-base text-white/90">
+              Total des charges mensuelles
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-lg sm:text-xl text-white font-bold">
+              {Math.round(monthlyTotal)} €
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Quarterly Card */}
+        <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300 hover:shadow-lg">
+          <CardHeader className="py-3 sm:py-4">
+            <div className="flex flex-row items-center justify-between">
+              <CardTitle className="text-xl sm:text-2xl text-white">Trimestriel</CardTitle>
+              <CalendarDays className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+            </div>
+            <CardDescription className="text-sm sm:text-base text-white/90">
+              Total des charges trimestrielles
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-lg sm:text-xl text-white font-bold">
+              {Math.round(quarterlyTotal)} €
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Yearly Card */}
+        <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300 hover:shadow-lg">
+          <CardHeader className="py-3 sm:py-4">
+            <div className="flex flex-row items-center justify-between">
+              <CardTitle className="text-xl sm:text-2xl text-white">Annuel</CardTitle>
+              <CalendarRange className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+            </div>
+            <CardDescription className="text-sm sm:text-base text-white/90">
+              Total des charges annuelles
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-lg sm:text-xl text-white font-bold">
+              {Math.round(yearlyTotal)} €
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <RecurringExpenseTable 
+          expenses={recurringExpenses || []} 
+          onDeleteExpense={handleDeleteExpense} 
+        />
+      </div>
+    </div>
     </DashboardLayout>;
 };
 
