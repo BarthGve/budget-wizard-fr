@@ -1,5 +1,5 @@
 
-import { useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useCallback } from "react";
@@ -40,131 +40,97 @@ interface RecurringExpense {
   debit_month?: number;
 }
 
-type QueryResult = {
-  data?: any;
-  error: Error | null;
-}
-
 export const useDashboardData = () => {
-  const queryClient = useQueryClient();
-
-  // First, fetch the current user
-  const { data: currentUser, error: userError } = useQuery({
+  const { data: currentUser } = useQuery({
     queryKey: ["current-user"],
     queryFn: async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) throw error;
-      if (!user) throw new Error("Non authentifié");
+      if (error) {
+        console.error("Auth error:", error);
+        toast.error("Erreur d'authentification");
+        throw error;
+      }
       return user;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    retry: false
   });
 
-  // Define refetch callback outside conditions
+  const { data: contributors = [] } = useQuery<Contributor[]>({
+    queryKey: ["contributors", currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      const { data, error } = await supabase
+        .from("contributors")
+        .select("*")
+        .eq("profile_id", currentUser.id)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentUser?.id
+  });
+
+  const { data: monthlySavings = [] } = useQuery<MonthlySaving[]>({
+    queryKey: ["monthly-savings", currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      const { data, error } = await supabase
+        .from("monthly_savings")
+        .select("*")
+        .eq("profile_id", currentUser.id)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentUser?.id
+  });
+
+  const { data: profile = null } = useQuery<Profile | null>({
+    queryKey: ["profile", currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentUser?.id
+  });
+
+  const { data: recurringExpenses = [] } = useQuery<RecurringExpense[]>({
+    queryKey: ["recurring-expenses", currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      const { data, error } = await supabase
+        .from("recurring_expenses")
+        .select("*")
+        .eq("profile_id", currentUser.id)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentUser?.id
+  });
+
   const refetch = useCallback(() => {
-    if (currentUser?.id) {
-      queryClient.invalidateQueries({ queryKey: ["contributors", currentUser.id] });
-      queryClient.invalidateQueries({ queryKey: ["monthly-savings", currentUser.id] });
-      queryClient.invalidateQueries({ queryKey: ["profile", currentUser.id] });
-      queryClient.invalidateQueries({ queryKey: ["recurring-expenses", currentUser.id] });
-    }
-  }, [queryClient, currentUser?.id]);
+    if (!currentUser?.id) return;
+    
+    // Only invalidate queries that exist
+    const queryClient = useQuery.getQueryClient();
+    queryClient.invalidateQueries({ queryKey: ["contributors", currentUser.id] });
+    queryClient.invalidateQueries({ queryKey: ["monthly-savings", currentUser.id] });
+    queryClient.invalidateQueries({ queryKey: ["profile", currentUser.id] });
+    queryClient.invalidateQueries({ queryKey: ["recurring-expenses", currentUser.id] });
+  }, [currentUser?.id]);
 
-  // Optimized error handling
-  const handleError = useCallback((error: any, message: string) => {
-    console.error(`Error ${message}:`, error);
-    toast.error(`Erreur lors du chargement ${message}`);
-    throw error;
-  }, []);
-
-  // Handle authentication error
-  if (userError) {
-    handleError(userError, "de l'authentification");
-    return {
-      contributors: [] as Contributor[],
-      monthlySavings: [] as MonthlySaving[],
-      profile: null as Profile | null,
-      recurringExpenses: [] as RecurringExpense[],
-      refetch,
-    };
-  }
-
-  // Only fetch dependent data if we have a current user
-  const queries = currentUser ? [
-    {
-      queryKey: ["contributors", currentUser.id],
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from("contributors")
-          .select("*")
-          .eq("profile_id", currentUser.id)
-          .order("created_at", { ascending: true });
-        if (error) throw error;
-        return (data || []) as Contributor[];
-      },
-      staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 30,
-    },
-    {
-      queryKey: ["monthly-savings", currentUser.id],
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from("monthly_savings")
-          .select("*")
-          .eq("profile_id", currentUser.id)
-          .order("created_at", { ascending: true });
-        if (error) throw error;
-        return (data || []) as MonthlySaving[];
-      },
-      staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 30,
-    },
-    {
-      queryKey: ["profile", currentUser.id],
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", currentUser.id)
-          .maybeSingle();
-        if (error) throw error;
-        return data as Profile | null;
-      },
-      staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 30,
-    },
-    {
-      queryKey: ["recurring-expenses", currentUser.id],
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from("recurring_expenses")
-          .select("*")
-          .eq("profile_id", currentUser.id)
-          .order("created_at", { ascending: true });
-        if (error) throw error;
-        return (data || []) as RecurringExpense[];
-      },
-      staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 30,
-    }
-  ] : [];
-
-  const dependentQueries = useQueries({ queries });
-
-  // Handle query errors
-  dependentQueries.forEach((query) => {
-    if (query.error) {
-      handleError(query.error, "des données du tableau de bord");
-    }
-  });
-
-  // Return data with proper type assertions
   return {
-    contributors: currentUser ? (dependentQueries[0]?.data as Contributor[] ?? []) : [],
-    monthlySavings: currentUser ? (dependentQueries[1]?.data as MonthlySaving[] ?? []) : [],
-    profile: currentUser ? (dependentQueries[2]?.data as Profile | null ?? null) : null,
-    recurringExpenses: currentUser ? (dependentQueries[3]?.data as RecurringExpense[] ?? []) : [],
+    contributors,
+    monthlySavings,
+    profile,
+    recurringExpenses,
     refetch,
   };
 };
