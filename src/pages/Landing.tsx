@@ -69,9 +69,9 @@ const Landing = () => {
     { icon: "/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png", name: "Lovable AI" },
     { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", name: "React" },
     { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg", name: "TypeScript" },
-    { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-plain.svg", name: "Tailwind CSS" },
-    { icon: "https://raw.githubusercontent.com/supabase/supabase/master/packages/common/assets/images/supabase-logo.svg", name: "Supabase" },
-    { icon: "https://www.shadcdn.com/favicon.ico", name: "shadcn/ui" },
+    { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg", name: "Tailwind CSS" },
+    { icon: "https://supabase.com/favicon/favicon-196x196.png", name: "Supabase" },
+    { icon: "https://app.supabase.com/img/supabase-logo.svg", name: "Supabase" },
   ];
 
   return (
