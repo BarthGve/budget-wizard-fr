@@ -6,7 +6,7 @@ export const appConfig = {
   landing: {
     hero: {
       title: 'Maitrisez vos dépenses, libérez vos ambitions',
-      description: 'Prenez les commandes de votre budget avec BudgetWizard. Un tableau de bord intelligent pour gérer vos revenus, charges, crédits et objectifs d'épargne en toute simplicité.',
+      description: 'Prenez les commandes de votre budget avec BudgetWizard. Un tableau de bord intelligent pour gérer vos revenus, charges, crédits et objectifs d\'épargne en toute simplicité.',
       buttons: {
         login: 'Se connecter',
         register: 'S\'inscrire',
