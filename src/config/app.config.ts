@@ -6,7 +6,7 @@ export const appConfig = {
   landing: {
     hero: {
       title: 'Maitrisez vos dépenses, libérez vos ambitions',
-      description: 'Prenez le contrôle total de votre budget avec BudgetWizard. Gérez vos revenus, vos charges, votre épargne et vos projets en toute simplicité.💡 Une interface fluide, des outils intelligents et une gestion financière enfin claire et efficace.',
+      description: 'Prenez les commandes de votre budget avec BudgetWizard. Renseignez vos revenus réguliers, maîtrisez vos charges et atteignez vos objectifs d’épargne sans stress.',
       buttons: {
         login: 'Se connecter',
         register: 'S\'inscrire',
@@ -19,7 +19,7 @@ export const appConfig = {
       },
       {
         title: 'Budget collaboratif',
-        description: 'Gérez vos finances à plusieurs, répartissez les charges et suivez les contributions en temps réel. Idéal pour couples, colocations ou groupes d’amis !',
+        description: 'Gérez votre budget à plusieurs. Idéal pour couples, colocations ou groupes d’amis !',
       },
       {
         title: 'Dépenses récurrentes',
