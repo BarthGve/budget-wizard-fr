@@ -69,7 +69,7 @@ const Landing = () => {
     { icon: "/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png", name: "Lovable AI" },
     { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", name: "React" },
     { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg", name: "TypeScript" },
-    { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg", name: "Tailwind CSS" },
+    { icon: "https://cdn.worldvectorlogo.com/logos/tailwindcss.svg", name: "Tailwind CSS" },
     { icon: "https://app.supabase.com/img/supabase-logo.svg", name: "Supabase" },
     { icon: "https://ui.shadcn.com/favicon.ico", name: "shadcn/ui" },
    ];
