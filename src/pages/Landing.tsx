@@ -70,9 +70,9 @@ const Landing = () => {
     { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", name: "React" },
     { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg", name: "TypeScript" },
     { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg", name: "Tailwind CSS" },
-    { icon: "https://supabase.com/favicon/favicon-196x196.png", name: "Supabase" },
     { icon: "https://app.supabase.com/img/supabase-logo.svg", name: "Supabase" },
-  ];
+    { icon: "https://ui.shadcn.com/favicon.ico", name: "shadcn/ui" },
+   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-background">
