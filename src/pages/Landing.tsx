@@ -1,8 +1,12 @@
+
 import { Button } from "@/components/ui/button";
 import { LogIn, UserPlus, Wallet, Users, Clock, Target, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
+import { appConfig } from "@/config/app.config";
 
 const Landing = () => {
+  const { landing } = appConfig;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
       {/* Hero Section */}
@@ -15,11 +19,10 @@ const Landing = () => {
           />
           <div className="space-y-6 max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent">
-              La magie de la gestion budgétaire
+              {landing.hero.title}
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Simplifiez la gestion de vos dépenses en groupe. Suivez vos contributions, 
-              partagez les coûts et gardez le contrôle de vos finances partagées.
+              {landing.hero.description}
             </p>
           </div>
 
@@ -27,13 +30,13 @@ const Landing = () => {
             <Link to="/login" className="flex-1">
               <Button className="w-full group" size="lg">
                 <LogIn className="mr-2 group-hover:translate-x-1 transition-transform" />
-                Se connecter
+                {landing.hero.buttons.login}
               </Button>
             </Link>
             <Link to="/register" className="flex-1">
               <Button variant="outline" className="w-full group" size="lg">
                 <UserPlus className="mr-2 group-hover:scale-110 transition-transform" />
-                S'inscrire
+                {landing.hero.buttons.register}
               </Button>
             </Link>
           </div>
@@ -46,34 +49,26 @@ const Landing = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
           <div className="group p-6 rounded-2xl bg-card hover:bg-primary/5 transition-colors border">
             <Wallet className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="text-xl font-semibold mb-2">Suivi des dépenses</h3>
-            <p className="text-muted-foreground">
-              Gardez une vue claire et précise de toutes vos dépenses partagées en temps réel
-            </p>
+            <h3 className="text-xl font-semibold mb-2">{landing.features[0].title}</h3>
+            <p className="text-muted-foreground">{landing.features[0].description}</p>
           </div>
 
           <div className="group p-6 rounded-2xl bg-card hover:bg-primary/5 transition-colors border">
             <Users className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="text-xl font-semibold mb-2">Gestion des contributeurs</h3>
-            <p className="text-muted-foreground">
-              Ajoutez et gérez facilement les participants avec une interface intuitive
-            </p>
+            <h3 className="text-xl font-semibold mb-2">{landing.features[1].title}</h3>
+            <p className="text-muted-foreground">{landing.features[1].description}</p>
           </div>
 
           <div className="group p-6 rounded-2xl bg-card hover:bg-primary/5 transition-colors border">
             <Clock className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="text-xl font-semibold mb-2">Dépenses récurrentes</h3>
-            <p className="text-muted-foreground">
-              Automatisez le suivi de vos charges mensuelles pour plus de tranquillité
-            </p>
+            <h3 className="text-xl font-semibold mb-2">{landing.features[2].title}</h3>
+            <p className="text-muted-foreground">{landing.features[2].description}</p>
           </div>
 
           <div className="group p-6 rounded-2xl bg-card hover:bg-primary/5 transition-colors border">
             <Target className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="text-xl font-semibold mb-2">Objectifs d'épargne</h3>
-            <p className="text-muted-foreground">
-              Fixez et suivez vos objectifs d'épargne en toute simplicité avec des outils visuels intuitifs
-            </p>
+            <h3 className="text-xl font-semibold mb-2">{landing.features[3].title}</h3>
+            <p className="text-muted-foreground">{landing.features[3].description}</p>
           </div>
         </div>
 
@@ -83,15 +78,13 @@ const Landing = () => {
             <div className="flex items-center gap-4">
               <Shield className="w-12 h-12 text-primary" />
               <div>
-                <h3 className="text-xl font-semibold mb-1">Sécurité maximale</h3>
-                <p className="text-muted-foreground">
-                  Vos données financières sont protégées avec les plus hauts standards de sécurité
-                </p>
+                <h3 className="text-xl font-semibold mb-1">{landing.security.title}</h3>
+                <p className="text-muted-foreground">{landing.security.description}</p>
               </div>
             </div>
             <Link to="/register">
               <Button size="lg" className="shadow-lg">
-                Commencer gratuitement
+                {landing.security.button}
                 <UserPlus className="ml-2" />
               </Button>
             </Link>
@@ -103,3 +96,4 @@ const Landing = () => {
 };
 
 export default Landing;
+
