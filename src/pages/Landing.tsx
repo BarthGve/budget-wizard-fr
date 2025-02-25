@@ -4,6 +4,7 @@ import { LogIn, UserPlus, Wallet, Users, Clock, Target, Shield } from "lucide-re
 import { Link } from "react-router-dom";
 import { appConfig } from "@/config/app.config";
 import { useEffect, useState } from "react";
+import Navbar from "@/components/layout/Navbar";
 
 const Landing = () => {
   const { landing } = appConfig;
@@ -15,8 +16,10 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background overflow-hidden">
+      <Navbar />
+      
       {/* Hero Section */}
-      <div className="container mx-auto px-4 pt-24 pb-16">
+      <div className="container mx-auto px-4 pt-32 pb-16">
         <div className="flex flex-col items-center gap-8 text-center">
           <div 
             className={`
