@@ -1,23 +1,55 @@
+
 import { Button } from "@/components/ui/button";
-import { LogIn, UserPlus, Wallet, ChartBar, Target, Shield } from "lucide-react";
+import { LogIn, UserPlus, Wallet, ChartBar, Target, Shield, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { appConfig } from "@/config/app.config";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import * as THREE from "three";
 
 const Landing = () => {
   const { landing } = appConfig;
   const [isLoaded, setIsLoaded] = useState(false);
   const [testimonials, setTestimonials] = useState<any[]>([]);
+  const logoRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsLoaded(true);
     fetchTestimonials();
+    initLogo3D();
   }, []);
+
+  const initLogo3D = () => {
+    if (!logoRef.current || !containerRef.current) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(80, 80);
+
+    const texture = new THREE.TextureLoader().load(logoRef.current.src);
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const cube = new THREE.Mesh(geometry, material);
+    
+    scene.add(cube);
+    camera.position.z = 2;
+
+    containerRef.current.appendChild(renderer.domElement);
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    };
+
+    animate();
+  };
 
   const fetchTestimonials = async () => {
     const { data, error } = await supabase
@@ -36,6 +68,19 @@ const Landing = () => {
     }
   };
 
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }).map((_, index) => (
+      <Star
+        key={index}
+        className={`h-4 w-4 ${
+          index < rating 
+            ? "fill-yellow-400 text-yellow-400" 
+            : "text-gray-300"
+        }`}
+      />
+    ));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-background">
       <Navbar />
@@ -43,7 +88,6 @@ const Landing = () => {
       {/* Hero Section */}
       <div className="container mx-auto px-4 pt-32 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left column - Text content */}
           <div className={`space-y-8 transform transition-all duration-700 ${
             isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
           }`}>
@@ -61,17 +105,6 @@ const Landing = () => {
                 className="group text-lg px-8 py-6 shadow-lg hover:shadow-primary/20"
                 asChild
               >
-                <Link to="/login">
-                  <LogIn className="mr-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  {landing.hero.buttons.login}
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="group text-lg px-8 py-6"
-                asChild
-              >
                 <Link to="/register">
                   <UserPlus className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
                   {landing.hero.buttons.register}
@@ -80,7 +113,6 @@ const Landing = () => {
             </div>
           </div>
 
-          {/* Right column - Image */}
           <div className={`transform transition-all duration-1000 ${
             isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
           }`}>
@@ -166,6 +198,9 @@ const Landing = () => {
                       </p>
                     </div>
                   </div>
+                  <div className="flex space-x-1 mb-3">
+                    {renderStars(testimonial.rating)}
+                  </div>
                   <p className="text-lg font-medium mb-2">{testimonial.title}</p>
                   <p className="text-muted-foreground">
                     {testimonial.content}
@@ -173,6 +208,31 @@ const Landing = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tech Stack Footer */}
+      <div className="py-12 bg-gray-50 dark:bg-gray-900/50 overflow-hidden">
+        <div className="relative">
+          <div className="flex space-x-12 animate-marquee">
+            {[
+              { icon: "/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png", name: "Lovable AI" },
+              { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", name: "React" },
+              { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg", name: "TypeScript" },
+              { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-plain.svg", name: "Tailwind CSS" },
+              { icon: "https://raw.githubusercontent.com/supabase/supabase/master/packages/common/assets/images/supabase-logo.svg", name: "Supabase" },
+              { icon: "https://www.shadcdn.com/favicon.ico", name: "shadcn/ui" },
+            ].map((tech, index) => (
+              <div key={index} className="flex flex-col items-center space-y-2">
+                <img
+                  src={tech.icon}
+                  alt={tech.name}
+                  className="h-12 w-12 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all"
+                />
+                <span className="text-sm text-gray-500">{tech.name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -1,13 +1,13 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, UserPlus } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { appConfig } from "@/config/app.config";
 
 const Navbar = () => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm bg-white/70 dark:bg-gray-950/70 border-b">
-      <div className="container mx-auto px-4">
+    <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-7xl z-50 rounded-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-950/70 border shadow-lg">
+      <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
             <img 
@@ -18,20 +18,12 @@ const Navbar = () => {
             <span className="font-semibold text-lg">{appConfig.name}</span>
           </Link>
           
-          <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button variant="ghost" size="sm" className="gap-2">
-                <LogIn className="w-4 h-4" />
-                {appConfig.landing.hero.buttons.login}
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm" className="gap-2">
-                <UserPlus className="w-4 h-4" />
-                {appConfig.landing.hero.buttons.register}
-              </Button>
-            </Link>
-          </div>
+          <Link to="/login">
+            <Button size="sm" variant="ghost" className="gap-2">
+              <LogIn className="w-4 h-4" />
+              {appConfig.landing.hero.buttons.login}
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>
