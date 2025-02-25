@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { LogIn, UserPlus, Wallet, Users, Clock, Target } from "lucide-react";
+import { LogIn, UserPlus, Wallet, Users, Clock, Target, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Landing = () => {
