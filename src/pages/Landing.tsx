@@ -18,9 +18,9 @@ const Landing = () => {
             className="w-48 h-48 md:w-64 md:h-64 animate-fade-up"
           />
           <div className="space-y-6 max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent">
-              {landing.hero.title}
-            </h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent pb-1 leading-normal">
+  {landing.hero.title}
+</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               {landing.hero.description}
             </p>
