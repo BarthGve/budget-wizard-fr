@@ -1,76 +1,100 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogIn, UserPlus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { appConfig } from "@/config/app.config";
+import Navbar from "@/components/layout/Navbar";
+import * as THREE from "three";
+import { Hero } from "@/components/landing/Hero";
+import { Features } from "@/components/landing/Features";
+import { Testimonials } from "@/components/landing/Testimonials";
+import { TechStack } from "@/components/landing/TechStack";
+
 const Landing = () => {
-  return <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold tracking-tight text-primary mb-4">Budget Wizard</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Gérez vos dépenses en groupe facilement. Suivez les contributions, partagez les coûts et gardez une vue claire sur vos finances partagées.
-          </p>
-        </div>
+  const { landing } = appConfig;
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const logoRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <Card className="card-hover">
-            <CardHeader>
-              <CardTitle>Connectez-vous</CardTitle>
-              <CardDescription>
-                Accédez à votre tableau de bord pour gérer vos budgets partagés
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to="/login">
-                <Button className="w-full" size="lg">
-                  <LogIn className="mr-2" />
-                  Se connecter
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+  useEffect(() => {
+    setIsLoaded(true);
+    fetchTestimonials();
+    initLogo3D();
+  }, []);
 
-          <Card className="card-hover">
-            <CardHeader>
-              <CardTitle>Créez un compte</CardTitle>
-              <CardDescription>
-                Commencez à gérer vos dépenses partagées dès maintenant
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to="/register">
-                <Button className="w-full" size="lg" variant="outline">
-                  <UserPlus className="mr-2" />
-                  S'inscrire
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
+  const initLogo3D = () => {
+    if (!logoRef.current || !containerRef.current) return;
 
-        <div className="mt-16 text-center space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Suivi des dépenses</h3>
-              <p className="text-muted-foreground">
-                Gardez une trace claire de toutes les dépenses partagées
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Gestion des contributeurs</h3>
-              <p className="text-muted-foreground">
-                Ajoutez et gérez facilement les participants au budget
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Dépenses récurrentes</h3>
-              <p className="text-muted-foreground">
-                Suivez et gérez vos charges mensuelles
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(80, 80);
+
+    const texture = new THREE.TextureLoader().load(logoRef.current.src);
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const cube = new THREE.Mesh(geometry, material);
+    
+    scene.add(cube);
+    camera.position.z = 2;
+
+    containerRef.current.appendChild(renderer.domElement);
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    };
+
+    animate();
+  };
+
+  const fetchTestimonials = async () => {
+    const { data, error } = await supabase
+      .from('feedbacks')
+      .select(`
+        *,
+        profile:profiles(full_name, avatar_url)
+      `)
+      .gte('rating', 4)
+      .eq('status', 'in_progress')
+      .order('created_at', { ascending: false })
+      .limit(3);
+
+    if (!error && data) {
+      setTestimonials(data);
+    }
+  };
+
+  const technologies = [
+    { icon: "/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png", name: "Lovable AI" },
+    { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", name: "React" },
+    { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg", name: "TypeScript" },
+    { icon: "https://cdn.worldvectorlogo.com/logos/tailwindcss.svg", name: "Tailwind CSS" },
+    { icon: "https://app.supabase.com/img/supabase-logo.svg", name: "Supabase" },
+    { icon: "https://ui.shadcn.com/favicon.ico", name: "shadcn/ui" },
+   ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-background">
+      <Navbar />
+      
+      <Hero
+        title={landing.hero.title}
+        description={landing.hero.description}
+        registerButtonText={landing.hero.buttons.register}
+        isLoaded={isLoaded}
+      />
+
+      <Features 
+        features={landing.features}
+        isLoaded={isLoaded}
+      />
+
+      <Testimonials testimonials={testimonials} />
+
+      <TechStack technologies={technologies} />
+    </div>
+  );
 };
+
 export default Landing;
