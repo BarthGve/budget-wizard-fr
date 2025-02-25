@@ -1,10 +1,11 @@
 
 import { Button } from "@/components/ui/button";
-import { LogIn, UserPlus, Wallet, Users, Clock, Target, Shield } from "lucide-react";
+import { LogIn, UserPlus, Wallet, ChartBar, Target, Shield, TrendingUp, TrendingDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { appConfig } from "@/config/app.config";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/layout/Navbar";
+import { Card } from "@/components/ui/card";
 
 const Landing = () => {
   const { landing } = appConfig;
@@ -66,15 +67,45 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* Stats Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">{landing.stats.title}</h2>
+          <p className="text-lg text-muted-foreground">{landing.stats.description}</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {landing.stats.items.map((stat, index) => (
+            <Card key={index} className={`p-6 transition-all duration-500 transform hover:-translate-y-1 ${
+              isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+            }`} style={{ transitionDelay: `${700 + index * 100}ms` }}>
+              <div className="text-center">
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">{stat.label}</h3>
+                <p className="text-3xl font-bold mb-2">{stat.value}</p>
+                <div className={`inline-flex items-center ${
+                  stat.trend.startsWith('+') ? 'text-green-500' : 'text-red-500'
+                }`}>
+                  {stat.trend.startsWith('+') ? (
+                    <TrendingUp className="w-4 h-4 mr-1" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4 mr-1" />
+                  )}
+                  {stat.trend}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+
       {/* Features Section */}
       <div className="container mx-auto px-4 py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
           {[
             { icon: Wallet, index: 0 },
-            { icon: Users, index: 1 },
-            { icon: Clock, index: 2 },
-            { icon: Target, index: 3 }
+            { icon: ChartBar, index: 1 },
+            { icon: Target, index: 2 },
+            { icon: Shield, index: 3 }
           ].map(({ icon: Icon, index }) => (
             <div 
               key={index}
@@ -84,7 +115,7 @@ const Landing = () => {
                 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
               `}
               style={{
-                transitionDelay: `${700 + index * 100}ms`
+                transitionDelay: `${1100 + index * 100}ms`
               }}
             >
               <Icon className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform duration-500" />
@@ -101,7 +132,7 @@ const Landing = () => {
             transform transition-all duration-700 hover:shadow-xl
             ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
           `}
-          style={{ transitionDelay: '1100ms' }}
+          style={{ transitionDelay: '1500ms' }}
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">

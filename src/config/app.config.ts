@@ -6,7 +6,7 @@ export const appConfig = {
   landing: {
     hero: {
       title: 'Maitrisez vos dépenses, libérez vos ambitions',
-      description: 'Prenez les commandes de votre budget avec BudgetWizard. Renseignez vos revenus réguliers, maîtrisez vos charges et atteignez vos objectifs d’épargne sans stress.',
+      description: 'Prenez les commandes de votre budget avec BudgetWizard. Un tableau de bord intelligent pour gérer vos revenus, charges, crédits et objectifs d'épargne en toute simplicité.',
       buttons: {
         login: 'Se connecter',
         register: 'S\'inscrire',
@@ -14,22 +14,31 @@ export const appConfig = {
     },
     features: [
       {
-        title: 'Tableau de bord intelligent',
-        description: 'Gardez une vue claire et précise de toutes vos dépenses partagées en temps réel',
+        title: 'Revenus et dépenses',
+        description: 'Suivez vos revenus et charges mensuelles avec des graphiques clairs et intuitifs',
       },
       {
-        title: 'Budget collaboratif',
-        description: 'Gérez votre budget à plusieurs. Idéal pour couples, colocations ou groupes d’amis !',
+        title: 'Suivi des crédits',
+        description: 'Gérez vos crédits et visualisez leur impact sur votre budget mensuel',
       },
       {
-        title: 'Dépenses récurrentes',
-        description: 'Automatisez le suivi de vos charges diverses pour plus de tranquillité',
+        title: 'Objectifs d\'épargne',
+        description: 'Définissez vos objectifs et suivez votre progression en temps réel',
       },
       {
-        title: 'Fixez et atteignez vos objectifs d’épargne',
-        description: 'Définissez un objectif clair (voyage, achat immobilier, investissement) Budget Wizard vous donne le cap.',
+        title: 'Vue d\'ensemble détaillée',
+        description: 'Accédez à une répartition claire de vos dépenses par catégorie',
       },
     ],
+    stats: {
+      title: 'Une vue d\'ensemble claire et précise',
+      description: 'Prenez les bonnes décisions financières grâce à des statistiques détaillées',
+      items: [
+        { label: 'Revenus moyens', value: '4500 €', trend: '+5%' },
+        { label: 'Charges mensuelles', value: '850 €', trend: '-2%' },
+        { label: 'Épargne mensuelle', value: '300 €', trend: '+10%' },
+      ],
+    },
     security: {
       title: 'Sécurité maximale',
       description: 'Vos données financières sont protégées avec les plus hauts standards de sécurité',
@@ -37,4 +46,3 @@ export const appConfig = {
     },
   },
 };
-
