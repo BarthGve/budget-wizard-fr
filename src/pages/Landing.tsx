@@ -1,15 +1,12 @@
-
-import { Button } from "@/components/ui/button";
-import { LogIn, UserPlus, Wallet, ChartBar, Target, Shield, Star } from "lucide-react";
-import { Link } from "react-router-dom";
-import { appConfig } from "@/config/app.config";
 import { useEffect, useState, useRef } from "react";
-import Navbar from "@/components/layout/Navbar";
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { appConfig } from "@/config/app.config";
+import Navbar from "@/components/layout/Navbar";
 import * as THREE from "three";
+import { Hero } from "@/components/landing/Hero";
+import { Features } from "@/components/landing/Features";
+import { Testimonials } from "@/components/landing/Testimonials";
+import { TechStack } from "@/components/landing/TechStack";
 
 const Landing = () => {
   const { landing } = appConfig;
@@ -68,174 +65,34 @@ const Landing = () => {
     }
   };
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }).map((_, index) => (
-      <Star
-        key={index}
-        className={`h-4 w-4 ${
-          index < rating 
-            ? "fill-yellow-400 text-yellow-400" 
-            : "text-gray-300"
-        }`}
-      />
-    ));
-  };
+  const technologies = [
+    { icon: "/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png", name: "Lovable AI" },
+    { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", name: "React" },
+    { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg", name: "TypeScript" },
+    { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-plain.svg", name: "Tailwind CSS" },
+    { icon: "https://raw.githubusercontent.com/supabase/supabase/master/packages/common/assets/images/supabase-logo.svg", name: "Supabase" },
+    { icon: "https://www.shadcdn.com/favicon.ico", name: "shadcn/ui" },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-background">
       <Navbar />
       
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 pt-32 pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className={`space-y-8 transform transition-all duration-700 ${
-            isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-          }`}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
-              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                {landing.hero.title}
-              </span>
-            </h1>
-            <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-              {landing.hero.description}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button
-                size="lg"
-                className="group text-lg px-8 py-6 shadow-lg hover:shadow-primary/20"
-                asChild
-              >
-                <Link to="/register">
-                  <UserPlus className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
-                  {landing.hero.buttons.register}
-                </Link>
-              </Button>
-            </div>
-          </div>
+      <Hero
+        title={landing.hero.title}
+        description={landing.hero.description}
+        registerButtonText={landing.hero.buttons.register}
+        isLoaded={isLoaded}
+      />
 
-          <div className={`transform transition-all duration-1000 ${
-            isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
-          }`}>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-3xl blur-3xl" />
-              <img
-                src="/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png"
-                alt="Budget Wizard"
-                className="relative w-full h-auto max-w-2xl mx-auto transform hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      <Features 
+        features={landing.features}
+        isLoaded={isLoaded}
+      />
 
-      {/* Features Grid */}
-      <div className="container mx-auto px-4 py-24">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Découvrez pourquoi nous sommes{' '}
-            <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              les meilleurs
-            </span>
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Une solution complète pour gérer vos finances personnelles avec simplicité et efficacité
-          </p>
-        </div>
+      <Testimonials testimonials={testimonials} />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {[
-            { icon: Wallet, title: landing.features[0].title, description: landing.features[0].description },
-            { icon: ChartBar, title: landing.features[1].title, description: landing.features[1].description },
-            { icon: Target, title: landing.features[2].title, description: landing.features[2].description },
-            { icon: Shield, title: landing.features[3].title, description: landing.features[3].description }
-          ].map(({ icon: Icon, title, description }, index) => (
-            <div
-              key={index}
-              className={`group p-6 rounded-2xl bg-white/5 hover:bg-primary/5 border border-primary/10 
-                transition-all duration-500 hover:shadow-lg transform hover:-translate-y-1
-                ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
-              style={{ transitionDelay: `${800 + index * 100}ms` }}
-            >
-              <div className="flex flex-col items-start gap-4">
-                <div className="p-3 rounded-xl bg-primary/10 text-primary">
-                  <Icon className="w-6 h-6 group-hover:scale-110 transition-transform duration-500" />
-                </div>
-                <h3 className="text-xl font-semibold">{title}</h3>
-                <p className="text-muted-foreground">{description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Testimonials Section */}
-      <div className="container mx-auto px-4 py-24">
-        <div className="relative p-8 rounded-3xl overflow-hidden bg-gradient-to-b from-primary/5 to-transparent border border-primary/20">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-20" />
-          <div className="relative">
-            <h2 className="text-3xl font-bold text-center mb-12">
-              Ce que nos utilisateurs disent de nous
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial) => (
-                <div
-                  key={testimonial.id}
-                  className="bg-white/5 p-6 rounded-xl backdrop-blur-sm border border-primary/10"
-                >
-                  <div className="flex items-start gap-4 mb-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={testimonial.profile.avatar_url} />
-                      <AvatarFallback>
-                        {testimonial.profile.full_name?.[0]?.toUpperCase() || "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold">
-                        {testimonial.profile.full_name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {format(new Date(testimonial.created_at), 'PP', { locale: fr })}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex space-x-1 mb-3">
-                    {renderStars(testimonial.rating)}
-                  </div>
-                  <p className="text-lg font-medium mb-2">{testimonial.title}</p>
-                  <p className="text-muted-foreground">
-                    {testimonial.content}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tech Stack Footer */}
-      <div className="py-12 bg-gray-50 dark:bg-gray-900/50 overflow-hidden">
-        <div className="relative">
-          <div className="flex space-x-12 animate-marquee">
-            {[
-              { icon: "/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png", name: "Lovable AI" },
-              { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", name: "React" },
-              { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg", name: "TypeScript" },
-              { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-plain.svg", name: "Tailwind CSS" },
-              { icon: "https://raw.githubusercontent.com/supabase/supabase/master/packages/common/assets/images/supabase-logo.svg", name: "Supabase" },
-              { icon: "https://www.shadcdn.com/favicon.ico", name: "shadcn/ui" },
-            ].map((tech, index) => (
-              <div key={index} className="flex flex-col items-center space-y-2">
-                <img
-                  src={tech.icon}
-                  alt={tech.name}
-                  className="h-12 w-12 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all"
-                />
-                <span className="text-sm text-gray-500">{tech.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <TechStack technologies={technologies} />
     </div>
   );
 };
