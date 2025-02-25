@@ -14,7 +14,7 @@ export const TechStack = ({ technologies }: TechStackProps) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="py-16 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900/80 dark:to-gray-900">
+    <div className="py-4 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900/80 dark:to-gray-900">
     <div className="container mx-auto px-4">
       {/* Technologies */}
       <div className="mb-12">
