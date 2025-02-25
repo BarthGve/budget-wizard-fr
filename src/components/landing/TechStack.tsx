@@ -18,7 +18,9 @@ export const TechStack = ({ technologies }: TechStackProps) => {
     <div className="container mx-auto px-4">
       {/* Technologies */}
       <div className="mb-6">
-        <h3 className="text-sm font-medium text-gray-400 dark:text-gray-500 mb-6 text-center">🚀 Propulsé par</h3>
+      <h3 className="text-sm font-medium text-gray-400 dark:text-gray-500 mb-6 text-center">
+  <span className="inline-block grayscale opacity-60">🚀</span> Propulsé par
+</h3>
         <div className="flex flex-wrap gap-8 justify-center max-w-3xl mx-auto">
           {technologies.map((tech, index) => (
             <div key={index} className="group flex flex-col items-center transition-all duration-300">
