@@ -17,7 +17,7 @@ export const TechStack = ({ technologies }: TechStackProps) => {
     <div className="py-4 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900/80 dark:to-gray-900">
     <div className="container mx-auto px-4">
       {/* Technologies */}
-      <div className="mb-12">
+      <div className="mb-6">
         <h3 className="text-sm font-medium text-gray-400 dark:text-gray-500 mb-6 text-center">🚀 Propulsé par</h3>
         <div className="flex flex-wrap gap-8 justify-center max-w-3xl mx-auto">
           {technologies.map((tech, index) => (
