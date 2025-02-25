@@ -1,6 +1,5 @@
-
 import { Button } from "@/components/ui/button";
-import { LogIn, UserPlus, Wallet, Users, Clock, Shield } from "lucide-react";
+import { LogIn, UserPlus, Wallet, Users, Clock, Target } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Landing = () => {
@@ -44,7 +43,7 @@ const Landing = () => {
       {/* Features Section */}
       <div className="container mx-auto px-4 py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
           <div className="group p-6 rounded-2xl bg-card hover:bg-primary/5 transition-colors border">
             <Wallet className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
             <h3 className="text-xl font-semibold mb-2">Suivi des dépenses</h3>
@@ -66,6 +65,14 @@ const Landing = () => {
             <h3 className="text-xl font-semibold mb-2">Dépenses récurrentes</h3>
             <p className="text-muted-foreground">
               Automatisez le suivi de vos charges mensuelles pour plus de tranquillité
+            </p>
+          </div>
+
+          <div className="group p-6 rounded-2xl bg-card hover:bg-primary/5 transition-colors border">
+            <Target className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
+            <h3 className="text-xl font-semibold mb-2">Objectifs d'épargne</h3>
+            <p className="text-muted-foreground">
+              Fixez et suivez vos objectifs d'épargne en toute simplicité avec des outils visuels intuitifs
             </p>
           </div>
         </div>
