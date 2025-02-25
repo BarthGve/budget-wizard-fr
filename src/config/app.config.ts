@@ -5,8 +5,8 @@ export const appConfig = {
   initiales: 'BW',
   landing: {
     hero: {
-      title: 'La magie de la gestion budgétaire',
-      description: 'Simplifiez la gestion de vos dépenses en groupe. Suivez vos contributions, partagez les coûts et gardez le contrôle de vos finances partagées.',
+      title: 'Maitrisez vos dépenses, libérez vos ambitions',
+      description: 'Prenez le contrôle total de votre budget avec BudgetWizard. Gérez vos revenus, vos charges, votre épargne et vos projets en toute simplicité.💡 Une interface fluide, des outils intelligents et une gestion financière enfin claire et efficace.',
       buttons: {
         login: 'Se connecter',
         register: 'S\'inscrire',
@@ -14,20 +14,20 @@ export const appConfig = {
     },
     features: [
       {
-        title: 'Suivi des dépenses',
+        title: 'Tableau de bord intelligent',
         description: 'Gardez une vue claire et précise de toutes vos dépenses partagées en temps réel',
       },
       {
-        title: 'Gestion des contributeurs',
-        description: 'Ajoutez et gérez facilement les participants avec une interface intuitive',
+        title: 'Budget collaboratif',
+        description: 'Gérez vos finances à plusieurs, répartissez les charges et suivez les contributions en temps réel. Idéal pour couples, colocations ou groupes d’amis !',
       },
       {
         title: 'Dépenses récurrentes',
-        description: 'Automatisez le suivi de vos charges mensuelles pour plus de tranquillité',
+        description: 'Automatisez le suivi de vos charges diverses pour plus de tranquillité',
       },
       {
-        title: 'Objectifs d\'épargne',
-        description: 'Fixez et suivez vos objectifs d\'épargne en toute simplicité avec des outils visuels intuitifs',
+        title: 'Fixez et atteignez vos objectifs d’épargne',
+        description: 'Définissez un objectif clair (voyage, achat immobilier, investissement) et BudgetWise vous aide à l’atteindre avec un plan d’épargne personnalisé.',
       },
     ],
     security: {
