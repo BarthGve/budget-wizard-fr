@@ -1,18 +1,40 @@
-
 import { Button } from "@/components/ui/button";
 import { LogIn, UserPlus, Wallet, ChartBar, Target, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { appConfig } from "@/config/app.config";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/layout/Navbar";
+import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 const Landing = () => {
   const { landing } = appConfig;
   const [isLoaded, setIsLoaded] = useState(false);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
 
   useEffect(() => {
     setIsLoaded(true);
+    fetchTestimonials();
   }, []);
+
+  const fetchTestimonials = async () => {
+    const { data, error } = await supabase
+      .from('feedbacks')
+      .select(`
+        *,
+        profile:profiles(full_name, avatar_url)
+      `)
+      .gte('rating', 4)
+      .eq('status', 'in_progress')
+      .order('created_at', { ascending: false })
+      .limit(3);
+
+    if (!error && data) {
+      setTestimonials(data);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-background">
@@ -114,28 +136,43 @@ const Landing = () => {
         </div>
       </div>
 
-      {/* Stats Section with Gradient Border */}
+      {/* Testimonials Section */}
       <div className="container mx-auto px-4 py-24">
         <div className="relative p-8 rounded-3xl overflow-hidden bg-gradient-to-b from-primary/5 to-transparent border border-primary/20">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-20" />
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8">
-            {landing.stats.items.map((stat, index) => (
-              <div 
-                key={index}
-                className={`text-center transform transition-all duration-700 ${
-                  isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                }`}
-                style={{ transitionDelay: `${1200 + index * 100}ms` }}
-              >
-                <p className="text-4xl font-bold mb-2">{stat.value}</p>
-                <p className="text-lg text-muted-foreground mb-2">{stat.label}</p>
-                <div className={`inline-flex items-center ${
-                  stat.trend.startsWith('+') ? 'text-green-500' : 'text-red-500'
-                }`}>
-                  {stat.trend}
+          <div className="relative">
+            <h2 className="text-3xl font-bold text-center mb-12">
+              Ce que nos utilisateurs disent de nous
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.id}
+                  className="bg-white/5 p-6 rounded-xl backdrop-blur-sm border border-primary/10"
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={testimonial.profile.avatar_url} />
+                      <AvatarFallback>
+                        {testimonial.profile.full_name?.[0]?.toUpperCase() || "?"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold">
+                        {testimonial.profile.full_name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {format(new Date(testimonial.created_at), 'PP', { locale: fr })}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-lg font-medium mb-2">{testimonial.title}</p>
+                  <p className="text-muted-foreground">
+                    {testimonial.content}
+                  </p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
