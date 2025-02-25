@@ -27,7 +27,7 @@ export const appConfig = {
       },
       {
         title: 'Fixez et atteignez vos objectifs d’épargne',
-        description: 'Définissez un objectif clair (voyage, achat immobilier, investissement) et BudgetWise vous aide à l’atteindre avec un plan d’épargne personnalisé.',
+        description: 'Définissez un objectif clair (voyage, achat immobilier, investissement) Budget Wizard vous donne le cap.',
       },
     ],
     security: {
