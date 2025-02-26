@@ -4,6 +4,7 @@ import { fr } from "date-fns/locale";
 import { BugOff, CheckCircle2, Edit, Sparkles, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import ReactMarkdown from "react-markdown";
 
 interface ChangelogEntry {
   id: string;
@@ -104,7 +105,9 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
                   </div>
                 )}
               </div>
-              <p className="text-muted-foreground">{entry.description}</p>
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <ReactMarkdown>{entry.description}</ReactMarkdown>
+              </div>
             </div>
           </div>
         ))}
@@ -112,3 +115,4 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
     </div>
   );
 };
+

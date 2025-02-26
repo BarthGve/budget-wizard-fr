@@ -1,4 +1,5 @@
 
+import React from "react";
 import {
   FormControl,
   FormField,
@@ -58,6 +59,7 @@ export function DateField({ form }: DateFieldProps) {
                 onSelect={field.onChange}
                 initialFocus
                 locale={fr}
+                className="rounded-md border"
               />
             </PopoverContent>
           </Popover>
