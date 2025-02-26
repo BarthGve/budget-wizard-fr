@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -62,31 +63,33 @@
   }
 }
 
+@layer components {
+  .page-transition {
+    @apply animate-fade-up;
+  }
+
+  .sidebar-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .card-hover {
+    @apply transition-transform duration-300 active:scale-95 hover:scale-[1.02];
+  }
+
+  .input-transition {
+    @apply transition-all duration-200;
+  }
+
+  .button-hover {
+    @apply hover:opacity-90 active:scale-95 transition-all duration-200;
+  }
+}
+
 /* Optimisations tactiles */
 @supports (-webkit-touch-callout: none) {
   .touch-scroll {
     -webkit-overflow-scrolling: touch;
   }
-}
-
-.page-transition {
-  @apply animate-fade-up;
-}
-
-.sidebar-transition {
-  @apply transition-all duration-300 ease-in-out;
-}
-
-.card-hover {
-  @apply transition-transform duration-300 active:scale-95 hover:scale-[1.02];
-}
-
-.input-transition {
-  @apply transition-all duration-200;
-}
-
-.button-hover {
-  @apply hover:opacity-90 active:scale-95 transition-all duration-200;
 }
 
 /* Amélioration du focus pour les appareils tactiles */
@@ -121,3 +124,4 @@
   animation: marquee 20s linear infinite;
   min-width: max-content;
 }
+
