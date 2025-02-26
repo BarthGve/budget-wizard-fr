@@ -1,3 +1,4 @@
+
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -29,41 +30,37 @@ interface NavigationMenuProps {
   isAdmin: boolean;
 }
 
-// Définir les menus en dehors du composant
-const adminMenu: MenuItem[] = [
-  { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "^/admin$" },
-  { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "^/admin/feedbacks$" },
-  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog$" }
-];
-
-const userMenu: MenuItem[] = [
-  { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
-  { title: "Revenus", icon: Banknote, path: "/contributors" },
-  { title: "Dépenses", icon: ShoppingBasket, path: "/expenses" },
-  { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
-  { title: "Crédits", icon: CreditCard, path: "/credits" },
-  { title: "Épargne", icon: PiggyBank, path: "/savings" },
-  { title: "Bourse", icon: TrendingUp, path: "/stocks" },
-  { title: "Immobilier", icon: Home, path: "/properties" },
-];
-
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
   const { canAccessPage } = usePagePermissions();
 
-  const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
+  const adminMenu: MenuItem[] = [
+    { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "/admin$" },
+    { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "/admin/feedbacks" },
+    { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "/admin/changelog" }
+  ];
+  
+  const userMenu: MenuItem[] = [
+    { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
+    { title: "Revenus", icon: Banknote, path: "/contributors" },
+    { title: "Dépenses", icon: ShoppingBasket, path: "/expenses" },
+    { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
+    { title: "Crédits", icon: CreditCard, path: "/credits" },
+    { title: "Épargne", icon: PiggyBank, path: "/savings" },
+    { title: "Bourse", icon: TrendingUp, path: "/stocks" },
+    { title: "Immobilier", icon: Home, path: "/properties" },
+  ];
+  
+  const menuItems = isAdmin ? [...adminMenu] : userMenu.filter(item => canAccessPage(item.path));
 
   return (
     <nav className="flex-1 p-4">
       <ul className="space-y-2">
         {menuItems.map((item) => {
-          const isActive = item.matchPath
+          const isActive = item.matchPath 
             ? new RegExp(item.matchPath).test(location.pathname)
             : location.pathname === item.path;
-
-          console.log(`Checking path: ${location.pathname} against ${item.matchPath || item.path}`);
-          console.log(`Is active: ${isActive}`);
-
+          
           return (
             <li key={item.path}>
               <NavLink
@@ -82,7 +79,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
           );
         })}
       </ul>
-
+      
       {!isAdmin && (
         <div className={cn(
           "mt-4 border-t border-gray-200 pt-4",
