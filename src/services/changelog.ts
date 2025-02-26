@@ -27,7 +27,7 @@ export async function createChangelogEntry(values: FormData) {
 }
 
 export async function updateChangelogEntry(id: string, values: FormData) {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("changelog_entries")
     .update({
       title: values.title,
@@ -36,9 +36,12 @@ export async function updateChangelogEntry(id: string, values: FormData) {
       type: values.type,
       date: values.date.toISOString(),
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select()
+    .single();
 
   if (error) throw error;
+  return data;
 }
 
 export async function deleteChangelogEntry(id: string) {

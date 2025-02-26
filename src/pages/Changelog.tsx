@@ -1,5 +1,5 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Search } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
@@ -33,10 +33,23 @@ const Changelog = () => {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<any>(null);
+  const queryClient = useQueryClient();
 
-  const { data: entries = [], isLoading, refetch } = useQuery({
+  const { data: entries = [], isLoading } = useQuery({
     queryKey: ["changelog"],
     queryFn: fetchChangelogEntries,
+  });
+
+  const { mutate: deleteEntry } = useMutation({
+    mutationFn: deleteChangelogEntry,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["changelog"] });
+      toast.success("Entrée supprimée avec succès");
+    },
+    onError: (error) => {
+      console.error("Error deleting changelog entry:", error);
+      toast.error("Une erreur est survenue");
+    },
   });
 
   useEffect(() => {
@@ -50,7 +63,7 @@ const Changelog = () => {
           table: "changelog_entries",
         },
         () => {
-          void refetch();
+          void queryClient.invalidateQueries({ queryKey: ["changelog"] });
         }
       )
       .subscribe();
@@ -58,7 +71,7 @@ const Changelog = () => {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [refetch]);
+  }, [queryClient]);
 
   const filteredEntries = entries.filter((entry) => {
     const matchesSearch = search.toLowerCase() === "" 
@@ -79,14 +92,7 @@ const Changelog = () => {
   const handleDelete = async (entryId: string) => {
     const confirmed = window.confirm("Êtes-vous sûr de vouloir supprimer cette entrée ?");
     if (!confirmed) return;
-
-    try {
-      await deleteChangelogEntry(entryId);
-      toast.success("Entrée supprimée avec succès");
-    } catch (error) {
-      console.error("Error deleting changelog entry:", error);
-      toast.error("Une erreur est survenue");
-    }
+    deleteEntry(entryId);
   };
 
   const content = (
