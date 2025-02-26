@@ -16,7 +16,7 @@ export const TechStack = ({ technologies }: TechStackProps) => {
   return (
     <div className="py-4 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900/80 dark:to-gray-900">
     <div className="container mx-auto px-4">
-      {/* Technologies */}
+      {/* Technologies employées */}
       <div className="mb-6">
       <h3 className="text-sm font-medium text-gray-400 dark:text-gray-500 mb-6 text-center">
   <span className="inline-block grayscale opacity-60">🚀</span> Propulsé par
@@ -46,7 +46,7 @@ export const TechStack = ({ technologies }: TechStackProps) => {
       <div className="text-center">
         <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
           <span className="font-medium">{appConfig.name}</span>
-          <span className="text-xs bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded-full">v{appConfig.version}</span>
+          <span className="text-xs bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded-full">{appConfig.version}</span>
           <span>© {currentYear}</span>
         </p>
       </div>

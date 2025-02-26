@@ -33,6 +33,39 @@ export type Database = {
         }
         Relationships: []
       }
+      changelog_entries: {
+        Row: {
+          created_at: string
+          date: string
+          description: string
+          id: string
+          title: string
+          type: Database["public"]["Enums"]["changelog_entry_type"]
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          description: string
+          id?: string
+          title: string
+          type: Database["public"]["Enums"]["changelog_entry_type"]
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          title?: string
+          type?: Database["public"]["Enums"]["changelog_entry_type"]
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       contributors: {
         Row: {
           created_at: string
@@ -885,6 +918,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      changelog_entry_type: "new" | "improvement" | "bugfix"
       credit_status: "actif" | "remboursé" | "dépassé"
       feedback_status: "pending" | "in_progress" | "completed"
       mode_planification_type: "par_date" | "par_mensualite"

@@ -23,6 +23,7 @@ import Credits from "./pages/Credits";
 import Expenses from "./pages/Expenses";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Changelog from "./pages/Changelog";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/changelog" element={<Changelog />} />
             
             {/* Routes protégées pour les utilisateurs normaux */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -56,6 +58,7 @@ const App = () => (
             {/* Routes protégées pour les admins */}
             <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
             <Route path="/admin/feedbacks" element={<ProtectedRoute requireAdmin><AdminFeedbacks /></ProtectedRoute>} />
+            <Route path="/admin/changelog" element={<ProtectedRoute requireAdmin><Changelog /></ProtectedRoute>} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>

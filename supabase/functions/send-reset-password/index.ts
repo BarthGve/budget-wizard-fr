@@ -30,7 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
     resetUrl.searchParams.set("token", token);
 
     const emailResponse = await resend.emails.send({
-      from: "Budget Wizard <no-reply@vision2tech.fr>",
+      from: "Budget Wizard <no-reply@budgetwizard.fr>",
       to: [email],
       subject: "Réinitialisation de votre mot de passe",
       html: `

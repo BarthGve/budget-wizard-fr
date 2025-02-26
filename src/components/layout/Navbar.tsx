@@ -18,7 +18,10 @@ const Navbar = () => {
             <span className="font-semibold text-lg">{appConfig.name}</span>
           </Link>
           
-          <div className="flex justify-center w-32">
+          <div className="flex items-center gap-4">
+            <Link to="/changelog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Changelog
+            </Link>
             <Link to="/login">
               <Button size="sm" variant="ghost" className="gap-2">
                 <LogIn className="w-4 h-4" />
