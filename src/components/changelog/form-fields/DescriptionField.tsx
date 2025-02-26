@@ -19,9 +19,6 @@ interface DescriptionFieldProps {
 export function DescriptionField({ form }: DescriptionFieldProps) {
   const description = form.watch("description");
 
-  // Convertit les retours à la ligne simples en doubles pour le rendu Markdown
-  const formattedDescription = description?.replace(/\n/g, '\n\n');
-
   return (
     <FormField
       control={form.control}
@@ -41,8 +38,8 @@ export function DescriptionField({ form }: DescriptionFieldProps) {
               />
             </FormControl>
             {description && (
-              <div className="p-4 border rounded-md bg-muted/50 prose prose-sm dark:prose-invert max-w-none">
-                <ReactMarkdown>{formattedDescription}</ReactMarkdown>
+              <div className="p-4 border rounded-md bg-muted/50">
+                <ReactMarkdown>{description}</ReactMarkdown>
               </div>
             )}
           </div>
