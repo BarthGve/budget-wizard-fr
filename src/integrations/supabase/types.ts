@@ -42,6 +42,7 @@ export type Database = {
           title: string
           type: Database["public"]["Enums"]["changelog_entry_type"]
           updated_at: string
+          version: string
         }
         Insert: {
           created_at?: string
@@ -51,6 +52,7 @@ export type Database = {
           title: string
           type: Database["public"]["Enums"]["changelog_entry_type"]
           updated_at?: string
+          version?: string
         }
         Update: {
           created_at?: string
@@ -60,6 +62,7 @@ export type Database = {
           title?: string
           type?: Database["public"]["Enums"]["changelog_entry_type"]
           updated_at?: string
+          version?: string
         }
         Relationships: []
       }

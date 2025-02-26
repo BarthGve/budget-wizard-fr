@@ -227,7 +227,6 @@ export function ChangelogEntryForm({
                     onSelect={field.onChange}
                     initialFocus
                     locale={fr}
-                    disabled={(date) => false}
                   />
                 </PopoverContent>
               </Popover>
