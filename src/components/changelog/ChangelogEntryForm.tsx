@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TitleField } from "./form-fields/TitleField";
 import { VersionField } from "./form-fields/VersionField";
-import { DescriptionField } from "./form-fields/DescriptionField";
+import { DescriptionField } from "./form-fields/MarkdownTextarea";
 import { TypeField } from "./form-fields/TypeField";
 import { DateField } from "./form-fields/DateField";
 import { ChangelogEntry } from "./types";
@@ -22,7 +22,11 @@ export function ChangelogEntryForm({
 }: ChangelogEntryFormProps) {
   const { form, onSubmit, onCancel: handleCancel } = useChangelogForm({
     initialData,
-    onSuccess,
+    onSuccess: () => {
+      onSuccess();
+      // Recharger la page après le succès
+      window.location.reload();
+    },
     onCancel,
   });
 
