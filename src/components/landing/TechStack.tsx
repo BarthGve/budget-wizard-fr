@@ -16,7 +16,7 @@ export const TechStack = ({ technologies }: TechStackProps) => {
   return (
     <div className="py-4 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900/80 dark:to-gray-900">
     <div className="container mx-auto px-4">
-      {/* Technologies */}
+      {/* Technologies employées */}
       <div className="mb-6">
       <h3 className="text-sm font-medium text-gray-400 dark:text-gray-500 mb-6 text-center">
   <span className="inline-block grayscale opacity-60">🚀</span> Propulsé par
