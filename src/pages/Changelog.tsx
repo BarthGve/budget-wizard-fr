@@ -96,7 +96,7 @@ const Changelog = () => {
   };
 
   const content = (
-    <div className={isAdmin ? "" : "min-h-screen bg-background"}>
+    <div className={`${isAdmin ? "" : "min-h-screen bg-gradient-to-br from-primary/5 via-background to-background"}`}>
       {!isAdmin && <Navbar />}
       <div className={`container mx-auto px-4 py-8 ${!isAdmin ? "pt-32" : ""}`}>
         <div className="flex justify-between items-center mb-8">
@@ -188,3 +188,4 @@ const Changelog = () => {
 };
 
 export default Changelog;
+
