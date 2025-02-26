@@ -17,8 +17,7 @@ const ResetPassword = () => {
 
   useEffect(() => {
     const hash = window.location.hash;
-    // Vérifier que le hash contient un token de réinitialisation
-    if (!hash || !hash.includes("type=recovery")) {
+    if (!hash || !hash.includes("access_token=")) {
       toast.error("Lien de réinitialisation invalide");
       navigate("/login");
     }
