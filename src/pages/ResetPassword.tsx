@@ -16,16 +16,12 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-    // Vérifier que l'utilisateur arrive bien avec un token de réinitialisation
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error("Session invalide ou expirée");
-        navigate("/login");
-      }
-    };
-
-    checkSession();
+    const hash = window.location.hash;
+    // Vérifier que le hash contient un token de réinitialisation
+    if (!hash || !hash.includes("type=recovery")) {
+      toast.error("Lien de réinitialisation invalide");
+      navigate("/login");
+    }
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
