@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { ChangelogEntryForm } from "@/components/changelog/ChangelogEntryForm";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const Changelog = () => {
   const { isAdmin } = usePagePermissions();
@@ -30,7 +31,7 @@ const Changelog = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<any>(null);
 
-  const { data: entries = [], isLoading } = useQuery({
+  const { data: entries = [], isLoading, refetch } = useQuery({
     queryKey: ["changelog"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -64,7 +65,7 @@ const Changelog = () => {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, []);
+  }, [refetch]);
 
   const filteredEntries = entries.filter((entry) => {
     const matchesSearch = search.toLowerCase() === "" 

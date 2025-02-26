@@ -32,6 +32,8 @@ const formSchema = z.object({
   date: z.string().optional(),
 });
 
+type FormData = z.infer<typeof formSchema>;
+
 interface ChangelogEntryFormProps {
   initialData?: {
     id: string;
@@ -49,7 +51,7 @@ export function ChangelogEntryForm({
   onSuccess,
   onCancel,
 }: ChangelogEntryFormProps) {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       title: "",
@@ -59,12 +61,17 @@ export function ChangelogEntryForm({
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormData) {
     try {
       if (initialData?.id) {
         const { error } = await supabase
           .from("changelog_entries")
-          .update(values)
+          .update({
+            title: values.title,
+            description: values.description,
+            type: values.type,
+            date: values.date,
+          })
           .eq("id", initialData.id);
 
         if (error) throw error;
@@ -72,7 +79,12 @@ export function ChangelogEntryForm({
       } else {
         const { error } = await supabase
           .from("changelog_entries")
-          .insert([values]);
+          .insert({
+            title: values.title,
+            description: values.description,
+            type: values.type,
+            date: values.date || new Date().toISOString(),
+          });
 
         if (error) throw error;
         toast.success("Entrée ajoutée avec succès");
