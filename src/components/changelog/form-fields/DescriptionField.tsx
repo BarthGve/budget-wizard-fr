@@ -20,7 +20,7 @@ export function DescriptionField({ form }: DescriptionFieldProps) {
   const description = form.watch("description");
 
 
-  console.log("Description value:", description);
+
 
   return (
     <FormField
