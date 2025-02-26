@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Search } from "lucide-react";
@@ -23,6 +24,7 @@ import { ChangelogEntryForm } from "@/components/changelog/ChangelogEntryForm";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 const Changelog = () => {
   const { isAdmin } = usePagePermissions();
@@ -99,10 +101,10 @@ const Changelog = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="container mx-auto px-4 py-8 pt-32">
+  const content = (
+    <div className={isAdmin ? "" : "min-h-screen bg-background"}>
+      {!isAdmin && <Navbar />}
+      <div className={`container mx-auto px-4 py-8 ${!isAdmin ? "pt-32" : ""}`}>
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold">Changelog</h1>
@@ -183,6 +185,13 @@ const Changelog = () => {
       </div>
     </div>
   );
+
+  if (isAdmin) {
+    return <DashboardLayout>{content}</DashboardLayout>;
+  }
+
+  return content;
 };
 
 export default Changelog;
+
