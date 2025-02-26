@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Search } from "lucide-react";
@@ -22,7 +23,7 @@ import {
 import { ChangelogEntryForm } from "@/components/changelog/ChangelogEntryForm";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { Navbar } from "@/components/ui/navbar";
+import Navbar from "@/components/layout/Navbar";
 
 const Changelog = () => {
   const { isAdmin } = usePagePermissions();
