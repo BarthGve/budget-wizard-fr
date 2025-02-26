@@ -16,6 +16,14 @@ import {
 import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { LucideIcon } from "lucide-react";
+
+interface MenuItem {
+  title: string;
+  icon: LucideIcon;
+  path: string;
+  matchPath?: string;
+}
 
 interface NavigationMenuProps {
   collapsed: boolean;
@@ -26,13 +34,13 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
   const { canAccessPage } = usePagePermissions();
 
-  const adminMenu = [
+  const adminMenu: MenuItem[] = [
     { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "/admin" },
     { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "/admin/feedbacks" },
     { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "/admin/changelog" }
   ];
   
-  const userMenu = [
+  const userMenu: MenuItem[] = [
     { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
     { title: "Revenus", icon: Banknote, path: "/contributors" },
     { title: "Dépenses", icon: ShoppingBasket, path: "/expenses" },
