@@ -31,11 +31,11 @@ interface NavigationMenuProps {
 
 // Définir les menus en dehors du composant
 const adminMenu: MenuItem[] = [
-  { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "/admin$" },
-  { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "/admin/feedbacks" },
-  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "/admin/changelog" }
+  { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "^/admin$" },
+  { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "^/admin/feedbacks$" },
+  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog$" }
 ];
-  
+
 const userMenu: MenuItem[] = [
   { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
   { title: "Revenus", icon: Banknote, path: "/contributors" },
@@ -57,10 +57,13 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     <nav className="flex-1 p-4">
       <ul className="space-y-2">
         {menuItems.map((item) => {
-          const isActive = item.matchPath 
+          const isActive = item.matchPath
             ? new RegExp(item.matchPath).test(location.pathname)
             : location.pathname === item.path;
-          
+
+          console.log(`Checking path: ${location.pathname} against ${item.matchPath || item.path}`);
+          console.log(`Is active: ${isActive}`);
+
           return (
             <li key={item.path}>
               <NavLink
@@ -79,7 +82,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
           );
         })}
       </ul>
-      
+
       {!isAdmin && (
         <div className={cn(
           "mt-4 border-t border-gray-200 pt-4",
@@ -91,4 +94,3 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     </nav>
   );
 };
-
