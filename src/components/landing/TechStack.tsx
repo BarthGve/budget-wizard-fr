@@ -46,7 +46,7 @@ export const TechStack = ({ technologies }: TechStackProps) => {
       <div className="text-center">
         <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
           <span className="font-medium">{appConfig.name}</span>
-          <span className="text-xs bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded-full">{appConfig.version}</span>
+          <span className="text-xs bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded-full">v{appConfig.version}</span>
           <span>© {currentYear}</span>
         </p>
       </div>
