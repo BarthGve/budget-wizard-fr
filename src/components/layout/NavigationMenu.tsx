@@ -18,7 +18,7 @@ import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { LucideIcon } from "lucide-react";
 
-interface MenuItem {
+export interface MenuItem {
   title: string;
   icon: LucideIcon;
   path: string;
@@ -34,10 +34,11 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
   const { canAccessPage } = usePagePermissions();
 
+  // Définir les menus à l'intérieur du composant pour éviter les problèmes de dépendances
   const adminMenu: MenuItem[] = [
     { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "/admin$" },
-    { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "/admin/feedbacks" },
-    { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "/admin/changelog" }
+    { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks" },
+    { title: "Changelog", icon: List, path: "/admin/changelog" }
   ];
   
   const userMenu: MenuItem[] = [
@@ -51,7 +52,9 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     { title: "Immobilier", icon: Home, path: "/properties" },
   ];
   
-  const menuItems = isAdmin ? [...adminMenu] : userMenu.filter(item => canAccessPage(item.path));
+  const menuItems = isAdmin 
+    ? adminMenu 
+    : userMenu.filter(item => canAccessPage(item.path));
 
   return (
     <nav className="flex-1 p-4">
@@ -65,11 +68,11 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
             <li key={item.path}>
               <NavLink
                 to={item.path}
-                className={({ isActive }) => cn(
+                className={({ isActive: linkIsActive }) => cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                   "hover:bg-primary/10",
                   collapsed && "justify-center",
-                  isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
+                  (item.matchPath ? isActive : linkIsActive) && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )}
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
