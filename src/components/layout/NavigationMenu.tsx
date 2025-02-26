@@ -49,8 +49,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     <nav className="flex-1 p-4">
       <ul className="space-y-2">
         {menuItems.map((item) => {
-          const isExactMatch = location.pathname === item.path;
-          const isActive = item.path === "/admin" ? isExactMatch : location.pathname.startsWith(item.path);
+          const isActive = location.pathname === item.path;
           
           return (
             <li key={item.path}>

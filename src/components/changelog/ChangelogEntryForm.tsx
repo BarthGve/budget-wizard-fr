@@ -20,8 +20,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
@@ -29,7 +39,9 @@ const formSchema = z.object({
   type: z.enum(["new", "improvement", "bugfix"], {
     required_error: "Veuillez sélectionner un type",
   }),
-  date: z.string().optional(),
+  date: z.date({
+    required_error: "Veuillez sélectionner une date",
+  }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -40,7 +52,7 @@ interface ChangelogEntryFormProps {
     title: string;
     description: string;
     type: "new" | "improvement" | "bugfix";
-    date?: string;
+    date: string;
   };
   onSuccess: () => void;
   onCancel: () => void;
@@ -53,12 +65,17 @@ export function ChangelogEntryForm({
 }: ChangelogEntryFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      title: "",
-      description: "",
-      type: "new",
-      date: new Date().toISOString(),
-    },
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          date: new Date(initialData.date),
+        }
+      : {
+          title: "",
+          description: "",
+          type: "new",
+          date: new Date(),
+        },
   });
 
   async function onSubmit(values: FormData) {
@@ -70,7 +87,7 @@ export function ChangelogEntryForm({
             title: values.title,
             description: values.description,
             type: values.type,
-            date: values.date,
+            date: values.date.toISOString(),
           })
           .eq("id", initialData.id);
 
@@ -83,7 +100,7 @@ export function ChangelogEntryForm({
             title: values.title,
             description: values.description,
             type: values.type,
-            date: values.date || new Date().toISOString(),
+            date: values.date.toISOString(),
           });
 
         if (error) throw error;
@@ -146,6 +163,46 @@ export function ChangelogEntryForm({
                   <SelectItem value="bugfix">Correction</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="date"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Date</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "d MMMM yyyy", { locale: fr })
+                      ) : (
+                        <span>Sélectionnez une date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    initialFocus
+                    locale={fr}
+                  />
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}
