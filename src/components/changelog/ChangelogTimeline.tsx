@@ -1,8 +1,9 @@
 
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { BugOff, CheckCircle2, Sparkles } from "lucide-react";
+import { BugOff, CheckCircle2, Edit, Sparkles, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ChangelogEntry {
   id: string;
@@ -14,6 +15,9 @@ interface ChangelogEntry {
 
 interface ChangelogTimelineProps {
   entries: ChangelogEntry[];
+  isAdmin?: boolean;
+  onEdit?: (entry: ChangelogEntry) => void;
+  onDelete?: (entryId: string) => void;
 }
 
 const getEntryTypeIcon = (type: ChangelogEntry["type"]) => {
@@ -60,7 +64,7 @@ const getEntryTypeLabel = (type: ChangelogEntry["type"]) => {
   }
 };
 
-export const ChangelogTimeline = ({ entries }: ChangelogTimelineProps) => {
+export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: ChangelogTimelineProps) => {
   return (
     <div className="relative">
       <div className="absolute left-8 top-3 bottom-3 w-px bg-border"></div>
@@ -79,6 +83,26 @@ export const ChangelogTimeline = ({ entries }: ChangelogTimelineProps) => {
                 <time className="text-sm text-muted-foreground">
                   {format(new Date(entry.date), "d MMMM yyyy", { locale: fr })}
                 </time>
+                {isAdmin && (
+                  <div className="ml-auto flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit?.(entry)}
+                      className="h-8 px-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete?.(entry.id)}
+                      className="h-8 px-2 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
               <p className="text-muted-foreground">{entry.description}</p>
             </div>
