@@ -11,6 +11,7 @@ import {
   Mailbox,
   CreditCard,
   ShoppingBasket,
+  List,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
@@ -27,7 +28,8 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
 
   const adminMenu = [
     { title: "Gestion utilisateurs", icon: Users, path: "/admin" },
-    { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks" }
+    { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks" },
+    { title: "Changelog", icon: List, path: "/admin/changelog" }
   ];
   
   const userMenu = [

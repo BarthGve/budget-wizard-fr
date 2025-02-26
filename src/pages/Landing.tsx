@@ -93,15 +93,6 @@ const Landing = () => {
       <Testimonials testimonials={testimonials} />
 
       <TechStack technologies={technologies} />
-      
-      <div className="py-4 text-center">
-        <a 
-          href="/changelog" 
-          className="text-sm text-muted-foreground hover:text-primary transition-colors"
-        >
-          Changelog
-        </a>
-      </div>
     </div>
   );
 };
