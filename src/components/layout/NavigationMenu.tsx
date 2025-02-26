@@ -27,9 +27,9 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const { canAccessPage } = usePagePermissions();
 
   const adminMenu = [
-    { title: "Gestion utilisateurs", icon: Users, path: "/admin" },
-    { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks" },
-    { title: "Changelog", icon: List, path: "/admin/changelog" }
+    { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "/admin" },
+    { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "/admin/feedbacks" },
+    { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "/admin/changelog" }
   ];
   
   const userMenu = [
@@ -49,7 +49,9 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     <nav className="flex-1 p-4">
       <ul className="space-y-2">
         {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = item.matchPath 
+            ? location.pathname === item.matchPath
+            : location.pathname === item.path;
           
           return (
             <li key={item.path}>

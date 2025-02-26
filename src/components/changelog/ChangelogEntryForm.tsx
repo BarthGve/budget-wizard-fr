@@ -12,7 +12,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -20,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +35,8 @@ import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
+  version: z.string().min(1, "Le numéro de version est requis")
+    .regex(/^\d+\.\d+\.\d+$/, "Le format doit être x.y.z (ex: 1.0.0)"),
   description: z.string().min(1, "La description est requise"),
   type: z.enum(["new", "improvement", "bugfix"], {
     required_error: "Veuillez sélectionner un type",
@@ -50,6 +52,7 @@ interface ChangelogEntryFormProps {
   initialData?: {
     id: string;
     title: string;
+    version: string;
     description: string;
     type: "new" | "improvement" | "bugfix";
     date: string;
@@ -72,6 +75,7 @@ export function ChangelogEntryForm({
         }
       : {
           title: "",
+          version: "",
           description: "",
           type: "new",
           date: new Date(),
@@ -85,6 +89,7 @@ export function ChangelogEntryForm({
           .from("changelog_entries")
           .update({
             title: values.title,
+            version: values.version,
             description: values.description,
             type: values.type,
             date: values.date.toISOString(),
@@ -98,6 +103,7 @@ export function ChangelogEntryForm({
           .from("changelog_entries")
           .insert({
             title: values.title,
+            version: values.version,
             description: values.description,
             type: values.type,
             date: values.date.toISOString(),
@@ -133,12 +139,33 @@ export function ChangelogEntryForm({
 
         <FormField
           control={form.control}
+          name="version"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Version</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="1.0.0" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="description"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea {...field} />
+                <Textarea 
+                  {...field} 
+                  className="min-h-[200px]"
+                  placeholder="Vous pouvez utiliser du Markdown pour la mise en forme:
+- Utilisez des tirets pour les listes
+- **texte** pour mettre en gras
+- *texte* pour l'italique"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -200,6 +227,7 @@ export function ChangelogEntryForm({
                     onSelect={field.onChange}
                     initialFocus
                     locale={fr}
+                    disabled={(date) => false}
                   />
                 </PopoverContent>
               </Popover>
