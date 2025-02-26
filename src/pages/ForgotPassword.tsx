@@ -18,7 +18,6 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      // Utiliser directement resetPasswordForEmail au lieu d'une fonction personnalisée
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
