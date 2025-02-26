@@ -7,17 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "../types";
 
@@ -30,42 +20,29 @@ export function DateField({ form }: DateFieldProps) {
     <FormField
       control={form.control}
       name="date"
-      render={({ field }) => (
-        <FormItem className="flex flex-col">
-          <FormLabel>Date</FormLabel>
-          <Popover>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-3 text-left font-normal",
-                    !field.value && "text-muted-foreground"
-                  )}
-                >
-                  {field.value ? (
-                    format(field.value, "d MMMM yyyy", { locale: fr })
-                  ) : (
-                    <span>Sélectionnez une date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={field.value}
-                onSelect={field.onChange}
-                initialFocus
-                locale={fr}
-                className="rounded-md border"
+      render={({ field }) => {
+        // Convert Date object to YYYY-MM-DD format for input
+        const value = field.value ? new Date(field.value).toISOString().split('T')[0] : '';
+
+        return (
+          <FormItem className="flex flex-col">
+            <FormLabel>Date</FormLabel>
+            <FormControl>
+              <Input
+                type="date"
+                className="w-full"
+                value={value}
+                onChange={(e) => {
+                  // Convert string date to Date object when value changes
+                  const date = e.target.value ? new Date(e.target.value) : null;
+                  field.onChange(date);
+                }}
               />
-            </PopoverContent>
-          </Popover>
-          <FormMessage />
-        </FormItem>
-      )}
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }
