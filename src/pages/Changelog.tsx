@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Search } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { supabase } from "@/integrations/supabase/client";
 import { ChangelogTimeline } from "@/components/changelog/ChangelogTimeline";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -25,6 +24,8 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { deleteChangelogEntry, fetchChangelogEntries } from "@/services/changelog";
+import { supabase } from "@/integrations/supabase/client";
 
 const Changelog = () => {
   const { isAdmin } = usePagePermissions();
@@ -35,15 +36,7 @@ const Changelog = () => {
 
   const { data: entries = [], isLoading, refetch } = useQuery({
     queryKey: ["changelog"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("changelog_entries")
-        .select("*")
-        .order("date", { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
+    queryFn: fetchChangelogEntries,
   });
 
   useEffect(() => {
@@ -88,12 +81,7 @@ const Changelog = () => {
     if (!confirmed) return;
 
     try {
-      const { error } = await supabase
-        .from("changelog_entries")
-        .delete()
-        .eq("id", entryId);
-
-      if (error) throw error;
+      await deleteChangelogEntry(entryId);
       toast.success("Entrée supprimée avec succès");
     } catch (error) {
       console.error("Error deleting changelog entry:", error);
@@ -194,4 +182,3 @@ const Changelog = () => {
 };
 
 export default Changelog;
-
