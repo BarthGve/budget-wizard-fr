@@ -67,6 +67,7 @@ export const UserTableRow = ({ user, onRoleChange, onProfileChange, onDelete }: 
         userEmail={user.email}
         currentRole={user.role}
         currentProfile={user.profile_type}
+        isVerified={user.is_verified}
         onRoleChange={onRoleChange}
         onProfileChange={onProfileChange}
         onDelete={onDelete}
