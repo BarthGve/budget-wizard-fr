@@ -831,6 +831,12 @@ export type Database = {
         }
         Returns: undefined
       }
+      force_verify_user: {
+        Args: {
+          target_user_id: string
+        }
+        Returns: undefined
+      }
       get_credits_stats_current_month: {
         Args: {
           p_profile_id: string
@@ -878,6 +884,7 @@ export type Database = {
           email: string
           created_at: string
           avatar_url: string
+          is_verified: boolean
         }[]
       }
       register_edge_function: {

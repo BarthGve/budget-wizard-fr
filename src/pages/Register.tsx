@@ -52,8 +52,9 @@ const Register = () => {
       }
 
       if (signUpData.user) {
-        toast.success("Inscription réussie ! Vérifiez votre email pour confirmer votre compte.");
-        navigate("/");
+        // Store the email for the verification page
+        localStorage.setItem("verificationEmail", formData.email);
+        navigate("/email-verification");
       }
     } catch (error: any) {
       console.error("Error: ", error);
