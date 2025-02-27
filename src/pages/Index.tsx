@@ -1,4 +1,5 @@
 
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -129,3 +130,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
