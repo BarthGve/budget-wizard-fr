@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AddContributorDialog } from "@/components/contributors/AddContributorDialog";
 import { ContributorCard } from "@/components/contributors/ContributorCard";
 import { useContributors } from "@/hooks/useContributors";
+import StyledLoader from "@/components/ui/styledloader";
 const Contributors = () => {
   const {
     contributors,
@@ -12,9 +13,7 @@ const Contributors = () => {
     deleteContributor
   } = useContributors();
   if (isLoading) {
-    return <DashboardLayout>
-        <div>Chargement...</div>
-      </DashboardLayout>;
+    return <StyledLoader/>;
   }
   return <DashboardLayout>
       <div className="grid gap-6">

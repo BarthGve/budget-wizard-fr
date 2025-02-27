@@ -9,6 +9,7 @@ import { useCallback, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { startOfYear, endOfYear, subYears } from "date-fns";
+import StyledLoader from "@/components/ui/styledloader";
 const Expenses = () => {
   const queryClient = useQueryClient();
   const {
@@ -62,9 +63,7 @@ const Expenses = () => {
   }) || [];
   const lastYearTotal = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   if (isLoading) {
-    return <DashboardLayout>
-      <div>Chargement...</div>
-    </DashboardLayout>;
+    return <StyledLoader/>;
   }
   return <DashboardLayout>
       <div className="grid gap-6">
