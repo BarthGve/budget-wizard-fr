@@ -63,6 +63,16 @@ export const UserActions = ({
 
   return (
     <div className="flex items-center gap-4">
+       {!isVerified && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleVerifyUser}
+            className="text-gray-500 hover:text-green-600 hover:bg-green-50"
+          >
+            <ShieldCheck className="h-4 w-4" />
+          </Button>
+        )}
       <Select
         value={currentRole}
         onValueChange={(value: "user" | "admin") => onRoleChange(userId, value)}
@@ -87,16 +97,7 @@ export const UserActions = ({
         </div>
       )}
       <div className="flex items-center gap-2 shrink-0">
-        {!isVerified && (
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleVerifyUser}
-            className="text-gray-500 hover:text-green-600 hover:bg-green-50"
-          >
-            <ShieldCheck className="h-4 w-4" />
-          </Button>
-        )}
+       
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
