@@ -54,7 +54,6 @@ export const UserActions = ({
       if (error) throw error;
 
       toast.success("Utilisateur vérifié avec succès");
-      // Refresh the page to update the UI
       window.location.reload();
     } catch (error: any) {
       toast.error("Erreur lors de la vérification de l'utilisateur");
@@ -63,33 +62,31 @@ export const UserActions = ({
   };
 
   return (
-    <div className="flex items-center justify-between ">
-      <div className="flex items-center gap-4">
-        <Select
-          value={currentRole}
-          onValueChange={(value: "user" | "admin") => onRoleChange(userId, value)}
-        >
-          <SelectTrigger className="w-[150px] border-gray-200">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="user">Membre</SelectItem>
-            <SelectItem value="admin">Administrateur</SelectItem>
-          </SelectContent>
-        </Select>
-        {currentRole === "user" && (
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={currentProfile === "pro"}
-              onCheckedChange={(checked) => onProfileChange(userId, checked ? "pro" : "basic")}
-            />
-            <span className="text-sm text-muted-foreground">
-              {currentProfile === "pro" ? "Pro" : "Basic"}
-            </span>
-          </div>
-        )}
-      </div>
-      <div className="flex items-center gap-2">
+    <div className="flex items-center gap-4">
+      <Select
+        value={currentRole}
+        onValueChange={(value: "user" | "admin") => onRoleChange(userId, value)}
+      >
+        <SelectTrigger className="w-[150px] border-gray-200">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="user">Membre</SelectItem>
+          <SelectItem value="admin">Administrateur</SelectItem>
+        </SelectContent>
+      </Select>
+      {currentRole === "user" && (
+        <div className="flex items-center gap-2 shrink-0">
+          <Switch
+            checked={currentProfile === "pro"}
+            onCheckedChange={(checked) => onProfileChange(userId, checked ? "pro" : "basic")}
+          />
+          <span className="text-sm text-muted-foreground whitespace-nowrap">
+            {currentProfile === "pro" ? "Pro" : "Basic"}
+          </span>
+        </div>
+      )}
+      <div className="flex items-center gap-2 shrink-0">
         {!isVerified && (
           <Button
             variant="outline"

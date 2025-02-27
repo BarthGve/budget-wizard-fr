@@ -23,8 +23,8 @@ export const UserTableRow = ({ user, onRoleChange, onProfileChange, onDelete }: 
   };
 
   return (
-    <div className="flex items-center justify-between p-4">
-      <div className="flex items-center space-x-4">
+    <div className="grid grid-cols-[auto_1fr_auto] gap-4 p-4 items-center w-full">
+      <div className="flex items-center gap-4 min-w-0">
         <Avatar>
           {user.avatar_url ? (
             <AvatarImage 
@@ -44,17 +44,17 @@ export const UserTableRow = ({ user, onRoleChange, onProfileChange, onDelete }: 
             {getInitials(user.email)}
           </AvatarFallback>
         </Avatar>
-        <div className="space-y-1">
-          <p className="font-medium">{user.email.split('@')[0]}</p>
-          <div className="flex items-center space-x-2">
-            <p className="text-sm text-muted-foreground">{user.email}</p>
+        <div className="space-y-1 min-w-0">
+          <p className="font-medium truncate">{user.email.split('@')[0]}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-sm text-muted-foreground truncate">{user.email}</p>
             {user.is_verified ? (
-              <Badge variant="default" className="flex items-center space-x-1">
+              <Badge variant="default" className="flex items-center gap-1 shrink-0">
                 <Shield className="h-3 w-3" />
                 <span>Vérifié</span>
               </Badge>
             ) : (
-              <Badge variant="destructive" className="flex items-center space-x-1">
+              <Badge variant="destructive" className="flex items-center gap-1 shrink-0">
                 <ShieldOff className="h-3 w-3" />
                 <span>Non vérifié</span>
               </Badge>
@@ -62,6 +62,7 @@ export const UserTableRow = ({ user, onRoleChange, onProfileChange, onDelete }: 
           </div>
         </div>
       </div>
+      <div className="flex-1" />
       <UserActions
         userId={user.id}
         userEmail={user.email}
