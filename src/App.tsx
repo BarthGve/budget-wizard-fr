@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +24,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Changelog from "./pages/Changelog";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import EmailVerification from "./pages/EmailVerification";
 
 const queryClient = new QueryClient();
 
@@ -41,9 +41,9 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/email-verification" element={<EmailVerification />} />
             <Route path="/changelog" element={<Changelog />} />
             
-            {/* Routes protégées pour les utilisateurs normaux */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/contributors" element={<ProtectedRoute><Contributors /></ProtectedRoute>} />
             <Route path="/user-settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
@@ -55,7 +55,6 @@ const App = () => (
             <Route path="/stocks" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
             <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
             
-            {/* Routes protégées pour les admins */}
             <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
             <Route path="/admin/feedbacks" element={<ProtectedRoute requireAdmin><AdminFeedbacks /></ProtectedRoute>} />
             <Route path="/admin/changelog" element={<ProtectedRoute requireAdmin><Changelog /></ProtectedRoute>} />
