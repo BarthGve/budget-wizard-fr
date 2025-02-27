@@ -39,7 +39,7 @@ export const Hero = ({ title, description, registerButtonText, isLoaded }: HeroP
           </div>
         </div>
 
-        <div className={`transform transition-all duration-1000 ${
+        <div className={`transform-fix transform transition-all duration-1000 ${
           isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
         }`}>
           <div className="relative">
@@ -47,7 +47,11 @@ export const Hero = ({ title, description, registerButtonText, isLoaded }: HeroP
             <img
               src="/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png"
               alt="Budget Wizard"
-              className="relative w-full h-auto max-w-2xl mx-auto transform hover:scale-105 transition-transform duration-500"
+              className="relative w-full h-auto max-w-2xl mx-auto transform-fix hover:scale-105 transition-transform duration-500"
+              style={{
+                WebkitBackfaceVisibility: 'hidden',
+                backfaceVisibility: 'hidden'
+              }}
             />
           </div>
         </div>
