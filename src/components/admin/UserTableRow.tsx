@@ -49,7 +49,7 @@ export const UserTableRow = ({ user, onRoleChange, onProfileChange, onDelete }: 
           <div className="flex items-center space-x-2">
             <p className="text-sm text-muted-foreground">{user.email}</p>
             {user.is_verified ? (
-              <Badge variant="success" className="flex items-center space-x-1">
+              <Badge variant="default" className="flex items-center space-x-1">
                 <Shield className="h-3 w-3" />
                 <span>Vérifié</span>
               </Badge>
