@@ -8,6 +8,7 @@ import { UserTable } from "@/components/admin/UserTable";
 import { UserStats } from "@/components/admin/UserStats";
 import { PagePermissionsTable } from "@/components/admin/PagePermissionsTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import StyledLoader from "@/components/ui/StyledLoader";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -33,7 +34,10 @@ const Admin = () => {
   }, [isAdmin, isLoading, navigate]);
 
   if (isLoading) {
-    return <div>Chargement...</div>;
+    return <DashboardLayout>
+      <StyledLoader/>
+    </DashboardLayout>
+    ;
   }
 
   return (
