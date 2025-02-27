@@ -48,25 +48,27 @@ export const CreateCategoryBanner = () => {
 
   return (
     <Alert className="relative w-full h-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800">
-      <Button
-        variant="ghost"
-        className="absolute right-2 top-2 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20"
-        onClick={handleDismiss}
-      >
-        <X className="h-4 w-4" />
-      </Button>
-      <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
-        Commencez par créer une catégorie
-      </AlertTitle>
-      <AlertDescription className="mt-2 text-muted-foreground">
-        Pour mieux organiser vos dépenses, créez votre première catégorie dans les paramètres.
-        <Button
-          onClick={() => navigate("/user-settings")}
-          className="ml-4 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
-        >
-          Créer une catégorie
-        </Button>
-      </AlertDescription>
-    </Alert>
+  <Button
+    variant="ghost"
+    className="absolute right-2 top-2 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20"
+    onClick={handleDismiss}
+  >
+    <X className="h-4 w-4" />
+  </Button>
+  <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
+    Commencez par créer une catégorie
+  </AlertTitle>
+  <AlertDescription className="mt-2 text-muted-foreground">
+    Pour mieux organiser vos dépenses, créez votre première catégorie dans les paramètres.
+  </AlertDescription>
+  <div className="flex justify-end mt-4">
+    <Button
+      onClick={() => navigate("/user-settings")}
+      className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+    >
+      Créer une catégorie
+    </Button>
+  </div>
+</Alert>
   );
 };
