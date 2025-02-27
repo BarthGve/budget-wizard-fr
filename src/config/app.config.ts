@@ -1,6 +1,6 @@
 
 export const appConfig = {
-  version: 'v1.0.0',
+  version: 'v1.0.1',
   name: 'Budget Wizard',
   initiales: 'BW',
   landing: {
