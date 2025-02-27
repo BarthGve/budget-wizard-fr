@@ -65,7 +65,7 @@ export const CreateRetailerBanner = () => {
     Commencez par créer une enseigne
   </AlertTitle>
   <AlertDescription className="mt-2 text-muted-foreground">
-    Pour mieux organiser vos dépenses, créez votre première enseigne dans les paramètres.
+    Pour mieux suivre vos dépenses, créez votre première enseigne dans les paramètres.
   </AlertDescription>
   <div className="flex justify-end mt-4">
     <Button
@@ -76,6 +76,16 @@ export const CreateRetailerBanner = () => {
     </Button>
   </div>
 </Alert>
+
+
+
+
+
+
+
+
+
+
 
   );
 };
