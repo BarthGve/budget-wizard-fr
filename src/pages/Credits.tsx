@@ -10,51 +10,50 @@ import { Credit } from "@/components/credits/types";
 import { CreditDialog } from "@/components/credits/CreditDialog";
 import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
 import { CreditsList } from "@/components/credits/CreditsList";
+import StyledLoader from "@/components/ui/StyledLoader";
+
 const Credits = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
   useEffect(() => {
     const checkAuth = async () => {
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
-      if (!user) {
+      const session = supabase.auth.session();
+      if (!session) {
         navigate("/login");
       }
     };
     checkAuth();
   }, [navigate]);
+
   const {
     data: credits = [],
     isLoading: isLoadingCredits
   } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
-      if (!user) {
+      const session = supabase.auth.session();
+      if (!session) {
         toast.error("Vous devez être connecté pour voir vos crédits");
         throw new Error("Not authenticated");
       }
+      
       const {
-        data,
+        data: creditsData,
         error
-      } = await supabase.from("credits").select("*").eq('profile_id', user.id).order('created_at', {
+      } = await supabase.from("credits").select("*").eq('profile_id', session.user.id).order('created_at', {
         ascending: false
       });
+
       if (error) {
         console.error("Error fetching credits:", error);
         toast.error("Erreur lors du chargement des crédits");
         throw error;
       }
-      return data as Credit[];
+      return creditsData as Credit[];
     }
   });
+
   const {
     data: monthlyStats = {
       credits_rembourses_count: 0,
@@ -64,29 +63,28 @@ const Credits = () => {
   } = useQuery({
     queryKey: ["credits-monthly-stats"],
     queryFn: async () => {
+      const session = supabase.auth.session();
+      if (!session) throw new Error("Not authenticated");
+      
       const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-      const {
-        data,
+        data: statsData,
         error
       } = await supabase.rpc('get_credits_stats_current_month', {
-        p_profile_id: user.id
+        p_profile_id: session.user.id
       });
+
       if (error) {
         console.error("Error fetching monthly stats:", error);
         toast.error("Erreur lors du chargement des statistiques mensuelles");
         throw error;
       }
-      return data?.[0] || {
+      return statsData?.[0] || {
         credits_rembourses_count: 0,
         total_mensualites_remboursees: 0
       };
     }
   });
+
   const {
     activeCredits,
     totalActiveMensualites
@@ -97,13 +95,19 @@ const Credits = () => {
     activeCredits: [] as Credit[],
     totalActiveMensualites: 0
   });
+
   const isLoading = isLoadingCredits || isLoadingStats;
+
   if (isLoading) {
-    return <DashboardLayout>
-      <div>Chargement...</div>
-    </DashboardLayout>;
+    return (
+      <DashboardLayout>
+<StyledLoader/>
+      </DashboardLayout>
+    );
   }
-  return <DashboardLayout>
+
+  return (
+    <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -112,28 +116,42 @@ const Credits = () => {
               Gérez vos crédits et leurs échéances
             </p>
           </div>
-          <CreditDialog trigger={<Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
+          <CreditDialog 
+            trigger={
+              <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
                 <Plus className="mr-2 h-4 w-4" />
                 Ajouter un crédit
-              </Button>} />
+              </Button>
+            } 
+          />
         </div>
 
-        <CreditSummaryCards activeCredits={activeCredits} repaidThisMonth={monthlyStats.credits_rembourses_count} totalActiveMensualites={totalActiveMensualites} totalRepaidMensualitesThisMonth={monthlyStats.total_mensualites_remboursees} />
+        <CreditSummaryCards 
+          activeCredits={activeCredits} 
+          repaidThisMonth={monthlyStats.credits_rembourses_count} 
+          totalActiveMensualites={totalActiveMensualites} 
+          totalRepaidMensualitesThisMonth={monthlyStats.total_mensualites_remboursees} 
+        />
 
         <div className="space-y-6">
           <div>
             <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl mb-4">Crédits en cours</h2>
-            <CreditsList credits={activeCredits} onCreditDeleted={() => {
-            queryClient.invalidateQueries({
-              queryKey: ["credits"]
-            });
-            queryClient.invalidateQueries({
-              queryKey: ["credits-monthly-stats"]
-            });
-          }} />
+            <CreditsList 
+              credits={activeCredits} 
+              onCreditDeleted={() => {
+                queryClient.invalidateQueries({
+                  queryKey: ["credits"]
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ["credits-monthly-stats"]
+                });
+              }} 
+            />
           </div>
         </div>
       </div>
-    </DashboardLayout>;
+    </DashboardLayout>
+  );
 };
+
 export default Credits;
