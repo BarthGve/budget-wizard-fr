@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { RetailerCard } from "@/components/expenses/RetailerCard";
@@ -11,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { startOfYear, endOfYear, subYears } from "date-fns";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
-
+import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import StyledLoader from "@/components/ui/StyledLoader";
 
 const Expenses = () => {
@@ -67,9 +66,7 @@ const Expenses = () => {
   }) || [];
   const lastYearTotal = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   if (isLoading) {
-
     return <StyledLoader/>;
-
   }
   return <DashboardLayout>
       <div className="grid gap-6">
@@ -91,19 +88,28 @@ const Expenses = () => {
             </div>
           </div>
 
-          <CreateRetailerBanner />
+          <div className="flex gap-4">
+            <CreateCategoryBanner />
+            <CreateRetailerBanner />
+          </div>
 
           <div className="mt-8">
             <YearlyTotalCard currentYearTotal={currentYearTotal} previousYearTotal={lastYearTotal} />
           </div>
           <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
-            {expensesByRetailer?.map(({
-            retailer,
-            expenses: retailerExpenses
-          }) => <RetailerCard key={retailer.id} retailer={retailer} expenses={retailerExpenses} onExpenseUpdated={handleExpenseUpdated} viewMode={viewMode} />)}
+            {expensesByRetailer?.map(({retailer, expenses: retailerExpenses}) => 
+              <RetailerCard 
+                key={retailer.id} 
+                retailer={retailer} 
+                expenses={retailerExpenses} 
+                onExpenseUpdated={handleExpenseUpdated} 
+                viewMode={viewMode} 
+              />
+            )}
           </div>
         </div>
       </div>
     </DashboardLayout>;
 };
+
 export default Expenses;

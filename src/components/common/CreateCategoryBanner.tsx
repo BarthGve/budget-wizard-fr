@@ -3,13 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const CreateCategoryBanner = () => {
   const [isDismissed, setIsDismissed] = useState(false);
   const navigate = useNavigate();
+
+  // Charger l'état de dismissal depuis localStorage au montage du composant
+  useEffect(() => {
+    const bannerDismissed = localStorage.getItem("categoryBannerDismissed");
+    if (bannerDismissed === "true") {
+      setIsDismissed(true);
+    }
+  }, []);
 
   const { data: hasCategories, isLoading } = useQuery({
     queryKey: ["has-categories"],
@@ -21,24 +29,29 @@ export const CreateCategoryBanner = () => {
 
       if (error) {
         console.error("Error checking categories:", error);
-        return true; // En cas d'erreur, on n'affiche pas le bandeau
+        return true;
       }
 
       return categories && categories.length > 0;
     },
   });
 
-  // Ne rien afficher pendant le chargement ou si le bandeau a été fermé
+  // Fonction pour gérer la dismissal de la bannière
+  const handleDismiss = () => {
+    setIsDismissed(true);
+    localStorage.setItem("categoryBannerDismissed", "true");
+  };
+
   if (isLoading || isDismissed || hasCategories) {
     return null;
   }
 
   return (
-    <Alert className="relative mb-6 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800">
+    <Alert className="flex-1 relative bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800">
       <Button
         variant="ghost"
         className="absolute right-2 top-2 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20"
-        onClick={() => setIsDismissed(true)}
+        onClick={handleDismiss}
       >
         <X className="h-4 w-4" />
       </Button>
