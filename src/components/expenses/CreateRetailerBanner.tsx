@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -10,6 +10,14 @@ import { useNavigate } from "react-router-dom";
 export const CreateRetailerBanner = () => {
   const [isDismissed, setIsDismissed] = useState(false);
   const navigate = useNavigate();
+
+  // Charger l'état de dismissal depuis localStorage au montage du composant
+  useEffect(() => {
+    const bannerDismissed = localStorage.getItem("retailerBannerDismissed");
+    if (bannerDismissed === "true") {
+      setIsDismissed(true);
+    }
+  }, []);
 
   const { data: hasRetailers, isLoading } = useQuery({
     queryKey: ["has-retailers"],
@@ -32,6 +40,12 @@ export const CreateRetailerBanner = () => {
     },
   });
 
+  // Fonction pour gérer la dismissal de la bannière
+  const handleDismiss = () => {
+    setIsDismissed(true);
+    localStorage.setItem("retailerBannerDismissed", "true");
+  };
+
   // Ne rien afficher pendant le chargement ou si la bannière a été fermée
   if (isLoading || isDismissed || hasRetailers) {
     return null;
@@ -42,7 +56,7 @@ export const CreateRetailerBanner = () => {
       <Button
         variant="ghost"
         className="absolute right-2 top-2 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20"
-        onClick={() => setIsDismissed(true)}
+        onClick={handleDismiss}
       >
         <X className="h-4 w-4" />
       </Button>
