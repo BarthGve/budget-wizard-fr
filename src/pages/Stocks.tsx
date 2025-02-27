@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
@@ -8,13 +9,15 @@ import { InvestmentHistory } from "@/components/stocks/InvestmentHistory";
 import { CurrentYearInvestmentsDialog } from "@/components/stocks/CurrentYearInvestmentsDialog";
 import { YearlyInvestmentsDialog } from "@/components/stocks/YearlyInvestmentsDialog";
 import { useState } from "react";
+
 const StocksPage = () => {
   const [currentYearDialogOpen, setCurrentYearDialogOpen] = useState(false);
   const [yearlyTotalDialogOpen, setYearlyTotalDialogOpen] = useState(false);
 
   // Fetch market data
   const {
-    data: marketData
+    data: marketData,
+    isLoading: isMarketDataLoading
   } = useQuery({
     queryKey: ["marketData"],
     queryFn: async () => {
@@ -83,6 +86,16 @@ const StocksPage = () => {
       maximumFractionDigits: 2
     }).format(price);
   };
+
+  // Préparer les données des cartes avec un placeholder si les données ne sont pas encore chargées
+  const marketCards = isMarketDataLoading
+    ? [
+        { symbol: '^FCHI', data: null, history: null },
+        { symbol: 'AAPL', data: null, history: null },
+        { symbol: 'BTC-EUR', data: null, history: null }
+      ]
+    : marketData || [];
+
   return <DashboardLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
@@ -97,11 +110,19 @@ const StocksPage = () => {
 
         {/* Market Data Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {marketData?.map(({
-          symbol,
-          data,
-          history
-        }) => <MarketDataCard key={symbol} symbol={symbol} data={data} history={history} />)}
+          {marketCards.map(({
+            symbol,
+            data,
+            history
+          }) => (
+            <MarketDataCard 
+              key={symbol} 
+              symbol={symbol} 
+              data={data} 
+              history={history} 
+              isLoading={isMarketDataLoading}
+            />
+          ))}
         </div>
 
         <div className="flex justify-between items-center">
