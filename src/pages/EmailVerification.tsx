@@ -11,7 +11,7 @@ const EmailVerification = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [isResending, setIsResending] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(300); // 5 minutes in seconds
+  const [remainingTime, setRemainingTime] = useState(120); // 2 minutes in seconds
 
   useEffect(() => {
     // Get the email from localStorage (set during registration)
@@ -61,7 +61,7 @@ const EmailVerification = () => {
       if (error) throw error;
 
       toast.success("Email de vérification envoyé");
-      setRemainingTime(300); // Reset timer to 5 minutes
+      setRemainingTime(120); // Reset timer to 2 minutes
     } catch (error: any) {
       toast.error(error.message || "Erreur lors de l'envoi de l'email");
     } finally {
