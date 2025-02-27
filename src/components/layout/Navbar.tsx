@@ -13,7 +13,13 @@ const Navbar = () => {
             <img 
               src="/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png"
               alt="Budget Wizard"
-              className="w-8 h-8"
+              className="w-8 h-8 transform-fix"
+              style={{
+                WebkitBackfaceVisibility: 'hidden',
+                backfaceVisibility: 'hidden',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)'
+              }}
             />
             <span className="font-semibold text-lg">{appConfig.name}</span>
           </Link>
