@@ -63,7 +63,7 @@ export const UserActions = ({
   };
 
   return (
-    <div className="flex items-center justify-between w-[300px]">
+    <div className="flex items-center justify-between ">
       <div className="flex items-center gap-4">
         <Select
           value={currentRole}
