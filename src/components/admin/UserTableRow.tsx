@@ -1,6 +1,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserActions } from "./UserActions";
+import { Badge } from "@/components/ui/badge";
+import { Shield, ShieldOff } from "lucide-react";
 import type { User } from "@/hooks/useUsers";
 
 interface UserTableRowProps {
@@ -42,9 +44,22 @@ export const UserTableRow = ({ user, onRoleChange, onProfileChange, onDelete }: 
             {getInitials(user.email)}
           </AvatarFallback>
         </Avatar>
-        <div>
+        <div className="space-y-1">
           <p className="font-medium">{user.email.split('@')[0]}</p>
-          <p className="text-sm text-muted-foreground">{user.email}</p>
+          <div className="flex items-center space-x-2">
+            <p className="text-sm text-muted-foreground">{user.email}</p>
+            {user.is_verified ? (
+              <Badge variant="success" className="flex items-center space-x-1">
+                <Shield className="h-3 w-3" />
+                <span>Vérifié</span>
+              </Badge>
+            ) : (
+              <Badge variant="destructive" className="flex items-center space-x-1">
+                <ShieldOff className="h-3 w-3" />
+                <span>Non vérifié</span>
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
       <UserActions

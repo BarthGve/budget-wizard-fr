@@ -11,6 +11,7 @@ export interface User {
   profile_type: ProfileType;
   created_at: string;
   avatar_url: string | null;
+  is_verified: boolean;
 }
 
 export const useUsers = (page: number, pageSize: number) => {
@@ -65,7 +66,8 @@ export const useUsers = (page: number, pageSize: number) => {
         role: roleMap.get(user.id) || "user",
         profile_type: profileMap.get(user.id) || "basic",
         created_at: user.created_at,
-        avatar_url: user.avatar_url
+        avatar_url: user.avatar_url,
+        is_verified: user.is_verified
       })) || [];
 
       setUsers(formattedUsers);

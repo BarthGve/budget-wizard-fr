@@ -878,6 +878,7 @@ export type Database = {
           email: string
           created_at: string
           avatar_url: string
+          is_verified: boolean
         }[]
       }
       register_edge_function: {
