@@ -52,7 +52,7 @@ export const CreateRetailerBanner = () => {
   }
 
   return (
-    <Alert className="relative mb-6 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800">
+    <Alert className="relative w-full h-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800">
       <Button
         variant="ghost"
         className="absolute right-2 top-2 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20"

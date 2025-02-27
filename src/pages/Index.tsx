@@ -106,14 +106,10 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="flex gap-4">
-  <div className="flex-1">
-    <CreateCategoryBanner />
-  </div>
-  <div className="flex-1">
-    <CreateRetailerBanner />
-  </div>
-</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <CreateCategoryBanner />
+          <CreateRetailerBanner />
+        </div>
         
         <DashboardTabContent
           revenue={totalRevenue}
