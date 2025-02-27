@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AddContributorDialog } from "@/components/contributors/AddContributorDialog";
 import { ContributorCard } from "@/components/contributors/ContributorCard";
 import { useContributors } from "@/hooks/useContributors";
+import StyledLoader from "@/components/ui/StyledLoader";
 const Contributors = () => {
   const {
     contributors,
@@ -13,7 +14,7 @@ const Contributors = () => {
   } = useContributors();
   if (isLoading) {
     return <DashboardLayout>
-        <div>Chargement...</div>
+        <StyledLoader/>
       </DashboardLayout>;
   }
   return <DashboardLayout>

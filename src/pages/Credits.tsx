@@ -10,6 +10,7 @@ import { Credit } from "@/components/credits/types";
 import { CreditDialog } from "@/components/credits/CreditDialog";
 import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
 import { CreditsList } from "@/components/credits/CreditsList";
+import StyledLoader from "@/components/ui/StyledLoader";
 const Credits = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -100,7 +101,7 @@ const Credits = () => {
   const isLoading = isLoadingCredits || isLoadingStats;
   if (isLoading) {
     return <DashboardLayout>
-      <div>Chargement...</div>
+     <StyledLoader/>
     </DashboardLayout>;
   }
   return <DashboardLayout>
