@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { startOfYear, endOfYear, subYears } from "date-fns";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 
-import StyledLoader from "@/components/ui/styledloader";
+import StyledLoader from "@/components/ui/StyledLoader";
 
 const Expenses = () => {
   const queryClient = useQueryClient();

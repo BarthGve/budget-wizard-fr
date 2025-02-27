@@ -1,10 +1,11 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AddContributorDialog } from "@/components/contributors/AddContributorDialog";
 import { ContributorCard } from "@/components/contributors/ContributorCard";
 import { useContributors } from "@/hooks/useContributors";
 
-import StyledLoader from "@/components/ui/styledloader";
+import StyledLoader from "@/components/ui/StyledLoader";
 
 
 const Contributors = () => {
