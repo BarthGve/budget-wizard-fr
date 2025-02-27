@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { RetailerCard } from "@/components/expenses/RetailerCard";
@@ -9,6 +10,7 @@ import { useCallback, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { startOfYear, endOfYear, subYears } from "date-fns";
+import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 
 import StyledLoader from "@/components/ui/styledloader";
 
@@ -88,6 +90,9 @@ const Expenses = () => {
               <AddExpenseDialog onExpenseAdded={handleExpenseUpdated} open={addExpenseDialogOpen} onOpenChange={setAddExpenseDialogOpen} />
             </div>
           </div>
+
+          <CreateRetailerBanner />
+
           <div className="mt-8">
             <YearlyTotalCard currentYearTotal={currentYearTotal} previousYearTotal={lastYearTotal} />
           </div>
