@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
+import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import {
   calculateTotalRevenue,
   calculateMonthlyExpenses,
@@ -105,7 +106,10 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <CreateCategoryBanner />
+        <div className="flex gap-4">
+          <CreateCategoryBanner />
+          <CreateRetailerBanner />
+        </div>
         
         <DashboardTabContent
           revenue={totalRevenue}
