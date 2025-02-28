@@ -1,55 +1,30 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Banknote } from 'lucide-react';
-import { useEffect, useState } from "react";
-
 interface ContributorShare {
   name: string;
   start: number;
   end: number;
   amount: number;
 }
-
 interface RevenueCardProps {
   totalRevenue: number;
   contributorShares: ContributorShare[];
 }
-
 export const RevenueCard = ({
-  totalRevenue,
-  contributorShares
+  totalRevenue
 }: RevenueCardProps) => {
-  const [displayedRevenue, setDisplayedRevenue] = useState(totalRevenue);
-  
-  // Use effect to animate the total when it changes
-  useEffect(() => {
-    setDisplayedRevenue(totalRevenue);
-  }, [totalRevenue]);
+  return <Card className="bg-background">
+    <CardHeader className="py-[16px]">
+      <div className="flex flex-row items-center justify-between ">
+          <CardTitle className="text-2xl">Revenus globaux</CardTitle>
+          <Banknote className="h-6 w-6 text-muted-foreground" />
+      </div>
+      <CardDescription>Somme de l'ensemble des revenus</CardDescription>
+    </CardHeader>
 
-  return (
-    <Card className="bg-background hover:shadow-md transition-all duration-300">
-      <CardHeader className="py-[16px]">
-        <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl">Revenus globaux</CardTitle>
-            <Banknote className="h-6 w-6 text-muted-foreground" />
-        </div>
-        <CardDescription>Somme de l'ensemble des revenus</CardDescription>
-      </CardHeader>
-
-      <CardContent className="space-y-4">
-        <p className="font-bold text-xl">{Math.round(displayedRevenue)} €</p>
-        
-        {contributorShares.length > 0 && (
-          <div className="mt-2 space-y-1">
-            {contributorShares.map((share, index) => (
-              <div key={index} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{share.name}</span>
-                <span>{Math.round(share.amount)} €</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
+    <CardContent className="space-y-4">
+      <p className="font-bold text-xl">{Math.round(totalRevenue)} €</p>
+    </CardContent>
+  </Card>;
 };
