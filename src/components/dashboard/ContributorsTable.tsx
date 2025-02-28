@@ -1,11 +1,12 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { useTheme } from "next-themes";
 import { ContributorDetailsDialog } from "./ContributorDetailsDialog";
 import { Contributor } from "@/types/contributor";
-import { ContributorsTableList } from "./contributor-table/ContributorsTableList";
 import { useProfileAvatar } from "@/hooks/useProfileAvatar";
+import { ContributorsTableHeader } from "./contributor-table/ContributorsTableHeader";
+import { ContributorsTableContent } from "./contributor-table/ContributorsTableContent";
 
 interface ContributorsTableProps {
   contributors: Array<Contributor>;
@@ -35,20 +36,15 @@ export const ContributorsTable = ({
   return (
     <>
       <Card>
-        <CardHeader>
-          <CardTitle>Répartition des charges</CardTitle>
-          <CardDescription>Détail des revenus et participations par contributeur</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ContributorsTableList
-            contributors={contributors}
-            totalExpenses={totalExpenses}
-            totalCredits={totalCredits}
-            isDarkTheme={isDarkTheme}
-            avatarUrl={profile?.avatar_url}
-            onSelectContributor={handleSelectContributor}
-          />
-        </CardContent>
+        <ContributorsTableHeader />
+        <ContributorsTableContent
+          contributors={contributors}
+          totalExpenses={totalExpenses}
+          totalCredits={totalCredits}
+          isDarkTheme={isDarkTheme}
+          avatarUrl={profile?.avatar_url}
+          onSelectContributor={handleSelectContributor}
+        />
       </Card>
       {selectedContributor && (
         <ContributorDetailsDialog 
