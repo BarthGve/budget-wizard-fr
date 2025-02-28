@@ -52,38 +52,29 @@ export const CreateRetailerBanner = () => {
   }
 
   return (
-    <Alert className="relative w-full h-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800">
-    <Button
-      variant="ghost"
-      className="absolute right-2 top-2 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20"
-      onClick={handleDismiss}
-    >
-      <X className="h-4 w-4" />
-    </Button>
-    <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
-    Suivez vos dépenses, magasin par magasin 🛍️
-    </AlertTitle>
-    <AlertDescription className="mt-2 text-muted-foreground">
-    “Ajoutez vos magasins favoris et suivez vos achats en toute simplicité. Rendez-vous dans les paramètres !
-    </AlertDescription>
-    <div className="flex justify-end mt-4">
+    <Alert className="relative w-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800 py-3">
       <Button
-        onClick={() => navigate("/user-settings")}
-        className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+        variant="ghost"
+        className="absolute right-2 top-2 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20"
+        onClick={handleDismiss}
       >
-        🚀 Let's go!
+        <X className="h-4 w-4" />
       </Button>
-    </div>
-  </Alert>
-
-
-
-
-
-
-
-
-
-
+      <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
+        Suivez vos dépenses, magasin par magasin 🛍️
+      </AlertTitle>
+      <AlertDescription className="mt-1 text-muted-foreground">
+        Ajoutez vos magasins favoris et suivez vos achats en toute simplicité. Rendez-vous dans les paramètres !
+      </AlertDescription>
+      <div className="flex justify-end mt-2">
+        <Button
+          onClick={() => navigate("/user-settings")}
+          className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+          size="sm"
+        >
+          🚀 Let's go!
+        </Button>
+      </div>
+    </Alert>
   );
 };
