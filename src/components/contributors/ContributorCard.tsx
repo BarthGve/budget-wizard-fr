@@ -20,16 +20,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getAvatarColor, getInitials } from "@/utils/avatarColors";
 import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface ContributorCardProps {
   contributor: Contributor;
@@ -43,6 +43,7 @@ export const ContributorCard = ({
   onDelete,
 }: ContributorCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editedContributor, setEditedContributor] = useState(contributor);
   const { theme } = useTheme();
   const isDarkTheme = theme === "dark";
@@ -70,6 +71,11 @@ export const ContributorCard = ({
   const handleUpdate = () => {
     onEdit(editedContributor);
     setIsEditDialogOpen(false);
+  };
+
+  const handleDeleteConfirm = () => {
+    onDelete(contributor.id);
+    setIsDeleteDialogOpen(false);
   };
 
   return (
@@ -102,109 +108,122 @@ export const ContributorCard = ({
             {contributor.percentage_contribution.toFixed(1)}% du budget
           </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Pencil className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Modifier le contributeur</DialogTitle>
-                <DialogDescription>
-                  {contributor.is_owner 
-                    ? "Modifiez votre contribution au budget"
-                    : "Modifiez les informations du contributeur"}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                {!contributor.is_owner && (
-                  <>
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-name">Nom</Label>
-                      <Input
-                        id="edit-name"
-                        value={editedContributor.name}
-                        onChange={(e) =>
-                          setEditedContributor({
-                            ...editedContributor,
-                            name: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-email">Email</Label>
-                      <Input
-                        id="edit-email"
-                        type="email"
-                        value={editedContributor.email}
-                        onChange={(e) =>
-                          setEditedContributor({
-                            ...editedContributor,
-                            email: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </>
-                )}
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[200px]">
+            <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Modifier
+            </DropdownMenuItem>
+            {!contributor.is_owner && (
+              <DropdownMenuItem 
+                className="text-destructive" 
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Supprimer
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modifier le contributeur</DialogTitle>
+            <DialogDescription>
+              {contributor.is_owner 
+                ? "Modifiez votre contribution au budget"
+                : "Modifiez les informations du contributeur"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {!contributor.is_owner && (
+              <>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-contribution">
-                    {contributor.is_owner ? "Votre contribution (€)" : "Contribution (€)"}
-                  </Label>
+                  <Label htmlFor="edit-name">Nom</Label>
                   <Input
-                    id="edit-contribution"
-                    type="number"
-                    value={editedContributor.total_contribution}
+                    id="edit-name"
+                    value={editedContributor.name}
                     onChange={(e) =>
                       setEditedContributor({
                         ...editedContributor,
-                        total_contribution: parseFloat(e.target.value) || 0,
+                        name: e.target.value,
                       })
                     }
                   />
                 </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={handleUpdate}>
-                  {contributor.is_owner ? "Mettre à jour ma contribution" : "Mettre à jour"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          {!contributor.is_owner && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Supprimer le contributeur
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer ce contributeur ? Cette
-                    action ne peut pas être annulée.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => onDelete(contributor.id)}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Supprimer
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-        </div>
-      </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-email">Email</Label>
+                  <Input
+                    id="edit-email"
+                    type="email"
+                    value={editedContributor.email}
+                    onChange={(e) =>
+                      setEditedContributor({
+                        ...editedContributor,
+                        email: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </>
+            )}
+            <div className="grid gap-2">
+              <Label htmlFor="edit-contribution">
+                {contributor.is_owner ? "Votre contribution (€)" : "Contribution (€)"}
+              </Label>
+              <Input
+                id="edit-contribution"
+                type="number"
+                value={editedContributor.total_contribution}
+                onChange={(e) =>
+                  setEditedContributor({
+                    ...editedContributor,
+                    total_contribution: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleUpdate}>
+              {contributor.is_owner ? "Mettre à jour ma contribution" : "Mettre à jour"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {!contributor.is_owner && (
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Supprimer le contributeur
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Êtes-vous sûr de vouloir supprimer ce contributeur ? Cette
+                action ne peut pas être annulée.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 };
