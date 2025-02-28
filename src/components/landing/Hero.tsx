@@ -45,7 +45,7 @@ export const Hero = ({ title, description, registerButtonText, isLoaded }: HeroP
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-3xl blur-3xl" />
             <img
-              src="/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png"
+              src="/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.avif"
               alt="Budget Wizard"
               className="relative w-full h-auto max-w-2xl mx-auto transform-fix hover:scale-105 transition-transform duration-500"
               style={{
