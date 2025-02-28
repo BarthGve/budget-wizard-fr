@@ -2,7 +2,7 @@
 import { Contributor } from "@/types/contributor";
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ContributorAvatar } from "./ContributorAvatar";
 import { ContributorCardActions } from "./ContributorCardActions";
@@ -23,6 +23,7 @@ export const ContributorCard = ({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { theme } = useTheme();
+  const queryClient = useQueryClient();
   const isDarkTheme = theme === "dark";
 
   // Fetch profile avatar for owner
@@ -51,14 +52,20 @@ export const ContributorCard = ({
     setIsDeleteDialogOpen(true);
   };
 
-  const handleEditContributor = (updatedContributor: Contributor) => {
-    onEdit(updatedContributor);
+  const handleEditContributor = async (updatedContributor: Contributor) => {
+    await onEdit(updatedContributor);
     setIsEditDialogOpen(false);
+    
+    // Invalider les données du dashboard pour forcer un rafraîchissement
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 
-  const handleDeleteConfirm = () => {
-    onDelete(contributor.id);
+  const handleDeleteConfirm = async () => {
+    await onDelete(contributor.id);
     setIsDeleteDialogOpen(false);
+    
+    // Invalider les données du dashboard pour forcer un rafraîchissement
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 
   return (
