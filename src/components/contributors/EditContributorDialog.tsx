@@ -28,9 +28,9 @@ export const EditContributorDialog = ({
 }: EditContributorDialogProps) => {
   const [editedContributor, setEditedContributor] = useState<Contributor>({...contributor});
 
-  // Reset edited contributor when the contributor prop changes or dialog closes
+  // Reset edited contributor when the contributor prop changes or dialog opens
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
       setEditedContributor({...contributor});
     }
   }, [contributor, isOpen]);

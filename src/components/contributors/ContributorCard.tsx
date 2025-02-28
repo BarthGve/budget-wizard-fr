@@ -51,8 +51,13 @@ export const ContributorCard = ({
     setIsDeleteDialogOpen(true);
   };
 
+  const handleEditContributor = (updatedContributor: Contributor) => {
+    onEdit(updatedContributor);
+  };
+
   const handleDeleteConfirm = () => {
     onDelete(contributor.id);
+    setIsDeleteDialogOpen(false);
   };
 
   return (
@@ -91,7 +96,7 @@ export const ContributorCard = ({
         contributor={contributor}
         isOpen={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
-        onUpdate={onEdit}
+        onUpdate={handleEditContributor}
       />
 
       {!contributor.is_owner && (
