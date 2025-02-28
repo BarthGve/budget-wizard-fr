@@ -34,10 +34,7 @@ const Admin = () => {
   }, [isAdmin, isLoading, navigate]);
 
   if (isLoading) {
-    return <DashboardLayout>
-      <StyledLoader/>
-    </DashboardLayout>
-    ;
+    return <StyledLoader/>;
   }
 
   return (

@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -11,6 +12,7 @@ import { CreditDialog } from "@/components/credits/CreditDialog";
 import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
 import { CreditsList } from "@/components/credits/CreditsList";
 import StyledLoader from "@/components/ui/StyledLoader";
+
 const Credits = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -100,9 +102,9 @@ const Credits = () => {
   });
   const isLoading = isLoadingCredits || isLoadingStats;
   if (isLoading) {
-    return <DashboardLayout>
-     <StyledLoader/>
-    </DashboardLayout>;
+
+    return <StyledLoader />;
+
   }
   return <DashboardLayout>
       <div className="space-y-6">

@@ -1,48 +1,53 @@
 
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
-export const CreateCategoryBanner = () => {
+export const CreateRetailerBanner = () => {
   const [isDismissed, setIsDismissed] = useState(false);
   const navigate = useNavigate();
 
   // Charger l'état de dismissal depuis localStorage au montage du composant
   useEffect(() => {
-    const bannerDismissed = localStorage.getItem("categoryBannerDismissed");
+    const bannerDismissed = localStorage.getItem("retailerBannerDismissed");
     if (bannerDismissed === "true") {
       setIsDismissed(true);
     }
   }, []);
 
-  const { data: hasCategories, isLoading } = useQuery({
-    queryKey: ["has-categories"],
+  const { data: hasRetailers, isLoading } = useQuery({
+    queryKey: ["has-retailers"],
     queryFn: async () => {
-      const { data: categories, error } = await supabase
-        .from("recurring_expense_categories")
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return true; // Si pas d'utilisateur, ne pas afficher la bannière
+      
+      const { data: retailers, error } = await supabase
+        .from("retailers")
         .select("id")
+        .eq("profile_id", user.id)
         .limit(1);
 
       if (error) {
-        console.error("Error checking categories:", error);
-        return true;
+        console.error("Erreur lors de la vérification des enseignes :", error);
+        return true; // En cas d'erreur, on n'affiche pas la bannière
       }
 
-      return categories && categories.length > 0;
+      return retailers && retailers.length > 0;
     },
   });
 
   // Fonction pour gérer la dismissal de la bannière
   const handleDismiss = () => {
     setIsDismissed(true);
-    localStorage.setItem("categoryBannerDismissed", "true");
+    localStorage.setItem("retailerBannerDismissed", "true");
   };
 
-  if (isLoading || isDismissed || hasCategories) {
+  // Ne rien afficher pendant le chargement ou si la bannière a été fermée
+  if (isLoading || isDismissed || hasRetailers) {
     return null;
   }
 
@@ -56,17 +61,17 @@ export const CreateCategoryBanner = () => {
         <X className="h-4 w-4" />
       </Button>
       <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
-        Mettez de l'ordre dans vos dépenses ! 🏷️
+        Suivez vos dépenses, magasin par magasin 🛍️
       </AlertTitle>
       <AlertDescription className="mt-1 text-muted-foreground mb-2">
-        Un budget bien organisé, c'est un budget maîtrisé ! Ajoutez votre première catégorie maintenant.
+        Ajoutez vos enseignes favorites et suivez vos achats en toute simplicité!
       </AlertDescription>
       <div className="flex justify-end mt-2">
       <Button
       onClick={() => navigate("/user-settings?tab=settings")}
       className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
     >
-          🔥 Je me lance !
+          🚀 Let's go !
         </Button>
       </div>
     </Alert>

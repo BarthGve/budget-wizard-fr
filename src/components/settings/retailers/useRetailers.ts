@@ -6,11 +6,10 @@ import { Retailer } from "./types";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 export const useRetailers = () => {
-  const { profile, canAccessFeature, isAdmin } = usePagePermissions();
+  const { profile } = usePagePermissions();
   
-  const canAccessRetailers = isAdmin || 
-    profile?.profile_type === 'pro' || 
-    (profile && canAccessFeature('/user-settings', 'retailers'));
+  // Make retailers accessible for all authenticated users
+  const canAccessRetailers = !!profile; // If profile exists, user is authenticated
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["retailers"],

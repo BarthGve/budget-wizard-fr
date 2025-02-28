@@ -55,24 +55,46 @@ export const useContributors = () => {
 
   const updateContributor = async (contributor: Contributor) => {
     try {
+      // Optimistic update for better UX
+      const optimisticContributors = contributors.map(c => 
+        c.id === contributor.id ? contributor : c
+      );
+      setContributors(optimisticContributors);
+      
+      // Actual update in the database
       const updatedContributors = await updateContributorService(contributor);
+      
+      // Update state with the response from the server
       setContributors(updatedContributors);
       setEditingContributor(null);
       toast.success("Le contributeur a été mis à jour avec succès");
     } catch (error: any) {
       console.error("Error updating contributor:", error);
       toast.error("Erreur lors de la mise à jour du contributeur");
+      
+      // Revert optimistic update if there's an error
+      fetchContributors();
     }
   };
 
   const deleteContributor = async (id: string) => {
     try {
+      // Optimistic removal
+      const filteredContributors = contributors.filter(c => c.id !== id);
+      setContributors(filteredContributors);
+      
+      // Actual delete
       const updatedContributors = await deleteContributorService(id);
+      
+      // Update with server data
       setContributors(updatedContributors);
       toast.success("Le contributeur a été supprimé avec succès");
     } catch (error: any) {
       console.error("Error deleting contributor:", error);
       toast.error(error.message || "Erreur lors de la suppression du contributeur");
+      
+      // Revert optimistic delete
+      fetchContributors();
     }
   };
 

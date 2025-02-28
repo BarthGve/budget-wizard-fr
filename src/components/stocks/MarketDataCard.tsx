@@ -1,26 +1,34 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Line, LineChart, ResponsiveContainer } from "recharts";
+import CardLoader from "@/components/ui/cardloader";
+
 interface MarketDataCardProps {
   symbol: string;
   data: {
     c: number;
     pc: number;
-  };
+  } | null;
   history: Array<{
     date: string;
     value: number;
-  }>;
+  }> | null;
+  isLoading?: boolean;
 }
+
 export const MarketDataCard = ({
   symbol,
   data,
-  history
+  history,
+  isLoading = false
 }: MarketDataCardProps) => {
   console.log(`Rendering MarketDataCard for ${symbol}`, {
     data,
-    history
+    history,
+    isLoading
   });
+  
   const formatPrice = (price: number, isCAC: boolean) => {
     if (isCAC) {
       return new Intl.NumberFormat('fr-FR', {
@@ -34,6 +42,7 @@ export const MarketDataCard = ({
       maximumFractionDigits: 2
     }).format(price);
   };
+  
   let displayName = "";
   let isCAC = false;
   if (symbol === '^FCHI') {
@@ -44,6 +53,23 @@ export const MarketDataCard = ({
   } else if (symbol === 'BTC-EUR') {
     displayName = 'Bitcoin/EUR';
   }
+  
+  // Si on est en chargement ou si on n'a pas de données, on affiche le loader
+  if (isLoading || !data) {
+    return (
+      <Card className="p-4 px-[13px]px-0 pb-2 my-0 py-px px-[14px]">
+        <CardHeader className="mx-0 px-0 py-[12px]">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            {displayName}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <CardLoader />
+        </CardContent>
+      </Card>
+    );
+  }
+  
   const isPositive = data.c > data.pc;
   const color = isPositive ? '#22c55e' : '#ef4444';
 
@@ -51,8 +77,10 @@ export const MarketDataCard = ({
   if (!history || history.length === 0) {
     console.warn(`No historical data for ${symbol}`);
   }
-  return <Card className="p-4 px-[13px]px-0 pb-2 my-0 py-px px-[14px]">
-      <CardHeader className="\\n mx-0 px-0 py-[12px]">
+  
+  return (
+    <Card className="p-4 px-[13px]px-0 pb-2 my-0 py-px px-[14px]">
+      <CardHeader className="mx-0 px-0 py-[12px]">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {displayName}
         </CardTitle>
@@ -71,14 +99,17 @@ export const MarketDataCard = ({
           </div>
           
           {/* Sparkline Chart */}
-          {history && history.length > 0 && <div className="h-[80px] mt-2">
+          {history && history.length > 0 && (
+            <div className="h-[80px] mt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={history}>
                   <Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={false} isAnimationActive={false} />
                 </LineChart>
               </ResponsiveContainer>
-            </div>}
+            </div>
+          )}
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };

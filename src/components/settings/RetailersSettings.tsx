@@ -9,11 +9,10 @@ import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 export const RetailersSettings = () => {
   const [open, setOpen] = useState(false);
-  const { profile, canAccessFeature, isAdmin } = usePagePermissions();
+  const { profile } = usePagePermissions();
 
-  const canAccessRetailers = isAdmin || 
-    profile?.profile_type === 'pro' || 
-    (profile && canAccessFeature('/user-settings', 'retailers'));
+  // Make retailers visible for all authenticated users
+  const canAccessRetailers = !!profile; // If profile exists, user is authenticated
 
   if (!canAccessRetailers) {
     return null;

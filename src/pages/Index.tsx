@@ -1,10 +1,12 @@
 
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
+import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import {
   calculateTotalRevenue,
   calculateMonthlyExpenses,
@@ -105,7 +107,10 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <CreateCategoryBanner />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <CreateCategoryBanner />
+          <CreateRetailerBanner />
+        </div>
         
         <DashboardTabContent
           revenue={totalRevenue}
@@ -125,3 +130,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

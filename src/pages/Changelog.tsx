@@ -19,6 +19,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ChangelogEntryForm } from "@/components/changelog/ChangelogEntryForm";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -32,7 +42,9 @@ const Changelog = () => {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<any>(null);
+  const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: entries = [], isLoading } = useQuery({
@@ -45,10 +57,12 @@ const Changelog = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["changelog"] });
       toast.success("Entrée supprimée avec succès");
+      setEntryToDelete(null);
     },
     onError: (error) => {
       console.error("Error deleting changelog entry:", error);
       toast.error("Une erreur est survenue");
+      setEntryToDelete(null);
     },
   });
 
@@ -89,10 +103,16 @@ const Changelog = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = async (entryId: string) => {
-    const confirmed = window.confirm("Êtes-vous sûr de vouloir supprimer cette entrée ?");
-    if (!confirmed) return;
-    deleteEntry(entryId);
+  const handleDelete = (entryId: string) => {
+    setEntryToDelete(entryId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (entryToDelete) {
+      deleteEntry(entryToDelete);
+      setIsDeleteDialogOpen(false);
+    }
   };
 
   const content = (
@@ -176,6 +196,25 @@ const Changelog = () => {
             />
           </DialogContent>
         </Dialog>
+
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Cette action est irréversible. L'entrée sera définitivement supprimée.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
+                Annuler
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete}>
+                Supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
@@ -188,4 +227,3 @@ const Changelog = () => {
 };
 
 export default Changelog;
-
