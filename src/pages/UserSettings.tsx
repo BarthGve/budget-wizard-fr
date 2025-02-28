@@ -17,6 +17,8 @@ const UserSettings = () => {
   // Allow all authenticated users to access retailers
   const canAccessRetailers = !!profile;
 
+  
+
   console.log('Debug permissions:', {
     profileType: profile?.profile_type,
     finalAccess: canAccessRetailers

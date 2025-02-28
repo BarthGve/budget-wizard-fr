@@ -67,11 +67,19 @@ export const CreateRetailerBanner = () => {
         Ajoutez vos enseignes favorites et suivez vos achats en toute simplicité!
       </AlertDescription>
       <div className="flex justify-end mt-2">
-        <Button
-          onClick={() => navigate("/user-settings?tab=settings")}
-          className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
-          size="sm"
-        >
+      <Button
+      onClick={() => {
+        navigate("/user-settings");
+        // Utilisation d'un cast vers HTMLElement
+        setTimeout(() => {
+          const settingsTab = document.querySelector('[value="settings"]');
+          if (settingsTab) {
+            (settingsTab as HTMLElement).click();
+          }
+        }, 100);
+      }}
+      className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+    >
           🚀 Let's go !
         </Button>
       </div>
