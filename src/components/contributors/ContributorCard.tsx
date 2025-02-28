@@ -9,7 +9,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -44,7 +43,7 @@ export const ContributorCard = ({
 }: ContributorCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [editedContributor, setEditedContributor] = useState(contributor);
+  const [editedContributor, setEditedContributor] = useState<Contributor>({...contributor});
   const { theme } = useTheme();
   const isDarkTheme = theme === "dark";
   const initials = getInitials(contributor.name);
@@ -67,6 +66,13 @@ export const ContributorCard = ({
       return data;
     },
   });
+
+  // Reset edited contributor when the contributor prop changes or dialog closes
+  useEffect(() => {
+    if (!isEditDialogOpen) {
+      setEditedContributor({...contributor});
+    }
+  }, [contributor, isEditDialogOpen]);
 
   const handleUpdate = () => {
     onEdit(editedContributor);
@@ -164,7 +170,7 @@ export const ContributorCard = ({
                   <Input
                     id="edit-email"
                     type="email"
-                    value={editedContributor.email}
+                    value={editedContributor.email || ""}
                     onChange={(e) =>
                       setEditedContributor({
                         ...editedContributor,
