@@ -7,6 +7,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 
 interface ContributorCardActionsProps {
   isOwner: boolean;
@@ -19,8 +20,10 @@ export const ContributorCardActions = ({
   onEdit,
   onDelete,
 }: ContributorCardActionsProps) => {
+  const [open, setOpen] = useState(false);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button 
           variant="outline" 
@@ -34,6 +37,7 @@ export const ContributorCardActions = ({
       <DropdownMenuContent align="end" className="w-[200px]">
         <DropdownMenuItem onClick={(e) => {
           e.stopPropagation();
+          setOpen(false);
           onEdit();
         }}>
           <Pencil className="mr-2 h-4 w-4" />
@@ -44,6 +48,7 @@ export const ContributorCardActions = ({
             className="text-destructive" 
             onClick={(e) => {
               e.stopPropagation();
+              setOpen(false);
               onDelete();
             }}
           >

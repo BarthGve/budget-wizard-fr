@@ -21,12 +21,6 @@ export const DeleteContributorDialog = ({
   onOpenChange,
   onConfirm,
 }: DeleteContributorDialogProps) => {
-  const handleDeleteConfirm = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onConfirm();
-  };
-
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent onClick={(e) => e.stopPropagation()}>
@@ -42,7 +36,10 @@ export const DeleteContributorDialog = ({
         <AlertDialogFooter>
           <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Annuler</AlertDialogCancel>
           <AlertDialogAction
-            onClick={handleDeleteConfirm}
+            onClick={(e) => {
+              e.stopPropagation();
+              onConfirm();
+            }}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             Supprimer
