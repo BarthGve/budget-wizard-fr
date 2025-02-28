@@ -3,13 +3,13 @@ import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { GlobalBalanceCard } from "../common/GlobalBalanceCard";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "@/components/credits/types";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo, memo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 // Memoization du Sidebar pour éviter les re-renders inutiles
@@ -23,6 +23,31 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isMobile = useIsMobile();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
+  const queryClient = useQueryClient();
+
+  // Configurer des écouteurs pour la modification des contributeurs
+  useEffect(() => {
+    // Configurer un canal pour les modifications de contributeurs
+    const channel = supabase
+      .channel('contributor-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'contributors'
+        },
+        () => {
+          // Invalider les requêtes pour forcer le rechargement des données
+          queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Optimisation de la requête des crédits avec staleTime
   const { data: credits } = useQuery({
@@ -85,7 +110,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   // Optimisation du rendu avec un conteneur memoizé
   const MemoizedContent = useMemo(() => (
-    <main className=" flex-1 flex flex-col h-screen touch-scroll">
+    <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!userProfile?.isAdmin && (
         <div className={`fixed right-6 top-4 z-50 ${isMobile ? 'ios-top-safe pt-4' : ''}`}>
           <GlobalBalanceCard 

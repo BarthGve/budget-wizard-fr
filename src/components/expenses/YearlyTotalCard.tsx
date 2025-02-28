@@ -17,7 +17,7 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal }: YearlyT
   const isIncrease = percentageChange > 0;
 
   return (
-    <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300">
+    <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300 hover:shadow-xl">
       <CardHeader className="py-[16px]">
         <div className="flex flex-row items-center justify-between">
           <CardTitle className="text-2xl text-white">Total des dépenses</CardTitle>

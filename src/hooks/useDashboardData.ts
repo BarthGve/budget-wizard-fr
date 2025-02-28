@@ -81,7 +81,7 @@ export const useDashboardData = () => {
       };
     },
     enabled: !!currentUser?.id,
-    staleTime: 1000 * 60 * 2, // Cache de 2 minutes pour les données du dashboard
+    staleTime: 1000 * 60 * 1, // Réduire le cache à 1 minute pour être plus réactif
     retry: 1 // Limite les tentatives de reconnexion
   });
 
