@@ -2,11 +2,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, X, Save } from "lucide-react";
+import { Save, X } from "lucide-react";
 import { useUpdateCategory } from "./useUpdateCategory";
 import { useDeleteCategory } from "./useDeleteCategory";
 import { Category } from "./types";
-import { DeleteCategoryDialog } from "./DeleteCategoryDialog";
+import { CategoryActions } from "./CategoryActions";
+import { DeleteCategoryConfirmDialog } from "./DeleteCategoryConfirmDialog";
 
 interface CategoryListProps {
   categories: Category[];
@@ -14,12 +15,28 @@ interface CategoryListProps {
 
 export const CategoryList = ({ categories }: CategoryListProps) => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const { updateCategory } = useUpdateCategory(() => setEditingCategory(null));
   const { deleteCategory } = useDeleteCategory();
 
   const handleUpdateCategory = () => {
     if (!editingCategory) return;
     updateCategory(editingCategory);
+  };
+
+  const handleEditCategory = (category: Category) => {
+    setEditingCategory(category);
+  };
+
+  const handleDeleteClick = (categoryId: string) => {
+    setCategoryToDelete(categoryId);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (categoryToDelete) {
+      deleteCategory(categoryToDelete);
+      setCategoryToDelete(null);
+    }
   };
 
   return (
@@ -52,20 +69,20 @@ export const CategoryList = ({ categories }: CategoryListProps) => {
           ) : (
             <>
               <span>{category.name}</span>
-              <div className="flex items-center space-x-2">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setEditingCategory(category)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <DeleteCategoryDialog categoryId={category.id} onDelete={deleteCategory} />
-              </div>
+              <CategoryActions
+                onEdit={() => handleEditCategory(category)}
+                onDelete={() => handleDeleteClick(category.id)}
+              />
             </>
           )}
         </div>
       ))}
+
+      <DeleteCategoryConfirmDialog
+        isOpen={!!categoryToDelete}
+        onOpenChange={(open) => !open && setCategoryToDelete(null)}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 };
