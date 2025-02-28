@@ -35,14 +35,15 @@ export const EditContributorDialog = ({
     }
   }, [contributor, isOpen]);
 
-  const handleUpdate = () => {
+  const handleUpdate = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onUpdate(editedContributor);
-    onOpenChange(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent onClick={(e) => e.stopPropagation()}>
         <DialogHeader>
           <DialogTitle>Modifier le contributeur</DialogTitle>
           <DialogDescription>

@@ -53,6 +53,7 @@ export const ContributorCard = ({
 
   const handleEditContributor = (updatedContributor: Contributor) => {
     onEdit(updatedContributor);
+    setIsEditDialogOpen(false);
   };
 
   const handleDeleteConfirm = () => {
