@@ -9,6 +9,7 @@ import {
   updateContributorService,
   deleteContributorService,
 } from "@/services/contributors";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useContributors = () => {
   const [contributors, setContributors] = useState<Contributor[]>([]);
@@ -16,6 +17,34 @@ export const useContributors = () => {
     null
   );
   const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  // Set up realtime subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel('contributors-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'contributors'
+        },
+        () => {
+          console.log('Contributors table changed, fetching updated data');
+          fetchContributors();
+          
+          // Invalidate all related queries to ensure dashboard components update
+          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+          queryClient.invalidateQueries({ queryKey: ["current-user"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const fetchContributors = async () => {
     try {
@@ -44,12 +73,37 @@ export const useContributors = () => {
         return;
       }
 
+      // Optimistic update
+      const optimisticId = crypto.randomUUID();
+      const optimisticContributor: Contributor = {
+        id: optimisticId,
+        name: newContributor.name,
+        email: newContributor.email || undefined,
+        total_contribution: parseFloat(newContributor.total_contribution),
+        percentage_contribution: 0, // Will be calculated on server
+        is_owner: false,
+        profile_id: user.id
+      };
+      
+      // Add optimistic contributor to the list
+      setContributors(prev => [...prev, optimisticContributor]);
+      
+      // Actual update in the database
       const updatedContributors = await addContributorService(newContributor, user.id);
+      
+      // Update with actual data from server
       setContributors(updatedContributors);
+      
+      // Immediately invalidate all relevant queries
+      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+      
       toast.success("Le contributeur a été ajouté avec succès");
     } catch (error: any) {
       console.error("Error adding contributor:", error);
       toast.error(error.message || "Erreur lors de l'ajout du contributeur");
+      
+      // Revert optimistic update on error
+      fetchContributors();
     }
   };
 
@@ -67,6 +121,10 @@ export const useContributors = () => {
       // Update state with the response from the server
       setContributors(updatedContributors);
       setEditingContributor(null);
+      
+      // Immediately invalidate queries
+      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+      
       toast.success("Le contributeur a été mis à jour avec succès");
     } catch (error: any) {
       console.error("Error updating contributor:", error);
@@ -88,6 +146,10 @@ export const useContributors = () => {
       
       // Update with server data
       setContributors(updatedContributors);
+      
+      // Immediately invalidate queries
+      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+      
       toast.success("Le contributeur a été supprimé avec succès");
     } catch (error: any) {
       console.error("Error deleting contributor:", error);
