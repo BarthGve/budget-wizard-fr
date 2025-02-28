@@ -1,9 +1,37 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 export const useDashboardData = () => {
+  const queryClient = useQueryClient();
+
+  // Set up real-time listener for contributor changes
+  useEffect(() => {
+    // Subscribe to changes on the contributors table
+    const channel = supabase
+      .channel('contributor-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'contributors'
+        },
+        () => {
+          // Immediately invalidate the dashboard data to trigger a refresh
+          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+        }
+      )
+      .subscribe();
+
+    // Cleanup function
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   // Utilisation d'une clé partagée pour le user
   const { data: currentUser } = useQuery({
     queryKey: ["current-user"],
@@ -81,7 +109,7 @@ export const useDashboardData = () => {
       };
     },
     enabled: !!currentUser?.id,
-    staleTime: 1000 * 60 * 1, // Réduire le cache à 1 minute pour être plus réactif
+    staleTime: 1000 * 30, // Réduire le cache à 30 secondes pour être plus réactif
     retry: 1 // Limite les tentatives de reconnexion
   });
 
