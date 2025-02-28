@@ -63,7 +63,7 @@ export const CreateRetailerBanner = () => {
       <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
         Suivez vos dépenses, magasin par magasin 🛍️
       </AlertTitle>
-      <AlertDescription className="mt-1 text-muted-foreground">
+      <AlertDescription className="mt-1 text-muted-foreground mb-2">
         Ajoutez vos enseignes favorites et suivez vos achats en toute simplicité!
       </AlertDescription>
       <div className="flex justify-end mt-2">

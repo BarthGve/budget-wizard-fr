@@ -58,7 +58,7 @@ export const CreateCategoryBanner = () => {
       <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
         Mettez de l'ordre dans vos dépenses ! 🏷️
       </AlertTitle>
-      <AlertDescription className="mt-1 text-muted-foreground">
+      <AlertDescription className="mt-1 text-muted-foreground mb-2">
         Un budget bien organisé, c'est un budget maîtrisé ! Ajoutez votre première catégorie maintenant.
       </AlertDescription>
       <div className="flex justify-end mt-2">
