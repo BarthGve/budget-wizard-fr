@@ -71,7 +71,7 @@ export const CreateRetailerBanner = () => {
         onClick={() => navigate("/user-settings")}
         className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
       >
-        Let's go 🚀
+        🚀 Let's go!
       </Button>
     </div>
   </Alert>

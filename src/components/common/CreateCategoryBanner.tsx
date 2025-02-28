@@ -56,17 +56,17 @@ export const CreateCategoryBanner = () => {
       <X className="h-4 w-4" />
     </Button>
     <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
-      Commencez par créer une catégorie
+    Mettez de l’ordre dans vos dépenses ! 🏷️
     </AlertTitle>
     <AlertDescription className="mt-2 text-muted-foreground">
-      Pour mieux organiser vos dépenses récurrentes, créez votre première catégorie dans les paramètres.
+    Un budget bien organisé, c’est un budget maîtrisé ! Ajoutez votre première catégorie maintenant.
     </AlertDescription>
     <div className="flex justify-end mt-4">
       <Button
         onClick={() => navigate("/user-settings")}
         className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
       >
-        Créer une catégorie
+       🔥 “Je me lance !
       </Button>
     </div>
   </Alert>
