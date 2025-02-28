@@ -64,7 +64,7 @@ export const CreateRetailerBanner = () => {
         Suivez vos dépenses, magasin par magasin 🛍️
       </AlertTitle>
       <AlertDescription className="mt-1 text-muted-foreground">
-        Ajoutez vos enseignes favorites et suivez vos achats en toute simplicité. Rendez-vous dans les paramètres !
+        Ajoutez vos enseignes favorites et suivez vos achats en toute simplicité!
       </AlertDescription>
       <div className="flex justify-end mt-2">
         <Button
