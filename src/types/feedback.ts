@@ -4,7 +4,7 @@ export interface Feedback {
   title: string;
   content: string;
   rating: number;
-  status: "pending" | "in_progress" | "completed";
+  status: "pending" | "read" | "published";
   created_at: string;
   profile: {
     full_name: string | null;

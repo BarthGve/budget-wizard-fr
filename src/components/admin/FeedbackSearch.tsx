@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-type StatusFilter = "pending" | "in_progress" | "completed" | "all";
+type StatusFilter = "pending" | "read" | "published" | "all";
 
 interface FeedbackSearchProps {
   search: string;
@@ -41,8 +41,8 @@ export const FeedbackSearch = ({
         <SelectContent>
           <SelectItem value="all">Tous les statuts</SelectItem>
           <SelectItem value="pending">En attente</SelectItem>
-          <SelectItem value="in_progress">En cours</SelectItem>
-          <SelectItem value="completed">Terminé</SelectItem>
+          <SelectItem value="read">Lu</SelectItem>
+          <SelectItem value="published">Publié</SelectItem>
         </SelectContent>
       </Select>
     </div>

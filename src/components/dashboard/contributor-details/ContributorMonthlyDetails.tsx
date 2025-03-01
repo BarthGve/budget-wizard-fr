@@ -31,10 +31,10 @@ export function ContributorMonthlyDetails({
 
   return (
     <Card className="p-4">
-      <h3 className="text-lg font-semibold mb-4">
-        {isCredit ? "Détails des crédits" : "Détails des charges"}
+      <h3 className="text-lg font-semibold mb-2">
+        {isCredit ? "Contributions aux crédits" : "Contributions aux charges"}
       </h3>
-      <div className="space-y-4">
+      <div >
         {expenses.map((item) => {
           const name = isCredit ? item.nom_credit : item.name;
           const category = isCredit ? item.nom_domaine : item.category;
@@ -43,7 +43,7 @@ export function ContributorMonthlyDetails({
           return (
             <div
               key={item.id}
-              className="flex items-center justify-between p-2 rounded-lg border"
+              className="flex items-center justify-between p-1"
             >
               <div>
                 <p className="font-medium">{name}</p>

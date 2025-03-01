@@ -15,7 +15,7 @@ import { FeedbackPagination } from "@/components/admin/FeedbackPagination";
 
 const ITEMS_PER_PAGE = 15;
 
-type StatusFilter = "pending" | "in_progress" | "completed" | "all";
+type StatusFilter = "pending" | "read" | "published" | "all";
 
 export const AdminFeedbacks = () => {
   const [page, setPage] = useState(1);
@@ -27,7 +27,7 @@ export const AdminFeedbacks = () => {
   const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
   const [localFeedbacks, setLocalFeedbacks] = useState<Feedback[]>([]);
 
-  const { data: feedbacks, isLoading } = useQuery({
+  const { data: feedbacks, isLoading, refetch } = useQuery({
     queryKey: ["feedbacks", page, statusFilter, sortColumn, sortDirection],
     queryFn: async () => {
       let query = supabase
@@ -74,7 +74,7 @@ export const AdminFeedbacks = () => {
 
   const totalPages = Math.ceil((feedbacks?.totalCount || 0) / ITEMS_PER_PAGE);
 
-  const handleUpdateStatus = async (id: string, newStatus: "pending" | "in_progress" | "completed") => {
+  const handleUpdateStatus = async (id: string, newStatus: "pending" | "read" | "published") => {
     try {
       const { error } = await supabase
         .from("feedbacks")
@@ -96,13 +96,83 @@ export const AdminFeedbacks = () => {
     }
   };
 
+  const handleDeleteFeedback = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("feedbacks")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setLocalFeedbacks(prevFeedbacks => 
+        prevFeedbacks.filter(feedback => feedback.id !== id)
+      );
+      
+      toast.success("Feedback supprimé avec succès");
+      
+      if (localFeedbacks.length === 1 && page > 1) {
+        setPage(page - 1);
+      } else {
+        refetch();
+      }
+    } catch (error) {
+      console.error("Error deleting feedback:", error);
+      toast.error("Erreur lors de la suppression du feedback");
+    }
+  };
+
+  const handleApproveFeedback = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("feedbacks")
+        .update({ status: "published" })
+        .eq("id", id);
+
+      if (error) throw error;
+      
+      setLocalFeedbacks(prevFeedbacks =>
+        prevFeedbacks.map(feedback =>
+          feedback.id === id ? { ...feedback, status: "published" } : feedback
+        )
+      );
+      
+      toast.success("Feedback publié");
+    } catch (error) {
+      console.error("Error approving feedback:", error);
+      toast.error("Erreur lors de la publication du feedback");
+    }
+  };
+
+  const handleUnapproveFeedback = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("feedbacks")
+        .update({ status: "read" })
+        .eq("id", id);
+
+      if (error) throw error;
+      
+      setLocalFeedbacks(prevFeedbacks =>
+        prevFeedbacks.map(feedback =>
+          feedback.id === id ? { ...feedback, status: "read" } : feedback
+        )
+      );
+      
+      toast.success("Publication retirée");
+    } catch (error) {
+      console.error("Error unapproving feedback:", error);
+      toast.error("Erreur lors du retrait de la publication");
+    }
+  };
+
   const handleDragEnd = async (result: any) => {
     if (!result.destination) return;
 
     const feedbackId = result.draggableId;
     const newStatus = result.destination.droppableId;
 
-    await handleUpdateStatus(feedbackId, newStatus as "pending" | "in_progress" | "completed");
+    await handleUpdateStatus(feedbackId, newStatus as "pending" | "read" | "published");
   };
 
   if (isLoading) return <div>Chargement...</div>;
@@ -140,6 +210,9 @@ export const AdminFeedbacks = () => {
                 feedbacks={filteredFeedbacks}
                 onViewDetails={setSelectedFeedback}
                 onStatusUpdate={handleStatusUpdate}
+                onDelete={handleDeleteFeedback}
+                onApprove={handleApproveFeedback}
+                onUnapprove={handleUnapproveFeedback}
               />
             ) : (
               <FeedbacksKanban

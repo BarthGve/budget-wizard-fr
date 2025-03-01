@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { appConfig } from "@/config/app.config";
@@ -55,10 +56,8 @@ const Landing = () => {
         *,
         profile:profiles(full_name, avatar_url)
       `)
-      .gte('rating', 4)
-      .eq('status', 'in_progress')
-      .order('created_at', { ascending: false })
-      .limit(3);
+      .eq('status', 'published')
+      .order('created_at', { ascending: false });
 
     if (!error && data) {
       setTestimonials(data);

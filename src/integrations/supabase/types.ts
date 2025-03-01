@@ -927,7 +927,7 @@ export type Database = {
       app_role: "admin" | "user"
       changelog_entry_type: "new" | "improvement" | "bugfix"
       credit_status: "actif" | "remboursé" | "dépassé"
-      feedback_status: "pending" | "in_progress" | "completed"
+      feedback_status: "pending" | "read" | "published"
       mode_planification_type: "par_date" | "par_mensualite"
       notification_status: "non_lu" | "lu"
       notification_type: "credit_echeance" | "autre"

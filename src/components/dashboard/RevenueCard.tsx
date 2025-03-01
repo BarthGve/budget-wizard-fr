@@ -39,16 +39,7 @@ export const RevenueCard = ({
       <CardContent className="space-y-4">
         <p className="font-bold text-xl">{Math.round(displayedRevenue)} €</p>
         
-        {contributorShares.length > 0 && (
-          <div className="mt-2 space-y-1">
-            {contributorShares.map((share, index) => (
-              <div key={index} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{share.name}</span>
-                <span>{Math.round(share.amount)} €</span>
-              </div>
-            ))}
-          </div>
-        )}
+    
       </CardContent>
     </Card>
   );

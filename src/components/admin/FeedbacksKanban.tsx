@@ -19,13 +19,13 @@ export const FeedbacksKanban = ({ feedbacks, onDragEnd }: FeedbacksKanbanProps) 
       title: "En attente",
       items: feedbacks.filter(f => f.status === "pending"),
     },
-    in_progress: {
-      title: "En cours",
-      items: feedbacks.filter(f => f.status === "in_progress"),
+    read: {
+      title: "Lu",
+      items: feedbacks.filter(f => f.status === "read"),
     },
-    completed: {
-      title: "Terminé",
-      items: feedbacks.filter(f => f.status === "completed"),
+    published: {
+      title: "Publié",
+      items: feedbacks.filter(f => f.status === "published"),
     },
   };
 
