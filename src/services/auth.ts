@@ -24,7 +24,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
   console.log("Tentative d'inscription avec:", { email: credentials.email, name: credentials.name });
   
   try {
-    // Approche plus directe pour l'inscription
+    // Utilisation de l'API la plus simple possible pour éviter les problèmes
     const { data, error } = await supabase.auth.signUp({
       email: credentials.email,
       password: credentials.password,
@@ -36,7 +36,6 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     console.log("Réponse d'inscription:", { data, error: error ? error.message : null });
 
     if (error) {
-      // Gestion des erreurs connues
       if (error.message.includes("User already registered")) {
         throw new Error("Un compte existe déjà avec cet email");
       } else {
@@ -48,18 +47,15 @@ export const registerUser = async (credentials: RegisterCredentials) => {
       throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
     }
     
-    // Stocker l'email pour permettre la vérification
     localStorage.setItem("verificationEmail", credentials.email);
-    
     toast.success("Inscription réussie! Veuillez vérifier votre email.");
     
     return data;
   } catch (error: any) {
     console.error("Erreur lors de l'inscription:", error);
     
-    // Message d'erreur générique pour les problèmes de base de données
     if (error.message.includes("Database error")) {
-      throw new Error("Problème technique lors de l'inscription. Veuillez réessayer ultérieurement.");
+      throw new Error("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants.");
     }
     
     throw error;
