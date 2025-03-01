@@ -1,13 +1,6 @@
 
-import { Button } from "@/components/ui/button";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
+import { CardActions } from "@/components/ui/card-actions";
 
 interface ContributorCardActionsProps {
   isOwner: boolean;
@@ -20,43 +13,29 @@ export const ContributorCardActions = ({
   onEdit,
   onDelete,
 }: ContributorCardActionsProps) => {
-  const [open, setOpen] = useState(false);
+  const editOption = {
+    label: "Modifier",
+    icon: <Pencil className="mr-2 h-4 w-4" />,
+    onClick: () => onEdit()
+  };
+
+  const deleteOption = {
+    label: "Supprimer",
+    icon: <Trash2 className="mr-2 h-4 w-4" />,
+    onClick: () => onDelete(),
+    className: "text-destructive"
+  };
+
+  // Only include the delete option if not owner
+  const options = isOwner ? [editOption] : [editOption, deleteOption];
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          type="button"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MoreVertical className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[200px]">
-        <DropdownMenuItem onClick={(e) => {
-          e.stopPropagation();
-          setOpen(false);
-          onEdit();
-        }}>
-          <Pencil className="mr-2 h-4 w-4" />
-          Modifier
-        </DropdownMenuItem>
-        {!isOwner && (
-          <DropdownMenuItem 
-            className="text-destructive" 
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpen(false);
-              onDelete();
-            }}
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Supprimer
-          </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <CardActions 
+      options={options}
+      buttonVariant="outline"
+      buttonSize="icon"
+      align="end"
+      width="w-[200px]"
+    />
   );
 };

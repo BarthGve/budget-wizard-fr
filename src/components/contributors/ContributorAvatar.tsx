@@ -1,6 +1,5 @@
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getAvatarColor, getInitials } from "@/utils/avatarColors";
+import { ContributorAvatar as SharedContributorAvatar } from "@/components/ui/contributor-avatar";
 
 interface ContributorAvatarProps {
   name: string;
@@ -9,28 +8,6 @@ interface ContributorAvatarProps {
   isDarkTheme: boolean;
 }
 
-export const ContributorAvatar = ({ 
-  name, 
-  avatarUrl, 
-  isOwner, 
-  isDarkTheme 
-}: ContributorAvatarProps) => {
-  const initials = getInitials(name);
-  const avatarColors = getAvatarColor(name, isDarkTheme);
-
-  return (
-    <Avatar>
-      {isOwner && avatarUrl ? (
-        <AvatarImage src={avatarUrl} alt={name} />
-      ) : null}
-      <AvatarFallback 
-        style={{
-          backgroundColor: avatarColors.background,
-          color: avatarColors.text,
-        }}
-      >
-        {initials}
-      </AvatarFallback>
-    </Avatar>
-  );
+export const ContributorAvatar = (props: ContributorAvatarProps) => {
+  return <SharedContributorAvatar {...props} />;
 };
