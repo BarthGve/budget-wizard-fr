@@ -39,22 +39,27 @@ export const addContributorService = async (
     email: newContributor.email ? newContributor.email.trim() : null, // On s'assure que l'email est null si vide
     profile_id: userId,
     // On doit toujours inclure total_contribution pour que les triggers fonctionnent
-    total_contribution: contribution
+    total_contribution: contribution,
+    is_encrypted: false // Par défaut à false
   };
   
   // Si le chiffrement est activé, chiffrer les données sensibles
   if (encryptionEnabled) {
     try {
       const userKey = await getUserEncryptionKey(userId);
+      console.log("Clé de chiffrement récupérée pour l'utilisateur:", userId);
+      
       const encryptedValue = encryptValue(contribution, userKey);
       
       console.log("Chiffrement activé pour l'ajout:", {
         originalValue: contribution,
-        encryptedValue: encryptedValue
+        encryptedValueLength: encryptedValue.length
       });
       
       contributorData.total_contribution_encrypted = encryptedValue;
-      contributorData.is_encrypted = true;
+      contributorData.is_encrypted = true; // Important: définir is_encrypted à true
+
+      console.log("La valeur de is_encrypted est définie à:", contributorData.is_encrypted);
     } catch (error) {
       console.error("Erreur lors du chiffrement:", error);
       throw new Error("Impossible de chiffrer les données");
@@ -67,10 +72,12 @@ export const addContributorService = async (
 
   console.log("Ajout d'un nouveau contributeur:", {
     encryptionEnabled: encryptionEnabled,
+    isEncrypted: contributorData.is_encrypted,
+    hasEncryptedData: !!contributorData.total_contribution_encrypted,
     contributorData: {
       ...contributorData,
       total_contribution_encrypted: contributorData.total_contribution_encrypted ? 
-        contributorData.total_contribution_encrypted.substring(0, 20) + '...' : null
+        "Données chiffrées présentes" : null
     }
   });
 
@@ -86,6 +93,6 @@ export const addContributorService = async (
   }
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
-  console.log("Contributeur ajouté avec succès:", insertedContributor.id);
+  console.log("Contributeur ajouté avec succès:", insertedContributor.id, "is_encrypted:", insertedContributor.is_encrypted);
   return await fetchContributorsService();
 };

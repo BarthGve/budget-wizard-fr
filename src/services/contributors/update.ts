@@ -44,21 +44,26 @@ export const updateContributorService = async (contributor: Contributor) => {
   
   // Le champ total_contribution est toujours nécessaire pour les triggers
   updateData.total_contribution = contributor.total_contribution;
+  updateData.is_encrypted = false; // Par défaut à false
   
   // Si le chiffrement est activé, chiffrer les données sensibles
   if (encryptionEnabled) {
     try {
       const userKey = await getUserEncryptionKey(user.id);
+      console.log("Clé de chiffrement récupérée pour la mise à jour");
+      
       const encryptedValue = encryptValue(contributor.total_contribution, userKey);
       
       console.log("Chiffrement activé pour la mise à jour:", {
         contributorId: contributor.id,
         originalValue: contributor.total_contribution,
-        encryptedValue: encryptedValue
+        encryptedValueLength: encryptedValue.length
       });
       
       updateData.total_contribution_encrypted = encryptedValue;
-      updateData.is_encrypted = true;
+      updateData.is_encrypted = true; // Important: définir is_encrypted à true
+      
+      console.log("La valeur de is_encrypted est définie à:", updateData.is_encrypted);
     } catch (error) {
       console.error("Erreur lors du chiffrement:", error);
       throw new Error("Impossible de chiffrer les données");
@@ -72,20 +77,28 @@ export const updateContributorService = async (contributor: Contributor) => {
   console.log("Mise à jour d'un contributeur:", {
     id: contributor.id,
     encryptionEnabled: encryptionEnabled,
-    updateData: updateData
+    isEncrypted: updateData.is_encrypted,
+    hasEncryptedData: !!updateData.total_contribution_encrypted,
+    updateData: {
+      ...updateData,
+      total_contribution_encrypted: updateData.total_contribution_encrypted ? 
+        "Données chiffrées présentes" : null
+    }
   });
 
-  const { error: updateError } = await supabase
+  const { data: updatedContributor, error: updateError } = await supabase
     .from("contributors")
     .update(updateData)
     .eq("id", contributor.id)
-    .eq("profile_id", user.id);
+    .eq("profile_id", user.id)
+    .select()
+    .single();
 
   if (updateError) {
     console.error("Erreur lors de la mise à jour:", updateError);
     throw updateError;
   }
 
-  console.log("Mise à jour réussie, récupération des données mises à jour");
+  console.log("Mise à jour réussie, contributeur mis à jour:", updatedContributor.id, "is_encrypted:", updatedContributor.is_encrypted);
   return await fetchContributorsService();
 };
