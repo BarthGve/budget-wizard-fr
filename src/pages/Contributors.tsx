@@ -84,9 +84,15 @@ const Contributors = () => {
   // Fonctions de gestion des contributeurs avec mises à jour optimistes
   const handleAddContributor = async (newContributor) => {
     const optimisticId = `temp-${Date.now()}`;
-    queryClient.setQueryData(["contributors"], (old = []) => [
-      { ...newContributor, id: optimisticId },
-      ...old
+    // Ensure contributors is treated as an array
+    const currentContributors = Array.isArray(contributors) ? contributors : [];
+    
+    // Parse the string to number for total_contribution
+    const contributionValue = parseFloat(newContributor.total_contribution);
+    
+    queryClient.setQueryData(["contributors"], [
+      { ...newContributor, id: optimisticId, total_contribution: contributionValue },
+      ...currentContributors
     ]);
 
     try {
@@ -95,15 +101,21 @@ const Contributors = () => {
 
       const { data, error } = await supabase
         .from("contributors")
-        .insert([{ ...newContributor, profile_id: user.id }])
+        .insert([{ 
+          ...newContributor,
+          total_contribution: contributionValue, // Ensure we use the numeric value
+          profile_id: user.id 
+        }])
         .select()
         .single();
 
       if (error) throw error;
 
       // Mise à jour avec les vraies données du serveur
-      queryClient.setQueryData(["contributors"], (old = []) => 
-        old.map(item => item.id === optimisticId ? data : item)
+      const updatedContributors = Array.isArray(contributors) ? contributors : [];
+      
+      queryClient.setQueryData(["contributors"], 
+        updatedContributors.map(item => item.id === optimisticId ? data : item)
       );
 
       toast.success("Contributeur ajouté avec succès");
@@ -120,9 +132,12 @@ const Contributors = () => {
     // Sauvegarde de l'état précédent
     const previousData = queryClient.getQueryData(["contributors"]);
     
+    // Ensure contributors is treated as an array
+    const currentContributors = Array.isArray(contributors) ? contributors : [];
+    
     // Mise à jour optimiste
-    queryClient.setQueryData(["contributors"], (old = []) => 
-      old.map(item => item.id === contributor.id ? contributor : item)
+    queryClient.setQueryData(["contributors"], 
+      currentContributors.map(item => item.id === contributor.id ? contributor : item)
     );
     
     try {
@@ -147,9 +162,12 @@ const Contributors = () => {
     // Sauvegarde de l'état précédent
     const previousData = queryClient.getQueryData(["contributors"]);
     
+    // Ensure contributors is treated as an array
+    const currentContributors = Array.isArray(contributors) ? contributors : [];
+    
     // Mise à jour optimiste
-    queryClient.setQueryData(["contributors"], (old = []) => 
-      old.filter(item => item.id !== id)
+    queryClient.setQueryData(["contributors"], 
+      currentContributors.filter(item => item.id !== id)
     );
     
     try {
@@ -195,7 +213,7 @@ const Contributors = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {contributors.map(contributor => (
+              {Array.isArray(contributors) && contributors.map(contributor => (
                 <ContributorCard 
                   key={contributor.id} 
                   contributor={contributor} 
