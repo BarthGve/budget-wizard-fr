@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { useEffect } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -32,6 +33,12 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     },
     staleTime: 1000 * 60, // 1 minute
   });
+
+  // Effet pour forcer le rafraîchissement des données d'authentification au changement de route
+  useEffect(() => {
+    // Invalider la requête auth à chaque changement de route
+    queryClient.invalidateQueries({ queryKey: ["auth"] });
+  }, [location.pathname, queryClient]);
 
   if (isLoading) {
     return <div>Chargement...</div>;
