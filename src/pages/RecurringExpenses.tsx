@@ -10,6 +10,7 @@ import { RecurringExpenseDialog } from "@/components/recurring-expenses/Recurrin
 import { RecurringExpenseTable } from "@/components/recurring-expenses/RecurringExpenseTable";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import StyledLoader from "@/components/ui/StyledLoader";
+import { memo, useCallback } from "react";
 
 interface RecurringExpense {
   id: string;
@@ -22,9 +23,11 @@ interface RecurringExpense {
   created_at: string;
 }
 
-const RecurringExpenses = () => {
+// Utilisation de memo pour éviter les re-renders inutiles
+const RecurringExpenses = memo(function RecurringExpenses() {
   const queryClient = useQueryClient();
   
+  // Configuration optimisée de la requête
   const {
     data: recurringExpenses,
     isLoading
@@ -57,31 +60,35 @@ const RecurringExpenses = () => {
     },
     staleTime: 1000 * 60 * 5, // Cache data for 5 minutes to prevent unnecessary refetches
     refetchOnWindowFocus: false, // Disable refetching when window gains focus
+    refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
     retry: 1 // Only retry once on failure
   });
 
-  const handleDeleteExpense = async (id: string) => {
+  // Optimiser avec useCallback pour éviter les recréations de fonctions
+  const handleDeleteExpense = useCallback(async (id: string) => {
     try {
-      const {
-        error
-      } = await supabase.from("recurring_expenses").delete().eq("id", id);
+      const { error } = await supabase.from("recurring_expenses").delete().eq("id", id);
       if (error) throw error;
+      
+      // Invalidation ciblée
       queryClient.invalidateQueries({
-        queryKey: ["recurring-expenses"]
+        queryKey: ["recurring-expenses"],
+        exact: true
       });
+      
       toast.success("Dépense supprimée avec succès");
     } catch (error) {
       console.error("Error deleting expense:", error);
       toast.error("Erreur lors de la suppression de la dépense");
     }
-  };
+  }, [queryClient]);
 
   const monthlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "monthly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
   const quarterlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "quarterly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
   const yearlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "yearly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
 
   if (isLoading) {
-    return <StyledLoader />;
+    return <DashboardLayout><StyledLoader /></DashboardLayout>;
   }
 
   return <DashboardLayout>
@@ -143,6 +150,6 @@ const RecurringExpenses = () => {
       </div>
     </div>
   </DashboardLayout>;
-};
+});
 
 export default RecurringExpenses;

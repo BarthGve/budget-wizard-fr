@@ -37,6 +37,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     refetchOnWindowFocus: false,
     refetchInterval: false,
     refetchOnMount: true,
+    refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
     retry: false,
   });
 

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 /**
  * Composant qui écoute les changements d'état d'authentification
- * et met à jour le cache React Query en conséquence
+ * et met à jour le cache React Query en conséquence de manière optimisée
  */
 export const AuthListener = () => {
   const queryClient = useQueryClient();
@@ -39,15 +39,28 @@ export const AuthListener = () => {
         previousAuthState.current = currentAuthState;
 
         if (event === "SIGNED_IN") {
-          // Invalider le cache de manière sélective
-          queryClient.invalidateQueries({ queryKey: ["auth"] });
-          queryClient.invalidateQueries({ queryKey: ["current-user"] });
-          queryClient.invalidateQueries({ queryKey: ["profile"] });
+          // Invalider le cache de manière sélective avec des requêtes ciblées
+          queryClient.invalidateQueries({ queryKey: ["auth"], exact: true });
+          queryClient.invalidateQueries({ queryKey: ["current-user"], exact: true });
+          queryClient.invalidateQueries({ queryKey: ["profile"], exact: true });
           // Ne pas naviguer ici pour éviter les rechargements complets
         } else if (event === "SIGNED_OUT") {
           try {
-            // Vider le cache React Query de manière ciblée
-            queryClient.clear(); // Plus efficace pour effacer complètement l'état
+            // Liste des clés de cache spécifiques à supprimer
+            const keysToRemove = [
+              "auth", 
+              "current-user", 
+              "profile", 
+              "contributors", 
+              "expenses", 
+              "recurring-expenses",
+              "recurring-expense-categories"
+            ];
+            
+            // Supprimer les entrées spécifiques au lieu de vider tout le cache
+            keysToRemove.forEach(key => {
+              queryClient.removeQueries({ queryKey: [key], exact: true });
+            });
             
             // Rediriger vers la page de connexion de manière programmatique
             // Utiliser navigate au lieu de window.location pour éviter un rechargement complet

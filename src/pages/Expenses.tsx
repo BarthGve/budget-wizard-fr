@@ -6,20 +6,23 @@ import { YearlyTotalCard } from "@/components/expenses/YearlyTotalCard";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
-import { useCallback, useState } from "react";
+import { useCallback, useState, memo } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { startOfYear, endOfYear, subYears } from "date-fns";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import StyledLoader from "@/components/ui/StyledLoader";
 
-const Expenses = () => {
+// Utilisation de memo pour éviter les re-renders inutiles
+const Expenses = memo(function Expenses() {
   const queryClient = useQueryClient();
   const {
     retailers
   } = useRetailers();
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
+  
+  // Configuration optimisée de la requête
   const {
     data: expenses,
     isLoading
@@ -38,14 +41,22 @@ const Expenses = () => {
       } = await supabase.from("expenses").select("*").eq("profile_id", user.id);
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Garder les données fraîches pendant 5 minutes
+    refetchOnWindowFocus: false, // Désactiver le refetch au focus de la fenêtre
+    refetchOnMount: true,
+    refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
   });
+
+  // Optimiser avec useCallback pour éviter les recréations de fonctions
   const handleExpenseUpdated = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: ["expenses"]
+      queryKey: ["expenses"],
+      exact: true // Invalidation ciblée uniquement
     });
     setAddExpenseDialogOpen(false);
   }, [queryClient]);
+
   const expensesByRetailer = retailers?.map(retailer => ({
     retailer,
     expenses: expenses?.filter(expense => expense.retailer_id === retailer.id) || []
@@ -65,9 +76,11 @@ const Expenses = () => {
     return expenseDate >= lastYearStart && expenseDate <= lastYearEnd;
   }) || [];
   const lastYearTotal = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+  
   if (isLoading) {
-    return <StyledLoader/>;
+    return <DashboardLayout><StyledLoader/></DashboardLayout>;
   }
+  
   return <DashboardLayout>
       <div className="grid gap-6">
         <div className="space-y-2">
@@ -107,6 +120,6 @@ const Expenses = () => {
         </div>
       </div>
     </DashboardLayout>;
-};
+});
 
 export default Expenses;
