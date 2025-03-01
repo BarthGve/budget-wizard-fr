@@ -34,8 +34,13 @@ export const AuthListener = () => {
             // Vider le cache React Query
             queryClient.clear();
             
-            // Rediriger vers la page d'accueil au lieu de la page de connexion
+            // Rediriger explicitement vers la landing page avec replace: true
             navigate("/", { replace: true });
+            
+            // Forcer un rechargement des données de la landing page
+            setTimeout(() => {
+              queryClient.invalidateQueries();
+            }, 100);
           } catch (error) {
             console.error("Error during sign out handling:", error);
           }

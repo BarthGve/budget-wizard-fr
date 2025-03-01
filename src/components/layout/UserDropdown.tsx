@@ -28,11 +28,13 @@ export const UserDropdown = ({
       // Vider le cache avant la déconnexion pour garantir un état propre
       queryClient.clear();
       
+      // Déconnexion via Supabase
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
       toast.success("Déconnexion réussie");
-      // Redirection explicite vers la landing page
+      
+      // Navigation explicite vers la landing page avec replace pour éviter le retour arrière
       navigate("/", { replace: true });
     } catch (error: any) {
       toast.error("Erreur lors de la déconnexion");

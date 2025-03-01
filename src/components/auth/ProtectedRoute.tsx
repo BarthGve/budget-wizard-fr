@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
@@ -41,9 +40,10 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     );
   }
 
-  // If not authenticated, redirect to login
+  // Si non authentifié, rediriger vers la landing page au lieu de login
   if (!authData?.isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // Redirection vers / (landing) au lieu de /login
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   // Liste des routes toujours accessibles une fois connecté
