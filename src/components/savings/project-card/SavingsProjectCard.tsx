@@ -1,3 +1,4 @@
+
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,8 +65,8 @@ export const SavingsProjectCard = ({
     },
     hidden: {
       opacity: 0,
-      rotateY: 90,
-      y: -30,
+      rotateY: -90,
+      y: 20,
       scale: 0.8,
       transition: {
         type: "spring",
@@ -80,6 +81,8 @@ export const SavingsProjectCard = ({
     <motion.div
       className="perspective-1000"
       variants={cardVariants}
+      initial="hidden"
+      animate={isVisible ? "visible" : "hidden"}
       whileHover={{ 
         scale: 1.03, 
         rotateY: 5,

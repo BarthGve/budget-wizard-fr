@@ -72,7 +72,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
   const containerVariants = {
     visible: {
       transition: {
-        staggerChildren: 0.05,
+        staggerChildren: 0.08,
         delayChildren: 0.1,
       }
     },
@@ -99,7 +99,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
         animate={showProjects ? "visible" : "hidden"}
       >
         <AnimatePresence mode="wait">
-          {showProjects && projects.map((project, index) => (
+          {projects.map((project, index) => (
             <SavingsProjectCard
               key={project.id}
               project={project}
