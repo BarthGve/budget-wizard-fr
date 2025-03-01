@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   Table,
@@ -8,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, Eye, Star, StarHalf, Trash, X } from "lucide-react";
+import { Check, Star, StarHalf, Trash, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -24,7 +25,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 interface FeedbacksTableProps {
