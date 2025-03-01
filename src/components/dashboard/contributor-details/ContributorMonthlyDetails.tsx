@@ -34,7 +34,7 @@ export function ContributorMonthlyDetails({
       <h3 className="text-lg font-semibold mb-4">
         {isCredit ? "Détails des crédits" : "Détails des charges"}
       </h3>
-      <div className="space-y-2">
+      <div >
         {expenses.map((item) => {
           const name = isCredit ? item.nom_credit : item.name;
           const category = isCredit ? item.nom_domaine : item.category;
