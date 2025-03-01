@@ -1,5 +1,5 @@
 
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { LucideIcon } from "lucide-react";
+import { MouseEvent } from "react";
 
 interface MenuItem {
   title: string;
@@ -50,9 +51,19 @@ const userMenu: MenuItem[] = [
 
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { canAccessPage } = usePagePermissions();
 
   const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
+
+  const handleNavigation = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
+    e.preventDefault();
+    
+    // Only navigate if we're not already on this page
+    if (location.pathname !== path) {
+      navigate(path);
+    }
+  };
 
   return (
     <nav className="flex-1 p-4">
@@ -65,19 +76,19 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
 
           return (
             <li key={item.path}>
-              <NavLink
-                to={item.path}
+              <a
+                href={item.path}
+                onClick={(e) => handleNavigation(e, item.path)}
                 className={cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                   "hover:bg-primary/10",
                   collapsed && "justify-center",
                   isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )}
-                end
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
                 {!collapsed && <span className="truncate">{item.title}</span>}
-              </NavLink>
+              </a>
             </li>
           );
         })}

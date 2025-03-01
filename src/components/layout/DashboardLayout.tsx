@@ -1,4 +1,3 @@
-
 import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { GlobalBalanceCard } from "../common/GlobalBalanceCard";
@@ -12,7 +11,6 @@ import { Menu } from "lucide-react";
 import { useState, useMemo, memo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
-// Memoization du Sidebar pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
 
 interface DashboardLayoutProps {
@@ -26,15 +24,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const queryClient = useQueryClient();
   const channelRef = useRef(null);
 
-  // Configurer des écouteurs pour la modification des contributeurs avec gestion améliorée
   useEffect(() => {
-    // Nettoyer le channel précédent s'il existe
     if (channelRef.current) {
       console.log('Removing existing channel in DashboardLayout');
       supabase.removeChannel(channelRef.current);
     }
     
-    // Configurer un canal pour les modifications de contributeurs avec ID unique
     const channel = supabase
       .channel('dashboard-layout-' + Date.now())
       .on(
@@ -46,13 +41,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         },
         () => {
           console.log('Contributors table changed from Dashboard layout, invalidating queries');
-          // Invalider uniquement les requêtes nécessaires
           queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
         }
       )
       .subscribe();
       
-    // Stocker la référence du channel
     channelRef.current = channel;
 
     return () => {
@@ -64,7 +57,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     };
   }, [queryClient]);
 
-  // Optimisation de la requête des crédits avec staleTime
   const { data: credits } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
@@ -79,11 +71,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour réduire les requêtes inutiles
-    refetchOnWindowFocus: false // Désactiver le refetch automatique lors du focus de la fenêtre
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false
   });
 
-  // Gestion optimisée du profil utilisateur
   const { data: userProfile } = useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
@@ -106,11 +97,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         isAdmin
       };
     },
-    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour le profil
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false
   });
 
-  // Calculs memoizés pour éviter les recalculs inutiles
   const totalRevenue = useMemo(() => 
     contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0,
     [contributors]
@@ -125,7 +115,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  // Optimisation du rendu avec un conteneur memoizé pour éviter les re-renders inutiles
   const MemoizedContent = useMemo(() => (
     <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!userProfile?.isAdmin && (

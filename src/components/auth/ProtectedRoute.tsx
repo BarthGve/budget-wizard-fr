@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import StyledLoader from "../ui/StyledLoader";
+import { PageTransition } from "../ui/PageTransition";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -27,11 +28,17 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
       
       return { isAuthenticated: true, isAdmin };
     },
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   if (isLoading) {
-    return <div><StyledLoader/></div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <PageTransition>
+          <StyledLoader/>
+        </PageTransition>
+      </div>
+    );
   }
 
   // If not authenticated, redirect to login
