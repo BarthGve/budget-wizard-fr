@@ -15,7 +15,7 @@ export const AuthListener = () => {
     // Écouteur d'événement pour les changements d'authentification
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("Auth state changed:", event);
+        console.log("Auth state changed:", event, session ? "with session" : "no session");
         
         if (event === "SIGNED_IN") {
           // Nouvel utilisateur connecté, on invalide certaines requêtes clés
@@ -27,10 +27,12 @@ export const AuthListener = () => {
           // Utilisateur déconnecté, on vide complètement le cache
           // mais sans déclencher de requêtes inutiles
           queryClient.clear();
+          toast.info("Déconnecté");
         } else if (event === "USER_UPDATED") {
           // Utilisateur mis à jour, on invalide seulement les requêtes liées au profil
           queryClient.invalidateQueries({ queryKey: ["profile"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
+          toast.info("Profil mis à jour");
         } else if (event === "TOKEN_REFRESHED") {
           // Token rafraîchi, mise à jour des données sensibles
           queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
@@ -39,6 +41,11 @@ export const AuthListener = () => {
           // Session initiale, on ne fait rien de spécial pour éviter
           // de déclencher trop de requêtes simultanées au chargement
           console.log("Session initiale détectée");
+          if (session) {
+            // Si on a une session, on met quand même à jour les requêtes d'auth pour avoir les données à jour
+            queryClient.invalidateQueries({ queryKey: ["auth"] });
+            queryClient.invalidateQueries({ queryKey: ["profile"] });
+          }
         }
       }
     );

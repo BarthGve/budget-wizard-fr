@@ -19,22 +19,46 @@ const Register = () => {
     confirmPassword: "",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      toast.error("Le nom est obligatoire");
+      return false;
+    }
+    
+    if (!formData.email.trim()) {
+      toast.error("L'email est obligatoire");
+      return false;
+    }
+    
+    if (!formData.password) {
+      toast.error("Le mot de passe est obligatoire");
+      return false;
+    }
+    
+    if (formData.password.length < 6) {
+      toast.error("Le mot de passe doit contenir au moins 6 caractères");
+      return false;
+    }
     
     if (formData.password !== formData.confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas");
-      return;
+      return false;
     }
+    
+    return true;
+  };
 
-    if (formData.password.length < 6) {
-      toast.error("Le mot de passe doit contenir au moins 6 caractères");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
+    
     try {
-      // Tentative d'inscription avec un appel simple et direct
+      // Version simplifiée de l'appel d'authentification
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -46,9 +70,8 @@ const Register = () => {
       });
 
       if (error) {
-        console.error("Signup error:", error);
+        console.error("Erreur d'inscription:", error);
         
-        // Gestion détaillée des erreurs spécifiques
         if (error.message.includes("User already registered")) {
           toast.error("Un compte existe déjà avec cet email");
         } else if (error.message.includes("Password should be at least")) {
@@ -56,17 +79,21 @@ const Register = () => {
         } else if (error.message.includes("invalid email")) {
           toast.error("L'adresse email n'est pas valide");
         } else {
-          toast.error("Erreur lors de l'inscription: " + error.message);
+          toast.error(`Erreur: ${error.message}`);
         }
-      } else if (data && data.user) {
-        // Stockage de l'email pour la page de vérification
+        return;
+      }
+      
+      if (data && data.user) {
         localStorage.setItem("verificationEmail", formData.email);
-        toast.success("Inscription réussie ! Veuillez vérifier votre email pour activer votre compte.");
+        toast.success("Inscription réussie! Veuillez vérifier votre email.");
         navigate("/email-verification");
+      } else {
+        toast.error("Erreur lors de la création du compte. Veuillez réessayer.");
       }
     } catch (error: any) {
-      console.error("Unexpected error during registration:", error);
-      toast.error("Une erreur inattendue est survenue. Veuillez réessayer plus tard.");
+      console.error("Erreur inattendue:", error);
+      toast.error("Une erreur système est survenue. Veuillez réessayer ultérieurement.");
     } finally {
       setIsLoading(false);
     }
