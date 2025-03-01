@@ -48,7 +48,6 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
     try {
       console.log("Tentative d'inscription depuis le formulaire...");
       
-      // Approche plus simple sans boucle de tentatives
       await registerUser({
         email: formData.email,
         password: formData.password,
@@ -67,12 +66,7 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
       console.error("Erreur finale capturée dans le formulaire d'inscription:", error);
       
       // Message d'erreur plus compréhensible pour l'utilisateur
-      if (error.message.includes("Database error") || 
-          error.message.includes("stack depth") ||
-          error.message.includes("column \"tg_depth\"") ||
-          error.message.includes("Problème technique")) {
-        setError("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants ou contacter le support.");
-      } else if (error.message.includes("User already registered") || error.message.includes("existe déjà")) {
+      if (error.message.includes("email") || error.message.includes("existe déjà")) {
         setError("Un compte existe déjà avec cet email. Veuillez vous connecter ou utiliser une autre adresse email.");
       } else {
         setError(error.message || "Une erreur est survenue lors de l'inscription. Veuillez réessayer.");

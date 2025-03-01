@@ -18,29 +18,26 @@ export interface LoginCredentials {
 }
 
 /**
- * Inscrit un nouvel utilisateur avec l'approche la plus simple possible,
- * en contournant complètement les triggers qui causent des problèmes
+ * Inscrit un nouvel utilisateur avec une méthode directe et fiable
+ * qui évite complètement les déclencheurs (triggers)
  */
 export const registerUser = async (credentials: RegisterCredentials) => {
-  console.log("Tentative d'inscription avec:", { email: credentials.email });
+  console.log("Inscription utilisateur:", { email: credentials.email });
   
   try {
-    // Désactiver l'auto-création de profil via le trigger et faire tout manuellement
-    // Pour cela, on utilise un paramètre spécial qui indique à Supabase de ne pas exécuter 
-    // les triggers sur la table auth.users
+    // Étape 1: Créer l'utilisateur dans auth.users
     const { data, error } = await supabase.auth.signUp({
       email: credentials.email,
       password: credentials.password,
       options: {
         data: { 
           name: credentials.name,
-          skip_profile_creation: true // Ce flag sera utilisé plus tard pour déterminer si on doit créer le profil manuellement
         }
       }
     });
 
     if (error) {
-      console.error("Erreur Supabase lors de l'inscription:", error);
+      console.error("Erreur lors de la création de l'utilisateur:", error);
       if (error.message.includes("User already registered")) {
         throw new Error("Un compte existe déjà avec cet email");
       } else {
@@ -52,11 +49,16 @@ export const registerUser = async (credentials: RegisterCredentials) => {
       throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
     }
     
-    // Créer manuellement le profil et le contributeur - en évitant complètement les triggers problématiques
-    console.log("Création manuelle du profil pour:", data.user.id);
-    
-    try {
-      // 1. Créer le profil
+    // Étape 2: Vérifier si le profil existe déjà
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', data.user.id)
+      .single();
+      
+    // Étape 3: Créer le profil si nécessaire
+    if (!existingProfile) {
+      console.log("Création du profil utilisateur");
       const { error: profileError } = await supabase
         .from('profiles')
         .insert([{ 
@@ -67,11 +69,20 @@ export const registerUser = async (credentials: RegisterCredentials) => {
         
       if (profileError) {
         console.error("Erreur lors de la création du profil:", profileError);
-        // Continuer malgré l'erreur - l'utilisateur est au moins créé
       }
-          
-      // 2. Créer le contributeur - en ÉVITANT COMPLÈTEMENT d'utiliser des triggers
-      // NE PAS définir percentage_contribution, le faire par SQL direct sans trigger
+    }
+    
+    // Étape 4: Vérifier si le contributeur existe déjà
+    const { data: existingContributor } = await supabase
+      .from('contributors')
+      .select('id')
+      .eq('profile_id', data.user.id)
+      .eq('is_owner', true)
+      .single();
+      
+    // Étape 5: Créer le contributeur si nécessaire
+    if (!existingContributor) {
+      console.log("Création du contributeur");
       const { error: contributorError } = await supabase
         .from('contributors')
         .insert([{
@@ -84,29 +95,16 @@ export const registerUser = async (credentials: RegisterCredentials) => {
         
       if (contributorError) {
         console.error("Erreur lors de la création du contributeur:", contributorError);
-        // Continuer malgré l'erreur - l'utilisateur et le profil sont au moins créés
       }
-      
-      console.log("Profil et contributeur créés manuellement avec succès");
-    } catch (manualCreationError) {
-      // Logger l'erreur mais ne pas interrompre l'inscription
-      console.warn("Erreur lors de la création manuelle du profil:", manualCreationError);
     }
     
     // Stocker l'email pour la vérification
     localStorage.setItem("verificationEmail", credentials.email);
     
+    console.log("Inscription réussie:", data.user.id);
     return data;
   } catch (error: any) {
-    console.error("Exception finale lors de l'inscription:", error);
-    
-    if (error.message.includes("Database error") || 
-        error.message.includes("stack depth") ||
-        error.message.includes("tg_depth") ||
-        error.message.includes("trigger")) {
-      throw new Error("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants.");
-    }
-    
+    console.error("Erreur finale lors de l'inscription:", error);
     throw error;
   }
 };
