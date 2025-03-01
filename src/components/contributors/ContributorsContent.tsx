@@ -1,24 +1,24 @@
 
-import { Contributor } from "@/types/contributor";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ContributorCard } from "@/components/contributors/ContributorCard";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddContributorDialog } from "@/components/contributors/AddContributorDialog";
+import { ContributorCard } from "@/components/contributors/ContributorCard";
+import { Contributor, NewContributor } from "@/types/contributor";
 
-interface ContributorsListProps {
+interface ContributorsContentProps {
   contributors: Contributor[];
-  onAdd: (contributor: any) => Promise<void>;
+  onAdd: (contributor: NewContributor) => Promise<void>;
   onUpdate: (contributor: Contributor) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
-export const ContributorsList = ({ 
+export const ContributorsContent = ({ 
   contributors, 
   onAdd, 
   onUpdate, 
   onDelete 
-}: ContributorsListProps) => {
+}: ContributorsContentProps) => {
   return (
-    <Card>
+    <>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>Listing</CardTitle>
@@ -30,7 +30,7 @@ export const ContributorsList = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {contributors.map((contributor: Contributor) => (
+          {Array.isArray(contributors) && contributors.map(contributor => (
             <ContributorCard 
               key={contributor.id} 
               contributor={contributor} 
@@ -40,6 +40,6 @@ export const ContributorsList = ({
           ))}
         </div>
       </CardContent>
-    </Card>
+    </>
   );
 };
