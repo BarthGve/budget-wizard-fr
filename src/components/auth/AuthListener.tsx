@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 /**
  * Composant qui écoute les changements d'état d'authentification
- * et nettoie le cache React Query en conséquence
+ * et met à jour le cache React Query en conséquence
  */
 export const AuthListener = () => {
   const queryClient = useQueryClient();
@@ -19,22 +19,26 @@ export const AuthListener = () => {
         
         if (event === "SIGNED_IN") {
           // Nouvel utilisateur connecté, on invalide certaines requêtes clés
-          // au lieu de vider complètement le cache
           queryClient.invalidateQueries({ queryKey: ["auth"] });
           queryClient.invalidateQueries({ queryKey: ["profile"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
           toast.success("Connecté avec succès");
         } else if (event === "SIGNED_OUT") {
           // Utilisateur déconnecté, on vide complètement le cache
+          // mais sans déclencher de requêtes inutiles
           queryClient.clear();
         } else if (event === "USER_UPDATED") {
-          // Utilisateur mis à jour, on invalide les requêtes liées au profil
+          // Utilisateur mis à jour, on invalide seulement les requêtes liées au profil
           queryClient.invalidateQueries({ queryKey: ["profile"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
         } else if (event === "TOKEN_REFRESHED") {
-          // Token rafraîchi, pourrait signifier un changement de rôle ou autres
+          // Token rafraîchi, mise à jour des données sensibles
           queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
           queryClient.invalidateQueries({ queryKey: ["auth"] });
+        } else if (event === "INITIAL_SESSION") {
+          // Session initiale, on ne fait rien de spécial pour éviter
+          // de déclencher trop de requêtes simultanées au chargement
+          console.log("Session initiale détectée");
         }
       }
     );
