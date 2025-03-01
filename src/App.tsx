@@ -1,9 +1,8 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Dashboard from "./pages/Index";
 import Contributors from "./pages/Contributors";
@@ -35,12 +34,15 @@ const App = () => {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        // Par défaut, on ne met pas en cache les données trop longtemps
-        staleTime: 1000 * 60, // 1 minute
-        // On réessaie pas plus d'une fois en cas d'erreur
-        retry: 1,
-        // Important: disable refetching on window focus to reduce unnecessary data fetching
+        // Augmenter le staleTime pour éviter les rechargements fréquents
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        // Définir explicitement refetchOnMount à false pour éviter les rechargements lors de la navigation
+        refetchOnMount: false,
+        // Garder refetchOnWindowFocus désactivé
         refetchOnWindowFocus: false,
+        // Définir cacheTime plus long pour conserver les données en cache
+        cacheTime: 1000 * 60 * 30, // 30 minutes
+        retry: 1,
       },
     },
   }));
