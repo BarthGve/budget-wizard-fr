@@ -6,12 +6,13 @@ export interface Credit {
   logo_url?: string;
   montant_mensualite: number;
   date_derniere_mensualite: string;
-  statut: "actif" | "remboursé";
+  statut: "actif" | "remboursé" | "dépassé";
   created_at: string;
 }
 
 export const ALL_STATUS = "all_status";
 export const statusLabels = {
   actif: "Actif",
-  remboursé: "Remboursé"
+  remboursé: "Remboursé",
+  dépassé: "Dépassé"
 };

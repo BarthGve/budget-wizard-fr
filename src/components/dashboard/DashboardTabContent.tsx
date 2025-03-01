@@ -80,7 +80,7 @@ export const DashboardTabContent = ({
         return [];
       }
 
-      return data as Credit[];
+      return data;
     }
   });
 
