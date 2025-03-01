@@ -44,7 +44,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
       };
     },
     staleTime: 1000 * 60 * 5, // 5 minutes - réduire le nombre de requêtes
-    cacheTime: 1000 * 60 * 10 // 10 minutes
+    gcTime: 1000 * 60 * 10 // 10 minutes - remplace cacheTime dans les nouvelles versions de React Query
   });
 
   // N'invalidez les requêtes d'authentification que lors des changements de route significatifs

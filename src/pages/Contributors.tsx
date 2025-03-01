@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Contributor } from "@/types/contributor";
+import { fetchContributorsService } from "@/services/contributors";
 
 const Contributors = () => {
   const navigate = useNavigate();
@@ -56,36 +57,17 @@ const Contributors = () => {
     };
   }, [queryClient]);
 
-  // Utilisation de useQuery comme dans Properties.tsx
+  // Utilisation de useQuery avec fetchContributorsService
   const { data: contributors = [], isLoading } = useQuery({
     queryKey: ["contributors"],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error("Vous devez être connecté pour voir vos contributeurs");
-        throw new Error("Not authenticated");
-      }
-
-      const { data, error } = await supabase
-        .from("contributors")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching contributors:", error);
-        toast.error("Erreur lors du chargement des contributeurs");
-        throw error;
-      }
-
-      return data as Contributor[];
-    }
+    queryFn: fetchContributorsService
   });
 
   // Fonctions de gestion des contributeurs avec mises à jour optimistes
-  const handleAddContributor = async (newContributor) => {
+  const handleAddContributor = async (newContributor: any) => {
     const optimisticId = `temp-${Date.now()}`;
-    queryClient.setQueryData(["contributors"], (old = []) => [
-      { ...newContributor, id: optimisticId },
+    queryClient.setQueryData(["contributors"], (old: Contributor[] = []) => [
+      { ...newContributor, id: optimisticId } as Contributor,
       ...old
     ]);
 
@@ -93,16 +75,23 @@ const Contributors = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
+      // Conversion du string en number pour total_contribution
+      const contributorToAdd = {
+        ...newContributor,
+        profile_id: user.id,
+        total_contribution: parseFloat(newContributor.total_contribution)
+      };
+
       const { data, error } = await supabase
         .from("contributors")
-        .insert([{ ...newContributor, profile_id: user.id }])
+        .insert([contributorToAdd])
         .select()
         .single();
 
       if (error) throw error;
 
       // Mise à jour avec les vraies données du serveur
-      queryClient.setQueryData(["contributors"], (old = []) => 
+      queryClient.setQueryData(["contributors"], (old: Contributor[] = []) => 
         old.map(item => item.id === optimisticId ? data : item)
       );
 
@@ -116,12 +105,12 @@ const Contributors = () => {
     }
   };
 
-  const handleUpdateContributor = async (contributor) => {
+  const handleUpdateContributor = async (contributor: Contributor) => {
     // Sauvegarde de l'état précédent
     const previousData = queryClient.getQueryData(["contributors"]);
     
     // Mise à jour optimiste
-    queryClient.setQueryData(["contributors"], (old = []) => 
+    queryClient.setQueryData(["contributors"], (old: Contributor[] = []) => 
       old.map(item => item.id === contributor.id ? contributor : item)
     );
     
@@ -143,12 +132,12 @@ const Contributors = () => {
     }
   };
 
-  const handleDeleteContributor = async (id) => {
+  const handleDeleteContributor = async (id: string) => {
     // Sauvegarde de l'état précédent
     const previousData = queryClient.getQueryData(["contributors"]);
     
     // Mise à jour optimiste
-    queryClient.setQueryData(["contributors"], (old = []) => 
+    queryClient.setQueryData(["contributors"], (old: Contributor[] = []) => 
       old.filter(item => item.id !== id)
     );
     
@@ -195,7 +184,7 @@ const Contributors = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {contributors.map(contributor => (
+              {contributors.map((contributor: Contributor) => (
                 <ContributorCard 
                   key={contributor.id} 
                   contributor={contributor} 
