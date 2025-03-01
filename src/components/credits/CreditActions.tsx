@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "./types";
 import { CreditDialog } from "./CreditDialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CreditActionsProps {
   credit: Credit;
@@ -18,6 +19,7 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleDelete = async () => {
     try {
@@ -29,6 +31,8 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
       if (error) throw error;
 
       toast.success("Crédit supprimé avec succès");
+      queryClient.invalidateQueries({ queryKey: ["credits"] });
+      queryClient.invalidateQueries({ queryKey: ["credits-monthly-stats"] });
       onCreditDeleted();
     } catch (error) {
       console.error("Error deleting credit:", error);
@@ -52,7 +56,7 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
     <>
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="h-8 w-8">
+          <Button variant="outline" size="icon" className="h-8 w-8" type="button">
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -90,6 +94,7 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              type="button"
             >
               Supprimer
             </AlertDialogAction>
