@@ -13,12 +13,13 @@ export const AuthListener = () => {
   const navigate = useNavigate();
   const isInitialMount = useRef(true);
   const previousAuthState = useRef<boolean | null>(null);
+  const navigationInProgress = useRef(false);
 
   useEffect(() => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("Auth state changed:", event, session ? "User logged in" : "User logged out");
+        // console.log("Auth state changed:", event, session ? "User logged in" : "User logged out");
 
         // Skip initial session check to avoid double navigation
         if (isInitialMount.current && event === "INITIAL_SESSION") {
@@ -32,24 +33,28 @@ export const AuthListener = () => {
         // Important: Avoid unnecessary cache invalidations if auth state didn't actually change
         const currentAuthState = !!session;
         if (previousAuthState.current === currentAuthState && event !== "SIGNED_OUT") {
-          console.log("Auth state didn't change, skipping cache invalidation");
+          // console.log("Auth state didn't change, skipping cache invalidation");
           return;
         }
         
         previousAuthState.current = currentAuthState;
 
         if (event === "SIGNED_IN") {
-          console.log("User signed in, invalidating relevant queries");
-          // Invalider le cache de manière sélective avec des requêtes ciblées
+          // console.log("User signed in, invalidating relevant queries");
+          // Invalider le cache de manière sélective
           queryClient.invalidateQueries({ queryKey: ["auth"], exact: true });
           queryClient.invalidateQueries({ queryKey: ["current-user"], exact: true });
           queryClient.invalidateQueries({ queryKey: ["profile"], exact: true });
-          // Ne pas naviguer ici pour éviter les rechargements complets
         } else if (event === "SIGNED_OUT") {
           try {
-            console.log("User signed out, removing cached queries");
-            // Liste des clés de cache spécifiques à supprimer
-            const keysToRemove = [
+            // console.log("User signed out, managing cache");
+            
+            // Éviter la navigation multiple
+            if (navigationInProgress.current) return;
+            navigationInProgress.current = true;
+            
+            // Plutôt que vider tout le cache, marquer comme périmées les entrées pertinentes
+            const keysToInvalidate = [
               "auth", 
               "current-user", 
               "profile", 
@@ -58,26 +63,25 @@ export const AuthListener = () => {
               "recurring-expenses",
               "recurring-expense-categories",
               "credits",
-              "credits-monthly-stats"
+              "credits-monthly-stats",
+              "savings"
             ];
             
-            // Supprimer les entrées spécifiques au lieu de vider tout le cache
-            keysToRemove.forEach(key => {
-              queryClient.removeQueries({ queryKey: [key], exact: true });
+            keysToInvalidate.forEach(key => {
+              queryClient.invalidateQueries({ queryKey: [key] });
             });
             
-            // Optimisation pour éviter une suppression complète du cache, indiquer que les données sont périmées
-            // plutôt que de les supprimer complètement
-            queryClient.invalidateQueries();
+            // Utiliser navigate avec replace pour éviter d'ajouter à l'historique
+            navigate("/", { replace: true });
             
-            // Attendre que toutes les suppressions soient terminées
+            // Réinitialiser le drapeau après un délai pour permettre la navigation complète
             setTimeout(() => {
-              // Rediriger vers la page de connexion de manière programmatique
-              // Utiliser navigate au lieu de window.location pour éviter un rechargement complet
-              navigate("/", { replace: true });
-            }, 50);
+              navigationInProgress.current = false;
+            }, 200);
+            
           } catch (error) {
             console.error("Error during sign out handling:", error);
+            navigationInProgress.current = false;
           }
         }
       }

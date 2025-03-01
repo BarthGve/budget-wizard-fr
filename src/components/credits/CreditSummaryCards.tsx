@@ -10,7 +10,7 @@ interface CreditSummaryCardsProps {
   totalRepaidMensualitesThisMonth: number;
 }
 
-// Using explicit displayName to help with debugging re-renders
+// Optimisation avec une fonction d'égalité personnalisée pour éviter les re-renders inutiles
 export const CreditSummaryCards = memo(({
   activeCredits,
   repaidThisMonth,
@@ -21,7 +21,7 @@ export const CreditSummaryCards = memo(({
   
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
+      <Card className="overflow-hidden border-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
         <CardHeader>
           <CardTitle>Crédits actifs</CardTitle>
           <CardDescription className="text-violet-100">
@@ -38,7 +38,7 @@ export const CreditSummaryCards = memo(({
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 text-white">
+      <Card className="overflow-hidden border-0 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 text-white">
         <CardHeader>
           <CardTitle>Crédits remboursés ce mois</CardTitle>
           <CardDescription className="text-emerald-100">
@@ -57,12 +57,12 @@ export const CreditSummaryCards = memo(({
     </div>
   );
 }, (prevProps, nextProps) => {
-  // Optimisé: Comparaison profonde des props pour éviter les re-renders inutiles
+  // Optimisation stricte: comparaison profonde des valeurs primitives
   return prevProps.activeCredits.length === nextProps.activeCredits.length &&
     prevProps.repaidThisMonth === nextProps.repaidThisMonth &&
     prevProps.totalActiveMensualites === nextProps.totalActiveMensualites &&
     prevProps.totalRepaidMensualitesThisMonth === nextProps.totalRepaidMensualitesThisMonth;
 });
 
-// Explicitly set display name for better debugging
+// Nom explicite pour le débogage
 CreditSummaryCards.displayName = "CreditSummaryCards";

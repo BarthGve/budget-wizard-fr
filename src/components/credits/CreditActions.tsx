@@ -14,16 +14,16 @@ interface CreditActionsProps {
   onCreditDeleted: () => void;
 }
 
-// Optimisation avec memo et une fonction d'égalité personnalisée
 export const CreditActions = memo(
   ({ credit, onCreditDeleted }: CreditActionsProps) => {
-    console.log("Rendering CreditActions for", credit.nom_credit);
+    // Réduire les logs pour éviter les opérations coûteuses
+    // console.log("Rendering CreditActions for", credit.nom_credit);
     
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showEditDialog, setShowEditDialog] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
-    // Utilisation de useCallback pour éviter de recréer la fonction à chaque render
+    // Stabiliser les références des fonctions avec useCallback
     const handleDelete = useCallback(async () => {
       try {
         const { error } = await supabase
@@ -43,7 +43,6 @@ export const CreditActions = memo(
       setDropdownOpen(false);
     }, [credit.id, onCreditDeleted]);
 
-    // Optimisation des callbacks pour les contrôles d'interface utilisateur
     const handleEditClick = useCallback(() => {
       setShowEditDialog(true);
       setDropdownOpen(false);
@@ -54,7 +53,6 @@ export const CreditActions = memo(
       setDropdownOpen(false);
     }, []);
 
-    // Optimisation pour éviter les fermetures/ouvertures inutiles
     const handleOpenChange = useCallback((open: boolean) => {
       setDropdownOpen(open);
     }, []);
@@ -71,17 +69,17 @@ export const CreditActions = memo(
       <>
         <DropdownMenu open={dropdownOpen} onOpenChange={handleOpenChange}>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" className="h-8 w-8">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[200px]">
-            <DropdownMenuItem onClick={handleEditClick}>
+          <DropdownMenuContent align="end" className="w-[180px]">
+            <DropdownMenuItem onClick={handleEditClick} className="cursor-pointer">
               <SquarePen className="mr-2 h-4 w-4" />
               Modifier
             </DropdownMenuItem>
             <DropdownMenuItem 
-              className="text-destructive"
+              className="text-destructive cursor-pointer"
               onClick={handleDeleteClick}
             >
               <Trash2 className="mr-2 h-4 w-4" />
@@ -118,29 +116,19 @@ export const CreditActions = memo(
       </>
     );
   },
-  // Optimisé: Fonction d'égalité améliorée avec une vérification plus précise
+  // Fonction d'égalité optimisée et simplifiée
   (prevProps, nextProps) => {
-    if (prevProps.onCreditDeleted !== nextProps.onCreditDeleted) {
-      return false;
-    }
-
-    // Vérification plus approfondie des propriétés du crédit qui affectent le rendu
+    // Les fonctions de rappel sont comparées par référence,
+    // mais nous sommes plus intéressés par les changements dans credit
     if (prevProps.credit.id !== nextProps.credit.id) {
       return false;
     }
     
-    if (prevProps.credit.statut !== nextProps.credit.statut) {
-      return false;
-    }
-    
-    if (prevProps.credit.nom_credit !== nextProps.credit.nom_credit) {
-      return false;
-    }
-    
-    // Les props sont identiques - éviter le re-render
-    return true;
+    // Vérifier uniquement les champs critiques qui affectent le rendu
+    return prevProps.credit.nom_credit === nextProps.credit.nom_credit &&
+           prevProps.credit.statut === nextProps.credit.statut;
   }
 );
 
-// Ajouter un displayName pour faciliter le débogage
+// Nom explicite pour le débogage
 CreditActions.displayName = "CreditActions";

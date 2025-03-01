@@ -9,10 +9,10 @@ interface CreditsListProps {
   onCreditDeleted: () => void;
 }
 
-// Optimizing with explicit equality check
 export const CreditsList = memo(
   ({ credits, onCreditDeleted }: CreditsListProps) => {
-    console.log("Rendering CreditsList", credits.length);
+    // Réduire les logs pour éviter les opérations coûteuses
+    // console.log("Rendering CreditsList", credits.length);
 
     if (!credits || credits.length === 0) {
       return (
@@ -24,7 +24,7 @@ export const CreditsList = memo(
       );
     }
 
-    // Create a new array to avoid modifying the original
+    // Créer un nouveau tableau pour éviter de modifier l'original
     const sortedCredits = [...credits].sort((a, b) => {
       return (
         new Date(a.date_derniere_mensualite).getTime() -
@@ -37,13 +37,9 @@ export const CreditsList = memo(
         {sortedCredits.map((credit) => (
           <Card
             key={credit.id}
-            className={`overflow-hidden border bg-card dark:bg-card ${
-              credit.statut.toLowerCase() === "remboursé"
-                ? "border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/20"
-                : ""
-            }`}
+            className="overflow-hidden border bg-card dark:bg-card"
           >
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between p-1">
               {/* Infos principales */}
               <div className="flex items-center px-4 gap-4 md:w-1/3">
                 {credit.logo_url ? (
@@ -116,48 +112,27 @@ export const CreditsList = memo(
       </div>
     );
   },
-  // Optimisé: Fonction d'égalité améliorée pour mieux détecter les changements
+  // Simplifier la fonction d'égalité pour plus d'efficacité
   (prevProps, nextProps) => {
-    // Si la longueur est différente, les tableaux sont différents
+    // Comparaison simple mais efficace des tableaux de crédits
     if (prevProps.credits.length !== nextProps.credits.length) {
       return false;
     }
     
-    // Vérifier si onCreditDeleted a changé
     if (prevProps.onCreditDeleted !== nextProps.onCreditDeleted) {
       return false;
     }
     
-    // Vérifier si les IDs et les contenus des crédits ont changé
-    const prevIds = new Set(prevProps.credits.map(c => c.id));
-    const nextIds = new Set(nextProps.credits.map(c => c.id));
-    
-    // Si les ensembles d'IDs diffèrent en taille, il y a eu un changement
-    if (prevIds.size !== nextIds.size) {
-      return false;
-    }
-    
-    // Vérifier si tous les IDs de prevProps sont dans nextProps
-    for (const id of prevIds) {
-      if (!nextIds.has(id)) {
-        return false;
-      }
-    }
-    
-    // Vérification profonde des propriétés importantes pour chaque crédit
+    // Vérification rapide si tous les IDs sont identiques et dans le même ordre
     for (let i = 0; i < prevProps.credits.length; i++) {
-      const prevCredit = prevProps.credits[i];
-      const nextCredit = nextProps.credits.find(c => c.id === prevCredit.id);
-      
-      if (!nextCredit || 
-          prevCredit.statut !== nextCredit.statut ||
-          prevCredit.montant_mensualite !== nextCredit.montant_mensualite ||
-          prevCredit.date_derniere_mensualite !== nextCredit.date_derniere_mensualite) {
+      if (prevProps.credits[i].id !== nextProps.credits[i].id ||
+          prevProps.credits[i].statut !== nextProps.credits[i].statut ||
+          prevProps.credits[i].montant_mensualite !== nextProps.credits[i].montant_mensualite ||
+          prevProps.credits[i].date_derniere_mensualite !== nextProps.credits[i].date_derniere_mensualite) {
         return false;
       }
     }
     
-    // Pas de changement détecté
     return true;
   }
 );
