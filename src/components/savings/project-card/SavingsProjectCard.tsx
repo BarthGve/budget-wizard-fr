@@ -44,12 +44,13 @@ export const SavingsProjectCard = ({ project, onDelete, onSelect, index = 0 }: S
 
   return (
     <motion.div
+      layout
       initial={{ opacity: 0, rotateY: -90, y: 20 }}
       animate={{ opacity: 1, rotateY: 0, y: 0 }}
       exit={{ opacity: 0, rotateY: 90, y: -20 }}
       transition={{ 
         duration: 0.6, 
-        delay: index * 0.1,
+        delay: index * 0.05,
         type: "spring",
         stiffness: 100
       }}
@@ -60,12 +61,14 @@ export const SavingsProjectCard = ({ project, onDelete, onSelect, index = 0 }: S
       }}
       className="perspective-1000"
     >
-      <Card className="flex flex-col backface-hidden transform-gpu">
+      <Card className="flex flex-col backface-hidden transform-gpu shadow-md hover:shadow-lg transition-shadow duration-300">
         <div 
-          className="aspect-video relative cursor-pointer"
+          className="aspect-video relative cursor-pointer overflow-hidden rounded-t-lg"
           onClick={() => onSelect(project)}
         >
-          <img
+          <motion.img
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3 }}
             src={project.image_url || "/placeholder.svg"}
             alt={project.nom_projet}
             className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
@@ -78,14 +81,16 @@ export const SavingsProjectCard = ({ project, onDelete, onSelect, index = 0 }: S
         <CardContent className="pt-4 flex-1 flex flex-col">
           <div className="flex justify-between items-start mb-2">
             <h3 className="font-semibold truncate">{project.nom_projet}</h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-destructive flex-shrink-0"
-              onClick={() => onDelete(project)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.1 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive flex-shrink-0"
+                onClick={() => onDelete(project)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </motion.div>
           </div>
           
           <div className="space-y-4">

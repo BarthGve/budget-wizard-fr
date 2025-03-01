@@ -6,7 +6,7 @@ import { SavingsProject } from "@/types/savings-project";
 import { SavingsProjectCard } from "./project-card/SavingsProjectCard";
 import { SavingsProjectDetails } from "./project-details/SavingsProjectDetails";
 import { DeleteProjectDialog } from "./project-delete/DeleteProjectDialog";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface SavingsProjectListProps {
   projects: SavingsProject[];
@@ -68,9 +68,15 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 grid-cols-6">
-        <AnimatePresence>
+    <motion.div 
+      className="space-y-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+        <AnimatePresence mode="wait">
           {projects.map((project, index) => (
             <SavingsProjectCard
               key={project.id}
@@ -82,9 +88,14 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
           ))}
         </AnimatePresence>
         {projects.length === 0 && (
-          <p className="col-span-full text-center text-muted-foreground">
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="col-span-full text-center text-muted-foreground py-10"
+          >
             Aucun projet d'épargne enregistré
-          </p>
+          </motion.p>
         )}
       </div>
 
@@ -98,6 +109,6 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
         project={selectedProject}
         onClose={() => setSelectedProject(null)}
       />
-    </div>
+    </motion.div>
   );
 };
