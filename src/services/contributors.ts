@@ -22,62 +22,84 @@ export const fetchContributorsService = async () => {
  * d'un profil donné
  */
 export const recalculatePercentages = async (userId: string) => {
-  console.log("Recalcul manuel des pourcentages pour l'utilisateur:", userId);
+  console.log("Recalcul des pourcentages pour l'utilisateur:", userId);
   
-  // 1. Récupérer tous les contributeurs
-  const { data: contributors, error: fetchError } = await supabase
-    .from("contributors")
-    .select("id, total_contribution")
-    .eq("profile_id", userId);
-  
-  if (fetchError) {
-    console.error("Erreur lors de la récupération des contributeurs:", fetchError);
-    throw fetchError;
-  }
-  
-  if (!contributors || contributors.length === 0) {
-    console.log("Aucun contributeur trouvé pour recalculer les pourcentages");
-    return;
-  }
-  
-  // 2. Calculer le total des contributions
-  const totalContributions = contributors.reduce(
-    (sum, contributor) => sum + contributor.total_contribution, 
-    0
-  );
-  
-  console.log("Total des contributions:", totalContributions);
-  
-  // 3. Mettre à jour les pourcentages individuels
-  if (totalContributions > 0) {
-    // Correction: utiliser des mises à jour individuelles pour une précision maximale
-    for (const contributor of contributors) {
-      const percentage = (contributor.total_contribution / totalContributions) * 100;
-      console.log(`Mise à jour de ${contributor.id}: ${percentage.toFixed(2)}%`);
-      
-      await supabase
-        .from("contributors")
-        .update({ percentage_contribution: percentage })
-        .eq("id", contributor.id);
+  try {
+    // Utiliser une fonction RPC côté serveur pour le recalcul des pourcentages
+    const { error } = await supabase.rpc('update_contributor_percentages', {
+      profile_id_param: userId
+    });
+    
+    if (error) {
+      console.error("Erreur lors du recalcul des pourcentages:", error);
+      throw error;
     }
     
-    console.log("Tous les pourcentages ont été recalculés avec succès");
-  } else {
-    // Si le total est 0, mettre tous les pourcentages à 0
-    const { error: updateError } = await supabase
+    console.log("Pourcentages recalculés avec succès via RPC");
+    return true;
+  } catch (rpcError) {
+    console.error("Échec de l'appel RPC, tentative de recalcul manuel:", rpcError);
+    
+    // Méthode de secours si l'appel RPC échoue
+    // 1. Récupérer tous les contributeurs
+    const { data: contributors, error: fetchError } = await supabase
       .from("contributors")
-      .update({ percentage_contribution: 0 })
+      .select("id, total_contribution")
       .eq("profile_id", userId);
-      
-    if (updateError) {
-      console.error("Erreur lors de la mise à jour des pourcentages à 0:", updateError);
-      throw updateError;
+    
+    if (fetchError) {
+      console.error("Erreur lors de la récupération des contributeurs:", fetchError);
+      throw fetchError;
     }
     
-    console.log("Tous les pourcentages ont été mis à 0 (total des contributions = 0)");
+    if (!contributors || contributors.length === 0) {
+      console.log("Aucun contributeur trouvé pour recalculer les pourcentages");
+      return true;
+    }
+    
+    // 2. Calculer le total des contributions
+    const totalContributions = contributors.reduce(
+      (sum, contributor) => sum + contributor.total_contribution, 
+      0
+    );
+    
+    console.log("Total des contributions:", totalContributions);
+    
+    // 3. Mettre à jour les pourcentages individuels
+    if (totalContributions > 0) {
+      for (const contributor of contributors) {
+        const percentage = (contributor.total_contribution / totalContributions) * 100;
+        console.log(`Mise à jour de ${contributor.id}: ${percentage.toFixed(2)}%`);
+        
+        const { error: updateError } = await supabase
+          .from("contributors")
+          .update({ percentage_contribution: percentage })
+          .eq("id", contributor.id);
+          
+        if (updateError) {
+          console.error(`Erreur lors de la mise à jour du pourcentage pour ${contributor.id}:`, updateError);
+          throw updateError;
+        }
+      }
+      
+      console.log("Tous les pourcentages ont été recalculés avec succès");
+    } else {
+      // Si le total est 0, mettre tous les pourcentages à 0
+      const { error: updateError } = await supabase
+        .from("contributors")
+        .update({ percentage_contribution: 0 })
+        .eq("profile_id", userId);
+        
+      if (updateError) {
+        console.error("Erreur lors de la mise à jour des pourcentages à 0:", updateError);
+        throw updateError;
+      }
+      
+      console.log("Tous les pourcentages ont été mis à 0 (total des contributions = 0)");
+    }
+    
+    return true;
   }
-  
-  return true;
 };
 
 export const addContributorService = async (
@@ -117,7 +139,7 @@ export const addContributorService = async (
   if (insertError) throw insertError;
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
-  // Recalculer les pourcentages manuellement
+  // Recalculer les pourcentages explicitement
   await recalculatePercentages(userId);
 
   return await fetchContributorsService();
@@ -160,7 +182,7 @@ export const updateContributorService = async (contributor: Contributor) => {
 
   if (updateError) throw updateError;
 
-  // Recalculer les pourcentages manuellement
+  // Recalculer les pourcentages explicitement après la mise à jour
   await recalculatePercentages(user.id);
 
   return await fetchContributorsService();
@@ -179,7 +201,7 @@ export const deleteContributorService = async (contributorId: string) => {
 
   if (deleteError) throw deleteError;
 
-  // Recalculer les pourcentages manuellement
+  // Recalculer les pourcentages explicitement après la suppression
   await recalculatePercentages(user.id);
 
   return await fetchContributorsService();
