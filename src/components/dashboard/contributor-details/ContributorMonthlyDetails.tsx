@@ -32,7 +32,7 @@ export function ContributorMonthlyDetails({
   return (
     <Card className="p-4">
       <h3 className="text-lg font-semibold mb-2">
-        {isCredit ? "Détails des crédits" : "Détails des charges"}
+        {isCredit ? "Contributions aux crédits" : "Contributions aux charges"}
       </h3>
       <div >
         {expenses.map((item) => {
