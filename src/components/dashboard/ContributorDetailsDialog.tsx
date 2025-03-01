@@ -93,48 +93,45 @@ export function ContributorDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-  <DialogContent className="max-w-5xl w-[1000px]">
-    <DialogHeader>
-      <ContributorDetailsHeader
-        name={contributor.name}
-        isOwner={contributor.is_owner}
-        avatarUrl={profile?.avatar_url}
-        isDarkTheme={isDarkTheme}
-      />
-    </DialogHeader>
-
-    <div className="mt-6 flex gap-6">
-      {/* Graphique des statistiques */}
-      <div className="w-[300px] flex-shrink-0">
-        <ContributorStatsChart
-          expenseShare={contributor.expenseShare || 0}
-          creditShare={contributor.creditShare || 0}
+    <DialogContent className="max-w-5xl w-[1000px]">
+      <DialogHeader>
+        <ContributorDetailsHeader
+          name={contributor.name}
+          isOwner={contributor.is_owner}
+          avatarUrl={profile?.avatar_url}
+          isDarkTheme={isDarkTheme}
         />
-      </div>
-
-      {/* Détails mensuels, placés en flex pour être alignés horizontalement */}
-      {paginatedData && (
-        <div className="flex flex-grow gap-6">
-          <ContributorMonthlyDetails
-            expenses={paginatedData.expenses}
-            currentPage={currentExpensePage}
-            totalPages={totalPages.expenses}
-            contributorPercentage={contributor.percentage_contribution}
-            onPageChange={setCurrentExpensePage}
-          />
-
-          <ContributorMonthlyDetails
-            expenses={paginatedData.credits}
-            currentPage={currentCreditPage}
-            totalPages={totalPages.credits}
-            contributorPercentage={contributor.percentage_contribution}
-            onPageChange={setCurrentCreditPage}
-            type="credit"
+      </DialogHeader>
+      <div className="mt-6 grid grid-cols-3 gap-6">
+        {/* Graphique des statistiques */}
+        <div className="col-span-1">
+          <ContributorStatsChart
+            expenseShare={contributor.expenseShare || 0}
+            creditShare={contributor.creditShare || 0}
           />
         </div>
-      )}
-    </div>
-  </DialogContent>
-</Dialog>
+        {/* Détails mensuels, placés en grid pour une meilleure répartition */}
+        {paginatedData && (
+          <div className="col-span-2 grid grid-cols-2 gap-6">
+            <ContributorMonthlyDetails
+              expenses={paginatedData.expenses}
+              currentPage={currentExpensePage}
+              totalPages={totalPages.expenses}
+              contributorPercentage={contributor.percentage_contribution}
+              onPageChange={setCurrentExpensePage}
+            />
+            <ContributorMonthlyDetails
+              expenses={paginatedData.credits}
+              currentPage={currentCreditPage}
+              totalPages={totalPages.credits}
+              contributorPercentage={contributor.percentage_contribution}
+              onPageChange={setCurrentCreditPage}
+              type="credit"
+            />
+          </div>
+        )}
+      </div>
+    </DialogContent>
+  </Dialog>
   );
 }
