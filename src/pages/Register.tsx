@@ -8,10 +8,12 @@ import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Register = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,28 +22,30 @@ const Register = () => {
   });
 
   const validateForm = () => {
+    setError(null);
+    
     if (!formData.name.trim()) {
-      toast.error("Le nom est obligatoire");
+      setError("Le nom est obligatoire");
       return false;
     }
     
     if (!formData.email.trim()) {
-      toast.error("L'email est obligatoire");
+      setError("L'email est obligatoire");
       return false;
     }
     
     if (!formData.password) {
-      toast.error("Le mot de passe est obligatoire");
+      setError("Le mot de passe est obligatoire");
       return false;
     }
     
     if (formData.password.length < 6) {
-      toast.error("Le mot de passe doit contenir au moins 6 caractères");
+      setError("Le mot de passe doit contenir au moins 6 caractères");
       return false;
     }
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
+      setError("Les mots de passe ne correspondent pas");
       return false;
     }
     
@@ -56,30 +60,31 @@ const Register = () => {
     }
 
     setIsLoading(true);
+    setError(null);
     
     try {
-      // Version simplifiée de l'appel d'authentification
-      const { data, error } = await supabase.auth.signUp({
+      console.log("Attempting to sign up with:", { email: formData.email, password: "***" });
+      
+      // Simplified signup request
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
             name: formData.name,
           },
-        },
+        }
       });
 
-      if (error) {
-        console.error("Erreur d'inscription:", error);
+      console.log("Sign up response:", { data, error: signUpError ? signUpError.message : null });
+
+      if (signUpError) {
+        console.error("Detailed error:", signUpError);
         
-        if (error.message.includes("User already registered")) {
-          toast.error("Un compte existe déjà avec cet email");
-        } else if (error.message.includes("Password should be at least")) {
-          toast.error("Le mot de passe doit contenir au moins 6 caractères");
-        } else if (error.message.includes("invalid email")) {
-          toast.error("L'adresse email n'est pas valide");
+        if (signUpError.message.includes("User already registered")) {
+          setError("Un compte existe déjà avec cet email");
         } else {
-          toast.error(`Erreur: ${error.message}`);
+          setError(`Erreur d'inscription: ${signUpError.message}`);
         }
         return;
       }
@@ -89,11 +94,11 @@ const Register = () => {
         toast.success("Inscription réussie! Veuillez vérifier votre email.");
         navigate("/email-verification");
       } else {
-        toast.error("Erreur lors de la création du compte. Veuillez réessayer.");
+        setError("Réponse inattendue du serveur. Veuillez réessayer.");
       }
     } catch (error: any) {
-      console.error("Erreur inattendue:", error);
-      toast.error("Une erreur système est survenue. Veuillez réessayer ultérieurement.");
+      console.error("Unexpected error during signup:", error);
+      setError("Une erreur technique est survenue. Veuillez réessayer ultérieurement.");
     } finally {
       setIsLoading(false);
     }
@@ -120,6 +125,12 @@ const Register = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nom</Label>
@@ -128,7 +139,7 @@ const Register = () => {
                 placeholder="Votre nom"
                 value={formData.name}
                 onChange={handleChange}
-                required
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -139,7 +150,7 @@ const Register = () => {
                 placeholder="vous@exemple.com"
                 value={formData.email}
                 onChange={handleChange}
-                required
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -149,8 +160,7 @@ const Register = () => {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                required
-                minLength={6}
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -160,8 +170,7 @@ const Register = () => {
                 type="password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                required
-                minLength={6}
+                disabled={isLoading}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>

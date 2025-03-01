@@ -33,6 +33,9 @@ export const AuthListener = () => {
           queryClient.invalidateQueries({ queryKey: ["profile"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
           toast.info("Profil mis à jour");
+        } else if (event === "PASSWORD_RECOVERY") {
+          // Redirection vers la page de récupération de mot de passe
+          toast.info("Récupération de mot de passe initiée");
         } else if (event === "TOKEN_REFRESHED") {
           // Token rafraîchi, mise à jour des données sensibles
           queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
