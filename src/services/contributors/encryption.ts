@@ -14,8 +14,7 @@ export const migrateContributorsToEncrypted = async (): Promise<void> => {
   const { data: contributors, error } = await supabase
     .from("contributors")
     .select("*")
-    .eq("profile_id", user.id)
-    .eq("is_encrypted", false);
+    .eq("profile_id", user.id);
   
   if (error) throw error;
   if (!contributors || contributors.length === 0) return;
@@ -23,26 +22,28 @@ export const migrateContributorsToEncrypted = async (): Promise<void> => {
   // Générer la clé de chiffrement de l'utilisateur
   const userKey = await getUserEncryptionKey(user.id);
   
-  // Préparer les mises à jour en lot
-  const updates = contributors.map(contributor => ({
-    id: contributor.id,
-    total_contribution_encrypted: encryptValue(contributor.total_contribution, userKey),
-    is_encrypted: true
-  }));
-  
-  // Mettre à jour les contributeurs en lot
-  for (const update of updates) {
+  // Mettre à jour les contributeurs un par un pour s'assurer que chaque mise à jour est réussie
+  for (const contributor of contributors) {
+    // Chiffrer la valeur de contribution
+    const encryptedValue = encryptValue(contributor.total_contribution, userKey);
+    
+    // Mettre à jour le contributeur avec la valeur chiffrée et marquer comme chiffré
     const { error: updateError } = await supabase
       .from("contributors")
       .update({
-        total_contribution_encrypted: update.total_contribution_encrypted,
+        total_contribution_encrypted: encryptedValue,
         is_encrypted: true
       })
-      .eq("id", update.id)
+      .eq("id", contributor.id)
       .eq("profile_id", user.id);
     
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error(`Erreur lors de la mise à jour du contributeur ${contributor.id}:`, updateError);
+      throw updateError;
+    }
   }
+  
+  console.log(`Migration réussie pour ${contributors.length} contributeurs`);
   
   // Activer le chiffrement dans le profil utilisateur
   const { error: profileError } = await supabase
@@ -64,13 +65,7 @@ export const enableEncryption = async (): Promise<void> => {
   // Migrer les données existantes
   await migrateContributorsToEncrypted();
   
-  // Mettre à jour le profil utilisateur pour activer le chiffrement
-  const { error } = await supabase
-    .from("profiles")
-    .update({ encryption_enabled: true })
-    .eq("id", user.id);
-  
-  if (error) throw error;
+  // Le profil est déjà mis à jour dans la fonction migrateContributorsToEncrypted
 };
 
 /**

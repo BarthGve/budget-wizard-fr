@@ -22,23 +22,21 @@ export const fetchContributorsService = async (): Promise<Contributor[]> => {
   // Vérifier si le chiffrement est activé
   const encryptionEnabled = await isEncryptionEnabled();
   
-  // Si le chiffrement est activé, déchiffrer les données nécessaires
-  if (encryptionEnabled) {
-    const userKey = await getUserEncryptionKey(user.id);
-    
-    return (data || []).map(contributor => {
-      // Déchiffrer seulement les données qui sont marquées comme chiffrées
-      if (contributor.is_encrypted) {
-        return {
-          ...contributor,
-          total_contribution: contributor.total_contribution_encrypted ? 
-            decryptValue(contributor.total_contribution_encrypted, userKey, true) as number : 
-            contributor.total_contribution
-        };
-      }
-      return contributor;
-    });
+  if (!encryptionEnabled) {
+    return data || [];
   }
   
-  return data || [];
+  // Si le chiffrement est activé, déchiffrer les données
+  const userKey = await getUserEncryptionKey(user.id);
+  
+  return (data || []).map(contributor => {
+    // Déchiffrer seulement les données qui sont marquées comme chiffrées
+    if (contributor.is_encrypted && contributor.total_contribution_encrypted) {
+      return {
+        ...contributor,
+        total_contribution: decryptValue(contributor.total_contribution_encrypted, userKey, true) as number
+      };
+    }
+    return contributor;
+  });
 };

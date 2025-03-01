@@ -31,6 +31,7 @@ export const updateContributorService = async (contributor: Contributor) => {
   // Vérifier si le chiffrement est activé
   const encryptionEnabled = await isEncryptionEnabled();
   
+  // Préparer les données de base à mettre à jour
   let updateData: any = contributor.is_owner
     ? {}
     : {
@@ -38,7 +39,7 @@ export const updateContributorService = async (contributor: Contributor) => {
         email: contributor.email ? contributor.email.trim() : null,
       };
   
-  // Ajouter la valeur total_contribution dans tous les cas (pour les triggers)
+  // On doit toujours inclure total_contribution pour que les triggers fonctionnent
   updateData.total_contribution = contributor.total_contribution;
   
   // Si le chiffrement est activé, chiffrer les données sensibles
@@ -47,6 +48,8 @@ export const updateContributorService = async (contributor: Contributor) => {
     updateData.total_contribution_encrypted = encryptValue(contributor.total_contribution, userKey);
     updateData.is_encrypted = true;
   }
+
+  console.log("Mise à jour d'un contributeur avec encryption:", encryptionEnabled, "Data:", updateData);
 
   const { error: updateError } = await supabase
     .from("contributors")

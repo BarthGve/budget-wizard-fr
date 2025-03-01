@@ -15,6 +15,7 @@ export const useEncryption = () => {
       try {
         const status = await checkEncryptionStatus();
         setIsEnabled(status);
+        console.log("État actuel du chiffrement:", status);
       } catch (error) {
         console.error("Erreur lors de la vérification du statut de chiffrement:", error);
       } finally {
@@ -29,14 +30,17 @@ export const useEncryption = () => {
   const activateEncryption = useCallback(async () => {
     setIsLoading(true);
     try {
+      console.log("Début de l'activation du chiffrement...");
       await enableEncryption();
       setIsEnabled(true);
       
       // Invalider toutes les requêtes pour forcer le rechargement des données
       queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+      queryClient.invalidateQueries({ queryKey: ["contributors"] });
       queryClient.invalidateQueries({ queryKey: ["current-user"] });
       
       toast.success("Le chiffrement des données a été activé avec succès");
+      console.log("Chiffrement activé avec succès");
     } catch (error: any) {
       console.error("Erreur lors de l'activation du chiffrement:", error);
       toast.error(error.message || "Erreur lors de l'activation du chiffrement");
@@ -49,13 +53,16 @@ export const useEncryption = () => {
   const migrateExistingData = useCallback(async () => {
     setIsLoading(true);
     try {
+      console.log("Début de la migration des données existantes...");
       await migrateContributorsToEncrypted();
       
       // Invalider toutes les requêtes pour forcer le rechargement des données
       queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+      queryClient.invalidateQueries({ queryKey: ["contributors"] });
       queryClient.invalidateQueries({ queryKey: ["current-user"] });
       
       toast.success("Les données existantes ont été migrées avec succès");
+      console.log("Migration des données réussie");
     } catch (error: any) {
       console.error("Erreur lors de la migration des données:", error);
       toast.error(error.message || "Erreur lors de la migration des données");
