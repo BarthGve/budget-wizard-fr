@@ -12,6 +12,7 @@ export const AuthListener = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const isInitialMount = useRef(true);
+  const previousAuthState = useRef<boolean | null>(null);
 
   useEffect(() => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
@@ -22,12 +23,23 @@ export const AuthListener = () => {
         // Skip initial session check to avoid double navigation
         if (isInitialMount.current && event === "INITIAL_SESSION") {
           isInitialMount.current = false;
+          
+          // Store initial auth state
+          previousAuthState.current = !!session;
           return;
         }
 
+        // Important: Avoid unnecessary cache invalidations if auth state didn't actually change
+        const currentAuthState = !!session;
+        if (previousAuthState.current === currentAuthState && event !== "SIGNED_OUT") {
+          console.log("Auth state didn't change, skipping cache invalidation");
+          return;
+        }
+        
+        previousAuthState.current = currentAuthState;
+
         if (event === "SIGNED_IN") {
-          // Invalider le cache pour forcer un rechargement des données
-          // Utilisation d'invalidateQueries au lieu de clear pour préserver les autres données
+          // Invalider le cache de manière sélective
           queryClient.invalidateQueries({ queryKey: ["auth"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
           queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -35,9 +47,10 @@ export const AuthListener = () => {
         } else if (event === "SIGNED_OUT") {
           try {
             // Vider le cache React Query de manière ciblée
-            queryClient.invalidateQueries();
+            queryClient.clear(); // Plus efficace pour effacer complètement l'état
             
-            // Rediriger vers la page de connexion
+            // Rediriger vers la page de connexion de manière programmatique
+            // Utiliser navigate au lieu de window.location pour éviter un rechargement complet
             navigate("/", { replace: true });
           } catch (error) {
             console.error("Error during sign out handling:", error);

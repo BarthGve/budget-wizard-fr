@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Contributor, NewContributor } from "@/types/contributor";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { 
   fetchContributorsService, 
   addContributorService, 
@@ -13,9 +13,15 @@ import {
 
 export const useContributorsData = () => {
   const queryClient = useQueryClient();
+  const channelRef = useRef<any>(null);
 
   // Configuration d'un écouteur Supabase unique avec cleanup approprié
   useEffect(() => {
+    if (channelRef.current) {
+      console.log("Cleaning up existing channel before creating a new one");
+      supabase.removeChannel(channelRef.current);
+    }
+
     const channelId = `contributors-realtime-${Date.now()}`;
     console.log(`Setting up realtime subscription with channel ID: ${channelId}`);
     
@@ -28,7 +34,8 @@ export const useContributorsData = () => {
           schema: 'public',
           table: 'contributors'
         },
-        () => {
+        (payload) => {
+          console.log("Contributors table change detected:", payload);
           // Invalider uniquement la requête des contributeurs sans recharger toute la page
           queryClient.invalidateQueries({ queryKey: ["contributors"] });
         }
@@ -37,16 +44,20 @@ export const useContributorsData = () => {
         console.log(`Supabase realtime status for contributors: ${status}`);
       });
 
+    channelRef.current = channel;
+
     return () => {
       console.log(`Cleaning up channel: ${channelId}`);
       supabase.removeChannel(channel);
+      channelRef.current = null;
     };
   }, [queryClient]);
 
-  // Utilisation de useQuery pour récupérer les contributeurs
+  // Utilisation de useQuery pour récupérer les contributeurs avec options optimisées
   const { data: contributors = [], isLoading } = useQuery({
     queryKey: ["contributors"],
     queryFn: async () => {
+      console.log("Fetching contributors data");
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         toast.error("Vous devez être connecté pour voir vos contributeurs");
@@ -60,7 +71,9 @@ export const useContributorsData = () => {
         toast.error("Erreur lors du chargement des contributeurs");
         throw error;
       }
-    }
+    },
+    staleTime: 1000 * 60, // Augmenté à 1 minute pour éviter les refetch trop fréquents
+    refetchOnWindowFocus: false, // Éviter de refetch au retour sur l'onglet
   });
 
   // Fonction d'ajout d'un contributeur avec mise à jour optimiste

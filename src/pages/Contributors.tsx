@@ -5,12 +5,12 @@ import { ContributorsHeader } from "@/components/contributors/ContributorsHeader
 import { ContributorsContent } from "@/components/contributors/ContributorsContent";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { useContributorsData } from "@/hooks/useContributorsData";
+import { memo } from "react";
 
-const Contributors = () => {
+// Using memo to prevent unnecessary re-renders
+const Contributors = memo(() => {
+  console.log("Contributors page rendering");
   const { contributors, isLoading, handleAddContributor, handleUpdateContributor, handleDeleteContributor } = useContributorsData();
-
-  // Suppression de la vérification d'authentification redondante, 
-  // car ProtectedRoute s'en charge déjà
   
   if (isLoading) {
     return <StyledLoader/>;
@@ -31,6 +31,6 @@ const Contributors = () => {
       </div>
     </DashboardLayout>
   );
-};
+});
 
 export default Contributors;

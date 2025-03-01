@@ -1,21 +1,22 @@
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import StyledLoader from "../ui/StyledLoader";
+import { memo } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
 }
 
-export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
+// Using memo to prevent unnecessary re-renders
+export const ProtectedRoute = memo(({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const location = useLocation();
-  const queryClient = useQueryClient();
   const { canAccessPage, isAdmin } = usePagePermissions();
   
-  // Modifié: suppression de location.pathname de la clé de requête
+  // Modifié: suppression de location.pathname de la clé de requête et ajout d'options de performance
   const { data: authData, isLoading } = useQuery({
     queryKey: ["auth"],
     queryFn: async () => {
@@ -32,7 +33,9 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
         isAdmin
       };
     },
-    staleTime: 1000 * 60 * 5, // Augmenté à 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false, // Désactiver le refetch automatique sur focus
+    retry: false, // Ne pas réessayer automatiquement en cas d'échec
   });
 
   if (isLoading) {
@@ -40,7 +43,8 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   }
 
   if (!authData?.isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // Utiliser state pour conserver l'URL de redirection
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Liste des routes toujours accessibles une fois connecté
@@ -75,4 +79,4 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   }
 
   return <>{children}</>;
-};
+});
