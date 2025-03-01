@@ -13,7 +13,6 @@ import { startOfYear, endOfYear, subYears } from "date-fns";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { motion } from "framer-motion";
-import { useFirstVisit } from "@/hooks/useFirstVisit";
 
 // Utilisation de memo pour éviter les re-renders inutiles
 const Expenses = memo(function Expenses() {
@@ -23,9 +22,6 @@ const Expenses = memo(function Expenses() {
   } = useRetailers();
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
-  
-  // Vérifier si c'est la première visite de la page Expenses
-  const isFirstVisit = useFirstVisit('expenses-page');
   
   // Configuration optimisée de la requête
   const {
@@ -47,8 +43,7 @@ const Expenses = memo(function Expenses() {
       if (error) throw error;
       return data;
     },
-    staleTime: 1000 * 60 *
-    5, // Garder les données fraîches pendant 5 minutes
+    staleTime: 1000 * 60 * 5, // Garder les données fraîches pendant 5 minutes
     refetchOnWindowFocus: false, // Désactiver le refetch au focus de la fenêtre
     refetchOnMount: true,
     refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
@@ -83,19 +78,19 @@ const Expenses = memo(function Expenses() {
   }) || [];
   const lastYearTotal = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   
-  // Définition des variants pour les animations - appliquées uniquement à la première visite
+  // Définition des variants pour les animations
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
       transition: { 
-        staggerChildren: isFirstVisit ? 0.1 : 0,
-        delayChildren: isFirstVisit ? 0.2 : 0
+        staggerChildren: 0.1,
+        delayChildren: 0.2
       }
     }
   };
   
-  const itemVariants = isFirstVisit ? {
+  const itemVariants = {
     hidden: { 
       opacity: 0, 
       y: 20,
@@ -113,7 +108,7 @@ const Expenses = memo(function Expenses() {
         damping: 15
       }
     }
-  } : { hidden: {}, visible: {} };
+  };
   
   if (isLoading) {
     return <DashboardLayout><StyledLoader/></DashboardLayout>;
@@ -122,8 +117,8 @@ const Expenses = memo(function Expenses() {
   return <DashboardLayout>
       <motion.div 
         className="grid gap-6"
-        initial={isFirstVisit ? "hidden" : false}
-        animate={isFirstVisit ? "visible" : false}
+        initial="hidden"
+        animate="visible"
         variants={containerVariants}
       >
         <motion.div variants={itemVariants} className="space-y-2">
@@ -161,17 +156,17 @@ const Expenses = memo(function Expenses() {
                 key={retailer.id}
                 variants={itemVariants}
                 custom={index}
-                whileHover={isFirstVisit ? {
+                whileHover={{
                   scale: 1.02,
                   rotateX: 2,
                   boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
                   z: 20,
                   transition: { duration: 0.2 }
-                } : undefined}
-                style={isFirstVisit ? {
+                }}
+                style={{
                   transformStyle: "preserve-3d",
                   perspective: "1000px"
-                } : undefined}
+                }}
               >
                 <RetailerCard 
                   retailer={retailer} 

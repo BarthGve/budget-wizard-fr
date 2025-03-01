@@ -4,7 +4,6 @@ import { Credit } from "./types";
 import { CreditActions } from "./CreditActions";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useFirstVisit } from "@/hooks/useFirstVisit";
 
 interface CreditCardProps {
   credit: Credit;
@@ -13,43 +12,40 @@ interface CreditCardProps {
 }
 
 export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) => {
-  // Vérifier si c'est la première visite de la page Credits
-  const isFirstVisit = useFirstVisit('credits-page');
-  
   return (
     <motion.div
       key={credit.id}
-      initial={isFirstVisit ? { 
+      initial={{ 
         opacity: 0,
         y: 50,
         rotateX: 45,
         scale: 0.9,
         z: -100
-      } : { opacity: 1 }}
-      animate={isFirstVisit ? { 
+      }}
+      animate={{ 
         opacity: 1, 
         y: 0,
         rotateX: 0,
         scale: 1,
         z: 0
-      } : { opacity: 1 }}
-      transition={isFirstVisit ? {
+      }}
+      transition={{
         type: "spring",
         stiffness: 100,
         damping: 15,
         delay: index * 0.1,
         duration: 0.5
-      } : undefined}
-      whileHover={isFirstVisit ? {
+      }}
+      whileHover={{
         scale: 1.02,
         z: 20,
         boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
         transition: { duration: 0.2 }
-      } : undefined}
-      style={isFirstVisit ? {
+      }}
+      style={{
         transformStyle: "preserve-3d",
         perspective: "1000px"
-      } : undefined}
+      }}
       className="transform-gpu"
     >
       <Card
@@ -58,13 +54,13 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
         )}
       >
         <div className="flex flex-col md:flex-row md:items-center md:justify-between p-1">
-          <CreditCardInfo credit={credit} index={index} isFirstVisit={isFirstVisit} />
-          <CreditCardDetails credit={credit} index={index} isFirstVisit={isFirstVisit} />
+          <CreditCardInfo credit={credit} index={index} />
+          <CreditCardDetails credit={credit} index={index} />
           <motion.div 
             className="px-4 py-2"
-            initial={isFirstVisit ? { opacity: 0, scale: 0.5 } : false}
-            animate={isFirstVisit ? { opacity: 1, scale: 1 } : false}
-            transition={isFirstVisit ? { delay: index * 0.1 + 0.5, duration: 0.3 } : undefined}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.1 + 0.5, duration: 0.3 }}
           >
             <CreditActions credit={credit} onCreditDeleted={onCreditDeleted} />
           </motion.div>
@@ -77,16 +73,15 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
 interface CreditCardInfoProps {
   credit: Credit;
   index: number;
-  isFirstVisit?: boolean;
 }
 
-export const CreditCardInfo = ({ credit, index, isFirstVisit = true }: CreditCardInfoProps) => {
+export const CreditCardInfo = ({ credit, index }: CreditCardInfoProps) => {
   return (
     <div className="flex items-center px-4 gap-4 md:w-1/3">
       <motion.div
-        initial={isFirstVisit ? { rotate: -30, scale: 0.8 } : false}
-        animate={isFirstVisit ? { rotate: 0, scale: 1 } : false}
-        transition={isFirstVisit ? { delay: index * 0.1 + 0.2, duration: 0.5 } : undefined}
+        initial={{ rotate: -30, scale: 0.8 }}
+        animate={{ rotate: 0, scale: 1 }}
+        transition={{ delay: index * 0.1 + 0.2, duration: 0.5 }}
       >
         {credit.logo_url ? (
           <img
@@ -109,16 +104,15 @@ export const CreditCardInfo = ({ credit, index, isFirstVisit = true }: CreditCar
 interface CreditCardDetailsProps {
   credit: Credit;
   index: number;
-  isFirstVisit?: boolean;
 }
 
-export const CreditCardDetails = ({ credit, index, isFirstVisit = true }: CreditCardDetailsProps) => {
+export const CreditCardDetails = ({ credit, index }: CreditCardDetailsProps) => {
   return (
     <motion.div 
       className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-2 bg-card dark:bg-card"
-      initial={isFirstVisit ? { opacity: 0, x: 20 } : false}
-      animate={isFirstVisit ? { opacity: 1, x: 0 } : false}
-      transition={isFirstVisit ? { delay: index * 0.1 + 0.3, duration: 0.4 } : undefined}
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.1 + 0.3, duration: 0.4 }}
     >
       <div className="flex flex-col">
         <span className="text-sm text-muted-foreground">Mensualité</span>
@@ -141,9 +135,9 @@ export const CreditCardDetails = ({ credit, index, isFirstVisit = true }: Credit
       <div className="flex flex-col">
         <span className="text-sm text-muted-foreground">Statut</span>
         <motion.span
-          initial={isFirstVisit ? { scale: 0, opacity: 0 } : false}
-          animate={isFirstVisit ? { scale: 1, opacity: 1 } : false}
-          transition={isFirstVisit ? { delay: index * 0.1 + 0.4, duration: 0.3 } : undefined}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: index * 0.1 + 0.4, duration: 0.3 }}
           className={`inline-flex items-center ${
             credit.statut.toLowerCase() === "actif"
               ? "text-green-600"

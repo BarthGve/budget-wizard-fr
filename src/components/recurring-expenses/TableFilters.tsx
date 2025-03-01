@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ALL_CATEGORIES, ALL_PERIODICITIES, periodicityLabels } from "./types";
-import { Dispatch, SetStateAction } from "react";
 
 interface TableFiltersProps {
   searchTerm: string;
@@ -31,7 +30,7 @@ export const TableFilters = ({
   uniqueCategories,
 }: TableFiltersProps) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto p-4">
+    <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
       <div className="relative w-full sm:w-[250px]">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input

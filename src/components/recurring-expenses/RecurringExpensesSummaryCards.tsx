@@ -7,27 +7,25 @@ interface RecurringExpensesSummaryCardsProps {
   monthlyTotal: number;
   quarterlyTotal: number;
   yearlyTotal: number;
-  isFirstVisit?: boolean;
 }
 
 export const RecurringExpensesSummaryCards = ({
   monthlyTotal,
   quarterlyTotal,
-  yearlyTotal,
-  isFirstVisit = true
+  yearlyTotal
 }: RecurringExpensesSummaryCardsProps) => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
       transition: { 
-        staggerChildren: isFirstVisit ? 0.1 : 0,
-        delayChildren: isFirstVisit ? 0.2 : 0
+        staggerChildren: 0.1,
+        delayChildren: 0.2
       }
     }
   };
   
-  const cardVariants = isFirstVisit ? {
+  const cardVariants = {
     hidden: { 
       opacity: 0, 
       y: 20,
@@ -48,14 +46,14 @@ export const RecurringExpensesSummaryCards = ({
         delay: i * 0.1
       }
     })
-  } : { hidden: {}, visible: {} };
+  };
 
   return (
     <motion.div 
       className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
       variants={containerVariants}
-      initial={isFirstVisit ? "hidden" : false}
-      animate={isFirstVisit ? "visible" : false}
+      initial="hidden"
+      animate="visible"
     >
       {[
         {
@@ -81,17 +79,17 @@ export const RecurringExpensesSummaryCards = ({
           key={title}
           custom={index}
           variants={cardVariants}
-          whileHover={isFirstVisit ? {
+          whileHover={{
             scale: 1.03,
             rotateX: 5,
             z: 20,
             boxShadow: "0 15px 30px rgba(0,0,0,0.15)",
             transition: { duration: 0.3 }
-          } : undefined}
-          style={isFirstVisit ? {
+          }}
+          style={{
             transformStyle: "preserve-3d",
             perspective: "1000px"
-          } : undefined}
+          }}
         >
           <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md dark:bg-gray-800 transform-gpu">
             <CardHeader className="py-[16px]">

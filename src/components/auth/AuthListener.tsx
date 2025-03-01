@@ -37,9 +37,6 @@ export const AuthListener = () => {
         previousAuthState.current = currentAuthState;
 
         if (event === "SIGNED_IN") {
-          // Réinitialiser les animations lorsqu'un utilisateur se connecte
-          localStorage.removeItem('visitedPages');
-          
           // Invalidation simple des caches pertinents
           queryClient.invalidateQueries({ queryKey: ["auth"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
@@ -49,9 +46,6 @@ export const AuthListener = () => {
             // Éviter la navigation multiple
             if (navigationInProgress.current) return;
             navigationInProgress.current = true;
-            
-            // Réinitialiser les animations lorsqu'un utilisateur se déconnecte
-            localStorage.removeItem('visitedPages');
             
             // Invalidation simple des caches pertinents
             const keysToInvalidate = [
