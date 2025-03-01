@@ -102,7 +102,7 @@ export function ContributorDetailsDialog({
           isDarkTheme={isDarkTheme}
         />
       </DialogHeader>
-      <div className="mt-6 grid grid-cols-3 gap-6">
+      <div className="mt-2 grid grid-cols-3 gap-6">
         {/* Graphique des statistiques */}
         <div className="col-span-1">
           <ContributorStatsChart
