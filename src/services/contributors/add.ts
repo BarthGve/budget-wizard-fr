@@ -11,6 +11,8 @@ export const addContributorService = async (
   newContributor: NewContributor,
   userId: string
 ) => {
+  console.log("Début de l'ajout d'un nouveau contributeur:", newContributor);
+  
   // On ne vérifie l'unicité de l'email que s'il est fourni
   if (newContributor.email && newContributor.email.trim() !== '') {
     const { data: existingContributor, error: existingError } = await supabase
@@ -30,6 +32,7 @@ export const addContributorService = async (
   
   // Vérifier si le chiffrement est activé
   const encryptionEnabled = await isEncryptionEnabled();
+  console.log("Chiffrement activé:", encryptionEnabled);
   
   let contributorData: any = {
     name: newContributor.name,
@@ -45,7 +48,7 @@ export const addContributorService = async (
       const userKey = await getUserEncryptionKey(userId);
       const encryptedValue = encryptValue(contribution, userKey);
       
-      console.log("Encryption enabled for add:", {
+      console.log("Chiffrement activé pour l'ajout:", {
         originalValue: contribution,
         encryptedValue: encryptedValue
       });
@@ -56,11 +59,19 @@ export const addContributorService = async (
       console.error("Erreur lors du chiffrement:", error);
       throw new Error("Impossible de chiffrer les données");
     }
+  } else {
+    // Définir explicitement les valeurs par défaut
+    contributorData.total_contribution_encrypted = null;
+    contributorData.is_encrypted = false;
   }
 
   console.log("Ajout d'un nouveau contributeur:", {
     encryptionEnabled: encryptionEnabled,
-    contributorData: contributorData
+    contributorData: {
+      ...contributorData,
+      total_contribution_encrypted: contributorData.total_contribution_encrypted ? 
+        contributorData.total_contribution_encrypted.substring(0, 20) + '...' : null
+    }
   });
 
   const { data: insertedContributor, error: insertError } = await supabase
@@ -69,8 +80,12 @@ export const addContributorService = async (
     .select()
     .single();
 
-  if (insertError) throw insertError;
+  if (insertError) {
+    console.error("Erreur lors de l'insertion:", insertError);
+    throw insertError;
+  }
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
+  console.log("Contributeur ajouté avec succès:", insertedContributor.id);
   return await fetchContributorsService();
 };

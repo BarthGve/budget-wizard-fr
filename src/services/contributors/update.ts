@@ -8,6 +8,8 @@ import { fetchContributorsService } from "./fetch";
  * Updates an existing contributor
  */
 export const updateContributorService = async (contributor: Contributor) => {
+  console.log("Début de la mise à jour du contributeur:", contributor);
+  
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError) throw userError;
   if (!user) throw new Error("Non authentifié");
@@ -30,6 +32,7 @@ export const updateContributorService = async (contributor: Contributor) => {
 
   // Vérifier si le chiffrement est activé
   const encryptionEnabled = await isEncryptionEnabled();
+  console.log("Chiffrement activé:", encryptionEnabled);
   
   // Préparer les données de base à mettre à jour
   let updateData: any = contributor.is_owner
@@ -48,7 +51,8 @@ export const updateContributorService = async (contributor: Contributor) => {
       const userKey = await getUserEncryptionKey(user.id);
       const encryptedValue = encryptValue(contributor.total_contribution, userKey);
       
-      console.log("Encryption enabled for update:", {
+      console.log("Chiffrement activé pour la mise à jour:", {
+        contributorId: contributor.id,
         originalValue: contributor.total_contribution,
         encryptedValue: encryptedValue
       });
@@ -59,6 +63,10 @@ export const updateContributorService = async (contributor: Contributor) => {
       console.error("Erreur lors du chiffrement:", error);
       throw new Error("Impossible de chiffrer les données");
     }
+  } else {
+    // Si le chiffrement n'est pas activé, s'assurer que les champs sont correctement réinitialisés
+    updateData.total_contribution_encrypted = null;
+    updateData.is_encrypted = false;
   }
 
   console.log("Mise à jour d'un contributeur:", {
@@ -78,5 +86,6 @@ export const updateContributorService = async (contributor: Contributor) => {
     throw updateError;
   }
 
+  console.log("Mise à jour réussie, récupération des données mises à jour");
   return await fetchContributorsService();
 };

@@ -7,7 +7,10 @@ import { encryptValue, getUserEncryptionKey, isEncryptionEnabled } from "@/servi
  */
 export const migrateContributorsToEncrypted = async (): Promise<void> => {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError) throw userError;
+  if (userError) {
+    console.error("Erreur d'authentification:", userError);
+    throw userError;
+  }
   if (!user) throw new Error("Non authentifié");
   
   console.log("Début de la migration des données vers le format chiffré");
@@ -29,6 +32,7 @@ export const migrateContributorsToEncrypted = async (): Promise<void> => {
   }
   
   console.log(`Migration de ${contributors.length} contributeurs`);
+  console.log("Contributeurs à migrer:", contributors);
   
   // Générer la clé de chiffrement de l'utilisateur
   const userKey = await getUserEncryptionKey(user.id);
@@ -71,7 +75,7 @@ export const migrateContributorsToEncrypted = async (): Promise<void> => {
   // Vérifier que la migration a fonctionné
   const { data: updatedContributors, error: verificationError } = await supabase
     .from("contributors")
-    .select("id, is_encrypted, total_contribution_encrypted")
+    .select("id, is_encrypted, total_contribution_encrypted, total_contribution")
     .eq("profile_id", user.id);
     
   if (verificationError) {

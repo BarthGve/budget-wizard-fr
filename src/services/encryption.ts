@@ -20,6 +20,7 @@ export const getUserEncryptionKey = async (userId: string): Promise<string> => {
       iterations: 1000
     }).toString();
     
+    console.log(`Generated encryption key for user ${userId}`);
     return userKey;
   } catch (error) {
     console.error('Erreur lors de la génération de la clé utilisateur:', error);
@@ -34,13 +35,19 @@ export const getUserEncryptionKey = async (userId: string): Promise<string> => {
  * @returns Données chiffrées en Base64
  */
 export const encryptValue = (value: string | number, userKey: string): string => {
-  // Convertir les nombres en chaînes
-  const stringValue = typeof value === 'number' ? value.toString() : value;
-  
-  // Chiffrer avec AES
-  const encrypted = CryptoJS.AES.encrypt(stringValue, userKey).toString();
-  
-  return encrypted;
+  try {
+    // Convertir les nombres en chaînes
+    const stringValue = typeof value === 'number' ? value.toString() : value;
+    
+    // Chiffrer avec AES
+    const encrypted = CryptoJS.AES.encrypt(stringValue, userKey).toString();
+    
+    console.log(`Value encrypted successfully: ${typeof value} -> ${encrypted.substring(0, 20)}...`);
+    return encrypted;
+  } catch (error) {
+    console.error('Error during encryption:', error);
+    throw error;
+  }
 };
 
 /**
@@ -52,9 +59,21 @@ export const encryptValue = (value: string | number, userKey: string): string =>
  */
 export const decryptValue = (encryptedValue: string, userKey: string, isNumber: boolean = false): string | number => {
   try {
+    if (!encryptedValue) {
+      console.warn('Attempted to decrypt empty value');
+      return isNumber ? 0 : '';
+    }
+    
     // Déchiffrer
     const decrypted = CryptoJS.AES.decrypt(encryptedValue, userKey);
     const decryptedString = decrypted.toString(CryptoJS.enc.Utf8);
+    
+    if (!decryptedString) {
+      console.error('Decryption resulted in empty string');
+      return isNumber ? 0 : '';
+    }
+    
+    console.log(`Value decrypted successfully: ${encryptedValue.substring(0, 20)}... -> ${decryptedString}`);
     
     // Convertir en nombre si nécessaire
     return isNumber ? parseFloat(decryptedString) : decryptedString;
@@ -78,7 +97,9 @@ export const isEncryptionEnabled = async (): Promise<boolean> => {
       .eq('id', user.id)
       .single();
     
-    return data?.encryption_enabled || false;
+    const enabled = data?.encryption_enabled || false;
+    console.log(`Encryption status for user ${user.id}: ${enabled}`);
+    return enabled;
   } catch (error) {
     console.error('Erreur lors de la vérification du statut de chiffrement:', error);
     return false;
