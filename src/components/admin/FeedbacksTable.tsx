@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, Star, StarHalf, Trash } from "lucide-react";
+import { Check, Eye, Star, StarHalf, Trash, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -34,6 +34,7 @@ interface FeedbacksTableProps {
   onStatusUpdate: (updatedFeedback: Feedback) => void;
   onDelete: (id: string) => void;
   onApprove: (id: string) => void;
+  onUnapprove: (id: string) => void;
 }
 
 export const FeedbacksTable = ({ 
@@ -41,7 +42,8 @@ export const FeedbacksTable = ({
   onViewDetails, 
   onStatusUpdate, 
   onDelete,
-  onApprove
+  onApprove,
+  onUnapprove
 }: FeedbacksTableProps) => {
   const [feedbackToDelete, setFeedbackToDelete] = useState<string | null>(null);
   
@@ -61,14 +63,14 @@ export const FeedbacksTable = ({
       try {
         const { error } = await supabase
           .from("feedbacks")
-          .update({ status: "in_progress" })
+          .update({ status: "read" })
           .eq("id", feedback.id);
 
         if (error) throw error;
 
         const updatedFeedback = {
           ...feedback,
-          status: "in_progress" as const
+          status: "read" as const
         };
         onStatusUpdate(updatedFeedback);
         onViewDetails(updatedFeedback);
@@ -88,6 +90,11 @@ export const FeedbacksTable = ({
   const handleApproveClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     onApprove(id);
+  };
+
+  const handleUnapproveClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    onUnapprove(id);
   };
 
   const handleConfirmDelete = () => {
@@ -146,27 +153,38 @@ export const FeedbacksTable = ({
                   "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
                   {
                     "bg-yellow-100 text-yellow-800": feedback.status === "pending",
-                    "bg-blue-100 text-blue-800": feedback.status === "in_progress",
-                    "bg-green-100 text-green-800": feedback.status === "completed",
+                    "bg-blue-100 text-blue-800": feedback.status === "read",
+                    "bg-green-100 text-green-800": feedback.status === "published",
                   }
                 )}>
                   {feedback.status === "pending" && "En attente"}
-                  {feedback.status === "in_progress" && "En cours"}
-                  {feedback.status === "completed" && "Terminé"}
+                  {feedback.status === "read" && "Lu"}
+                  {feedback.status === "published" && "Publié"}
                 </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center space-x-2">
-                  {feedback.status !== "completed" && (
+                  {feedback.status !== "published" ? (
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
                       onClick={(e) => handleApproveClick(e, feedback.id)}
-                      title="Approuver"
+                      title="Publier"
                     >
                       <Check className="h-4 w-4" />
-                      <span className="sr-only">Approuver</span>
+                      <span className="sr-only">Publier</span>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                      onClick={(e) => handleUnapproveClick(e, feedback.id)}
+                      title="Retirer la publication"
+                    >
+                      <X className="h-4 w-4" />
+                      <span className="sr-only">Retirer la publication</span>
                     </Button>
                   )}
                   <Button

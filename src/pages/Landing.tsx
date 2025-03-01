@@ -57,7 +57,7 @@ const Landing = () => {
         profile:profiles(full_name, avatar_url)
       `)
       .gte('rating', 4)
-      .eq('status', 'completed')
+      .eq('status', 'published')
       .order('created_at', { ascending: false });
 
     if (!error && data) {
