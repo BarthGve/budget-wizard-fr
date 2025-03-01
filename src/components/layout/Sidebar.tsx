@@ -34,43 +34,55 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     }
   }, [isMobile]);
 
-  const { data: profile } = useQuery<Profile>({
-    queryKey: ["profile"],
+  // Récupère d'abord l'utilisateur actuel pour avoir son ID
+  const { data: currentUser } = useQuery({
+    queryKey: ["current-user-for-sidebar"],
     queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    },
+    staleTime: 1000 * 60, // 1 minute
+  });
+
+  const { data: profile } = useQuery<Profile>({
+    queryKey: ["profile-for-sidebar", currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser) throw new Error("User not authenticated");
 
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user?.id)
+        .eq("id", currentUser.id)
         .single();
 
       if (error) throw error;
 
       const profileData = {
         ...data,
-        email: user?.email
+        email: currentUser.email
       } as Profile;
 
       return profileData;
     },
+    enabled: !!currentUser,
+    staleTime: 1000 * 60, // 1 minute
   });
 
   const { data: isAdmin } = useQuery({
-    queryKey: ["isAdmin"],
+    queryKey: ["isAdmin-for-sidebar", currentUser?.id],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
+      if (!currentUser) return false;
 
       const { data, error } = await supabase.rpc('has_role', {
-        user_id: user.id,
+        user_id: currentUser.id,
         role: 'admin'
       });
 
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: !!currentUser,
+    staleTime: 1000 * 60, // 1 minute
   });
 
   const handleClickOutside = (e: MouseEvent) => {

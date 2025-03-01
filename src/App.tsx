@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,8 +26,19 @@ import ResetPassword from "./pages/ResetPassword";
 import Changelog from "./pages/Changelog";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import EmailVerification from "./pages/EmailVerification";
+import { AuthListener } from "./components/auth/AuthListener";
 
-const queryClient = new QueryClient();
+// Configurer React Query avec des options optimisées pour la gestion des changements d'utilisateur
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Par défaut, on ne met pas en cache les données trop longtemps
+      staleTime: 1000 * 60, // 1 minute
+      // On réessaie pas plus d'une fois en cas d'erreur
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -34,6 +46,8 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        {/* Intégration du composant d'écoute d'authentification */}
+        <AuthListener />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Landing />} />

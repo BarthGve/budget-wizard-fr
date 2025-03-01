@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Profile } from "@/types/profile";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface UserDropdownProps {
   collapsed: boolean;
@@ -20,11 +21,16 @@ export const UserDropdown = ({
   profile
 }: UserDropdownProps) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     try {
+      // Vider le cache avant la déconnexion pour garantir un état propre
+      queryClient.clear();
+      
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
       toast.success("Déconnexion réussie");
       navigate("/");
     } catch (error: any) {

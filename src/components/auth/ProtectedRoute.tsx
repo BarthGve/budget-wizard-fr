@@ -1,8 +1,9 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { useEffect } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -11,10 +12,11 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const location = useLocation();
+  const queryClient = useQueryClient();
   const { canAccessPage, isAdmin } = usePagePermissions();
   
   const { data: authData, isLoading } = useQuery({
-    queryKey: ["auth"],
+    queryKey: ["auth", location.pathname],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
@@ -28,8 +30,15 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
         isAuthenticated: true,
         isAdmin
       };
-    }
+    },
+    staleTime: 1000 * 60, // 1 minute
   });
+
+  // Effet pour forcer le rafraîchissement des données d'authentification au changement de route
+  useEffect(() => {
+    // Invalider la requête auth à chaque changement de route
+    queryClient.invalidateQueries({ queryKey: ["auth"] });
+  }, [location.pathname, queryClient]);
 
   if (isLoading) {
     return <div>Chargement...</div>;
