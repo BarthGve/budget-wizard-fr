@@ -2,7 +2,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { checkEncryptionStatus, enableEncryption, migrateContributorsToEncrypted } from "@/services/contributors";
+import { migrateContributorsToEncrypted } from "@/services/contributors";
+import { isEncryptionEnabled, setEncryptionEnabled } from "@/services/encryption";
 
 export const useEncryption = () => {
   const [isEnabled, setIsEnabled] = useState<boolean>(false);
@@ -13,7 +14,7 @@ export const useEncryption = () => {
   useEffect(() => {
     const fetchEncryptionStatus = async () => {
       try {
-        const status = await checkEncryptionStatus();
+        const status = await isEncryptionEnabled();
         setIsEnabled(status);
         console.log("État actuel du chiffrement:", status);
       } catch (error) {
@@ -31,7 +32,7 @@ export const useEncryption = () => {
     setIsLoading(true);
     try {
       console.log("Début de l'activation du chiffrement...");
-      await enableEncryption();
+      await setEncryptionEnabled(true);
       setIsEnabled(true);
       
       // Invalider toutes les requêtes pour forcer le rechargement des données
