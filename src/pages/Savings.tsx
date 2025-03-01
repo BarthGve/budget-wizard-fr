@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Rocket, X } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+
 const Savings = () => {
   const {
     monthlySavings,
@@ -24,6 +25,7 @@ const Savings = () => {
   const {
     canAccessFeature
   } = usePagePermissions();
+
   const {
     data: projects = [],
     refetch: refetchProjects
@@ -43,21 +45,27 @@ const Savings = () => {
       return data;
     }
   });
+
   const totalMonthlyAmount = monthlySavings?.reduce((acc, saving) => acc + saving.amount, 0) || 0;
+
   const handleSavingAdded = () => {
     refetch();
   };
+
   const handleSavingDeleted = () => {
     refetch();
   };
+
   const handleProjectCreated = () => {
     refetch();
     refetchProjects();
   };
+
   const handleProjectDeleted = () => {
     refetch();
     refetchProjects();
   };
+
   const handleNewProjectClick = () => {
     if (canAccessFeature('/savings', 'new_project')) {
       setShowProjectWizard(true);
@@ -65,6 +73,7 @@ const Savings = () => {
       setShowProModal(true);
     }
   };
+
   if (showProjectWizard) {
     return <div className="fixed inset-0 flex items-center justify-center bg-background/80 z-50">
         <div className="w-full max-w-4xl relative">
@@ -75,30 +84,32 @@ const Savings = () => {
         </div>
       </div>;
   }
+
   return <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
-              Épargne
-            </h1>
-            <p className="text-muted-foreground">
-              Prévoyez vos versements mensuels d'épargne
-            </p>
+      <div className="flex flex-col h-[calc(100vh-4rem)]">
+        <div className="flex-none space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
+                Épargne
+              </h1>
+              <p className="text-muted-foreground">
+                Prévoyez vos versements mensuels d'épargne
+              </p>
+            </div>
+            <NewSavingDialog onSavingAdded={handleSavingAdded} />
           </div>
-          <NewSavingDialog onSavingAdded={handleSavingAdded} />
-        </div>
 
-        <div className="grid gap-4 grid-cols-12">
-          <div className="col-span-8">
-            <SavingsGoal savingsPercentage={profile?.savings_goal_percentage || 0} totalMonthlyAmount={totalMonthlyAmount} />
+          <div className="grid gap-4 grid-cols-12">
+            <div className="col-span-8">
+              <SavingsGoal savingsPercentage={profile?.savings_goal_percentage || 0} totalMonthlyAmount={totalMonthlyAmount} />
+            </div>
+            <div className="col-span-4">
+              <SavingsPieChart monthlySavings={monthlySavings || []} totalSavings={totalMonthlyAmount} />
+            </div>
           </div>
-          <div className="col-span-4">
-            <SavingsPieChart monthlySavings={monthlySavings || []} totalSavings={totalMonthlyAmount} />
-          </div>
-        </div>
 
-        {canAccessFeature('/savings', 'new_project') && <>
+          {canAccessFeature('/savings', 'new_project') && <>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Projets</h2>
               <Button onClick={handleNewProjectClick} className="gap-2">
@@ -109,8 +120,9 @@ const Savings = () => {
 
             <SavingsProjectList projects={projects} onProjectDeleted={handleProjectDeleted} />
           </>}
+        </div>
 
-        <div>
+        <div className="flex-1 overflow-auto mt-6 min-h-[300px]">
           <SavingsList monthlySavings={monthlySavings || []} onSavingDeleted={handleSavingDeleted} />
         </div>
       </div>
@@ -128,4 +140,5 @@ const Savings = () => {
       </Dialog>
     </DashboardLayout>;
 };
+
 export default Savings;
