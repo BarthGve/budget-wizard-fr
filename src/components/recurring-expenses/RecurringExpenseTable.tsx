@@ -7,6 +7,7 @@ import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, ALL_PERIO
 import { TableFilters } from "./TableFilters";
 import { TableRowActions } from "./TableRowActions";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,9 +53,42 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
     setCurrentPage(page);
   };
 
+  // Animations
+  const tableRowVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+      rotateX: 15,
+      scale: 0.95
+    },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        delay: i * 0.05
+      }
+    }),
+    exit: {
+      opacity: 0,
+      y: -10,
+      scale: 0.95,
+      transition: { duration: 0.2 }
+    }
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4">
+      <motion.div 
+        className="flex flex-col gap-4"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
         <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between w-full">
           <TableFilters
             searchTerm={searchTerm}
@@ -92,9 +126,14 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             </Select>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="overflow-auto rounded-lg border bg-background">
+      <motion.div 
+        className="overflow-auto rounded-lg border bg-background"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
         <div className="relative w-full overflow-auto">
           <Table>
             <TableHeader>
@@ -107,41 +146,66 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedExpenses.map((expense) => (
-                <TableRow 
-                  key={expense.id}
-                  className="bg-card dark:bg-card"
-                >
-                  <TableCell className="py-2">
-                    <div className="flex items-center gap-3">
-                      {expense.logo_url && (
-                        <img
-                          src={expense.logo_url}
-                          alt={expense.name}
-                          className="w-8 h-8 rounded-full object-contain"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/placeholder.svg";
-                          }}
-                        />
-                      )}
-                      <span className="font-semibold">{expense.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-2">{expense.category}</TableCell>
-                  <TableCell className="py-2">{periodicityLabels[expense.periodicity]}</TableCell>
-                  <TableCell className="text-center py-2">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
-                  <TableCell className="text-right py-2">
-                    <TableRowActions expense={expense} onDeleteExpense={onDeleteExpense} />
-                  </TableCell>
-                </TableRow>
-              ))}
+              <AnimatePresence mode="wait">
+                {paginatedExpenses.map((expense, index) => (
+                  <motion.tr 
+                    key={expense.id}
+                    className="bg-card dark:bg-card"
+                    custom={index}
+                    variants={tableRowVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    whileHover={{
+                      scale: 1.01,
+                      backgroundColor: "rgba(var(--card-rgb), 0.8)",
+                      transition: { duration: 0.2 }
+                    }}
+                    style={{
+                      transformStyle: "preserve-3d",
+                      perspective: "1000px",
+                      zIndex: paginatedExpenses.length - index
+                    }}
+                  >
+                    <TableCell className="py-2">
+                      <div className="flex items-center gap-3">
+                        {expense.logo_url && (
+                          <motion.img
+                            src={expense.logo_url}
+                            alt={expense.name}
+                            className="w-8 h-8 rounded-full object-contain"
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: index * 0.05 + 0.2, duration: 0.3 }}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/placeholder.svg";
+                            }}
+                          />
+                        )}
+                        <span className="font-semibold">{expense.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-2">{expense.category}</TableCell>
+                    <TableCell className="py-2">{periodicityLabels[expense.periodicity]}</TableCell>
+                    <TableCell className="text-center py-2">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
+                    <TableCell className="text-right py-2">
+                      <TableRowActions expense={expense} onDeleteExpense={onDeleteExpense} />
+                    </TableCell>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
             </TableBody>
           </Table>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <motion.div 
+        className="flex flex-col sm:flex-row items-center justify-between gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.4 }}
+      >
         <div className="text-sm text-muted-foreground order-2 sm:order-1">
           {filteredExpenses.length} résultat{filteredExpenses.length !== 1 ? 's' : ''}
         </div>
@@ -175,7 +239,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             </Pagination>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };

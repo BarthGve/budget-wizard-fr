@@ -11,6 +11,7 @@ import { RecurringExpenseTable } from "@/components/recurring-expenses/Recurring
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { memo, useCallback } from "react";
+import { motion } from "framer-motion";
 
 interface RecurringExpense {
   id: string;
@@ -87,13 +88,76 @@ const RecurringExpenses = memo(function RecurringExpenses() {
   const quarterlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "quarterly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
   const yearlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "yearly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
 
+  // Définition des variants pour les animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20,
+      scale: 0.95,
+      rotateX: 10
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      rotateX: 0,
+      transition: { 
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+  
+  const cardVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20,
+      scale: 0.9,
+      rotateX: 20,
+      z: -50
+    },
+    visible: (i: number) => ({ 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      rotateX: 0,
+      z: 0,
+      transition: { 
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        delay: i * 0.1
+      }
+    })
+  };
+
   if (isLoading) {
     return <DashboardLayout><StyledLoader /></DashboardLayout>;
   }
 
   return <DashboardLayout>
-    <div className="space-y-6 max-w-[1600px] mx-auto px-4">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <motion.div 
+      className="space-y-6 max-w-[1600px] mx-auto px-4"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <motion.div 
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+        variants={itemVariants}
+      >
         <div>
           <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
             Charges récurrentes
@@ -108,47 +172,75 @@ const RecurringExpenses = memo(function RecurringExpenses() {
             </Button>
           }
         />
-      </div>
+      </motion.div>
 
-      <CreateCategoryBanner />
+      <motion.div variants={itemVariants}>
+        <CreateCategoryBanner />
+      </motion.div>
 
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <motion.div 
+        className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        variants={containerVariants}
+      >
         {[
           {
             title: "Mensuel",
             value: monthlyTotal,
-            Icon: Calendar
+            Icon: Calendar,
+            index: 0
           },
           {
             title: "Trimestriel",
             value: quarterlyTotal,
-            Icon: CalendarDays
+            Icon: CalendarDays,
+            index: 1
           },
           {
             title: "Annuel",
             value: yearlyTotal,
-            Icon: CalendarRange
+            Icon: CalendarRange,
+            index: 2
           }
-        ].map(({ title, value, Icon }) => (
-          <Card key={title} className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md dark:bg-gray-800">
-            <CardHeader className="py-[16px]">
-              <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-xl md:text-2xl text-white">{title}</CardTitle>
-                <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
-              </div>
-              <CardDescription className="text-sm md:text-base text-white">Total des charges {title.toLowerCase()}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-lg md:text-xl text-white font-bold">{Math.round(value)} €</p>
-            </CardContent>
-          </Card>
+        ].map(({ title, value, Icon, index }) => (
+          <motion.div
+            key={title}
+            custom={index}
+            variants={cardVariants}
+            whileHover={{
+              scale: 1.03,
+              rotateX: 5,
+              z: 20,
+              boxShadow: "0 15px 30px rgba(0,0,0,0.15)",
+              transition: { duration: 0.3 }
+            }}
+            style={{
+              transformStyle: "preserve-3d",
+              perspective: "1000px"
+            }}
+          >
+            <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md dark:bg-gray-800 transform-gpu">
+              <CardHeader className="py-[16px]">
+                <div className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-xl md:text-2xl text-white">{title}</CardTitle>
+                  <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                </div>
+                <CardDescription className="text-sm md:text-base text-white">Total des charges {title.toLowerCase()}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg md:text-xl text-white font-bold">{Math.round(value)} €</p>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
-      <div className="w-full overflow-hidden">
+      <motion.div 
+        className="w-full overflow-hidden"
+        variants={itemVariants}
+      >
         <RecurringExpenseTable expenses={recurringExpenses || []} onDeleteExpense={handleDeleteExpense} />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   </DashboardLayout>;
 });
 
