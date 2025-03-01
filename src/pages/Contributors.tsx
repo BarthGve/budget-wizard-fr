@@ -6,30 +6,24 @@ import { ContributorCard } from "@/components/contributors/ContributorCard";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import StyledLoader from "@/components/ui/StyledLoader";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Contributor } from "@/types/contributor";
 import { fetchContributorsService } from "@/services/contributors";
+import { Link } from "react-router-dom";
 
 const Contributors = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  // Vérification de l'authentification comme dans Properties.tsx
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/login');
-      }
-    };
-
-    checkAuth();
-  }, [navigate]);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   // Configuration d'un écouteur Supabase unique avec cleanup approprié
   useEffect(() => {
+    // Nettoyer le channel précédent s'il existe
+    if (channelRef.current) {
+      console.log('Removing existing contributors channel');
+      supabase.removeChannel(channelRef.current);
+    }
+    
     const channelId = `contributors-realtime-${Date.now()}`;
     console.log(`Setting up realtime subscription with channel ID: ${channelId}`);
     
@@ -51,23 +45,31 @@ const Contributors = () => {
         console.log(`Supabase realtime status for contributors: ${status}`);
       });
 
+    // Stocker la référence du channel
+    channelRef.current = channel;
+
     return () => {
-      console.log(`Cleaning up channel: ${channelId}`);
-      supabase.removeChannel(channel);
+      if (channelRef.current) {
+        console.log(`Cleaning up channel: ${channelId}`);
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
   }, [queryClient]);
 
-  // Utilisation de useQuery avec fetchContributorsService
+  // Utilisation de useQuery avec fetchContributorsService et configuration optimisée
   const { data: contributors = [], isLoading } = useQuery({
     queryKey: ["contributors"],
-    queryFn: fetchContributorsService
+    queryFn: fetchContributorsService,
+    staleTime: 1000 * 60 * 2, // 2 minutes - réduire le nombre de requêtes
+    gcTime: 1000 * 60 * 5 // 5 minutes - remplace cacheTime dans les nouvelles versions de React Query
   });
 
   // Fonctions de gestion des contributeurs avec mises à jour optimistes
   const handleAddContributor = async (newContributor: any) => {
     const optimisticId = `temp-${Date.now()}`;
     queryClient.setQueryData(["contributors"], (old: Contributor[] = []) => [
-      { ...newContributor, id: optimisticId } as Contributor,
+      { ...newContributor, id: optimisticId, total_contribution: parseFloat(newContributor.total_contribution) } as Contributor,
       ...old
     ]);
 
@@ -90,7 +92,7 @@ const Contributors = () => {
 
       if (error) throw error;
 
-      // Mise à jour avec les vraies données du serveur
+      // Mise à jour avec les vraies données du serveur sans invalider la requête
       queryClient.setQueryData(["contributors"], (old: Contributor[] = []) => 
         old.map(item => item.id === optimisticId ? data : item)
       );
@@ -169,6 +171,11 @@ const Contributors = () => {
           <div>
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Revenus</h1>
             <p className="text-muted-foreground">Indiquez vos rentrées d'argent régulières.</p>
+          </div>
+          <div>
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:underline">
+              Retour au dashboard
+            </Link>
           </div>
         </div>
 
