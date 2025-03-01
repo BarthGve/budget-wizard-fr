@@ -34,7 +34,6 @@ export const addContributorService = async (
   let contributorData: any = {
     name: newContributor.name,
     email: newContributor.email ? newContributor.email.trim() : null, // On s'assure que l'email est null si vide
-    total_contribution: contribution,
     profile_id: userId,
   };
   
@@ -43,6 +42,11 @@ export const addContributorService = async (
     const userKey = await getUserEncryptionKey(userId);
     contributorData.total_contribution_encrypted = encryptValue(contribution, userKey);
     contributorData.is_encrypted = true;
+    // Stocker une valeur fictive dans total_contribution pour que les triggers fonctionnent correctement
+    contributorData.total_contribution = contribution;
+  } else {
+    // Si le chiffrement n'est pas activé, stocker la valeur en clair
+    contributorData.total_contribution = contribution;
   }
 
   const { data: insertedContributor, error: insertError } = await supabase

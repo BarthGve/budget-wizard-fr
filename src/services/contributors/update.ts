@@ -32,12 +32,14 @@ export const updateContributorService = async (contributor: Contributor) => {
   const encryptionEnabled = await isEncryptionEnabled();
   
   let updateData: any = contributor.is_owner
-    ? { total_contribution: contributor.total_contribution }
+    ? {}
     : {
         name: contributor.name,
         email: contributor.email ? contributor.email.trim() : null,
-        total_contribution: contributor.total_contribution,
       };
+  
+  // Ajouter la valeur total_contribution dans tous les cas (pour les triggers)
+  updateData.total_contribution = contributor.total_contribution;
   
   // Si le chiffrement est activé, chiffrer les données sensibles
   if (encryptionEnabled) {
