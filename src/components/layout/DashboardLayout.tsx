@@ -9,7 +9,7 @@ import { Credit } from "@/components/credits/types";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
-import { useState, useMemo, memo, useEffect } from "react";
+import { useState, useMemo, memo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 // Memoization du Sidebar pour éviter les re-renders inutiles
@@ -24,9 +24,15 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
   const queryClient = useQueryClient();
+  const channelRef = useRef(null);
 
   // Configurer des écouteurs pour la modification des contributeurs
   useEffect(() => {
+    // Nettoyer le channel précédent s'il existe
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
+    
     // Configurer un canal pour les modifications de contributeurs
     const channel = supabase
       .channel('contributor-changes')
@@ -43,9 +49,15 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         }
       )
       .subscribe();
+      
+    // Stocker la référence du channel
+    channelRef.current = channel;
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
   }, [queryClient]);
 
