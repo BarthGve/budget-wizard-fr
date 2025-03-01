@@ -10,6 +10,7 @@ import { ContributorsTable } from "./ContributorsTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "@/components/credits/types";
+import { motion } from "framer-motion";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -103,64 +104,115 @@ export const DashboardTabContent = ({
     creditShare: 0
   }));
 
+  // Animation variants for staggered children
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
   return (
-    <div className="space-y-8">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <RevenueCard
-          totalRevenue={revenue}
-          contributorShares={contributorShares}
-        />
-        <ExpensesCard
-          totalExpenses={expenses}
-          recurringExpenses={recurringExpenses.map(expense => ({
-            amount: expense.amount,
-            debit_day: expense.debit_day,
-            debit_month: expense.debit_month,
-            periodicity: expense.periodicity
-          }))}
-        />
-        <CreditCard
-          totalMensualites={totalMensualites}
-          totalRevenue={revenue}
-        />
-        <SavingsCard
-          totalMonthlySavings={savings}
-          savingsGoal={savingsGoal}
-        />
-      </div>
-      <div className="grid gap-6 md:grid-cols-3">
+    <motion.div 
+      className="space-y-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <motion.div 
+        className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
+        variants={containerVariants}
+      >
+        <motion.div variants={itemVariants}>
+          <RevenueCard
+            totalRevenue={revenue}
+            contributorShares={contributorShares}
+          />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <ExpensesCard
+            totalExpenses={expenses}
+            recurringExpenses={recurringExpenses.map(expense => ({
+              amount: expense.amount,
+              debit_day: expense.debit_day,
+              debit_month: expense.debit_month,
+              periodicity: expense.periodicity
+            }))}
+          />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <CreditCard
+            totalMensualites={totalMensualites}
+            totalRevenue={revenue}
+          />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <SavingsCard
+            totalMonthlySavings={savings}
+            savingsGoal={savingsGoal}
+          />
+        </motion.div>
+      </motion.div>
+      
+      <motion.div 
+        className="grid gap-6 md:grid-cols-3"
+        variants={containerVariants}
+      >
         {recurringExpenses.length > 0 && (
-          <div>
+          <motion.div variants={itemVariants}>
             <RecurringExpensesPieChart
               recurringExpenses={recurringExpenses}
               totalExpenses={expenses}
             />
-          </div>
+          </motion.div>
         )}
         {credits && credits.length > 0 && (
-          <div>
+          <motion.div variants={itemVariants}>
             <CreditsPieChart
               credits={credits}
               totalMensualites={totalMensualites}
             />
-          </div>
+          </motion.div>
         )}
         {monthlySavings.length > 0 && (
-         <div>
+          <motion.div variants={itemVariants}>
             <SavingsPieChart
               monthlySavings={monthlySavings}
               totalSavings={savings}
             />
-        </div>
+          </motion.div>
         )}
-      </div>
-      <div>
+      </motion.div>
+      
+      <motion.div variants={itemVariants}>
         <ContributorsTable 
           contributors={mappedContributors}
           totalExpenses={expenses}
           totalCredits={totalMensualites}
         />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
+import { motion } from "framer-motion";
 import {
   calculateTotalRevenue,
   calculateMonthlyExpenses,
@@ -88,10 +89,45 @@ const Dashboard = () => {
     return monthlySavings;
   };
 
+  // Animation variants for staggered children
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
   return (
     <DashboardLayout>
-      <div className="grid gap-6 mt-4">
-        <div className="space-y-2">
+      <motion.div 
+        className="grid gap-6 mt-4"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <motion.div className="space-y-2" variants={itemVariants}>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
@@ -104,12 +140,15 @@ const Dashboard = () => {
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full"
+          variants={itemVariants}
+        >
           <CreateCategoryBanner />
           <CreateRetailerBanner />
-        </div>
+        </motion.div>
         
         <DashboardTabContent
           revenue={currentView === "monthly" ? totalRevenue : yearlyRevenue}
@@ -123,7 +162,7 @@ const Dashboard = () => {
           monthlySavings={getSavingsForPieChart()}
           contributors={contributors || []}
         />
-      </div>
+      </motion.div>
     </DashboardLayout>
   );
 };
