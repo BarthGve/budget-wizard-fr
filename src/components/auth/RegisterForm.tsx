@@ -29,6 +29,8 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
       ...formData,
       [e.target.id]: e.target.value,
     });
+    // Réinitialiser le message d'erreur lorsque l'utilisateur modifie quelque chose
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,28 +47,55 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
     
     try {
       console.log("Tentative d'inscription depuis le formulaire...");
-      await registerUser({
-        email: formData.email,
-        password: formData.password,
-        name: formData.name
-      });
       
-      console.log("Inscription réussie!");
-      toast.success("Inscription réussie! Veuillez vérifier votre email.");
+      // Tentative d'inscription avec plusieurs essais si nécessaire
+      let retryCount = 0;
+      const maxRetries = 2;
+      let lastError = null;
       
-      if (onSubmit) {
-        onSubmit();
+      while (retryCount <= maxRetries) {
+        try {
+          await registerUser({
+            email: formData.email,
+            password: formData.password,
+            name: formData.name
+          });
+          
+          console.log("Inscription réussie après " + retryCount + " essais!");
+          toast.success("Inscription réussie! Veuillez vérifier votre email.");
+          
+          if (onSubmit) {
+            onSubmit();
+          }
+          
+          navigate("/email-verification");
+          return; // Sortir de la fonction si l'inscription a réussi
+        } catch (err: any) {
+          lastError = err;
+          
+          // Ne pas réessayer si c'est une erreur d'email déjà existant ou autre erreur non technique
+          if (!err.message.includes("Problème technique")) {
+            break;
+          }
+          
+          console.log(`Tentative ${retryCount + 1} échouée, nouvelle tentative...`);
+          retryCount++;
+          // Attendre un peu avant de réessayer
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
       
-      navigate("/email-verification");
+      // Si on arrive ici, toutes les tentatives ont échoué
+      throw lastError;
     } catch (error: any) {
-      console.error("Erreur capturée dans le formulaire d'inscription:", error);
+      console.error("Erreur finale capturée dans le formulaire d'inscription:", error);
       
       // Message d'erreur plus compréhensible pour l'utilisateur
       if (error.message.includes("Database error") || 
           error.message.includes("stack depth") ||
-          error.message.includes("column \"tg_depth\"")) {
-        setError("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants.");
+          error.message.includes("column \"tg_depth\"") ||
+          error.message.includes("Problème technique")) {
+        setError("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants ou contacter le support.");
       } else if (error.message.includes("User already registered") || error.message.includes("existe déjà")) {
         setError("Un compte existe déjà avec cet email. Veuillez vous connecter ou utiliser une autre adresse email.");
       } else {

@@ -18,13 +18,13 @@ export interface LoginCredentials {
 }
 
 /**
- * Inscrit un nouvel utilisateur avec une approche simplifiée
+ * Inscrit un nouvel utilisateur avec l'approche la plus simple possible
  */
 export const registerUser = async (credentials: RegisterCredentials) => {
   console.log("Tentative d'inscription avec:", { email: credentials.email });
   
   try {
-    // Inscription de base avec le minimum d'options
+    // Approche simplifiée au maximum, sans options supplémentaires
     const { data, error } = await supabase.auth.signUp({
       email: credentials.email,
       password: credentials.password,
@@ -51,23 +51,22 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     // Stocker l'email pour la vérification
     localStorage.setItem("verificationEmail", credentials.email);
     
-    // Création manuelle du profil et du contributeur si les triggers ne fonctionnent pas
     try {
-      const userId = data.user.id;
-      
-      // Vérifier si un profil existe déjà
+      // Vérifier si un profil existe déjà pour cet utilisateur
       const { data: existingProfile } = await supabase
         .from('profiles')
         .select('id')
-        .eq('id', userId)
+        .eq('id', data.user.id)
         .single();
       
       // Si aucun profil n'existe, en créer un manuellement
       if (!existingProfile) {
+        console.log("Création manuelle du profil pour:", data.user.id);
+        
         await supabase
           .from('profiles')
           .insert([{ 
-            id: userId, 
+            id: data.user.id, 
             full_name: credentials.name, 
             profile_type: 'basic' 
           }]);
@@ -76,26 +75,28 @@ export const registerUser = async (credentials: RegisterCredentials) => {
         await supabase
           .from('contributors')
           .insert([{
-            profile_id: userId,
+            profile_id: data.user.id,
             name: credentials.name,
             is_owner: true,
             total_contribution: 0,
             percentage_contribution: 0
           }]);
+          
+        console.log("Profil et contributeur créés manuellement avec succès");
       }
-    } catch (backupError) {
-      console.warn("Note: Création manuelle du profil tentée mais non nécessaire:", backupError);
-      // Ne pas interrompre l'inscription si cette étape échoue
+    } catch (profileError) {
+      // Logger l'erreur mais ne pas interrompre l'inscription
+      console.warn("Erreur lors de la création du profil:", profileError);
     }
     
     return data;
   } catch (error: any) {
-    console.error("Exception lors de l'inscription:", error);
+    console.error("Exception finale lors de l'inscription:", error);
     
-    // Gestion précise des erreurs connues
     if (error.message.includes("Database error") || 
         error.message.includes("stack depth") ||
-        error.message.includes("column \"tg_depth\" does not exist")) {
+        error.message.includes("tg_depth") ||
+        error.message.includes("trigger")) {
       throw new Error("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants.");
     }
     
