@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Contributor } from "@/types/contributor";
 import { encryptValue, getUserEncryptionKey, isEncryptionEnabled } from "@/services/encryption";
+import { calculateContributorPercentages, updateContributorPercentagesInDB } from "./percentages";
 import { fetchContributorsService } from "./fetch";
 
 /**
@@ -54,7 +55,7 @@ export const updateContributorService = async (contributor: Contributor) => {
       console.log("Chiffrement activé pour la mise à jour:", {
         contributorId: contributor.id,
         originalValue: contributor.total_contribution,
-        encryptedValue: encryptedValue
+        encryptedValue: encryptedValue.substring(0, 20) + '...'
       });
       
       updateData.total_contribution_encrypted = encryptedValue;
@@ -87,5 +88,15 @@ export const updateContributorService = async (contributor: Contributor) => {
   }
 
   console.log("Mise à jour réussie, récupération des données mises à jour");
-  return await fetchContributorsService();
+  
+  // Récupérer tous les contributeurs et mettre à jour les pourcentages si le chiffrement est activé
+  const contributors = await fetchContributorsService();
+  
+  if (encryptionEnabled) {
+    const contributorsWithPercentages = await calculateContributorPercentages(contributors);
+    await updateContributorPercentagesInDB(contributorsWithPercentages);
+    return contributorsWithPercentages;
+  }
+  
+  return contributors;
 };

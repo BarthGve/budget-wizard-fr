@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { encryptValue, getUserEncryptionKey, isEncryptionEnabled } from "@/services/encryption";
+import { calculateContributorPercentages, updateContributorPercentagesInDB } from "./percentages";
 
 /**
  * Service pour migrer les données existantes vers le format chiffré
@@ -75,21 +76,26 @@ export const migrateContributorsToEncrypted = async (): Promise<void> => {
     }
   }
   
+  // Calculer et mettre à jour les pourcentages
+  const updatedContributors = await calculateContributorPercentages(contributors);
+  await updateContributorPercentagesInDB(updatedContributors);
+  
   console.log(`Migration réussie pour ${contributors.length} contributeurs`);
   
   // Vérifier que la migration a fonctionné
-  const { data: updatedContributors, error: verificationError } = await supabase
+  const { data: verifiedContributors, error: verificationError } = await supabase
     .from("contributors")
-    .select("id, is_encrypted, total_contribution_encrypted, total_contribution")
+    .select("id, is_encrypted, total_contribution_encrypted, total_contribution, percentage_contribution")
     .eq("profile_id", user.id);
     
   if (verificationError) {
     console.error("Erreur lors de la vérification de la migration:", verificationError);
   } else {
-    console.log("État après migration:", updatedContributors?.map(c => ({
+    console.log("État après migration:", verifiedContributors?.map(c => ({
       id: c.id,
       is_encrypted: c.is_encrypted,
-      has_encrypted_data: !!c.total_contribution_encrypted
+      has_encrypted_data: !!c.total_contribution_encrypted,
+      percentage: c.percentage_contribution
     })));
   }
   

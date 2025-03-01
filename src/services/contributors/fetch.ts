@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Contributor } from "@/types/contributor";
 import { decryptValue, getUserEncryptionKey, isEncryptionEnabled } from "@/services/encryption";
+import { calculateContributorPercentages } from "./percentages";
 
 /**
  * Fetches all contributors for the current user
@@ -52,7 +53,8 @@ export const fetchContributorsService = async (): Promise<Contributor[]> => {
   
   console.log("Récupération des contributeurs avec chiffrement activé");
   
-  return data.map(contributor => {
+  // Déchiffrer les données
+  const decryptedContributors = data.map(contributor => {
     try {
       // Déchiffrer seulement les données qui sont marquées comme chiffrées
       // et qui ont une valeur chiffrée
@@ -77,4 +79,7 @@ export const fetchContributorsService = async (): Promise<Contributor[]> => {
       return contributor;
     }
   });
+  
+  // Calculer les pourcentages côté client si nécessaire
+  return await calculateContributorPercentages(decryptedContributors);
 };

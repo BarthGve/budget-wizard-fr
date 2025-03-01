@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { NewContributor } from "@/types/contributor";
 import { encryptValue, getUserEncryptionKey, isEncryptionEnabled } from "@/services/encryption";
+import { calculateContributorPercentages, updateContributorPercentagesInDB } from "./percentages";
 import { fetchContributorsService } from "./fetch";
 
 /**
@@ -50,7 +51,7 @@ export const addContributorService = async (
       
       console.log("Chiffrement activé pour l'ajout:", {
         originalValue: contribution,
-        encryptedValue: encryptedValue
+        encryptedValue: encryptedValue.substring(0, 20) + '...'
       });
       
       contributorData.total_contribution_encrypted = encryptedValue;
@@ -87,5 +88,15 @@ export const addContributorService = async (
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
   console.log("Contributeur ajouté avec succès:", insertedContributor.id);
-  return await fetchContributorsService();
+  
+  // Récupérer tous les contributeurs et mettre à jour les pourcentages si le chiffrement est activé
+  const contributors = await fetchContributorsService();
+  
+  if (encryptionEnabled) {
+    const contributorsWithPercentages = await calculateContributorPercentages(contributors);
+    await updateContributorPercentagesInDB(contributorsWithPercentages);
+    return contributorsWithPercentages;
+  }
+  
+  return contributors;
 };
