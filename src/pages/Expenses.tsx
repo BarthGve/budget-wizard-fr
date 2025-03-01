@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { startOfYear, endOfYear, subYears } from "date-fns";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
-import StyledLoader from "@/components/ui/StyledLoader";
+import ExpenseSkeleton from "@/components/ui/ExpenseSkeleton";
 
 const Expenses = () => {
   const queryClient = useQueryClient();
@@ -66,7 +66,23 @@ const Expenses = () => {
   }) || [];
   const lastYearTotal = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   if (isLoading) {
-    return <StyledLoader/>;
+    return (
+      <DashboardLayout>
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <ExpenseSkeleton key={index} />
+          ))}
+        </div>
+      </DashboardLayout>
+    );
+  }
+  
+  if (error) {
+    return (
+      <DashboardLayout>
+        <p className="text-red-500">Une erreur s'est produite : {error.message}</p>
+      </DashboardLayout>
+    );
   }
   return <DashboardLayout>
       <div className="grid gap-6">
