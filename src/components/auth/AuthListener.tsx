@@ -37,7 +37,7 @@ export const AuthListener = () => {
             // Rediriger explicitement vers la landing page avec replace: true
             navigate("/", { replace: true });
             
-            // Forcer un rechargement des données de la landing page
+            // Forcer un rechargement des données de la landing page sans recharger toute la page
             setTimeout(() => {
               queryClient.invalidateQueries();
             }, 100);

@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +34,7 @@ export const UserDropdown = ({
       toast.success("Déconnexion réussie");
       
       // Navigation explicite vers la landing page avec replace pour éviter le retour arrière
+      // Utiliser replace: true pour éviter l'historique problématique
       navigate("/", { replace: true });
     } catch (error: any) {
       toast.error("Erreur lors de la déconnexion");

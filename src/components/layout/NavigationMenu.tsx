@@ -58,7 +58,8 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const handleNavigation = (path: string) => {
     // Éviter les rechargements inutiles si on est déjà sur la même page
     if (location.pathname !== path) {
-      navigate(path);
+      // Utiliser navigate avec { replace: false } pour garantir une navigation SPA
+      navigate(path, { replace: false });
     }
   };
 
