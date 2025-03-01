@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
@@ -121,6 +122,28 @@ export const AdminFeedbacks = () => {
     }
   };
 
+  const handleApproveFeedback = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("feedbacks")
+        .update({ status: "completed" })
+        .eq("id", id);
+
+      if (error) throw error;
+      
+      setLocalFeedbacks(prevFeedbacks =>
+        prevFeedbacks.map(feedback =>
+          feedback.id === id ? { ...feedback, status: "completed" } : feedback
+        )
+      );
+      
+      toast.success("Feedback approuvé");
+    } catch (error) {
+      console.error("Error approving feedback:", error);
+      toast.error("Erreur lors de l'approbation du feedback");
+    }
+  };
+
   const handleDragEnd = async (result: any) => {
     if (!result.destination) return;
 
@@ -166,6 +189,7 @@ export const AdminFeedbacks = () => {
                 onViewDetails={setSelectedFeedback}
                 onStatusUpdate={handleStatusUpdate}
                 onDelete={handleDeleteFeedback}
+                onApprove={handleApproveFeedback}
               />
             ) : (
               <FeedbacksKanban

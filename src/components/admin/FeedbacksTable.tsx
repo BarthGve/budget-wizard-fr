@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, StarHalf, Trash } from "lucide-react";
+import { Check, Star, StarHalf, Trash } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -33,13 +33,15 @@ interface FeedbacksTableProps {
   onViewDetails: (feedback: Feedback) => void;
   onStatusUpdate: (updatedFeedback: Feedback) => void;
   onDelete: (id: string) => void;
+  onApprove: (id: string) => void;
 }
 
 export const FeedbacksTable = ({ 
   feedbacks, 
   onViewDetails, 
   onStatusUpdate, 
-  onDelete 
+  onDelete,
+  onApprove
 }: FeedbacksTableProps) => {
   const [feedbackToDelete, setFeedbackToDelete] = useState<string | null>(null);
   
@@ -83,6 +85,11 @@ export const FeedbacksTable = ({
     setFeedbackToDelete(id);
   };
 
+  const handleApproveClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    onApprove(id);
+  };
+
   const handleConfirmDelete = () => {
     if (feedbackToDelete) {
       onDelete(feedbackToDelete);
@@ -99,7 +106,7 @@ export const FeedbacksTable = ({
             <TableHead>Titre</TableHead>
             <TableHead>Note & Date</TableHead>
             <TableHead>Statut</TableHead>
-            <TableHead className="w-[80px]">Actions</TableHead>
+            <TableHead className="w-[120px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -149,15 +156,30 @@ export const FeedbacksTable = ({
                 </div>
               </TableCell>
               <TableCell>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                  onClick={(e) => handleDeleteClick(e, feedback.id)}
-                >
-                  <Trash className="h-4 w-4" />
-                  <span className="sr-only">Supprimer</span>
-                </Button>
+                <div className="flex items-center space-x-2">
+                  {feedback.status !== "completed" && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                      onClick={(e) => handleApproveClick(e, feedback.id)}
+                      title="Approuver"
+                    >
+                      <Check className="h-4 w-4" />
+                      <span className="sr-only">Approuver</span>
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                    onClick={(e) => handleDeleteClick(e, feedback.id)}
+                    title="Supprimer"
+                  >
+                    <Trash className="h-4 w-4" />
+                    <span className="sr-only">Supprimer</span>
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -186,4 +208,3 @@ export const FeedbacksTable = ({
     </>
   );
 };
-
