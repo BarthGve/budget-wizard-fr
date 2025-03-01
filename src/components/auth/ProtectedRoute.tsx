@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -14,30 +14,53 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   const location = useLocation();
   const queryClient = useQueryClient();
   const { canAccessPage, isAdmin } = usePagePermissions();
+  const previousPathRef = useRef<string | null>(null);
   
+  // Optimisé pour éviter les rechargements inutiles
   const { data: authData, isLoading } = useQuery({
-    queryKey: ["auth", location.pathname],
+    queryKey: ["auth"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
 
-      const { data: isAdmin, error } = await supabase.rpc('has_role', {
-        user_id: user.id,
-        role: 'admin'
-      });
+      // Uniquement vérifier le rôle admin si nécessaire
+      if (requireAdmin || location.pathname.startsWith('/admin')) {
+        const { data: isAdmin, error } = await supabase.rpc('has_role', {
+          user_id: user.id,
+          role: 'admin'
+        });
+        
+        return { 
+          isAuthenticated: true,
+          isAdmin,
+          userId: user.id
+        };
+      }
 
       return { 
         isAuthenticated: true,
-        isAdmin
+        isAdmin: false,
+        userId: user.id
       };
     },
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60 * 5, // 5 minutes - réduire le nombre de requêtes
+    cacheTime: 1000 * 60 * 10 // 10 minutes
   });
 
-  // Effet pour forcer le rafraîchissement des données d'authentification au changement de route
+  // N'invalidez les requêtes d'authentification que lors des changements de route significatifs
   useEffect(() => {
-    // Invalider la requête auth à chaque changement de route
-    queryClient.invalidateQueries({ queryKey: ["auth"] });
+    // Vérifiez si c'est un véritable changement de route, pas juste des paramètres de requête ou des ancres
+    const isRealPathChange = previousPathRef.current !== location.pathname;
+    
+    if (isRealPathChange && 
+        location.pathname !== '/login' && 
+        location.pathname !== '/register' &&
+        previousPathRef.current !== null) {
+      // Invalider uniquement lors d'un vrai changement de route et non au montage initial
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+    }
+    
+    previousPathRef.current = location.pathname;
   }, [location.pathname, queryClient]);
 
   if (isLoading) {
@@ -45,7 +68,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   }
 
   if (!authData?.isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Liste des routes toujours accessibles une fois connecté
