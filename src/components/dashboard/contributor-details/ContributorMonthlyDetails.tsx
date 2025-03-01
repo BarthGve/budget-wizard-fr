@@ -31,7 +31,7 @@ export function ContributorMonthlyDetails({
 
   return (
     <Card className="p-4">
-      <h3 className="text-lg font-semibold mb-4">
+      <h3 className="text-lg font-semibold mb-2">
         {isCredit ? "Détails des crédits" : "Détails des charges"}
       </h3>
       <div >
@@ -43,7 +43,7 @@ export function ContributorMonthlyDetails({
           return (
             <div
               key={item.id}
-              className="flex items-center justify-between p-2"
+              className="flex items-center justify-between p-1"
             >
               <div>
                 <p className="font-medium">{name}</p>
