@@ -71,37 +71,31 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
-          is_encrypted: boolean | null
           is_owner: boolean
           name: string
           percentage_contribution: number
           profile_id: string
           total_contribution: number
-          total_contribution_encrypted: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           id?: string
-          is_encrypted?: boolean | null
           is_owner?: boolean
           name: string
           percentage_contribution?: number
           profile_id: string
           total_contribution?: number
-          total_contribution_encrypted?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
-          is_encrypted?: boolean | null
           is_owner?: boolean
           name?: string
           percentage_contribution?: number
           profile_id?: string
           total_contribution?: number
-          total_contribution_encrypted?: string | null
         }
         Relationships: [
           {

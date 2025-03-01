@@ -19,18 +19,16 @@ export interface LoginCredentials {
 
 /**
  * Inscrit un nouvel utilisateur avec une approche simplifiée
- * pour éviter les problèmes de triggers et récursion côté Supabase
  */
 export const registerUser = async (credentials: RegisterCredentials) => {
-  console.log("Tentative d'inscription simplifiée avec:", { email: credentials.email });
+  console.log("Tentative d'inscription avec:", { email: credentials.email });
   
   try {
-    // Méthode la plus directe possible sans options supplémentaires
+    // Inscription de base avec le minimum d'options
     const { data, error } = await supabase.auth.signUp({
       email: credentials.email,
       password: credentials.password,
       options: {
-        // Minimum d'informations pour éviter des traitements complexes côté serveur
         data: { 
           name: credentials.name 
         }
@@ -53,39 +51,51 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     // Stocker l'email pour la vérification
     localStorage.setItem("verificationEmail", credentials.email);
     
-    // Créer manuellement le profil utilisateur si le trigger côté Supabase échoue
+    // Création manuelle du profil et du contributeur si les triggers ne fonctionnent pas
     try {
-      if (data.user.id) {
-        const { error: profileError } = await supabase
+      const userId = data.user.id;
+      
+      // Vérifier si un profil existe déjà
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+        .single();
+      
+      // Si aucun profil n'existe, en créer un manuellement
+      if (!existingProfile) {
+        await supabase
           .from('profiles')
           .insert([{ 
-            id: data.user.id, 
+            id: userId, 
             full_name: credentials.name, 
             profile_type: 'basic' 
-          }])
-          .select()
-          .single();
+          }]);
           
-        if (profileError) {
-          console.warn("Erreur lors de la création manuelle du profil:", profileError);
-          // Ne pas interrompre l'inscription, juste logger l'erreur
-        }
+        // Créer également un contributeur par défaut
+        await supabase
+          .from('contributors')
+          .insert([{
+            profile_id: userId,
+            name: credentials.name,
+            is_owner: true,
+            total_contribution: 0,
+            percentage_contribution: 0
+          }]);
       }
-    } catch (profileError) {
-      console.warn("Exception lors de la création manuelle du profil:", profileError);
-      // Ne pas interrompre l'inscription, juste logger l'erreur
+    } catch (backupError) {
+      console.warn("Note: Création manuelle du profil tentée mais non nécessaire:", backupError);
+      // Ne pas interrompre l'inscription si cette étape échoue
     }
     
     return data;
   } catch (error: any) {
     console.error("Exception lors de l'inscription:", error);
     
-    // Gestion plus précise des erreurs
-    if (
-      error.message.includes("Database error") || 
-      error.message.includes("stack depth") ||
-      error.message.includes("column \"tg_depth\" does not exist")
-    ) {
+    // Gestion précise des erreurs connues
+    if (error.message.includes("Database error") || 
+        error.message.includes("stack depth") ||
+        error.message.includes("column \"tg_depth\" does not exist")) {
       throw new Error("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants.");
     }
     

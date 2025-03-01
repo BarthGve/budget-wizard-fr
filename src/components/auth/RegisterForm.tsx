@@ -62,13 +62,11 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
     } catch (error: any) {
       console.error("Erreur capturée dans le formulaire d'inscription:", error);
       
-      // Message d'erreur plus spécifique et robuste
-      if (
-        error.message.includes("Database error") || 
-        error.message.includes("stack depth") ||
-        error.message.includes("column \"tg_depth\"")
-      ) {
-        setError("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants ou contacter le support si le problème persiste.");
+      // Message d'erreur plus compréhensible pour l'utilisateur
+      if (error.message.includes("Database error") || 
+          error.message.includes("stack depth") ||
+          error.message.includes("column \"tg_depth\"")) {
+        setError("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants.");
       } else if (error.message.includes("User already registered") || error.message.includes("existe déjà")) {
         setError("Un compte existe déjà avec cet email. Veuillez vous connecter ou utiliser une autre adresse email.");
       } else {
