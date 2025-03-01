@@ -1,10 +1,9 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { useState, useEffect } from "react";
-import StyledLoader from "@/components/ui/StyledLoader";
+import { useEffect } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,51 +12,16 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const location = useLocation();
+  const queryClient = useQueryClient();
   const { canAccessPage, isAdmin } = usePagePermissions();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userIsAdmin, setUserIsAdmin] = useState(false);
   
-  // Utilisation d'un effet direct plutôt qu'une requête pour vérifier l'authentification initiale
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        setIsLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          setIsAuthenticated(false);
-          setIsLoading(false);
-          return;
-        }
-
-        setIsAuthenticated(true);
-
-        const { data: adminStatus } = await supabase.rpc('has_role', {
-          user_id: user.id,
-          role: 'admin'
-        });
-        
-        setUserIsAdmin(!!adminStatus);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error checking auth", error);
-        setIsAuthenticated(false);
-        setIsLoading(false);
-      }
-    };
-    
-    checkAuth();
-  }, [location.pathname]);
-
-  // Utiliser une requête en arrière-plan pour maintenir à jour les informations d'authentification
-  useQuery({
-    queryKey: ["auth-background", location.pathname],
+  const { data: authData, isLoading } = useQuery({
+    queryKey: ["auth", location.pathname],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
 
-      const { data: isAdmin } = await supabase.rpc('has_role', {
+      const { data: isAdmin, error } = await supabase.rpc('has_role', {
         user_id: user.id,
         role: 'admin'
       });
@@ -68,24 +32,19 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
       };
     },
     staleTime: 1000 * 60, // 1 minute
-    enabled: isAuthenticated, // Seulement si l'utilisateur est déjà authentifié
-    meta: {
-      onSuccess: (data) => {
-        if (data.isAuthenticated !== isAuthenticated) {
-          setIsAuthenticated(data.isAuthenticated);
-        }
-        if (data.isAdmin !== userIsAdmin) {
-          setUserIsAdmin(data.isAdmin);
-        }
-      }
-    }
   });
 
+  // Effet pour forcer le rafraîchissement des données d'authentification au changement de route
+  useEffect(() => {
+    // Invalider la requête auth à chaque changement de route
+    queryClient.invalidateQueries({ queryKey: ["auth"] });
+  }, [location.pathname, queryClient]);
+
   if (isLoading) {
-    return <StyledLoader />;
+    return <div>Chargement...</div>;
   }
 
-  if (!isAuthenticated) {
+  if (!authData?.isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
@@ -93,7 +52,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
   
   // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
-  if (userIsAdmin && location.pathname === '/dashboard') {
+  if (authData.isAdmin && location.pathname === '/dashboard') {
     return <Navigate to="/admin" replace />;
   }
 

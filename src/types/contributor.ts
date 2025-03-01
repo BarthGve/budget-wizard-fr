@@ -9,14 +9,10 @@ export interface Contributor {
   profile_id: string;
   expenseShare?: number;
   creditShare?: number;
-  is_encrypted?: boolean;
-  total_contribution_encrypted?: string;
 }
 
 export interface NewContributor {
   name: string;
   email?: string;
   total_contribution: string;
-  is_encrypted?: boolean;
-  total_contribution_encrypted?: string;
 }

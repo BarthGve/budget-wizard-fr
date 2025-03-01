@@ -1,4 +1,3 @@
-
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -17,7 +16,6 @@ import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { LucideIcon } from "lucide-react";
-import { memo } from "react";
 
 interface MenuItem {
   title: string;
@@ -49,8 +47,7 @@ const userMenu: MenuItem[] = [
   { title: "Immobilier", icon: Home, path: "/properties" },
 ];
 
-// Utilisation de memo pour éviter les re-renders inutiles
-export const NavigationMenu = memo(({ collapsed, isAdmin }: NavigationMenuProps) => {
+export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
   const { canAccessPage } = usePagePermissions();
 
@@ -64,17 +61,19 @@ export const NavigationMenu = memo(({ collapsed, isAdmin }: NavigationMenuProps)
             ? new RegExp(item.matchPath).test(location.pathname)
             : location.pathname === item.path;
 
+          console.log(`Checking path: ${location.pathname} against ${item.matchPath || item.path}`);
+          console.log(`Is active: ${isActive}`);
+
           return (
             <li key={item.path}>
               <NavLink
                 to={item.path}
-                className={cn(
+                className={({ isActive }) => cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                   "hover:bg-primary/10",
                   collapsed && "justify-center",
                   isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )}
-                end={!item.matchPath} // Pour éviter les correspondances partielles
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
                 {!collapsed && <span className="truncate">{item.title}</span>}
@@ -94,6 +93,4 @@ export const NavigationMenu = memo(({ collapsed, isAdmin }: NavigationMenuProps)
       )}
     </nav>
   );
-});
-
-NavigationMenu.displayName = "NavigationMenu";
+};

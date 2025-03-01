@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 
 /**
  * Composant qui écoute les changements d'état d'authentification
@@ -11,29 +10,17 @@ import { useNavigate } from "react-router-dom";
  */
 export const AuthListener = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    // État pour suivre si c'est la première initialisation
-    let isInitialLoad = true;
-    
     // Écouteur d'événement pour les changements d'authentification
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("Auth state changed:", event);
         
         if (event === "SIGNED_IN") {
-          if (!isInitialLoad) {
-            // Seulement si ce n'est pas le chargement initial
-            // On invalide les requêtes au lieu de vider complètement le cache
-            queryClient.invalidateQueries({ queryKey: ["auth"] });
-            queryClient.invalidateQueries({ queryKey: ["profile"] });
-            queryClient.invalidateQueries({ queryKey: ["current-user"] });
-            queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
-            
-            toast.success("Connecté avec succès");
-            navigate("/dashboard", { replace: true });
-          }
+          // Nouvel utilisateur connecté, on vide complètement le cache
+          queryClient.clear();
+          toast.success("Connecté avec succès");
         } else if (event === "SIGNED_OUT") {
           // Utilisateur déconnecté, on vide complètement le cache
           queryClient.clear();
@@ -46,9 +33,6 @@ export const AuthListener = () => {
           queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
           queryClient.invalidateQueries({ queryKey: ["auth"] });
         }
-        
-        // Après le premier événement, on considère que ce n'est plus le chargement initial
-        isInitialLoad = false;
       }
     );
 
@@ -56,7 +40,7 @@ export const AuthListener = () => {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [queryClient, navigate]);
+  }, [queryClient]);
 
   // Ce composant ne rend rien
   return null;

@@ -5,7 +5,7 @@ import { AddContributorDialog } from "@/components/contributors/AddContributorDi
 import { ContributorCard } from "@/components/contributors/ContributorCard";
 import { useContributors } from "@/hooks/useContributors";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import StyledLoader from "@/components/ui/StyledLoader";
 
@@ -19,15 +19,9 @@ const Contributors = () => {
   } = useContributors();
   
   const queryClient = useQueryClient();
-  const isInitialMount = useRef(true);
   
   // Set up an additional listener to ensure dashboard data is invalidated
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    
     const channel = supabase
       .channel('contributors-page-changes')
       .on(
@@ -38,14 +32,9 @@ const Contributors = () => {
           table: 'contributors'
         },
         () => {
-          console.log('Contributors table changed, invalidating queries');
-          // Invalidation sélective des requêtes pour éviter les rechargements complets
-          queryClient.invalidateQueries({ queryKey: ["contributors"] });
-          
-          // Délai avant d'invalider d'autres requêtes pour éviter les conflits
-          setTimeout(() => {
-            queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-          }, 200);
+          console.log('Contributors table changed from Contributors page, invalidating queries');
+          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+          queryClient.invalidateQueries({ queryKey: ["current-user"] });
         }
       )
       .subscribe();
@@ -55,21 +44,20 @@ const Contributors = () => {
     };
   }, [queryClient]);
   
-  // Gestionnaires optimisés pour les opérations sur les contributeurs
+  // Handle contributor operations with immediate invalidation
   const handleAddContributor = async (newContributor) => {
     await addContributor(newContributor);
-    // Invalidation ciblée
-    queryClient.invalidateQueries({ queryKey: ["contributors"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
   
   const handleUpdateContributor = async (contributor) => {
     await updateContributor(contributor);
-    queryClient.invalidateQueries({ queryKey: ["contributors"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
   
   const handleDeleteContributor = async (id) => {
     await deleteContributor(id);
-    queryClient.invalidateQueries({ queryKey: ["contributors"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
   
   if (isLoading) {
