@@ -15,8 +15,9 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   const queryClient = useQueryClient();
   const { canAccessPage, isAdmin } = usePagePermissions();
   
+  // Modifié: suppression de location.pathname de la clé de requête
   const { data: authData, isLoading } = useQuery({
-    queryKey: ["auth", location.pathname],
+    queryKey: ["auth"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
@@ -31,7 +32,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
         isAdmin
       };
     },
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60 * 5, // Augmenté à 5 minutes
   });
 
   if (isLoading) {
