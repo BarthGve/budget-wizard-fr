@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { LucideIcon } from "lucide-react";
+import { memo } from "react";
 
 interface MenuItem {
   title: string;
@@ -48,7 +49,8 @@ const userMenu: MenuItem[] = [
   { title: "Immobilier", icon: Home, path: "/properties" },
 ];
 
-export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
+// Utilisation de memo pour éviter les re-renders inutiles
+export const NavigationMenu = memo(({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
   const { canAccessPage } = usePagePermissions();
 
@@ -72,7 +74,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
                   collapsed && "justify-center",
                   isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )}
-                end={!item.matchPath} // Ajoute un "end" pour éviter les correspondances partielles
+                end={!item.matchPath} // Pour éviter les correspondances partielles
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
                 {!collapsed && <span className="truncate">{item.title}</span>}
@@ -92,4 +94,6 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
       )}
     </nav>
   );
-};
+});
+
+NavigationMenu.displayName = "NavigationMenu";

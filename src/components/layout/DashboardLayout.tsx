@@ -9,7 +9,7 @@ import { Credit } from "@/components/credits/types";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
-import { useState, useMemo, memo, useEffect } from "react";
+import { useState, useMemo, memo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 // Memoization du Sidebar pour éviter les re-renders inutiles
@@ -24,9 +24,15 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
   const queryClient = useQueryClient();
+  const isInitialMount = useRef(true);
 
-  // Configurer des écouteurs pour la modification des contributeurs
+  // Configurer des écouteurs pour la modification des contributeurs avec une seule exécution
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
     // Configurer un canal pour les modifications de contributeurs
     const channel = supabase
       .channel('contributor-changes')
@@ -38,8 +44,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           table: 'contributors'
         },
         () => {
-          // Invalider les requêtes pour forcer le rechargement des données
-          queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+          // Invalider les requêtes de manière sélective
+          queryClient.invalidateQueries({ queryKey: ['contributors'] });
+          
+          // Retarder l'invalidation des autres données
+          setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+          }, 200);
         }
       )
       .subscribe();
@@ -64,7 +75,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 2 // Cache de 2 minutes
+    staleTime: 1000 * 60 * 5 // Cache de 5 minutes
   });
 
   // Gestion optimisée du profil utilisateur
@@ -90,7 +101,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         isAdmin
       };
     },
-    staleTime: 1000 * 60 * 5 // Cache de 5 minutes pour le profil
+    staleTime: 1000 * 60 * 10 // Cache de 10 minutes pour le profil
   });
 
   // Calculs memoizés pour éviter les recalculs inutiles
