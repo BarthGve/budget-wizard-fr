@@ -11,7 +11,6 @@ import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
 import { CreditsList } from "@/components/credits/CreditsList";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
 
 const Credits = memo(function Credits() {
   const navigate = useNavigate();
@@ -117,45 +116,11 @@ const Credits = memo(function Credits() {
   if (isLoading) {
     return <DashboardLayout><StyledLoader /></DashboardLayout>;
   }
-
-  // Animation variants
-  const pageVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        duration: 0.5,
-        staggerChildren: 0.2,
-        when: "beforeChildren"
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        type: "spring", 
-        stiffness: 100,
-        damping: 15
-      }
-    }
-  };
   
   return (
     <DashboardLayout>
-      <motion.div 
-        className="space-y-6"
-        initial="hidden"
-        animate="visible"
-        variants={pageVariants}
-      >
-        <motion.div 
-          className="flex items-center justify-between"
-          variants={itemVariants}
-        >
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">Crédits</h1>
             <p className="text-muted-foreground">
@@ -170,21 +135,16 @@ const Credits = memo(function Credits() {
               </Button>
             } 
           />
-        </motion.div>
+        </div>
 
-        <motion.div variants={itemVariants}>
-          <CreditSummaryCards 
-            activeCredits={activeCredits} 
-            repaidThisMonth={monthlyStats.credits_rembourses_count} 
-            totalActiveMensualites={totalActiveMensualites} 
-            totalRepaidMensualitesThisMonth={monthlyStats.total_mensualites_remboursees} 
-          />
-        </motion.div>
+        <CreditSummaryCards 
+          activeCredits={activeCredits} 
+          repaidThisMonth={monthlyStats.credits_rembourses_count} 
+          totalActiveMensualites={totalActiveMensualites} 
+          totalRepaidMensualitesThisMonth={monthlyStats.total_mensualites_remboursees} 
+        />
 
-        <motion.div 
-          className="space-y-6"
-          variants={itemVariants}
-        >
+        <div className="space-y-6">
           <div>
             <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent text-2xl mb-4">Crédits en cours</h2>
             <CreditsList 
@@ -192,8 +152,8 @@ const Credits = memo(function Credits() {
               onCreditDeleted={handleCreditDeleted} 
             />
           </div>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </DashboardLayout>
   );
 });
