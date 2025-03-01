@@ -18,8 +18,11 @@ export const AuthListener = () => {
         console.log("Auth state changed:", event);
         
         if (event === "SIGNED_IN") {
-          // Nouvel utilisateur connecté, on vide complètement le cache
-          queryClient.clear();
+          // Nouvel utilisateur connecté, on invalide certaines requêtes clés
+          // au lieu de vider complètement le cache
+          queryClient.invalidateQueries({ queryKey: ["auth"] });
+          queryClient.invalidateQueries({ queryKey: ["profile"] });
+          queryClient.invalidateQueries({ queryKey: ["current-user"] });
           toast.success("Connecté avec succès");
         } else if (event === "SIGNED_OUT") {
           // Utilisateur déconnecté, on vide complètement le cache

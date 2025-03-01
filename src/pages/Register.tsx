@@ -45,8 +45,12 @@ const Register = () => {
       });
 
       if (signUpError) {
+        console.error("Signup error details:", signUpError);
+        
         if (signUpError.message.includes("User already registered")) {
           throw new Error("Un compte existe déjà avec cet email");
+        } else if (signUpError.status === 500) {
+          throw new Error("Une erreur serveur est survenue. Veuillez réessayer plus tard ou contacter l'administrateur.");
         }
         throw signUpError;
       }
@@ -55,9 +59,10 @@ const Register = () => {
         // Store the email for the verification page
         localStorage.setItem("verificationEmail", formData.email);
         navigate("/email-verification");
+        toast.success("Inscription réussie ! Veuillez vérifier votre email pour activer votre compte.");
       }
     } catch (error: any) {
-      console.error("Error: ", error);
+      console.error("Error during registration:", error);
       toast.error(error.message || "Une erreur est survenue lors de l'inscription");
     } finally {
       setIsLoading(false);
