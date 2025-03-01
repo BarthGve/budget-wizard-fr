@@ -12,6 +12,11 @@ export interface RegisterCredentials {
   name: string;
 }
 
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
 /**
  * Inscrit un nouvel utilisateur
  */
@@ -56,6 +61,39 @@ export const registerUser = async (credentials: RegisterCredentials) => {
   localStorage.setItem("userName", credentials.name);
   
   toast.success("Inscription réussie! Veuillez vérifier votre email.");
+  
+  return data;
+};
+
+/**
+ * Connecte un utilisateur
+ */
+export const loginUser = async (credentials: LoginCredentials) => {
+  console.log("Tentative de connexion avec:", { email: credentials.email });
+  
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: credentials.email,
+    password: credentials.password,
+  });
+
+  console.log("Réponse de connexion:", { data, error: error ? error.message : null });
+
+  if (error) {
+    console.error("Erreur détaillée:", error);
+    
+    // Handle specific errors
+    if (error.message.includes("Invalid login credentials")) {
+      throw new Error("Email ou mot de passe incorrect");
+    } else {
+      throw new Error(`Erreur de connexion: ${error.message}`);
+    }
+  }
+  
+  if (!data || !data.user) {
+    throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
+  }
+  
+  toast.success("Connexion réussie!");
   
   return data;
 };
