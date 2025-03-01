@@ -1,115 +1,132 @@
 
-import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, ALL_PERIODICITIES } from "./types";
-import { TableFilters } from "./TableFilters";
-import { motion } from "framer-motion";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { RecurringExpense } from "./types";
 import { TableRows } from "./table/TableRows";
+import { useState } from "react";
 import { TablePagination } from "./table/TablePagination";
 import { TableSorting } from "./table/TableSorting";
-import { filterExpenses, sortExpenses, paginateExpenses } from "./table/tableUtils";
+import { SortConfig, filterAndSortExpenses } from "./table/tableUtils";
+import { TableFilters } from "./TableFilters";
+import { Card } from "@/components/ui/card";
+import CardLoader from "../ui/cardloader";
 
-export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>(ALL_CATEGORIES);
-  const [periodicityFilter, setPeriodicityFilter] = useState<string>(ALL_PERIODICITIES);
-  const [sortField, setSortField] = useState<keyof RecurringExpense>("created_at");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+interface RecurringExpenseTableProps {
+  expenses: RecurringExpense[];
+  onDeleteExpense: (id: string) => Promise<void>;
+  isFirstVisit?: boolean;
+}
+
+export const RecurringExpenseTable = ({ 
+  expenses, 
+  onDeleteExpense,
+  isFirstVisit = true 
+}: RecurringExpenseTableProps) => {
+  // États pour la pagination
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  // États pour le filtre et le tri
+  const [filterText, setFilterText] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'name', direction: 'asc' });
 
-  const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category)));
-
-  const handleSort = (field: keyof RecurringExpense) => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
+  // Effectuer le filtrage et le tri
+  const filteredAndSortedExpenses = filterAndSortExpenses(expenses, filterText, filterCategory, sortConfig);
+  
+  // Calculer les éléments à afficher sur la page actuelle
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredAndSortedExpenses.slice(indexOfFirstItem, indexOfLastItem);
+  
+  // Callback pour changer de page
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
   };
-
-  const handleRowsPerPageChange = (value: number) => {
-    setRowsPerPage(value);
-    setCurrentPage(1);
+  
+  // Callback pour changer le tri
+  const handleSort = (key: keyof RecurringExpense) => {
+    setSortConfig(prevSortConfig => {
+      if (prevSortConfig.key === key) {
+        return {
+          key,
+          direction: prevSortConfig.direction === 'asc' ? 'desc' : 'asc'
+        };
+      }
+      return { key, direction: 'asc' };
+    });
   };
-
-  const filteredExpenses = filterExpenses(expenses, searchTerm, categoryFilter, periodicityFilter, ALL_CATEGORIES, ALL_PERIODICITIES);
-  const sortedExpenses = sortExpenses(filteredExpenses, sortField, sortDirection);
-  const totalPages = rowsPerPage === -1 ? 1 : Math.ceil(sortedExpenses.length / rowsPerPage);
-  const paginatedExpenses = paginateExpenses(sortedExpenses, currentPage, rowsPerPage);
+  
+  if (!expenses || expenses.length === 0) {
+    return (
+      <Card className="p-4 flex justify-center items-center min-h-[15rem]">
+        <p className="text-muted-foreground">Aucune charge récurrente pour le moment.</p>
+      </Card>
+    );
+  }
+  
+  if (!filteredAndSortedExpenses) {
+    return <CardLoader />;
+  }
 
   return (
-    <div className="space-y-4">
-      <motion.div 
-        className="flex flex-col gap-4"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between w-full">
-          <TableFilters
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            categoryFilter={categoryFilter}
-            onCategoryFilterChange={setCategoryFilter}
-            periodicityFilter={periodicityFilter}
-            onPeriodicityFilterChange={setPeriodicityFilter}
-            uniqueCategories={uniqueCategories}
-          />
-          <TableSorting 
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleRowsPerPageChange}
-            sortField={sortField}
-            onSortFieldChange={handleSort}
-          />
-        </div>
-      </motion.div>
-
-      <motion.div 
-        className="overflow-auto rounded-lg border bg-background"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        <div className="relative w-full overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-0">
-                <TableHead className="text-card-foreground dark:text-card-foreground">Charge</TableHead>
-                <TableHead className="text-card-foreground dark:text-card-foreground">Catégorie</TableHead>
-                <TableHead className="text-card-foreground dark:text-card-foreground">Périodicité</TableHead>
-                <TableHead className="text-card-foreground dark:text-card-foreground text-center">Montant</TableHead>
-                <TableHead className="text-card-foreground dark:text-card-foreground text-right"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRows 
-                expenses={paginatedExpenses} 
-                onDeleteExpense={onDeleteExpense} 
+    <Card className="p-1">
+      <TableFilters 
+        onFilterTextChange={setFilterText} 
+        filterText={filterText}
+        onFilterCategoryChange={setFilterCategory}
+        filterCategory={filterCategory}
+        categories={Array.from(new Set(expenses.map(expense => expense.category)))}
+      />
+      
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableSorting 
+                label="Nom" 
+                sortKey="name" 
+                currentSort={sortConfig} 
+                onSort={handleSort} 
               />
-            </TableBody>
-          </Table>
-        </div>
-      </motion.div>
-
-      <motion.div 
-        className="flex flex-col sm:flex-row items-center justify-between gap-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.4 }}
-      >
-        <div className="text-sm text-muted-foreground order-2 sm:order-1">
-          {filteredExpenses.length} résultat{filteredExpenses.length !== 1 ? 's' : ''}
-        </div>
-        <div className="order-1 sm:order-2">
-          <TablePagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      </motion.div>
-    </div>
+              <TableSorting 
+                label="Catégorie" 
+                sortKey="category" 
+                currentSort={sortConfig} 
+                onSort={handleSort} 
+              />
+              <TableSorting 
+                label="Périodicité" 
+                sortKey="periodicity" 
+                currentSort={sortConfig} 
+                onSort={handleSort} 
+              />
+              <TableSorting 
+                label="Montant" 
+                sortKey="amount" 
+                currentSort={sortConfig}
+                onSort={handleSort}
+                className="text-center"
+              />
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRows 
+              expenses={currentItems} 
+              onDeleteExpense={onDeleteExpense} 
+              isFirstVisit={isFirstVisit}
+            />
+          </TableBody>
+        </Table>
+      </div>
+      
+      <TablePagination 
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        totalItems={filteredAndSortedExpenses.length}
+        onPageChange={handlePageChange}
+        onItemsPerPageChange={setItemsPerPage}
+      />
+    </Card>
   );
 };

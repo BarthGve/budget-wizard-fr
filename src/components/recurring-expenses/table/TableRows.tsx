@@ -7,11 +7,12 @@ import { motion, AnimatePresence } from "framer-motion";
 interface TableRowsProps {
   expenses: RecurringExpense[];
   onDeleteExpense: (id: string) => Promise<void>;
+  isFirstVisit?: boolean;
 }
 
-export const TableRows = ({ expenses, onDeleteExpense }: TableRowsProps) => {
-  // Animations
-  const tableRowVariants = {
+export const TableRows = ({ expenses, onDeleteExpense, isFirstVisit = true }: TableRowsProps) => {
+  // Animations conditionnelles
+  const tableRowVariants = isFirstVisit ? {
     hidden: {
       opacity: 0,
       y: 20,
@@ -36,6 +37,10 @@ export const TableRows = ({ expenses, onDeleteExpense }: TableRowsProps) => {
       scale: 0.95,
       transition: { duration: 0.2 }
     }
+  } : {
+    hidden: { opacity: 1 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0, transition: { duration: 0.1 } }
   };
 
   return (
@@ -49,16 +54,16 @@ export const TableRows = ({ expenses, onDeleteExpense }: TableRowsProps) => {
           initial="hidden"
           animate="visible"
           exit="exit"
-          whileHover={{
+          whileHover={isFirstVisit ? {
             scale: 1.01,
             backgroundColor: "rgba(var(--card-rgb), 0.8)",
             transition: { duration: 0.2 }
-          }}
-          style={{
+          } : undefined}
+          style={isFirstVisit ? {
             transformStyle: "preserve-3d",
             perspective: "1000px",
             zIndex: expenses.length - index
-          }}
+          } : undefined}
         >
           <TableCell className="py-2">
             <div className="flex items-center gap-3">
@@ -67,9 +72,9 @@ export const TableRows = ({ expenses, onDeleteExpense }: TableRowsProps) => {
                   src={expense.logo_url}
                   alt={expense.name}
                   className="w-8 h-8 rounded-full object-contain"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: index * 0.05 + 0.2, duration: 0.3 }}
+                  initial={isFirstVisit ? { scale: 0.8, opacity: 0 } : false}
+                  animate={isFirstVisit ? { scale: 1, opacity: 1 } : false}
+                  transition={isFirstVisit ? { delay: index * 0.05 + 0.2, duration: 0.3 } : undefined}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = "/placeholder.svg";

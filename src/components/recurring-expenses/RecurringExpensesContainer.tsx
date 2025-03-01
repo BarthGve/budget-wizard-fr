@@ -5,6 +5,7 @@ import { RecurringExpensesSummaryCards } from "./RecurringExpensesSummaryCards";
 import { RecurringExpenseTable } from "./RecurringExpenseTable";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import { RecurringExpense } from "./types";
+import { useFirstVisit } from "@/hooks/useFirstVisit";
 
 interface RecurringExpensesContainerProps {
   recurringExpenses: RecurringExpense[];
@@ -15,18 +16,21 @@ export const RecurringExpensesContainer = ({
   recurringExpenses,
   onDeleteExpense
 }: RecurringExpensesContainerProps) => {
+  // Vérifier si c'est la première visite de la page RecurringExpenses
+  const isFirstVisit = useFirstVisit('recurring-expenses-page');
+  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
       transition: { 
-        staggerChildren: 0.1,
-        delayChildren: 0.2
+        staggerChildren: isFirstVisit ? 0.1 : 0,
+        delayChildren: isFirstVisit ? 0.2 : 0
       }
     }
   };
   
-  const itemVariants = {
+  const itemVariants = isFirstVisit ? {
     hidden: { 
       opacity: 0, 
       y: 20,
@@ -44,7 +48,7 @@ export const RecurringExpensesContainer = ({
         damping: 15
       }
     }
-  };
+  } : { hidden: {}, visible: {} };
 
   const monthlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "monthly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
   const quarterlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "quarterly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
@@ -53,11 +57,11 @@ export const RecurringExpensesContainer = ({
   return (
     <motion.div 
       className="space-y-6 max-w-[1600px] mx-auto px-4"
-      initial="hidden"
-      animate="visible"
+      initial={isFirstVisit ? "hidden" : false}
+      animate={isFirstVisit ? "visible" : false}
       variants={containerVariants}
     >
-      <RecurringExpensesHeader />
+      <RecurringExpensesHeader isFirstVisit={isFirstVisit} />
 
       <motion.div variants={itemVariants}>
         <CreateCategoryBanner />
@@ -67,13 +71,14 @@ export const RecurringExpensesContainer = ({
         monthlyTotal={monthlyTotal}
         quarterlyTotal={quarterlyTotal}
         yearlyTotal={yearlyTotal}
+        isFirstVisit={isFirstVisit}
       />
 
       <motion.div 
         className="w-full overflow-hidden"
         variants={itemVariants}
       >
-        <RecurringExpenseTable expenses={recurringExpenses} onDeleteExpense={onDeleteExpense} />
+        <RecurringExpenseTable expenses={recurringExpenses} onDeleteExpense={onDeleteExpense} isFirstVisit={isFirstVisit} />
       </motion.div>
     </motion.div>
   );
