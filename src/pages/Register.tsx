@@ -34,8 +34,8 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      // Simplifier l'appel d'inscription en ne transmettant que les données essentielles
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      // Tentative d'inscription avec un appel simple et direct
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -45,26 +45,28 @@ const Register = () => {
         },
       });
 
-      if (signUpError) {
-        console.error("Signup error details:", signUpError);
+      if (error) {
+        console.error("Signup error:", error);
         
-        if (signUpError.message.includes("User already registered")) {
-          throw new Error("Un compte existe déjà avec cet email");
+        // Gestion détaillée des erreurs spécifiques
+        if (error.message.includes("User already registered")) {
+          toast.error("Un compte existe déjà avec cet email");
+        } else if (error.message.includes("Password should be at least")) {
+          toast.error("Le mot de passe doit contenir au moins 6 caractères");
+        } else if (error.message.includes("invalid email")) {
+          toast.error("L'adresse email n'est pas valide");
         } else {
-          // Message d'erreur plus générique pour les autres cas
-          throw new Error("Une erreur est survenue lors de l'inscription. Veuillez réessayer plus tard.");
+          toast.error("Erreur lors de l'inscription: " + error.message);
         }
-      }
-
-      if (signUpData.user) {
-        // Store the email for the verification page
+      } else if (data && data.user) {
+        // Stockage de l'email pour la page de vérification
         localStorage.setItem("verificationEmail", formData.email);
-        navigate("/email-verification");
         toast.success("Inscription réussie ! Veuillez vérifier votre email pour activer votre compte.");
+        navigate("/email-verification");
       }
     } catch (error: any) {
-      console.error("Error during registration:", error);
-      toast.error(error.message || "Une erreur est survenue lors de l'inscription");
+      console.error("Unexpected error during registration:", error);
+      toast.error("Une erreur inattendue est survenue. Veuillez réessayer plus tard.");
     } finally {
       setIsLoading(false);
     }
