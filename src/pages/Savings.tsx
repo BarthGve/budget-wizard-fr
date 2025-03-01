@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
@@ -25,6 +26,7 @@ const Savings = () => {
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
   const [showProjects, setShowProjects] = useState(true);
+  const [showMonthlySavings, setShowMonthlySavings] = useState(true);
   const {
     canAccessFeature
   } = usePagePermissions();
@@ -79,6 +81,10 @@ const Savings = () => {
 
   const toggleProjectsVisibility = () => {
     setShowProjects(prev => !prev);
+  };
+  
+  const toggleMonthlySavingsVisibility = () => {
+    setShowMonthlySavings(prev => !prev);
   };
 
   if (showProjectWizard) {
@@ -153,7 +159,31 @@ const Savings = () => {
         </div>
 
         <div className="flex-none mt-6">
-          <SavingsList monthlySavings={monthlySavings || []} onSavingDeleted={handleSavingDeleted} />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Versements mensuels</h2>
+              <motion.div
+                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.1 }}
+              >
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={toggleMonthlySavingsVisibility}
+                  className={cn(
+                    "transition-all duration-300 rounded-full hover:bg-primary/10", 
+                    showMonthlySavings ? "bg-primary/5" : ""
+                  )}
+                >
+                  {showMonthlySavings ? 
+                    <ChevronUp className="h-4 w-4 transition-all duration-300 transform" /> : 
+                    <ChevronDown className="h-4 w-4 transition-all duration-300 transform" />
+                  }
+                </Button>
+              </motion.div>
+            </div>
+          </div>
+          <SavingsList monthlySavings={monthlySavings || []} onSavingDeleted={handleSavingDeleted} showSavings={showMonthlySavings} />
         </div>
       </div>
 
