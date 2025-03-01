@@ -20,10 +20,9 @@ export const AuthListener = () => {
 
         if (event === "SIGNED_IN") {
           // Invalider le cache pour forcer un rechargement des données
-          await queryClient.invalidateQueries({ queryKey: ["current-user"] });
+          queryClient.invalidateQueries({ queryKey: ["current-user"] });
           
           // Ne pas naviguer ici pour éviter les rechargements complets
-          // Le composant ProtectedRoute s'occupera de la redirection
         } else if (event === "SIGNED_OUT") {
           // Vider le cache React Query
           queryClient.clear();
@@ -36,7 +35,9 @@ export const AuthListener = () => {
 
     // Nettoyage à la désinstallation du composant
     return () => {
-      subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, [queryClient, navigate]);
 
