@@ -65,10 +65,15 @@ const Register = () => {
     try {
       console.log("Tentative d'inscription avec:", { email: formData.email, name: formData.name });
       
-      // Note: Utilisation de l'option simple sans options avancées pour diagnostiquer le problème
+      // Simplify the signup process to avoid trigger recursion
+      // First create the user without metadata to avoid triggering complex chains
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
+        options: {
+          // Explicitly set empty data to minimize potential trigger issues
+          data: { }
+        }
       });
 
       console.log("Réponse d'inscription:", { data, error: signUpError ? signUpError.message : null });
@@ -89,20 +94,15 @@ const Register = () => {
       }
       
       if (data && data.user) {
-        // Création manuelle du profil utilisateur en deux étapes pour contourner les limitations
-        console.log("Utilisateur créé avec succès, mise à jour des métadonnées...");
+        // Rather than updating immediately, delay the metadata update
+        console.log("Utilisateur créé avec succès, redirection...");
         
-        // Mettre à jour les métadonnées après l'inscription
-        const { error: updateError } = await supabase.auth.updateUser({
-          data: { name: formData.name }
-        });
-        
-        if (updateError) {
-          console.error("Erreur lors de la mise à jour des métadonnées:", updateError);
-          // Continuer malgré l'erreur de métadonnées
-        }
-        
+        // Store email to allow verification
         localStorage.setItem("verificationEmail", formData.email);
+        
+        // Store name to update later
+        localStorage.setItem("userName", formData.name);
+        
         toast.success("Inscription réussie! Veuillez vérifier votre email.");
         navigate("/email-verification");
       } else {
