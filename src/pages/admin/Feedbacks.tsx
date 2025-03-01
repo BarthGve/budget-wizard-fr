@@ -1,179 +1,32 @@
 
-import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FeedbacksTable } from "@/components/admin/FeedbacksTable";
-import { FeedbacksKanban } from "@/components/admin/FeedbacksKanban";
-import { Feedback } from "@/types/feedback";
-import { toast } from "sonner";
-import { FeedbackSearch } from "@/components/admin/FeedbackSearch";
-import { FeedbackViewToggle } from "@/components/admin/FeedbackViewToggle";
+import { Card, CardContent } from "@/components/ui/card";
 import { FeedbackDetailsDialog } from "@/components/admin/FeedbackDetailsDialog";
-import { FeedbackPagination } from "@/components/admin/FeedbackPagination";
-
-const ITEMS_PER_PAGE = 15;
-
-type StatusFilter = "pending" | "read" | "published" | "all";
+import { FeedbackHeader } from "@/components/admin/feedback-header/FeedbackHeader";
+import { FeedbackContent } from "@/components/admin/feedback-content/FeedbackContent";
+import { useFeedbacks } from "@/hooks/useFeedbacks";
 
 export const AdminFeedbacks = () => {
-  const [page, setPage] = useState(1);
-  const [view, setView] = useState<"table" | "kanban">("table");
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [sortColumn, setSortColumn] = useState<string>("created_at");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
-  const [localFeedbacks, setLocalFeedbacks] = useState<Feedback[]>([]);
-
-  const { data: feedbacks, isLoading, refetch } = useQuery({
-    queryKey: ["feedbacks", page, statusFilter, sortColumn, sortDirection],
-    queryFn: async () => {
-      let query = supabase
-        .from("feedbacks")
-        .select(`
-          *,
-          profile:profiles(full_name, avatar_url)
-        `, { count: "exact" });
-
-      if (statusFilter !== "all") {
-        query = query.eq("status", statusFilter);
-      }
-
-      query = query
-        .order(sortColumn, { ascending: sortDirection === "asc" })
-        .range((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE - 1);
-
-      const { data, error, count } = await query;
-      if (error) throw error;
-
-      setLocalFeedbacks(data as Feedback[]);
-
-      return {
-        items: data as Feedback[],
-        totalCount: count || 0,
-      };
-    },
-  });
-
-  const handleStatusUpdate = (updatedFeedback: Feedback) => {
-    setLocalFeedbacks(prevFeedbacks =>
-      prevFeedbacks.map(feedback =>
-        feedback.id === updatedFeedback.id ? updatedFeedback : feedback
-      )
-    );
-  };
-
-  const filteredFeedbacks = localFeedbacks.filter(
-    (feedback) =>
-      feedback.title.toLowerCase().includes(search.toLowerCase()) ||
-      feedback.content.toLowerCase().includes(search.toLowerCase()) ||
-      feedback.profile.full_name?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const totalPages = Math.ceil((feedbacks?.totalCount || 0) / ITEMS_PER_PAGE);
-
-  const handleUpdateStatus = async (id: string, newStatus: "pending" | "read" | "published") => {
-    try {
-      const { error } = await supabase
-        .from("feedbacks")
-        .update({ status: newStatus })
-        .eq("id", id);
-
-      if (error) throw error;
-      
-      setLocalFeedbacks(prevFeedbacks =>
-        prevFeedbacks.map(feedback =>
-          feedback.id === id ? { ...feedback, status: newStatus } : feedback
-        )
-      );
-      
-      toast.success("Statut mis à jour");
-    } catch (error) {
-      console.error("Error updating status:", error);
-      toast.error("Erreur lors de la mise à jour du statut");
-    }
-  };
-
-  const handleDeleteFeedback = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("feedbacks")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-
-      setLocalFeedbacks(prevFeedbacks => 
-        prevFeedbacks.filter(feedback => feedback.id !== id)
-      );
-      
-      toast.success("Feedback supprimé avec succès");
-      
-      if (localFeedbacks.length === 1 && page > 1) {
-        setPage(page - 1);
-      } else {
-        refetch();
-      }
-    } catch (error) {
-      console.error("Error deleting feedback:", error);
-      toast.error("Erreur lors de la suppression du feedback");
-    }
-  };
-
-  const handleApproveFeedback = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("feedbacks")
-        .update({ status: "published" })
-        .eq("id", id);
-
-      if (error) throw error;
-      
-      setLocalFeedbacks(prevFeedbacks =>
-        prevFeedbacks.map(feedback =>
-          feedback.id === id ? { ...feedback, status: "published" } : feedback
-        )
-      );
-      
-      toast.success("Feedback publié");
-    } catch (error) {
-      console.error("Error approving feedback:", error);
-      toast.error("Erreur lors de la publication du feedback");
-    }
-  };
-
-  const handleUnapproveFeedback = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("feedbacks")
-        .update({ status: "read" })
-        .eq("id", id);
-
-      if (error) throw error;
-      
-      setLocalFeedbacks(prevFeedbacks =>
-        prevFeedbacks.map(feedback =>
-          feedback.id === id ? { ...feedback, status: "read" } : feedback
-        )
-      );
-      
-      toast.success("Publication retirée");
-    } catch (error) {
-      console.error("Error unapproving feedback:", error);
-      toast.error("Erreur lors du retrait de la publication");
-    }
-  };
-
-  const handleDragEnd = async (result: any) => {
-    if (!result.destination) return;
-
-    const feedbackId = result.draggableId;
-    const newStatus = result.destination.droppableId;
-
-    await handleUpdateStatus(feedbackId, newStatus as "pending" | "read" | "published");
-  };
+  const {
+    page,
+    setPage,
+    view,
+    setView,
+    search,
+    setSearch,
+    statusFilter,
+    setStatusFilter,
+    selectedFeedback,
+    setSelectedFeedback,
+    filteredFeedbacks,
+    totalPages,
+    isLoading,
+    handleStatusUpdate,
+    deleteFeedback,
+    approveFeedback,
+    unapproveFeedback,
+    handleDragEnd
+  } = useFeedbacks();
 
   if (isLoading) return <div>Chargement...</div>;
 
@@ -188,43 +41,27 @@ export const AdminFeedbacks = () => {
         </div>
 
         <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Liste des feedbacks</CardTitle>
-              <FeedbackViewToggle 
-                view={view}
-                onViewChange={setView}
-              />
-            </div>
-          </CardHeader>
+          <FeedbackHeader
+            view={view}
+            onViewChange={setView}
+            search={search}
+            onSearchChange={setSearch}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+          />
           <CardContent>
-            <FeedbackSearch
-              search={search}
-              onSearchChange={setSearch}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
-            />
-
-            {view === "table" ? (
-              <FeedbacksTable
-                feedbacks={filteredFeedbacks}
-                onViewDetails={setSelectedFeedback}
-                onStatusUpdate={handleStatusUpdate}
-                onDelete={handleDeleteFeedback}
-                onApprove={handleApproveFeedback}
-                onUnapprove={handleUnapproveFeedback}
-              />
-            ) : (
-              <FeedbacksKanban
-                feedbacks={filteredFeedbacks}
-                onDragEnd={handleDragEnd}
-              />
-            )}
-
-            <FeedbackPagination
+            <FeedbackContent
+              view={view}
+              feedbacks={filteredFeedbacks}
               page={page}
               totalPages={totalPages}
               onPageChange={setPage}
+              onViewDetails={setSelectedFeedback}
+              onStatusUpdate={handleStatusUpdate}
+              onDelete={deleteFeedback}
+              onApprove={approveFeedback}
+              onUnapprove={unapproveFeedback}
+              onDragEnd={handleDragEnd}
             />
           </CardContent>
         </Card>
