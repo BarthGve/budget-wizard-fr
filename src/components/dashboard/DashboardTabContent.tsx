@@ -22,7 +22,7 @@ interface DashboardTabContentProps {
     name: string;
     total_contribution: number;
     percentage_contribution: number;
-    is_owner: boolean;
+    is_owner: boolean; // Changed from optional to required
     profile_id: string;
   }>;
   contributorShares: Array<{
@@ -94,6 +94,8 @@ export const DashboardTabContent = ({
   const totalRepaidThisMonth = repaidThisMonth.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
 
   const totalMensualites = totalActiveMensualites + totalRepaidThisMonth;
+
+  const baseCardStyle = "hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02]";
 
   // Map contributors to ensure all required properties are present
   const mappedContributors = contributors.map(contributor => ({

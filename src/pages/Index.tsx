@@ -1,4 +1,5 @@
 
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -112,15 +113,15 @@ const Dashboard = () => {
         </div>
         
         <DashboardTabContent
-          revenue={currentView === "monthly" ? totalRevenue : yearlyRevenue}
-          expenses={currentView === "monthly" ? monthlyExpenses : yearlyExpenses}
-          savings={currentView === "monthly" ? totalMonthlySavings : yearlyMonthlySavings}
-          balance={currentView === "monthly" ? monthlyBalance : yearlyBalance}
+          revenue={totalRevenue}
+          expenses={monthlyExpenses}
+          savings={totalMonthlySavings}
+          balance={monthlyBalance}
           savingsGoal={savingsGoal}
           contributorShares={getCumulativeContributionPercentages(contributors, totalRevenue)}
           expenseShares={getCumulativeExpensePercentages(contributors, monthlyExpenses)}
           recurringExpenses={getExpensesForPieChart()}
-          monthlySavings={getSavingsForPieChart()}
+          monthlySavings={monthlySavings || []}
           contributors={contributors || []}
         />
       </div>
@@ -129,3 +130,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

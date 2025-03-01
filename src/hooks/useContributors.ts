@@ -36,17 +36,9 @@ export const useContributors = () => {
         return null;
       }
 
-      // Convert string to number for total_contribution
-      const contributorToInsert = {
-        name: newContributor.name,
-        email: newContributor.email || null,
-        total_contribution: parseFloat(newContributor.total_contribution),
-        profile_id: user.id
-      };
-
       const { data, error } = await supabase
         .from("contributors")
-        .insert([contributorToInsert])
+        .insert([{ ...newContributor, profile_id: user.id }])
         .select()
         .single();
 
