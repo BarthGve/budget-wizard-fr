@@ -32,9 +32,15 @@ const Contributors = () => {
           table: 'contributors'
         },
         () => {
-          console.log('Contributors table changed from Contributors page, invalidating queries');
-          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-          queryClient.invalidateQueries({ queryKey: ["current-user"] });
+          console.log('Contributors table changed, invalidating queries');
+          // Utiliser une invalidation plus ciblée pour éviter les rechargements complets
+          queryClient.invalidateQueries({ queryKey: ["contributors"] });
+          
+          // Invalidation différée des autres requêtes pour éviter les rechargements simultanés
+          setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+            queryClient.invalidateQueries({ queryKey: ["current-user"] });
+          }, 100);
         }
       )
       .subscribe();
@@ -44,20 +50,31 @@ const Contributors = () => {
     };
   }, [queryClient]);
   
-  // Handle contributor operations with immediate invalidation
+  // Handle contributor operations with more targeted invalidation
   const handleAddContributor = async (newContributor) => {
     await addContributor(newContributor);
-    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    // Invalidation plus ciblée
+    queryClient.invalidateQueries({ queryKey: ["contributors"] });
+    // Invalidation différée des autres données
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    }, 100);
   };
   
   const handleUpdateContributor = async (contributor) => {
     await updateContributor(contributor);
-    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    queryClient.invalidateQueries({ queryKey: ["contributors"] });
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    }, 100);
   };
   
   const handleDeleteContributor = async (id) => {
     await deleteContributor(id);
-    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    queryClient.invalidateQueries({ queryKey: ["contributors"] });
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    }, 100);
   };
   
   if (isLoading) {
