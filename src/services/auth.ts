@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { recalculatePercentages } from "./contributors";
 
 /**
  * Service pour gérer l'authentification des utilisateurs
@@ -96,6 +97,9 @@ export const registerUser = async (credentials: RegisterCredentials) => {
       if (contributorError) {
         console.error("Erreur lors de la création du contributeur:", contributorError);
       }
+      
+      // Recalculer les pourcentages manuellement
+      await recalculatePercentages(data.user.id);
     }
     
     // Stocker l'email pour la vérification
