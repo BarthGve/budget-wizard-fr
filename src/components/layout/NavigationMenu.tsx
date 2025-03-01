@@ -1,5 +1,5 @@
 
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { LucideIcon } from "lucide-react";
-import { MouseEvent } from "react";
 
 interface MenuItem {
   title: string;
@@ -56,10 +55,8 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
 
   const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
 
-  const handleNavigation = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
-    e.preventDefault();
-    
-    // Only navigate if we're not already on this page
+  const handleNavigation = (path: string) => {
+    // Éviter les rechargements inutiles si on est déjà sur la même page
     if (location.pathname !== path) {
       navigate(path);
     }
@@ -76,11 +73,10 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
 
           return (
             <li key={item.path}>
-              <a
-                href={item.path}
-                onClick={(e) => handleNavigation(e, item.path)}
+              <button
+                onClick={() => handleNavigation(item.path)}
                 className={cn(
-                  "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
+                  "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors w-full text-left",
                   "hover:bg-primary/10",
                   collapsed && "justify-center",
                   isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
@@ -88,7 +84,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
                 {!collapsed && <span className="truncate">{item.title}</span>}
-              </a>
+              </button>
             </li>
           );
         })}

@@ -1,3 +1,4 @@
+
 import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { GlobalBalanceCard } from "../common/GlobalBalanceCard";
@@ -10,6 +11,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
 import { useState, useMemo, memo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { PageTransition } from "../ui/PageTransition";
 
 const MemoizedSidebar = memo(Sidebar);
 
@@ -115,27 +117,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  const MemoizedContent = useMemo(() => (
-    <main className="flex-1 flex flex-col h-screen touch-scroll">
-      {!userProfile?.isAdmin && (
-        <div className={`fixed right-6 top-4 z-50 ${isMobile ? 'ios-top-safe pt-4' : ''}`}>
-          <GlobalBalanceCard 
-            balance={globalBalance} 
-            className="shadow-lg"
-          />
-        </div>
-      )}
-
-      <div className={`flex-1 container mx-auto p-6 overflow-auto relative ${isMobile ? 'ios-top-safe pt-20' : 'pt-20'}`}>
-        <div className="page-transition">
-          {children}
-        </div>
-      </div>
-
-      {isMobile && <div className="h-16 ios-bottom-safe" />}
-    </main>
-  ), [userProfile?.isAdmin, isMobile, globalBalance, children]);
-
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
       <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'}`}>
@@ -153,7 +134,25 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </Button>
       )}
 
-      {MemoizedContent}
+      <main className="flex-1 flex flex-col h-screen touch-scroll">
+        {!userProfile?.isAdmin && (
+          <div className={`fixed right-6 top-4 z-50 ${isMobile ? 'ios-top-safe pt-4' : ''}`}>
+            <GlobalBalanceCard 
+              balance={globalBalance} 
+              className="shadow-lg"
+            />
+          </div>
+        )}
+
+        <div className={`flex-1 container mx-auto p-6 overflow-auto relative ${isMobile ? 'ios-top-safe pt-20' : 'pt-20'}`}>
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </div>
+
+        {isMobile && <div className="h-16 ios-bottom-safe" />}
+      </main>
+      
       <Toaster />
     </div>
   );

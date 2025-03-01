@@ -43,7 +43,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
 
   // If not authenticated, redirect to login
   if (!authData?.isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Liste des routes toujours accessibles une fois connecté
@@ -51,12 +51,12 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
 
   // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
   if (authData.isAdmin && location.pathname === '/dashboard') {
-    return <Navigate to="/admin" />;
+    return <Navigate to="/admin" replace />;
   }
 
   // Admin check
   if (requireAdmin && !isAdmin) {
-    return <Navigate to="/forbidden" />;
+    return <Navigate to="/forbidden" replace />;
   }
 
   // Permettre l'accès aux routes toujours accessibles
@@ -75,7 +75,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
 
   // Vérifier les permissions pour les autres routes seulement si ce n'est pas dashboard
   if (!alwaysAccessibleRoutes.includes(location.pathname) && !canAccessPage(location.pathname)) {
-    return <Navigate to="/forbidden" />;
+    return <Navigate to="/forbidden" replace />;
   }
 
   return <>{children}</>;
