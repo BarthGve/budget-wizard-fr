@@ -123,7 +123,7 @@ const Savings = () => {
           </>}
         </div>
 
-        <div className="mt-6 flex-1 max-h-[calc(100vh-25rem)] overflow-auto">
+        <div className="mt-6 flex-1">
           <SavingsList monthlySavings={monthlySavings || []} onSavingDeleted={handleSavingDeleted} />
         </div>
 
