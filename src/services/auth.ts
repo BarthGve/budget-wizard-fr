@@ -23,14 +23,15 @@ export interface LoginCredentials {
 export const registerUser = async (credentials: RegisterCredentials) => {
   console.log("Tentative d'inscription avec:", { email: credentials.email, name: credentials.name });
   
-  // Simplify the signup process to avoid trigger recursion
-  // First create the user without metadata to avoid triggering complex chains
+  // Simplifier le processus d'inscription pour éviter la récursion des triggers
   const { data, error: signUpError } = await supabase.auth.signUp({
     email: credentials.email,
     password: credentials.password,
     options: {
-      // Explicitly set empty data to minimize potential trigger issues
-      data: { }
+      // Inclure le nom d'utilisateur dans les métadonnées
+      data: { 
+        name: credentials.name
+      }
     }
   });
 
@@ -39,7 +40,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
   if (signUpError) {
     console.error("Erreur détaillée:", signUpError);
     
-    // Handle specific errors
+    // Gérer les erreurs spécifiques
     if (signUpError.message.includes("User already registered")) {
       throw new Error("Un compte existe déjà avec cet email");
     } else if (signUpError.message.includes("Database error")) {
@@ -54,11 +55,8 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
   }
   
-  // Store email to allow verification
+  // Stocker l'email pour permettre la vérification
   localStorage.setItem("verificationEmail", credentials.email);
-  
-  // Store name to update later
-  localStorage.setItem("userName", credentials.name);
   
   toast.success("Inscription réussie! Veuillez vérifier votre email.");
   
@@ -81,7 +79,7 @@ export const loginUser = async (credentials: LoginCredentials) => {
   if (error) {
     console.error("Erreur détaillée:", error);
     
-    // Handle specific errors
+    // Gérer les erreurs spécifiques
     if (error.message.includes("Invalid login credentials")) {
       throw new Error("Email ou mot de passe incorrect");
     } else {

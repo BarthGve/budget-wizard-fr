@@ -14,34 +14,6 @@ export const AuthListener = () => {
   useEffect(() => {
     console.log("AuthListener: Initialisation de l'écouteur d'authentification");
     
-    // Tentative de mise à jour du nom d'utilisateur si stocké localement
-    const updateStoredUserName = async () => {
-      const session = await supabase.auth.getSession();
-      const storedName = localStorage.getItem("userName");
-      
-      if (session?.data?.session?.user && storedName) {
-        console.log("Tentative de mise à jour du nom d'utilisateur stocké:", storedName);
-        
-        try {
-          const { error } = await supabase.auth.updateUser({
-            data: { name: storedName }
-          });
-          
-          if (!error) {
-            console.log("Nom d'utilisateur mis à jour avec succès");
-            localStorage.removeItem("userName");
-          } else {
-            console.error("Erreur lors de la mise à jour du nom:", error);
-          }
-        } catch (err) {
-          console.error("Exception lors de la mise à jour du nom:", err);
-        }
-      }
-    };
-    
-    // Exécuter immédiatement pour les sessions existantes
-    updateStoredUserName();
-    
     // Écouteur d'événement pour les changements d'authentification
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -53,9 +25,6 @@ export const AuthListener = () => {
           queryClient.invalidateQueries({ queryKey: ["auth"] });
           queryClient.invalidateQueries({ queryKey: ["profile"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
-          
-          // Tenter de mettre à jour le nom si stocké localement
-          updateStoredUserName();
           
           toast.success("Connecté avec succès");
         } else if (event === "SIGNED_OUT") {
