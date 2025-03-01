@@ -3,174 +3,170 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AddContributorDialog } from "@/components/contributors/AddContributorDialog";
 import { ContributorCard } from "@/components/contributors/ContributorCard";
-import { useContributors } from "@/hooks/useContributors";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import StyledLoader from "@/components/ui/StyledLoader";
-
-const CHANNEL_KEY = 'contributors-page-subscription';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { Contributor } from "@/types/contributor";
 
 const Contributors = () => {
-  const {
-    contributors,
-    isLoading,
-    addContributor,
-    updateContributor,
-    deleteContributor
-  } = useContributors();
-  
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const channelRef = useRef(null);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  
-  // Optimisation de l'écouteur pour éviter les multiples abonnements
+
+  // Vérification de l'authentification comme dans Properties.tsx
   useEffect(() => {
-    // Éviter de créer des abonnements multiples
-    if (isSubscribed) return;
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  // Configuration d'un écouteur Supabase unique avec cleanup approprié
+  useEffect(() => {
+    const channelId = `contributors-realtime-${Date.now()}`;
+    console.log(`Setting up realtime subscription with channel ID: ${channelId}`);
     
-    // Nettoyer le channel précédent s'il existe
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current);
-    }
-    
-    // Créer un canal avec une clé statique
     const channel = supabase
-      .channel(CHANNEL_KEY)
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
           schema: 'public',
           table: 'contributors'
         },
-        (payload) => {
-          console.log('New contributor added, updating cache');
-          // Mettre à jour les données dans le cache au lieu d'invalider
-          queryClient.setQueryData(['contributors'], (oldData) => {
-            if (!oldData) return [payload.new];
-            return [...oldData, payload.new];
-          });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'contributors'
-        },
-        (payload) => {
-          console.log('Contributor updated, updating cache');
-          queryClient.setQueryData(['contributors'], (oldData) => {
-            if (!oldData) return [payload.new];
-            return oldData.map(item => 
-              item.id === payload.new.id ? payload.new : item
-            );
-          });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'contributors'
-        },
-        (payload) => {
-          console.log('Contributor deleted, updating cache');
-          queryClient.setQueryData(['contributors'], (oldData) => {
-            if (!oldData) return [];
-            return oldData.filter(item => item.id !== payload.old.id);
-          });
+        () => {
+          // Invalider uniquement la requête des contributeurs sans recharger toute la page
+          queryClient.invalidateQueries({ queryKey: ["contributors"] });
         }
       )
       .subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          setIsSubscribed(true);
-        }
+        console.log(`Supabase realtime status for contributors: ${status}`);
       });
-    
-    // Stocker la référence du channel
-    channelRef.current = channel;
 
-    // Cleanup function
     return () => {
-      if (channelRef.current) {
-        console.log('Removing channel from Contributors page');
-        supabase.removeChannel(channelRef.current);
-        channelRef.current = null;
-        setIsSubscribed(false);
-      }
+      console.log(`Cleaning up channel: ${channelId}`);
+      supabase.removeChannel(channel);
     };
-  }, [queryClient, isSubscribed]);
-  
-  // Optimiser les gestionnaires avec mise à jour optimiste
+  }, [queryClient]);
+
+  // Utilisation de useQuery comme dans Properties.tsx
+  const { data: contributors = [], isLoading } = useQuery({
+    queryKey: ["contributors"],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Vous devez être connecté pour voir vos contributeurs");
+        throw new Error("Not authenticated");
+      }
+
+      const { data, error } = await supabase
+        .from("contributors")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching contributors:", error);
+        toast.error("Erreur lors du chargement des contributeurs");
+        throw error;
+      }
+
+      return data as Contributor[];
+    }
+  });
+
+  // Fonctions de gestion des contributeurs avec mises à jour optimistes
   const handleAddContributor = async (newContributor) => {
-    // Mise à jour optimiste
-    const tempId = `temp-${Date.now()}`;
-    const optimisticContributor = { ...newContributor, id: tempId };
-    
-    queryClient.setQueryData(['contributors'], (oldData) => {
-      if (!oldData) return [optimisticContributor];
-      return [...oldData, optimisticContributor];
-    });
-    
+    const optimisticId = `temp-${Date.now()}`;
+    queryClient.setQueryData(["contributors"], (old = []) => [
+      { ...newContributor, id: optimisticId },
+      ...old
+    ]);
+
     try {
-      // Appel API réel
-      await addContributor(newContributor);
-      // L'abonnement Supabase mettra à jour le cache avec les vraies données
-    } catch (error) {
-      // En cas d'erreur, revenir aux données précédentes
-      queryClient.setQueryData(['contributors'], (oldData) => {
-        if (!oldData) return [];
-        return oldData.filter(item => item.id !== tempId);
-      });
-      console.error('Failed to add contributor:', error);
-    }
-  };
-  
-  const handleUpdateContributor = async (contributor) => {
-    // Sauvegarder l'état précédent
-    const previousContributors = queryClient.getQueryData(['contributors']);
-    
-    // Mise à jour optimiste
-    queryClient.setQueryData(['contributors'], (oldData) => {
-      if (!oldData) return [contributor];
-      return oldData.map(item => 
-        item.id === contributor.id ? contributor : item
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("contributors")
+        .insert([{ ...newContributor, profile_id: user.id }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Mise à jour avec les vraies données du serveur
+      queryClient.setQueryData(["contributors"], (old = []) => 
+        old.map(item => item.id === optimisticId ? data : item)
       );
-    });
-    
-    try {
-      // Appel API réel
-      await updateContributor(contributor);
-      // L'abonnement Supabase mettra à jour le cache avec les vraies données
+
+      toast.success("Contributeur ajouté avec succès");
     } catch (error) {
-      // En cas d'erreur, revenir aux données précédentes
-      queryClient.setQueryData(['contributors'], previousContributors);
-      console.error('Failed to update contributor:', error);
+      console.error("Error adding contributor:", error);
+      toast.error("Erreur lors de l'ajout du contributeur");
+      
+      // Revenir à l'état précédent en cas d'erreur
+      queryClient.invalidateQueries({ queryKey: ["contributors"] });
     }
   };
-  
-  const handleDeleteContributor = async (id) => {
-    // Sauvegarder l'état précédent
-    const previousContributors = queryClient.getQueryData(['contributors']);
+
+  const handleUpdateContributor = async (contributor) => {
+    // Sauvegarde de l'état précédent
+    const previousData = queryClient.getQueryData(["contributors"]);
     
     // Mise à jour optimiste
-    queryClient.setQueryData(['contributors'], (oldData) => {
-      if (!oldData) return [];
-      return oldData.filter(item => item.id !== id);
-    });
+    queryClient.setQueryData(["contributors"], (old = []) => 
+      old.map(item => item.id === contributor.id ? contributor : item)
+    );
     
     try {
-      // Appel API réel
-      await deleteContributor(id);
-      // L'abonnement Supabase confirmera la suppression
+      const { error } = await supabase
+        .from("contributors")
+        .update(contributor)
+        .eq("id", contributor.id);
+
+      if (error) throw error;
+      
+      toast.success("Contributeur mis à jour avec succès");
     } catch (error) {
-      // En cas d'erreur, revenir aux données précédentes
-      queryClient.setQueryData(['contributors'], previousContributors);
-      console.error('Failed to delete contributor:', error);
+      console.error("Error updating contributor:", error);
+      toast.error("Erreur lors de la mise à jour du contributeur");
+      
+      // Revenir à l'état précédent en cas d'erreur
+      queryClient.setQueryData(["contributors"], previousData);
+    }
+  };
+
+  const handleDeleteContributor = async (id) => {
+    // Sauvegarde de l'état précédent
+    const previousData = queryClient.getQueryData(["contributors"]);
+    
+    // Mise à jour optimiste
+    queryClient.setQueryData(["contributors"], (old = []) => 
+      old.filter(item => item.id !== id)
+    );
+    
+    try {
+      const { error } = await supabase
+        .from("contributors")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+      
+      toast.success("Contributeur supprimé avec succès");
+    } catch (error) {
+      console.error("Error deleting contributor:", error);
+      toast.error("Erreur lors de la suppression du contributeur");
+      
+      // Revenir à l'état précédent en cas d'erreur
+      queryClient.setQueryData(["contributors"], previousData);
     }
   };
   
