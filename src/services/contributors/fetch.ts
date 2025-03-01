@@ -40,16 +40,17 @@ export const fetchContributorsService = async (): Promise<Contributor[]> => {
     return data;
   }
   
-  console.log("Chiffrement activé, vérification des données à déchiffrer");
+  console.log("Chiffrement activé, déchiffrement des données");
   console.log("Données récupérées:", data.map(c => ({
     id: c.id,
-    name: c.name,
     is_encrypted: c.is_encrypted,
     has_encrypted_data: !!c.total_contribution_encrypted
   })));
   
   // Si le chiffrement est activé, déchiffrer les données
   const userKey = await getUserEncryptionKey(user.id);
+  
+  console.log("Récupération des contributeurs avec chiffrement activé");
   
   return data.map(contributor => {
     try {
@@ -58,31 +59,21 @@ export const fetchContributorsService = async (): Promise<Contributor[]> => {
       if (contributor.is_encrypted && contributor.total_contribution_encrypted) {
         console.log(`Déchiffrement des données pour le contributeur ${contributor.id}`);
         
-        try {
-          const decryptedValue = decryptValue(contributor.total_contribution_encrypted, userKey);
-          
-          if (typeof decryptedValue === 'number') {
-            console.log(`Valeur déchiffrée pour le contributeur ${contributor.id}: ${decryptedValue}`);
-            
-            return {
-              ...contributor,
-              total_contribution: decryptedValue
-            };
-          } else {
-            console.error(`Déchiffrement incorrect pour le contributeur ${contributor.id}, type reçu:`, typeof decryptedValue);
-            return contributor;
-          }
-        } catch (decryptError) {
-          console.error(`Erreur lors du déchiffrement pour le contributeur ${contributor.id}:`, decryptError);
-          return contributor;
-        }
+        const decryptedValue = decryptValue(contributor.total_contribution_encrypted, userKey, true) as number;
+        
+        console.log(`Valeur déchiffrée pour le contributeur ${contributor.id}: ${decryptedValue}`);
+        
+        return {
+          ...contributor,
+          total_contribution: decryptedValue
+        };
       }
       
       // Si les données ne sont pas chiffrées, utiliser les valeurs originales
       console.log(`Utilisation de la valeur originale pour le contributeur ${contributor.id} (non chiffré)`);
       return contributor;
     } catch (error) {
-      console.error(`Erreur lors du traitement des données pour le contributeur ${contributor.id}:`, error);
+      console.error(`Erreur lors du déchiffrement des données pour le contributeur ${contributor.id}:`, error);
       return contributor;
     }
   });
