@@ -1,4 +1,5 @@
 
+import { memo } from "react";
 import { Card } from "@/components/ui/card";
 import { Credit } from "./types";
 import { CreditActions } from "./CreditActions";
@@ -8,7 +9,8 @@ interface CreditsListProps {
   onCreditDeleted: () => void;
 }
 
-export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
+// Optimisation avec memo pour éviter les re-renders inutiles
+export const CreditsList = memo(({ credits, onCreditDeleted }: CreditsListProps) => {
   if (!credits || credits.length === 0) {
     return (
       <Card className="p-4">
@@ -110,4 +112,4 @@ export const CreditsList = ({ credits, onCreditDeleted }: CreditsListProps) => {
       ))}
     </div>
   );
-};
+});

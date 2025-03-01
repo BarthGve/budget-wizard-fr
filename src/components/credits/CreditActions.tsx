@@ -1,9 +1,9 @@
 
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { MoreVertical, Eye, SquarePen, Trash2 } from "lucide-react";
+import { MoreVertical, SquarePen, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "./types";
@@ -14,13 +14,14 @@ interface CreditActionsProps {
   onCreditDeleted: () => void;
 }
 
-export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) => {
+// Optimisation avec memo pour éviter les re-renders inutiles
+export const CreditActions = memo(({ credit, onCreditDeleted }: CreditActionsProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleDelete = async () => {
+  // Utilisation de useCallback pour éviter de recréer la fonction à chaque render
+  const handleDelete = useCallback(async () => {
     try {
       const { error } = await supabase
         .from("credits")
@@ -37,7 +38,18 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
     }
     setShowDeleteDialog(false);
     setDropdownOpen(false);
-  };
+  }, [credit.id, onCreditDeleted]);
+
+  // Optimisation des callbacks pour les contrôles d'interface utilisateur
+  const handleEditClick = useCallback(() => {
+    setShowEditDialog(true);
+    setDropdownOpen(false);
+  }, []);
+
+  const handleDeleteClick = useCallback(() => {
+    setShowDeleteDialog(true);
+    setDropdownOpen(false);
+  }, []);
 
   return (
     <>
@@ -48,20 +60,13 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">
-      
-          <DropdownMenuItem onClick={() => {
-            setShowEditDialog(true);
-            setDropdownOpen(false);
-          }}>
+          <DropdownMenuItem onClick={handleEditClick}>
             <SquarePen className="mr-2 h-4 w-4" />
             Modifier
           </DropdownMenuItem>
           <DropdownMenuItem 
             className="text-destructive"
-            onClick={() => {
-              setShowDeleteDialog(true);
-              setDropdownOpen(false);
-            }}
+            onClick={handleDeleteClick}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Supprimer
@@ -96,4 +101,4 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
       </AlertDialog>
     </>
   );
-};
+});

@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -54,7 +53,9 @@ export const AuthListener = () => {
               "contributors", 
               "expenses", 
               "recurring-expenses",
-              "recurring-expense-categories"
+              "recurring-expense-categories",
+              "credits",
+              "credits-monthly-stats"
             ];
             
             // Supprimer les entrées spécifiques au lieu de vider tout le cache

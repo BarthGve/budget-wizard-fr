@@ -1,4 +1,5 @@
 
+import { memo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Credit } from "./types";
 
@@ -9,7 +10,8 @@ interface CreditSummaryCardsProps {
   totalRepaidMensualitesThisMonth: number;
 }
 
-export const CreditSummaryCards = ({
+// Optimisation avec memo pour éviter les re-renders inutiles
+export const CreditSummaryCards = memo(({
   activeCredits,
   repaidThisMonth,
   totalActiveMensualites,
@@ -52,4 +54,4 @@ export const CreditSummaryCards = ({
       </Card>
     </div>
   );
-};
+});
