@@ -1,5 +1,4 @@
 
-import { memo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Credit } from "./types";
 
@@ -10,15 +9,12 @@ interface CreditSummaryCardsProps {
   totalRepaidMensualitesThisMonth: number;
 }
 
-// Optimisation avec une fonction d'égalité personnalisée pour éviter les re-renders inutiles
-export const CreditSummaryCards = memo(({
+export const CreditSummaryCards = ({
   activeCredits,
   repaidThisMonth,
   totalActiveMensualites,
   totalRepaidMensualitesThisMonth,
 }: CreditSummaryCardsProps) => {
-  console.log("Rendering CreditSummaryCards");
-  
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Card className="overflow-hidden border-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
@@ -56,13 +52,4 @@ export const CreditSummaryCards = memo(({
       </Card>
     </div>
   );
-}, (prevProps, nextProps) => {
-  // Optimisation stricte: comparaison profonde des valeurs primitives
-  return prevProps.activeCredits.length === nextProps.activeCredits.length &&
-    prevProps.repaidThisMonth === nextProps.repaidThisMonth &&
-    prevProps.totalActiveMensualites === nextProps.totalActiveMensualites &&
-    prevProps.totalRepaidMensualitesThisMonth === nextProps.totalRepaidMensualitesThisMonth;
-});
-
-// Nom explicite pour le débogage
-CreditSummaryCards.displayName = "CreditSummaryCards";
+};

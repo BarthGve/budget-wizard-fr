@@ -37,17 +37,17 @@ export const AuthListener = () => {
         previousAuthState.current = currentAuthState;
 
         if (event === "SIGNED_IN") {
-          // Invalider le cache de manière sélective avec exact: true
-          queryClient.invalidateQueries({ queryKey: ["auth"], exact: true });
-          queryClient.invalidateQueries({ queryKey: ["current-user"], exact: true });
-          queryClient.invalidateQueries({ queryKey: ["profile"], exact: true });
+          // Invalidation simple des caches pertinents
+          queryClient.invalidateQueries({ queryKey: ["auth"] });
+          queryClient.invalidateQueries({ queryKey: ["current-user"] });
+          queryClient.invalidateQueries({ queryKey: ["profile"] });
         } else if (event === "SIGNED_OUT") {
           try {
             // Éviter la navigation multiple
             if (navigationInProgress.current) return;
             navigationInProgress.current = true;
             
-            // Plutôt que vider tout le cache, marquer comme périmées les entrées pertinentes avec exact: true
+            // Invalidation simple des caches pertinents
             const keysToInvalidate = [
               "auth", 
               "current-user", 
@@ -62,7 +62,7 @@ export const AuthListener = () => {
             ];
             
             keysToInvalidate.forEach(key => {
-              queryClient.invalidateQueries({ queryKey: [key], exact: true });
+              queryClient.invalidateQueries({ queryKey: [key] });
             });
             
             // Utiliser navigate avec replace pour éviter d'ajouter à l'historique

@@ -67,8 +67,8 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       const logo_url = getFaviconUrl(values.nom_domaine);
 
       const creditData = {
-        nom_credit: values.nom_credit,
-        nom_domaine: values.nom_domaine,
+        nom_credit: values.nom_credit.trim(),
+        nom_domaine: values.nom_domaine.trim(),
         montant_mensualite: Number(values.montant_mensualite),
         date_derniere_mensualite: values.date_derniere_mensualite,
         logo_url,
@@ -92,9 +92,9 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
         toast.success("Crédit ajouté avec succès");
       }
 
-      // Invalidation ciblée avec exact: true
-      queryClient.invalidateQueries({ queryKey: ["credits"], exact: true });
-      queryClient.invalidateQueries({ queryKey: ["credits-monthly-stats"], exact: true });
+      // Invalidation simple sans options avancées
+      queryClient.invalidateQueries({ queryKey: ["credits"] });
+      queryClient.invalidateQueries({ queryKey: ["credits-monthly-stats"] });
       onSuccess();
       form.reset();
     } catch (error) {

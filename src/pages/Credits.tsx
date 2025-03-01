@@ -4,19 +4,28 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useCallback, memo } from "react";
-import { Credit } from "@/components/credits/types";
+import { useQuery } from "@tanstack/react-query";
 import { CreditDialog } from "@/components/credits/CreditDialog";
 import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
 import { CreditsList } from "@/components/credits/CreditsList";
 import StyledLoader from "@/components/ui/StyledLoader";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-// Optimisation avec memo mais sans fonction d'égalité complexe
-const Credits = memo(() => {
-  const queryClient = useQueryClient();
+const Credits = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
   
-  // Configuration des requêtes avec un staleTime plus court et refetchOnMount activé
   const {
     data: credits = [],
     isLoading: isLoadingCredits
@@ -42,17 +51,10 @@ const Credits = memo(() => {
         throw error;
       }
       
-      return data as Credit[];
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes (comme dans Dépenses)
-    gcTime: 1000 * 60 * 10, // 10 minutes
-    refetchOnWindowFocus: false, 
-    refetchInterval: false,
-    refetchOnMount: true, // Activé pour assurer le rechargement au montage
-    refetchOnReconnect: false,
+      return data;
+    }
   });
   
-  // Configuration des stats mensuelles avec un staleTime plus court
   const {
     data: monthlyStats = {
       credits_rembourses_count: 0,
@@ -81,44 +83,16 @@ const Credits = memo(() => {
         credits_rembourses_count: 0,
         total_mensualites_remboursees: 0
       };
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
-    refetchOnWindowFocus: false,
-    refetchInterval: false,
-    refetchOnMount: true, // Activé également
-    refetchOnReconnect: false,
+    }
   });
 
-  // Calculer les valeurs dérivées avec useMemo pour éviter des recalculs
-  const { activeCredits, totalActiveMensualites } = useMemo(() => {
-    if (!credits || credits.length === 0) {
-      return {
-        activeCredits: [],
-        totalActiveMensualites: 0
-      };
-    }
-    
-    const active = credits.filter(credit => credit.statut === 'actif');
-    const total = active.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
-    
-    return {
-      activeCredits: active,
-      totalActiveMensualites: total
-    };
-  }, [credits]);
+  // Calculer les valeurs dérivées
+  const activeCredits = credits?.filter(credit => credit.statut === 'actif') || [];
+  const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
 
-  // Stabiliser cette fonction de rappel avec useCallback
-  const handleCreditDeleted = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["credits"],
-      exact: true // Invalidation ciblée comme dans Dépenses
-    });
-    queryClient.invalidateQueries({
-      queryKey: ["credits-monthly-stats"],
-      exact: true
-    });
-  }, [queryClient]);
+  const handleCreditDeleted = () => {
+    // L'invalidation automatique de la requête sera gérée par React Query
+  };
 
   const isLoading = isLoadingCredits || isLoadingStats;
   
@@ -165,9 +139,6 @@ const Credits = memo(() => {
       </div>
     </DashboardLayout>
   );
-});
-
-// Nom explicite pour le débogage
-Credits.displayName = "CreditsPage";
+};
 
 export default Credits;
