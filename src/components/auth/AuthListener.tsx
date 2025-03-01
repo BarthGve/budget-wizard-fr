@@ -1,8 +1,9 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { ZeroIncomeDialog } from "./ZeroIncomeDialog";
 
 /**
  * Composant qui écoute les changements d'état d'authentification
@@ -14,6 +15,38 @@ export const AuthListener = () => {
   const isInitialMount = useRef(true);
   const previousAuthState = useRef<boolean | null>(null);
   const navigationInProgress = useRef(false);
+  const [showIncomeDialog, setShowIncomeDialog] = useState(false);
+  const hasCheckedIncome = useRef(false);
+
+  // Vérifier si le contributeur principal a un revenu nul
+  const checkOwnerContributorIncome = async () => {
+    if (hasCheckedIncome.current) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: ownerContributor, error } = await supabase
+        .from("contributors")
+        .select("total_contribution")
+        .eq("profile_id", user.id)
+        .eq("is_owner", true)
+        .single();
+
+      if (error) {
+        console.error("Erreur lors de la vérification des revenus:", error);
+        return;
+      }
+
+      if (ownerContributor && ownerContributor.total_contribution === 0) {
+        setShowIncomeDialog(true);
+      }
+      
+      hasCheckedIncome.current = true;
+    } catch (error) {
+      console.error("Erreur lors de la vérification des revenus:", error);
+    }
+  };
 
   useEffect(() => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
@@ -25,6 +58,12 @@ export const AuthListener = () => {
           
           // Store initial auth state
           previousAuthState.current = !!session;
+          
+          // Vérifier les revenus après la connexion initiale
+          if (session) {
+            checkOwnerContributorIncome();
+          }
+          
           return;
         }
 
@@ -41,6 +80,14 @@ export const AuthListener = () => {
           queryClient.invalidateQueries({ queryKey: ["auth"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
           queryClient.invalidateQueries({ queryKey: ["profile"] });
+          
+          // Réinitialiser le flag pour vérifier les revenus lors de la connexion
+          hasCheckedIncome.current = false;
+          
+          // Vérifier les revenus après connexion
+          setTimeout(() => {
+            checkOwnerContributorIncome();
+          }, 1000); // Délai pour laisser le temps de charger les données
         } else if (event === "SIGNED_OUT") {
           try {
             // Éviter la navigation multiple
@@ -89,5 +136,10 @@ export const AuthListener = () => {
     };
   }, [queryClient, navigate]);
 
-  return null;
+  return (
+    <ZeroIncomeDialog 
+      open={showIncomeDialog} 
+      onOpenChange={setShowIncomeDialog} 
+    />
+  );
 };
