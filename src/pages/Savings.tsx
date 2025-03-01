@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
@@ -11,7 +12,7 @@ import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ChevronDown, ChevronUp, Plus, Rocket, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Rocket, X } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -181,12 +182,6 @@ const Savings = () => {
                 </Button>
               </motion.div>
             </div>
-            <NewSavingDialog onSavingAdded={handleSavingAdded}>
-              <Button className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
-                <Plus className="h-4 w-4" />
-                Nouveau versement
-              </Button>
-            </NewSavingDialog>
           </div>
           <SavingsList monthlySavings={monthlySavings || []} onSavingDeleted={handleSavingDeleted} showSavings={showMonthlySavings} />
         </div>
