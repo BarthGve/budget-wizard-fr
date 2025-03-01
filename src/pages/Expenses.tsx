@@ -22,7 +22,8 @@ const Expenses = () => {
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
   const {
     data: expenses,
-    isLoading
+    isLoading,
+    error
   } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
@@ -38,7 +39,10 @@ const Expenses = () => {
       } = await supabase.from("expenses").select("*").eq("profile_id", user.id);
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+    retry: 1
   });
   const handleExpenseUpdated = useCallback(() => {
     queryClient.invalidateQueries({
@@ -80,7 +84,7 @@ const Expenses = () => {
   if (error) {
     return (
       <DashboardLayout>
-        <p className="text-red-500">Une erreur s'est produite : {error.message}</p>
+        <p className="text-red-500">Une erreur s'est produite : {(error as Error).message}</p>
       </DashboardLayout>
     );
   }
