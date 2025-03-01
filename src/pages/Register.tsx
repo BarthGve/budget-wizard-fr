@@ -34,6 +34,7 @@ const Register = () => {
 
     setIsLoading(true);
     try {
+      // Simplifier l'appel d'inscription en ne transmettant que les données essentielles
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -49,10 +50,10 @@ const Register = () => {
         
         if (signUpError.message.includes("User already registered")) {
           throw new Error("Un compte existe déjà avec cet email");
-        } else if (signUpError.status === 500) {
-          throw new Error("Une erreur serveur est survenue. Veuillez réessayer plus tard ou contacter l'administrateur.");
+        } else {
+          // Message d'erreur plus générique pour les autres cas
+          throw new Error("Une erreur est survenue lors de l'inscription. Veuillez réessayer plus tard.");
         }
-        throw signUpError;
       }
 
       if (signUpData.user) {
