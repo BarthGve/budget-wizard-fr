@@ -40,8 +40,8 @@ const App = () => {
         refetchOnMount: false,
         // Garder refetchOnWindowFocus désactivé
         refetchOnWindowFocus: false,
-        // Définir cacheTime plus long pour conserver les données en cache
-        cacheTime: 1000 * 60 * 30, // 30 minutes
+        // Définir garbage collection time plus long pour conserver les données en cache
+        gcTime: 1000 * 60 * 30, // 30 minutes
         retry: 1,
       },
     },

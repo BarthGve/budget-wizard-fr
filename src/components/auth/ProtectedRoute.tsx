@@ -5,7 +5,6 @@ import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import StyledLoader from "../ui/StyledLoader";
 
-
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
@@ -35,18 +34,20 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     return <div><StyledLoader/></div>;
   }
 
+  // If not authenticated, redirect to login
   if (!authData?.isAuthenticated) {
     return <Navigate to="/login" />;
   }
 
   // Liste des routes toujours accessibles une fois connecté
-  const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
+  const alwaysAccessibleRoutes = ['/user-settings', '/settings', '/dashboard'];
 
   // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
   if (authData.isAdmin && location.pathname === '/dashboard') {
     return <Navigate to="/admin" />;
   }
 
+  // Admin check
   if (requireAdmin && !isAdmin) {
     return <Navigate to="/forbidden" />;
   }
@@ -65,8 +66,8 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     }
   }
 
-  // Vérifier les permissions pour les autres routes
-  if (!canAccessPage(location.pathname)) {
+  // Vérifier les permissions pour les autres routes seulement si ce n'est pas dashboard
+  if (!alwaysAccessibleRoutes.includes(location.pathname) && !canAccessPage(location.pathname)) {
     return <Navigate to="/forbidden" />;
   }
 
