@@ -32,7 +32,8 @@ export const UserDropdown = ({
       if (error) throw error;
       
       toast.success("Déconnexion réussie");
-      navigate("/");
+      // Redirection explicite vers la landing page
+      navigate("/", { replace: true });
     } catch (error: any) {
       toast.error("Erreur lors de la déconnexion");
       console.error("Logout error:", error);

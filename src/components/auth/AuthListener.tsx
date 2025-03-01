@@ -34,8 +34,8 @@ export const AuthListener = () => {
             // Vider le cache React Query
             queryClient.clear();
             
-            // Rediriger vers la page de connexion
-            navigate("/login", { replace: true });
+            // Rediriger vers la page d'accueil au lieu de la page de connexion
+            navigate("/", { replace: true });
           } catch (error) {
             console.error("Error during sign out handling:", error);
           }
