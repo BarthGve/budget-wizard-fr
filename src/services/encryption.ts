@@ -1,107 +1,88 @@
 
 import CryptoJS from 'crypto-js';
-import { supabase } from "@/integrations/supabase/client";
-
-// Récupère la clé principale à partir de l'environnement local (pour le développement)
-// En production, cette clé serait stockée dans les variables d'environnement de Supabase
-const MASTER_KEY = import.meta.env.VITE_ENCRYPTION_KEY || 'default-dev-key-change-in-production';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Génère une clé de chiffrement spécifique à l'utilisateur
- * @param userId ID de l'utilisateur
- * @returns Clé dérivée pour cet utilisateur
+ * Génère une clé de chiffrement basée sur l'identifiant utilisateur
  */
 export const getUserEncryptionKey = async (userId: string): Promise<string> => {
-  try {
-    // On génère une clé unique basée sur l'ID utilisateur et la clé principale
-    // La clé utilisateur est dérivée pour ne pas avoir à la stocker
-    const userKey = CryptoJS.PBKDF2(userId, MASTER_KEY, {
-      keySize: 256 / 32,
-      iterations: 1000
-    }).toString();
-    
-    console.log(`Generated encryption key for user ${userId}`);
-    return userKey;
-  } catch (error) {
-    console.error('Erreur lors de la génération de la clé utilisateur:', error);
-    throw new Error('Impossible de générer la clé de chiffrement');
-  }
+  // Créer une clé déterministe basée sur l'ID utilisateur
+  // Dans une application réelle, vous devriez utiliser un sel stocké en sécurité
+  return CryptoJS.SHA256(userId + "secure-salt").toString();
 };
 
 /**
- * Chiffre une valeur numérique ou textuelle
- * @param value Valeur à chiffrer
- * @param userKey Clé de chiffrement spécifique à l'utilisateur
- * @returns Données chiffrées en Base64
+ * Chiffre une valeur avec la clé utilisateur fournie
  */
-export const encryptValue = (value: string | number, userKey: string): string => {
-  try {
-    // Convertir les nombres en chaînes
-    const stringValue = typeof value === 'number' ? value.toString() : value;
-    
-    // Chiffrer avec AES
-    const encrypted = CryptoJS.AES.encrypt(stringValue, userKey).toString();
-    
-    console.log(`Value encrypted successfully: ${typeof value} -> ${encrypted.substring(0, 20)}...`);
-    return encrypted;
-  } catch (error) {
-    console.error('Error during encryption:', error);
-    throw error;
-  }
+export const encryptValue = (value: any, userKey: string): string => {
+  const valueStr = typeof value === 'object' ? JSON.stringify(value) : String(value);
+  return CryptoJS.AES.encrypt(valueStr, userKey).toString();
 };
 
 /**
- * Déchiffre une valeur
- * @param encryptedValue Valeur chiffrée
- * @param userKey Clé de chiffrement spécifique à l'utilisateur
- * @param isNumber Indique si la valeur originale était un nombre
- * @returns Valeur déchiffrée (nombre ou chaîne)
+ * Déchiffre une valeur avec la clé utilisateur fournie
  */
-export const decryptValue = (encryptedValue: string, userKey: string, isNumber: boolean = false): string | number => {
+export const decryptValue = (encrypted: string, userKey: string, isNumber: boolean = false): string | number => {
+  const bytes = CryptoJS.AES.decrypt(encrypted, userKey);
+  const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+  
+  if (isNumber) {
+    return parseFloat(decrypted);
+  }
+  
   try {
-    if (!encryptedValue) {
-      console.warn('Attempted to decrypt empty value');
-      return isNumber ? 0 : '';
-    }
-    
-    // Déchiffrer
-    const decrypted = CryptoJS.AES.decrypt(encryptedValue, userKey);
-    const decryptedString = decrypted.toString(CryptoJS.enc.Utf8);
-    
-    if (!decryptedString) {
-      console.error('Decryption resulted in empty string');
-      return isNumber ? 0 : '';
-    }
-    
-    console.log(`Value decrypted successfully: ${encryptedValue.substring(0, 20)}... -> ${decryptedString}`);
-    
-    // Convertir en nombre si nécessaire
-    return isNumber ? parseFloat(decryptedString) : decryptedString;
-  } catch (error) {
-    console.error('Erreur lors du déchiffrement:', error);
-    return isNumber ? 0 : '';
+    // Tenter de parser en tant que JSON si c'est un objet
+    return JSON.parse(decrypted);
+  } catch {
+    // Sinon retourner la chaîne déchiffrée
+    return decrypted;
   }
 };
 
 /**
- * Vérifie si l'utilisateur a activé le chiffrement
+ * Vérifie si le chiffrement est activé pour l'utilisateur actuel
  */
 export const isEncryptionEnabled = async (): Promise<boolean> => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
-    
-    const { data } = await supabase
-      .from('profiles')
-      .select('encryption_enabled')
-      .eq('id', user.id)
-      .single();
-    
-    const enabled = data?.encryption_enabled || false;
-    console.log(`Encryption status for user ${user.id}: ${enabled}`);
-    return enabled;
-  } catch (error) {
-    console.error('Erreur lors de la vérification du statut de chiffrement:', error);
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
+    console.error("Erreur d'authentification lors de la vérification du chiffrement:", userError);
     return false;
   }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("encryption_enabled")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Erreur lors de la vérification du chiffrement:", error);
+    return false;
+  }
+
+  return data?.encryption_enabled || false;
+};
+
+/**
+ * Active ou désactive le chiffrement pour l'utilisateur actuel
+ */
+export const setEncryptionEnabled = async (enabled: boolean): Promise<boolean> => {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
+    console.error("Erreur d'authentification lors de l'activation du chiffrement:", userError);
+    return false;
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ encryption_enabled: enabled })
+    .eq("id", user.id);
+
+  if (error) {
+    console.error("Erreur lors de l'activation du chiffrement:", error);
+    return false;
+  }
+
+  console.log(`Chiffrement ${enabled ? 'activé' : 'désactivé'} avec succès`);
+  return true;
 };
