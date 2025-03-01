@@ -5,12 +5,13 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useEncryption } from "@/hooks/useEncryption";
-import { Shield, ShieldAlert, LockKeyhole } from "lucide-react";
+import { Shield, ShieldAlert, LockKeyhole, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 export function EncryptionSettings() {
   const { isEncryptionEnabled, isLoading, activateEncryption, migrateExistingData } = useEncryption();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isMigratingData, setIsMigratingData] = useState(false);
 
   const handleToggleEncryption = async () => {
     if (isEncryptionEnabled) {
@@ -30,6 +31,19 @@ export function EncryptionSettings() {
       setShowConfirmation(false);
     } catch (error) {
       console.error("Erreur lors de l'activation du chiffrement:", error);
+    }
+  };
+
+  const handleMigrateData = async () => {
+    try {
+      setIsMigratingData(true);
+      await migrateExistingData();
+      toast.success("Migration des données réussie");
+    } catch (error) {
+      console.error("Erreur lors de la migration des données:", error);
+      toast.error("Échec de la migration des données");
+    } finally {
+      setIsMigratingData(false);
     }
   };
 
@@ -87,6 +101,44 @@ export function EncryptionSettings() {
                     disabled={isLoading}
                   >
                     Confirmer l'activation
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isEncryptionEnabled && (
+          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-800 dark:bg-blue-950">
+            <div className="flex items-start space-x-3">
+              <RefreshCw className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div>
+                <h4 className="font-medium text-blue-800 dark:text-blue-300">
+                  Réexécuter la migration des données
+                </h4>
+                <p className="mt-1 text-blue-700 dark:text-blue-400">
+                  Si certaines données ne sont pas correctement chiffrées, vous pouvez relancer la migration.
+                  Cela mettra à jour tous les contributeurs avec le chiffrement.
+                </p>
+                <div className="mt-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleMigrateData}
+                    disabled={isMigratingData}
+                    className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+                  >
+                    {isMigratingData ? (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                        Migration en cours...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Relancer la migration
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

@@ -32,7 +32,12 @@ export const migrateContributorsToEncrypted = async (): Promise<void> => {
   }
   
   console.log(`Migration de ${contributors.length} contributeurs`);
-  console.log("Contributeurs à migrer:", contributors);
+  console.log("Contributeurs à migrer:", contributors.map(c => ({
+    id: c.id,
+    name: c.name,
+    contribution: c.total_contribution,
+    is_encrypted: c.is_encrypted
+  })));
   
   // Générer la clé de chiffrement de l'utilisateur
   const userKey = await getUserEncryptionKey(user.id);
@@ -45,7 +50,7 @@ export const migrateContributorsToEncrypted = async (): Promise<void> => {
       
       console.log(`Migration du contributeur ${contributor.id}:`, {
         originalValue: contributor.total_contribution,
-        encryptedValue: encryptedValue
+        encryptedValue: encryptedValue.substring(0, 20) + '...'
       });
       
       // Mettre à jour le contributeur avec la valeur chiffrée et marquer comme chiffré
@@ -81,7 +86,11 @@ export const migrateContributorsToEncrypted = async (): Promise<void> => {
   if (verificationError) {
     console.error("Erreur lors de la vérification de la migration:", verificationError);
   } else {
-    console.log("État après migration:", updatedContributors);
+    console.log("État après migration:", updatedContributors?.map(c => ({
+      id: c.id,
+      is_encrypted: c.is_encrypted,
+      has_encrypted_data: !!c.total_contribution_encrypted
+    })));
   }
   
   // Activer le chiffrement dans le profil utilisateur
