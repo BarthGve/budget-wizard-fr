@@ -26,16 +26,17 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const queryClient = useQueryClient();
   const channelRef = useRef(null);
 
-  // Configurer des écouteurs pour la modification des contributeurs
+  // Configurer des écouteurs pour la modification des contributeurs avec gestion améliorée
   useEffect(() => {
     // Nettoyer le channel précédent s'il existe
     if (channelRef.current) {
+      console.log('Removing existing channel in DashboardLayout');
       supabase.removeChannel(channelRef.current);
     }
     
-    // Configurer un canal pour les modifications de contributeurs
+    // Configurer un canal pour les modifications de contributeurs avec ID unique
     const channel = supabase
-      .channel('contributor-changes')
+      .channel('dashboard-layout-' + Date.now())
       .on(
         'postgres_changes',
         {
@@ -44,7 +45,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           table: 'contributors'
         },
         () => {
-          // Invalider les requêtes pour forcer le rechargement des données
+          console.log('Contributors table changed from Dashboard layout, invalidating queries');
+          // Invalider uniquement les requêtes nécessaires
           queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
         }
       )
@@ -55,6 +57,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
     return () => {
       if (channelRef.current) {
+        console.log('Cleaning up channel in DashboardLayout unmount');
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }

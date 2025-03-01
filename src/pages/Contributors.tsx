@@ -21,16 +21,16 @@ const Contributors = () => {
   const queryClient = useQueryClient();
   const channelRef = useRef(null);
   
-  // Set up an additional listener to ensure dashboard data is invalidated - avec un cleanup correct
+  // Optimisation de l'écouteur pour éviter les multiples abonnements et invalidations
   useEffect(() => {
     // Nettoyer le channel précédent s'il existe
     if (channelRef.current) {
       supabase.removeChannel(channelRef.current);
     }
     
-    // Créer un nouveau channel
+    // Créer un nouveau channel avec une clé unique pour cette instance de composant
     const channel = supabase
-      .channel('contributors-page-changes')
+      .channel('contributors-page-' + Date.now())
       .on(
         'postgres_changes',
         {
@@ -38,10 +38,11 @@ const Contributors = () => {
           schema: 'public',
           table: 'contributors'
         },
-        () => {
-          console.log('Contributors table changed from Contributors page, invalidating queries');
+        (payload) => {
+          console.log('Contributors table changed, invalidating queries');
+          // N'invalider que les requêtes spécifiques pour éviter les rechargements complets
+          queryClient.invalidateQueries({ queryKey: ["contributors"] });
           queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-          queryClient.invalidateQueries({ queryKey: ["current-user"] });
         }
       )
       .subscribe();
@@ -49,29 +50,30 @@ const Contributors = () => {
     // Stocker la référence du channel
     channelRef.current = channel;
 
-    // Cleanup function
+    // Cleanup function - très important pour éviter les fuites mémoire
     return () => {
       if (channelRef.current) {
+        console.log('Removing channel from Contributors page');
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
     };
   }, [queryClient]);
   
-  // Handle contributor operations with immediate invalidation - sans réinvoquer des invalidations multiples
+  // Optimiser les gestionnaires pour éviter les invalidations multiples
   const handleAddContributor = async (newContributor) => {
     await addContributor(newContributor);
-    // L'invalidation est déjà gérée par le hook useContributors ou l'écouteur de channel
+    // L'invalidation est déjà gérée par le hook useContributors et l'écouteur
   };
   
   const handleUpdateContributor = async (contributor) => {
     await updateContributor(contributor);
-    // L'invalidation est déjà gérée par le hook useContributors ou l'écouteur de channel
+    // L'invalidation est déjà gérée par le hook useContributors et l'écouteur
   };
   
   const handleDeleteContributor = async (id) => {
     await deleteContributor(id);
-    // L'invalidation est déjà gérée par le hook useContributors ou l'écouteur de channel
+    // L'invalidation est déjà gérée par le hook useContributors et l'écouteur
   };
   
   if (isLoading) {

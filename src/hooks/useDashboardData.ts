@@ -2,16 +2,23 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export const useDashboardData = () => {
   const queryClient = useQueryClient();
+  const channelRef = useRef(null);
 
-  // Set up real-time listener for contributor changes
+  // Set up real-time listener for contributor changes with improved channel management
   useEffect(() => {
-    // Subscribe to changes on the contributors table
+    // Cleanup previous channel if it exists
+    if (channelRef.current) {
+      console.log('Removing existing channel in useDashboardData');
+      supabase.removeChannel(channelRef.current);
+    }
+    
+    // Create a new channel with a unique ID
     const channel = supabase
-      .channel('contributor-changes')
+      .channel('dashboard-data-' + Date.now())
       .on(
         'postgres_changes',
         {
@@ -20,15 +27,23 @@ export const useDashboardData = () => {
           table: 'contributors'
         },
         () => {
-          // Immediately invalidate the dashboard data to trigger a refresh
+          console.log('Contributors table changed from useDashboardData hook, invalidating dashboard data');
+          // Selectively invalidate only the necessary queries
           queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
         }
       )
       .subscribe();
+    
+    // Store the channel reference
+    channelRef.current = channel;
 
     // Cleanup function
     return () => {
-      supabase.removeChannel(channel);
+      if (channelRef.current) {
+        console.log('Cleaning up channel in useDashboardData unmount');
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
   }, [queryClient]);
 
