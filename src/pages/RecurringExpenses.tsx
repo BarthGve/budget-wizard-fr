@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RecurringExpenseDialog } from "@/components/recurring-expenses/RecurringExpenseDialog";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { RecurringExpenseTable } from "@/components/recurring-expenses/RecurringExpenseTable";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import StyledLoader from "@/components/ui/StyledLoader";
@@ -26,21 +23,7 @@ interface RecurringExpense {
 
 const RecurringExpenses = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/login");
-      }
-    };
-    checkAuth();
-  }, [navigate]);
-
+  
   const {
     data: recurringExpenses,
     isLoading
@@ -94,7 +77,7 @@ const RecurringExpenses = () => {
   const yearlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "yearly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
 
   if (isLoading) {
-    return<StyledLoader/>;
+    return <StyledLoader />;
   }
 
   return <DashboardLayout>
