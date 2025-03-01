@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useCallback, memo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Credit } from "@/components/credits/types";
 import { CreditDialog } from "@/components/credits/CreditDialog";
 import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
@@ -15,16 +14,17 @@ import StyledLoader from "@/components/ui/StyledLoader";
 
 // Optimisation avec memo pour éviter les re-renders inutiles
 const Credits = memo(() => {
-  const navigate = useNavigate();
+  console.log("Rendering Credits page");
   const queryClient = useQueryClient();
   
-  // Configuration optimisée de la requête pour les crédits
+  // Configuration optimisée de la requête pour les crédits avec un long staleTime
   const {
     data: credits = [],
     isLoading: isLoadingCredits
   } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
+      console.log("Fetching credits data");
       const {
         data: { user }
       } = await supabase.auth.getUser();
@@ -43,16 +43,18 @@ const Credits = memo(() => {
         toast.error("Erreur lors du chargement des crédits");
         throw error;
       }
+      console.log("Credits data fetched successfully", data?.length);
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 5, // Cache valide pendant 5 minutes pour réduire les requêtes réseau
-    refetchOnWindowFocus: false, // Désactiver le rechargement lors du focus
+    staleTime: 1000 * 60 * 10, // Cache valide pendant 10 minutes pour réduire les requêtes réseau
+    gcTime: 1000 * 60 * 15, // Garde en cache pendant 15 minutes
+    refetchOnWindowFocus: false, 
     refetchInterval: false,
     refetchOnMount: true,
-    refetchOnReconnect: false, // Désactiver le rechargement à la reconnexion
+    refetchOnReconnect: false,
   });
   
-  // Configuration optimisée pour les statistiques mensuelles
+  // Configuration optimisée pour les statistiques mensuelles avec un long staleTime
   const {
     data: monthlyStats = {
       credits_rembourses_count: 0,
@@ -62,6 +64,7 @@ const Credits = memo(() => {
   } = useQuery({
     queryKey: ["credits-monthly-stats"],
     queryFn: async () => {
+      console.log("Fetching monthly stats");
       const {
         data: { user }
       } = await supabase.auth.getUser();
@@ -77,12 +80,14 @@ const Credits = memo(() => {
         toast.error("Erreur lors du chargement des statistiques mensuelles");
         throw error;
       }
+      console.log("Monthly stats fetched successfully");
       return data?.[0] || {
         credits_rembourses_count: 0,
         total_mensualites_remboursees: 0
       };
     },
-    staleTime: 1000 * 60 * 5, // Cache valide pendant 5 minutes
+    staleTime: 1000 * 60 * 10, // Cache valide pendant 10 minutes
+    gcTime: 1000 * 60 * 15, // Garde en cache pendant 15 minutes
     refetchOnWindowFocus: false,
     refetchInterval: false,
     refetchOnReconnect: false,
@@ -90,6 +95,7 @@ const Credits = memo(() => {
 
   // Calculer les valeurs dérivées avec useMemo pour éviter des recalculs inutiles
   const { activeCredits, totalActiveMensualites } = useMemo(() => {
+    console.log("Calculating derived values from credits");
     return credits.reduce((acc, credit) => ({
       activeCredits: credit.statut === 'actif' ? [...acc.activeCredits, credit] : acc.activeCredits,
       totalActiveMensualites: credit.statut === 'actif' ? acc.totalActiveMensualites + credit.montant_mensualite : acc.totalActiveMensualites
@@ -101,6 +107,7 @@ const Credits = memo(() => {
 
   // Optimiser le rappel de la fonction avec useCallback
   const handleCreditDeleted = useCallback(() => {
+    console.log("Credit deleted, invalidating queries");
     queryClient.invalidateQueries({
       queryKey: ["credits"]
     });
@@ -115,7 +122,8 @@ const Credits = memo(() => {
     return <StyledLoader />;
   }
   
-  return <DashboardLayout>
+  return (
+    <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -124,10 +132,14 @@ const Credits = memo(() => {
               Gérez vos crédits et leurs échéances
             </p>
           </div>
-          <CreditDialog trigger={<Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
+          <CreditDialog 
+            trigger={
+              <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
                 <Plus className="mr-2 h-4 w-4" />
                 Ajouter un crédit
-              </Button>} />
+              </Button>
+            } 
+          />
         </div>
 
         <CreditSummaryCards 
@@ -147,7 +159,11 @@ const Credits = memo(() => {
           </div>
         </div>
       </div>
-    </DashboardLayout>;
+    </DashboardLayout>
+  );
 });
+
+// Ajouter un displayName pour faciliter le débogage
+Credits.displayName = "CreditsPage";
 
 export default Credits;

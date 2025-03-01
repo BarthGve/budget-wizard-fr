@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -38,6 +39,7 @@ export const AuthListener = () => {
         previousAuthState.current = currentAuthState;
 
         if (event === "SIGNED_IN") {
+          console.log("User signed in, invalidating relevant queries");
           // Invalider le cache de manière sélective avec des requêtes ciblées
           queryClient.invalidateQueries({ queryKey: ["auth"], exact: true });
           queryClient.invalidateQueries({ queryKey: ["current-user"], exact: true });
@@ -45,6 +47,7 @@ export const AuthListener = () => {
           // Ne pas naviguer ici pour éviter les rechargements complets
         } else if (event === "SIGNED_OUT") {
           try {
+            console.log("User signed out, removing cached queries");
             // Liste des clés de cache spécifiques à supprimer
             const keysToRemove = [
               "auth", 
@@ -62,6 +65,9 @@ export const AuthListener = () => {
             keysToRemove.forEach(key => {
               queryClient.removeQueries({ queryKey: [key], exact: true });
             });
+            
+            // Clear user-specific data from cache to avoid leaking data
+            queryClient.clear();
             
             // Rediriger vers la page de connexion de manière programmatique
             // Utiliser navigate au lieu de window.location pour éviter un rechargement complet

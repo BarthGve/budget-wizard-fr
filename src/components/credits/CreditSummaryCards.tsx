@@ -10,13 +10,15 @@ interface CreditSummaryCardsProps {
   totalRepaidMensualitesThisMonth: number;
 }
 
-// Optimisation avec memo pour éviter les re-renders inutiles
+// Using explicit displayName to help with debugging re-renders
 export const CreditSummaryCards = memo(({
   activeCredits,
   repaidThisMonth,
   totalActiveMensualites,
   totalRepaidMensualitesThisMonth,
 }: CreditSummaryCardsProps) => {
+  console.log("Rendering CreditSummaryCards");
+  
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
@@ -55,3 +57,6 @@ export const CreditSummaryCards = memo(({
     </div>
   );
 });
+
+// Explicitly set display name for better debugging
+CreditSummaryCards.displayName = "CreditSummaryCards";
