@@ -7,14 +7,16 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { differenceInDays } from "date-fns";
+import { motion } from "framer-motion";
 
 interface SavingsProjectCardProps {
   project: SavingsProject;
   onDelete: (project: SavingsProject) => void;
   onSelect: (project: SavingsProject) => void;
+  index?: number;
 }
 
-export const SavingsProjectCard = ({ project, onDelete, onSelect }: SavingsProjectCardProps) => {
+export const SavingsProjectCard = ({ project, onDelete, onSelect, index = 0 }: SavingsProjectCardProps) => {
   const calculateSavedAmount = (project: SavingsProject) => {
     if (!project.montant_mensuel || !project.created_at) return 0;
     
@@ -41,55 +43,73 @@ export const SavingsProjectCard = ({ project, onDelete, onSelect }: SavingsProje
   };
 
   return (
-    <Card className="flex flex-col">
-      <div 
-        className="aspect-video relative cursor-pointer"
-        onClick={() => onSelect(project)}
-      >
-        <img
-          src={project.image_url || "/placeholder.svg"}
-          alt={project.nom_projet}
-          className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/placeholder.svg";
-          }}
-        />
-      </div>
-      <CardContent className="pt-4 flex-1 flex flex-col">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold truncate">{project.nom_projet}</h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive flex-shrink-0"
-            onClick={() => onDelete(project)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+    <motion.div
+      initial={{ opacity: 0, rotateY: -90, y: 20 }}
+      animate={{ opacity: 1, rotateY: 0, y: 0 }}
+      exit={{ opacity: 0, rotateY: 90, y: -20 }}
+      transition={{ 
+        duration: 0.6, 
+        delay: index * 0.1,
+        type: "spring",
+        stiffness: 100
+      }}
+      whileHover={{ 
+        scale: 1.03, 
+        rotateY: 5,
+        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
+      }}
+      className="perspective-1000"
+    >
+      <Card className="flex flex-col backface-hidden transform-gpu">
+        <div 
+          className="aspect-video relative cursor-pointer"
+          onClick={() => onSelect(project)}
+        >
+          <img
+            src={project.image_url || "/placeholder.svg"}
+            alt={project.nom_projet}
+            className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "/placeholder.svg";
+            }}
+          />
         </div>
-        
-        <div className="space-y-4">
-          {project.montant_mensuel && project.montant_mensuel > 0 && project.statut === 'actif' && (
-            <div>
-              <p className="text-sm font-medium mb-2">Progression:</p>
-              <Progress value={calculateProgress(project)} className="h-2" />
-            </div>
-          )}
-          
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">Objectif:</p>
-              <p className="text-lg font-bold">
-                {formatCurrency(project.montant_total)}
-              </p>
-            </div>
-            <Badge variant={getBadgeVariant(project)} className="flex-shrink-0">
-              {getBadgeText(project)}
-            </Badge>
+        <CardContent className="pt-4 flex-1 flex flex-col">
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="font-semibold truncate">{project.nom_projet}</h3>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-destructive flex-shrink-0"
+              onClick={() => onDelete(project)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+          
+          <div className="space-y-4">
+            {project.montant_mensuel && project.montant_mensuel > 0 && project.statut === 'actif' && (
+              <div>
+                <p className="text-sm font-medium mb-2">Progression:</p>
+                <Progress value={calculateProgress(project)} className="h-2" />
+              </div>
+            )}
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Objectif:</p>
+                <p className="text-lg font-bold">
+                  {formatCurrency(project.montant_total)}
+                </p>
+              </div>
+              <Badge variant={getBadgeVariant(project)} className="flex-shrink-0">
+                {getBadgeText(project)}
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };

@@ -12,8 +12,9 @@ import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Rocket, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Rocket, X } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { cn } from "@/lib/utils";
 
 const Savings = () => {
   const {
@@ -23,6 +24,7 @@ const Savings = () => {
   } = useDashboardData();
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
+  const [showProjects, setShowProjects] = useState(true);
   const {
     canAccessFeature
   } = usePagePermissions();
@@ -75,6 +77,10 @@ const Savings = () => {
     }
   };
 
+  const toggleProjectsVisibility = () => {
+    setShowProjects(prev => !prev);
+  };
+
   if (showProjectWizard) {
     return <div className="fixed inset-0 flex items-center justify-center bg-background/80 z-50">
         <div className="w-full max-w-4xl relative">
@@ -87,8 +93,8 @@ const Savings = () => {
   }
 
   return <DashboardLayout>
-
-        <div className="space-y-6">
+      <div className="space-y-6 h-[calc(100vh-4rem)] overflow-hidden flex flex-col">
+        <div className="flex-none">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
@@ -101,7 +107,7 @@ const Savings = () => {
             <NewSavingDialog onSavingAdded={handleSavingAdded} />
           </div>
 
-          <div className="grid gap-4 grid-cols-12">
+          <div className="grid gap-4 grid-cols-12 mt-6">
             <div className="col-span-8">
               <SavingsGoal savingsPercentage={profile?.savings_goal_percentage || 0} totalMonthlyAmount={totalMonthlyAmount} />
             </div>
@@ -110,23 +116,44 @@ const Savings = () => {
             </div>
           </div>
 
-          {canAccessFeature('/savings', 'new_project') && <>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Projets</h2>
-              <Button onClick={handleNewProjectClick} className="gap-2">
-                <Rocket className="h-4 w-4" />
-                Créer
-              </Button>
+          {canAccessFeature('/savings', 'new_project') && (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Projets</h2>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={toggleProjectsVisibility}
+                    className="transition-transform duration-300"
+                  >
+                    {showProjects ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </Button>
+                </div>
+                <Button onClick={handleNewProjectClick} className="gap-2">
+                  <Rocket className="h-4 w-4" />
+                  Créer
+                </Button>
+              </div>
+              
+              <div 
+                className={cn(
+                  "transition-all transform-gpu duration-700 origin-top", 
+                  showProjects 
+                    ? "opacity-100 scale-y-100 rotate-x-0" 
+                    : "opacity-0 scale-y-0 rotate-x-90 h-0 overflow-hidden"
+                )}
+              >
+                <SavingsProjectList projects={projects} onProjectDeleted={handleProjectDeleted} />
+              </div>
             </div>
-
-            <SavingsProjectList projects={projects} onProjectDeleted={handleProjectDeleted} />
-          </>}
+          )}
         </div>
 
-        <div className="mt-6 flex-1">
+        <div className="flex-none mt-6">
           <SavingsList monthlySavings={monthlySavings || []} onSavingDeleted={handleSavingDeleted} />
         </div>
-
+      </div>
 
       <Dialog open={showProModal} onOpenChange={setShowProModal}>
         <DialogContent>

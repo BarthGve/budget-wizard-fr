@@ -6,6 +6,7 @@ import { SavingsProject } from "@/types/savings-project";
 import { SavingsProjectCard } from "./project-card/SavingsProjectCard";
 import { SavingsProjectDetails } from "./project-details/SavingsProjectDetails";
 import { DeleteProjectDialog } from "./project-delete/DeleteProjectDialog";
+import { AnimatePresence } from "framer-motion";
 
 interface SavingsProjectListProps {
   projects: SavingsProject[];
@@ -69,14 +70,17 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
   return (
     <div className="space-y-4">
       <div className="grid gap-4 grid-cols-6">
-        {projects.map((project) => (
-          <SavingsProjectCard
-            key={project.id}
-            project={project}
-            onDelete={setProjectToDelete}
-            onSelect={setSelectedProject}
-          />
-        ))}
+        <AnimatePresence>
+          {projects.map((project, index) => (
+            <SavingsProjectCard
+              key={project.id}
+              project={project}
+              onDelete={setProjectToDelete}
+              onSelect={setSelectedProject}
+              index={index}
+            />
+          ))}
+        </AnimatePresence>
         {projects.length === 0 && (
           <p className="col-span-full text-center text-muted-foreground">
             Aucun projet d'épargne enregistré
