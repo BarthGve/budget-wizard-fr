@@ -63,26 +63,25 @@ const Register = () => {
     setError(null);
     
     try {
-      console.log("Attempting to sign up with:", { email: formData.email, password: "***" });
+      console.log("Tentative d'inscription avec:", { email: formData.email, name: formData.name });
       
-      // Simplified signup request
+      // Note: Utilisation de l'option simple sans options avancées pour diagnostiquer le problème
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
-        options: {
-          data: {
-            name: formData.name,
-          },
-        }
       });
 
-      console.log("Sign up response:", { data, error: signUpError ? signUpError.message : null });
+      console.log("Réponse d'inscription:", { data, error: signUpError ? signUpError.message : null });
 
       if (signUpError) {
-        console.error("Detailed error:", signUpError);
+        console.error("Erreur détaillée:", signUpError);
         
+        // Gestion des erreurs spécifiques
         if (signUpError.message.includes("User already registered")) {
           setError("Un compte existe déjà avec cet email");
+        } else if (signUpError.message.includes("Database error")) {
+          setError("Erreur de connexion à la base de données. Veuillez contacter l'administrateur.");
+          console.error("Erreur supabase détectée:", signUpError);
         } else {
           setError(`Erreur d'inscription: ${signUpError.message}`);
         }
@@ -90,6 +89,19 @@ const Register = () => {
       }
       
       if (data && data.user) {
+        // Création manuelle du profil utilisateur en deux étapes pour contourner les limitations
+        console.log("Utilisateur créé avec succès, mise à jour des métadonnées...");
+        
+        // Mettre à jour les métadonnées après l'inscription
+        const { error: updateError } = await supabase.auth.updateUser({
+          data: { name: formData.name }
+        });
+        
+        if (updateError) {
+          console.error("Erreur lors de la mise à jour des métadonnées:", updateError);
+          // Continuer malgré l'erreur de métadonnées
+        }
+        
         localStorage.setItem("verificationEmail", formData.email);
         toast.success("Inscription réussie! Veuillez vérifier votre email.");
         navigate("/email-verification");
@@ -97,7 +109,7 @@ const Register = () => {
         setError("Réponse inattendue du serveur. Veuillez réessayer.");
       }
     } catch (error: any) {
-      console.error("Unexpected error during signup:", error);
+      console.error("Erreur technique inattendue:", error);
       setError("Une erreur technique est survenue. Veuillez réessayer ultérieurement.");
     } finally {
       setIsLoading(false);
