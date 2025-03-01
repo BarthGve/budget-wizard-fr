@@ -55,8 +55,8 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
       
       navigate("/email-verification");
     } catch (error: any) {
-      console.error("Erreur technique inattendue:", error);
-      setError(error.message || "Une erreur technique est survenue. Veuillez réessayer ultérieurement.");
+      console.error("Erreur lors de l'inscription:", error);
+      setError(error.message || "Une erreur est survenue lors de l'inscription. Veuillez réessayer.");
     } finally {
       setIsLoading(false);
     }

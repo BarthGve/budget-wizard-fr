@@ -23,44 +23,47 @@ export interface LoginCredentials {
 export const registerUser = async (credentials: RegisterCredentials) => {
   console.log("Tentative d'inscription avec:", { email: credentials.email, name: credentials.name });
   
-  // Simplifier le processus d'inscription pour éviter la récursion des triggers
-  const { data, error: signUpError } = await supabase.auth.signUp({
-    email: credentials.email,
-    password: credentials.password,
-    options: {
-      // Inclure le nom d'utilisateur dans les métadonnées
-      data: { 
-        name: credentials.name
+  try {
+    // Approche plus directe pour l'inscription
+    const { data, error } = await supabase.auth.signUp({
+      email: credentials.email,
+      password: credentials.password,
+      options: {
+        data: { name: credentials.name }
+      }
+    });
+
+    console.log("Réponse d'inscription:", { data, error: error ? error.message : null });
+
+    if (error) {
+      // Gestion des erreurs connues
+      if (error.message.includes("User already registered")) {
+        throw new Error("Un compte existe déjà avec cet email");
+      } else {
+        throw error;
       }
     }
-  });
-
-  console.log("Réponse d'inscription:", { data, error: signUpError ? signUpError.message : null });
-
-  if (signUpError) {
-    console.error("Erreur détaillée:", signUpError);
     
-    // Gérer les erreurs spécifiques
-    if (signUpError.message.includes("User already registered")) {
-      throw new Error("Un compte existe déjà avec cet email");
-    } else if (signUpError.message.includes("Database error")) {
-      console.error("Erreur supabase détectée:", signUpError);
-      throw new Error("Erreur de connexion à la base de données. Veuillez contacter l'administrateur.");
-    } else {
-      throw new Error(`Erreur d'inscription: ${signUpError.message}`);
+    if (!data || !data.user) {
+      throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
     }
+    
+    // Stocker l'email pour permettre la vérification
+    localStorage.setItem("verificationEmail", credentials.email);
+    
+    toast.success("Inscription réussie! Veuillez vérifier votre email.");
+    
+    return data;
+  } catch (error: any) {
+    console.error("Erreur lors de l'inscription:", error);
+    
+    // Message d'erreur générique pour les problèmes de base de données
+    if (error.message.includes("Database error")) {
+      throw new Error("Problème technique lors de l'inscription. Veuillez réessayer ultérieurement.");
+    }
+    
+    throw error;
   }
-  
-  if (!data || !data.user) {
-    throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
-  }
-  
-  // Stocker l'email pour permettre la vérification
-  localStorage.setItem("verificationEmail", credentials.email);
-  
-  toast.success("Inscription réussie! Veuillez vérifier votre email.");
-  
-  return data;
 };
 
 /**
