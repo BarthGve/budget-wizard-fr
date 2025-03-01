@@ -71,37 +71,31 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
-          is_encrypted: boolean | null
           is_owner: boolean
           name: string
           percentage_contribution: number
           profile_id: string
           total_contribution: number
-          total_contribution_encrypted: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           id?: string
-          is_encrypted?: boolean | null
           is_owner?: boolean
           name: string
           percentage_contribution?: number
           profile_id: string
           total_contribution?: number
-          total_contribution_encrypted?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
-          is_encrypted?: boolean | null
           is_owner?: boolean
           name?: string
           percentage_contribution?: number
           profile_id?: string
           total_contribution?: number
-          total_contribution_encrypted?: string | null
         }
         Relationships: [
           {
@@ -419,7 +413,6 @@ export type Database = {
         Row: {
           avatar_url: string | null
           color_palette: string | null
-          encryption_enabled: boolean | null
           full_name: string | null
           id: string
           profile_type: Database["public"]["Enums"]["user_profile_type"]
@@ -429,7 +422,6 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           color_palette?: string | null
-          encryption_enabled?: boolean | null
           full_name?: string | null
           id: string
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
@@ -439,7 +431,6 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           color_palette?: string | null
-          encryption_enabled?: boolean | null
           full_name?: string | null
           id?: string
           profile_type?: Database["public"]["Enums"]["user_profile_type"]

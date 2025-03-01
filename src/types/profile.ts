@@ -10,5 +10,4 @@ export interface Profile {
   updated_at: string | null;
   email: string | null;
   profile_type: ProfileType;
-  encryption_enabled?: boolean;
 }
