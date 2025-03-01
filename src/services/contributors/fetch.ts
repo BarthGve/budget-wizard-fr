@@ -23,20 +23,33 @@ export const fetchContributorsService = async (): Promise<Contributor[]> => {
   const encryptionEnabled = await isEncryptionEnabled();
   
   if (!encryptionEnabled) {
+    console.log("Encryption disabled, using original values");
     return data || [];
   }
   
   // Si le chiffrement est activé, déchiffrer les données
   const userKey = await getUserEncryptionKey(user.id);
   
+  console.log("Fetching contributors with encryption enabled");
+  
   return (data || []).map(contributor => {
-    // Déchiffrer seulement les données qui sont marquées comme chiffrées
-    if (contributor.is_encrypted && contributor.total_contribution_encrypted) {
-      return {
-        ...contributor,
-        total_contribution: decryptValue(contributor.total_contribution_encrypted, userKey, true) as number
-      };
+    try {
+      // Déchiffrer seulement les données qui sont marquées comme chiffrées
+      // et qui ont une valeur chiffrée
+      if (contributor.is_encrypted && contributor.total_contribution_encrypted) {
+        console.log(`Decrypting data for contributor ${contributor.id}`);
+        return {
+          ...contributor,
+          total_contribution: decryptValue(contributor.total_contribution_encrypted, userKey, true) as number
+        };
+      }
+      
+      // Si les données ne sont pas chiffrées, utiliser les valeurs originales
+      console.log(`Using original value for contributor ${contributor.id} (not encrypted)`);
+      return contributor;
+    } catch (error) {
+      console.error(`Error decrypting data for contributor ${contributor.id}:`, error);
+      return contributor;
     }
-    return contributor;
   });
 };

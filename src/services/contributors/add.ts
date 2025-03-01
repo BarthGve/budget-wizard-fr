@@ -41,12 +41,27 @@ export const addContributorService = async (
   
   // Si le chiffrement est activé, chiffrer les données sensibles
   if (encryptionEnabled) {
-    const userKey = await getUserEncryptionKey(userId);
-    contributorData.total_contribution_encrypted = encryptValue(contribution, userKey);
-    contributorData.is_encrypted = true;
+    try {
+      const userKey = await getUserEncryptionKey(userId);
+      const encryptedValue = encryptValue(contribution, userKey);
+      
+      console.log("Encryption enabled for add:", {
+        originalValue: contribution,
+        encryptedValue: encryptedValue
+      });
+      
+      contributorData.total_contribution_encrypted = encryptedValue;
+      contributorData.is_encrypted = true;
+    } catch (error) {
+      console.error("Erreur lors du chiffrement:", error);
+      throw new Error("Impossible de chiffrer les données");
+    }
   }
 
-  console.log("Ajout d'un nouveau contributeur avec encryption:", encryptionEnabled, "Data:", contributorData);
+  console.log("Ajout d'un nouveau contributeur:", {
+    encryptionEnabled: encryptionEnabled,
+    contributorData: contributorData
+  });
 
   const { data: insertedContributor, error: insertError } = await supabase
     .from("contributors")

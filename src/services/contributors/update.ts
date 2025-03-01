@@ -39,17 +39,33 @@ export const updateContributorService = async (contributor: Contributor) => {
         email: contributor.email ? contributor.email.trim() : null,
       };
   
-  // On doit toujours inclure total_contribution pour que les triggers fonctionnent
+  // Le champ total_contribution est toujours nécessaire pour les triggers
   updateData.total_contribution = contributor.total_contribution;
   
   // Si le chiffrement est activé, chiffrer les données sensibles
   if (encryptionEnabled) {
-    const userKey = await getUserEncryptionKey(user.id);
-    updateData.total_contribution_encrypted = encryptValue(contributor.total_contribution, userKey);
-    updateData.is_encrypted = true;
+    try {
+      const userKey = await getUserEncryptionKey(user.id);
+      const encryptedValue = encryptValue(contributor.total_contribution, userKey);
+      
+      console.log("Encryption enabled for update:", {
+        originalValue: contributor.total_contribution,
+        encryptedValue: encryptedValue
+      });
+      
+      updateData.total_contribution_encrypted = encryptedValue;
+      updateData.is_encrypted = true;
+    } catch (error) {
+      console.error("Erreur lors du chiffrement:", error);
+      throw new Error("Impossible de chiffrer les données");
+    }
   }
 
-  console.log("Mise à jour d'un contributeur avec encryption:", encryptionEnabled, "Data:", updateData);
+  console.log("Mise à jour d'un contributeur:", {
+    id: contributor.id,
+    encryptionEnabled: encryptionEnabled,
+    updateData: updateData
+  });
 
   const { error: updateError } = await supabase
     .from("contributors")
@@ -57,7 +73,10 @@ export const updateContributorService = async (contributor: Contributor) => {
     .eq("id", contributor.id)
     .eq("profile_id", user.id);
 
-  if (updateError) throw updateError;
+  if (updateError) {
+    console.error("Erreur lors de la mise à jour:", updateError);
+    throw updateError;
+  }
 
   return await fetchContributorsService();
 };
