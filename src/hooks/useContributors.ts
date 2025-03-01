@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Contributor, NewContributor } from "@/types/contributor";
 import { toast } from "sonner";
@@ -19,6 +19,19 @@ export const useContributors = () => {
   const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
 
+  // Create a memoized fetchContributors function to avoid recreating it on each render
+  const fetchContributors = useCallback(async () => {
+    try {
+      const data = await fetchContributorsService();
+      setContributors(data);
+    } catch (error: any) {
+      console.error("Error fetching contributors:", error);
+      toast.error("Erreur lors du chargement des contributeurs");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   // Set up realtime subscription with unique channel ID to prevent duplication
   useEffect(() => {
     const channelId = 'contributors-changes-' + Date.now();
@@ -34,7 +47,7 @@ export const useContributors = () => {
           table: 'contributors'
         },
         (payload) => {
-          console.log('Contributors table changed, fetching updated data');
+          console.log('Contributors table changed, fetching updated data', payload);
           fetchContributors();
           
           // Invalidate all related queries to ensure dashboard components update
@@ -49,19 +62,12 @@ export const useContributors = () => {
       console.log(`Cleaning up channel: ${channelId}`);
       supabase.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, [queryClient, fetchContributors]);
 
-  const fetchContributors = async () => {
-    try {
-      const data = await fetchContributorsService();
-      setContributors(data);
-    } catch (error: any) {
-      console.error("Error fetching contributors:", error);
-      toast.error("Erreur lors du chargement des contributeurs");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Initial data fetch
+  useEffect(() => {
+    fetchContributors();
+  }, [fetchContributors]);
 
   const addContributor = async (newContributor: NewContributor) => {
     if (!newContributor.name || isNaN(parseFloat(newContributor.total_contribution))) {
@@ -164,10 +170,6 @@ export const useContributors = () => {
       fetchContributors();
     }
   };
-
-  useEffect(() => {
-    fetchContributors();
-  }, []);
 
   return {
     contributors,

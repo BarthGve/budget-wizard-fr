@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -11,12 +11,19 @@ import { useNavigate } from "react-router-dom";
 export const AuthListener = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("Auth state changed:", event, session ? "User logged in" : "User logged out");
+
+        // Skip initial session check to avoid double navigation
+        if (isInitialMount.current && event === "INITIAL_SESSION") {
+          isInitialMount.current = false;
+          return;
+        }
 
         if (event === "SIGNED_IN") {
           // Invalider le cache pour forcer un rechargement des données

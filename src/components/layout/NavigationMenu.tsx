@@ -1,3 +1,4 @@
+
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -57,23 +58,22 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
     <nav className="flex-1 p-4">
       <ul className="space-y-2">
         {menuItems.map((item) => {
+          // Use a proper matching logic for active state
           const isActive = item.matchPath
             ? new RegExp(item.matchPath).test(location.pathname)
             : location.pathname === item.path;
-
-          console.log(`Checking path: ${location.pathname} against ${item.matchPath || item.path}`);
-          console.log(`Is active: ${isActive}`);
 
           return (
             <li key={item.path}>
               <NavLink
                 to={item.path}
-                className={({ isActive }) => cn(
+                className={cn(
                   "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                   "hover:bg-primary/10",
                   collapsed && "justify-center",
                   isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )}
+                end
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
                 {!collapsed && <span className="truncate">{item.title}</span>}
