@@ -119,6 +119,34 @@ const Dashboard = () => {
     }
   };
 
+  // Tab animation variants
+  const tabVariants = {
+    inactive: { 
+      scale: 0.95,
+      opacity: 0.7,
+      y: 0 
+    },
+    active: { 
+      scale: 1,
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }
+    },
+    hover: { 
+      scale: 1.05,
+      y: -2,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }
+    }
+  };
+
   return (
     <DashboardLayout>
       <motion.div 
@@ -139,15 +167,63 @@ const Dashboard = () => {
                   : `Aperçu du budget annuel ${new Date().getFullYear()}`}
               </p>
             </div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              <Tabs
+                defaultValue="monthly"
+                onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
+                className="w-[250px]"
+              >
+                <TabsList className="grid w-full grid-cols-2">
+                  <motion.div
+                    initial="inactive"
+                    animate={currentView === "monthly" ? "active" : "inactive"}
+                    whileHover="hover"
+                    variants={tabVariants}
+                  >
+                    <TabsTrigger value="monthly">Mensuel</TabsTrigger>
+                  </motion.div>
+                  <motion.div
+                    initial="inactive"
+                    animate={currentView === "yearly" ? "active" : "inactive"}
+                    whileHover="hover"
+                    variants={tabVariants}
+                  >
+                    <TabsTrigger value="yearly">Annuel</TabsTrigger>
+                  </motion.div>
+                </TabsList>
+              </Tabs>
+            </motion.div>
           </div>
         </motion.div>
 
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full"
-          variants={itemVariants}
+          variants={containerVariants}
         >
-          <CreateCategoryBanner />
-          <CreateRetailerBanner />
+          <motion.div 
+            variants={itemVariants}
+            whileHover={{ 
+              scale: 1.03, 
+              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            <CreateCategoryBanner />
+          </motion.div>
+          <motion.div 
+            variants={itemVariants}
+            whileHover={{ 
+              scale: 1.03, 
+              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            <CreateRetailerBanner />
+          </motion.div>
         </motion.div>
         
         <DashboardTabContent
