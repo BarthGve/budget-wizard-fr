@@ -92,7 +92,9 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
         toast.success("Crédit ajouté avec succès");
       }
 
-      queryClient.invalidateQueries({ queryKey: ["credits"] });
+      // Invalidation ciblée avec exact: true
+      queryClient.invalidateQueries({ queryKey: ["credits"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["credits-monthly-stats"], exact: true });
       onSuccess();
       form.reset();
     } catch (error) {

@@ -16,9 +16,6 @@ interface CreditActionsProps {
 
 export const CreditActions = memo(
   ({ credit, onCreditDeleted }: CreditActionsProps) => {
-    // Réduire les logs pour éviter les opérations coûteuses
-    // console.log("Rendering CreditActions for", credit.nom_credit);
-    
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showEditDialog, setShowEditDialog] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -116,16 +113,10 @@ export const CreditActions = memo(
       </>
     );
   },
-  // Fonction d'égalité optimisée et simplifiée
+  // Fonction d'égalité simplifiée 
   (prevProps, nextProps) => {
-    // Les fonctions de rappel sont comparées par référence,
-    // mais nous sommes plus intéressés par les changements dans credit
-    if (prevProps.credit.id !== nextProps.credit.id) {
-      return false;
-    }
-    
-    // Vérifier uniquement les champs critiques qui affectent le rendu
-    return prevProps.credit.nom_credit === nextProps.credit.nom_credit &&
+    // Comparer uniquement l'ID et le statut qui sont les plus susceptibles de changer
+    return prevProps.credit.id === nextProps.credit.id && 
            prevProps.credit.statut === nextProps.credit.statut;
   }
 );

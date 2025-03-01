@@ -19,8 +19,6 @@ export const AuthListener = () => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // console.log("Auth state changed:", event, session ? "User logged in" : "User logged out");
-
         // Skip initial session check to avoid double navigation
         if (isInitialMount.current && event === "INITIAL_SESSION") {
           isInitialMount.current = false;
@@ -33,27 +31,23 @@ export const AuthListener = () => {
         // Important: Avoid unnecessary cache invalidations if auth state didn't actually change
         const currentAuthState = !!session;
         if (previousAuthState.current === currentAuthState && event !== "SIGNED_OUT") {
-          // console.log("Auth state didn't change, skipping cache invalidation");
           return;
         }
         
         previousAuthState.current = currentAuthState;
 
         if (event === "SIGNED_IN") {
-          // console.log("User signed in, invalidating relevant queries");
-          // Invalider le cache de manière sélective
+          // Invalider le cache de manière sélective avec exact: true
           queryClient.invalidateQueries({ queryKey: ["auth"], exact: true });
           queryClient.invalidateQueries({ queryKey: ["current-user"], exact: true });
           queryClient.invalidateQueries({ queryKey: ["profile"], exact: true });
         } else if (event === "SIGNED_OUT") {
           try {
-            // console.log("User signed out, managing cache");
-            
             // Éviter la navigation multiple
             if (navigationInProgress.current) return;
             navigationInProgress.current = true;
             
-            // Plutôt que vider tout le cache, marquer comme périmées les entrées pertinentes
+            // Plutôt que vider tout le cache, marquer comme périmées les entrées pertinentes avec exact: true
             const keysToInvalidate = [
               "auth", 
               "current-user", 
@@ -68,7 +62,7 @@ export const AuthListener = () => {
             ];
             
             keysToInvalidate.forEach(key => {
-              queryClient.invalidateQueries({ queryKey: [key] });
+              queryClient.invalidateQueries({ queryKey: [key], exact: true });
             });
             
             // Utiliser navigate avec replace pour éviter d'ajouter à l'historique

@@ -12,21 +12,17 @@ import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
 import { CreditsList } from "@/components/credits/CreditsList";
 import StyledLoader from "@/components/ui/StyledLoader";
 
-// Optimisation avec memo et une fonction d'égalité vide (pas de props à comparer)
+// Optimisation avec memo mais sans fonction d'égalité complexe
 const Credits = memo(() => {
-  // Réduire les logs pour éviter les opérations coûteuses
-  // console.log("Rendering Credits page");
-  
   const queryClient = useQueryClient();
   
-  // Configuration des requêtes avec un long staleTime pour éviter les rechargements inutiles
+  // Configuration des requêtes avec un staleTime plus court et refetchOnMount activé
   const {
     data: credits = [],
     isLoading: isLoadingCredits
   } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
-      // console.log("Fetching credits data");
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -46,18 +42,17 @@ const Credits = memo(() => {
         throw error;
       }
       
-      // console.log("Credits data fetched successfully", data?.length);
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 20, // 20 minutes
-    gcTime: 1000 * 60 * 40, // 40 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes (comme dans Dépenses)
+    gcTime: 1000 * 60 * 10, // 10 minutes
     refetchOnWindowFocus: false, 
     refetchInterval: false,
-    refetchOnMount: false, // Ne pas refetch au montage 
+    refetchOnMount: true, // Activé pour assurer le rechargement au montage
     refetchOnReconnect: false,
   });
   
-  // Configuration des stats mensuelles avec un long staleTime
+  // Configuration des stats mensuelles avec un staleTime plus court
   const {
     data: monthlyStats = {
       credits_rembourses_count: 0,
@@ -67,7 +62,6 @@ const Credits = memo(() => {
   } = useQuery({
     queryKey: ["credits-monthly-stats"],
     queryFn: async () => {
-      // console.log("Fetching monthly stats");
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) throw new Error("Not authenticated");
@@ -83,23 +77,21 @@ const Credits = memo(() => {
         throw error;
       }
       
-      // console.log("Monthly stats fetched successfully");
       return data?.[0] || {
         credits_rembourses_count: 0,
         total_mensualites_remboursees: 0
       };
     },
-    staleTime: 1000 * 60 * 20, // 20 minutes 
-    gcTime: 1000 * 60 * 40, // 40 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
     refetchOnWindowFocus: false,
     refetchInterval: false,
-    refetchOnMount: false, // Ne pas refetch au montage
+    refetchOnMount: true, // Activé également
     refetchOnReconnect: false,
   });
 
   // Calculer les valeurs dérivées avec useMemo pour éviter des recalculs
   const { activeCredits, totalActiveMensualites } = useMemo(() => {
-    // console.log("Calculating derived values from credits");
     if (!credits || credits.length === 0) {
       return {
         activeCredits: [],
@@ -118,12 +110,13 @@ const Credits = memo(() => {
 
   // Stabiliser cette fonction de rappel avec useCallback
   const handleCreditDeleted = useCallback(() => {
-    // console.log("Credit deleted, invalidating queries");
     queryClient.invalidateQueries({
-      queryKey: ["credits"]
+      queryKey: ["credits"],
+      exact: true // Invalidation ciblée comme dans Dépenses
     });
     queryClient.invalidateQueries({
-      queryKey: ["credits-monthly-stats"]
+      queryKey: ["credits-monthly-stats"],
+      exact: true
     });
   }, [queryClient]);
 
