@@ -9,7 +9,7 @@ import { Shield, ShieldAlert, LockKeyhole } from "lucide-react";
 import { toast } from "sonner";
 
 export function EncryptionSettings() {
-  const { isEncryptionEnabled, isLoading, activateEncryption } = useEncryption();
+  const { isEncryptionEnabled, isLoading, activateEncryption, migrateExistingData } = useEncryption();
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleToggleEncryption = async () => {
