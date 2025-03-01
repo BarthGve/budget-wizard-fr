@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
@@ -86,7 +87,7 @@ const Savings = () => {
   }
 
   return <DashboardLayout>
-      <div className="flex flex-col h-[calc(100vh-4rem)]">
+      <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden">
         <div className="flex-none space-y-6">
           <div className="flex items-center justify-between">
             <div>
