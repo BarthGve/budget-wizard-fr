@@ -71,15 +71,24 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
   // Configuration des variants pour les animations des cartes
   const containerVariants = {
     visible: {
+      height: "auto",
+      opacity: 1,
       transition: {
         staggerChildren: 0.08,
         delayChildren: 0.1,
+        height: { duration: 0.4, ease: "easeInOut" },
+        opacity: { duration: 0.3 }
       }
     },
     hidden: {
+      height: 0,
+      opacity: 0,
       transition: {
         staggerChildren: 0.05,
         staggerDirection: -1,
+        height: { duration: 0.4, ease: "easeInOut" },
+        opacity: { duration: 0.3 },
+        when: "afterChildren"
       }
     }
   };
@@ -93,7 +102,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
       transition={{ duration: 0.4 }}
     >
       <motion.div 
-        className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+        className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 overflow-hidden"
         variants={containerVariants}
         initial="hidden"
         animate={showProjects ? "visible" : "hidden"}

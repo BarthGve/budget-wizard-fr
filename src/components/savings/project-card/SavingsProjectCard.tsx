@@ -55,6 +55,7 @@ export const SavingsProjectCard = ({
       rotateY: 0,
       y: 0,
       scale: 1,
+      height: "auto",
       transition: {
         type: "spring",
         stiffness: 100,
@@ -68,6 +69,8 @@ export const SavingsProjectCard = ({
       rotateY: -90,
       y: 20,
       scale: 0.8,
+      height: 0,
+      margin: 0,
       transition: {
         type: "spring",
         stiffness: 100,
