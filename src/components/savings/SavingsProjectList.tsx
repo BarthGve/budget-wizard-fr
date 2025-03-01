@@ -11,9 +11,10 @@ import { AnimatePresence, motion } from "framer-motion";
 interface SavingsProjectListProps {
   projects: SavingsProject[];
   onProjectDeleted: () => void;
+  showProjects: boolean;
 }
 
-export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjectListProps) => {
+export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }: SavingsProjectListProps) => {
   const [projectToDelete, setProjectToDelete] = useState<SavingsProject | null>(null);
   const [selectedProject, setSelectedProject] = useState<SavingsProject | null>(null);
   const { toast } = useToast();
@@ -67,6 +68,22 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
     }
   };
 
+  // Configuration des variants pour les animations des cartes
+  const containerVariants = {
+    visible: {
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.1,
+      }
+    },
+    hidden: {
+      transition: {
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+      }
+    }
+  };
+
   return (
     <motion.div 
       className="space-y-4"
@@ -75,19 +92,25 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+      <motion.div 
+        className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate={showProjects ? "visible" : "hidden"}
+      >
         <AnimatePresence mode="wait">
-          {projects.map((project, index) => (
+          {showProjects && projects.map((project, index) => (
             <SavingsProjectCard
               key={project.id}
               project={project}
               onDelete={setProjectToDelete}
               onSelect={setSelectedProject}
               index={index}
+              isVisible={showProjects}
             />
           ))}
         </AnimatePresence>
-        {projects.length === 0 && (
+        {showProjects && projects.length === 0 && (
           <motion.p 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -97,7 +120,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
             Aucun projet d'épargne enregistré
           </motion.p>
         )}
-      </div>
+      </motion.div>
 
       <DeleteProjectDialog
         project={projectToDelete}

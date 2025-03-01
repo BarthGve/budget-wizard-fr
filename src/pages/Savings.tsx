@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
@@ -148,16 +147,7 @@ const Savings = () => {
                 </Button>
               </div>
               
-              <div 
-                className={cn(
-                  "transition-all transform-gpu duration-700 origin-top", 
-                  showProjects 
-                    ? "opacity-100 scale-y-100 rotate-x-0" 
-                    : "opacity-0 scale-y-0 rotate-x-90 h-0 overflow-hidden"
-                )}
-              >
-                <SavingsProjectList projects={projects} onProjectDeleted={handleProjectDeleted} />
-              </div>
+              <SavingsProjectList projects={projects} onProjectDeleted={handleProjectDeleted} showProjects={showProjects} />
             </div>
           )}
         </div>

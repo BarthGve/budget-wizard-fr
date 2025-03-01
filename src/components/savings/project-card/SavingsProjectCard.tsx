@@ -1,4 +1,3 @@
-
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +13,16 @@ interface SavingsProjectCardProps {
   onDelete: (project: SavingsProject) => void;
   onSelect: (project: SavingsProject) => void;
   index?: number;
+  isVisible?: boolean;
 }
 
-export const SavingsProjectCard = ({ project, onDelete, onSelect, index = 0 }: SavingsProjectCardProps) => {
+export const SavingsProjectCard = ({ 
+  project, 
+  onDelete, 
+  onSelect, 
+  index = 0, 
+  isVisible = true 
+}: SavingsProjectCardProps) => {
   const calculateSavedAmount = (project: SavingsProject) => {
     if (!project.montant_mensuel || !project.created_at) return 0;
     
@@ -42,24 +48,44 @@ export const SavingsProjectCard = ({ project, onDelete, onSelect, index = 0 }: S
     return "En attente";
   };
 
+  const cardVariants = {
+    visible: {
+      opacity: 1,
+      rotateY: 0,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        duration: 0.6,
+        delay: index * 0.05
+      }
+    },
+    hidden: {
+      opacity: 0,
+      rotateY: 90,
+      y: -30,
+      scale: 0.8,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        duration: 0.5
+      }
+    }
+  };
+
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, rotateY: -90, y: 20 }}
-      animate={{ opacity: 1, rotateY: 0, y: 0 }}
-      exit={{ opacity: 0, rotateY: 90, y: -20 }}
-      transition={{ 
-        duration: 0.6, 
-        delay: index * 0.05,
-        type: "spring",
-        stiffness: 100
-      }}
+      className="perspective-1000"
+      variants={cardVariants}
       whileHover={{ 
         scale: 1.03, 
         rotateY: 5,
         boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
       }}
-      className="perspective-1000"
+      whileTap={{ scale: 0.98 }}
     >
       <Card className="flex flex-col backface-hidden transform-gpu shadow-md hover:shadow-lg transition-shadow duration-300">
         <div 
