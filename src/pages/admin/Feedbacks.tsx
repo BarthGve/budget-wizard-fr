@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
@@ -27,7 +26,7 @@ export const AdminFeedbacks = () => {
   const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
   const [localFeedbacks, setLocalFeedbacks] = useState<Feedback[]>([]);
 
-  const { data: feedbacks, isLoading } = useQuery({
+  const { data: feedbacks, isLoading, refetch } = useQuery({
     queryKey: ["feedbacks", page, statusFilter, sortColumn, sortDirection],
     queryFn: async () => {
       let query = supabase
@@ -96,6 +95,32 @@ export const AdminFeedbacks = () => {
     }
   };
 
+  const handleDeleteFeedback = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("feedbacks")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setLocalFeedbacks(prevFeedbacks => 
+        prevFeedbacks.filter(feedback => feedback.id !== id)
+      );
+      
+      toast.success("Feedback supprimé avec succès");
+      
+      if (localFeedbacks.length === 1 && page > 1) {
+        setPage(page - 1);
+      } else {
+        refetch();
+      }
+    } catch (error) {
+      console.error("Error deleting feedback:", error);
+      toast.error("Erreur lors de la suppression du feedback");
+    }
+  };
+
   const handleDragEnd = async (result: any) => {
     if (!result.destination) return;
 
@@ -140,6 +165,7 @@ export const AdminFeedbacks = () => {
                 feedbacks={filteredFeedbacks}
                 onViewDetails={setSelectedFeedback}
                 onStatusUpdate={handleStatusUpdate}
+                onDelete={handleDeleteFeedback}
               />
             ) : (
               <FeedbacksKanban
