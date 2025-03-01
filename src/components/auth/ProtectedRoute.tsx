@@ -69,12 +69,14 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
     },
     staleTime: 1000 * 60, // 1 minute
     enabled: isAuthenticated, // Seulement si l'utilisateur est déjà authentifié
-    onSuccess: (data) => {
-      if (data.isAuthenticated !== isAuthenticated) {
-        setIsAuthenticated(data.isAuthenticated);
-      }
-      if (data.isAdmin !== userIsAdmin) {
-        setUserIsAdmin(data.isAdmin);
+    meta: {
+      onSuccess: (data) => {
+        if (data.isAuthenticated !== isAuthenticated) {
+          setIsAuthenticated(data.isAuthenticated);
+        }
+        if (data.isAdmin !== userIsAdmin) {
+          setUserIsAdmin(data.isAdmin);
+        }
       }
     }
   });
