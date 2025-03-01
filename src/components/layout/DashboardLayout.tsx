@@ -79,7 +79,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 2 // Cache de 2 minutes
+    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour réduire les requêtes inutiles
+    refetchOnWindowFocus: false // Désactiver le refetch automatique lors du focus de la fenêtre
   });
 
   // Gestion optimisée du profil utilisateur
@@ -105,7 +106,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         isAdmin
       };
     },
-    staleTime: 1000 * 60 * 5 // Cache de 5 minutes pour le profil
+    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour le profil
+    refetchOnWindowFocus: false
   });
 
   // Calculs memoizés pour éviter les recalculs inutiles
@@ -123,7 +125,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  // Optimisation du rendu avec un conteneur memoizé
+  // Optimisation du rendu avec un conteneur memoizé pour éviter les re-renders inutiles
   const MemoizedContent = useMemo(() => (
     <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!userProfile?.isAdmin && (

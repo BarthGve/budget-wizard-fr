@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,7 +54,10 @@ const RecurringExpenses = () => {
         throw error;
       }
       return data as RecurringExpense[];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes to prevent unnecessary refetches
+    refetchOnWindowFocus: false, // Disable refetching when window gains focus
+    retry: 1 // Only retry once on failure
   });
 
   const handleDeleteExpense = async (id: string) => {
