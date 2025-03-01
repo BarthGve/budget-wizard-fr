@@ -116,13 +116,49 @@ export const CreditsList = memo(
       </div>
     );
   },
-  // Custom equality function to prevent unnecessary re-renders
+  // Optimisé: Fonction d'égalité améliorée pour mieux détecter les changements
   (prevProps, nextProps) => {
-    // Only re-render if the credits length changes or onCreditDeleted function changes
-    return (
-      prevProps.credits.length === nextProps.credits.length &&
-      prevProps.onCreditDeleted === nextProps.onCreditDeleted
-    );
+    // Si la longueur est différente, les tableaux sont différents
+    if (prevProps.credits.length !== nextProps.credits.length) {
+      return false;
+    }
+    
+    // Vérifier si onCreditDeleted a changé
+    if (prevProps.onCreditDeleted !== nextProps.onCreditDeleted) {
+      return false;
+    }
+    
+    // Vérifier si les IDs et les contenus des crédits ont changé
+    const prevIds = new Set(prevProps.credits.map(c => c.id));
+    const nextIds = new Set(nextProps.credits.map(c => c.id));
+    
+    // Si les ensembles d'IDs diffèrent en taille, il y a eu un changement
+    if (prevIds.size !== nextIds.size) {
+      return false;
+    }
+    
+    // Vérifier si tous les IDs de prevProps sont dans nextProps
+    for (const id of prevIds) {
+      if (!nextIds.has(id)) {
+        return false;
+      }
+    }
+    
+    // Vérification profonde des propriétés importantes pour chaque crédit
+    for (let i = 0; i < prevProps.credits.length; i++) {
+      const prevCredit = prevProps.credits[i];
+      const nextCredit = nextProps.credits.find(c => c.id === prevCredit.id);
+      
+      if (!nextCredit || 
+          prevCredit.statut !== nextCredit.statut ||
+          prevCredit.montant_mensualite !== nextCredit.montant_mensualite ||
+          prevCredit.date_derniere_mensualite !== nextCredit.date_derniere_mensualite) {
+        return false;
+      }
+    }
+    
+    // Pas de changement détecté
+    return true;
   }
 );
 

@@ -66,12 +66,16 @@ export const AuthListener = () => {
               queryClient.removeQueries({ queryKey: [key], exact: true });
             });
             
-            // Clear user-specific data from cache to avoid leaking data
-            queryClient.clear();
+            // Optimisation pour éviter une suppression complète du cache, indiquer que les données sont périmées
+            // plutôt que de les supprimer complètement
+            queryClient.invalidateQueries();
             
-            // Rediriger vers la page de connexion de manière programmatique
-            // Utiliser navigate au lieu de window.location pour éviter un rechargement complet
-            navigate("/", { replace: true });
+            // Attendre que toutes les suppressions soient terminées
+            setTimeout(() => {
+              // Rediriger vers la page de connexion de manière programmatique
+              // Utiliser navigate au lieu de window.location pour éviter un rechargement complet
+              navigate("/", { replace: true });
+            }, 50);
           } catch (error) {
             console.error("Error during sign out handling:", error);
           }

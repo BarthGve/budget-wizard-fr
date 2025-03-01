@@ -118,14 +118,27 @@ export const CreditActions = memo(
       </>
     );
   },
-  // Fonction d'égalité personnalisée pour optimiser les rendus
+  // Optimisé: Fonction d'égalité améliorée avec une vérification plus précise
   (prevProps, nextProps) => {
-    // Comparer uniquement les propriétés pertinentes du crédit
-    return (
-      prevProps.credit.id === nextProps.credit.id &&
-      prevProps.credit.statut === nextProps.credit.statut &&
-      prevProps.onCreditDeleted === nextProps.onCreditDeleted
-    );
+    if (prevProps.onCreditDeleted !== nextProps.onCreditDeleted) {
+      return false;
+    }
+
+    // Vérification plus approfondie des propriétés du crédit qui affectent le rendu
+    if (prevProps.credit.id !== nextProps.credit.id) {
+      return false;
+    }
+    
+    if (prevProps.credit.statut !== nextProps.credit.statut) {
+      return false;
+    }
+    
+    if (prevProps.credit.nom_credit !== nextProps.credit.nom_credit) {
+      return false;
+    }
+    
+    // Les props sont identiques - éviter le re-render
+    return true;
   }
 );
 

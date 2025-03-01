@@ -46,11 +46,11 @@ const Credits = memo(() => {
       console.log("Credits data fetched successfully", data?.length);
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 10, // Cache valide pendant 10 minutes pour réduire les requêtes réseau
-    gcTime: 1000 * 60 * 15, // Garde en cache pendant 15 minutes
+    staleTime: 1000 * 60 * 15, // Augmenté: Cache valide pendant 15 minutes pour réduire les requêtes réseau
+    gcTime: 1000 * 60 * 30, // Augmenté: Garde en cache pendant 30 minutes
     refetchOnWindowFocus: false, 
     refetchInterval: false,
-    refetchOnMount: true,
+    refetchOnMount: false, // Changé: Ne pas refetch automatiquement au montage pour éviter les rechargements
     refetchOnReconnect: false,
   });
   
@@ -86,16 +86,24 @@ const Credits = memo(() => {
         total_mensualites_remboursees: 0
       };
     },
-    staleTime: 1000 * 60 * 10, // Cache valide pendant 10 minutes
-    gcTime: 1000 * 60 * 15, // Garde en cache pendant 15 minutes
+    staleTime: 1000 * 60 * 15, // Augmenté: Cache valide pendant 15 minutes
+    gcTime: 1000 * 60 * 30, // Augmenté: Garde en cache pendant 30 minutes
     refetchOnWindowFocus: false,
     refetchInterval: false,
+    refetchOnMount: false, // Changé: Ne pas refetch automatiquement au montage
     refetchOnReconnect: false,
   });
 
   // Calculer les valeurs dérivées avec useMemo pour éviter des recalculs inutiles
   const { activeCredits, totalActiveMensualites } = useMemo(() => {
     console.log("Calculating derived values from credits");
+    if (!credits || credits.length === 0) {
+      return {
+        activeCredits: [],
+        totalActiveMensualites: 0
+      };
+    }
+    
     return credits.reduce((acc, credit) => ({
       activeCredits: credit.statut === 'actif' ? [...acc.activeCredits, credit] : acc.activeCredits,
       totalActiveMensualites: credit.statut === 'actif' ? acc.totalActiveMensualites + credit.montant_mensualite : acc.totalActiveMensualites
@@ -105,7 +113,7 @@ const Credits = memo(() => {
     });
   }, [credits]);
 
-  // Optimiser le rappel de la fonction avec useCallback
+  // Optimiser le rappel de la fonction avec useCallback et la stabiliser
   const handleCreditDeleted = useCallback(() => {
     console.log("Credit deleted, invalidating queries");
     queryClient.invalidateQueries({
@@ -161,6 +169,11 @@ const Credits = memo(() => {
       </div>
     </DashboardLayout>
   );
+}, (prevProps, nextProps) => {
+  // Optimisé: Ajout d'une fonction d'égalité pour le composant principal
+  // Cette fonction retournera toujours true car ce composant n'a pas de props
+  // mais c'est une bonne pratique d'uniformiser l'approche
+  return true;
 });
 
 // Ajouter un displayName pour faciliter le débogage

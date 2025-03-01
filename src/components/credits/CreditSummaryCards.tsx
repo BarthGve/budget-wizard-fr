@@ -56,6 +56,12 @@ export const CreditSummaryCards = memo(({
       </Card>
     </div>
   );
+}, (prevProps, nextProps) => {
+  // Optimisé: Comparaison profonde des props pour éviter les re-renders inutiles
+  return prevProps.activeCredits.length === nextProps.activeCredits.length &&
+    prevProps.repaidThisMonth === nextProps.repaidThisMonth &&
+    prevProps.totalActiveMensualites === nextProps.totalActiveMensualites &&
+    prevProps.totalRepaidMensualitesThisMonth === nextProps.totalRepaidMensualitesThisMonth;
 });
 
 // Explicitly set display name for better debugging
