@@ -5,6 +5,7 @@ import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Credit } from "../types";
 
 export const formSchema = z.object({
   nom_credit: z.string().min(1, "Le nom est requis"),
@@ -22,15 +23,7 @@ export const formSchema = z.object({
 export type FormValues = z.infer<typeof formSchema>;
 
 interface UseCreditFormProps {
-  credit?: {
-    id: string;
-    nom_credit: string;
-    nom_domaine: string;
-    montant_mensualite: number;
-    date_derniere_mensualite: string;
-    statut: "actif" | "remboursé";
-    logo_url?: string;
-  };
+  credit?: Credit;
   onSuccess: () => void;
 }
 
