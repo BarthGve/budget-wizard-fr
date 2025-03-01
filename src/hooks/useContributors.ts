@@ -13,9 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export const useContributors = () => {
   const [contributors, setContributors] = useState<Contributor[]>([]);
-  const [editingContributor, setEditingContributor] = useState<Contributor | null>(
-    null
-  );
+  const [editingContributor, setEditingContributor] = useState<Contributor | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
 
