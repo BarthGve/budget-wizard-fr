@@ -44,12 +44,14 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
     setError(null);
     
     try {
+      console.log("Tentative d'inscription depuis le formulaire...");
       await registerUser({
         email: formData.email,
         password: formData.password,
         name: formData.name
       });
       
+      console.log("Inscription réussie!");
       toast.success("Inscription réussie! Veuillez vérifier votre email.");
       
       if (onSubmit) {
@@ -58,11 +60,17 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
       
       navigate("/email-verification");
     } catch (error: any) {
-      console.error("Erreur lors de l'inscription:", error);
+      console.error("Erreur capturée dans le formulaire d'inscription:", error);
       
-      // Message d'erreur plus spécifique
-      if (error.message.includes("Database error") || error.message.includes("stack depth")) {
-        setError("Problème technique lors de l'inscription. Nos équipes ont été notifiées. Veuillez réessayer dans quelques instants.");
+      // Message d'erreur plus spécifique et robuste
+      if (
+        error.message.includes("Database error") || 
+        error.message.includes("stack depth") ||
+        error.message.includes("column \"tg_depth\"")
+      ) {
+        setError("Problème technique lors de l'inscription. Veuillez réessayer dans quelques instants ou contacter le support si le problème persiste.");
+      } else if (error.message.includes("User already registered") || error.message.includes("existe déjà")) {
+        setError("Un compte existe déjà avec cet email. Veuillez vous connecter ou utiliser une autre adresse email.");
       } else {
         setError(error.message || "Une erreur est survenue lors de l'inscription. Veuillez réessayer.");
       }
