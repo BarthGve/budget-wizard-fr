@@ -46,9 +46,9 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        {/* Intégration du composant d'écoute d'authentification */}
-        <AuthListener />
         <BrowserRouter>
+          {/* Déplacer AuthListener à l'intérieur du BrowserRouter pour que useNavigate fonctionne */}
+          <AuthListener />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />

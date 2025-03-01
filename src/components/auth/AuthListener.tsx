@@ -21,14 +21,17 @@ export const AuthListener = () => {
         if (event === "SIGNED_IN") {
           // Invalider le cache pour forcer un rechargement des données
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
-          
           // Ne pas naviguer ici pour éviter les rechargements complets
         } else if (event === "SIGNED_OUT") {
-          // Vider le cache React Query
-          queryClient.clear();
-          
-          // Rediriger vers la page de connexion
-          navigate("/login", { replace: true });
+          try {
+            // Vider le cache React Query
+            queryClient.clear();
+            
+            // Rediriger vers la page de connexion
+            navigate("/login", { replace: true });
+          } catch (error) {
+            console.error("Error during sign out handling:", error);
+          }
         }
       }
     );
