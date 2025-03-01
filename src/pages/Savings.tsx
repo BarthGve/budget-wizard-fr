@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
@@ -155,6 +156,7 @@ const Savings = () => {
               <SavingsProjectList projects={projects} onProjectDeleted={handleProjectDeleted} showProjects={showProjects} />
             </div>
           )}
+        </div>
 
         <div className="flex-none mt-6">
           <div className="flex items-center justify-between mb-4">
