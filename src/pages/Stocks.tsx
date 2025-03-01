@@ -8,6 +8,49 @@ import { StocksHeader } from "@/components/stocks/StocksHeader";
 import { MarketDataSection } from "@/components/stocks/MarketDataSection";
 import { InvestmentsSummary } from "@/components/stocks/InvestmentsSummary";
 
+// Process investment data to calculate yearly totals, current year total, etc.
+const processInvestmentData = (investmentHistory: any[] | undefined) => {
+  // Calculate yearly totals for the chart
+  const yearlyData = investmentHistory?.reduce((acc: any[], investment) => {
+    const year = new Date(investment.investment_date).getFullYear();
+    const existingYear = acc.find(item => item.year === year);
+    if (existingYear) {
+      existingYear.amount += Number(investment.amount);
+    } else {
+      acc.push({
+        year,
+        amount: Number(investment.amount)
+      });
+    }
+    return acc;
+  }, []) || [];
+
+  // Calculate current year total
+  const currentYear = new Date().getFullYear();
+  const currentYearTotal = yearlyData.find(data => data.year === currentYear)?.amount || 0;
+  const currentYearInvestments = investmentHistory?.filter(inv => 
+    new Date(inv.investment_date).getFullYear() === currentYear) || [];
+
+  // Calculate total investment
+  const totalInvestment = yearlyData.reduce((sum, data) => sum + data.amount, 0);
+
+  return {
+    yearlyData,
+    currentYearTotal,
+    currentYearInvestments,
+    totalInvestment
+  };
+};
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(price);
+};
+
 const StocksPage = () => {
   // Fetch market data
   const {
@@ -51,38 +94,15 @@ const StocksPage = () => {
     }
   });
 
-  // Calculate yearly totals for the chart
-  const yearlyData = investmentHistory?.reduce((acc: any[], investment) => {
-    const year = new Date(investment.investment_date).getFullYear();
-    const existingYear = acc.find(item => item.year === year);
-    if (existingYear) {
-      existingYear.amount += Number(investment.amount);
-    } else {
-      acc.push({
-        year,
-        amount: Number(investment.amount)
-      });
-    }
-    return acc;
-  }, []) || [];
+  // Process the investment data
+  const { 
+    yearlyData, 
+    currentYearTotal, 
+    currentYearInvestments, 
+    totalInvestment 
+  } = processInvestmentData(investmentHistory);
 
-  // Calculate current year total
-  const currentYear = new Date().getFullYear();
-  const currentYearTotal = yearlyData.find(data => data.year === currentYear)?.amount || 0;
-  const currentYearInvestments = investmentHistory?.filter(inv => new Date(inv.investment_date).getFullYear() === currentYear) || [];
-
-  // Calculate total investment
-  const totalInvestment = yearlyData.reduce((sum, data) => sum + data.amount, 0);
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(price);
-  };
-
-  // Préparer les données des cartes avec un placeholder si les données ne sont pas encore chargées
+  // Prepare market cards data
   const marketCards = isMarketDataLoading
     ? [
         { symbol: '^FCHI', data: null, history: null },
