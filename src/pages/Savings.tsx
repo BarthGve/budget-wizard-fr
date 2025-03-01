@@ -87,8 +87,8 @@ const Savings = () => {
   }
 
   return <DashboardLayout>
-      <div className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
-        <div className="flex-none space-y-6">
+
+        <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
@@ -126,7 +126,7 @@ const Savings = () => {
         <div className="mt-6 flex-1 max-h-[calc(100vh-25rem)] overflow-auto">
           <SavingsList monthlySavings={monthlySavings || []} onSavingDeleted={handleSavingDeleted} />
         </div>
-      </div>
+
 
       <Dialog open={showProModal} onOpenChange={setShowProModal}>
         <DialogContent>
