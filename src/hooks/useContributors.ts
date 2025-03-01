@@ -19,10 +19,13 @@ export const useContributors = () => {
   const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
 
-  // Set up realtime subscription
+  // Set up realtime subscription with unique channel ID to prevent duplication
   useEffect(() => {
+    const channelId = 'contributors-changes-' + Date.now();
+    console.log(`Setting up realtime subscription with channel ID: ${channelId}`);
+    
     const channel = supabase
-      .channel('contributors-changes')
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -30,18 +33,20 @@ export const useContributors = () => {
           schema: 'public',
           table: 'contributors'
         },
-        () => {
+        (payload) => {
           console.log('Contributors table changed, fetching updated data');
           fetchContributors();
           
           // Invalidate all related queries to ensure dashboard components update
           queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-          queryClient.invalidateQueries({ queryKey: ["current-user"] });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Supabase realtime status for contributors: ${status}`);
+      });
 
     return () => {
+      console.log(`Cleaning up channel: ${channelId}`);
       supabase.removeChannel(channel);
     };
   }, [queryClient]);

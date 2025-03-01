@@ -50,17 +50,17 @@ export const recalculatePercentages = async (userId: string) => {
   
   // 3. Mettre à jour les pourcentages individuels
   if (totalContributions > 0) {
-    const updatePromises = contributors.map(contributor => {
+    // Correction: utiliser des mises à jour individuelles pour une précision maximale
+    for (const contributor of contributors) {
       const percentage = (contributor.total_contribution / totalContributions) * 100;
       console.log(`Mise à jour de ${contributor.id}: ${percentage.toFixed(2)}%`);
       
-      return supabase
+      await supabase
         .from("contributors")
         .update({ percentage_contribution: percentage })
         .eq("id", contributor.id);
-    });
+    }
     
-    await Promise.all(updatePromises);
     console.log("Tous les pourcentages ont été recalculés avec succès");
   } else {
     // Si le total est 0, mettre tous les pourcentages à 0
