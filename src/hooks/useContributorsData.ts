@@ -4,12 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Contributor, NewContributor } from "@/types/contributor";
 import { useEffect } from "react";
-import { 
-  fetchContributorsService, 
-  addContributorService, 
-  updateContributorService, 
-  deleteContributorService 
-} from "@/services/contributors";
 
 export const useContributorsData = () => {
   const queryClient = useQueryClient();
@@ -53,13 +47,18 @@ export const useContributorsData = () => {
         throw new Error("Not authenticated");
       }
 
-      try {
-        return await fetchContributorsService();
-      } catch (error) {
+      const { data, error } = await supabase
+        .from("contributors")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
         console.error("Error fetching contributors:", error);
         toast.error("Erreur lors du chargement des contributeurs");
         throw error;
       }
+
+      return data as Contributor[];
     }
   });
 
@@ -78,11 +77,28 @@ export const useContributorsData = () => {
     ]);
 
     try {
-      const updatedContributors = await addContributorService(newContributor);
-      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("contributors")
+        .insert([{ 
+          ...newContributor,
+          total_contribution: contributionValue, // Ensure we use the numeric value
+          profile_id: user.id 
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
       // Mise à jour avec les vraies données du serveur
-      queryClient.setQueryData(["contributors"], updatedContributors);
+      const updatedContributors = Array.isArray(contributors) ? contributors : [];
       
+      queryClient.setQueryData(["contributors"], 
+        updatedContributors.map(item => item.id === optimisticId ? data : item)
+      );
+
       toast.success("Contributeur ajouté avec succès");
     } catch (error) {
       console.error("Error adding contributor:", error);
@@ -107,10 +123,12 @@ export const useContributorsData = () => {
     );
     
     try {
-      const updatedContributors = await updateContributorService(contributor);
-      
-      // Mise à jour avec les vraies données du serveur
-      queryClient.setQueryData(["contributors"], updatedContributors);
+      const { error } = await supabase
+        .from("contributors")
+        .update(contributor)
+        .eq("id", contributor.id);
+
+      if (error) throw error;
       
       toast.success("Contributeur mis à jour avec succès");
     } catch (error) {
@@ -136,10 +154,12 @@ export const useContributorsData = () => {
     );
     
     try {
-      const updatedContributors = await deleteContributorService(id);
-      
-      // Mise à jour avec les vraies données du serveur
-      queryClient.setQueryData(["contributors"], updatedContributors);
+      const { error } = await supabase
+        .from("contributors")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
       
       toast.success("Contributeur supprimé avec succès");
     } catch (error) {
