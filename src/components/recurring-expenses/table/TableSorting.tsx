@@ -1,39 +1,44 @@
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowUpDown } from "lucide-react";
+import { TableHead } from "@/components/ui/table";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { RecurringExpense } from "../types";
+import { SortConfig } from "./tableUtils";
+import { cn } from "@/lib/utils";
 
 interface TableSortingProps {
-  rowsPerPage: number;
-  onRowsPerPageChange: (value: number) => void;
-  sortField: keyof RecurringExpense;
-  onSortFieldChange: (value: keyof RecurringExpense) => void;
+  label: string;
+  sortKey: keyof RecurringExpense;
+  currentSort: SortConfig;
+  onSort: (key: keyof RecurringExpense) => void;
+  className?: string;
 }
 
-export const TableSorting = ({ rowsPerPage, onRowsPerPageChange, sortField, onSortFieldChange }: TableSortingProps) => {
+export const TableSorting = ({ 
+  label, 
+  sortKey, 
+  currentSort, 
+  onSort, 
+  className 
+}: TableSortingProps) => {
+  const isSorted = currentSort.key === sortKey;
+  
   return (
-    <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-      <Select value={String(rowsPerPage)} onValueChange={(value) => onRowsPerPageChange(Number(value))}>
-        <SelectTrigger className="w-full sm:w-[180px]">
-          <SelectValue placeholder="Lignes par page"/>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="10">10 lignes</SelectItem>
-          <SelectItem value="25">25 lignes</SelectItem>
-          <SelectItem value="-1">Toutes les lignes</SelectItem>
-        </SelectContent>
-      </Select>
-      <Select value={sortField} onValueChange={(value: keyof RecurringExpense) => onSortFieldChange(value)}>
-        <SelectTrigger className="w-full sm:w-[180px]">
-          <ArrowUpDown className="mr-2 h-4 w-4" />
-          <SelectValue placeholder="Trier par" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="name">Nom</SelectItem>
-          <SelectItem value="amount">Montant</SelectItem>
-          <SelectItem value="created_at">Date de création</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
+    <TableHead 
+      className={cn("cursor-pointer hover:text-foreground transition-colors", className)}
+      onClick={() => onSort(sortKey)}
+    >
+      <div className="flex items-center justify-between">
+        <span>{label}</span>
+        <span className="ml-2">
+          {isSorted ? (
+            currentSort.direction === 'asc' ? 
+              <ArrowUp className="h-4 w-4" /> : 
+              <ArrowDown className="h-4 w-4" />
+          ) : (
+            <ArrowUpDown className="h-4 w-4 opacity-50" />
+          )}
+        </span>
+      </div>
+    </TableHead>
   );
 };

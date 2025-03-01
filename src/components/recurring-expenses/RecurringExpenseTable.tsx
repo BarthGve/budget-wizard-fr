@@ -1,11 +1,11 @@
 
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { RecurringExpense } from "./types";
+import { RecurringExpense, ALL_CATEGORIES, ALL_PERIODICITIES } from "./types";
 import { TableRows } from "./table/TableRows";
 import { useState } from "react";
 import { TablePagination } from "./table/TablePagination";
 import { TableSorting } from "./table/TableSorting";
-import { SortConfig, filterAndSortExpenses } from "./table/tableUtils";
+import { SortConfig, filterExpenses, sortExpenses, paginateExpenses } from "./table/tableUtils";
 import { TableFilters } from "./TableFilters";
 import { Card } from "@/components/ui/card";
 import CardLoader from "../ui/cardloader";
@@ -26,17 +26,35 @@ export const RecurringExpenseTable = ({
   const [itemsPerPage, setItemsPerPage] = useState(10);
   
   // États pour le filtre et le tri
-  const [filterText, setFilterText] = useState("");
-  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState(ALL_CATEGORIES);
+  const [periodicityFilter, setPeriodicityFilter] = useState(ALL_PERIODICITIES);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'name', direction: 'asc' });
 
-  // Effectuer le filtrage et le tri
-  const filteredAndSortedExpenses = filterAndSortExpenses(expenses, filterText, filterCategory, sortConfig);
+  // Extraire les catégories uniques
+  const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category)));
+
+  // Effectuer le filtrage, le tri et la pagination
+  const filteredExpenses = filterExpenses(
+    expenses, 
+    searchTerm, 
+    categoryFilter, 
+    periodicityFilter,
+    ALL_CATEGORIES, 
+    ALL_PERIODICITIES
+  );
   
-  // Calculer les éléments à afficher sur la page actuelle
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredAndSortedExpenses.slice(indexOfFirstItem, indexOfLastItem);
+  const sortedExpenses = sortExpenses(
+    filteredExpenses,
+    sortConfig.key,
+    sortConfig.direction
+  );
+  
+  const paginatedExpenses = paginateExpenses(
+    sortedExpenses,
+    currentPage,
+    itemsPerPage
+  );
   
   // Callback pour changer de page
   const handlePageChange = (pageNumber: number) => {
@@ -64,18 +82,20 @@ export const RecurringExpenseTable = ({
     );
   }
   
-  if (!filteredAndSortedExpenses) {
+  if (!filteredExpenses) {
     return <CardLoader />;
   }
 
   return (
     <Card className="p-1">
       <TableFilters 
-        onFilterTextChange={setFilterText} 
-        filterText={filterText}
-        onFilterCategoryChange={setFilterCategory}
-        filterCategory={filterCategory}
-        categories={Array.from(new Set(expenses.map(expense => expense.category)))}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        categoryFilter={categoryFilter}
+        onCategoryFilterChange={setCategoryFilter}
+        periodicityFilter={periodicityFilter}
+        onPeriodicityFilterChange={setPeriodicityFilter}
+        uniqueCategories={uniqueCategories}
       />
       
       <div className="rounded-md border">
@@ -112,7 +132,7 @@ export const RecurringExpenseTable = ({
           </TableHeader>
           <TableBody>
             <TableRows 
-              expenses={currentItems} 
+              expenses={paginatedExpenses} 
               onDeleteExpense={onDeleteExpense} 
               isFirstVisit={isFirstVisit}
             />
@@ -123,7 +143,7 @@ export const RecurringExpenseTable = ({
       <TablePagination 
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}
-        totalItems={filteredAndSortedExpenses.length}
+        totalItems={filteredExpenses.length}
         onPageChange={handlePageChange}
         onItemsPerPageChange={setItemsPerPage}
       />
