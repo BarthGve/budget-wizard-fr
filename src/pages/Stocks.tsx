@@ -1,20 +1,14 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { MarketDataCard } from "@/components/stocks/MarketDataCard";
-import { InvestmentDialog } from "@/components/stocks/InvestmentDialog";
-import { InvestmentHistory } from "@/components/stocks/InvestmentHistory";
-import { CurrentYearInvestmentsDialog } from "@/components/stocks/CurrentYearInvestmentsDialog";
-import { YearlyInvestmentsDialog } from "@/components/stocks/YearlyInvestmentsDialog";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { StocksHeader } from "@/components/stocks/StocksHeader";
+import { MarketDataSection } from "@/components/stocks/MarketDataSection";
+import { InvestmentsSummary } from "@/components/stocks/InvestmentsSummary";
 
 const StocksPage = () => {
-  const [currentYearDialogOpen, setCurrentYearDialogOpen] = useState(false);
-  const [yearlyTotalDialogOpen, setYearlyTotalDialogOpen] = useState(false);
-
   // Fetch market data
   const {
     data: marketData,
@@ -109,24 +103,6 @@ const StocksPage = () => {
     }
   };
 
-  const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20,
-      scale: 0.95
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    }
-  };
-
   return (
     <DashboardLayout>
       <motion.div 
@@ -135,138 +111,21 @@ const StocksPage = () => {
         animate="visible"
         variants={containerVariants}
       >
-        <motion.div className="flex justify-between items-center" variants={itemVariants}>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Bourse</h1>
-            <p className="text-muted-foreground">
-              Suivez vos investissements et les marchés en temps réel
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Market Data Cards */}
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          variants={containerVariants}
-        >
-          {marketCards.map(({
-            symbol,
-            data,
-            history
-          }, index) => (
-            <motion.div 
-              key={symbol}
-              variants={itemVariants}
-              whileHover={{ 
-                scale: 1.03, 
-                rotateY: 5,
-                boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
-              }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <MarketDataCard 
-                symbol={symbol} 
-                data={data} 
-                history={history} 
-                isLoading={isMarketDataLoading}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.div className="flex justify-between items-center" variants={itemVariants}>
-          <div>
-            <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Compte titre</h2>
-            <p className="text-muted-foreground">
-              Renseigner les sommes investies dans votre portefeuille
-            </p>
-          </div>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <InvestmentDialog onSuccess={refetchHistory} />
-          </motion.div>
-        </motion.div>    
-   
-        {/* Grid Container */}
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          variants={containerVariants}
-        >
-          {/* Colonne de gauche (1/3) avec les cards */}
-          <motion.div className="space-y-6" variants={containerVariants}>
-            <motion.div 
-              variants={itemVariants}
-              whileHover={{ 
-                scale: 1.03, 
-                rotateY: 5,
-                boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
-              }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Card className="cursor-pointer transition-colors hover:bg-accent/50" onClick={() => setCurrentYearDialogOpen(true)}>
-                <CardHeader>
-                  <CardTitle>Total {currentYear}</CardTitle>
-                  <CardDescription>Montant total investi cette année</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {formatPrice(currentYearTotal)}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-            <motion.div 
-              variants={itemVariants}
-              whileHover={{ 
-                scale: 1.03, 
-                rotateY: 5,
-                boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
-              }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Card className="cursor-pointer transition-colors hover:bg-accent/50" onClick={() => setYearlyTotalDialogOpen(true)}>
-                <CardHeader>
-                  <CardTitle>Total global</CardTitle>
-                  <CardDescription>Montant total de tous les investissements</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {formatPrice(totalInvestment)}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </motion.div>
-          {/* Colonne de droite (2/3) avec le graphique */}
-          <motion.div 
-            className="col-span-2"
-            variants={itemVariants}
-            whileHover={{ 
-              scale: 1.01,
-              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
-            }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>Historique des investissements</CardTitle>
-                <CardDescription>Évolution de vos investissements sur les 5 dernières années</CardDescription>
-              </CardHeader>
-              <CardContent className="h-full">
-                <div className="h-full">
-                  <InvestmentHistory data={yearlyData} />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
-
-        {/* Modals */}
-        <CurrentYearInvestmentsDialog open={currentYearDialogOpen} onOpenChange={setCurrentYearDialogOpen} investments={currentYearInvestments} onSuccess={refetchHistory} />
-
-        <YearlyInvestmentsDialog open={yearlyTotalDialogOpen} onOpenChange={setYearlyTotalDialogOpen} yearlyData={yearlyData} />
+        <StocksHeader onSuccess={refetchHistory} />
+        
+        <MarketDataSection 
+          marketCards={marketCards} 
+          isLoading={isMarketDataLoading} 
+        />
+        
+        <InvestmentsSummary 
+          yearlyData={yearlyData}
+          currentYearTotal={currentYearTotal}
+          totalInvestment={totalInvestment}
+          currentYearInvestments={currentYearInvestments}
+          onSuccess={refetchHistory}
+          formatPrice={formatPrice}
+        />
       </motion.div>
     </DashboardLayout>
   );
