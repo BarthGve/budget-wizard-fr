@@ -48,45 +48,21 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
     try {
       console.log("Tentative d'inscription depuis le formulaire...");
       
-      // Tentative d'inscription avec plusieurs essais si nécessaire
-      let retryCount = 0;
-      const maxRetries = 2;
-      let lastError = null;
+      // Approche plus simple sans boucle de tentatives
+      await registerUser({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name
+      });
       
-      while (retryCount <= maxRetries) {
-        try {
-          await registerUser({
-            email: formData.email,
-            password: formData.password,
-            name: formData.name
-          });
-          
-          console.log("Inscription réussie après " + retryCount + " essais!");
-          toast.success("Inscription réussie! Veuillez vérifier votre email.");
-          
-          if (onSubmit) {
-            onSubmit();
-          }
-          
-          navigate("/email-verification");
-          return; // Sortir de la fonction si l'inscription a réussi
-        } catch (err: any) {
-          lastError = err;
-          
-          // Ne pas réessayer si c'est une erreur d'email déjà existant ou autre erreur non technique
-          if (!err.message.includes("Problème technique")) {
-            break;
-          }
-          
-          console.log(`Tentative ${retryCount + 1} échouée, nouvelle tentative...`);
-          retryCount++;
-          // Attendre un peu avant de réessayer
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
+      console.log("Inscription réussie!");
+      toast.success("Inscription réussie! Veuillez vérifier votre email.");
+      
+      if (onSubmit) {
+        onSubmit();
       }
       
-      // Si on arrive ici, toutes les tentatives ont échoué
-      throw lastError;
+      navigate("/email-verification");
     } catch (error: any) {
       console.error("Erreur finale capturée dans le formulaire d'inscription:", error);
       

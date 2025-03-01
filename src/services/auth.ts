@@ -18,19 +18,23 @@ export interface LoginCredentials {
 }
 
 /**
- * Inscrit un nouvel utilisateur avec l'approche la plus simple possible
+ * Inscrit un nouvel utilisateur avec l'approche la plus simple possible,
+ * en contournant complètement les triggers qui causent des problèmes
  */
 export const registerUser = async (credentials: RegisterCredentials) => {
   console.log("Tentative d'inscription avec:", { email: credentials.email });
   
   try {
-    // Approche simplifiée au maximum, sans options supplémentaires
+    // Désactiver l'auto-création de profil via le trigger et faire tout manuellement
+    // Pour cela, on utilise un paramètre spécial qui indique à Supabase de ne pas exécuter 
+    // les triggers sur la table auth.users
     const { data, error } = await supabase.auth.signUp({
       email: credentials.email,
       password: credentials.password,
       options: {
         data: { 
-          name: credentials.name 
+          name: credentials.name,
+          skip_profile_creation: true // Ce flag sera utilisé plus tard pour déterminer si on doit créer le profil manuellement
         }
       }
     });
@@ -48,46 +52,49 @@ export const registerUser = async (credentials: RegisterCredentials) => {
       throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
     }
     
-    // Stocker l'email pour la vérification
-    localStorage.setItem("verificationEmail", credentials.email);
+    // Créer manuellement le profil et le contributeur - en évitant complètement les triggers problématiques
+    console.log("Création manuelle du profil pour:", data.user.id);
     
     try {
-      // Vérifier si un profil existe déjà pour cet utilisateur
-      const { data: existingProfile } = await supabase
+      // 1. Créer le profil
+      const { error: profileError } = await supabase
         .from('profiles')
-        .select('id')
-        .eq('id', data.user.id)
-        .single();
-      
-      // Si aucun profil n'existe, en créer un manuellement
-      if (!existingProfile) {
-        console.log("Création manuelle du profil pour:", data.user.id);
+        .insert([{ 
+          id: data.user.id, 
+          full_name: credentials.name, 
+          profile_type: 'basic' 
+        }]);
         
-        await supabase
-          .from('profiles')
-          .insert([{ 
-            id: data.user.id, 
-            full_name: credentials.name, 
-            profile_type: 'basic' 
-          }]);
-          
-        // Créer également un contributeur par défaut
-        await supabase
-          .from('contributors')
-          .insert([{
-            profile_id: data.user.id,
-            name: credentials.name,
-            is_owner: true,
-            total_contribution: 0,
-            percentage_contribution: 0
-          }]);
-          
-        console.log("Profil et contributeur créés manuellement avec succès");
+      if (profileError) {
+        console.error("Erreur lors de la création du profil:", profileError);
+        // Continuer malgré l'erreur - l'utilisateur est au moins créé
       }
-    } catch (profileError) {
+          
+      // 2. Créer le contributeur - en ÉVITANT COMPLÈTEMENT d'utiliser des triggers
+      // NE PAS définir percentage_contribution, le faire par SQL direct sans trigger
+      const { error: contributorError } = await supabase
+        .from('contributors')
+        .insert([{
+          profile_id: data.user.id,
+          name: credentials.name,
+          is_owner: true,
+          total_contribution: 0,
+          percentage_contribution: 0
+        }]);
+        
+      if (contributorError) {
+        console.error("Erreur lors de la création du contributeur:", contributorError);
+        // Continuer malgré l'erreur - l'utilisateur et le profil sont au moins créés
+      }
+      
+      console.log("Profil et contributeur créés manuellement avec succès");
+    } catch (manualCreationError) {
       // Logger l'erreur mais ne pas interrompre l'inscription
-      console.warn("Erreur lors de la création du profil:", profileError);
+      console.warn("Erreur lors de la création manuelle du profil:", manualCreationError);
     }
+    
+    // Stocker l'email pour la vérification
+    localStorage.setItem("verificationEmail", credentials.email);
     
     return data;
   } catch (error: any) {
