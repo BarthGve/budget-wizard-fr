@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { MoreVertical, HandCoins, SquarePen, Trash2 } from "lucide-react";
@@ -128,14 +127,6 @@ export const SavingsList = ({
   };
 
   return <div className="grid gap-2">
-      <div className="flex items-center justify-between">
-        <CardTitle className="py-4 font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Versements mensuels</CardTitle>
-        <NewSavingDialog onSavingAdded={onSavingDeleted} trigger={<Button className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
-              <HandCoins className="mr-2 h-4 w-4" />
-              Ajouter
-            </Button>} />
-      </div>
-      
       <motion.div 
         className="overflow-hidden"
         variants={containerVariants}
