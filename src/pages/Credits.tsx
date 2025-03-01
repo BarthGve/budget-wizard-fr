@@ -1,19 +1,20 @@
 
+import { memo, useCallback, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreditDialog } from "@/components/credits/CreditDialog";
 import { CreditSummaryCards } from "@/components/credits/CreditSummaryCards";
 import { CreditsList } from "@/components/credits/CreditsList";
 import StyledLoader from "@/components/ui/StyledLoader";
-import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-const Credits = () => {
+const Credits = memo(function Credits() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -52,7 +53,11 @@ const Credits = () => {
       }
       
       return data;
-    }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnReconnect: false
   });
   
   const {
@@ -83,21 +88,33 @@ const Credits = () => {
         credits_rembourses_count: 0,
         total_mensualites_remboursees: 0
       };
-    }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnReconnect: false
   });
 
-  // Calculer les valeurs dérivées
+  // Calculer les valeurs dérivées de manière optimisée
   const activeCredits = credits?.filter(credit => credit.statut === 'actif') || [];
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
 
-  const handleCreditDeleted = () => {
-    // L'invalidation automatique de la requête sera gérée par React Query
-  };
+  const handleCreditDeleted = useCallback(() => {
+    // Utilisation de invalidateQueries avec options précises
+    queryClient.invalidateQueries({
+      queryKey: ["credits"],
+      exact: true
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["credits-monthly-stats"],
+      exact: true
+    });
+  }, [queryClient]);
 
   const isLoading = isLoadingCredits || isLoadingStats;
   
   if (isLoading) {
-    return <StyledLoader />;
+    return <DashboardLayout><StyledLoader /></DashboardLayout>;
   }
   
   return (
@@ -139,6 +156,6 @@ const Credits = () => {
       </div>
     </DashboardLayout>
   );
-};
+});
 
 export default Credits;
