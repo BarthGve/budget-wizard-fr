@@ -69,7 +69,8 @@ export const useContributors = () => {
     fetchContributors();
   }, [fetchContributors]);
 
-  const addContributor = async (newContributor: NewContributor) => {
+  // Optimistic UI updates
+  const addContributor = useCallback(async (newContributor: NewContributor) => {
     if (!newContributor.name || isNaN(parseFloat(newContributor.total_contribution))) {
       toast.error("Veuillez remplir tous les champs requis");
       return;
@@ -116,9 +117,9 @@ export const useContributors = () => {
       // Revert optimistic update on error
       fetchContributors();
     }
-  };
+  }, [fetchContributors, queryClient]);
 
-  const updateContributor = async (contributor: Contributor) => {
+  const updateContributor = useCallback(async (contributor: Contributor) => {
     try {
       // Optimistic update for better UX
       const optimisticContributors = contributors.map(c => 
@@ -144,9 +145,9 @@ export const useContributors = () => {
       // Revert optimistic update if there's an error
       fetchContributors();
     }
-  };
+  }, [contributors, fetchContributors, queryClient]);
 
-  const deleteContributor = async (id: string) => {
+  const deleteContributor = useCallback(async (id: string) => {
     try {
       // Optimistic removal
       const filteredContributors = contributors.filter(c => c.id !== id);
@@ -169,7 +170,7 @@ export const useContributors = () => {
       // Revert optimistic delete
       fetchContributors();
     }
-  };
+  }, [contributors, fetchContributors, queryClient]);
 
   return {
     contributors,
