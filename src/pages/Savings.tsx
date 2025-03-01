@@ -87,7 +87,7 @@ const Savings = () => {
   }
 
   return <DashboardLayout>
-      <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
         <div className="flex-none space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -123,7 +123,7 @@ const Savings = () => {
           </>}
         </div>
 
-        <div className="flex-1 overflow-auto mt-6 min-h-[300px]">
+        <div className="mt-6 flex-1 max-h-[calc(100vh-25rem)] overflow-auto">
           <SavingsList monthlySavings={monthlySavings || []} onSavingDeleted={handleSavingDeleted} />
         </div>
       </div>
