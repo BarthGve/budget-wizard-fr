@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import StyledLoader from "../ui/StyledLoader";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -34,7 +35,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   });
 
   if (isLoading) {
-    return <div>Chargement...</div>;
+    return <div><StyledLoader/></div>;
   }
 
   if (!authData?.isAuthenticated) {
