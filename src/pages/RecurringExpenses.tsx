@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,6 @@ import { RecurringExpenseDialog } from "@/components/recurring-expenses/Recurrin
 import { RecurringExpenseTable } from "@/components/recurring-expenses/RecurringExpenseTable";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import StyledLoader from "@/components/ui/StyledLoader";
-import { PageTransition } from "@/components/ui/PageTransition";
 
 interface RecurringExpense {
   id: string;
@@ -81,78 +81,68 @@ const RecurringExpenses = () => {
   const yearlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "yearly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
 
   if (isLoading) {
-    return (
-      <DashboardLayout>
-        <PageTransition>
-          <StyledLoader />
-        </PageTransition>
-      </DashboardLayout>
-    );
+    return <StyledLoader />;
   }
 
-  return (
-    <DashboardLayout>
-      <PageTransition>
-        <div className="space-y-6 max-w-[1600px] mx-auto px-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
-                Charges récurrentes
-              </h1>
-              <p className="text-muted-foreground">Gérez vos charges récurrentes et leurs échéances</p>
-            </div>
-            <RecurringExpenseDialog
-              trigger={
-                <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Nouvelle charge
-                </Button>
-              }
-            />
-          </div>
-
-          <CreateCategoryBanner />
-
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                title: "Mensuel",
-                value: monthlyTotal,
-                Icon: Calendar
-              },
-              {
-                title: "Trimestriel",
-                value: quarterlyTotal,
-                Icon: CalendarDays
-              },
-              {
-                title: "Annuel",
-                value: yearlyTotal,
-                Icon: CalendarRange
-              }
-            ].map(({ title, value, Icon }) => (
-              <Card key={title} className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md dark:bg-gray-800">
-                <CardHeader className="py-[16px]">
-                  <div className="flex flex-row items-center justify-between">
-                    <CardTitle className="text-xl md:text-2xl text-white">{title}</CardTitle>
-                    <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                  </div>
-                  <CardDescription className="text-sm md:text-base text-white">Total des charges {title.toLowerCase()}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-lg md:text-xl text-white font-bold">{Math.round(value)} €</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="w-full overflow-hidden">
-            <RecurringExpenseTable expenses={recurringExpenses || []} onDeleteExpense={handleDeleteExpense} />
-          </div>
+  return <DashboardLayout>
+    <div className="space-y-6 max-w-[1600px] mx-auto px-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
+            Charges récurrentes
+          </h1>
+          <p className="text-muted-foreground">Gérez vos charges récurrentes et leurs échéances</p>
         </div>
-      </PageTransition>
-    </DashboardLayout>
-  );
+        <RecurringExpenseDialog
+          trigger={
+            <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
+              <Plus className="mr-2 h-4 w-4" />
+              Nouvelle charge
+            </Button>
+          }
+        />
+      </div>
+
+      <CreateCategoryBanner />
+
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {[
+          {
+            title: "Mensuel",
+            value: monthlyTotal,
+            Icon: Calendar
+          },
+          {
+            title: "Trimestriel",
+            value: quarterlyTotal,
+            Icon: CalendarDays
+          },
+          {
+            title: "Annuel",
+            value: yearlyTotal,
+            Icon: CalendarRange
+          }
+        ].map(({ title, value, Icon }) => (
+          <Card key={title} className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md dark:bg-gray-800">
+            <CardHeader className="py-[16px]">
+              <div className="flex flex-row items-center justify-between">
+                <CardTitle className="text-xl md:text-2xl text-white">{title}</CardTitle>
+                <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+              </div>
+              <CardDescription className="text-sm md:text-base text-white">Total des charges {title.toLowerCase()}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg md:text-xl text-white font-bold">{Math.round(value)} €</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="w-full overflow-hidden">
+        <RecurringExpenseTable expenses={recurringExpenses || []} onDeleteExpense={handleDeleteExpense} />
+      </div>
+    </div>
+  </DashboardLayout>;
 };
 
 export default RecurringExpenses;

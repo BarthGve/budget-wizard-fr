@@ -1,5 +1,5 @@
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -50,18 +50,9 @@ const userMenu: MenuItem[] = [
 
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { canAccessPage } = usePagePermissions();
 
   const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
-
-  const handleNavigation = (path: string) => {
-    // Éviter les rechargements inutiles si on est déjà sur la même page
-    if (location.pathname !== path) {
-      // Utiliser navigate avec { replace: false } pour garantir une navigation SPA
-      navigate(path, { replace: false });
-    }
-  };
 
   return (
     <nav className="flex-1 p-4">
@@ -74,18 +65,19 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
 
           return (
             <li key={item.path}>
-              <button
-                onClick={() => handleNavigation(item.path)}
+              <NavLink
+                to={item.path}
                 className={cn(
-                  "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors w-full text-left",
+                  "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                   "hover:bg-primary/10",
                   collapsed && "justify-center",
                   isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )}
+                end
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
                 {!collapsed && <span className="truncate">{item.title}</span>}
-              </button>
+              </NavLink>
             </li>
           );
         })}

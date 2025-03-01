@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,15 +28,11 @@ export const UserDropdown = ({
       // Vider le cache avant la déconnexion pour garantir un état propre
       queryClient.clear();
       
-      // Déconnexion via Supabase
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
       toast.success("Déconnexion réussie");
-      
-      // Navigation explicite vers la landing page avec replace pour éviter le retour arrière
-      // Utiliser replace: true pour éviter l'historique problématique
-      navigate("/", { replace: true });
+      navigate("/");
     } catch (error: any) {
       toast.error("Erreur lors de la déconnexion");
       console.error("Logout error:", error);

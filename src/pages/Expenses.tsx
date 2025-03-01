@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { startOfYear, endOfYear, subYears } from "date-fns";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
-import ExpenseSkeleton from "@/components/ui/ExpenseSkeleton";
+import StyledLoader from "@/components/ui/StyledLoader";
 
 const Expenses = () => {
   const queryClient = useQueryClient();
@@ -22,8 +22,7 @@ const Expenses = () => {
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
   const {
     data: expenses,
-    isLoading,
-    error
+    isLoading
   } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
@@ -39,10 +38,7 @@ const Expenses = () => {
       } = await supabase.from("expenses").select("*").eq("profile_id", user.id);
       if (error) throw error;
       return data;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false,
-    retry: 1
+    }
   });
   const handleExpenseUpdated = useCallback(() => {
     queryClient.invalidateQueries({
@@ -70,26 +66,9 @@ const Expenses = () => {
   }) || [];
   const lastYearTotal = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   if (isLoading) {
-    return (
-      <DashboardLayout>
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <ExpenseSkeleton key={index} />
-          ))}
-        </div>
-      </DashboardLayout>
-    );
+    return <StyledLoader/>;
   }
-  
-  if (error) {
-    return (
-      <DashboardLayout>
-        <p className="text-red-500">Une erreur s'est produite : {(error as Error).message}</p>
-      </DashboardLayout>
-    );
-  }
-  return (
-    <DashboardLayout>
+  return <DashboardLayout>
       <div className="grid gap-6">
         <div className="space-y-2">
           <div className="flex justify-between items-center mb-6">
@@ -127,8 +106,7 @@ const Expenses = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
-  );
+    </DashboardLayout>;
 };
 
 export default Expenses;
