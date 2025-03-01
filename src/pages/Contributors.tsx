@@ -5,7 +5,7 @@ import { AddContributorDialog } from "@/components/contributors/AddContributorDi
 import { ContributorCard } from "@/components/contributors/ContributorCard";
 import { useContributors } from "@/hooks/useContributors";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import StyledLoader from "@/components/ui/StyledLoader";
 
@@ -19,9 +19,16 @@ const Contributors = () => {
   } = useContributors();
   
   const queryClient = useQueryClient();
+  const channelRef = useRef(null);
   
-  // Set up an additional listener to ensure dashboard data is invalidated
+  // Set up an additional listener to ensure dashboard data is invalidated - avec un cleanup correct
   useEffect(() => {
+    // Nettoyer le channel précédent s'il existe
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
+    
+    // Créer un nouveau channel
     const channel = supabase
       .channel('contributors-page-changes')
       .on(
@@ -38,26 +45,33 @@ const Contributors = () => {
         }
       )
       .subscribe();
+    
+    // Stocker la référence du channel
+    channelRef.current = channel;
 
+    // Cleanup function
     return () => {
-      supabase.removeChannel(channel);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
   }, [queryClient]);
   
-  // Handle contributor operations with immediate invalidation
+  // Handle contributor operations with immediate invalidation - sans réinvoquer des invalidations multiples
   const handleAddContributor = async (newContributor) => {
     await addContributor(newContributor);
-    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    // L'invalidation est déjà gérée par le hook useContributors ou l'écouteur de channel
   };
   
   const handleUpdateContributor = async (contributor) => {
     await updateContributor(contributor);
-    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    // L'invalidation est déjà gérée par le hook useContributors ou l'écouteur de channel
   };
   
   const handleDeleteContributor = async (id) => {
     await deleteContributor(id);
-    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    // L'invalidation est déjà gérée par le hook useContributors ou l'écouteur de channel
   };
   
   if (isLoading) {
