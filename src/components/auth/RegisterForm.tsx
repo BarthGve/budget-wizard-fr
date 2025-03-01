@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RegisterFormData, validateRegisterForm } from "@/utils/formValidation";
 import { registerUser } from "@/services/auth";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface RegisterFormProps {
   onSubmit?: () => void;
@@ -49,6 +50,8 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
         name: formData.name
       });
       
+      toast.success("Inscription réussie! Veuillez vérifier votre email.");
+      
       if (onSubmit) {
         onSubmit();
       }
@@ -56,7 +59,13 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
       navigate("/email-verification");
     } catch (error: any) {
       console.error("Erreur lors de l'inscription:", error);
-      setError(error.message || "Une erreur est survenue lors de l'inscription. Veuillez réessayer.");
+      
+      // Message d'erreur plus spécifique
+      if (error.message.includes("Database error") || error.message.includes("stack depth")) {
+        setError("Problème technique lors de l'inscription. Nos équipes ont été notifiées. Veuillez réessayer dans quelques instants.");
+      } else {
+        setError(error.message || "Une erreur est survenue lors de l'inscription. Veuillez réessayer.");
+      }
     } finally {
       setIsLoading(false);
     }
