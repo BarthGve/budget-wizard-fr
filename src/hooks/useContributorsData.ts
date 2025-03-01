@@ -15,76 +15,74 @@ export const useContributorsData = () => {
   const queryClient = useQueryClient();
   const channelRef = useRef<any>(null);
 
-  // Configuration d'un écouteur Supabase unique avec cleanup approprié
+  // Optimisation de l'écouteur Supabase avec cleanup approprié
   useEffect(() => {
+    // Nettoyage du canal existant si nécessaire
     if (channelRef.current) {
-      console.log("Cleaning up existing channel before creating a new one");
       supabase.removeChannel(channelRef.current);
     }
 
-    const channelId = `contributors-realtime-${Date.now()}`;
-    console.log(`Setting up realtime subscription with channel ID: ${channelId}`);
+    // Utiliser un ID unique pour le canal
+    const channelId = `contributors-${Math.random().toString(36).substring(2, 9)}`;
     
+    // Configuration de l'abonnement aux changements
     const channel = supabase
       .channel(channelId)
       .on(
         'postgres_changes',
         {
-          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          event: '*',
           schema: 'public',
           table: 'contributors'
         },
         (payload) => {
-          console.log("Contributors table change detected:", payload);
-          // Invalider uniquement la requête des contributeurs sans recharger toute la page
-          queryClient.invalidateQueries({ queryKey: ["contributors"] });
+          // Invalidation ciblée pour éviter les rechargements complets
+          queryClient.invalidateQueries({ 
+            queryKey: ["contributors"],
+            exact: true,
+            refetchType: 'active'
+          });
         }
       )
-      .subscribe((status) => {
-        console.log(`Supabase realtime status for contributors: ${status}`);
-      });
+      .subscribe();
 
+    // Stocker la référence au canal pour le nettoyage
     channelRef.current = channel;
 
+    // Nettoyage lors du démontage du composant
     return () => {
-      console.log(`Cleaning up channel: ${channelId}`);
-      supabase.removeChannel(channel);
-      channelRef.current = null;
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
-  }, [queryClient]);
+  }, [queryClient]); // Dépendance stable
 
-  // Utilisation de useQuery pour récupérer les contributeurs avec options optimisées
+  // Utilisation optimisée de useQuery pour les contributeurs
   const { data: contributors = [], isLoading } = useQuery({
     queryKey: ["contributors"],
     queryFn: async () => {
-      console.log("Fetching contributors data");
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         toast.error("Vous devez être connecté pour voir vos contributeurs");
         throw new Error("Not authenticated");
       }
 
-      try {
-        return await fetchContributorsService();
-      } catch (error) {
-        console.error("Error fetching contributors:", error);
-        toast.error("Erreur lors du chargement des contributeurs");
-        throw error;
-      }
+      return await fetchContributorsService();
     },
-    staleTime: 1000 * 60, // Augmenté à 1 minute pour éviter les refetch trop fréquents
-    refetchOnWindowFocus: false, // Éviter de refetch au retour sur l'onglet
+    staleTime: 1000 * 60 * 5, // Augmenté à 5 minutes pour réduire les refetch inutiles
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,  // Seulement lors du premier montage
+    refetchOnReconnect: false, // Désactivé pour éviter les rechargements intempestifs
   });
 
   // Fonction d'ajout d'un contributeur avec mise à jour optimiste
   const handleAddContributor = async (newContributor: NewContributor) => {
     const optimisticId = `temp-${Date.now()}`;
-    // Ensure contributors is treated as an array
     const currentContributors = Array.isArray(contributors) ? contributors : [];
-    
-    // Parse the string to number for total_contribution
     const contributionValue = parseFloat(newContributor.total_contribution);
     
+    // Mise à jour optimiste plus propre
     queryClient.setQueryData(["contributors"], [
       { ...newContributor, id: optimisticId, total_contribution: contributionValue },
       ...currentContributors
@@ -92,26 +90,20 @@ export const useContributorsData = () => {
 
     try {
       const updatedContributors = await addContributorService(newContributor);
-      
-      // Mise à jour avec les vraies données du serveur
       queryClient.setQueryData(["contributors"], updatedContributors);
-      
       toast.success("Contributeur ajouté avec succès");
     } catch (error) {
       console.error("Error adding contributor:", error);
       toast.error("Erreur lors de l'ajout du contributeur");
-      
       // Revenir à l'état précédent en cas d'erreur
-      queryClient.invalidateQueries({ queryKey: ["contributors"] });
+      queryClient.setQueryData(["contributors"], currentContributors);
     }
   };
 
-  // Fonction de mise à jour d'un contributeur avec mise à jour optimiste
+  // Fonction de mise à jour d'un contributeur avec approche optimiste
   const handleUpdateContributor = async (contributor: Contributor) => {
     // Sauvegarde de l'état précédent
     const previousData = queryClient.getQueryData(["contributors"]);
-    
-    // Ensure contributors is treated as an array
     const currentContributors = Array.isArray(contributors) ? contributors : [];
     
     // Mise à jour optimiste
@@ -121,26 +113,20 @@ export const useContributorsData = () => {
     
     try {
       const updatedContributors = await updateContributorService(contributor);
-      
-      // Mise à jour avec les vraies données du serveur
       queryClient.setQueryData(["contributors"], updatedContributors);
-      
       toast.success("Contributeur mis à jour avec succès");
     } catch (error) {
       console.error("Error updating contributor:", error);
       toast.error("Erreur lors de la mise à jour du contributeur");
-      
-      // Revenir à l'état précédent en cas d'erreur
+      // Revenir à l'état précédent
       queryClient.setQueryData(["contributors"], previousData);
     }
   };
 
-  // Fonction de suppression d'un contributeur avec mise à jour optimiste
+  // Fonction de suppression d'un contributeur avec gestion optimiste
   const handleDeleteContributor = async (id: string) => {
     // Sauvegarde de l'état précédent
     const previousData = queryClient.getQueryData(["contributors"]);
-    
-    // Ensure contributors is treated as an array
     const currentContributors = Array.isArray(contributors) ? contributors : [];
     
     // Mise à jour optimiste
@@ -150,16 +136,12 @@ export const useContributorsData = () => {
     
     try {
       const updatedContributors = await deleteContributorService(id);
-      
-      // Mise à jour avec les vraies données du serveur
       queryClient.setQueryData(["contributors"], updatedContributors);
-      
       toast.success("Contributeur supprimé avec succès");
     } catch (error) {
       console.error("Error deleting contributor:", error);
       toast.error("Erreur lors de la suppression du contributeur");
-      
-      // Revenir à l'état précédent en cas d'erreur
+      // Revenir à l'état précédent
       queryClient.setQueryData(["contributors"], previousData);
     }
   };

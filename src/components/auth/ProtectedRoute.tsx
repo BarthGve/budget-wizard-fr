@@ -11,16 +11,16 @@ interface ProtectedRouteProps {
   requireAdmin?: boolean;
 }
 
-// Using memo to prevent unnecessary re-renders
-export const ProtectedRoute = memo(({ children, requireAdmin = false }: ProtectedRouteProps) => {
+// Optimisation avec memo pour éviter les re-renders inutiles
+export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const location = useLocation();
   const { canAccessPage, isAdmin } = usePagePermissions();
   
-  // Modifié: suppression de location.pathname de la clé de requête et ajout d'options de performance
+  // Configuration optimisée de la requête d'authentification
   const { data: authData, isLoading } = useQuery({
     queryKey: ["auth"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
 
       const { data: isAdmin, error } = await supabase.rpc('has_role', {
@@ -33,17 +33,23 @@ export const ProtectedRoute = memo(({ children, requireAdmin = false }: Protecte
         isAdmin
       };
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false, // Désactiver le refetch automatique sur focus
-    retry: false, // Ne pas réessayer automatiquement en cas d'échec
+    staleTime: 1000 * 60 * 10, // 10 minutes pour réduire les vérifications fréquentes
+    refetchOnWindowFocus: false,
+    refetchInterval: false,
+    refetchOnMount: true,
+    retry: false,
   });
 
   if (isLoading) {
-    return <div><StyledLoader/></div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <StyledLoader/>
+      </div>
+    );
   }
 
   if (!authData?.isAuthenticated) {
-    // Utiliser state pour conserver l'URL de redirection
+    // Utilisation de state pour préserver l'URL de redirection
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

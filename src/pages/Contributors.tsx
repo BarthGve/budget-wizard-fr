@@ -7,13 +7,13 @@ import StyledLoader from "@/components/ui/StyledLoader";
 import { useContributorsData } from "@/hooks/useContributorsData";
 import { memo } from "react";
 
-// Using memo to prevent unnecessary re-renders
-const Contributors = memo(() => {
-  console.log("Contributors page rendering");
+// Using memo with a display name for better debugging
+const Contributors = memo(function Contributors() {
+  // Utilisation des données optimisées
   const { contributors, isLoading, handleAddContributor, handleUpdateContributor, handleDeleteContributor } = useContributorsData();
   
   if (isLoading) {
-    return <StyledLoader/>;
+    return <DashboardLayout><StyledLoader /></DashboardLayout>;
   }
   
   return (
