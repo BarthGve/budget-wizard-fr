@@ -82,7 +82,7 @@ export const SavingsProjectCard = ({
 
   return (
     <motion.div
-      className="perspective-1000 h-full p-4"
+      className="perspective-1000 h-full pb-4"
       variants={cardVariants}
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
