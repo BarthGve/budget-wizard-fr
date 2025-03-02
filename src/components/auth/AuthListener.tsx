@@ -26,6 +26,22 @@ export const AuthListener = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Vérifier d'abord si l'utilisateur est admin
+      const { data: isAdmin, error: adminError } = await supabase.rpc('has_role', {
+        user_id: user.id,
+        role: 'admin'
+      });
+      
+      if (adminError) {
+        console.error("Erreur lors de la vérification du rôle admin:", adminError);
+      }
+      
+      // Ne pas afficher la modale pour les admins
+      if (isAdmin) {
+        hasCheckedIncome.current = true;
+        return;
+      }
+
       const { data: ownerContributor, error } = await supabase
         .from("contributors")
         .select("total_contribution")
