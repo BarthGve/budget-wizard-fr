@@ -117,7 +117,7 @@ export const SavingsProjectCard = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-destructive-foreground hover:text-destructive flex-shrink-0"
+                className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
                 onClick={() => onDelete(project)}
               >
                 <Trash2 className="h-4 w-4" />
