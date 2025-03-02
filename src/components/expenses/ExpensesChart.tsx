@@ -4,6 +4,7 @@ import { subYears, format, parseISO, isWithinInterval, startOfYear, endOfYear, s
 import { fr } from "date-fns/locale";
 import { formatCurrency } from "@/utils/format";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useMemo } from "react";
 
 interface Expense {
   id: string;
@@ -30,7 +31,8 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   const today = new Date();
   const startOfCurrentYear = startOfYear(today);
 
-  const chartData = (() => {
+  // Utiliser useMemo pour éviter des recalculs coûteux à chaque rendu
+  const chartData = useMemo(() => {
     if (viewMode === 'monthly') {
       // Données des 12 derniers mois
       const last12Months = Array.from({ length: 12 }, (_, i) => {
@@ -75,7 +77,7 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
         }))
         .sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
     }
-  })();
+  }, [expenses, viewMode, today]); // Dépendances correctement spécifiées
 
   if (chartData.length === 0) {
     return null;

@@ -413,6 +413,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           color_palette: string | null
+          encryption_enabled: boolean | null
           full_name: string | null
           id: string
           profile_type: Database["public"]["Enums"]["user_profile_type"]
@@ -422,6 +423,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           color_palette?: string | null
+          encryption_enabled?: boolean | null
           full_name?: string | null
           id: string
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
@@ -431,6 +433,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           color_palette?: string | null
+          encryption_enabled?: boolean | null
           full_name?: string | null
           id?: string
           profile_type?: Database["public"]["Enums"]["user_profile_type"]

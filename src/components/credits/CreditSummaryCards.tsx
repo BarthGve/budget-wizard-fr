@@ -17,7 +17,7 @@ export const CreditSummaryCards = ({
 }: CreditSummaryCardsProps) => {
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
+      <Card className="overflow-hidden border-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
         <CardHeader>
           <CardTitle>Crédits actifs</CardTitle>
           <CardDescription className="text-violet-100">
@@ -34,7 +34,7 @@ export const CreditSummaryCards = ({
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 text-white">
+      <Card className="overflow-hidden border-0 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 text-white">
         <CardHeader>
           <CardTitle>Crédits remboursés ce mois</CardTitle>
           <CardDescription className="text-emerald-100">

@@ -1,5 +1,4 @@
 
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,6 +6,7 @@ import { useState } from "react";
 import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
+import { motion } from "framer-motion";
 import {
   calculateTotalRevenue,
   calculateMonthlyExpenses,
@@ -89,10 +89,73 @@ const Dashboard = () => {
     return monthlySavings;
   };
 
+  // Animation variants for staggered children
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
+  // Tab animation variants
+  const tabVariants = {
+    inactive: { 
+      scale: 0.95,
+      opacity: 0.7,
+      y: 0 
+    },
+    active: { 
+      scale: 1,
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }
+    },
+    hover: { 
+      scale: 1.05,
+      y: -2,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }
+    }
+  };
+
   return (
     <DashboardLayout>
-      <div className="grid gap-6 mt-4">
-        <div className="space-y-2">
+      <motion.div 
+        className="grid gap-6 mt-4"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <motion.div className="space-y-2" variants={itemVariants}>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
@@ -104,30 +167,80 @@ const Dashboard = () => {
                   : `Aperçu du budget annuel ${new Date().getFullYear()}`}
               </p>
             </div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              <Tabs
+                defaultValue="monthly"
+                onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
+                className="w-[250px]"
+              >
+                <TabsList className="grid w-full grid-cols-2">
+                  <motion.div
+                    initial="inactive"
+                    animate={currentView === "monthly" ? "active" : "inactive"}
+                    whileHover="hover"
+                    variants={tabVariants}
+                  >
+                    <TabsTrigger value="monthly">Mensuel</TabsTrigger>
+                  </motion.div>
+                  <motion.div
+                    initial="inactive"
+                    animate={currentView === "yearly" ? "active" : "inactive"}
+                    whileHover="hover"
+                    variants={tabVariants}
+                  >
+                    <TabsTrigger value="yearly">Annuel</TabsTrigger>
+                  </motion.div>
+                </TabsList>
+              </Tabs>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-          <CreateCategoryBanner />
-          <CreateRetailerBanner />
-        </div>
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full"
+          variants={containerVariants}
+        >
+          <motion.div 
+            variants={itemVariants}
+            whileHover={{ 
+              scale: 1.03, 
+              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            <CreateCategoryBanner />
+          </motion.div>
+          <motion.div 
+            variants={itemVariants}
+            whileHover={{ 
+              scale: 1.03, 
+              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            <CreateRetailerBanner />
+          </motion.div>
+        </motion.div>
         
         <DashboardTabContent
-          revenue={totalRevenue}
-          expenses={monthlyExpenses}
-          savings={totalMonthlySavings}
-          balance={monthlyBalance}
+          revenue={currentView === "monthly" ? totalRevenue : yearlyRevenue}
+          expenses={currentView === "monthly" ? monthlyExpenses : yearlyExpenses}
+          savings={currentView === "monthly" ? totalMonthlySavings : yearlyMonthlySavings}
+          balance={currentView === "monthly" ? monthlyBalance : yearlyBalance}
           savingsGoal={savingsGoal}
           contributorShares={getCumulativeContributionPercentages(contributors, totalRevenue)}
           expenseShares={getCumulativeExpensePercentages(contributors, monthlyExpenses)}
           recurringExpenses={getExpensesForPieChart()}
-          monthlySavings={monthlySavings || []}
+          monthlySavings={getSavingsForPieChart()}
           contributors={contributors || []}
         />
-      </div>
+      </motion.div>
     </DashboardLayout>
   );
 };
 
 export default Dashboard;
-

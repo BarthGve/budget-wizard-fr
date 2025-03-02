@@ -1,12 +1,13 @@
 
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowUpDown } from "lucide-react";
-import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, ALL_PERIODICITIES, periodicityLabels } from "./types";
+import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, ALL_PERIODICITIES } from "./types";
 import { TableFilters } from "./TableFilters";
-import { TableRowActions } from "./TableRowActions";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { motion } from "framer-motion";
+import { TableRows } from "./table/TableRows";
+import { TablePagination } from "./table/TablePagination";
+import { TableSorting } from "./table/TableSorting";
+import { filterExpenses, sortExpenses, paginateExpenses } from "./table/tableUtils";
 
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,33 +29,24 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
     }
   };
 
-  const filteredExpenses = expenses.filter(expense => {
-    const matchesSearch = expense.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === ALL_CATEGORIES || expense.category === categoryFilter;
-    const matchesPeriodicity = periodicityFilter === ALL_PERIODICITIES || expense.periodicity === periodicityFilter;
-    return matchesSearch && matchesCategory && matchesPeriodicity;
-  });
-
-  const sortedExpenses = [...filteredExpenses].sort((a, b) => {
-    const multiplier = sortDirection === "asc" ? 1 : -1;
-    if (sortField === "amount") {
-      return (a[sortField] - b[sortField]) * multiplier;
-    }
-    return String(a[sortField]).localeCompare(String(b[sortField])) * multiplier;
-  });
-
-  const totalPages = rowsPerPage === -1 ? 1 : Math.ceil(sortedExpenses.length / rowsPerPage);
-  const paginatedExpenses = rowsPerPage === -1 
-    ? sortedExpenses 
-    : sortedExpenses.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const handleRowsPerPageChange = (value: number) => {
+    setRowsPerPage(value);
+    setCurrentPage(1);
   };
+
+  const filteredExpenses = filterExpenses(expenses, searchTerm, categoryFilter, periodicityFilter, ALL_CATEGORIES, ALL_PERIODICITIES);
+  const sortedExpenses = sortExpenses(filteredExpenses, sortField, sortDirection);
+  const totalPages = rowsPerPage === -1 ? 1 : Math.ceil(sortedExpenses.length / rowsPerPage);
+  const paginatedExpenses = paginateExpenses(sortedExpenses, currentPage, rowsPerPage);
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4">
+      <motion.div 
+        className="flex flex-col gap-4"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
         <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between w-full">
           <TableFilters
             searchTerm={searchTerm}
@@ -65,36 +57,21 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             onPeriodicityFilterChange={setPeriodicityFilter}
             uniqueCategories={uniqueCategories}
           />
-          <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-            <Select value={String(rowsPerPage)} onValueChange={(value) => {
-              setRowsPerPage(Number(value));
-              setCurrentPage(1);
-            }}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Lignes par page"/>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">10 lignes</SelectItem>
-                <SelectItem value="25">25 lignes</SelectItem>
-                <SelectItem value="-1">Toutes les lignes</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={sortField} onValueChange={(value: keyof RecurringExpense) => handleSort(value)}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <ArrowUpDown className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Trier par" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name">Nom</SelectItem>
-                <SelectItem value="amount">Montant</SelectItem>
-                <SelectItem value="created_at">Date de création</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <TableSorting 
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            sortField={sortField}
+            onSortFieldChange={handleSort}
+          />
         </div>
-      </div>
+      </motion.div>
 
-      <div className="overflow-auto rounded-lg border bg-background">
+      <motion.div 
+        className="overflow-auto rounded-lg border bg-background"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
         <div className="relative w-full overflow-auto">
           <Table>
             <TableHeader>
@@ -107,75 +84,32 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedExpenses.map((expense) => (
-                <TableRow 
-                  key={expense.id}
-                  className="bg-card dark:bg-card"
-                >
-                  <TableCell className="py-2">
-                    <div className="flex items-center gap-3">
-                      {expense.logo_url && (
-                        <img
-                          src={expense.logo_url}
-                          alt={expense.name}
-                          className="w-8 h-8 rounded-full object-contain"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/placeholder.svg";
-                          }}
-                        />
-                      )}
-                      <span className="font-semibold">{expense.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-2">{expense.category}</TableCell>
-                  <TableCell className="py-2">{periodicityLabels[expense.periodicity]}</TableCell>
-                  <TableCell className="text-center py-2">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
-                  <TableCell className="text-right py-2">
-                    <TableRowActions expense={expense} onDeleteExpense={onDeleteExpense} />
-                  </TableCell>
-                </TableRow>
-              ))}
+              <TableRows 
+                expenses={paginatedExpenses} 
+                onDeleteExpense={onDeleteExpense} 
+              />
             </TableBody>
           </Table>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <motion.div 
+        className="flex flex-col sm:flex-row items-center justify-between gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.4 }}
+      >
         <div className="text-sm text-muted-foreground order-2 sm:order-1">
           {filteredExpenses.length} résultat{filteredExpenses.length !== 1 ? 's' : ''}
         </div>
-        {totalPages > 1 && (
-          <div className="order-1 sm:order-2 w-full sm:w-auto flex justify-center">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      onClick={() => handlePageChange(page)}
-                      isActive={currentPage === page}
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
-      </div>
+        <div className="order-1 sm:order-2">
+          <TablePagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      </motion.div>
     </div>
   );
 };

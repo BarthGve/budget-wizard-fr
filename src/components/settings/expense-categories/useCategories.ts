@@ -19,6 +19,9 @@ export const useCategories = () => {
       if (error) throw error;
       return data as Category[];
     },
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes to prevent unnecessary refetches
+    refetchOnWindowFocus: false, // Disable refetching when window gains focus
+    refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
   });
 
   return { categories, isLoading };

@@ -8,6 +8,7 @@ import { Hero } from "@/components/landing/Hero";
 import { Features } from "@/components/landing/Features";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { TechStack } from "@/components/landing/TechStack";
+import { useLatestVersion } from "@/hooks/useLatestVersion";
 
 const Landing = () => {
   const { landing } = appConfig;
@@ -15,6 +16,7 @@ const Landing = () => {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const logoRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { latestVersion } = useLatestVersion();
 
   useEffect(() => {
     setIsLoaded(true);
@@ -91,7 +93,10 @@ const Landing = () => {
 
       <Testimonials testimonials={testimonials} />
 
-      <TechStack technologies={technologies} />
+      <TechStack 
+        technologies={technologies} 
+        appVersion={latestVersion || appConfig.version}
+      />
     </div>
   );
 };

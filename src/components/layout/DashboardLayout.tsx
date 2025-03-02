@@ -9,7 +9,7 @@ import { Credit } from "@/components/credits/types";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
-import { useState, useMemo, memo, useEffect } from "react";
+import { useState, useMemo, memo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 // Memoization du Sidebar pour éviter les re-renders inutiles
@@ -24,12 +24,19 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
   const queryClient = useQueryClient();
+  const channelRef = useRef(null);
 
-  // Configurer des écouteurs pour la modification des contributeurs
+  // Configurer des écouteurs pour la modification des contributeurs avec gestion améliorée
   useEffect(() => {
-    // Configurer un canal pour les modifications de contributeurs
+    // Nettoyer le channel précédent s'il existe
+    if (channelRef.current) {
+      console.log('Removing existing channel in DashboardLayout');
+      supabase.removeChannel(channelRef.current);
+    }
+    
+    // Configurer un canal pour les modifications de contributeurs avec ID unique
     const channel = supabase
-      .channel('contributor-changes')
+      .channel('dashboard-layout-' + Date.now())
       .on(
         'postgres_changes',
         {
@@ -38,14 +45,22 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           table: 'contributors'
         },
         () => {
-          // Invalider les requêtes pour forcer le rechargement des données
+          console.log('Contributors table changed from Dashboard layout, invalidating queries');
+          // Invalider uniquement les requêtes nécessaires
           queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
         }
       )
       .subscribe();
+      
+    // Stocker la référence du channel
+    channelRef.current = channel;
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channelRef.current) {
+        console.log('Cleaning up channel in DashboardLayout unmount');
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
   }, [queryClient]);
 
@@ -64,7 +79,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 2 // Cache de 2 minutes
+    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour réduire les requêtes inutiles
+    refetchOnWindowFocus: false // Désactiver le refetch automatique lors du focus de la fenêtre
   });
 
   // Gestion optimisée du profil utilisateur
@@ -90,7 +106,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         isAdmin
       };
     },
-    staleTime: 1000 * 60 * 5 // Cache de 5 minutes pour le profil
+    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour le profil
+    refetchOnWindowFocus: false
   });
 
   // Calculs memoizés pour éviter les recalculs inutiles
@@ -108,7 +125,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  // Optimisation du rendu avec un conteneur memoizé
+  // Optimisation du rendu avec un conteneur memoizé pour éviter les re-renders inutiles
   const MemoizedContent = useMemo(() => (
     <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!userProfile?.isAdmin && (

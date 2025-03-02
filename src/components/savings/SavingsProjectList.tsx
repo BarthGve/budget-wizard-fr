@@ -6,13 +6,15 @@ import { SavingsProject } from "@/types/savings-project";
 import { SavingsProjectCard } from "./project-card/SavingsProjectCard";
 import { SavingsProjectDetails } from "./project-details/SavingsProjectDetails";
 import { DeleteProjectDialog } from "./project-delete/DeleteProjectDialog";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface SavingsProjectListProps {
   projects: SavingsProject[];
   onProjectDeleted: () => void;
+  showProjects: boolean;
 }
 
-export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjectListProps) => {
+export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }: SavingsProjectListProps) => {
   const [projectToDelete, setProjectToDelete] = useState<SavingsProject | null>(null);
   const [selectedProject, setSelectedProject] = useState<SavingsProject | null>(null);
   const { toast } = useToast();
@@ -66,23 +68,68 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
     }
   };
 
+  // Configuration des variants pour les animations des cartes
+  const containerVariants = {
+    visible: {
+      height: "auto",
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+        delayChildren: 0.1,
+        height: { duration: 0.4, ease: "easeInOut" },
+        opacity: { duration: 0.3 }
+      }
+    },
+    hidden: {
+      height: 0,
+      opacity: 0,
+      transition: {
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+        height: { duration: 0.4, ease: "easeInOut" },
+        opacity: { duration: 0.3 },
+        when: "afterChildren"
+      }
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 grid-cols-6">
-        {projects.map((project) => (
-          <SavingsProjectCard
-            key={project.id}
-            project={project}
-            onDelete={setProjectToDelete}
-            onSelect={setSelectedProject}
-          />
-        ))}
-        {projects.length === 0 && (
-          <p className="col-span-full text-center text-muted-foreground">
+    <motion.div 
+      className="space-y-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div 
+        className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 overflow-hidden"
+        variants={containerVariants}
+        initial="hidden"
+        animate={showProjects ? "visible" : "hidden"}
+      >
+        <AnimatePresence mode="wait">
+          {projects.map((project, index) => (
+            <SavingsProjectCard
+              key={project.id}
+              project={project}
+              onDelete={setProjectToDelete}
+              onSelect={setSelectedProject}
+              index={index}
+              isVisible={showProjects}
+            />
+          ))}
+        </AnimatePresence>
+        {showProjects && projects.length === 0 && (
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="col-span-full text-center text-muted-foreground py-10"
+          >
             Aucun projet d'épargne enregistré
-          </p>
+          </motion.p>
         )}
-      </div>
+      </motion.div>
 
       <DeleteProjectDialog
         project={projectToDelete}
@@ -94,6 +141,6 @@ export const SavingsProjectList = ({ projects, onProjectDeleted }: SavingsProjec
         project={selectedProject}
         onClose={() => setSelectedProject(null)}
       />
-    </div>
+    </motion.div>
   );
 };

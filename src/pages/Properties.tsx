@@ -2,12 +2,12 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { PropertyList } from "@/components/properties/PropertyList";
-import { AddPropertyDialog } from "@/components/properties/AddPropertyDialog";
-import { PropertiesMap } from "@/components/properties/PropertiesMap";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { PropertiesHeader } from "@/components/properties/PropertiesHeader";
+import { PropertyContent } from "@/components/properties/PropertyContent";
 
 const Properties = () => {
   const navigate = useNavigate();
@@ -46,22 +46,29 @@ const Properties = () => {
     },
   });
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1
+      }
+    }
+  };
+
   return (
     <DashboardLayout>
-      <div className="grid gap-6">
-        <div className="flex items-center justify-between">
-          <div>
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Propriétés</h1>
-            <p className="text-muted-foreground">
-              Gérez vos biens immobiliers et suivez leurs performances
-            </p>
-          </div>
-          <AddPropertyDialog />
-        </div>
-
-        <PropertiesMap properties={properties || []} />
-        <PropertyList properties={properties || []} isLoading={isLoading} />
-      </div>
+      <motion.div 
+        className="grid gap-6"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <PropertiesHeader />
+        <PropertyContent properties={properties} isLoading={isLoading} />
+      </motion.div>
     </DashboardLayout>
   );
 };

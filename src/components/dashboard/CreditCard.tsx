@@ -26,11 +26,6 @@ export const CreditCard = ({
     if (taux < 40) return "secondary";
     return "destructive";
   };
-
-  // Requête pour obtenir les crédits actifs et remboursés du mois en cours
-  const today = new Date();
-  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
  
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
 
@@ -48,23 +43,22 @@ export const CreditCard = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-        <div className="flex items-center justify-between">
-  <div className="flex flex-col">
-    <p className="text-xl font-bold leading-none">{Math.round(totalMensualites)} €</p>
-    
-  </div>
-  <Tooltip>
-    <TooltipTrigger>
-      <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
-        {Math.round(tauxEndettement)}%
-      </Badge>
-    </TooltipTrigger>
-    <TooltipContent>
-      <p>Taux d'endettement</p>
-    </TooltipContent>
-  </Tooltip>
-</div>
-</div>
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col">
+              <p className="text-xl font-bold leading-none">{Math.round(totalMensualites)} €</p>
+            </div>
+            <Tooltip>
+              <TooltipTrigger>
+                <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
+                  {Math.round(tauxEndettement)}%
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Taux d'endettement</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

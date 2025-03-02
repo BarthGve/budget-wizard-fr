@@ -1,15 +1,10 @@
 
-import { RevenueCard } from "./RevenueCard";
-import { ExpensesCard } from "./ExpensesCard";
-import { SavingsCard } from "./SavingsCard";
-import { CreditCard } from "./CreditCard";
-import { RecurringExpensesPieChart } from "./RecurringExpensesPieChart";
-import { SavingsPieChart } from "./SavingsPieChart";
-import { CreditsPieChart } from "./CreditsPieChart";
-import { ContributorsTable } from "./ContributorsTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Credit } from "@/components/credits/types";
+import { motion } from "framer-motion";
+import { DashboardCards } from "./dashboard-content/DashboardCards";
+import { DashboardCharts } from "./dashboard-content/DashboardCharts";
+import { DashboardContributors } from "./dashboard-content/DashboardContributors";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -22,7 +17,7 @@ interface DashboardTabContentProps {
     name: string;
     total_contribution: number;
     percentage_contribution: number;
-    is_owner: boolean; // Changed from optional to required
+    is_owner: boolean;
     profile_id: string;
   }>;
   contributorShares: Array<{
@@ -80,7 +75,7 @@ export const DashboardTabContent = ({
         return [];
       }
 
-      return data as Credit[];
+      return data;
     }
   });
 
@@ -95,8 +90,6 @@ export const DashboardTabContent = ({
 
   const totalMensualites = totalActiveMensualites + totalRepaidThisMonth;
 
-  const baseCardStyle = "hover:shadow-xl transition-shadow duration-300 hover:scale-[1.02]";
-
   // Map contributors to ensure all required properties are present
   const mappedContributors = contributors.map(contributor => ({
     ...contributor,
@@ -105,64 +98,54 @@ export const DashboardTabContent = ({
     creditShare: 0
   }));
 
+  // Animation variants for staggered children
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1
+      }
+    }
+  };
+
   return (
-    <div className="space-y-8">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <RevenueCard
-          totalRevenue={revenue}
-          contributorShares={contributorShares}
-        />
-        <ExpensesCard
-          totalExpenses={expenses}
-          recurringExpenses={recurringExpenses.map(expense => ({
-            amount: expense.amount,
-            debit_day: expense.debit_day,
-            debit_month: expense.debit_month,
-            periodicity: expense.periodicity
-          }))}
-        />
-        <CreditCard
-          totalMensualites={totalMensualites}
-          totalRevenue={revenue}
-        />
-        <SavingsCard
-          totalMonthlySavings={savings}
-          savingsGoal={savingsGoal}
-        />
-      </div>
-      <div className="grid gap-6 md:grid-cols-3">
-        {recurringExpenses.length > 0 && (
-          <div>
-            <RecurringExpensesPieChart
-              recurringExpenses={recurringExpenses}
-              totalExpenses={expenses}
-            />
-          </div>
-        )}
-        {credits && credits.length > 0 && (
-          <div>
-            <CreditsPieChart
-              credits={credits}
-              totalMensualites={totalMensualites}
-            />
-          </div>
-        )}
-        {monthlySavings.length > 0 && (
-         <div>
-            <SavingsPieChart
-              monthlySavings={monthlySavings}
-              totalSavings={savings}
-            />
-        </div>
-        )}
-      </div>
-      <div>
-        <ContributorsTable 
-          contributors={mappedContributors}
-          totalExpenses={expenses}
-          totalCredits={totalMensualites}
-        />
-      </div>
-    </div>
+    <motion.div 
+      className="space-y-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <DashboardCards 
+        revenue={revenue}
+        expenses={expenses}
+        totalMensualites={totalMensualites}
+        savings={savings}
+        savingsGoal={savingsGoal}
+        contributorShares={contributorShares}
+        recurringExpenses={recurringExpenses.map(expense => ({
+          amount: expense.amount,
+          debit_day: expense.debit_day,
+          debit_month: expense.debit_month,
+          periodicity: expense.periodicity
+        }))}
+      />
+      
+      <DashboardCharts 
+        expenses={expenses}
+        savings={savings}
+        totalMensualites={totalMensualites}
+        credits={credits}
+        recurringExpenses={recurringExpenses}
+        monthlySavings={monthlySavings}
+      />
+      
+      <DashboardContributors 
+        contributors={mappedContributors}
+        expenses={expenses}
+        totalMensualites={totalMensualites}
+      />
+    </motion.div>
   );
 };

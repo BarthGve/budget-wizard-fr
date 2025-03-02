@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { CreditForm } from "./CreditForm";
 import { Credit } from "./types";
@@ -11,12 +11,12 @@ interface CreditDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function CreditDialog({ 
+export const CreditDialog = memo(({ 
   credit, 
   trigger,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange 
-}: CreditDialogProps) {
+}: CreditDialogProps) => {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
 
   const isControlled = controlledOpen !== undefined;
@@ -45,4 +45,16 @@ export function CreditDialog({
       </DialogContent>
     </Dialog>
   );
-}
+}, (prevProps, nextProps) => {
+  // Optimisation: Vérifiez uniquement les propriétés qui affectent le rendu
+  if (prevProps.open !== nextProps.open) return false;
+  if ((!prevProps.credit && nextProps.credit) || (prevProps.credit && !nextProps.credit)) return false;
+  if (prevProps.credit && nextProps.credit && prevProps.credit.id !== nextProps.credit.id) return false;
+  
+  // Les children du trigger sont difficiles à comparer, donc si le trigger change, on re-render pour être sûr
+  if (prevProps.trigger !== nextProps.trigger) return false;
+  
+  return true;
+});
+
+CreditDialog.displayName = "CreditDialog";

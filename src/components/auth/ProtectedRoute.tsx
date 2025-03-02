@@ -3,20 +3,24 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import StyledLoader from "../ui/StyledLoader";
+import { memo } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
 }
 
-export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
+// Optimisation avec memo pour éviter les re-renders inutiles
+export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const location = useLocation();
   const { canAccessPage, isAdmin } = usePagePermissions();
   
+  // Configuration optimisée de la requête d'authentification
   const { data: authData, isLoading } = useQuery({
     queryKey: ["auth"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
 
       const { data: isAdmin, error } = await supabase.rpc('has_role', {
@@ -28,15 +32,26 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
         isAuthenticated: true,
         isAdmin
       };
-    }
+    },
+    staleTime: 1000 * 60 * 10, // 10 minutes pour réduire les vérifications fréquentes
+    refetchOnWindowFocus: false,
+    refetchInterval: false,
+    refetchOnMount: true,
+    refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
+    retry: false,
   });
 
   if (isLoading) {
-    return <div>Chargement...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <StyledLoader/>
+      </div>
+    );
   }
 
   if (!authData?.isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // Utilisation de state pour préserver l'URL de redirection
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Liste des routes toujours accessibles une fois connecté
@@ -71,4 +86,4 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   }
 
   return <>{children}</>;
-};
+});

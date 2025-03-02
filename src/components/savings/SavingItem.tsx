@@ -1,0 +1,98 @@
+
+import { Button } from "@/components/ui/button";
+import { MoreVertical, SquarePen, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { formatCurrency } from "@/utils/format";
+import { motion } from "framer-motion";
+
+interface SavingItemProps {
+  saving: {
+    id: string;
+    name: string;
+    amount: number;
+    logo_url?: string;
+  };
+  onEdit: (saving: {
+    id: string;
+    name: string;
+    amount: number;
+    logo_url?: string;
+  }) => void;
+  onDelete: (saving: {
+    id: string;
+    name: string;
+    amount: number;
+    logo_url?: string;
+  }) => void;
+}
+
+export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
+  return (
+    <motion.div
+      variants={{
+        visible: {
+          opacity: 1,
+          x: 0,
+          scale: 1,
+          height: "auto",
+          transition: {
+            type: "spring",
+            stiffness: 100,
+            damping: 15,
+            duration: 0.4
+          }
+        },
+        hidden: {
+          opacity: 0,
+          x: -20,
+          scale: 0.8,
+          height: 0,
+          margin: 0,
+          transition: {
+            type: "spring",
+            stiffness: 100,
+            damping: 15,
+            duration: 0.3
+          }
+        }
+      }}
+      className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card mb-2"
+    >
+      <div className="flex items-center gap-4">
+        <img
+          src={saving.logo_url || "/placeholder.svg"}
+          alt={saving.name}
+          className="w-10 h-10 rounded-full object-contain"
+          onError={e => {
+            const target = e.target as HTMLImageElement;
+            target.src = "/placeholder.svg";
+          }}
+        />
+        <div>
+          <h4 className="font-medium">{saving.name}</h4>
+          <p className="text-sm text-muted-foreground">
+            {formatCurrency(saving.amount)} / mois
+          </p>
+        </div>
+      </div>
+
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="icon">
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[200px]">
+          <DropdownMenuItem onClick={() => onEdit(saving)}>
+            <SquarePen className="mr-2 h-4 w-4" />
+            Modifier
+          </DropdownMenuItem>
+          <DropdownMenuItem className="text-destructive" onClick={() => onDelete(saving)}>
+            <Trash2 className="mr-2 h-4 w-4" />
+            Supprimer
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </motion.div>
+  );
+};

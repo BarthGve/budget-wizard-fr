@@ -1,168 +1,117 @@
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Contributor, NewContributor } from "@/types/contributor";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import {
-  fetchContributorsService,
-  addContributorService,
-  updateContributorService,
-  deleteContributorService,
-} from "@/services/contributors";
-import { useQueryClient } from "@tanstack/react-query";
 
 export const useContributors = () => {
-  const [contributors, setContributors] = useState<Contributor[]>([]);
-  const [editingContributor, setEditingContributor] = useState<Contributor | null>(
-    null
-  );
-  const [isLoading, setIsLoading] = useState(true);
+  const [editingContributor, setEditingContributor] = useState<Contributor | null>(null);
   const queryClient = useQueryClient();
 
-  // Set up realtime subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('contributors-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'contributors'
-        },
-        () => {
-          console.log('Contributors table changed, fetching updated data');
-          fetchContributors();
-          
-          // Invalidate all related queries to ensure dashboard components update
-          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-          queryClient.invalidateQueries({ queryKey: ["current-user"] });
-        }
-      )
-      .subscribe();
+  const { data: contributors = [], isLoading } = useQuery({
+    queryKey: ["contributors"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("contributors")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
-  const fetchContributors = async () => {
-    try {
-      const data = await fetchContributorsService();
-      setContributors(data);
-    } catch (error: any) {
-      console.error("Error fetching contributors:", error);
-      toast.error("Erreur lors du chargement des contributeurs");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const addContributor = async (newContributor: NewContributor) => {
-    if (!newContributor.name || isNaN(parseFloat(newContributor.total_contribution))) {
-      toast.error("Veuillez remplir tous les champs requis");
-      return;
-    }
-
-    try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-
-      if (!user) {
-        toast.error("Vous devez être connecté pour ajouter un contributeur");
-        return;
+      if (error) {
+        console.error("Error fetching contributors:", error);
+        toast.error("Erreur lors du chargement des contributeurs");
+        throw error;
       }
 
-      // Optimistic update
-      const optimisticId = crypto.randomUUID();
-      const optimisticContributor: Contributor = {
-        id: optimisticId,
+      return data as Contributor[];
+    },
+    staleTime: 60 * 1000, // 1 minute
+  });
+
+  const addContributor = async (newContributor: NewContributor) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour ajouter un contributeur");
+        return null;
+      }
+
+      // Convert string to number for total_contribution
+      const contributorToInsert = {
         name: newContributor.name,
-        email: newContributor.email || undefined,
+        email: newContributor.email || null,
         total_contribution: parseFloat(newContributor.total_contribution),
-        percentage_contribution: 0, // Will be calculated on server
-        is_owner: false,
         profile_id: user.id
       };
+
+      const { data, error } = await supabase
+        .from("contributors")
+        .insert([contributorToInsert])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Mettre à jour le cache localement pour une UX plus fluide
+      queryClient.setQueryData(["contributors"], (old: Contributor[] = []) => 
+        [...old, data]
+      );
       
-      // Add optimistic contributor to the list
-      setContributors(prev => [...prev, optimisticContributor]);
-      
-      // Actual update in the database
-      const updatedContributors = await addContributorService(newContributor, user.id);
-      
-      // Update with actual data from server
-      setContributors(updatedContributors);
-      
-      // Immediately invalidate all relevant queries
-      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-      
-      toast.success("Le contributeur a été ajouté avec succès");
+      return data;
     } catch (error: any) {
       console.error("Error adding contributor:", error);
       toast.error(error.message || "Erreur lors de l'ajout du contributeur");
-      
-      // Revert optimistic update on error
-      fetchContributors();
+      return null;
     }
   };
 
   const updateContributor = async (contributor: Contributor) => {
     try {
-      // Optimistic update for better UX
-      const optimisticContributors = contributors.map(c => 
-        c.id === contributor.id ? contributor : c
+      const { data, error } = await supabase
+        .from("contributors")
+        .update(contributor)
+        .eq("id", contributor.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Mettre à jour le cache localement
+      queryClient.setQueryData(["contributors"], (old: Contributor[] = []) => 
+        old.map(item => item.id === data.id ? data : item)
       );
-      setContributors(optimisticContributors);
       
-      // Actual update in the database
-      const updatedContributors = await updateContributorService(contributor);
-      
-      // Update state with the response from the server
-      setContributors(updatedContributors);
       setEditingContributor(null);
       
-      // Immediately invalidate queries
-      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-      
-      toast.success("Le contributeur a été mis à jour avec succès");
+      return data;
     } catch (error: any) {
       console.error("Error updating contributor:", error);
-      toast.error("Erreur lors de la mise à jour du contributeur");
-      
-      // Revert optimistic update if there's an error
-      fetchContributors();
+      toast.error(error.message || "Erreur lors de la mise à jour du contributeur");
+      return null;
     }
   };
 
   const deleteContributor = async (id: string) => {
     try {
-      // Optimistic removal
-      const filteredContributors = contributors.filter(c => c.id !== id);
-      setContributors(filteredContributors);
+      const { error } = await supabase
+        .from("contributors")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      // Mettre à jour le cache localement
+      queryClient.setQueryData(["contributors"], (old: Contributor[] = []) => 
+        old.filter(item => item.id !== id)
+      );
       
-      // Actual delete
-      const updatedContributors = await deleteContributorService(id);
-      
-      // Update with server data
-      setContributors(updatedContributors);
-      
-      // Immediately invalidate queries
-      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-      
-      toast.success("Le contributeur a été supprimé avec succès");
+      return true;
     } catch (error: any) {
       console.error("Error deleting contributor:", error);
       toast.error(error.message || "Erreur lors de la suppression du contributeur");
-      
-      // Revert optimistic delete
-      fetchContributors();
+      return false;
     }
   };
-
-  useEffect(() => {
-    fetchContributors();
-  }, []);
 
   return {
     contributors,

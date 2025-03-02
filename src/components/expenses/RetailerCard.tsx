@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { ExpensesChart } from "./ExpensesChart";
 import { startOfYear, endOfYear, subYears } from "date-fns";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -30,29 +30,41 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const now = new Date();
   
-  const currentYearExpenses = expenses.filter(expense => {
-    const expenseDate = new Date(expense.date);
-    return expenseDate >= startOfYear(now) && expenseDate <= endOfYear(now);
-  });
-  const totalCurrentYear = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+  // Mémorisation des calculs coûteux
+  const { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange } = useMemo(() => {
+    const currentYearStart = startOfYear(now);
+    const currentYearEnd = endOfYear(now);
+    
+    const currentYearExpenses = expenses.filter(expense => {
+      const expenseDate = new Date(expense.date);
+      return expenseDate >= currentYearStart && expenseDate <= currentYearEnd;
+    });
+    
+    const totalCurrentYear = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-  const lastYearStart = startOfYear(subYears(now, 1));
-  const lastYearEnd = endOfYear(subYears(now, 1));
-  const lastYearExpenses = expenses.filter(expense => {
-    const expenseDate = new Date(expense.date);
-    return expenseDate >= lastYearStart && expenseDate <= lastYearEnd;
-  });
-  const totalLastYear = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+    const lastYearStart = startOfYear(subYears(now, 1));
+    const lastYearEnd = endOfYear(subYears(now, 1));
+    
+    const lastYearExpenses = expenses.filter(expense => {
+      const expenseDate = new Date(expense.date);
+      return expenseDate >= lastYearStart && expenseDate <= lastYearEnd;
+    });
+    
+    const totalLastYear = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-  const percentageChange = totalLastYear === 0 
-    ? 100 
-    : ((totalCurrentYear - totalLastYear) / totalLastYear) * 100;
+    const percentageChange = totalLastYear === 0 
+      ? 100 
+      : ((totalCurrentYear - totalLastYear) / totalLastYear) * 100;
+      
+    return { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange };
+  }, [expenses, now]);
 
-  const handleExpenseUpdated = () => {
+  // Optimisation avec useCallback
+  const handleExpenseUpdated = useCallback(() => {
     setExpensesDialogOpen(false);
     setAddDialogOpen(false);
     onExpenseUpdated();
-  };
+  }, [onExpenseUpdated]);
 
   return (
     <>

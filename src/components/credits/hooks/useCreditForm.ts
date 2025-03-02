@@ -5,6 +5,7 @@ import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Credit } from "../types";
 
 export const formSchema = z.object({
   nom_credit: z.string().min(1, "Le nom est requis"),
@@ -22,15 +23,7 @@ export const formSchema = z.object({
 export type FormValues = z.infer<typeof formSchema>;
 
 interface UseCreditFormProps {
-  credit?: {
-    id: string;
-    nom_credit: string;
-    nom_domaine: string;
-    montant_mensualite: number;
-    date_derniere_mensualite: string;
-    statut: "actif" | "remboursé";
-    logo_url?: string;
-  };
+  credit?: Credit;
   onSuccess: () => void;
 }
 
@@ -67,8 +60,8 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       const logo_url = getFaviconUrl(values.nom_domaine);
 
       const creditData = {
-        nom_credit: values.nom_credit,
-        nom_domaine: values.nom_domaine,
+        nom_credit: values.nom_credit.trim(),
+        nom_domaine: values.nom_domaine.trim(),
         montant_mensualite: Number(values.montant_mensualite),
         date_derniere_mensualite: values.date_derniere_mensualite,
         logo_url,
@@ -92,7 +85,9 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
         toast.success("Crédit ajouté avec succès");
       }
 
+      // Invalidation simple sans options avancées
       queryClient.invalidateQueries({ queryKey: ["credits"] });
+      queryClient.invalidateQueries({ queryKey: ["credits-monthly-stats"] });
       onSuccess();
       form.reset();
     } catch (error) {

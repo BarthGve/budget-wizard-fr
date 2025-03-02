@@ -1,18 +1,21 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
-import { SavingsList } from "@/components/savings/SavingsList";
-import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { SavingsProjectWizard } from "@/components/savings/ProjectWizard/SavingsProjectWizard";
-import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Rocket, X } from "lucide-react";
+import { X } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { SavingsHeader } from "@/components/savings/SavingsHeader";
+import { SavingsGoalSection } from "@/components/savings/SavingsGoalSection";
+import { ProjectsSection } from "@/components/savings/ProjectsSection";
+import { MonthlySavingsSection } from "@/components/savings/MonthlySavingsSection";
+import { ProModalDialog } from "@/components/savings/ProModalDialog";
+
 const Savings = () => {
   const {
     monthlySavings,
@@ -24,6 +27,7 @@ const Savings = () => {
   const {
     canAccessFeature
   } = usePagePermissions();
+
   const {
     data: projects = [],
     refetch: refetchProjects
@@ -43,21 +47,27 @@ const Savings = () => {
       return data;
     }
   });
+
   const totalMonthlyAmount = monthlySavings?.reduce((acc, saving) => acc + saving.amount, 0) || 0;
+
   const handleSavingAdded = () => {
     refetch();
   };
+
   const handleSavingDeleted = () => {
     refetch();
   };
+
   const handleProjectCreated = () => {
     refetch();
     refetchProjects();
   };
+
   const handleProjectDeleted = () => {
     refetch();
     refetchProjects();
   };
+
   const handleNewProjectClick = () => {
     if (canAccessFeature('/savings', 'new_project')) {
       setShowProjectWizard(true);
@@ -65,6 +75,19 @@ const Savings = () => {
       setShowProModal(true);
     }
   };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1
+      }
+    }
+  };
+
   if (showProjectWizard) {
     return <div className="fixed inset-0 flex items-center justify-center bg-background/80 z-50">
         <div className="w-full max-w-4xl relative">
@@ -75,57 +98,45 @@ const Savings = () => {
         </div>
       </div>;
   }
-  return <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
-              Épargne
-            </h1>
-            <p className="text-muted-foreground">
-              Prévoyez vos versements mensuels d'épargne
-            </p>
-          </div>
-          <NewSavingDialog onSavingAdded={handleSavingAdded} />
-        </div>
 
-        <div className="grid gap-4 grid-cols-12">
-          <div className="col-span-8">
-            <SavingsGoal savingsPercentage={profile?.savings_goal_percentage || 0} totalMonthlyAmount={totalMonthlyAmount} />
-          </div>
-          <div className="col-span-4">
-            <SavingsPieChart monthlySavings={monthlySavings || []} totalSavings={totalMonthlyAmount} />
-          </div>
-        </div>
+  return (
+    <DashboardLayout>
+      <motion.div 
+        className="space-y-6 h-[calc(100vh-4rem)] overflow-hidden flex flex-col"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        {/* Header Section */}
+        <SavingsHeader onNewProjectClick={handleNewProjectClick} />
 
-        {canAccessFeature('/savings', 'new_project') && <>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Projets</h2>
-              <Button onClick={handleNewProjectClick} className="gap-2">
-                <Rocket className="h-4 w-4" />
-                Créer
-              </Button>
-            </div>
+        {/* Savings Goal Section */}
+        <SavingsGoalSection 
+          profile={profile} 
+          totalMonthlyAmount={totalMonthlyAmount}
+          monthlySavings={monthlySavings} 
+        />
 
-            <SavingsProjectList projects={projects} onProjectDeleted={handleProjectDeleted} />
-          </>}
+        {/* Projects Section - only show if user has pro access */}
+        {canAccessFeature('/savings', 'new_project') && (
+          <ProjectsSection 
+            projects={projects} 
+            onProjectDeleted={handleProjectDeleted}
+          />
+        )}
 
-        <div>
-          <SavingsList monthlySavings={monthlySavings || []} onSavingDeleted={handleSavingDeleted} />
-        </div>
-      </div>
-
-      <Dialog open={showProModal} onOpenChange={setShowProModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Fonctionnalité Pro</DialogTitle>
-            <DialogDescription>
-              La création de projets d'épargne est une fonctionnalité réservée aux utilisateurs Pro. 
-              Passez à la version Pro pour accéder à cette fonctionnalité et à bien d'autres avantages.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    </DashboardLayout>;
+        {/* Monthly Savings Section */}
+        <MonthlySavingsSection 
+          monthlySavings={monthlySavings}
+          onSavingDeleted={handleSavingDeleted}
+          onSavingAdded={handleSavingAdded}
+        />
+        
+        {/* Pro Feature Modal */}
+        <ProModalDialog open={showProModal} onOpenChange={setShowProModal} />
+      </motion.div>
+    </DashboardLayout>
+  );
 };
+
 export default Savings;
