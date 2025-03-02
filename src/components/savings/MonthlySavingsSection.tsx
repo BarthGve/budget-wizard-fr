@@ -27,9 +27,18 @@ export const MonthlySavingsSection = ({
   showInitial = true
 }: MonthlySavingsSectionProps) => {
   const [showMonthlySavings, setShowMonthlySavings] = useState(showInitial);
+  const [newSavingDialogOpen, setNewSavingDialogOpen] = useState(false);
 
   const toggleMonthlySavingsVisibility = () => {
     setShowMonthlySavings(prev => !prev);
+  };
+  
+  const handleOpenNewSavingDialog = () => {
+    setNewSavingDialogOpen(true);
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setNewSavingDialogOpen(open);
   };
 
   return (
@@ -66,25 +75,32 @@ export const MonthlySavingsSection = ({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
+                             shadow-md rounded-full flex items-center justify-center w-10 h-10 p-0"
+                  onClick={handleOpenNewSavingDialog}
+                >
+                  <HandCoins className="h-5 w-5 text-white" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent 
+                side="top" 
+                align="center" 
+                className="z-50 max-w-[200px]" 
+                sideOffset={5}
+              >
+                Ajouter un nouveau versement
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
           <NewSavingDialog 
             onSavingAdded={onSavingAdded} 
-            trigger={
-              <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
-                               shadow-md rounded-full flex items-center justify-center w-10 h-10 p-0"
-                  >
-                    <HandCoins className="h-5 w-5 text-white" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top" align="center" className="z-50">
-                  Ajouter un nouveau versement
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            } 
+            open={newSavingDialogOpen}
+            onOpenChange={handleDialogOpenChange}
           />
         </motion.div>
       </div>
