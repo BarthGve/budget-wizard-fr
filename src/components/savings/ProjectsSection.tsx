@@ -15,7 +15,6 @@ interface ProjectsSectionProps {
   showInitial?: boolean;
 }
 
-
 export const ProjectsSection = ({ 
   projects, 
   onProjectDeleted,
@@ -30,7 +29,7 @@ export const ProjectsSection = ({
 
   return (
     <motion.div 
-      className="mt-6"
+      className="mt-6 h-full flex flex-col"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
@@ -59,33 +58,35 @@ export const ProjectsSection = ({
           </motion.div>
         </div>
         <motion.div
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
->
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button 
-          onClick={onNewProjectClick}
-          className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
-                     shadow-md rounded-full flex items-center justify-center w-10 h-10 p-0"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <Rocket className="h-5 w-5 text-white" />
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="top" align="center" className="z-50">
-        Créer un nouveau projet
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-</motion.div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  onClick={onNewProjectClick}
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
+                             shadow-md rounded-full flex items-center justify-center w-10 h-10 p-0"
+                >
+                  <Rocket className="h-5 w-5 text-white" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top" align="center" className="z-50 max-w-[200px]">
+                Créer un nouveau projet
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </motion.div>
       </div>
       
-      <SavingsProjectList 
-        projects={projects} 
-        onProjectDeleted={onProjectDeleted} 
-        showProjects={showProjects} 
-      />
+      <div className="flex-1 overflow-hidden">
+        <SavingsProjectList 
+          projects={projects} 
+          onProjectDeleted={onProjectDeleted} 
+          showProjects={showProjects} 
+        />
+      </div>
     </motion.div>
   );
 };

@@ -82,7 +82,7 @@ export const SavingsProjectCard = ({
 
   return (
     <motion.div
-      className="perspective-1000"
+      className="perspective-1000 h-full"
       variants={cardVariants}
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
@@ -93,9 +93,9 @@ export const SavingsProjectCard = ({
       }}
       whileTap={{ scale: 0.98 }}
     >
-      <Card className="flex flex-col backface-hidden transform-gpu shadow-md hover:shadow-lg transition-shadow duration-300">
+      <Card className="flex flex-col backface-hidden transform-gpu shadow-md hover:shadow-lg transition-shadow duration-300 h-full">
         <div 
-          className="aspect-video relative cursor-pointer overflow-hidden rounded-t-lg"
+          className="h-48 relative cursor-pointer overflow-hidden rounded-t-lg"
           onClick={() => onSelect(project)}
         >
           <motion.img
@@ -110,7 +110,7 @@ export const SavingsProjectCard = ({
             }}
           />
         </div>
-        <CardContent className="pt-4 flex-1 flex flex-col">
+        <CardContent className="pt-4 flex-1 flex flex-col justify-between">
           <div className="flex justify-between items-start mb-2">
             <h3 className="font-semibold truncate">{project.nom_projet}</h3>
             <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.1 }}>
@@ -125,7 +125,7 @@ export const SavingsProjectCard = ({
             </motion.div>
           </div>
           
-          <div className="space-y-4">
+          <div className="mt-auto space-y-4">
             {project.montant_mensuel && project.montant_mensuel > 0 && project.statut === 'actif' && (
               <div>
                 <p className="text-sm font-medium mb-2">Progression:</p>
@@ -133,7 +133,7 @@ export const SavingsProjectCard = ({
               </div>
             )}
             
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mt-4">
               <div>
                 <p className="text-sm font-medium">Objectif:</p>
                 <p className="text-lg font-bold">

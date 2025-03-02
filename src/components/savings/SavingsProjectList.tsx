@@ -102,7 +102,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
       transition={{ duration: 0.4 }}
     >
       <motion.div 
-        className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 overflow-hidden"
+        className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-fr overflow-hidden"
         variants={containerVariants}
         initial="hidden"
         animate={showProjects ? "visible" : "hidden"}
