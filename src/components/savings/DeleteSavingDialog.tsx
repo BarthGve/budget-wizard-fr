@@ -34,7 +34,7 @@ export const DeleteSavingDialog = ({
             {isProjectSaving ? (
               <>
                 <p>Attention : cette épargne est liée à un projet d'épargne "{savingName}".</p>
-                <p className="mt-2">Supprimer ce versement mensuel n'affectera pas le projet associé, mais celui-ci ne bénéficiera plus de versements automatiques.</p>
+                <p className="mt-2">Supprimer ce versement mensuel entraînera aussi la suppression du projet associé.</p>
               </>
             ) : (
               <>

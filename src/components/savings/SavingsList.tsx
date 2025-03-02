@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -46,18 +45,14 @@ export const SavingsList = ({
       if (error) throw error;
       
       if (selectedSaving?.is_project_saving) {
-        // Mettre à jour le statut du projet en "en attente" si on supprime un versement lié à un projet
-        const { error: updateError } = await supabase
+        const { error: deleteProjectError } = await supabase
           .from('projets_epargne')
-          .update({ 
-            added_to_recurring: false,
-            statut: 'en_attente'
-          })
+          .delete()
           .eq('nom_projet', selectedSaving.name);
 
-        if (updateError) throw updateError;
+        if (deleteProjectError) throw deleteProjectError;
 
-        toast.success("Épargne supprimée et projet mis à jour");
+        toast.success("Épargne et projet associé supprimés avec succès");
       } else {
         toast.success("Épargne supprimée avec succès");
       }
