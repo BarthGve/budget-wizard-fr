@@ -89,7 +89,7 @@ export const SavingsProjectCard = ({
       whileHover={{ 
         scale: 1.03, 
         rotateY: 5,
-        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
+        
       }}
       whileTap={{ scale: 0.98 }}
     >
