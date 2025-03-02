@@ -50,7 +50,7 @@ export function RetailersList() {
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
       <DropdownMenuItem 
-        className="text-destructive focus:text-destructive" 
+        className="text-destructive focus:text-destructive border" 
         onClick={() => handleDelete(retailer.id)} 
         disabled={isDeleting}
       >
