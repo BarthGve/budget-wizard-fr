@@ -92,7 +92,7 @@ export const MonthlySavingsSection = ({
                 className="z-50 max-w-[200px]" 
                 sideOffset={5}
               >
-                Ajouter un nouveau versement
+                nouveau versement
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
