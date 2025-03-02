@@ -59,11 +59,7 @@ export const InvestmentsSummary = ({
 
   return (
     <>
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-3 gap-6"
-        variants={containerVariants}
-      >
-        <motion.div className="flex justify-between items-center" variants={{
+          <motion.div className="flex justify-between items-center" variants={{
         hidden: { opacity: 0, y: 20, scale: 0.95 },
         visible: { 
           opacity: 1, 
@@ -88,6 +84,11 @@ export const InvestmentsSummary = ({
         >
           <InvestmentDialog onSuccess={onSuccess} />
         </motion.div>
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        variants={containerVariants}
+      >
+  
       </motion.div>
         {/* Colonne de gauche (1/3) avec les cards */}
         <motion.div className="space-y-6" variants={containerVariants}>
