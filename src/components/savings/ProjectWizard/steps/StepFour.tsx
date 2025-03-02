@@ -1,3 +1,4 @@
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SavingsMode, SavingsProject } from "@/types/savings-project";
@@ -47,6 +48,29 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
     }
   };
 
+  const handleMonthlyAmountChange = (amount: string) => {
+    const monthlyAmount = parseFloat(amount);
+    
+    if (isNaN(monthlyAmount) || monthlyAmount <= 0) {
+      return;
+    }
+
+    // Calcul de la date estimée d'atteinte de l'objectif
+    if (data.montant_total && monthlyAmount > 0) {
+      const months = Math.ceil(data.montant_total / monthlyAmount);
+      const estimatedDate = addMonths(new Date(), months);
+      const formattedDate = estimatedDate.toISOString().split("T")[0];
+      
+      setDate(formattedDate);
+      
+      onChange({
+        ...data,
+        montant_mensuel: monthlyAmount,
+        date_estimee: estimatedDate.toISOString()
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       {mode === "par_date" ? (
@@ -73,7 +97,7 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
             id="monthly-amount"
             type="number"
             value={data.montant_mensuel || ""}
-            onChange={(e) => handleDateChange(e.target.value)}
+            onChange={(e) => handleMonthlyAmountChange(e.target.value)}
             min="1"
             placeholder="Montant mensuel souhaité"
             required
