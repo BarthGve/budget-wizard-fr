@@ -249,9 +249,11 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_project_saving: boolean | null
           logo_url: string | null
           name: string
           profile_id: string
+          projet_id: string | null
           updated_at: string
         }
         Insert: {
@@ -259,9 +261,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_project_saving?: boolean | null
           logo_url?: string | null
           name: string
           profile_id: string
+          projet_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -269,9 +273,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_project_saving?: boolean | null
           logo_url?: string | null
           name?: string
           profile_id?: string
+          projet_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -280,6 +286,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "monthly_savings_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets_epargne"
             referencedColumns: ["id"]
           },
         ]

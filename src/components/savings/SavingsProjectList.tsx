@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -23,17 +22,8 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
     if (!projectToDelete) return;
 
     try {
-      // Cas où le projet a des versements mensuels associés
-      if (projectToDelete.added_to_recurring) {
-        const { error: monthlySavingError } = await supabase
-          .from('monthly_savings')
-          .delete()
-          .eq('name', projectToDelete.nom_projet);
-
-        if (monthlySavingError) throw monthlySavingError;
-      }
-
-      // Supprimer le projet
+      // Grâce à la contrainte ON DELETE CASCADE,
+      // supprimer le projet supprimera automatiquement les versements mensuels associés
       const { error: projectError } = await supabase
         .from('projets_epargne')
         .delete()

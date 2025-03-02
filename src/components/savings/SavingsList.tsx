@@ -14,6 +14,7 @@ interface SavingsListProps {
     amount: number;
     logo_url?: string;
     is_project_saving?: boolean;
+    projet_id?: string;
   }>;
   onSavingDeleted: () => void;
   showSavings: boolean;
@@ -31,6 +32,7 @@ export const SavingsList = ({
     amount: number;
     logo_url?: string;
     is_project_saving?: boolean;
+    projet_id?: string;
   } | null>(null);
   const [editSaving, setEditSaving] = useState<{
     id: string;
@@ -43,45 +45,11 @@ export const SavingsList = ({
     try {
       console.log("Deleting saving with ID:", id);
       
-      // If this saving is associated with a project, delete the project first
-      if (selectedSaving?.is_project_saving) {
-        console.log("This is a project saving. Project name:", selectedSaving.name);
-        
-        // Get the project information before deleting
-        const { data: projectData, error: projectError } = await supabase
-          .from('projets_epargne')
-          .select('id')
-          .eq('nom_projet', selectedSaving.name)
-          .single();
-          
-        if (projectError) {
-          console.error("Error fetching project:", projectError);
-          if (projectError.code !== 'PGRST116') { // Not found error
-            throw projectError;
-          }
-        }
-        
-        if (projectData) {
-          console.log("Found project to delete with ID:", projectData.id);
-          
-          // Delete the project
-          const { error: deleteProjectError } = await supabase
-            .from('projets_epargne')
-            .delete()
-            .eq('id', projectData.id);
-
-          if (deleteProjectError) {
-            console.error("Error deleting project:", deleteProjectError);
-            throw deleteProjectError;
-          }
-          
-          console.log("Project deleted successfully");
-        } else {
-          console.log("No project found with name:", selectedSaving.name);
-        }
-      }
+      // Puisque nous avons mis en place une contrainte ON DELETE CASCADE,
+      // nous n'avons plus besoin de supprimer explicitement le projet.
+      // La suppression du versement mensuel entraînera automatiquement
+      // la suppression du projet associé (si is_project_saving est true).
       
-      // Now delete the monthly saving
       const { error } = await supabase.from("monthly_savings").delete().eq("id", id);
       if (error) {
         console.error("Error deleting saving:", error);
