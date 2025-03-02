@@ -7,6 +7,8 @@ import { useEffect, useRef } from "react";
 export const useDashboardData = () => {
   const queryClient = useQueryClient();
   const channelRef = useRef(null);
+  const monthlySavingsChannelRef = useRef(null);
+  const projectsChannelRef = useRef(null);
 
   // Set up real-time listener for contributor changes with improved channel management
   useEffect(() => {
@@ -43,6 +45,70 @@ export const useDashboardData = () => {
         console.log('Cleaning up channel in useDashboardData unmount');
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
+      }
+    };
+  }, [queryClient]);
+
+  // Set up real-time listener for monthly savings changes
+  useEffect(() => {
+    if (monthlySavingsChannelRef.current) {
+      supabase.removeChannel(monthlySavingsChannelRef.current);
+    }
+    
+    const channel = supabase
+      .channel('monthly-savings-changes-' + Date.now())
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'monthly_savings'
+        },
+        () => {
+          console.log('Monthly savings table changed, invalidating dashboard data');
+          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+        }
+      )
+      .subscribe();
+    
+    monthlySavingsChannelRef.current = channel;
+
+    return () => {
+      if (monthlySavingsChannelRef.current) {
+        supabase.removeChannel(monthlySavingsChannelRef.current);
+        monthlySavingsChannelRef.current = null;
+      }
+    };
+  }, [queryClient]);
+
+  // Set up real-time listener for projects changes
+  useEffect(() => {
+    if (projectsChannelRef.current) {
+      supabase.removeChannel(projectsChannelRef.current);
+    }
+    
+    const channel = supabase
+      .channel('projects-changes-' + Date.now())
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'projets_epargne'
+        },
+        () => {
+          console.log('Projects table changed, invalidating dashboard data');
+          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+        }
+      )
+      .subscribe();
+    
+    projectsChannelRef.current = channel;
+
+    return () => {
+      if (projectsChannelRef.current) {
+        supabase.removeChannel(projectsChannelRef.current);
+        projectsChannelRef.current = null;
       }
     };
   }, [queryClient]);

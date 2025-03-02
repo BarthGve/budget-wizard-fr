@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { SavingsProject } from "@/types/savings-project";
@@ -17,13 +18,59 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
   const [projectToDelete, setProjectToDelete] = useState<SavingsProject | null>(null);
   const [selectedProject, setSelectedProject] = useState<SavingsProject | null>(null);
   const { toast } = useToast();
+  
+  // Set up real-time listener for monthly_savings changes affecting projects
+  useEffect(() => {
+    const channel = supabase
+      .channel('savings-project-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'monthly_savings',
+          filter: 'is_project_saving=eq.true'
+        },
+        () => {
+          console.log('Project-related monthly saving changed, refreshing projects list');
+          onProjectDeleted();
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [onProjectDeleted]);
+
+  // Also listen for direct projets_epargne changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('projects-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'projets_epargne'
+        },
+        () => {
+          console.log('Projects table changed, refreshing projects list');
+          onProjectDeleted();
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [onProjectDeleted]);
 
   const handleDelete = async () => {
     if (!projectToDelete) return;
 
     try {
-      // Grâce à la contrainte ON DELETE CASCADE,
-      // supprimer le projet supprimera automatiquement les versements mensuels associés
+      // Delete the project from the database
       const { error: projectError } = await supabase
         .from('projets_epargne')
         .delete()
