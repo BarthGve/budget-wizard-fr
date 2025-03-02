@@ -24,8 +24,23 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<SavingsProject>>({});
   const [savingsMode, setSavingsMode] = useState<SavingsMode>("par_date");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-  const { isLoading, createProject, error } = useSavingsWizard();
+  
+  const {
+    currentStep: wizardStep,
+    projectData,
+    savingsMode: wizardMode,
+    handleNext: wizardNext,
+    handlePrevious: wizardPrevious,
+    handleSubmit: wizardSubmit,
+    setProjectData,
+    setSavingsMode: setWizardMode
+  } = useSavingsWizard({
+    onClose,
+    onProjectCreated
+  });
 
   const steps: Step[] = [
     {
@@ -66,7 +81,53 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     setSavingsMode(mode);
   }, []);
 
+  const createProject = async (projectData: Partial<SavingsProject>) => {
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      if (!projectData.nom_projet) {
+        throw new Error('Le nom du projet est obligatoire');
+      }
+
+      const supabaseProject = {
+        id: projectData.id,
+        profile_id: user.id,
+        nom_projet: projectData.nom_projet,
+        mode_planification: savingsMode,
+        montant_total: projectData.montant_total || 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        description: projectData.description || '',
+        image_url: projectData.image_url || '/placeholder.svg',
+        montant_mensuel: projectData.montant_mensuel,
+        date_estimee: projectData.date_estimee,
+        nombre_mois: projectData.nombre_mois,
+        added_to_recurring: projectData.added_to_recurring || false,
+        statut: projectData.added_to_recurring ? 'actif' : 'en_attente'
+      };
+
+      // Insert project into database
+      const { data, error: projectError } = await supabase
+        .from('projets_epargne')
+        .insert(supabaseProject)
+        .select()
+        .single();
+
+      if (projectError) throw projectError;
+      
+      return data;
+    } catch (error) {
+      console.error('Error creating project:', error);
+      throw error;
+    }
+  };
+
   const handleFinish = async () => {
+    setIsLoading(true);
+    setError(null);
+    
     try {
       // Créer le projet
       const newProject = await createProject(formData);
@@ -97,11 +158,14 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       onClose();
     } catch (err) {
       console.error("Erreur lors de la création du projet:", err);
+      setError("Impossible de créer le projet");
       toast({
         title: "Erreur",
         description: "Impossible de créer le projet",
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -110,6 +174,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     return () => {
       setFormData({});
       setCurrentStep(0);
+      setError(null);
     };
   }, []);
 
