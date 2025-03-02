@@ -6,6 +6,7 @@ import { CurrentYearInvestmentsDialog } from "./CurrentYearInvestmentsDialog";
 import { YearlyInvestmentsDialog } from "./YearlyInvestmentsDialog";
 import { InvestmentHistory } from "./InvestmentHistory";
 import { Investment } from "./types/investments";
+import { InvestmentDialog } from "./InvestmentDialog";
 
 interface InvestmentsSummaryProps {
   yearlyData: Array<{ year: number; amount: number }>;
@@ -62,6 +63,32 @@ export const InvestmentsSummary = ({
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
         variants={containerVariants}
       >
+        <motion.div className="flex justify-between items-center" variants={{
+        hidden: { opacity: 0, y: 20, scale: 0.95 },
+        visible: { 
+          opacity: 1, 
+          y: 0,
+          scale: 1,
+          transition: {
+            type: "spring",
+            stiffness: 100,
+            damping: 15
+          }
+        }
+      }}>
+        <div>
+          <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Compte titre</h2>
+          <p className="text-muted-foreground">
+            Renseigner les sommes investies dans votre portefeuille
+          </p>
+        </div>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <InvestmentDialog onSuccess={onSuccess} />
+        </motion.div>
+      </motion.div>
         {/* Colonne de gauche (1/3) avec les cards */}
         <motion.div className="space-y-6" variants={containerVariants}>
           <motion.div 
