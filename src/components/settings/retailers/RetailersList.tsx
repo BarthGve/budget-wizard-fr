@@ -10,13 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import StyledLoader from "@/components/ui/StyledLoader";
 
 export function RetailersList() {
   const { retailers, isLoading } = useRetailers();
   const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer();
 
   if (isLoading) {
-    return <div>Chargement...</div>;
+    return <div><StyledLoader/></div>;
   }
 
   const handleDelete = (retailerId: string) => {
@@ -27,7 +28,6 @@ export function RetailersList() {
   return (
     <div className="space-y-4">
       <Table>
-       
         <TableBody>
           {retailers.map((retailer) => (
             <TableRow key={retailer.id}>
@@ -41,25 +41,25 @@ export function RetailersList() {
                   />
                 )}
               </TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => handleDelete(retailer.id)}
-                      disabled={isDeleting}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      {isDeleting ? "Suppression..." : "Supprimer"}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+              <TableCell className="text-right">
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button variant="ghost" className="h-8 w-8 p-0 ml-auto">
+        <MoreVertical className="h-4 w-4" />
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end">
+      <DropdownMenuItem 
+        className="text-destructive focus:text-destructive" 
+        onClick={() => handleDelete(retailer.id)} 
+        disabled={isDeleting}
+      >
+        <Trash2 className="mr-2 h-4 w-4" />
+        {isDeleting ? "Suppression..." : "Supprimer"}
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</TableCell>
             </TableRow>
           ))}
         </TableBody>
