@@ -132,7 +132,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
             {!collapsed && (
              <div className="flex items-baseline gap-2">
                <span className="text-xs text-muted-foreground">
-                 {latestVersion || appConfig.version}
+                 v{latestVersion || appConfig.version}
                </span>
              </div>
             )}
