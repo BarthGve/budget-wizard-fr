@@ -29,7 +29,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     if (showConfetti) {
       const timer = setTimeout(() => {
         setShowConfetti(false);
-      }, 2500); // 2.5 secondes
+      }, 3500); // 2.5 secondes
 
       return () => clearTimeout(timer);
     }
