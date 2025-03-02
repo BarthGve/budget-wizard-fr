@@ -54,18 +54,10 @@ export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnounceme
       <div className="px-3 mb-3">
         <Card 
   className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100 hover:from-indigo-100 hover:to-purple-100 transition-all cursor-pointer hover:shadow-lg"
-  onClick={handleCreateProject}
+  onClick={handleCreateProject} // Déclenche l'action au clic sur la card
 >
   <CardContent className="p-3 flex flex-col items-center gap-2">
     <Rocket className="h-5 w-5 text-indigo-500" />
-    <Button 
-      size="icon" 
-      variant="outline" 
-      className="h-7 w-7 rounded-full bg-white hover:bg-indigo-100 border-indigo-200"
-      onClick={handleCreateProject}
-    >
-      <Rocket className="h-3.5 w-3.5 text-indigo-500" />
-    </Button>
   </CardContent>
 </Card>
       </div>
@@ -74,24 +66,17 @@ export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnounceme
   
   return (
     <div className="px-4 mb-3">
-      <Card 
+     <Card 
   className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100 hover:from-indigo-100 hover:to-purple-100 transition-all cursor-pointer hover:shadow-lg"
-  onClick={handleCreateProject}
+  onClick={handleCreateProject} // Déclenche l'action au clic sur la card
 >
   <CardContent className="p-4">
     <div className="flex items-start gap-3">
-      <Rocket className="h-5 w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
+      <PartyPopper className="h-5 w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
       <div className="space-y-2">
         <p className="text-xs text-gray-800">
           Nouveau: créer un projet d'épargne !
         </p>
-        <Button 
-          size="sm" 
-          className="text-xs w-full bg-indigo-500 hover:bg-indigo-600"
-          onClick={handleCreateProject}
-        >
-          🚀 Let's go!
-        </Button>
       </div>
     </div>
   </CardContent>
