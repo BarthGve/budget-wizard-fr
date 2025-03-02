@@ -29,7 +29,7 @@ export const ZeroIncomeDialog = ({ open, onOpenChange }: ZeroIncomeDialogProps) 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-primary" />
+          
             🎉 Bienvenue sur Budget Wizard !
           </DialogTitle>
           <DialogDescription>
