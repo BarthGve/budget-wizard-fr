@@ -108,9 +108,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             Créez un nouveau projet d'épargne et suivez sa progression
           </DialogDescription>
         </div>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="h-4 w-4" />
-        </Button>
+    
       </div>
 
       <WizardStepper 
