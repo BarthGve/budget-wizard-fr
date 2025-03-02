@@ -149,6 +149,7 @@ export const useFeedbacks = () => {
     deleteFeedback,
     approveFeedback,
     unapproveFeedback,
-    handleDragEnd
+    handleDragEnd,
+    refetch // Add refetch to the returned object
   };
 };
