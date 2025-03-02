@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -29,7 +28,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     if (showConfetti) {
       const timer = setTimeout(() => {
         setShowConfetti(false);
-      }, 3500); // 2.5 secondes
+      }, 3500); // 3.5 secondes
 
       return () => clearTimeout(timer);
     }
@@ -93,7 +92,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
             )}
           >
             <Send className="h-4 w-4" />
-            {!collapsed && <span className="ml-2 font-normal text-base">Laissez-nous un avis</span>}
+            {!collapsed && <span className="ml-2 font-normal">Laissez-nous un avis</span>}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[600px]">
@@ -151,7 +150,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
               disabled={isSubmitting}
               className="w-full bg-primary hover:bg-primary-hover"
             >
-              <Send />
+              <Send className="mr-2 h-4 w-4" />
               {isSubmitting ? "Envoi..." : "Envoyer"}
             </Button>
           </div>

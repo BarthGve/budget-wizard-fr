@@ -12,6 +12,7 @@ import { appConfig } from "@/config/app.config";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
+import { FeedbackDialog } from "../feedback/FeedbackDialog";
 
 interface SidebarProps {
   className?: string;
@@ -140,6 +141,16 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
         </div>
   
         <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
+        
+        {!isAdmin && (
+          <div className={cn(
+            "mt-auto border-t border-gray-200 pt-4 px-4",
+            collapsed && "flex justify-center"
+          )}>
+            <FeedbackDialog collapsed={collapsed} />
+          </div>
+        )}
+        
         <UserDropdown collapsed={collapsed} profile={profile} />
       </div>
   

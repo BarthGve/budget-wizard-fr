@@ -14,7 +14,6 @@ import {
   List,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { LucideIcon } from "lucide-react";
 
@@ -55,7 +54,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
 
   return (
-    <nav className="flex-1 p-4">
+    <nav className="flex flex-col h-full justify-between p-4">
       <ul className="space-y-2">
         {menuItems.map((item) => {
           // Use a proper matching logic for active state
@@ -82,15 +81,6 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
           );
         })}
       </ul>
-
-      {!isAdmin && (
-        <div className={cn(
-          "mt-4 border-t border-gray-200 pt-4",
-          collapsed && "flex justify-center"
-        )}>
-          <FeedbackDialog collapsed={collapsed} />
-        </div>
-      )}
     </nav>
   );
 };
