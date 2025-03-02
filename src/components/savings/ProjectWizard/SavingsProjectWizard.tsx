@@ -91,6 +91,9 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         throw new Error('Le nom du projet est obligatoire');
       }
 
+      // Define the proper statut type value using the correct enum
+      const statut: "actif" | "en_attente" | "dépassé" = projectData.added_to_recurring ? "actif" : "en_attente";
+
       const supabaseProject = {
         id: projectData.id,
         profile_id: user.id,
@@ -105,7 +108,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         date_estimee: projectData.date_estimee,
         nombre_mois: projectData.nombre_mois,
         added_to_recurring: projectData.added_to_recurring || false,
-        statut: projectData.added_to_recurring ? 'actif' : 'en_attente'
+        statut: statut
       };
 
       // Insert project into database
