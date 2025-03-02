@@ -38,7 +38,7 @@ export const MonthlySavingsSection = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
           <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Versements mensuels</h2>
           <motion.div
@@ -68,7 +68,7 @@ export const MonthlySavingsSection = ({
           <NewSavingDialog 
             onSavingAdded={onSavingAdded} 
             trigger={
-              <Button className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md p-2">
+              <Button className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md rounded-full ">
                 <HandCoins className="mr-2 h-4 w-4" />
               </Button>
             } 
