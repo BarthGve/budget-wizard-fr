@@ -23,6 +23,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
     if (!projectToDelete) return;
 
     try {
+      // Cas où le projet a des versements mensuels associés
       if (projectToDelete.added_to_recurring) {
         const { error: monthlySavingError } = await supabase
           .from('monthly_savings')
@@ -30,19 +31,9 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
           .eq('name', projectToDelete.nom_projet);
 
         if (monthlySavingError) throw monthlySavingError;
-
-        // Mettre à jour le statut du projet en "en attente"
-        const { error: updateError } = await supabase
-          .from('projets_epargne')
-          .update({ 
-            added_to_recurring: false,
-            statut: 'en_attente'
-          })
-          .eq('id', projectToDelete.id);
-
-        if (updateError) throw updateError;
       }
 
+      // Supprimer le projet
       const { error: projectError } = await supabase
         .from('projets_epargne')
         .delete()
@@ -52,7 +43,9 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
 
       toast({
         title: "Projet supprimé",
-        description: "Le projet d'épargne a été supprimé avec succès"
+        description: projectToDelete.added_to_recurring 
+          ? "Le projet d'épargne et ses versements mensuels ont été supprimés avec succès" 
+          : "Le projet d'épargne a été supprimé avec succès"
       });
 
       onProjectDeleted();

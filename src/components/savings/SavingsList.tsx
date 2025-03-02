@@ -14,6 +14,7 @@ interface SavingsListProps {
     name: string;
     amount: number;
     logo_url?: string;
+    is_project_saving?: boolean;
   }>;
   onSavingDeleted: () => void;
   showSavings: boolean;
@@ -30,6 +31,7 @@ export const SavingsList = ({
     name: string;
     amount: number;
     logo_url?: string;
+    is_project_saving?: boolean;
   } | null>(null);
   const [editSaving, setEditSaving] = useState<{
     id: string;
@@ -42,7 +44,24 @@ export const SavingsList = ({
     try {
       const { error } = await supabase.from("monthly_savings").delete().eq("id", id);
       if (error) throw error;
-      toast.success("Épargne supprimée avec succès");
+      
+      if (selectedSaving?.is_project_saving) {
+        // Mettre à jour le statut du projet en "en attente" si on supprime un versement lié à un projet
+        const { error: updateError } = await supabase
+          .from('projets_epargne')
+          .update({ 
+            added_to_recurring: false,
+            statut: 'en_attente'
+          })
+          .eq('nom_projet', selectedSaving.name);
+
+        if (updateError) throw updateError;
+
+        toast.success("Épargne supprimée et projet mis à jour");
+      } else {
+        toast.success("Épargne supprimée avec succès");
+      }
+      
       onSavingDeleted();
       setShowDeleteDialog(false);
       setSelectedSaving(null);
@@ -66,6 +85,7 @@ export const SavingsList = ({
     name: string;
     amount: number;
     logo_url?: string;
+    is_project_saving?: boolean;
   }) => {
     setSelectedSaving(saving);
     setShowDeleteDialog(true);
@@ -137,6 +157,7 @@ export const SavingsList = ({
         }}
         onConfirm={() => selectedSaving && handleDelete(selectedSaving.id)}
         savingName={selectedSaving?.name}
+        isProjectSaving={selectedSaving?.is_project_saving}
       />
     </div>
   );
