@@ -80,8 +80,8 @@ export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnounceme
                 Nouveau: créer un projet d'épargne !
               </p>
               <Button 
-                size="xs" 
-                className="w-full bg-indigo-500 hover:bg-indigo-600"
+                size="sm" 
+                className="text-xs w-full bg-indigo-500 hover:bg-indigo-600"
                 onClick={handleCreateProject}
               >
                 🚀 Let's go!
