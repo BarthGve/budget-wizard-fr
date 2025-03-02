@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -7,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { SavingItem } from "./SavingItem";
 import { DeleteSavingDialog } from "./DeleteSavingDialog";
 import { EmptySavings } from "./EmptySavings";
+import { deleteSavingAndProject } from "./ProjectWizard/utils/projectUtils";
 
 interface SavingsListProps {
   monthlySavings: Array<{
@@ -14,6 +14,8 @@ interface SavingsListProps {
     name: string;
     amount: number;
     logo_url?: string;
+    is_project_saving?: boolean;
+    projet_id?: string;
   }>;
   onSavingDeleted: () => void;
   showSavings: boolean;
@@ -30,6 +32,8 @@ export const SavingsList = ({
     name: string;
     amount: number;
     logo_url?: string;
+    is_project_saving?: boolean;
+    projet_id?: string;
   } | null>(null);
   const [editSaving, setEditSaving] = useState<{
     id: string;
@@ -40,15 +44,22 @@ export const SavingsList = ({
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase.from("monthly_savings").delete().eq("id", id);
-      if (error) throw error;
-      toast.success("Épargne supprimée avec succès");
+      console.log("Deleting saving with ID:", id);
+      
+      if (selectedSaving?.is_project_saving) {
+        await deleteSavingAndProject(id, true, selectedSaving.projet_id);
+        toast.success("Épargne et projet associé supprimés avec succès");
+      } else {
+        await deleteSavingAndProject(id, false);
+        toast.success("Épargne supprimée avec succès");
+      }
+      
       onSavingDeleted();
       setShowDeleteDialog(false);
       setSelectedSaving(null);
     } catch (error) {
-      console.error("Error deleting saving:", error);
-      toast.error("Erreur lors de la suppression de l'épargne");
+      console.error("Error in delete process:", error);
+      toast.error("Erreur lors de la suppression");
     }
   };
 
@@ -66,6 +77,7 @@ export const SavingsList = ({
     name: string;
     amount: number;
     logo_url?: string;
+    is_project_saving?: boolean;
   }) => {
     setSelectedSaving(saving);
     setShowDeleteDialog(true);
@@ -98,7 +110,7 @@ export const SavingsList = ({
   return (
     <div className="grid gap-2">
       <motion.div 
-        className="overflow-hidden"
+        className="mb-2"
         variants={containerVariants}
         initial="hidden"
         animate={showSavings ? "visible" : "hidden"}
@@ -137,6 +149,7 @@ export const SavingsList = ({
         }}
         onConfirm={() => selectedSaving && handleDelete(selectedSaving.id)}
         savingName={selectedSaving?.name}
+        isProjectSaving={selectedSaving?.is_project_saving}
       />
     </div>
   );

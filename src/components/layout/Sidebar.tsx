@@ -12,6 +12,8 @@ import { appConfig } from "@/config/app.config";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
+import { FeedbackDialog } from "../feedback/FeedbackDialog";
+import { ProjectAnnouncementCard } from "./ProjectAnnouncementCard";
 
 interface SidebarProps {
   className?: string;
@@ -140,7 +142,23 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
         </div>
   
         <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
-        <UserDropdown collapsed={collapsed} profile={profile} />
+        
+        <div className="mt-auto">
+          {/* Project announcement card */}
+          <ProjectAnnouncementCard collapsed={collapsed} userId={currentUser?.id} />
+          
+          {/* Feedback dialog */}
+          {!isAdmin && (
+            <div className={cn(
+              "pt-4 pb-4 px-4",
+              collapsed && "flex justify-center"
+            )}>
+              <FeedbackDialog collapsed={collapsed} />
+            </div>
+          )}
+          
+          <UserDropdown collapsed={collapsed} profile={profile} />
+        </div>
       </div>
   
       {!isMobile && (

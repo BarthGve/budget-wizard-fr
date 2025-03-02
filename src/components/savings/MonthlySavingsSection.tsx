@@ -6,6 +6,7 @@ import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
 import { ChevronDown, ChevronUp, HandCoins } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface MonthlySavingsSectionProps {
   monthlySavings: Array<{
@@ -26,9 +27,18 @@ export const MonthlySavingsSection = ({
   showInitial = true
 }: MonthlySavingsSectionProps) => {
   const [showMonthlySavings, setShowMonthlySavings] = useState(showInitial);
+  const [newSavingDialogOpen, setNewSavingDialogOpen] = useState(false);
 
   const toggleMonthlySavingsVisibility = () => {
     setShowMonthlySavings(prev => !prev);
+  };
+  
+  const handleOpenNewSavingDialog = () => {
+    setNewSavingDialogOpen(true);
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setNewSavingDialogOpen(open);
   };
 
   return (
@@ -38,7 +48,7 @@ export const MonthlySavingsSection = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
           <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Versements mensuels</h2>
           <motion.div
@@ -65,14 +75,32 @@ export const MonthlySavingsSection = ({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
+                             shadow-md rounded-full flex items-center justify-center w-10 h-10 p-0"
+                  onClick={handleOpenNewSavingDialog}
+                >
+                  <HandCoins className="h-5 w-5 text-white" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent 
+                side="top" 
+                align="center" 
+                className="z-50 max-w-[200px]" 
+                sideOffset={5}
+              >
+                nouveau versement
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
           <NewSavingDialog 
             onSavingAdded={onSavingAdded} 
-            trigger={
-              <Button className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
-                <HandCoins className="mr-2 h-4 w-4" />
-                Ajouter
-              </Button>
-            } 
+            open={newSavingDialogOpen}
+            onOpenChange={handleDialogOpenChange}
           />
         </motion.div>
       </div>

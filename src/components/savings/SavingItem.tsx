@@ -11,6 +11,7 @@ interface SavingItemProps {
     name: string;
     amount: number;
     logo_url?: string;
+    is_project_saving?: boolean;
   };
   onEdit: (saving: {
     id: string;
@@ -23,6 +24,7 @@ interface SavingItemProps {
     name: string;
     amount: number;
     logo_url?: string;
+    is_project_saving?: boolean;
   }) => void;
 }
 
@@ -73,6 +75,11 @@ export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
           <p className="text-sm text-muted-foreground">
             {formatCurrency(saving.amount)} / mois
           </p>
+          {saving.is_project_saving && (
+            <p className="text-xs text-blue-500 italic">
+              Lié à un projet d'épargne
+            </p>
+          )}
         </div>
       </div>
 
@@ -83,10 +90,12 @@ export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">
-          <DropdownMenuItem onClick={() => onEdit(saving)}>
-            <SquarePen className="mr-2 h-4 w-4" />
-            Modifier
-          </DropdownMenuItem>
+          {!saving.is_project_saving && (
+            <DropdownMenuItem onClick={() => onEdit(saving)}>
+              <SquarePen className="mr-2 h-4 w-4" />
+              Modifier
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem className="text-destructive" onClick={() => onDelete(saving)}>
             <Trash2 className="mr-2 h-4 w-4" />
             Supprimer

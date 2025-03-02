@@ -1,14 +1,19 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect } from "react";
+import { StepOne } from "./steps/StepOne";
+import { StepTwo } from "./steps/StepTwo";
+import { StepThree } from "./steps/StepThree";
+import { StepFour } from "./steps/StepFour";
+import { StepFive } from "./steps/StepFive";
+import { WizardStepper } from "./components/WizardStepper";
+import { Step } from "./types";
+import { SavingsProject } from "@/types/savings-project";
 import { Button } from "@/components/ui/button";
-import { StepOne } from './steps/StepOne';
-import { StepTwo } from './steps/StepTwo';
-import { StepThree } from './steps/StepThree';
-import { StepFour } from './steps/StepFour';
-import { StepFive } from './steps/StepFive';
-import { WizardStepper } from './components/WizardStepper';
-import { useSavingsWizard } from './hooks/useSavingsWizard';
-import { Step } from './types';
+import { X } from "lucide-react";
+import { DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { useProjectWizard } from "./hooks/useProjectWizard";
+import { createProject, createMonthlySaving } from "./utils/projectUtils";
 
 interface SavingsProjectWizardProps {
   onClose: () => void;
@@ -18,61 +23,128 @@ interface SavingsProjectWizardProps {
 export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProjectWizardProps) => {
   const {
     currentStep,
-    projectData,
+    formData,
     savingsMode,
+    isLoading,
+    error,
+    setCurrentStep,
     handleNext,
     handlePrevious,
-    handleSubmit,
-    setProjectData,
-    setSavingsMode
-  } = useSavingsWizard({ onClose, onProjectCreated });
+    handleChange,
+    handleModeChange,
+    setFormData,
+    setIsLoading,
+    setError
+  } = useProjectWizard({ onClose, onProjectCreated });
+  
+  const { toast } = useToast();
 
   const steps: Step[] = [
-    { title: "Informations", component: StepOne },
-    { title: "Objectif", component: StepTwo },
-    { title: "Mode d'épargne", component: StepThree },
-    { title: "Planification", component: StepFour },
-    { title: "Configuration", component: StepFive }
+    {
+      title: "Informations générales",
+      component: StepOne,
+    },
+    {
+      title: "Objectif financier",
+      component: StepTwo,
+    },
+    {
+      title: "Image du projet",
+      component: StepThree,
+    },
+    {
+      title: "Planification",
+      component: StepFour,
+    },
+    {
+      title: "Versement mensuel",
+      component: StepFive,
+    },
   ];
 
-  const renderStep = () => {
-    const StepComponent = steps[currentStep - 1].component;
-    return (
-      <StepComponent
-        data={projectData}
-        onChange={setProjectData}
-        mode={savingsMode}
-        onModeChange={setSavingsMode}
-      />
-    );
+  const handleFinish = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const newProject = await createProject(formData, savingsMode);
+      
+      if (formData.added_to_recurring && newProject) {
+        await createMonthlySaving(formData, newProject.profile_id, newProject.id);
+      }
+
+      toast({
+        title: "Projet créé avec succès",
+        description: formData.added_to_recurring 
+          ? "Votre projet et son versement mensuel ont été créés" 
+          : "Votre projet a été créé"
+      });
+      
+      onProjectCreated();
+      onClose();
+    } catch (err) {
+      console.error("Erreur lors de la création du projet:", err);
+      setError("Impossible de créer le projet");
+      toast({
+        title: "Erreur",
+        description: "Impossible de créer le projet",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  const CurrentStepComponent = steps[currentStep].component;
+  const isLastStep = currentStep === steps.length - 1;
+  const isSecondStep = currentStep === 1;
+
   return (
-    <Card className="max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle>Nouveau projet d'épargne</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <WizardStepper steps={steps} currentStep={currentStep} />
-        {renderStep()}
-        
-        <div className="flex justify-between mt-6">
-          {currentStep > 1 && (
-            <Button onClick={handlePrevious} variant="outline">
-              Précédent
-            </Button>
-          )}
-          {currentStep < steps.length ? (
-            <Button onClick={handleNext} className="ml-auto">
-              Suivant
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} className="ml-auto">
-              Créer le projet
-            </Button>
-          )}
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <DialogTitle className="text-2xl">Nouveau projet d'épargne</DialogTitle>
+          <DialogDescription>
+            Créez un nouveau projet d'épargne et suivez sa progression
+          </DialogDescription>
         </div>
-      </CardContent>
-    </Card>
+        <Button variant="ghost" size="icon" onClick={onClose}>
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <WizardStepper 
+        steps={steps.map(step => step.title)} 
+        currentStep={currentStep} 
+        onStepClick={setCurrentStep}
+      />
+
+      <div className="min-h-[300px] flex flex-col">
+        <div className="flex-1">
+          <CurrentStepComponent 
+            data={formData} 
+            onChange={handleChange}
+            mode={savingsMode}
+            onModeChange={handleModeChange}
+          />
+        </div>
+
+        <div className="flex justify-between mt-8">
+          <Button 
+            variant="outline" 
+            onClick={currentStep === 0 ? onClose : handlePrevious}
+          >
+            {currentStep === 0 ? 'Annuler' : 'Précédent'}
+          </Button>
+
+          <Button 
+            onClick={isLastStep ? handleFinish : handleNext}
+            disabled={isLoading || (isSecondStep && !formData.montant_total)}
+          >
+            {isLastStep ? 'Créer le projet' : 'Suivant'}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };

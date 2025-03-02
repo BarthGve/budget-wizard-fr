@@ -1,13 +1,7 @@
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Rocket } from "lucide-react";
 
-interface SavingsHeaderProps {
-  onNewProjectClick: () => void;
-}
-
-export const SavingsHeader = ({ onNewProjectClick }: SavingsHeaderProps) => {
+export const SavingsHeader = () => {
   return (
     <motion.div 
       className="flex-none"
@@ -24,15 +18,6 @@ export const SavingsHeader = ({ onNewProjectClick }: SavingsHeaderProps) => {
             Prévoyez vos versements mensuels d'épargne
           </p>
         </div>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Button onClick={onNewProjectClick} className="gap-2">
-            <Rocket className="h-4 w-4" />
-            Créer
-          </Button>
-        </motion.div>
       </div>
     </motion.div>
   );

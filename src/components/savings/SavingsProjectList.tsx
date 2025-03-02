@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { SavingsProject } from "@/types/savings-project";
@@ -18,31 +18,75 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
   const [projectToDelete, setProjectToDelete] = useState<SavingsProject | null>(null);
   const [selectedProject, setSelectedProject] = useState<SavingsProject | null>(null);
   const { toast } = useToast();
+  
+  // Set up real-time listener for monthly_savings changes affecting projects
+  useEffect(() => {
+    // Génération d'un identifiant unique pour le canal
+    const channelId = `savings-project-changes-${Date.now()}`;
+    console.log(`Creating real-time channel: ${channelId}`);
+    
+    const channel = supabase
+      .channel(channelId)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'monthly_savings',
+          filter: 'is_project_saving=eq.true'
+        },
+        (payload) => {
+          console.log('Project-related monthly saving changed:', payload);
+          // Forcer la mise à jour de la liste des projets
+          onProjectDeleted();
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Subscription status for ${channelId}:`, status);
+      });
+      
+    return () => {
+      console.log(`Removing channel: ${channelId}`);
+      supabase.removeChannel(channel);
+    };
+  }, [onProjectDeleted]);
+
+  // Also listen for direct projets_epargne changes
+  useEffect(() => {
+    // Génération d'un identifiant unique pour le canal
+    const channelId = `projects-changes-${Date.now()}`;
+    console.log(`Creating projects table channel: ${channelId}`);
+    
+    const channel = supabase
+      .channel(channelId)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'projets_epargne'
+        },
+        (payload) => {
+          console.log('Projects table changed:', payload);
+          // Forcer la mise à jour de la liste des projets
+          onProjectDeleted();
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Subscription status for ${channelId}:`, status);
+      });
+      
+    return () => {
+      console.log(`Removing channel: ${channelId}`);
+      supabase.removeChannel(channel);
+    };
+  }, [onProjectDeleted]);
 
   const handleDelete = async () => {
     if (!projectToDelete) return;
 
     try {
-      if (projectToDelete.added_to_recurring) {
-        const { error: monthlySavingError } = await supabase
-          .from('monthly_savings')
-          .delete()
-          .eq('name', projectToDelete.nom_projet);
-
-        if (monthlySavingError) throw monthlySavingError;
-
-        // Mettre à jour le statut du projet en "en attente"
-        const { error: updateError } = await supabase
-          .from('projets_epargne')
-          .update({ 
-            added_to_recurring: false,
-            statut: 'en_attente'
-          })
-          .eq('id', projectToDelete.id);
-
-        if (updateError) throw updateError;
-      }
-
+      // Delete the project from the database
       const { error: projectError } = await supabase
         .from('projets_epargne')
         .delete()
@@ -52,7 +96,9 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
 
       toast({
         title: "Projet supprimé",
-        description: "Le projet d'épargne a été supprimé avec succès"
+        description: projectToDelete.added_to_recurring 
+          ? "Le projet d'épargne et ses versements mensuels ont été supprimés avec succès" 
+          : "Le projet d'épargne a été supprimé avec succès"
       });
 
       onProjectDeleted();
@@ -102,12 +148,12 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
       transition={{ duration: 0.4 }}
     >
       <motion.div 
-        className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 overflow-hidden"
+        className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 auto-rows-fr overflow-hidden "
         variants={containerVariants}
         initial="hidden"
         animate={showProjects ? "visible" : "hidden"}
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {projects.map((project, index) => (
             <SavingsProjectCard
               key={project.id}

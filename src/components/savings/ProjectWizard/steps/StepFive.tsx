@@ -20,7 +20,7 @@ export const StepFive = ({ data, onChange }: StepFiveProps) => {
           }
         />
         <Label htmlFor="convert-monthly">
-          Créer un versement mensuel automatique
+          Ajouter un versement mensuel
         </Label>
       </div>
 

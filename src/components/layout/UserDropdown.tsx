@@ -116,10 +116,10 @@ export const UserDropdown = ({
             <span>Mon compte</span>
           </DropdownMenuItem>
      
-          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>
+      {/*    <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>
             <Bell className="mr-2 h-4 w-4" />
             <span>Notifications</span>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
 
           <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />

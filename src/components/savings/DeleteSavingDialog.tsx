@@ -15,13 +15,15 @@ interface DeleteSavingDialogProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
   savingName?: string;
+  isProjectSaving?: boolean;
 }
 
 export const DeleteSavingDialog = ({
   open,
   onOpenChange,
   onConfirm,
-  savingName
+  savingName,
+  isProjectSaving = false
 }: DeleteSavingDialogProps) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -29,8 +31,17 @@ export const DeleteSavingDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Supprimer l&apos;épargne</AlertDialogTitle>
           <AlertDialogDescription>
-            Êtes-vous sûr de vouloir supprimer cette épargne {savingName ? `"${savingName}"` : ""}? 
-            Cette action ne peut pas être annulée.
+            {isProjectSaving ? (
+              <>
+                <p>Attention : cette épargne est liée à un projet d'épargne "{savingName}".</p>
+                <p className="mt-2">Supprimer ce versement mensuel entraînera aussi la suppression du projet associé.</p>
+              </>
+            ) : (
+              <>
+                Êtes-vous sûr de vouloir supprimer cette épargne {savingName ? `"${savingName}"` : ""}? 
+                Cette action ne peut pas être annulée.
+              </>
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

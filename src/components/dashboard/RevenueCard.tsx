@@ -24,7 +24,7 @@ export const RevenueCard = ({
   return <Card className="bg-background hover:shadow-md transition-all duration-300">
       <CardHeader className="py-[16px]">
         <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl">Revenus globaux</CardTitle>
+            <CardTitle className="text-2xl">Revenus</CardTitle>
             <Banknote className="h-6 w-6 text-muted-foreground" />
         </div>
         <CardDescription>Des contributeurs</CardDescription>
