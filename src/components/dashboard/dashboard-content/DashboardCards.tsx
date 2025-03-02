@@ -76,17 +76,18 @@ export const DashboardCards = ({
         />
       </motion.div>
       <motion.div variants={itemVariants}>
-        <ExpensesCard
-          totalExpenses={expenses}
-          recurringExpenses={recurringExpenses}
-        />
-      </motion.div>
-      <motion.div variants={itemVariants}>
         <CreditCard
           totalMensualites={totalMensualites}
           totalRevenue={revenue}
         />
       </motion.div>
+      <motion.div variants={itemVariants}>
+        <ExpensesCard
+          totalExpenses={expenses}
+          recurringExpenses={recurringExpenses}
+        />
+      </motion.div>
+      
       <motion.div variants={itemVariants}>
         <SavingsCard
           totalMonthlySavings={savings}
