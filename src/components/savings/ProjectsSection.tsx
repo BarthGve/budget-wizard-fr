@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { SavingsProject } from "@/types/savings-project";
@@ -10,12 +10,15 @@ import { SavingsProject } from "@/types/savings-project";
 interface ProjectsSectionProps {
   projects: SavingsProject[];
   onProjectDeleted: () => void;
+  onNewProjectClick: () => void;
   showInitial?: boolean;
 }
+
 
 export const ProjectsSection = ({ 
   projects, 
   onProjectDeleted,
+  onNewProjectClick,
   showInitial = true
 }: ProjectsSectionProps) => {
   const [showProjects, setShowProjects] = useState(showInitial);
@@ -54,6 +57,15 @@ export const ProjectsSection = ({
             </Button>
           </motion.div>
         </div>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Button onClick={onNewProjectClick} className="gap-2">
+            <Rocket className="h-4 w-4" />
+            Créer
+          </Button>
+        </motion.div>
       </div>
       
       <SavingsProjectList 
