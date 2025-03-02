@@ -6,7 +6,7 @@ import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
 import { ChevronDown, ChevronUp, HandCoins } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface MonthlySavingsSectionProps {
   monthlySavings: Array<{
@@ -69,19 +69,21 @@ export const MonthlySavingsSection = ({
           <NewSavingDialog 
             onSavingAdded={onSavingAdded} 
             trigger={
+              <TooltipProvider>
               <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
-                             shadow-md rounded-full flex items-center justify-center w-10 h-10 p-0"
-                >
-                  <HandCoins className="h-5 w-5 text-white" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                Ajouter un nouveau versement
-              </TooltipContent>
-            </Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
+                               shadow-md rounded-full flex items-center justify-center w-10 h-10 p-0"
+                  >
+                    <HandCoins className="h-5 w-5 text-white" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" align="center" className="z-50">
+                  Ajouter un nouveau versement
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             } 
           />
         </motion.div>
