@@ -8,7 +8,7 @@ interface WizardStepperProps {
 
 export const WizardStepper = ({ steps, currentStep }: WizardStepperProps) => {
   return (
-    <div className="mb-8">
+    <div className="mb-8 mt-8">
       <div className="flex justify-between">
         {steps.map((step, index) => (
           <div key={index} className="flex items-center">
