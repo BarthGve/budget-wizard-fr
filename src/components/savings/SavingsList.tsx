@@ -41,17 +41,54 @@ export const SavingsList = ({
 
   const handleDelete = async (id: string) => {
     try {
+      console.log("Deleting saving with ID:", id);
+      
+      // If this saving is associated with a project, delete the project first
+      if (selectedSaving?.is_project_saving) {
+        console.log("This is a project saving. Project name:", selectedSaving.name);
+        
+        // Get the project information before deleting
+        const { data: projectData, error: projectError } = await supabase
+          .from('projets_epargne')
+          .select('id')
+          .eq('nom_projet', selectedSaving.name)
+          .single();
+          
+        if (projectError) {
+          console.error("Error fetching project:", projectError);
+          if (projectError.code !== 'PGRST116') { // Not found error
+            throw projectError;
+          }
+        }
+        
+        if (projectData) {
+          console.log("Found project to delete with ID:", projectData.id);
+          
+          // Delete the project
+          const { error: deleteProjectError } = await supabase
+            .from('projets_epargne')
+            .delete()
+            .eq('id', projectData.id);
+
+          if (deleteProjectError) {
+            console.error("Error deleting project:", deleteProjectError);
+            throw deleteProjectError;
+          }
+          
+          console.log("Project deleted successfully");
+        } else {
+          console.log("No project found with name:", selectedSaving.name);
+        }
+      }
+      
+      // Now delete the monthly saving
       const { error } = await supabase.from("monthly_savings").delete().eq("id", id);
-      if (error) throw error;
+      if (error) {
+        console.error("Error deleting saving:", error);
+        throw error;
+      }
       
       if (selectedSaving?.is_project_saving) {
-        const { error: deleteProjectError } = await supabase
-          .from('projets_epargne')
-          .delete()
-          .eq('nom_projet', selectedSaving.name);
-
-        if (deleteProjectError) throw deleteProjectError;
-
         toast.success("Épargne et projet associé supprimés avec succès");
       } else {
         toast.success("Épargne supprimée avec succès");
@@ -61,8 +98,8 @@ export const SavingsList = ({
       setShowDeleteDialog(false);
       setSelectedSaving(null);
     } catch (error) {
-      console.error("Error deleting saving:", error);
-      toast.error("Erreur lors de la suppression de l'épargne");
+      console.error("Error in delete process:", error);
+      toast.error("Erreur lors de la suppression");
     }
   };
 
