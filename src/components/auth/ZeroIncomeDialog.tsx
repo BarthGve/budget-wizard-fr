@@ -48,7 +48,7 @@ export const ZeroIncomeDialog = ({ open, onOpenChange }: ZeroIncomeDialogProps) 
           </ul>
         </div>
         <DialogFooter className="flex flex-col sm:flex-row gap-2">
-          <Button  onClick={() => onOpenChange(false)}>
+          <Button variant="secondary"  onClick={() => onOpenChange(false)}>
             Non merci
           </Button>
           <Button onClick={handleNavigateToContributors} className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white">
