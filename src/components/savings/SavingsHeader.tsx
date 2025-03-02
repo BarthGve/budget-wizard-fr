@@ -1,9 +1,6 @@
 
 import { motion } from "framer-motion";
 
-
-
-
 export const SavingsHeader = () => {
   return (
     <motion.div 
@@ -21,7 +18,6 @@ export const SavingsHeader = () => {
             Prévoyez vos versements mensuels d'épargne
           </p>
         </div>
-  
       </div>
     </motion.div>
   );

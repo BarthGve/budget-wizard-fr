@@ -48,31 +48,26 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   };
 
   return (
-    <Card className="max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle>Nouveau projet d'épargne</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <WizardStepper steps={steps} currentStep={currentStep} />
-        {renderStep()}
-        
-        <div className="flex justify-between mt-6">
-          {currentStep > 1 && (
-            <Button onClick={handlePrevious} variant="outline">
-              Précédent
-            </Button>
-          )}
-          {currentStep < steps.length ? (
-            <Button onClick={handleNext} className="ml-auto">
-              Suivant
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} className="ml-auto">
-              Créer le projet
-            </Button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <WizardStepper steps={steps} currentStep={currentStep} />
+      {renderStep()}
+      
+      <div className="flex justify-between mt-6">
+        {currentStep > 1 && (
+          <Button onClick={handlePrevious} variant="outline">
+            Précédent
+          </Button>
+        )}
+        {currentStep < steps.length ? (
+          <Button onClick={handleNext} className="ml-auto">
+            Suivant
+          </Button>
+        ) : (
+          <Button onClick={handleSubmit} className="ml-auto">
+            Créer le projet
+          </Button>
+        )}
+      </div>
+    </div>
   );
 };

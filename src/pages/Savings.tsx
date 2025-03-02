@@ -6,15 +6,14 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { X } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { SavingsHeader } from "@/components/savings/SavingsHeader";
 import { SavingsGoalSection } from "@/components/savings/SavingsGoalSection";
 import { ProjectsSection } from "@/components/savings/ProjectsSection";
 import { MonthlySavingsSection } from "@/components/savings/MonthlySavingsSection";
 import { ProModalDialog } from "@/components/savings/ProModalDialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const Savings = () => {
   const {
@@ -61,6 +60,7 @@ const Savings = () => {
   const handleProjectCreated = () => {
     refetch();
     refetchProjects();
+    setShowProjectWizard(false);
   };
 
   const handleProjectDeleted = () => {
@@ -88,17 +88,6 @@ const Savings = () => {
     }
   };
 
-  if (showProjectWizard) {
-    return <div className="fixed inset-0 flex items-center justify-center bg-background/80 z-50">
-        <div className="w-full max-w-4xl relative">
-          <Button variant="ghost" size="icon" className="absolute right-2 top-2 z-10" onClick={() => setShowProjectWizard(false)}>
-            <X className="h-4 w-4" />
-          </Button>
-          <SavingsProjectWizard onClose={() => setShowProjectWizard(false)} onProjectCreated={handleProjectCreated} />
-        </div>
-      </div>;
-  }
-
   return (
     <DashboardLayout>
       <motion.div 
@@ -108,7 +97,7 @@ const Savings = () => {
         variants={containerVariants}
       >
         {/* Header Section */}
-        <SavingsHeader onNewProjectClick={handleNewProjectClick} />
+        <SavingsHeader />
 
         {/* Savings Goal Section */}
         <SavingsGoalSection 
@@ -116,21 +105,39 @@ const Savings = () => {
           totalMonthlyAmount={totalMonthlyAmount}
           monthlySavings={monthlySavings} 
         />
-
-        {/* Projects Section - only show if user has pro access */}
-        {canAccessFeature('/savings', 'new_project') && (
-          <ProjectsSection 
-            projects={projects} 
-            onProjectDeleted={handleProjectDeleted}
-          />
-        )}
-
-        {/* Monthly Savings Section */}
-        <MonthlySavingsSection 
-          monthlySavings={monthlySavings}
-          onSavingDeleted={handleSavingDeleted}
-          onSavingAdded={handleSavingAdded}
-        />
+        
+        {/* Main Content - Two Columns */}
+        <div className="flex flex-col md:flex-row gap-6 flex-1 overflow-hidden">
+          {/* Left Column - Monthly Savings - 1/3 */}
+          <div className="md:w-1/3 overflow-y-auto pb-6">
+            <MonthlySavingsSection 
+              monthlySavings={monthlySavings}
+              onSavingDeleted={handleSavingDeleted}
+              onSavingAdded={handleSavingAdded}
+            />
+          </div>
+          
+          {/* Right Column - Projects - 2/3 */}
+          <div className="md:w-2/3 overflow-y-auto pb-6">
+            {canAccessFeature('/savings', 'new_project') && (
+              <ProjectsSection 
+                projects={projects} 
+                onProjectDeleted={handleProjectDeleted}
+                onNewProjectClick={handleNewProjectClick}
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Project Wizard Dialog */}
+        <Dialog open={showProjectWizard} onOpenChange={setShowProjectWizard}>
+          <DialogContent className="max-w-4xl">
+            <SavingsProjectWizard 
+              onClose={() => setShowProjectWizard(false)} 
+              onProjectCreated={handleProjectCreated} 
+            />
+          </DialogContent>
+        </Dialog>
         
         {/* Pro Feature Modal */}
         <ProModalDialog open={showProModal} onOpenChange={setShowProModal} />
