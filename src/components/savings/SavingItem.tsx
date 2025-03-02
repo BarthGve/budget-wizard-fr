@@ -75,6 +75,11 @@ export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
           <p className="text-sm text-muted-foreground">
             {formatCurrency(saving.amount)} / mois
           </p>
+          {saving.is_project_saving && (
+            <p className="text-xs text-blue-500 italic">
+              Lié à un projet d'épargne
+            </p>
+          )}
         </div>
       </div>
 

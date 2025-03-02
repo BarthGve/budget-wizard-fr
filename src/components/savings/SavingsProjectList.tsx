@@ -21,8 +21,12 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
   
   // Set up real-time listener for monthly_savings changes affecting projects
   useEffect(() => {
+    // Génération d'un identifiant unique pour le canal
+    const channelId = `savings-project-changes-${Date.now()}`;
+    console.log(`Creating real-time channel: ${channelId}`);
+    
     const channel = supabase
-      .channel('savings-project-changes')
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -31,22 +35,30 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
           table: 'monthly_savings',
           filter: 'is_project_saving=eq.true'
         },
-        () => {
-          console.log('Project-related monthly saving changed, refreshing projects list');
+        (payload) => {
+          console.log('Project-related monthly saving changed:', payload);
+          // Forcer la mise à jour de la liste des projets
           onProjectDeleted();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Subscription status for ${channelId}:`, status);
+      });
       
     return () => {
+      console.log(`Removing channel: ${channelId}`);
       supabase.removeChannel(channel);
     };
   }, [onProjectDeleted]);
 
   // Also listen for direct projets_epargne changes
   useEffect(() => {
+    // Génération d'un identifiant unique pour le canal
+    const channelId = `projects-changes-${Date.now()}`;
+    console.log(`Creating projects table channel: ${channelId}`);
+    
     const channel = supabase
-      .channel('projects-changes')
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -54,14 +66,18 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
           schema: 'public',
           table: 'projets_epargne'
         },
-        () => {
-          console.log('Projects table changed, refreshing projects list');
+        (payload) => {
+          console.log('Projects table changed:', payload);
+          // Forcer la mise à jour de la liste des projets
           onProjectDeleted();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Subscription status for ${channelId}:`, status);
+      });
       
     return () => {
+      console.log(`Removing channel: ${channelId}`);
       supabase.removeChannel(channel);
     };
   }, [onProjectDeleted]);
@@ -137,7 +153,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
         initial="hidden"
         animate={showProjects ? "visible" : "hidden"}
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {projects.map((project, index) => (
             <SavingsProjectCard
               key={project.id}

@@ -14,13 +14,16 @@ export const useDashboardData = () => {
   useEffect(() => {
     // Cleanup previous channel if it exists
     if (channelRef.current) {
-      console.log('Removing existing channel in useDashboardData');
+      console.log('Removing existing contributors channel in useDashboardData');
       supabase.removeChannel(channelRef.current);
     }
     
     // Create a new channel with a unique ID
+    const channelId = `dashboard-data-${Date.now()}`;
+    console.log(`Setting up contributors channel: ${channelId}`);
+    
     const channel = supabase
-      .channel('dashboard-data-' + Date.now())
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -28,13 +31,15 @@ export const useDashboardData = () => {
           schema: 'public',
           table: 'contributors'
         },
-        () => {
-          console.log('Contributors table changed from useDashboardData hook, invalidating dashboard data');
+        (payload) => {
+          console.log('Contributors table changed from useDashboardData hook:', payload);
           // Selectively invalidate only the necessary queries
           queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Contributors channel status: ${status}`);
+      });
     
     // Store the channel reference
     channelRef.current = channel;
@@ -42,7 +47,7 @@ export const useDashboardData = () => {
     // Cleanup function
     return () => {
       if (channelRef.current) {
-        console.log('Cleaning up channel in useDashboardData unmount');
+        console.log('Cleaning up contributors channel in useDashboardData unmount');
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
@@ -52,11 +57,15 @@ export const useDashboardData = () => {
   // Set up real-time listener for monthly savings changes
   useEffect(() => {
     if (monthlySavingsChannelRef.current) {
+      console.log('Removing existing monthly savings channel in useDashboardData');
       supabase.removeChannel(monthlySavingsChannelRef.current);
     }
     
+    const channelId = `monthly-savings-changes-${Date.now()}`;
+    console.log(`Setting up monthly savings channel: ${channelId}`);
+    
     const channel = supabase
-      .channel('monthly-savings-changes-' + Date.now())
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -64,17 +73,22 @@ export const useDashboardData = () => {
           schema: 'public',
           table: 'monthly_savings'
         },
-        () => {
-          console.log('Monthly savings table changed, invalidating dashboard data');
+        (payload) => {
+          console.log('Monthly savings table changed:', payload);
+          // Invalidate both dashboard data and savings projects
           queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+          queryClient.invalidateQueries({ queryKey: ["savings-projects"] });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Monthly savings channel status: ${status}`);
+      });
     
     monthlySavingsChannelRef.current = channel;
 
     return () => {
       if (monthlySavingsChannelRef.current) {
+        console.log('Cleaning up monthly savings channel in useDashboardData unmount');
         supabase.removeChannel(monthlySavingsChannelRef.current);
         monthlySavingsChannelRef.current = null;
       }
@@ -84,11 +98,15 @@ export const useDashboardData = () => {
   // Set up real-time listener for projects changes
   useEffect(() => {
     if (projectsChannelRef.current) {
+      console.log('Removing existing projects channel in useDashboardData');
       supabase.removeChannel(projectsChannelRef.current);
     }
     
+    const channelId = `projects-changes-${Date.now()}`;
+    console.log(`Setting up projects channel: ${channelId}`);
+    
     const channel = supabase
-      .channel('projects-changes-' + Date.now())
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -96,17 +114,22 @@ export const useDashboardData = () => {
           schema: 'public',
           table: 'projets_epargne'
         },
-        () => {
-          console.log('Projects table changed, invalidating dashboard data');
+        (payload) => {
+          console.log('Projects table changed:', payload);
+          // Invalidate both dashboard data and savings projects
           queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+          queryClient.invalidateQueries({ queryKey: ["savings-projects"] });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Projects channel status: ${status}`);
+      });
     
     projectsChannelRef.current = channel;
 
     return () => {
       if (projectsChannelRef.current) {
+        console.log('Cleaning up projects channel in useDashboardData unmount');
         supabase.removeChannel(projectsChannelRef.current);
         projectsChannelRef.current = null;
       }
