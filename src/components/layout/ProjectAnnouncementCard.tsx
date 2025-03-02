@@ -76,15 +76,15 @@ export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnounceme
           <div className="flex items-start gap-3">
             <Rocket className="h-5 w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-800">
-                Créez vos propres projets dès maintenant !
+              <p className="text-xs  text-gray-800">
+                Nouveau: créer un projet d'épargne !
               </p>
               <Button 
-                size="sm" 
+                size="xs" 
                 className="w-full bg-indigo-500 hover:bg-indigo-600"
                 onClick={handleCreateProject}
               >
-                Créer un projet
+                🚀 Let's go!
               </Button>
             </div>
           </div>
