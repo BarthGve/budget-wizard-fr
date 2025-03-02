@@ -24,9 +24,9 @@ export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnounceme
       if (!userId) return true; // If no user ID, don't show card
       
       const { data, error } = await supabase
-        .from('savings_projects')
+        .from('projets_epargne')
         .select('id')
-        .eq('user_id', userId)
+        .eq('profile_id', userId)
         .limit(1);
       
       if (error) {
