@@ -30,30 +30,29 @@ export const ZeroIncomeDialog = ({ open, onOpenChange }: ZeroIncomeDialogProps) 
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CreditCard className="h-5 w-5 text-primary" />
-            Bienvenue sur Budget Wizard
+            🎉 Bienvenue sur Budget Wizard !
           </DialogTitle>
           <DialogDescription>
-            Nous avons remarqué que vous n'avez pas encore renseigné vos revenus. 
-            Cette information est essentielle pour vous offrir une expérience personnalisée 
-            et des analyses budgétaires précises.
+          Nous avons remarqué que vous n’avez pas encore renseigné vos revenus.
+          Cette information est essentielle pour vous offrir une expérience personnalisée et des analyses budgétaires précises.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
           <p className="text-sm">
-            En renseignant vos revenus, vous pourrez :
+          ✨ En ajoutant vos revenus, vous pourrez :
           </p>
           <ul className="mt-2 list-disc pl-5 text-sm text-muted-foreground">
-            <li>Visualiser votre budget mensuel</li>
-            <li>Analyser vos dépenses par rapport à vos revenus</li>
-            <li>Obtenir des suggestions d'épargne personnalisées</li>
+            <li>Planifier votre budget mensuel</li>
+            <li>Fixer votre objectif d'épargne</li>
+            <li>Evaluer votre liberté financière</li>
           </ul>
         </div>
         <DialogFooter className="flex flex-col sm:flex-row gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Plus tard
+            Non merci
           </Button>
           <Button onClick={handleNavigateToContributors}>
-            Renseigner mes revenus
+          🔥 C'est parti!
           </Button>
         </DialogFooter>
       </DialogContent>
