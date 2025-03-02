@@ -91,7 +91,7 @@ const Savings = () => {
   return (
     <DashboardLayout>
       <motion.div 
-        className="space-y-6 h-[calc(100vh-4rem)] overflow-hidden flex flex-col"
+        className="space-y-4 h-[calc(100vh-4rem)] overflow-hidden flex flex-col"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -107,7 +107,7 @@ const Savings = () => {
         />
         
         {/* Main Content - Two Columns */}
-        <div className="flex flex-col md:flex-row gap-6 flex-1 overflow-hidden">
+        <div className="flex flex-col md:flex-row gap-12 flex-1 overflow-hidden">
           {/* Left Column - Monthly Savings - 1/3 */}
           <div className="md:w-1/3 overflow-y-auto pb-6">
             <MonthlySavingsSection 
