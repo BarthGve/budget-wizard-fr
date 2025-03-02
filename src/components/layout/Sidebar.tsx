@@ -11,6 +11,7 @@ import { ThemeToggle } from "../theme/ThemeToggle";
 import { appConfig } from "@/config/app.config";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLatestVersion } from "@/hooks/useLatestVersion";
 
 interface SidebarProps {
   className?: string;
@@ -23,6 +24,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     const saved = localStorage.getItem("sidebarCollapsed");
     return saved ? JSON.parse(saved) : (isMobile ? true : false);
   });
+  const { latestVersion } = useLatestVersion();
 
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
@@ -130,7 +132,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
             {!collapsed && (
              <div className="flex items-baseline gap-2">
                <span className="text-xs text-muted-foreground">
-                 {appConfig.version}
+                 {latestVersion || appConfig.version}
                </span>
              </div>
             )}
