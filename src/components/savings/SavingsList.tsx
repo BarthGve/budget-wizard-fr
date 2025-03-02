@@ -98,7 +98,7 @@ export const SavingsList = ({
   return (
     <div className="grid gap-2">
       <motion.div 
-        className="overflow-hidden"
+        className="mb-1"
         variants={containerVariants}
         initial="hidden"
         animate={showSavings ? "visible" : "hidden"}
