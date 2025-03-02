@@ -68,14 +68,6 @@ export const DashboardCharts = ({
       className="grid gap-6 md:grid-cols-3"
       variants={containerVariants}
     >
-      {recurringExpenses.length > 0 && (
-        <motion.div variants={itemVariants}>
-          <RecurringExpensesPieChart
-            recurringExpenses={recurringExpenses}
-            totalExpenses={expenses}
-          />
-        </motion.div>
-      )}
       {credits && credits.length > 0 && (
         <motion.div variants={itemVariants}>
           <CreditsPieChart
@@ -84,6 +76,15 @@ export const DashboardCharts = ({
           />
         </motion.div>
       )}
+      {recurringExpenses.length > 0 && (
+        <motion.div variants={itemVariants}>
+          <RecurringExpensesPieChart
+            recurringExpenses={recurringExpenses}
+            totalExpenses={expenses}
+          />
+        </motion.div>
+      )}
+      
       {monthlySavings.length > 0 && (
         <motion.div variants={itemVariants}>
           <SavingsPieChart
