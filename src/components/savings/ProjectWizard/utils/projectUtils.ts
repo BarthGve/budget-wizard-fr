@@ -1,4 +1,3 @@
-
 import { SavingsMode, SavingsProject } from "@/types/savings-project";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -61,6 +60,47 @@ export const createMonthlySaving = async (projectData: Partial<SavingsProject>, 
     return true;
   } catch (error) {
     console.error('Error creating monthly saving:', error);
+    throw error;
+  }
+};
+
+export const deleteProjectAndSavings = async (projectId: string) => {
+  try {
+    const { error: projectError } = await supabase
+      .from('projets_epargne')
+      .delete()
+      .eq('id', projectId);
+
+    if (projectError) throw projectError;
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting project and associated savings:', error);
+    throw error;
+  }
+};
+
+export const deleteSavingAndProject = async (savingId: string, isProjectSaving: boolean, projectId?: string) => {
+  try {
+    const { error: savingError } = await supabase
+      .from('monthly_savings')
+      .delete()
+      .eq('id', savingId);
+
+    if (savingError) throw savingError;
+
+    if (isProjectSaving && projectId) {
+      const { error: projectError } = await supabase
+        .from('projets_epargne')
+        .delete()
+        .eq('id', projectId);
+        
+      if (projectError) throw projectError;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting saving and associated project:', error);
     throw error;
   }
 };

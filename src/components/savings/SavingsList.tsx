@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { SavingItem } from "./SavingItem";
 import { DeleteSavingDialog } from "./DeleteSavingDialog";
 import { EmptySavings } from "./EmptySavings";
+import { deleteSavingAndProject } from "./ProjectWizard/utils/projectUtils";
 
 interface SavingsListProps {
   monthlySavings: Array<{
@@ -45,20 +46,11 @@ export const SavingsList = ({
     try {
       console.log("Deleting saving with ID:", id);
       
-      // Puisque nous avons mis en place une contrainte ON DELETE CASCADE,
-      // nous n'avons plus besoin de supprimer explicitement le projet.
-      // La suppression du versement mensuel entraînera automatiquement
-      // la suppression du projet associé (si is_project_saving est true).
-      
-      const { error } = await supabase.from("monthly_savings").delete().eq("id", id);
-      if (error) {
-        console.error("Error deleting saving:", error);
-        throw error;
-      }
-      
       if (selectedSaving?.is_project_saving) {
+        await deleteSavingAndProject(id, true, selectedSaving.projet_id);
         toast.success("Épargne et projet associé supprimés avec succès");
       } else {
+        await deleteSavingAndProject(id, false);
         toast.success("Épargne supprimée avec succès");
       }
       
