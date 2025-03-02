@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from "react";
 import { StepOne } from "./steps/StepOne";
 import { StepTwo } from "./steps/StepTwo";
@@ -83,7 +82,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
 
   const createProject = async (projectData: Partial<SavingsProject>) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
@@ -91,7 +89,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         throw new Error('Le nom du projet est obligatoire');
       }
 
-      // Define the proper statut type value using the correct enum
       const statut: "actif" | "en_attente" | "dépassé" = projectData.added_to_recurring ? "actif" : "en_attente";
 
       const supabaseProject = {
@@ -111,7 +108,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         statut: statut
       };
 
-      // Insert project into database
       const { data, error: projectError } = await supabase
         .from('projets_epargne')
         .insert(supabaseProject)
@@ -132,18 +128,16 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     setError(null);
     
     try {
-      // Créer le projet
       const newProject = await createProject(formData);
       
-      // Si l'option "Créer un versement mensuel" est cochée, créer le versement mensuel
       if (formData.added_to_recurring && newProject) {
         const { error } = await supabase.from("monthly_savings").insert({
           name: formData.nom_projet,
           amount: formData.montant_mensuel || 0,
           description: formData.description,
           profile_id: newProject.profile_id,
-          projet_id: newProject.id, // Utiliser la nouvelle relation directe
-          is_project_saving: true, // Marquer explicitement comme un versement de projet
+          projet_id: newProject.id,
+          is_project_saving: true,
           logo_url: formData.image_url || '/placeholder.svg'
         });
 
@@ -172,7 +166,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     }
   };
 
-  // Reset form when closing
   useEffect(() => {
     return () => {
       setFormData({});
@@ -181,7 +174,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     };
   }, []);
 
-  // Display error if any
   useEffect(() => {
     if (error) {
       toast({
