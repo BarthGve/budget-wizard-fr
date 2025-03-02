@@ -82,7 +82,13 @@ export const usePagePermissions = () => {
   const canAccessFeature = (pagePath: string, featureKey: string): boolean => {
     if (!profile || !permissions) return false;
     if (isAdmin) return true;
-
+    
+    // Pour les projets d'épargne, autoriser l'accès à tous les utilisateurs
+    if (pagePath === '/savings' && featureKey === 'savings_projects') {
+      return true;
+    }
+    
+    // Pour les autres fonctionnalités
     const pagePermission = permissions.find(p => p.page_path === pagePath);
     if (!pagePermission) return false; // Si aucune permission n'est définie, on refuse l'accès
 

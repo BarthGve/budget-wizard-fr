@@ -12,7 +12,6 @@ import { SavingsHeader } from "@/components/savings/SavingsHeader";
 import { SavingsGoalSection } from "@/components/savings/SavingsGoalSection";
 import { ProjectsSection } from "@/components/savings/ProjectsSection";
 import { MonthlySavingsSection } from "@/components/savings/MonthlySavingsSection";
-import { ProModalDialog } from "@/components/savings/ProModalDialog";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const Savings = () => {
@@ -23,10 +22,6 @@ const Savings = () => {
   } = useDashboardData();
   const queryClient = useQueryClient();
   const [showProjectWizard, setShowProjectWizard] = useState(false);
-  const [showProModal, setShowProModal] = useState(false);
-  const {
-    canAccessFeature
-  } = usePagePermissions();
   const savingsChannelRef = useRef(null);
 
   // Écouteurs en temps réel spécifiques à la page Savings
@@ -119,14 +114,6 @@ const Savings = () => {
     refetchProjects();
   };
 
-  const handleNewProjectClick = () => {
-    if (canAccessFeature('/savings', 'new_project')) {
-      setShowProjectWizard(true);
-    } else {
-      setShowProModal(true);
-    }
-  };
-
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -170,13 +157,11 @@ const Savings = () => {
           
           {/* Right Column - Projects - 1/2 */}
           <div className="md:w-1/2 overflow-y-auto pb-6">
-            {canAccessFeature('/savings', 'new_project') && (
-              <ProjectsSection 
-                projects={projects} 
-                onProjectDeleted={handleProjectDeleted}
-                onNewProjectClick={handleNewProjectClick}
-              />
-            )}
+            <ProjectsSection 
+              projects={projects} 
+              onProjectDeleted={handleProjectDeleted}
+              onNewProjectClick={() => setShowProjectWizard(true)}
+            />
           </div>
         </div>
         
@@ -189,9 +174,6 @@ const Savings = () => {
             />
           </DialogContent>
         </Dialog>
-        
-        {/* Pro Feature Modal */}
-        <ProModalDialog open={showProModal} onOpenChange={setShowProModal} />
       </motion.div>
     </DashboardLayout>
   );

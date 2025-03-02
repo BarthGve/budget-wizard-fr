@@ -138,7 +138,7 @@ export const PagePermissionsTable = () => {
               <TableHead>Chemin</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Version Pro requise</TableHead>
-              <TableHead>Fonctionnalités Pro</TableHead>
+              <TableHead>Fonctionnalités</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -192,6 +192,9 @@ export const PagePermissionsTable = () => {
                           handleFeaturePermissionChange(permission.id, 'savings_projects', checked)
                         }
                       />
+                      <span className="text-sm text-muted-foreground">
+                        {getFeaturePermission(permission, 'savings_projects') ? "Pro" : "Basic"}
+                      </span>
                     </div>
                   )}
                 </TableCell>
