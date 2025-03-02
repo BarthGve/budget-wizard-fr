@@ -159,8 +159,8 @@ const Savings = () => {
         
         {/* Main Content - Two Columns */}
         <div className="flex flex-col md:flex-row gap-12 flex-1 overflow-hidden">
-          {/* Left Column - Monthly Savings - 1/3 */}
-          <div className="md:w-1/3 overflow-y-auto pb-6">
+          {/* Left Column - Monthly Savings - 1/2 */}
+          <div className="md:w-1/2 overflow-y-auto pb-6">
             <MonthlySavingsSection 
               monthlySavings={monthlySavings}
               onSavingDeleted={handleSavingDeleted}
@@ -168,8 +168,8 @@ const Savings = () => {
             />
           </div>
           
-          {/* Right Column - Projects - 2/3 */}
-          <div className="md:w-2/3 overflow-y-auto pb-6">
+          {/* Right Column - Projects - 1/2 */}
+          <div className="md:w-1/2 overflow-y-auto pb-6">
             {canAccessFeature('/savings', 'new_project') && (
               <ProjectsSection 
                 projects={projects} 
