@@ -51,7 +51,7 @@ export const ZeroIncomeDialog = ({ open, onOpenChange }: ZeroIncomeDialogProps) 
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Non merci
           </Button>
-          <Button onClick={handleNavigateToContributors}>
+          <Button onClick={handleNavigateToContributors} className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white">
           🔥 C'est parti!
           </Button>
         </DialogFooter>
