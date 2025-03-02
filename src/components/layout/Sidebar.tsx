@@ -144,7 +144,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
         
         {!isAdmin && (
           <div className={cn(
-            "mt-auto border-t border-gray-200 pt-4 pb-4 px-4",
+            "mt-auto  pt-4 pb-4 px-4",
             collapsed && "flex justify-center"
           )}>
             <FeedbackDialog collapsed={collapsed} />

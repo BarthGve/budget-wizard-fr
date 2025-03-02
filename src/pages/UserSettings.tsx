@@ -49,9 +49,9 @@ const UserSettings = () => {
           <TabsContent value="profile" className="space-y-6">
             <ProfileSettings />
             <SecuritySettings />
-            <NotificationSettings />
-            <PaymentSettings />
-            <PrivacySettings />
+           {/* <NotificationSettings />*/}
+           {/*<PaymentSettings /> */} 
+            {/*<PrivacySettings /> */}
           </TabsContent>
           <TabsContent value="settings" className="space-y-6">
             {canAccessRetailers && <RetailersSettings />}
