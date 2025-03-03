@@ -8,7 +8,7 @@ import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface RetailerCardProps {
   retailer: {
@@ -66,8 +66,8 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
-  const handleRetailerClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleRetailerClick = () => {
+    console.log(`Navigating to retailer detail: /expenses/retailer/${retailer.id}`);
     navigate(`/expenses/retailer/${retailer.id}`);
   };
 
