@@ -1,5 +1,5 @@
 
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -15,20 +15,21 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
   const endDate = new Date(dateFin);
   const currentDate = new Date();
 
-  // Calculer le nombre total de mois entre le début et la fin
-  const totalMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
-    (endDate.getMonth() - startDate.getMonth());
-
-  // Calculer le nombre de mois écoulés jusqu'à aujourd'hui
-  const elapsedMonths = Math.min(
-    (currentDate.getFullYear() - startDate.getFullYear()) * 12 + 
-    (currentDate.getMonth() - startDate.getMonth()),
-    totalMonths
+  // Calculer le nombre total de jours entre le début et la fin
+  const totalDays = differenceInDays(endDate, startDate);
+  
+  // Calculer le nombre de jours écoulés jusqu'à aujourd'hui
+  const elapsedDays = Math.min(
+    differenceInDays(currentDate, startDate),
+    totalDays
   );
 
-  const progressPercentage = Math.min(100, Math.max(0, (elapsedMonths / totalMonths) * 100));
-  const montantTotal = totalMonths * montantMensuel;
-  const montantRembourse = elapsedMonths * montantMensuel;
+  // Calculer le pourcentage de progression basé sur les jours
+  const progressPercentage = Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100));
+  
+  // Calculer le montant total et le montant déjà remboursé
+  const montantTotal = (totalDays / 30) * montantMensuel; // Approximation basée sur les jours
+  const montantRembourse = (elapsedDays / 30) * montantMensuel; // Approximation basée sur les jours
   const montantRestant = montantTotal - montantRembourse;
 
   return (
