@@ -97,7 +97,7 @@ export const RecurringExpensesSummaryCards = ({
                 <CardTitle className="text-xl md:text-2xl text-white">{title}</CardTitle>
                 <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
-              <CardDescription className="text-sm md:text-base text-white">Total des charges</CardDescription>
+              <CardDescription className="text-sm md:text-base text-white">Total des charges {title.toLowerCase()}</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-lg md:text-xl text-white font-bold">{Math.round(value)} €</p>

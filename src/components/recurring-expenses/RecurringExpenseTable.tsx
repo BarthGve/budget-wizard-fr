@@ -142,18 +142,12 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                 <TableCell className="text-center py-2 font-medium">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
                 <TableCell className="text-right py-2">
                   <div className="flex justify-end">
-            
-
-
-
                     <button
-                     variant="ghost"
-                size="icon"
                       onClick={() => onDeleteExpense(expense.id)}
-                      className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                      >
-                <Trash2 className="h-4 w-4" />
-                </button>
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Supprimer
+                    </button>
                   </div>
                 </TableCell>
               </TableRow>
