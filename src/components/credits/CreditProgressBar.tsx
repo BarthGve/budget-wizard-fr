@@ -57,24 +57,7 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
   return (
     <TooltipProvider>
       <div className="space-y-2">
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <Tooltip>
-            <TooltipTrigger>
-              <span>{format(startDate, 'MMM yyyy', { locale: fr })}</span>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Début du crédit</p>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger>
-              <span>{format(endDate, 'MMM yyyy', { locale: fr })}</span>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Fin du crédit</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
+       
         <Tooltip>
           <TooltipTrigger className="w-full">
             <Progress value={progressPercentage} className="h-3" />
