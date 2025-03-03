@@ -15,24 +15,26 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
   const endDate = new Date(dateFin);
   const currentDate = new Date();
 
-  // Calculer le nombre total de jours entre le début et la fin pour la barre de progression
+  // Calculer le nombre total de jours entre le début et la fin pour la barre de progression visuelle
   const totalDays = differenceInDays(endDate, startDate);
   const elapsedDays = Math.min(
     differenceInDays(currentDate, startDate),
     totalDays
   );
   
-  // Calculer le pourcentage de progression basé sur les jours
+  // Calculer le pourcentage de progression basé sur les jours pour l'affichage visuel
   const progressPercentage = Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100));
 
+  // Calculer le nombre total de mois entre le début et la fin
+  const totalMonths = differenceInMonths(endDate, startDate);
+  
   // Calculer le nombre de mois complets écoulés pour le montant remboursé
   // Si la date actuelle est après la date de fin, alors tous les mois sont écoulés
-  const totalMonths = differenceInMonths(endDate, startDate);
   const completedMonths = isAfter(currentDate, endDate) 
     ? totalMonths 
     : Math.min(differenceInMonths(currentDate, startDate), totalMonths);
   
-  // Calculer le montant total et le montant déjà remboursé basé sur les mois complets
+  // Calculer le montant total et le montant déjà remboursé basé uniquement sur les mois complets
   const montantTotal = totalMonths * montantMensuel;
   const montantRembourse = completedMonths * montantMensuel;
   const montantRestant = montantTotal - montantRembourse;
@@ -63,7 +65,7 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
             <Progress value={progressPercentage} className="h-3" />
           </TooltipTrigger>
           <TooltipContent className="space-y-2">
-            <p>Progression du remboursement : {progressPercentage.toFixed(1)}%</p>
+            <p>Progression visuelle : {progressPercentage.toFixed(1)}%</p>
             <p>Mensualités payées : {completedMonths} sur {totalMonths}</p>
             <p>Montant remboursé : {montantRembourse.toLocaleString('fr-FR')}€</p>
             <p>Montant restant : {montantRestant.toLocaleString('fr-FR')}€</p>
