@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, CaptionProps } from "react-day-picker";
+import { DayPicker, CaptionProps, useNavigation } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -15,26 +15,37 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
-  function CustomCaption(captionProps: CaptionProps) {
-    const { displayMonth, currMonth } = captionProps;
-    const displayedMonth = displayMonth || currMonth;
-
-    // On vérifie si captionLayout est "dropdown-buttons"
+  function CustomCaption(props: CaptionProps) {
+    const { month, displayMonth } = props;
+    const { goToMonth } = useNavigation();
+    
+    // Use displayMonth for the current displayed month
+    const currentMonth = displayMonth || month;
+    
+    // Only render dropdown selectors if captionLayout is "dropdown-buttons"
     if (props.captionLayout === "dropdown-buttons") {
-      const years = Array.from({ length: (props.toYear || 2050) - (props.fromYear || 1900) + 1 }, 
-        (_, i) => (props.fromYear || 1900) + i);
+      const fromYear = props.fromYear || 1900;
+      const toYear = props.toYear || 2050;
+      
+      const years = Array.from(
+        { length: toYear - fromYear + 1 }, 
+        (_, i) => fromYear + i
+      );
       
       const months = Array.from({ length: 12 }, (_, i) => {
-        const month = new Date(2021, i, 1);
-        return { value: i.toString(), label: month.toLocaleString('fr', { month: 'long' }) };
+        const date = new Date(2021, i, 1);
+        return { value: i.toString(), label: date.toLocaleString('fr', { month: 'long' }) };
       });
 
       return (
         <div className="flex justify-center space-x-2 pt-1 relative items-center">
           <Select
-            value={displayedMonth.getFullYear().toString()}
+            value={currentMonth.getFullYear().toString()}
             onValueChange={(value) => {
-              captionProps.onYearChange?.(parseInt(value));
+              const newYear = parseInt(value);
+              const newDate = new Date(currentMonth);
+              newDate.setFullYear(newYear);
+              goToMonth(newDate);
             }}
           >
             <SelectTrigger className="w-[110px] h-7">
@@ -50,9 +61,12 @@ function Calendar({
           </Select>
           
           <Select
-            value={displayedMonth.getMonth().toString()}
+            value={currentMonth.getMonth().toString()}
             onValueChange={(value) => {
-              captionProps.onMonthChange?.(new Date(displayedMonth.getFullYear(), parseInt(value), 1));
+              const newMonth = parseInt(value);
+              const newDate = new Date(currentMonth);
+              newDate.setMonth(newMonth);
+              goToMonth(newDate);
             }}
           >
             <SelectTrigger className="w-[110px] h-7">
