@@ -56,4 +56,4 @@ export function FirstPaymentDateField({ form }: FirstPaymentDateFieldProps) {
       )}
     />
   );
-}
+};

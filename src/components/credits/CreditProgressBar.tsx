@@ -1,0 +1,69 @@
+
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+interface CreditProgressBarProps {
+  dateDebut: string;
+  dateFin: string;
+  montantMensuel: number;
+}
+
+export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: CreditProgressBarProps) => {
+  const startDate = new Date(dateDebut);
+  const endDate = new Date(dateFin);
+  const currentDate = new Date();
+
+  // Calculer le nombre total de mois entre le début et la fin
+  const totalMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+    (endDate.getMonth() - startDate.getMonth());
+
+  // Calculer le nombre de mois écoulés jusqu'à aujourd'hui
+  const elapsedMonths = Math.min(
+    (currentDate.getFullYear() - startDate.getFullYear()) * 12 + 
+    (currentDate.getMonth() - startDate.getMonth()),
+    totalMonths
+  );
+
+  const progressPercentage = Math.min(100, Math.max(0, (elapsedMonths / totalMonths) * 100));
+  const montantTotal = totalMonths * montantMensuel;
+  const montantRembourse = elapsedMonths * montantMensuel;
+  const montantRestant = montantTotal - montantRembourse;
+
+  return (
+    <TooltipProvider>
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm text-muted-foreground">
+          <Tooltip>
+            <TooltipTrigger>
+              <span>{format(startDate, 'MMM yyyy', { locale: fr })}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Début du crédit</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger>
+              <span>{format(endDate, 'MMM yyyy', { locale: fr })}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Fin du crédit</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        <Tooltip>
+          <TooltipTrigger className="w-full">
+            <Progress value={progressPercentage} className="h-3" />
+          </TooltipTrigger>
+          <TooltipContent className="space-y-2">
+            <p>Progression du remboursement : {progressPercentage.toFixed(1)}%</p>
+            <p>Montant remboursé : {montantRembourse.toLocaleString('fr-FR')}€</p>
+            <p>Montant restant : {montantRestant.toLocaleString('fr-FR')}€</p>
+            <p>Montant total : {montantTotal.toLocaleString('fr-FR')}€</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
+  );
+};
