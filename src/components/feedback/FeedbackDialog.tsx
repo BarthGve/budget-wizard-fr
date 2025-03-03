@@ -92,11 +92,11 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
             )}
           >
             <Send className="h-4 w-4" />
-            {!collapsed && <span className="ml-2 font-normal">Votre avis compte</span>}
+            {!collapsed && <span className="ml-2 font-normal">Laissez-nous un avis</span>}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader className="mt-2">
+          <DialogHeader>
             <DialogTitle className="text-center text-2xl font-bold">⭐️ Votre avis nous intéresse ⭐️</DialogTitle>
             <DialogDescription className="text-center text-base">
               Aidez-nous à améliorer notre produit en partageant vos impressions
