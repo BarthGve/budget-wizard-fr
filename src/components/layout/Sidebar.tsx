@@ -9,7 +9,6 @@ import { NavigationMenu } from "./NavigationMenu";
 import { UserDropdown } from "./UserDropdown";
 import { ThemeToggle } from "../theme/ThemeToggle";
 import { appConfig } from "@/config/app.config";
-import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
