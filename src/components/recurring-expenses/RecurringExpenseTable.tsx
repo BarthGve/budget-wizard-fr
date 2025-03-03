@@ -1,9 +1,8 @@
 
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, ALL_PERIODICITIES, periodicityLabels } from "./types";
+import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, periodicityLabels } from "./types";
 import { TableFilters } from "./TableFilters";
-import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { TableRows } from "./table/TableRows";
 import { TablePagination } from "./table/TablePagination";
@@ -14,7 +13,6 @@ import { SortableTableHeader } from "@/components/properties/expenses/SortableTa
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>(ALL_CATEGORIES);
-  const [periodicityFilter, setPeriodicityFilter] = useState<string>(ALL_PERIODICITIES);
   const [sortField, setSortField] = useState<keyof RecurringExpense>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -31,7 +29,8 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
     }
   };
 
-  const filteredExpenses = filterExpenses(expenses, searchTerm, categoryFilter, periodicityFilter, ALL_CATEGORIES, ALL_PERIODICITIES);
+  // Modification de l'appel à filterExpenses pour supprimer le filtre de périodicité
+  const filteredExpenses = filterExpenses(expenses, searchTerm, categoryFilter, null, ALL_CATEGORIES, "");
   const sortedExpenses = sortExpenses(filteredExpenses, sortField, sortDirection);
   const totalPages = itemsPerPage === -1 ? 1 : Math.ceil(sortedExpenses.length / itemsPerPage);
   const paginatedExpenses = paginateExpenses(sortedExpenses, currentPage, itemsPerPage);
@@ -57,8 +56,6 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           onSearchChange={setSearchTerm}
           categoryFilter={categoryFilter}
           onCategoryFilterChange={setCategoryFilter}
-          periodicityFilter={periodicityFilter}
-          onPeriodicityFilterChange={setPeriodicityFilter}
           uniqueCategories={uniqueCategories}
         />
       </motion.div>

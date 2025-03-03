@@ -1,5 +1,6 @@
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { RecurringExpensesHeader } from "./RecurringExpensesHeader";
 import { RecurringExpensesSummaryCards } from "./RecurringExpensesSummaryCards";
 import { RecurringExpenseTable } from "./RecurringExpenseTable";
@@ -15,6 +16,8 @@ export const RecurringExpensesContainer = ({
   recurringExpenses,
   onDeleteExpense
 }: RecurringExpensesContainerProps) => {
+  const [selectedPeriod, setSelectedPeriod] = useState<"monthly" | "quarterly" | "yearly" | null>(null);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -50,6 +53,11 @@ export const RecurringExpensesContainer = ({
   const quarterlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "quarterly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
   const yearlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "yearly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
 
+  // Filtrer les dépenses en fonction de la période sélectionnée
+  const filteredExpenses = selectedPeriod 
+    ? recurringExpenses.filter(expense => expense.periodicity === selectedPeriod)
+    : recurringExpenses;
+
   return (
     <motion.div 
       className="space-y-6 max-w-[1600px] mx-auto px-4"
@@ -67,13 +75,18 @@ export const RecurringExpensesContainer = ({
         monthlyTotal={monthlyTotal}
         quarterlyTotal={quarterlyTotal}
         yearlyTotal={yearlyTotal}
+        onPeriodSelect={setSelectedPeriod}
+        selectedPeriod={selectedPeriod}
       />
 
       <motion.div 
         className="w-full overflow-hidden"
         variants={itemVariants}
       >
-        <RecurringExpenseTable expenses={recurringExpenses} onDeleteExpense={onDeleteExpense} />
+        <RecurringExpenseTable 
+          expenses={filteredExpenses} 
+          onDeleteExpense={onDeleteExpense} 
+        />
       </motion.div>
     </motion.div>
   );

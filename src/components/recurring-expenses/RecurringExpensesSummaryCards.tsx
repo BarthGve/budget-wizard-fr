@@ -7,12 +7,16 @@ interface RecurringExpensesSummaryCardsProps {
   monthlyTotal: number;
   quarterlyTotal: number;
   yearlyTotal: number;
+  onPeriodSelect: (period: "monthly" | "quarterly" | "yearly" | null) => void;
+  selectedPeriod: "monthly" | "quarterly" | "yearly" | null;
 }
 
 export const RecurringExpensesSummaryCards = ({
   monthlyTotal,
   quarterlyTotal,
-  yearlyTotal
+  yearlyTotal,
+  onPeriodSelect,
+  selectedPeriod
 }: RecurringExpensesSummaryCardsProps) => {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -60,21 +64,24 @@ export const RecurringExpensesSummaryCards = ({
           title: "Mensuel",
           value: monthlyTotal,
           Icon: Calendar,
-          index: 0
+          index: 0,
+          period: "monthly" as const
         },
         {
           title: "Trimestriel",
           value: quarterlyTotal,
           Icon: CalendarDays,
-          index: 1
+          index: 1,
+          period: "quarterly" as const
         },
         {
           title: "Annuel",
           value: yearlyTotal,
           Icon: CalendarRange,
-          index: 2
+          index: 2,
+          period: "yearly" as const
         }
-      ].map(({ title, value, Icon, index }) => (
+      ].map(({ title, value, Icon, index, period }) => (
         <motion.div
           key={title}
           custom={index}
@@ -90,8 +97,13 @@ export const RecurringExpensesSummaryCards = ({
             transformStyle: "preserve-3d",
             perspective: "1000px"
           }}
+          onClick={() => onPeriodSelect(selectedPeriod === period ? null : period)}
         >
-          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md dark:bg-gray-800 transform-gpu">
+          <Card 
+            className={`bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md dark:bg-gray-800 transform-gpu cursor-pointer ${
+              selectedPeriod === period ? 'ring-4 ring-white ring-opacity-50' : ''
+            }`}
+          >
             <CardHeader className="py-[16px]">
               <div className="flex flex-row items-center justify-between">
                 <CardTitle className="text-xl md:text-2xl text-white">{title}</CardTitle>
