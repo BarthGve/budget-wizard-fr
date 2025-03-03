@@ -16,14 +16,13 @@ function Calendar({
   ...props
 }: CalendarProps) {
   function CustomCaption(props: CaptionProps) {
-    const { month, displayMonth } = props;
-    const { goToMonth } = useNavigation();
+    const { goToMonth, nextMonth, previousMonth } = useNavigation();
     
-    // Use displayMonth for the current displayed month
-    const currentMonth = displayMonth || month;
+    // In react-day-picker v8, we get the current displayed month directly from props
+    const currentMonth = props.displayMonth;
     
-    // Only render dropdown selectors if captionLayout is "dropdown-buttons"
-    if (props.captionLayout === "dropdown-buttons") {
+    // Only render dropdown selectors if captionLayout is specified in the parent props
+    if (props.id === "caption" && props.captionLayout === "dropdown-buttons") {
       const fromYear = props.fromYear || 1900;
       const toYear = props.toYear || 2050;
       
