@@ -16,7 +16,8 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
   const endDate = new Date(dateFin);
   const currentDate = new Date();
 
-  // Calculer le nombre total de mensualités entre le début et la fin
+  // Calculer le nombre total de mois entre le début et la fin
+  // On utilise differenceInMonths pour tenir compte des différences exactes entre les dates
   const totalMonths = differenceInMonths(endDate, startDate) + 1; // +1 car on compte la mensualité du jour de début
   
   // Calcul du nombre exact de mensualités payées
