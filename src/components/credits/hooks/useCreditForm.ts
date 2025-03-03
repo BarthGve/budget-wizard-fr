@@ -11,6 +11,7 @@ export const formSchema = z.object({
   nom_credit: z.string().min(1, "Le nom est requis"),
   nom_domaine: z.string().min(1, "Le domaine est requis"),
   montant_mensualite: z.string().min(1, "Le montant est requis").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Le montant doit être un nombre positif"),
+  date_premiere_mensualite: z.string().min(1, "La date de première mensualité est requise"),
   date_derniere_mensualite: z.string().min(1, "La date de dernière mensualité est requise")
     .refine((date) => {
       const selectedDate = new Date(date);
@@ -18,6 +19,13 @@ export const formSchema = z.object({
       today.setHours(0, 0, 0, 0);
       return selectedDate > today;
     }, "La date de dernière mensualité doit être dans le futur"),
+}).refine((data) => {
+  const firstDate = new Date(data.date_premiere_mensualite);
+  const lastDate = new Date(data.date_derniere_mensualite);
+  return firstDate < lastDate;
+}, {
+  message: "La date de première mensualité doit être antérieure à la date de dernière mensualité",
+  path: ["date_premiere_mensualite"],
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -42,6 +50,7 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       nom_credit: credit?.nom_credit || "",
       nom_domaine: credit?.nom_domaine || "",
       montant_mensualite: credit?.montant_mensualite?.toString() || "",
+      date_premiere_mensualite: credit?.date_premiere_mensualite || "",
       date_derniere_mensualite: credit?.date_derniere_mensualite || "",
     },
   });
@@ -63,6 +72,7 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
         nom_credit: values.nom_credit.trim(),
         nom_domaine: values.nom_domaine.trim(),
         montant_mensualite: Number(values.montant_mensualite),
+        date_premiere_mensualite: values.date_premiere_mensualite,
         date_derniere_mensualite: values.date_derniere_mensualite,
         logo_url,
         profile_id: user.id,

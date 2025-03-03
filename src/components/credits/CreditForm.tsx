@@ -6,6 +6,7 @@ import { NameField } from "./form-fields/NameField";
 import { DomainField } from "./form-fields/DomainField";
 import { AmountField } from "./form-fields/AmountField";
 import { LastPaymentDateField } from "./form-fields/LastPaymentDateField";
+import { FirstPaymentDateField } from "./form-fields/FirstPaymentDateField";
 import { Credit } from "./types";
 
 interface CreditFormProps {
@@ -30,7 +31,10 @@ export function CreditForm({
         <NameField form={form} />
         <DomainField form={form} />
         <AmountField form={form} />
-        <LastPaymentDateField form={form} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FirstPaymentDateField form={form} />
+          <LastPaymentDateField form={form} />
+        </div>
 
         <div className="flex justify-end space-x-2">
           <Button type="button" variant="outline" onClick={onCancel}>
