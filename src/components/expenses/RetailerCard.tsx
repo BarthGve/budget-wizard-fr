@@ -8,6 +8,7 @@ import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
+import { Link } from "react-router-dom";
 
 interface RetailerCardProps {
   retailer: {
@@ -69,17 +70,24 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
   return (
     <>
       <Card className="pb-0 pt-6 px-6">
-        <div 
-          className="flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => setAddDialogOpen(true)}
-        >
-          <h3 className="text-xl font-semibold">{retailer.name}</h3>
+        <div className="flex items-center justify-between">
+          <Link 
+            to={`/depenses/enseigne/${retailer.id}`}
+            className="text-xl font-semibold hover:text-primary transition-colors"
+          >
+            {retailer.name}
+          </Link>
           {retailer.logo_url && (
-            <img 
-              src={retailer.logo_url} 
-              alt={retailer.name} 
-              className="w-10 h-10 rounded-full object-contain"
-            />
+            <div 
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => setAddDialogOpen(true)}
+            >
+              <img 
+                src={retailer.logo_url} 
+                alt={retailer.name} 
+                className="w-10 h-10 rounded-full object-contain"
+              />
+            </div>
           )}
         </div>
         <div 
