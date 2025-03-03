@@ -66,27 +66,35 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
-  const handleCardClick = () => {
+  const handleNameClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     navigate(`/expenses/retailer/${retailer.id}`);
+  };
+
+  const handleAmountClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpensesDialogOpen(true);
+  };
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setAddDialogOpen(true);
   };
 
   return (
     <>
-      <Card 
-        className="pb-0 pt-6 px-6 cursor-pointer transition-transform hover:scale-[1.02]"
-        onClick={handleCardClick}
-      >
+      <Card className="pb-0 pt-6 px-6">
         <div className="flex items-center justify-between">
-          <div className="text-xl font-semibold hover:text-primary transition-colors">
+          <div 
+            className="text-xl font-semibold hover:text-primary transition-colors cursor-pointer"
+            onClick={handleNameClick}
+          >
             {retailer.name}
           </div>
           {retailer.logo_url && (
             <div 
               className="cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={(e) => {
-                e.stopPropagation();
-                setAddDialogOpen(true);
-              }}
+              onClick={handleLogoClick}
             >
               <img 
                 src={retailer.logo_url} 
@@ -98,10 +106,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
         </div>
         <div 
           className="mt-4 cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpensesDialogOpen(true);
-          }}
+          onClick={handleAmountClick}
         >
           <div className="text-2xl font-bold">
             {formatCurrency(totalCurrentYear)}
@@ -121,7 +126,9 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
             </div>
           )}
         </div>
-        <ExpensesChart expenses={expenses} viewMode={viewMode} />
+        <div onClick={(e) => e.stopPropagation()}>
+          <ExpensesChart expenses={expenses} viewMode={viewMode} />
+        </div>
       </Card>
 
       <RetailerExpensesDialog
