@@ -1,4 +1,5 @@
 
+
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, periodicityLabels } from "./types";
@@ -166,3 +167,4 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
     </div>
   );
 };
+
