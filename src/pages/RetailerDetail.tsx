@@ -1,18 +1,18 @@
+
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { ChevronLeft } from "lucide-react";
-import { formatCurrency } from "@/utils/format";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { RetailerStatsCard } from "@/components/expenses/RetailerStatsCard";
-import { RetailerExpenseActions } from "@/components/expenses/RetailerExpenseActions";
 import { EditExpenseDialog } from "@/components/expenses/EditExpenseDialog";
+import { RetailerHeader } from "@/components/expenses/retailer-detail/RetailerHeader";
+import { RetailerStats } from "@/components/expenses/retailer-detail/RetailerStats";
+import { RetailerExpensesTable } from "@/components/expenses/retailer-detail/RetailerExpensesTable";
+import { useRetailerExpenseStats } from "@/components/expenses/retailer-detail/useRetailerExpenseStats";
 
 const RetailerDetail = () => {
   const { id } = useParams();
@@ -58,41 +58,15 @@ const RetailerDetail = () => {
     enabled: !!id
   });
 
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-
-  const currentMonthExpenses = expenses?.filter(expense => {
-    const expenseDate = new Date(expense.date);
-    return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
-  }) || [];
-
-  const currentYearExpenses = expenses?.filter(expense => {
-    const expenseDate = new Date(expense.date);
-    return expenseDate.getFullYear() === currentYear;
-  }) || [];
-
-  const monthlyTotal = currentMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const monthlyCount = currentMonthExpenses.length;
-  
-  const yearlyTotal = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const yearlyCount = currentYearExpenses.length;
-
-  const allExpenses = expenses || [];
-  const expenseDates = allExpenses.map(expense => new Date(expense.date));
-  
-  let monthlyAverage = 0;
-  let monthlyAverageCount = 0;
-  
-  if (expenseDates.length > 0) {
-    const oldestDate = new Date(Math.min(...expenseDates.map(date => date.getTime())));
-    const totalMonths = 
-      (currentDate.getFullYear() - oldestDate.getFullYear()) * 12 + 
-      (currentDate.getMonth() - oldestDate.getMonth()) + 1;
-    
-    monthlyAverage = allExpenses.reduce((sum, expense) => sum + expense.amount, 0) / totalMonths;
-    monthlyAverageCount = allExpenses.length / totalMonths;
-  }
+  const {
+    currentYearExpenses,
+    monthlyTotal,
+    monthlyCount,
+    yearlyTotal,
+    yearlyCount,
+    monthlyAverage,
+    monthlyAverageCount
+  } = useRetailerExpenseStats(expenses);
 
   const handleEditExpense = (expense: any) => {
     setExpenseToEdit(expense);
@@ -160,103 +134,26 @@ const RetailerDetail = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex flex-col space-y-2">
-          <Link 
-            to="/expenses" 
-            className="flex items-center text-muted-foreground hover:text-primary transition-colors w-fit"
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            <span>Retour aux dépenses</span>
-          </Link>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold">{retailer.name}</h1>
-              {retailer.logo_url && (
-                <img 
-                  src={retailer.logo_url} 
-                  alt={`Logo ${retailer.name}`} 
-                  className="h-10 w-10 rounded-full object-contain"
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        <RetailerHeader retailer={retailer} />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <RetailerStatsCard
-            title="Dépenses du mois"
-            amount={monthlyTotal}
-            count={monthlyCount}
-            label="achats ce mois-ci"
-            className="bg-gradient-to-br from-blue-500 to-indigo-600"
-          />
-          
-          <RetailerStatsCard
-            title="Dépenses de l'année"
-            amount={yearlyTotal}
-            count={yearlyCount}
-            label="achats cette année"
-            className="bg-gradient-to-br from-purple-500 to-pink-600"
-          />
-          
-          <RetailerStatsCard
-            title="Moyenne mensuelle"
-            amount={monthlyAverage}
-            count={monthlyAverageCount}
-            label="achats par mois"
-            className="bg-gradient-to-br from-orange-500 to-amber-600"
-          />
-        </div>
+        <RetailerStats
+          monthlyTotal={monthlyTotal}
+          monthlyCount={monthlyCount}
+          yearlyTotal={yearlyTotal}
+          yearlyCount={yearlyCount}
+          monthlyAverage={monthlyAverage}
+          monthlyAverageCount={monthlyAverageCount}
+        />
 
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {currentYear}</h2>
+          <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {new Date().getFullYear()}</h2>
           
-          {isLoadingExpenses ? (
-            <div className="space-y-2">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          ) : currentYearExpenses.length === 0 ? (
-            <p className="text-center py-8 text-muted-foreground">
-              Aucune dépense enregistrée pour cette année
-            </p>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Montant</TableHead>
-                    <TableHead>Commentaire</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {currentYearExpenses.map((expense) => (
-                    <TableRow key={expense.id}>
-                      <TableCell>
-                        {new Date(expense.date).toLocaleDateString('fr-FR')}
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {formatCurrency(expense.amount)}
-                      </TableCell>
-                      <TableCell>
-                        {expense.comment || "-"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <RetailerExpenseActions
-                          onEdit={() => handleEditExpense(expense)}
-                          onDelete={() => handleDeleteExpense(expense.id)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+          <RetailerExpensesTable
+            expenses={currentYearExpenses}
+            isLoading={isLoadingExpenses}
+            onEditExpense={handleEditExpense}
+            onDeleteExpense={handleDeleteExpense}
+          />
         </Card>
 
         <EditExpenseDialog
