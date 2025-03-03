@@ -1,5 +1,5 @@
 
-import { format, differenceInDays } from "date-fns";
+import { format, differenceInDays, differenceInMonths, isAfter } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -15,21 +15,26 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
   const endDate = new Date(dateFin);
   const currentDate = new Date();
 
-  // Calculer le nombre total de jours entre le début et la fin
+  // Calculer le nombre total de jours entre le début et la fin pour la barre de progression
   const totalDays = differenceInDays(endDate, startDate);
-  
-  // Calculer le nombre de jours écoulés jusqu'à aujourd'hui
   const elapsedDays = Math.min(
     differenceInDays(currentDate, startDate),
     totalDays
   );
-
+  
   // Calculer le pourcentage de progression basé sur les jours
   const progressPercentage = Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100));
+
+  // Calculer le nombre de mois complets écoulés pour le montant remboursé
+  // Si la date actuelle est après la date de fin, alors tous les mois sont écoulés
+  const totalMonths = differenceInMonths(endDate, startDate);
+  const completedMonths = isAfter(currentDate, endDate) 
+    ? totalMonths 
+    : Math.min(differenceInMonths(currentDate, startDate), totalMonths);
   
-  // Calculer le montant total et le montant déjà remboursé
-  const montantTotal = (totalDays / 30) * montantMensuel; // Approximation basée sur les jours
-  const montantRembourse = (elapsedDays / 30) * montantMensuel; // Approximation basée sur les jours
+  // Calculer le montant total et le montant déjà remboursé basé sur les mois complets
+  const montantTotal = totalMonths * montantMensuel;
+  const montantRembourse = completedMonths * montantMensuel;
   const montantRestant = montantTotal - montantRembourse;
 
   return (
@@ -59,6 +64,7 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
           </TooltipTrigger>
           <TooltipContent className="space-y-2">
             <p>Progression du remboursement : {progressPercentage.toFixed(1)}%</p>
+            <p>Mensualités payées : {completedMonths} sur {totalMonths}</p>
             <p>Montant remboursé : {montantRembourse.toLocaleString('fr-FR')}€</p>
             <p>Montant restant : {montantRestant.toLocaleString('fr-FR')}€</p>
             <p>Montant total : {montantTotal.toLocaleString('fr-FR')}€</p>
