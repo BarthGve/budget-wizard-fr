@@ -52,7 +52,7 @@ export const TableFilters = ({
           ))}
         </SelectContent>
       </Select>
-      <Select value={periodicityFilter} onValueChange={onPeriodicityFilterChange}>
+    {/*  <Select value={periodicityFilter} onValueChange={onPeriodicityFilterChange}>
         <SelectTrigger className="w-full sm:w-[220px]">
           <Filter className="mr-2 h-4 w-4" />
           <SelectValue placeholder="Périodicité" />
@@ -63,7 +63,7 @@ export const TableFilters = ({
             <SelectItem key={key} value={key}>{label}</SelectItem>
           ))}
         </SelectContent>
-      </Select>
+      </Select> */}
     </div>
   );
 };
