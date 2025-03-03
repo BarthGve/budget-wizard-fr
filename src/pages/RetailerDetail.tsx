@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +19,6 @@ const RetailerDetail = () => {
   const [expenseToEdit, setExpenseToEdit] = useState<any>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  // Récupérer l'enseigne
   const { data: retailer, isLoading: isLoadingRetailer } = useQuery({
     queryKey: ["retailer", id],
     queryFn: async () => {
@@ -40,7 +38,6 @@ const RetailerDetail = () => {
     }
   });
 
-  // Récupérer les dépenses pour cette enseigne
   const { data: expenses, isLoading: isLoadingExpenses, refetch: refetchExpenses } = useQuery({
     queryKey: ["retailer-expenses", id],
     queryFn: async () => {
@@ -61,12 +58,10 @@ const RetailerDetail = () => {
     enabled: !!id
   });
 
-  // Calculs des statistiques
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  // Filtrer les dépenses du mois et de l'année en cours
   const currentMonthExpenses = expenses?.filter(expense => {
     const expenseDate = new Date(expense.date);
     return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
@@ -77,14 +72,12 @@ const RetailerDetail = () => {
     return expenseDate.getFullYear() === currentYear;
   }) || [];
 
-  // Calculer les totaux
   const monthlyTotal = currentMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   const monthlyCount = currentMonthExpenses.length;
   
   const yearlyTotal = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   const yearlyCount = currentYearExpenses.length;
 
-  // Calculer la moyenne mensuelle
   const allExpenses = expenses || [];
   const expenseDates = allExpenses.map(expense => new Date(expense.date));
   
@@ -167,7 +160,6 @@ const RetailerDetail = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* Header avec bouton retour et titre */}
         <div className="flex flex-col space-y-2">
           <Link 
             to="/expenses" 
@@ -191,7 +183,6 @@ const RetailerDetail = () => {
           </div>
         </div>
 
-        {/* Cartes de statistiques */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <RetailerStatsCard
             title="Dépenses du mois"
@@ -218,7 +209,6 @@ const RetailerDetail = () => {
           />
         </div>
 
-        {/* Tableau des dépenses */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {currentYear}</h2>
           
@@ -269,7 +259,6 @@ const RetailerDetail = () => {
           )}
         </Card>
 
-        {/* Dialog pour modifier une dépense */}
         <EditExpenseDialog
           open={editDialogOpen}
           onOpenChange={setEditDialogOpen}

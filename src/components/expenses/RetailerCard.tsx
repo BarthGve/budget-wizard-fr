@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { ExpensesChart } from "./ExpensesChart";
@@ -72,7 +71,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
       <Card className="pb-0 pt-6 px-6">
         <div className="flex items-center justify-between">
           <Link 
-            to={`/depenses/enseigne/${retailer.id}`}
+            to={`/expenses/retailer/${retailer.id}`}
             className="text-xl font-semibold hover:text-primary transition-colors"
           >
             {retailer.name}

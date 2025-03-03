@@ -72,7 +72,7 @@ const App = () => {
               <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />
               <Route path="/recurring-expenses" element={<ProtectedRoute><RecurringExpenses /></ProtectedRoute>} />
               <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
-              <Route path="/depenses/enseigne/:id" element={<ProtectedRoute><RetailerDetail /></ProtectedRoute>} />
+              <Route path="/expenses/retailer/:id" element={<ProtectedRoute><RetailerDetail /></ProtectedRoute>} />
               <Route path="/stocks" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
               <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
               
@@ -90,4 +90,3 @@ const App = () => {
 };
 
 export default App;
-
