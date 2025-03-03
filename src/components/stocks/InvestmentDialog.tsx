@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
-import { format, parse } from "date-fns";
+import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -25,14 +25,17 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
 
   const handleDateInput = (value: string) => {
     setDateString(value);
-    try {
-      // Tentative de parse de la date au format DD/MM/YYYY
-      const parsedDate = parse(value, "dd/MM/yyyy", new Date());
-      if (!isNaN(parsedDate.getTime())) {
-        setDate(parsedDate);
+    
+    // Essayer de parser la date entrée (format français: JJ/MM/AAAA)
+    if (value.length === 10) { // Longueur exacte d'une date au format JJ/MM/AAAA
+      try {
+        const parsedDate = parse(value, "dd/MM/yyyy", new Date());
+        if (isValid(parsedDate)) {
+          setDate(parsedDate);
+        }
+      } catch (error) {
+        // Si le format n'est pas valide, on ne met pas à jour la date
       }
-    } catch (error) {
-      // Si le format n'est pas valide, on ne met pas à jour la date
     }
   };
 
@@ -120,7 +123,7 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
                 </PopoverContent>
               </Popover>
             </div>
-            {dateString && isNaN(date.getTime()) && (
+            {dateString && !isValid(date) && (
               <p className="text-sm text-red-500">Format de date invalide. Utilisez JJ/MM/AAAA</p>
             )}
           </div>
