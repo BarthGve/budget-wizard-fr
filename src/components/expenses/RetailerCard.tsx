@@ -7,6 +7,7 @@ import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
+import { useNavigate } from "react-router-dom";
 
 interface RetailerCardProps {
   retailer: {
@@ -27,6 +28,7 @@ interface RetailerCardProps {
 export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const navigate = useNavigate();
   const now = new Date();
   
   const { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange } = useMemo(() => {
@@ -63,9 +65,16 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
+  const handleCardClick = () => {
+    navigate(`/expenses/retailer/${retailer.id}`);
+  };
+
   return (
     <>
-      <Card className="pb-0 pt-6 px-6">
+      <Card 
+        className="pb-0 pt-6 px-6 cursor-pointer hover:shadow-md transition-all" 
+        onClick={handleCardClick}
+      >
         <div className="flex items-center justify-between">
           <div className="text-xl font-semibold">
             {retailer.name}
