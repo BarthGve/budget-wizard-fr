@@ -5,11 +5,6 @@ import { SavingsMode, SavingsProject } from "@/types/savings-project";
 import { addMonths, differenceInMonths, parseISO, format, parse, isValid } from "date-fns";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { fr } from "date-fns/locale";
 
 interface StepFourProps {
   data: Partial<SavingsProject>;
@@ -28,8 +23,6 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
   const [dateInput, setDateInput] = useState(
     data.date_estimee ? format(new Date(data.date_estimee), "dd/MM/yyyy") : format(minDate, "dd/MM/yyyy")
   );
-  
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const { toast } = useToast();
 
@@ -112,39 +105,12 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
       {mode === "par_date" ? (
         <div className="space-y-2">
           <Label>Date cible *</Label>
-          <div className="flex gap-2">
-            <Input
-              placeholder="JJ/MM/AAAA"
-              value={dateInput}
-              onChange={(e) => handleDateInputChange(e.target.value)}
-              className="flex-1"
-            />
-            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <CalendarIcon className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="end">
-                <Calendar
-                  mode="single"
-                  selected={date ? new Date(date) : undefined}
-                  onSelect={(selectedDate) => {
-                    if (selectedDate) {
-                      const formattedDate = format(selectedDate, "yyyy-MM-dd");
-                      setDate(formattedDate);
-                      setDateInput(format(selectedDate, "dd/MM/yyyy"));
-                      handleDateChange(formattedDate);
-                      setCalendarOpen(false);
-                    }
-                  }}
-                  locale={fr}
-                  fromDate={minDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          <Input
+            placeholder="JJ/MM/AAAA"
+            value={dateInput}
+            onChange={(e) => handleDateInputChange(e.target.value)}
+            className="w-full"
+          />
           {data.montant_mensuel && (
             <div className="mt-4 p-4 bg-muted rounded-lg">
               <p>Montant mensuel estimé :</p>

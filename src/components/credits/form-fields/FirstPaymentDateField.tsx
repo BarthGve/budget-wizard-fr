@@ -1,13 +1,8 @@
 
 import { useState } from "react";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "../hooks/useCreditForm";
 import { Input } from "@/components/ui/input";
@@ -18,7 +13,6 @@ interface FirstPaymentDateFieldProps {
 
 export function FirstPaymentDateField({ form }: FirstPaymentDateFieldProps) {
   const [dateInput, setDateInput] = useState("");
-  const [open, setOpen] = useState(false);
 
   return (
     <FormField
@@ -52,38 +46,13 @@ export function FirstPaymentDateField({ form }: FirstPaymentDateFieldProps) {
         return (
           <FormItem className="flex flex-col">
             <FormLabel>Date de première mensualité</FormLabel>
-            <div className="flex gap-2">
-              <FormControl>
-                <Input
-                  placeholder="JJ/MM/AAAA"
-                  value={dateInput}
-                  onChange={(e) => handleManualInput(e.target.value)}
-                />
-              </FormControl>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <CalendarIcon className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value ? new Date(field.value) : undefined}
-                    onSelect={(date) => {
-                      if (date) {
-                        const formattedDate = format(date, "yyyy-MM-dd");
-                        field.onChange(formattedDate);
-                        setDateInput(format(date, "dd/MM/yyyy"));
-                        setOpen(false);
-                      }
-                    }}
-                    locale={fr}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            <FormControl>
+              <Input
+                placeholder="JJ/MM/AAAA"
+                value={dateInput}
+                onChange={(e) => handleManualInput(e.target.value)}
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         );

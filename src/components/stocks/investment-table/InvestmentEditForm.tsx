@@ -1,12 +1,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
 import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
 interface InvestmentEditFormProps {
@@ -29,7 +25,6 @@ export const InvestmentEditForm = ({
   const [dateString, setDateString] = useState(
     editDate ? format(editDate, "dd/MM/yyyy") : ""
   );
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   useEffect(() => {
     if (editDate) {
@@ -63,28 +58,6 @@ export const InvestmentEditForm = ({
           placeholder="JJ/MM/AAAA"
           className="w-[120px]"
         />
-        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="icon">
-              <CalendarIcon className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={editDate}
-              onSelect={(date) => {
-                setEditDate(date);
-                if (date) {
-                  setDateString(format(date, "dd/MM/yyyy"));
-                }
-                setCalendarOpen(false);
-              }}
-              initialFocus
-              locale={fr}
-            />
-          </PopoverContent>
-        </Popover>
       </div>
 
       <Input
