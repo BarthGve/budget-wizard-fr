@@ -66,9 +66,10 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
-  const handleNameClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate(`/expenses/retailer/${retailer.id}`);
+  const handleNameClick = () => {
+    console.log("Navigating to retailer detail:", `/expenses/retailer/${retailer.id}`);
+    // Use direct navigation to ensure we're going to the right route
+    window.location.href = `/expenses/retailer/${retailer.id}`;
   };
 
   const handleAmountClick = (e: React.MouseEvent) => {
