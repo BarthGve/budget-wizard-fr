@@ -8,7 +8,7 @@ import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface RetailerCardProps {
   retailer: {
@@ -29,6 +29,7 @@ interface RetailerCardProps {
 export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const navigate = useNavigate();
   const now = new Date();
   
   const { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange } = useMemo(() => {
@@ -65,60 +66,63 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
+  const handleCardClick = () => {
+    navigate(`/expenses/retailer/${retailer.id}`);
+  };
+
   return (
     <>
-      <Link to={`/expenses/retailer/${retailer.id}`} className="block">
-        <Card className="pb-0 pt-6 px-6 cursor-pointer transition-transform hover:scale-[1.02]">
-          <div className="flex items-center justify-between">
-            <div className="text-xl font-semibold hover:text-primary transition-colors">
-              {retailer.name}
-            </div>
-            {retailer.logo_url && (
-              <div 
-                className="cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setAddDialogOpen(true);
-                }}
-              >
-                <img 
-                  src={retailer.logo_url} 
-                  alt={retailer.name} 
-                  className="w-10 h-10 rounded-full object-contain"
-                />
-              </div>
-            )}
+      <Card 
+        className="pb-0 pt-6 px-6 cursor-pointer transition-transform hover:scale-[1.02]"
+        onClick={handleCardClick}
+      >
+        <div className="flex items-center justify-between">
+          <div className="text-xl font-semibold hover:text-primary transition-colors">
+            {retailer.name}
           </div>
-          <div 
-            className="mt-4 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              setExpensesDialogOpen(true);
-            }}
-          >
-            <div className="text-2xl font-bold">
-              {formatCurrency(totalCurrentYear)}
+          {retailer.logo_url && (
+            <div 
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={(e) => {
+                e.stopPropagation();
+                setAddDialogOpen(true);
+              }}
+            >
+              <img 
+                src={retailer.logo_url} 
+                alt={retailer.name} 
+                className="w-10 h-10 rounded-full object-contain"
+              />
             </div>
-            {totalLastYear > 0 && (
-              <div className="flex items-center gap-1 mt-1">
-                {percentageChange > 0 ? (
-                  <MoveUpRight className="h-4 w-4 text-red-500" />
-                ) : (
-                  <MoveDownRight className="h-4 w-4 text-green-500" />
-                )}
-                <span className={cn("text-sm", 
-                  percentageChange > 0 ? "text-red-500" : "text-green-500"
-                )}>
-                  {Math.abs(percentageChange).toFixed(1)}%
-                </span>
-              </div>
-            )}
+          )}
+        </div>
+        <div 
+          className="mt-4 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpensesDialogOpen(true);
+          }}
+        >
+          <div className="text-2xl font-bold">
+            {formatCurrency(totalCurrentYear)}
           </div>
-          <ExpensesChart expenses={expenses} viewMode={viewMode} />
-        </Card>
-      </Link>
+          {totalLastYear > 0 && (
+            <div className="flex items-center gap-1 mt-1">
+              {percentageChange > 0 ? (
+                <MoveUpRight className="h-4 w-4 text-red-500" />
+              ) : (
+                <MoveDownRight className="h-4 w-4 text-green-500" />
+              )}
+              <span className={cn("text-sm", 
+                percentageChange > 0 ? "text-red-500" : "text-green-500"
+              )}>
+                {Math.abs(percentageChange).toFixed(1)}%
+              </span>
+            </div>
+          )}
+        </div>
+        <ExpensesChart expenses={expenses} viewMode={viewMode} />
+      </Card>
 
       <RetailerExpensesDialog
         retailer={retailer}
