@@ -6,6 +6,7 @@ import { CreditActions } from "./CreditActions";
 import { CreditInfoDialog } from "./CreditInfoDialog";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { CreditProgressBar } from "./CreditProgressBar";
 
 interface CreditCardProps {
   credit: Credit;
@@ -149,30 +150,14 @@ export const CreditCardDetails = ({ credit, index }: CreditCardDetailsProps) => 
       </div>
 
       <div className="flex flex-col">
-        <span className="text-sm text-muted-foreground">Statut</span>
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: index * 0.1 + 0.4, duration: 0.3 }}
-          className={`inline-flex items-center ${
-            credit.statut.toLowerCase() === "actif"
-              ? "text-green-600"
-              : credit.statut.toLowerCase() === "remboursé"
-              ? "text-gray-600"
-              : ""
-          }`}
-        >
-          <span
-            className={`w-2 h-2 rounded-full mr-2 ${
-              credit.statut.toLowerCase() === "actif"
-                ? "bg-green-600"
-                : credit.statut.toLowerCase() === "remboursé"
-                ? "bg-gray-600"
-                : ""
-            }`}
+        <span className="text-sm text-muted-foreground">Progression</span>
+        <div className="w-full">
+          <CreditProgressBar 
+            dateDebut={credit.date_premiere_mensualite}
+            dateFin={credit.date_derniere_mensualite}
+            montantMensuel={credit.montant_mensualite}
           />
-          {credit.statut}
-        </motion.span>
+        </div>
       </div>
     </motion.div>
   );
