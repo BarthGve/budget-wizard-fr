@@ -82,7 +82,7 @@ export const UserDropdown = ({
       <div className="flex items-center justify-between flex-1">
         <div className="flex flex-col items-start">
           <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
-          <span className="text-xs text-muted-foreground">{profile?.email}</span>
+         {/* <span className="text-xs text-muted-foreground">{profile?.email}</span> */}
         </div>
         <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
       </div>
