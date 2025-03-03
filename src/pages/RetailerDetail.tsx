@@ -1,11 +1,11 @@
 
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { EditExpenseDialog } from "@/components/expenses/EditExpenseDialog";
@@ -25,12 +25,25 @@ interface Expense {
 
 const RetailerDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  // Add debugging logs
+  useEffect(() => {
+    console.log("RetailerDetail mounted with id:", id);
+    
+    // Check if we have access to this page through permissions
+    // This is just for debugging - you might want to remove this later
+    return () => {
+      console.log("RetailerDetail unmounted");
+    };
+  }, [id]);
 
   const { data: retailer, isLoading: isLoadingRetailer } = useQuery({
     queryKey: ["retailer", id],
     queryFn: async () => {
+      console.log("Fetching retailer with id:", id);
       const { data, error } = await supabase
         .from("retailers")
         .select("*")
@@ -43,6 +56,7 @@ const RetailerDetail = () => {
         throw error;
       }
 
+      console.log("Retailer data fetched successfully:", data);
       return data;
     }
   });
@@ -50,6 +64,7 @@ const RetailerDetail = () => {
   const { data: expenses, isLoading: isLoadingExpenses, refetch: refetchExpenses } = useQuery({
     queryKey: ["retailer-expenses", id],
     queryFn: async () => {
+      console.log("Fetching expenses for retailer:", id);
       const { data, error } = await supabase
         .from("expenses")
         .select("*")
@@ -62,6 +77,7 @@ const RetailerDetail = () => {
         throw error;
       }
 
+      console.log("Expenses fetched successfully, count:", data?.length);
       return data;
     },
     enabled: !!id
