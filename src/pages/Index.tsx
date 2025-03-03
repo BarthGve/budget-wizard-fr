@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,6 +6,7 @@ import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent"
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   calculateTotalRevenue,
   calculateMonthlyExpenses,
@@ -19,6 +19,7 @@ import {
 const Dashboard = () => {
   const [currentView, setCurrentView] = useState<"monthly" | "yearly">("monthly");
   const { contributors, monthlySavings, profile, recurringExpenses } = useDashboardData();
+  const isMobile = useIsMobile();
 
   // Get current month name
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
@@ -158,10 +159,10 @@ const Dashboard = () => {
         <motion.div className="space-y-2" variants={itemVariants}>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">
+              <h1 className={`text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in ${isMobile ? 'mobile-title-shadow mobile-title-outline' : ''}`}>
                 Tableau de bord
               </h1>
-              <p className="text-muted-foreground">
+              <p className={`text-muted-foreground ${isMobile ? 'font-medium text-white mobile-title-shadow' : ''}`}>
                 {currentView === "monthly" 
                   ? `Aperçu du budget pour le mois de ${currentMonthName} ${new Date().getFullYear()}` 
                   : `Aperçu du budget annuel ${new Date().getFullYear()}`}

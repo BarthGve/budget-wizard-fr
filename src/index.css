@@ -173,3 +173,29 @@
 .card-flip-out {
   animation: card-flip-out 0.6s ease-in forwards;
 }
+
+/* Améliorations pour mobile */
+@media (max-width: 768px) {
+  .mobile-title-shadow {
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .mobile-title-outline {
+    -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.15);
+  }
+  
+  .mobile-gradient-text {
+    background: linear-gradient(to right, #a78bfa, #ec4899);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+  }
+  
+  .mobile-contrast-bg {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius);
+    padding: 0.5rem;
+  }
+}
+

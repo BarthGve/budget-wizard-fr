@@ -157,7 +157,8 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
             </div>
           )}
           
-          <UserDropdown collapsed={collapsed} profile={profile} />
+          {/* Ne pas afficher UserDropdown sur mobile, uniquement sur desktop/tablette */}
+          {!isMobile && <UserDropdown collapsed={collapsed} profile={profile} />}
         </div>
       </div>
   
