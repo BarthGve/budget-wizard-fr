@@ -1,3 +1,4 @@
+
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +14,8 @@ import { RetailerStats } from "@/components/expenses/retailer-detail/RetailerSta
 import { RetailerExpensesTable } from "@/components/expenses/retailer-detail/RetailerExpensesTable";
 import { useRetailerExpenseStats } from "@/components/expenses/retailer-detail/useRetailerExpenseStats";
 import { ExpenseActionDetails } from "@/components/expenses/ExpenseActionDetails";
+import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
+import { RetailerYearlyArchives } from "@/components/expenses/retailer-detail/RetailerYearlyArchives";
 
 interface Expense {
   id: string;
@@ -29,6 +32,7 @@ const RetailerDetail = () => {
   const [expenseToView, setExpenseToView] = useState<Expense | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
 
   useEffect(() => {
     console.log("RetailerDetail mounted with id:", id);
@@ -88,7 +92,9 @@ const RetailerDetail = () => {
     yearlyTotal,
     yearlyCount,
     monthlyAverage,
-    monthlyAverageCount
+    monthlyAverageCount,
+    previousMonthTotal,
+    previousYearTotal
   } = useRetailerExpenseStats(expenses);
 
   const handleViewExpenseDetails = (expense: Expense) => {
@@ -124,7 +130,12 @@ const RetailerDetail = () => {
 
   const handleExpenseUpdated = () => {
     setEditDialogOpen(false);
+    setAddExpenseDialogOpen(false);
     refetchExpenses();
+  };
+
+  const handleAddExpense = () => {
+    setAddExpenseDialogOpen(true);
   };
 
   if (isLoadingRetailer) {
@@ -159,10 +170,15 @@ const RetailerDetail = () => {
     );
   }
 
+  const currentYear = new Date().getFullYear();
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <RetailerHeader retailer={retailer} />
+        <RetailerHeader 
+          retailer={retailer} 
+          onAddExpense={handleAddExpense} 
+        />
 
         <RetailerStats
           monthlyTotal={monthlyTotal}
@@ -171,10 +187,12 @@ const RetailerDetail = () => {
           yearlyCount={yearlyCount}
           monthlyAverage={monthlyAverage}
           monthlyAverageCount={monthlyAverageCount}
+          previousMonthTotal={previousMonthTotal}
+          previousYearTotal={previousYearTotal}
         />
 
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {new Date().getFullYear()}</h2>
+          <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {currentYear}</h2>
           
           <RetailerExpensesTable
             expenses={currentYearExpenses}
@@ -184,6 +202,13 @@ const RetailerDetail = () => {
             onViewDetails={handleViewExpenseDetails}
           />
         </Card>
+
+        {expenses && expenses.length > 0 && (
+          <RetailerYearlyArchives
+            expenses={expenses}
+            currentYear={currentYear}
+          />
+        )}
 
         <EditExpenseDialog
           open={editDialogOpen}
@@ -196,6 +221,13 @@ const RetailerDetail = () => {
           expense={expenseToView}
           open={detailsDialogOpen}
           onOpenChange={setDetailsDialogOpen}
+        />
+
+        <AddExpenseDialog
+          onExpenseAdded={handleExpenseUpdated}
+          preSelectedRetailer={retailer}
+          open={addExpenseDialogOpen}
+          onOpenChange={setAddExpenseDialogOpen}
         />
       </div>
     </DashboardLayout>

@@ -8,6 +8,8 @@ interface RetailerStatsProps {
   yearlyCount: number;
   monthlyAverage: number;
   monthlyAverageCount: number;
+  previousMonthTotal?: number;
+  previousYearTotal?: number;
 }
 
 export function RetailerStats({
@@ -16,7 +18,9 @@ export function RetailerStats({
   yearlyTotal,
   yearlyCount,
   monthlyAverage,
-  monthlyAverageCount
+  monthlyAverageCount,
+  previousMonthTotal,
+  previousYearTotal
 }: RetailerStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -26,6 +30,7 @@ export function RetailerStats({
         count={monthlyCount}
         label="achats ce mois-ci"
         className="bg-gradient-to-br from-blue-500 to-indigo-600"
+        previousAmount={previousMonthTotal}
       />
       
       <RetailerStatsCard
@@ -34,6 +39,7 @@ export function RetailerStats({
         count={yearlyCount}
         label="achats cette année"
         className="bg-gradient-to-br from-purple-500 to-pink-600"
+        previousAmount={previousYearTotal}
       />
       
       <RetailerStatsCard

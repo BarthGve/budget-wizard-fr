@@ -1,15 +1,18 @@
 
 import { Link } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface RetailerHeaderProps {
   retailer: {
+    id: string;
     name: string;
     logo_url?: string;
   };
+  onAddExpense: () => void;
 }
 
-export function RetailerHeader({ retailer }: RetailerHeaderProps) {
+export function RetailerHeader({ retailer, onAddExpense }: RetailerHeaderProps) {
   return (
     <div className="flex flex-col space-y-2">
       <Link 
@@ -31,6 +34,10 @@ export function RetailerHeader({ retailer }: RetailerHeaderProps) {
             />
           )}
         </div>
+        <Button onClick={onAddExpense} className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600">
+          <Plus className="h-4 w-4 mr-2" />
+          Ajouter une dépense
+        </Button>
       </div>
     </div>
   );
