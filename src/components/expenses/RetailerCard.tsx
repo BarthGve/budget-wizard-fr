@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { ExpensesChart } from "./ExpensesChart";
@@ -7,7 +8,7 @@ import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface RetailerCardProps {
   retailer: {
@@ -28,6 +29,7 @@ interface RetailerCardProps {
 export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const navigate = useNavigate();
   const now = new Date();
   
   const { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange } = useMemo(() => {
@@ -64,16 +66,21 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
+  const handleRetailerClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate(`/expenses/retailer/${retailer.id}`);
+  };
+
   return (
     <>
       <Card className="pb-0 pt-6 px-6">
         <div className="flex items-center justify-between">
-          <Link 
-            to={`/expenses/retailer/${retailer.id}`}
-            className="text-xl font-semibold hover:text-primary transition-colors"
+          <div 
+            className="text-xl font-semibold hover:text-primary transition-colors cursor-pointer"
+            onClick={handleRetailerClick}
           >
             {retailer.name}
-          </Link>
+          </div>
           {retailer.logo_url && (
             <div 
               className="cursor-pointer hover:opacity-80 transition-opacity"
