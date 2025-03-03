@@ -12,6 +12,7 @@ import { CreditsList } from "@/components/credits/CreditsList";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Credit } from "@/components/credits/types";
 
 const Credits = memo(function Credits() {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ const Credits = memo(function Credits() {
         throw error;
       }
       
-      return data;
+      return data as Credit[];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,

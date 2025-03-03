@@ -9,6 +9,7 @@ import { TablePagination } from "./table/TablePagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { filterExpenses, sortExpenses, paginateExpenses } from "./table/tableUtils";
 import { SortableTableHeader } from "@/components/properties/expenses/SortableTableHeader";
+import { Button } from "@/components/ui/button";
 
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -139,19 +140,14 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                 <TableCell className="text-center py-2 font-medium">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
                 <TableCell className="text-right py-2">
                   <div className="flex justify-end">
-
-             
-
-
-                    <button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
                       onClick={() => onDeleteExpense(expense.id)}
-                    
                     >
-                    <Trash2 className="h-4 w-4" />
-                    </button>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>

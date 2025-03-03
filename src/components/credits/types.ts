@@ -6,7 +6,7 @@ export interface Credit {
   logo_url?: string;
   montant_mensualite: number;
   date_derniere_mensualite: string;
-  date_premiere_mensualite: string; // Nouvelle propriété
+  date_premiere_mensualite?: string; // Made optional for backward compatibility with existing data
   statut: "actif" | "remboursé" | "dépassé";
   created_at: string;
 }

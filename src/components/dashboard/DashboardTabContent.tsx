@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { DashboardCards } from "./dashboard-content/DashboardCards";
 import { DashboardCharts } from "./dashboard-content/DashboardCharts";
 import { DashboardContributors } from "./dashboard-content/DashboardContributors";
+import { Credit } from "@/components/credits/types";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -75,7 +76,7 @@ export const DashboardTabContent = ({
         return [];
       }
 
-      return data;
+      return data as Credit[];
     }
   });
 
