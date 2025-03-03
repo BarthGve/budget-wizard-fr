@@ -1,5 +1,5 @@
 
-import { format, differenceInMonths, isAfter, isSameDay, isSameMonth } from "date-fns";
+import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -19,18 +19,31 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
   // Calculer le nombre total de mensualités entre le début et la fin
   const totalMonths = differenceInMonths(endDate, startDate) + 1; // +1 car on compte la mensualité du jour de début
   
-  // Calculer le nombre de mensualités payées
-  // Une mensualité est comptée comme payée dès le jour de l'échéance
+  // Calcul du nombre exact de mensualités payées
   let completedMonths = 0;
   
-  if (isAfter(currentDate, endDate) || isSameDay(currentDate, endDate)) {
-    // Si on est après ou exactement à la date de fin, toutes les mensualités sont payées
-    completedMonths = totalMonths;
-  } else if (isAfter(currentDate, startDate) || isSameDay(currentDate, startDate)) {
-    // On compte le nombre de mois entre la date de début et aujourd'hui
-    // +1 car on compte la mensualité du jour de début (si on est au moins à ce jour)
-    completedMonths = differenceInMonths(currentDate, startDate) + 1;
+  // Vérifier si on est avant la première échéance
+  if (isBefore(currentDate, startDate)) {
+    completedMonths = 0;
+  } else {
+    // Compter chaque mensualité une par une
+    let paymentDate = new Date(startDate);
+    
+    while (isBefore(paymentDate, currentDate) || isSameDay(paymentDate, currentDate)) {
+      completedMonths++;
+      
+      // Si on atteint la date de fin, on s'arrête
+      if (isSameDay(paymentDate, endDate)) {
+        break;
+      }
+      
+      // Passer à la prochaine mensualité
+      paymentDate = addMonths(paymentDate, 1);
+    }
   }
+  
+  // Limiter le nombre de mensualités au total des mensualités
+  completedMonths = Math.min(completedMonths, totalMonths);
   
   // Calculer le pourcentage de progression basé sur les mensualités payées
   const progressPercentage = Math.min(100, Math.max(0, (completedMonths / totalMonths) * 100));
