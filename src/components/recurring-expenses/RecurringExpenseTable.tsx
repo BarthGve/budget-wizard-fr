@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, periodicityLabels } from "./types";
 import { TableFilters } from "./TableFilters";
 import { motion } from "framer-motion";
-import { TableRows } from "./table/TableRows";
+import { Trash2 } from "lucide-react";
 import { TablePagination } from "./table/TablePagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { filterExpenses, sortExpenses, paginateExpenses } from "./table/tableUtils";
