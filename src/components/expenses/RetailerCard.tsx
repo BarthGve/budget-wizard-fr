@@ -8,7 +8,6 @@ import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
-import { useNavigate } from "react-router-dom";
 
 interface RetailerCardProps {
   retailer: {
@@ -29,7 +28,6 @@ interface RetailerCardProps {
 export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const navigate = useNavigate();
   const now = new Date();
   
   // Mémorisation des calculs coûteux
@@ -68,16 +66,12 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
-  const handleRetailerNameClick = () => {
-    navigate(`/depenses/enseigne/${retailer.id}`);
-  };
-
   return (
     <>
       <Card className="pb-0 pt-6 px-6">
         <div 
           className="flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={handleRetailerNameClick}
+          onClick={() => setAddDialogOpen(true)}
         >
           <h3 className="text-xl font-semibold">{retailer.name}</h3>
           {retailer.logo_url && (
