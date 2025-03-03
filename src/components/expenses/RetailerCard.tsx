@@ -7,7 +7,7 @@ import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface RetailerCardProps {
   retailer: {
@@ -28,7 +28,6 @@ interface RetailerCardProps {
 export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const navigate = useNavigate();
   const now = new Date();
   
   const { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange } = useMemo(() => {
@@ -65,53 +64,48 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
-  const handleCardClick = () => {
-    navigate(`/expenses/retailer/${retailer.id}`);
-  };
-
   return (
     <>
-      <Card 
-        className="pb-0 pt-6 px-6 cursor-pointer hover:shadow-md transition-all" 
-        onClick={handleCardClick}
-      >
-        <div className="flex items-center justify-between">
-          <div className="text-xl font-semibold">
-            {retailer.name}
-          </div>
-          {retailer.logo_url && (
-            <div>
-              <img 
-                src={retailer.logo_url} 
-                alt={retailer.name} 
-                className="w-10 h-10 rounded-full object-contain"
-              />
+      <Link to={`/expenses/retailer/${retailer.id}`} className="block">
+        <Card className="pb-0 pt-6 px-6 cursor-pointer hover:shadow-md transition-all">
+          <div className="flex items-center justify-between">
+            <div className="text-xl font-semibold">
+              {retailer.name}
             </div>
-          )}
-        </div>
-        <div className="mt-4">
-          <div className="text-2xl font-bold">
-            {formatCurrency(totalCurrentYear)}
+            {retailer.logo_url && (
+              <div>
+                <img 
+                  src={retailer.logo_url} 
+                  alt={retailer.name} 
+                  className="w-10 h-10 rounded-full object-contain"
+                />
+              </div>
+            )}
           </div>
-          {totalLastYear > 0 && (
-            <div className="flex items-center gap-1 mt-1">
-              {percentageChange > 0 ? (
-                <MoveUpRight className="h-4 w-4 text-red-500" />
-              ) : (
-                <MoveDownRight className="h-4 w-4 text-green-500" />
-              )}
-              <span className={cn("text-sm", 
-                percentageChange > 0 ? "text-red-500" : "text-green-500"
-              )}>
-                {Math.abs(percentageChange).toFixed(1)}%
-              </span>
+          <div className="mt-4">
+            <div className="text-2xl font-bold">
+              {formatCurrency(totalCurrentYear)}
             </div>
-          )}
-        </div>
-        <div>
-          <ExpensesChart expenses={expenses} viewMode={viewMode} />
-        </div>
-      </Card>
+            {totalLastYear > 0 && (
+              <div className="flex items-center gap-1 mt-1">
+                {percentageChange > 0 ? (
+                  <MoveUpRight className="h-4 w-4 text-red-500" />
+                ) : (
+                  <MoveDownRight className="h-4 w-4 text-green-500" />
+                )}
+                <span className={cn("text-sm", 
+                  percentageChange > 0 ? "text-red-500" : "text-green-500"
+                )}>
+                  {Math.abs(percentageChange).toFixed(1)}%
+                </span>
+              </div>
+            )}
+          </div>
+          <div>
+            <ExpensesChart expenses={expenses} viewMode={viewMode} />
+          </div>
+        </Card>
+      </Link>
 
       <RetailerExpensesDialog
         retailer={retailer}
