@@ -47,44 +47,47 @@ const App = () => {
   }));
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          {/* AuthListener doit être à l'intérieur du BrowserRouter pour que useNavigate fonctionne */}
-          <AuthListener />
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/email-verification" element={<EmailVerification />} />
-            <Route path="/changelog" element={<Changelog />} />
-            
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/contributors" element={<ProtectedRoute><Contributors /></ProtectedRoute>} />
-            <Route path="/user-settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
-            <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />
-            <Route path="/properties" element={<ProtectedRoute><Properties /></ProtectedRoute>} />
-            <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />
-            <Route path="/recurring-expenses" element={<ProtectedRoute><RecurringExpenses /></ProtectedRoute>} />
-            <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
-            <Route path="/depenses/enseigne/:id" element={<ProtectedRoute><RetailerDetail /></ProtectedRoute>} />
-            <Route path="/stocks" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
-            <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
-            
-            <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
-            <Route path="/admin/feedbacks" element={<ProtectedRoute requireAdmin><AdminFeedbacks /></ProtectedRoute>} />
-            <Route path="/admin/changelog" element={<ProtectedRoute requireAdmin><Changelog /></ProtectedRoute>} />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            {/* AuthListener doit être à l'intérieur du BrowserRouter pour que useNavigate fonctionne */}
+            <AuthListener />
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/email-verification" element={<EmailVerification />} />
+              <Route path="/changelog" element={<Changelog />} />
+              
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/contributors" element={<ProtectedRoute><Contributors /></ProtectedRoute>} />
+              <Route path="/user-settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
+              <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />
+              <Route path="/properties" element={<ProtectedRoute><Properties /></ProtectedRoute>} />
+              <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />
+              <Route path="/recurring-expenses" element={<ProtectedRoute><RecurringExpenses /></ProtectedRoute>} />
+              <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
+              <Route path="/depenses/enseigne/:id" element={<ProtectedRoute><RetailerDetail /></ProtectedRoute>} />
+              <Route path="/stocks" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
+              <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
+              
+              <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
+              <Route path="/admin/feedbacks" element={<ProtectedRoute requireAdmin><AdminFeedbacks /></ProtectedRoute>} />
+              <Route path="/admin/changelog" element={<ProtectedRoute requireAdmin><Changelog /></ProtectedRoute>} />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 
 export default App;
+
