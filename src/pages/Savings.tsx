@@ -129,7 +129,7 @@ const Savings = () => {
   return (
     <DashboardLayout>
       <motion.div 
-        className="space-y-4 h-[calc(100vh-4rem)] overflow-hidden flex flex-col"
+        className="space-y-4  overflow-hidden flex flex-col"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
