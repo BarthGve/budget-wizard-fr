@@ -66,14 +66,12 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
 
   return (
     <>
-      
-        <Card className="pb-0 pt-6 px-6  hover:shadow-md transition-all">
+      <Link to={`/expenses/retailer/${retailer.id}`} className="block">
+        <Card className="pb-0 pt-6 px-6 cursor-pointer hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
-          <Link to={`/expenses/retailer/${retailer.id}`} className="block">
-            <div className="text-xl font-semibold cursor-pointer">
+            <div className="text-xl font-semibold">
               {retailer.name}
             </div>
-            </Link>
             {retailer.logo_url && (
               <div>
                 <img 
@@ -107,7 +105,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
             <ExpensesChart expenses={expenses} viewMode={viewMode} />
           </div>
         </Card>
-  
+      </Link>
 
       <RetailerExpensesDialog
         retailer={retailer}
