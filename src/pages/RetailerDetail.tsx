@@ -1,4 +1,3 @@
-
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,8 +12,8 @@ import { RetailerHeader } from "@/components/expenses/retailer-detail/RetailerHe
 import { RetailerStats } from "@/components/expenses/retailer-detail/RetailerStats";
 import { RetailerExpensesTable } from "@/components/expenses/retailer-detail/RetailerExpensesTable";
 import { useRetailerExpenseStats } from "@/components/expenses/retailer-detail/useRetailerExpenseStats";
+import { ExpenseActionDetails } from "@/components/expenses/ExpenseActionDetails";
 
-// Define the Expense type consistently across components
 interface Expense {
   id: string;
   date: string;
@@ -27,14 +26,13 @@ const RetailerDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
+  const [expenseToView, setExpenseToView] = useState<Expense | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
 
-  // Add debugging logs
   useEffect(() => {
     console.log("RetailerDetail mounted with id:", id);
     
-    // Check if we have access to this page through permissions
-    // This is just for debugging - you might want to remove this later
     return () => {
       console.log("RetailerDetail unmounted");
     };
@@ -92,6 +90,11 @@ const RetailerDetail = () => {
     monthlyAverage,
     monthlyAverageCount
   } = useRetailerExpenseStats(expenses);
+
+  const handleViewExpenseDetails = (expense: Expense) => {
+    setExpenseToView(expense);
+    setDetailsDialogOpen(true);
+  };
 
   const handleEditExpense = (expense: Expense) => {
     setExpenseToEdit(expense);
@@ -178,6 +181,7 @@ const RetailerDetail = () => {
             isLoading={isLoadingExpenses}
             onEditExpense={handleEditExpense}
             onDeleteExpense={handleDeleteExpense}
+            onViewDetails={handleViewExpenseDetails}
           />
         </Card>
 
@@ -186,6 +190,12 @@ const RetailerDetail = () => {
           onOpenChange={setEditDialogOpen}
           expense={expenseToEdit}
           onExpenseUpdated={handleExpenseUpdated}
+        />
+
+        <ExpenseActionDetails
+          expense={expenseToView}
+          open={detailsDialogOpen}
+          onOpenChange={setDetailsDialogOpen}
         />
       </div>
     </DashboardLayout>
