@@ -148,7 +148,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   ), [userProfile?.isAdmin, isMobile, globalBalance, children]);
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-[#1A1F2C] ios-top-safe">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
       <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'}`}>
         <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
       </div>
