@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Index";
 import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "./components/theme/ThemeProvider";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import Expenses from "./pages/Expenses";
 import RetailerDetail from "./pages/RetailerDetail";
 import { AuthListener } from "./components/auth/AuthListener";
