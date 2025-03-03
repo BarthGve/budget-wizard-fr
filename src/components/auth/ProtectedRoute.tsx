@@ -54,6 +54,9 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Debugging log for current path
+  console.log("Current path in ProtectedRoute:", location.pathname);
+
   // Liste des routes toujours accessibles une fois connecté
   const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
   
@@ -80,8 +83,19 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     }
   }
 
+  // Gestion spéciale pour les routes de détail des enseignes
+  if (location.pathname.startsWith('/expenses/retailer/')) {
+    console.log("Retailer detail route detected in ProtectedRoute");
+    // Si l'utilisateur peut accéder à /expenses, il peut accéder aux détails des enseignes
+    const canAccessExpenses = canAccessPage('/expenses');
+    if (canAccessExpenses) {
+      return <>{children}</>;
+    }
+  }
+
   // Vérifier les permissions pour les autres routes
   if (!canAccessPage(location.pathname)) {
+    console.log("Access denied to path:", location.pathname);
     return <Navigate to="/dashboard" replace />;
   }
 
