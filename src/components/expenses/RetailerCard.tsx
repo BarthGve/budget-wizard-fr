@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { ExpensesChart } from "./ExpensesChart";
@@ -8,7 +7,7 @@ import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface RetailerCardProps {
   retailer: {
@@ -29,6 +28,7 @@ interface RetailerCardProps {
 export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const navigate = useNavigate();
   const now = new Date();
   
   const { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange } = useMemo(() => {
@@ -65,20 +65,24 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
+  const handleCardClick = () => {
+    navigate(`/expenses/retailer/${retailer.id}`);
+  };
+
   return (
     <>
-      <Card className="pb-0 pt-6 px-6">
+      <Card className="pb-0 pt-6 px-6 cursor-pointer transition-transform hover:scale-[1.02]" onClick={handleCardClick}>
         <div className="flex items-center justify-between">
-          <Link 
-            to={`/expenses/retailer/${retailer.id}`}
-            className="text-xl font-semibold hover:text-primary transition-colors cursor-pointer"
-          >
+          <div className="text-xl font-semibold hover:text-primary transition-colors">
             {retailer.name}
-          </Link>
+          </div>
           {retailer.logo_url && (
             <div 
               className="cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => setAddDialogOpen(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setAddDialogOpen(true);
+              }}
             >
               <img 
                 src={retailer.logo_url} 
@@ -90,7 +94,10 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
         </div>
         <div 
           className="mt-4 cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => setExpensesDialogOpen(true)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpensesDialogOpen(true);
+          }}
         >
           <div className="text-2xl font-bold">
             {formatCurrency(totalCurrentYear)}
