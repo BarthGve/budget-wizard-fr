@@ -67,10 +67,10 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
   return (
     <>
       
-        <Card className="pb-0 pt-6 px-6 cursor-pointer hover:shadow-md transition-all">
+        <Card className="pb-0 pt-6 px-6  hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
           <Link to={`/expenses/retailer/${retailer.id}`} className="block">
-            <div className="text-xl font-semibold">
+            <div className="text-xl font-semibold cursor-pointer">
               {retailer.name}
             </div>
             </Link>
