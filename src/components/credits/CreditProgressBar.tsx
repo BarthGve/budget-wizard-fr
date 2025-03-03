@@ -1,8 +1,9 @@
 
-import { format, differenceInDays, differenceInMonths, isAfter } from "date-fns";
+import { format, differenceInMonths, isAfter, isSameDay, isSameMonth } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatCurrency } from "@/utils/format";
 
 interface CreditProgressBarProps {
   dateDebut: string;
@@ -15,26 +16,26 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
   const endDate = new Date(dateFin);
   const currentDate = new Date();
 
-  // Calculer le nombre total de jours entre le début et la fin pour la barre de progression visuelle
-  const totalDays = differenceInDays(endDate, startDate);
-  const elapsedDays = Math.min(
-    differenceInDays(currentDate, startDate),
-    totalDays
-  );
+  // Calculer le nombre total de mensualités entre le début et la fin
+  const totalMonths = differenceInMonths(endDate, startDate) + 1; // +1 car on compte la mensualité du jour de début
   
-  // Calculer le pourcentage de progression basé sur les jours pour l'affichage visuel
-  const progressPercentage = Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100));
+  // Calculer le nombre de mensualités payées
+  // Une mensualité est comptée comme payée dès le jour de l'échéance
+  let completedMonths = 0;
+  
+  if (isAfter(currentDate, endDate) || isSameDay(currentDate, endDate)) {
+    // Si on est après ou exactement à la date de fin, toutes les mensualités sont payées
+    completedMonths = totalMonths;
+  } else if (isAfter(currentDate, startDate) || isSameDay(currentDate, startDate)) {
+    // On compte le nombre de mois entre la date de début et aujourd'hui
+    // +1 car on compte la mensualité du jour de début (si on est au moins à ce jour)
+    completedMonths = differenceInMonths(currentDate, startDate) + 1;
+  }
+  
+  // Calculer le pourcentage de progression basé sur les mensualités payées
+  const progressPercentage = Math.min(100, Math.max(0, (completedMonths / totalMonths) * 100));
 
-  // Calculer le nombre total de mois entre le début et la fin
-  const totalMonths = differenceInMonths(endDate, startDate);
-  
-  // Calculer le nombre de mois complets écoulés pour le montant remboursé
-  // Si la date actuelle est après la date de fin, alors tous les mois sont écoulés
-  const completedMonths = isAfter(currentDate, endDate) 
-    ? totalMonths 
-    : Math.min(differenceInMonths(currentDate, startDate), totalMonths);
-  
-  // Calculer le montant total et le montant déjà remboursé basé uniquement sur les mois complets
+  // Calculer le montant total et le montant déjà remboursé
   const montantTotal = totalMonths * montantMensuel;
   const montantRembourse = completedMonths * montantMensuel;
   const montantRestant = montantTotal - montantRembourse;
@@ -65,11 +66,11 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
             <Progress value={progressPercentage} className="h-3" />
           </TooltipTrigger>
           <TooltipContent className="space-y-2">
-            <p>Progression visuelle : {progressPercentage.toFixed(1)}%</p>
             <p>Mensualités payées : {completedMonths} sur {totalMonths}</p>
-            <p>Montant remboursé : {montantRembourse.toLocaleString('fr-FR')}€</p>
-            <p>Montant restant : {montantRestant.toLocaleString('fr-FR')}€</p>
-            <p>Montant total : {montantTotal.toLocaleString('fr-FR')}€</p>
+            <p>Progression : {progressPercentage.toFixed(1)}%</p>
+            <p>Montant remboursé : {formatCurrency(montantRembourse)}</p>
+            <p>Montant restant : {formatCurrency(montantRestant)}</p>
+            <p>Montant total : {formatCurrency(montantTotal)}</p>
           </TooltipContent>
         </Tooltip>
       </div>
