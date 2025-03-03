@@ -53,6 +53,9 @@ export const LastPaymentDateField = ({ form }: LastPaymentDateFieldProps) => {
                 locale={fr}
                 fromDate={today} // Ne permet que les dates futures
                 initialFocus
+                captionLayout="dropdown-buttons"
+                fromYear={new Date().getFullYear()}
+                toYear={2050}
               />
             </PopoverContent>
           </Popover>

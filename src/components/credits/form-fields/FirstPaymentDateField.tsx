@@ -48,7 +48,9 @@ export function FirstPaymentDateField({ form }: FirstPaymentDateFieldProps) {
                 onSelect={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : "")}
                 locale={fr}
                 initialFocus
-                // Aucune restriction de date pour la première mensualité
+                captionLayout="dropdown-buttons"
+                fromYear={2000}
+                toYear={2050}
               />
             </PopoverContent>
           </Popover>
