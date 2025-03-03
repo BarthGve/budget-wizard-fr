@@ -30,7 +30,6 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const now = new Date();
   
-  // Mémorisation des calculs coûteux
   const { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange } = useMemo(() => {
     const currentYearStart = startOfYear(now);
     const currentYearEnd = endOfYear(now);
@@ -59,7 +58,6 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     return { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange };
   }, [expenses, now]);
 
-  // Optimisation avec useCallback
   const handleExpenseUpdated = useCallback(() => {
     setExpensesDialogOpen(false);
     setAddDialogOpen(false);
