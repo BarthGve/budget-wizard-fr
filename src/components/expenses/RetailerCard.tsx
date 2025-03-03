@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { ExpensesChart } from "./ExpensesChart";
@@ -8,7 +7,6 @@ import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
-import { useNavigate } from "react-router-dom";
 
 interface RetailerCardProps {
   retailer: {
@@ -29,7 +27,6 @@ interface RetailerCardProps {
 export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const navigate = useNavigate();
   const now = new Date();
   
   const { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange } = useMemo(() => {
@@ -66,37 +63,15 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
-  const handleNameClick = () => {
-    console.log("Navigating to retailer detail:", `/expenses/retailer/${retailer.id}`);
-    // Use direct navigation to ensure we're going to the right route
-    window.location.href = `/expenses/retailer/${retailer.id}`;
-  };
-
-  const handleAmountClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpensesDialogOpen(true);
-  };
-
-  const handleLogoClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setAddDialogOpen(true);
-  };
-
   return (
     <>
       <Card className="pb-0 pt-6 px-6">
         <div className="flex items-center justify-between">
-          <div 
-            className="text-xl font-semibold hover:text-primary transition-colors cursor-pointer"
-            onClick={handleNameClick}
-          >
+          <div className="text-xl font-semibold">
             {retailer.name}
           </div>
           {retailer.logo_url && (
-            <div 
-              className="cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={handleLogoClick}
-            >
+            <div>
               <img 
                 src={retailer.logo_url} 
                 alt={retailer.name} 
@@ -105,10 +80,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
             </div>
           )}
         </div>
-        <div 
-          className="mt-4 cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={handleAmountClick}
-        >
+        <div className="mt-4">
           <div className="text-2xl font-bold">
             {formatCurrency(totalCurrentYear)}
           </div>
@@ -127,7 +99,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
             </div>
           )}
         </div>
-        <div onClick={(e) => e.stopPropagation()}>
+        <div>
           <ExpensesChart expenses={expenses} viewMode={viewMode} />
         </div>
       </Card>
