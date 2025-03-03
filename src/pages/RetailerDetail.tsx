@@ -14,9 +14,18 @@ import { RetailerStats } from "@/components/expenses/retailer-detail/RetailerSta
 import { RetailerExpensesTable } from "@/components/expenses/retailer-detail/RetailerExpensesTable";
 import { useRetailerExpenseStats } from "@/components/expenses/retailer-detail/useRetailerExpenseStats";
 
+// Define the Expense type consistently across components
+interface Expense {
+  id: string;
+  date: string;
+  amount: number;
+  comment?: string;
+  retailer_id: string;
+}
+
 const RetailerDetail = () => {
   const { id } = useParams();
-  const [expenseToEdit, setExpenseToEdit] = useState<any>(null);
+  const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const { data: retailer, isLoading: isLoadingRetailer } = useQuery({
@@ -68,7 +77,7 @@ const RetailerDetail = () => {
     monthlyAverageCount
   } = useRetailerExpenseStats(expenses);
 
-  const handleEditExpense = (expense: any) => {
+  const handleEditExpense = (expense: Expense) => {
     setExpenseToEdit(expense);
     setEditDialogOpen(true);
   };

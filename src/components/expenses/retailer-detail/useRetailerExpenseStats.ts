@@ -6,6 +6,7 @@ interface Expense {
   date: string;
   amount: number;
   comment?: string;
+  retailer_id: string;
 }
 
 export function useRetailerExpenseStats(expenses: Expense[] | undefined) {
