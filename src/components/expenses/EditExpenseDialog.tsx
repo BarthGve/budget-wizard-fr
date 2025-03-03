@@ -55,7 +55,7 @@ export function EditExpenseDialog({
               amount: expense.amount,
               date: expense.date,
               comment: expense.comment || "",
-              retailer_id: expense.retailer_id
+              retailerId: expense.retailer_id
             }}
             submitLabel="Mettre à jour"
             disableRetailerSelect
