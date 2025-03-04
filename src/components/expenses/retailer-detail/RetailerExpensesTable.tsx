@@ -90,16 +90,16 @@ export function RetailerExpensesTable({
           <TableBody>
             {paginatedExpenses.map((expense) => (
               <TableRow key={expense.id}>
-                <TableCell>
+                <TableCell className="p-2">
                   {new Date(expense.date).toLocaleDateString('fr-FR')}
                 </TableCell>
-                <TableCell className="font-medium">
+                <TableCell className="font-medium p-2">
                   {formatCurrency(expense.amount)}
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-2">
                   {expense.comment || "-"}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right p-2">
                   <ExpenseActionsDropdown
                     onViewDetails={() => onViewDetails && onViewDetails(expense)}
                     onEdit={() => onEditExpense(expense)}
