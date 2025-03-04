@@ -147,7 +147,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
             </div>
           )}
         </div>
-        <div className="mt-4">
+        <div className="mt-4 flex items-center gap-2">
           <div className="text-2xl font-bold">
             {formatCurrency(totalCurrentPeriod)}
           </div>
