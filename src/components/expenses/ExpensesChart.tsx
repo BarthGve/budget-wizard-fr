@@ -80,7 +80,7 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   }
 
   return (
-    <div className="bg-card rounded-lg p-2 mt-2">
+    <div className="bg-card rounded-lg p-2 mt-2 h-[300px]">
       <ChartContainer config={chartConfig}>
         <ResponsiveContainer width="100%" height={75}>
           <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 20 }}>
