@@ -16,9 +16,11 @@ interface ExpenseFormProps {
     id: string;
     name: string;
   };
+  submitLabel?: string;
+  disableRetailerSelect?: boolean;
 }
 
-export function ExpenseForm({ onSubmit, defaultValues, preSelectedRetailer }: ExpenseFormProps) {
+export function ExpenseForm({ onSubmit, defaultValues, preSelectedRetailer, submitLabel = "Ajouter", disableRetailerSelect }: ExpenseFormProps) {
   const { retailers } = useRetailers();
   
   const form = useForm<ExpenseFormData>({
@@ -40,12 +42,12 @@ export function ExpenseForm({ onSubmit, defaultValues, preSelectedRetailer }: Ex
           render={({ field }) => (
             <FormItem>
               <FormLabel>Enseigne</FormLabel>
-              {preSelectedRetailer ? (
-             <Input
-             value={preSelectedRetailer.name}
-             disabled
-             className="bg-muted text-muted-foreground"
-           />
+              {preSelectedRetailer || disableRetailerSelect ? (
+                <Input
+                  value={preSelectedRetailer?.name || retailers?.find(r => r.id === field.value)?.name || ""}
+                  disabled
+                  className="bg-muted text-muted-foreground"
+                />
               ) : (
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
@@ -117,7 +119,7 @@ export function ExpenseForm({ onSubmit, defaultValues, preSelectedRetailer }: Ex
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">Ajouter</Button>
+        <Button type="submit" className="w-full">{submitLabel}</Button>
       </form>
     </Form>
   );

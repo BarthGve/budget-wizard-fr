@@ -95,7 +95,7 @@ const PropertyDetail = () => {
   if (isLoadingProperty) {
     return (
       <DashboardLayout>
-        <div className="grid gap-6">
+        <div className="grid gap-6 mt-4">
           <Skeleton className="h-[200px] w-full" />
           <div className="grid gap-4">
             <Skeleton className="h-4 w-[250px]" />

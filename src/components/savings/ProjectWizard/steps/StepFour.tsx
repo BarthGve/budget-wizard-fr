@@ -2,7 +2,7 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SavingsMode, SavingsProject } from "@/types/savings-project";
-import { addMonths, differenceInMonths, parseISO } from "date-fns";
+import { addMonths, differenceInMonths, parseISO, format, parse, isValid } from "date-fns";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,6 +18,10 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
 
   const [date, setDate] = useState<string>(
     data.date_estimee ? new Date(data.date_estimee).toISOString().split("T")[0] : formattedMinDate
+  );
+  
+  const [dateInput, setDateInput] = useState(
+    data.date_estimee ? format(new Date(data.date_estimee), "dd/MM/yyyy") : format(minDate, "dd/MM/yyyy")
   );
 
   const { toast } = useToast();
@@ -47,6 +51,30 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
       });
     }
   };
+  
+  const handleDateInputChange = (input: string) => {
+    setDateInput(input);
+    
+    // Essayer de parser la date entrée (format français: JJ/MM/AAAA)
+    if (input.length === 10) { // Longueur exacte d'une date au format JJ/MM/AAAA
+      const parsedDate = parse(input, "dd/MM/yyyy", new Date());
+      
+      if (isValid(parsedDate)) {
+        // Vérifier que la date est au moins 1 mois dans le futur
+        if (parsedDate >= minDate) {
+          const newDate = format(parsedDate, "yyyy-MM-dd");
+          setDate(newDate);
+          handleDateChange(newDate);
+        } else {
+          toast({
+            title: "Date invalide",
+            description: "La date cible doit être au moins 1 mois après aujourd'hui",
+            variant: "destructive"
+          });
+        }
+      }
+    }
+  };
 
   const handleMonthlyAmountChange = (amount: string) => {
     const monthlyAmount = parseFloat(amount);
@@ -62,6 +90,7 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
       const formattedDate = estimatedDate.toISOString().split("T")[0];
       
       setDate(formattedDate);
+      setDateInput(format(estimatedDate, "dd/MM/yyyy"));
       
       onChange({
         ...data,
@@ -77,11 +106,10 @@ export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
         <div className="space-y-2">
           <Label>Date cible *</Label>
           <Input
-            type="date"
-            value={date}
-            onChange={(e) => handleDateChange(e.target.value)}
-            min={formattedMinDate} // Bloque les dates inférieures à +1 mois
-            required
+            placeholder="JJ/MM/AAAA"
+            value={dateInput}
+            onChange={(e) => handleDateInputChange(e.target.value)}
+            className="w-full"
           />
           {data.montant_mensuel && (
             <div className="mt-4 p-4 bg-muted rounded-lg">

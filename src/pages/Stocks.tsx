@@ -126,7 +126,7 @@ const StocksPage = () => {
   return (
     <DashboardLayout>
       <motion.div 
-        className="space-y-6"
+        className="space-y-6 mt-4"
         initial="hidden"
         animate="visible"
         variants={containerVariants}

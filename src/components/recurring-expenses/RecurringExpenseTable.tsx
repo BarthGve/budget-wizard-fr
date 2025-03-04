@@ -1,22 +1,25 @@
 
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, ALL_PERIODICITIES } from "./types";
+import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, periodicityLabels } from "./types";
 import { TableFilters } from "./TableFilters";
 import { motion } from "framer-motion";
-import { TableRows } from "./table/TableRows";
+import { Trash2 } from "lucide-react";
 import { TablePagination } from "./table/TablePagination";
-import { TableSorting } from "./table/TableSorting";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { filterExpenses, sortExpenses, paginateExpenses } from "./table/tableUtils";
+import { SortableTableHeader } from "@/components/properties/expenses/SortableTableHeader";
+import { Button } from "@/components/ui/button";
+import { DeleteExpenseConfirmDialog } from "./dialogs/DeleteExpenseConfirmDialog";
 
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>(ALL_CATEGORIES);
-  const [periodicityFilter, setPeriodicityFilter] = useState<string>(ALL_PERIODICITIES);
   const [sortField, setSortField] = useState<keyof RecurringExpense>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [expenseToDelete, setExpenseToDelete] = useState<RecurringExpense | null>(null);
 
   const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category)));
 
@@ -29,15 +32,30 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
     }
   };
 
-  const handleRowsPerPageChange = (value: number) => {
-    setRowsPerPage(value);
-    setCurrentPage(1);
+  const handleDeleteClick = (expense: RecurringExpense) => {
+    setExpenseToDelete(expense);
   };
 
-  const filteredExpenses = filterExpenses(expenses, searchTerm, categoryFilter, periodicityFilter, ALL_CATEGORIES, ALL_PERIODICITIES);
+  const handleConfirmDelete = () => {
+    if (expenseToDelete) {
+      onDeleteExpense(expenseToDelete.id);
+      setExpenseToDelete(null);
+    }
+  };
+
+  // Modification de l'appel à filterExpenses pour supprimer le filtre de périodicité
+  const filteredExpenses = filterExpenses(expenses, searchTerm, categoryFilter, null, ALL_CATEGORIES, "");
   const sortedExpenses = sortExpenses(filteredExpenses, sortField, sortDirection);
-  const totalPages = rowsPerPage === -1 ? 1 : Math.ceil(sortedExpenses.length / rowsPerPage);
-  const paginatedExpenses = paginateExpenses(sortedExpenses, currentPage, rowsPerPage);
+  const totalPages = itemsPerPage === -1 ? 1 : Math.ceil(sortedExpenses.length / itemsPerPage);
+  const paginatedExpenses = paginateExpenses(sortedExpenses, currentPage, itemsPerPage);
+
+  if (expenses.length === 0) {
+    return (
+      <p className="text-center py-8 text-muted-foreground">
+        Aucune charge récurrente enregistrée
+      </p>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -47,69 +65,126 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between w-full">
-          <TableFilters
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            categoryFilter={categoryFilter}
-            onCategoryFilterChange={setCategoryFilter}
-            periodicityFilter={periodicityFilter}
-            onPeriodicityFilterChange={setPeriodicityFilter}
-            uniqueCategories={uniqueCategories}
-          />
-          <TableSorting 
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleRowsPerPageChange}
-            sortField={sortField}
-            onSortFieldChange={handleSort}
-          />
-        </div>
+        <TableFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          categoryFilter={categoryFilter}
+          onCategoryFilterChange={setCategoryFilter}
+          uniqueCategories={uniqueCategories}
+        />
       </motion.div>
 
-      <motion.div 
-        className="overflow-auto rounded-lg border bg-background"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        <div className="relative w-full overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-0">
-                <TableHead className="text-card-foreground dark:text-card-foreground">Charge</TableHead>
-                <TableHead className="text-card-foreground dark:text-card-foreground">Catégorie</TableHead>
-                <TableHead className="text-card-foreground dark:text-card-foreground">Périodicité</TableHead>
-                <TableHead className="text-card-foreground dark:text-card-foreground text-center">Montant</TableHead>
-                <TableHead className="text-card-foreground dark:text-card-foreground text-right"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRows 
-                expenses={paginatedExpenses} 
-                onDeleteExpense={onDeleteExpense} 
+      <div className="flex justify-between items-center">
+        <div className="text-sm text-muted-foreground">
+          {filteredExpenses.length} charge{filteredExpenses.length !== 1 ? 's' : ''} au total
+        </div>
+        <Select value={String(itemsPerPage)} onValueChange={(value) => {
+          setItemsPerPage(Number(value));
+          setCurrentPage(1);
+        }}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Lignes par page" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="10">10 par page</SelectItem>
+            <SelectItem value="25">25 par page</SelectItem>
+            <SelectItem value="-1">Tout afficher</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <SortableTableHeader
+                field="name"
+                label="Charge"
+                currentSortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
               />
-            </TableBody>
-          </Table>
-        </div>
-      </motion.div>
+              <SortableTableHeader
+                field="category"
+                label="Catégorie"
+                currentSortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+              <SortableTableHeader
+                field="periodicity"
+                label="Périodicité"
+                currentSortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+              <SortableTableHeader
+                field="amount"
+                label="Montant"
+                currentSortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+                className="text-center"
+              />
+              <TableHead className="text-right"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedExpenses.map((expense) => (
+              <TableRow key={expense.id}>
+                <TableCell className="py-2">
+                  <div className="flex items-center gap-3">
+                    {expense.logo_url && (
+                      <img
+                        src={expense.logo_url}
+                        alt={expense.name}
+                        className="w-8 h-8 rounded-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder.svg";
+                        }}
+                      />
+                    )}
+                    <span className="font-semibold">{expense.name}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="py-2">{expense.category}</TableCell>
+                <TableCell className="py-2">{periodicityLabels[expense.periodicity]}</TableCell>
+                <TableCell className="text-center py-2 font-medium">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
+                <TableCell className="text-right py-2">
+                  <div className="flex justify-end">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                      onClick={() => handleDeleteClick(expense)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
-      <motion.div 
-        className="flex flex-col sm:flex-row items-center justify-between gap-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.4 }}
-      >
-        <div className="text-sm text-muted-foreground order-2 sm:order-1">
-          {filteredExpenses.length} résultat{filteredExpenses.length !== 1 ? 's' : ''}
-        </div>
-        <div className="order-1 sm:order-2">
-          <TablePagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      </motion.div>
+      {totalPages > 1 && (
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
+
+      <DeleteExpenseConfirmDialog
+        open={!!expenseToDelete}
+        onOpenChange={(open) => {
+          if (!open) setExpenseToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        expenseName={expenseToDelete?.name}
+      />
     </div>
   );
 };

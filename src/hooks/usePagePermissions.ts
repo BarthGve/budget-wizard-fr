@@ -72,11 +72,27 @@ export const usePagePermissions = () => {
     if (!profile || !permissions) return false;
     if (isAdmin) return true;
 
-    const pagePermission = permissions.find(p => p.page_path === pagePath);
-    if (!pagePermission) return false; // Si aucune permission n'est définie, on refuse l'accès
+    // Add debugging for the path being checked
+    console.log("Checking access for path:", pagePath);
 
-    return pagePermission.required_profile === 'basic' || 
+    // Special case for retailer detail pages
+    if (pagePath.startsWith('/expenses/retailer/')) {
+      console.log("Retailer detail page detected, checking expenses permissions");
+      // If user can access /expenses, they can access all retailer detail pages
+      return canAccessPage('/expenses');
+    }
+
+    const pagePermission = permissions.find(p => p.page_path === pagePath);
+    if (!pagePermission) {
+      console.log("No permission found for path:", pagePath);
+      return false; // Si aucune permission n'est définie, on refuse l'accès
+    }
+
+    const hasAccess = pagePermission.required_profile === 'basic' || 
            (pagePermission.required_profile === 'pro' && profile.profile_type === 'pro');
+    
+    console.log("Permission result:", hasAccess, "Required profile:", pagePermission.required_profile, "User profile:", profile.profile_type);
+    return hasAccess;
   };
 
   const canAccessFeature = (pagePath: string, featureKey: string): boolean => {

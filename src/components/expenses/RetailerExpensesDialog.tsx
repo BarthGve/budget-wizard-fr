@@ -160,9 +160,11 @@ export function RetailerExpensesDialog({
         <EditExpenseDialog 
           open={showEditDialog}
           onOpenChange={setShowEditDialog}
-          expense={currentExpense}
-          retailerId={retailer.id}
-          onSuccess={handleEditSuccess}
+          expense={{
+            ...currentExpense,
+            retailer_id: retailer.id
+          }}
+          onExpenseUpdated={handleEditSuccess}
         />
       )}
     </>

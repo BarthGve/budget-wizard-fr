@@ -8,15 +8,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ALL_CATEGORIES, ALL_PERIODICITIES, periodicityLabels } from "./types";
+import { ALL_CATEGORIES } from "./types";
 
 interface TableFiltersProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   categoryFilter: string;
   onCategoryFilterChange: (value: string) => void;
-  periodicityFilter: string;
-  onPeriodicityFilterChange: (value: string) => void;
   uniqueCategories: string[];
 }
 
@@ -25,8 +23,6 @@ export const TableFilters = ({
   onSearchChange,
   categoryFilter,
   onCategoryFilterChange,
-  periodicityFilter,
-  onPeriodicityFilterChange,
   uniqueCategories,
 }: TableFiltersProps) => {
   return (
@@ -49,18 +45,6 @@ export const TableFilters = ({
           <SelectItem value={ALL_CATEGORIES}>Toutes les catégories</SelectItem>
           {uniqueCategories.map((category) => (
             <SelectItem key={category} value={category}>{category}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Select value={periodicityFilter} onValueChange={onPeriodicityFilterChange}>
-        <SelectTrigger className="w-full sm:w-[220px]">
-          <Filter className="mr-2 h-4 w-4" />
-          <SelectValue placeholder="Périodicité" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_PERIODICITIES}>Toutes les périodicités</SelectItem>
-          {Object.entries(periodicityLabels).map(([key, label]) => (
-            <SelectItem key={key} value={key}>{label}</SelectItem>
           ))}
         </SelectContent>
       </Select>

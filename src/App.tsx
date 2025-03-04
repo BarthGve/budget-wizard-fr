@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +20,7 @@ import AdminFeedbacks from "./pages/admin/Feedbacks";
 import Stocks from "./pages/Stocks";
 import Credits from "./pages/Credits";
 import Expenses from "./pages/Expenses";
+import RetailerDetail from "./pages/RetailerDetail";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Changelog from "./pages/Changelog";
@@ -29,17 +29,12 @@ import EmailVerification from "./pages/EmailVerification";
 import { AuthListener } from "./components/auth/AuthListener";
 import { useState } from "react";
 
-// Configurer React Query avec des options optimisées
 const App = () => {
-  // Create a new instance of QueryClient for each app render to avoid shared cache between reloads
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        // Par défaut, on ne met pas en cache les données trop longtemps
-        staleTime: 1000 * 60, // 1 minute
-        // On réessaie pas plus d'une fois en cas d'erreur
+        staleTime: 1000 * 60,
         retry: 1,
-        // Important: disable refetching on window focus to reduce unnecessary data fetching
         refetchOnWindowFocus: false,
       },
     },
@@ -52,7 +47,6 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            {/* AuthListener doit être à l'intérieur du BrowserRouter pour que useNavigate fonctionne */}
             <AuthListener />
             <Routes>
               <Route path="/" element={<Landing />} />
@@ -71,6 +65,7 @@ const App = () => {
               <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />
               <Route path="/recurring-expenses" element={<ProtectedRoute><RecurringExpenses /></ProtectedRoute>} />
               <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
+              <Route path="/expenses/retailer/:id" element={<ProtectedRoute><RetailerDetail /></ProtectedRoute>} />
               <Route path="/stocks" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
               <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
               

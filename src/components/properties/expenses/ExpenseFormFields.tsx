@@ -2,7 +2,6 @@
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { fr } from "date-fns/locale";
 import { UseFormReturn } from "react-hook-form";
 
 export const EXPENSE_CATEGORIES = [

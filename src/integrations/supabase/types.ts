@@ -111,6 +111,7 @@ export type Database = {
         Row: {
           created_at: string
           date_derniere_mensualite: string
+          date_premiere_mensualite: string | null
           id: string
           logo_url: string | null
           montant_mensualite: number
@@ -123,6 +124,7 @@ export type Database = {
         Insert: {
           created_at?: string
           date_derniere_mensualite: string
+          date_premiere_mensualite?: string | null
           id?: string
           logo_url?: string | null
           montant_mensualite: number
@@ -135,6 +137,7 @@ export type Database = {
         Update: {
           created_at?: string
           date_derniere_mensualite?: string
+          date_premiere_mensualite?: string | null
           id?: string
           logo_url?: string | null
           montant_mensualite?: number
