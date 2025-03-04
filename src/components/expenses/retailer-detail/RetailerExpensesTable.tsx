@@ -57,7 +57,7 @@ export function RetailerExpensesTable({
     : expenses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex justify-between items-center">
         <div className="text-sm text-muted-foreground">
           {expenses.length} dépense{expenses.length !== 1 ? 's' : ''} au total
