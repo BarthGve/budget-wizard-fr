@@ -127,14 +127,14 @@ const RetailerDetail = () => {
             onViewDetails={handleViewExpenseDetails}
           />
         </Card>
-
+        <Card className="p-6">
         {expenses && expenses.length > 0 && (
           <RetailerYearlyArchives
             expenses={expenses}
             currentYear={currentYear}
           />
         )}
-
+</Card>
         <RetailerDialogs
           expenseToEdit={expenseToEdit}
           expenseToView={expenseToView}
