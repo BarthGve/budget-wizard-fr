@@ -90,9 +90,9 @@ export const RecurringExpensesSummaryCards = ({
             scale: 1.03,
             rotateX: 5,
             z: 20,
-            boxShadow: "0 15px 30px rgba(0,0,0,0.15)",
             transition: { duration: 0.3 }
           }}
+          className="overflow-hidden"
           style={{
             transformStyle: "preserve-3d",
             perspective: "1000px"
@@ -100,7 +100,7 @@ export const RecurringExpensesSummaryCards = ({
           onClick={() => onPeriodSelect(selectedPeriod === period ? null : period)}
         >
           <Card 
-            className={`bg-gradient-to-br rounded-lg from-indigo-500 via-purple-500 to-pink-500 shadow-sm hover:shadow-md  dark:bg-gray-800 transform-gpu cursor-pointer ${
+            className={`bg-gradient-to-br rounded-lg from-indigo-500 via-purple-500 to-pink-500 shadow-sm hover:shadow-md dark:bg-gray-800 transform-gpu cursor-pointer ${
               selectedPeriod === period ? 'ring-4 ring-white ring-opacity-50' : ''
             }`}
           >
@@ -114,7 +114,6 @@ export const RecurringExpensesSummaryCards = ({
             <CardContent>
               <p className="text-lg md:text-xl text-white font-bold">{Math.round(value)} €</p>
             </CardContent>
-           
           </Card>
         </motion.div>
       ))}

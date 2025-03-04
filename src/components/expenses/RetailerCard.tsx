@@ -112,7 +112,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
 
   return (
     <>
-      <Card className="pb-0 pt-6 px-6 hover:shadow-md transition-all">
+      <Card className="pb-0 pt-6 px-6 hover:shadow-md transition-all overflow-hidden">
         <div className="flex items-center justify-between">
           <Link 
             to={`/expenses/retailer/${retailer.id}`} 

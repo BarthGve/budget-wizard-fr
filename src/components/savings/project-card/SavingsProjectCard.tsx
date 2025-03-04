@@ -82,14 +82,13 @@ export const SavingsProjectCard = ({
 
   return (
     <motion.div
-      className="perspective-1000 h-full pb-4"
+      className="perspective-1000 h-full pb-4 overflow-hidden"
       variants={cardVariants}
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
       whileHover={{ 
         scale: 1.03, 
         rotateY: 5,
-        
       }}
       whileTap={{ scale: 0.98 }}
     >
