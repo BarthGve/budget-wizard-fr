@@ -92,14 +92,7 @@ interface CreditCardInfoProps {
 export const CreditCardInfo = ({ credit, index, onClick }: CreditCardInfoProps) => {
   return (
     <div className="flex items-center px-4 gap-4 md:w-1/3">
-      <motion.div
-        initial={{ rotate: -30, scale: 0.8 }}
-        animate={{ rotate: 0, scale: 1 }}
-        transition={{ delay: index * 0.1 + 0.2, duration: 0.5 }}
-        className="cursor-pointer"
-        onClick={onClick}
-        whileHover={{ scale: 1.2, rotate: 5 }}
-      >
+  
         {credit.logo_url ? (
           <img
             src={credit.logo_url}
@@ -112,7 +105,7 @@ export const CreditCardInfo = ({ credit, index, onClick }: CreditCardInfoProps) 
         ) : (
           <div className="w-8 h-8 bg-violet-100 rounded-full" />
         )}
-      </motion.div>
+  
       <h4 className="font-medium">{credit.nom_credit}</h4>
     </div>
   );
@@ -125,12 +118,7 @@ interface CreditCardDetailsProps {
 
 export const CreditCardDetails = ({ credit, index }: CreditCardDetailsProps) => {
   return (
-    <motion.div 
-      className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-2 bg-card dark:bg-card"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.1 + 0.3, duration: 0.4 }}
-    >
+   <>
       <div className="flex flex-col">
         <span className="text-sm text-muted-foreground">Mensualité</span>
         <h4 className="font-medium">
@@ -159,6 +147,6 @@ export const CreditCardDetails = ({ credit, index }: CreditCardDetailsProps) => 
           />
         </div>
       </div>
-    </motion.div>
+   </>
   );
 };
