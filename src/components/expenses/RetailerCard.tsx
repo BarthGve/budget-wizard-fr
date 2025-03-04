@@ -116,7 +116,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
         <div className="flex items-center justify-between">
           <Link 
             to={`/expenses/retailer/${retailer.id}`} 
-            className="text-xl font-semibold hover:text-primary hover:underline transition-colors"
+            className="text-xl font-semibold hover:text-primary  transition-colors"
           >
             {retailer.name}
           </Link>
