@@ -99,7 +99,8 @@ export const RecurringExpensesSummaryCards = ({
           }}
           onClick={() => onPeriodSelect(selectedPeriod === period ? null : period)}
         >
-          <Card 
+          <Card>
+            <div 
             className={`bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md dark:bg-gray-800 transform-gpu cursor-pointer ${
               selectedPeriod === period ? 'ring-4 ring-white ring-opacity-50' : ''
             }`}
@@ -114,6 +115,7 @@ export const RecurringExpensesSummaryCards = ({
             <CardContent>
               <p className="text-lg md:text-xl text-white font-bold">{Math.round(value)} €</p>
             </CardContent>
+            </div>
           </Card>
         </motion.div>
       ))}
