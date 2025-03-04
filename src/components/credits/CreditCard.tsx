@@ -91,24 +91,20 @@ interface CreditCardInfoProps {
 
 export const CreditCardInfo = ({ credit, index, onClick }: CreditCardInfoProps) => {
   return (
-    <div 
-      className="flex items-center px-4 gap-4 md:w-1/3 cursor-pointer hover:bg-accent/30 py-2 rounded-lg transition-colors"
-      onClick={onClick}
-      role="button"
-      aria-label={`Voir les détails de ${credit.nom_credit}`}
-    >
-      {credit.logo_url ? (
-        <img
-          src={credit.logo_url}
-          alt={credit.nom_credit}
-          className="w-8 h-8 rounded-full object-contain"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = "/placeholder.svg";
-          }}
-        />
-      ) : (
-        <div className="w-8 h-8 bg-violet-100 rounded-full" />
-      )}
+    <div className="flex items-center px-4 gap-4 md:w-1/3">
+  
+        {credit.logo_url ? (
+          <img
+            src={credit.logo_url}
+            alt={credit.nom_credit}
+            className="w-8 h-8 rounded-full object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/placeholder.svg";
+            }}
+          />
+        ) : (
+          <div className="w-8 h-8 bg-violet-100 rounded-full" />
+        )}
   
       <h4 className="font-medium">{credit.nom_credit}</h4>
     </div>

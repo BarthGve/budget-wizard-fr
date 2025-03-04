@@ -107,7 +107,6 @@ export const CreditInfoDialog = ({ credit, open, onOpenChange }: CreditInfoDialo
               dateDebut={credit.date_premiere_mensualite} 
               dateFin={credit.date_derniere_mensualite} 
               montantMensuel={credit.montant_mensualite} 
-              disableTooltip={true}
             />
             
             <div className="bg-muted/20 p-3 rounded-md space-y-1">
