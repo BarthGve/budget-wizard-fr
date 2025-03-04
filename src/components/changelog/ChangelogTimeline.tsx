@@ -71,7 +71,7 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
       <div className="absolute left-8 top-3 bottom-3 w-px bg-border"></div>
       <div className="space-y-8">
         {entries.map((entry) => (
-          <div key={entry.id} className="relative grid grid-cols-[auto,1fr] gap-6">
+          <div key={entry.id} className="relative grid grid-cols-[auto,1fr] gap-6 mb-12">
             <div className={cn("w-16 h-16 rounded-full bg-card flex items-center justify-center border", getEntryTypeColor(entry.type))}>
               {getEntryTypeIcon(entry.type)}
             </div>
