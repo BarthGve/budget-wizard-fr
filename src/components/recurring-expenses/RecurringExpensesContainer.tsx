@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { RecurringExpensesHeader } from "./RecurringExpensesHeader";
 import { RecurringExpensesSummaryCards } from "./RecurringExpensesSummaryCards";
 import { RecurringExpenseTable } from "./RecurringExpenseTable";
@@ -17,6 +17,24 @@ export const RecurringExpensesContainer = ({
   onDeleteExpense
 }: RecurringExpensesContainerProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState<"monthly" | "quarterly" | "yearly" | null>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Vérifie si le clic s'est produit en dehors des cartes
+      if (cardsRef.current && !cardsRef.current.contains(event.target as Node)) {
+        setSelectedPeriod(null);
+      }
+    };
+
+    // Ajouter l'écouteur d'événement
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Nettoyer l'écouteur d'événement
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -71,13 +89,15 @@ export const RecurringExpensesContainer = ({
         <CreateCategoryBanner />
       </motion.div>
 
-      <RecurringExpensesSummaryCards
-        monthlyTotal={monthlyTotal}
-        quarterlyTotal={quarterlyTotal}
-        yearlyTotal={yearlyTotal}
-        onPeriodSelect={setSelectedPeriod}
-        selectedPeriod={selectedPeriod}
-      />
+      <div ref={cardsRef}>
+        <RecurringExpensesSummaryCards
+          monthlyTotal={monthlyTotal}
+          quarterlyTotal={quarterlyTotal}
+          yearlyTotal={yearlyTotal}
+          onPeriodSelect={setSelectedPeriod}
+          selectedPeriod={selectedPeriod}
+        />
+      </div>
 
       <motion.div 
         className="w-full overflow-hidden"
