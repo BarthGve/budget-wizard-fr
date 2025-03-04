@@ -36,7 +36,7 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
   const queryClient = useQueryClient();
 
   // Calculer le nombre de mensualités si un crédit existant est passé
-  let initialMonthsCount = "";
+  let initialMonthsCount = 0; // Change from string to number
   if (credit) {
     const startDate = new Date(credit.date_premiere_mensualite);
     const endDate = new Date(credit.date_derniere_mensualite);
@@ -50,7 +50,7 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       currentDate = addMonths(currentDate, 1);
     }
     
-    initialMonthsCount = count.toString();
+    initialMonthsCount = count; // Set as number instead of string
   }
 
   const form = useForm<FormValues>({
@@ -60,7 +60,7 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       nom_domaine: credit?.nom_domaine || "",
       montant_mensualite: credit?.montant_mensualite?.toString() || "",
       date_premiere_mensualite: credit?.date_premiere_mensualite || "",
-      months_count: initialMonthsCount || "",
+      months_count: initialMonthsCount || 0, // Use number instead of string
     },
   });
 
