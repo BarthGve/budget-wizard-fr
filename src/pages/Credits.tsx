@@ -122,7 +122,7 @@ const Credits = memo(function Credits() {
   return (
     <DashboardLayout>
       <motion.div 
-        className="space-y-6"
+        className="space-y-6 mt-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
