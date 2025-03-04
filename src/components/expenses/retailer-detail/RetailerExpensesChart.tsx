@@ -22,7 +22,7 @@ export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) 
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
 
   return (
-    <Card className="p-4">
+    <Card className="p-6 h-[150px]">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-lg font-semibold">Évolution des dépenses</h2>
         
