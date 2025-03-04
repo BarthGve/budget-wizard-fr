@@ -84,18 +84,18 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   }
 
   return (
-    <div className="bg-card rounded-lg p-4 mt-4">
+    <div className="bg-card rounded-lg p-2 mt-2">
       <ChartContainer config={chartConfig}>
-        <ResponsiveContainer width="100%" height={75}>
-          <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 20 }}>
+        <ResponsiveContainer width="100%" height={60}>
+          <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 10 }}>
             <CartesianGrid vertical={false} stroke="hsl(var(--border))" opacity={0.1} />
             <XAxis 
               dataKey="period"
               axisLine={false}
               tickLine={false}
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              tickMargin={10}
+              fontSize={10}
+              tickMargin={5}
             />
             <ChartTooltip
               content={
@@ -109,7 +109,7 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
               dataKey="total" 
               fill="#8B5CF6"
               radius={[4, 4, 0, 0]}
-              maxBarSize={50}
+              maxBarSize={40}
             />
           </BarChart>
         </ResponsiveContainer>
@@ -117,4 +117,3 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
     </div>
   );
 }
-
