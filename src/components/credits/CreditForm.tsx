@@ -5,8 +5,8 @@ import { useCreditForm } from "./hooks/useCreditForm";
 import { NameField } from "./form-fields/NameField";
 import { DomainField } from "./form-fields/DomainField";
 import { AmountField } from "./form-fields/AmountField";
-import { LastPaymentDateField } from "./form-fields/LastPaymentDateField";
 import { FirstPaymentDateField } from "./form-fields/FirstPaymentDateField";
+import { MonthsCountField } from "./form-fields/MonthsCountField";
 import { Credit } from "./types";
 
 interface CreditFormProps {
@@ -33,7 +33,7 @@ export function CreditForm({
         <AmountField form={form} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FirstPaymentDateField form={form} />
-          <LastPaymentDateField form={form} />
+          <MonthsCountField form={form} />
         </div>
 
         <div className="flex justify-end space-x-2">

@@ -1,10 +1,10 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Credit } from "./types";
-import { format, differenceInMonths } from "date-fns";
+import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
 import { fr } from "date-fns/locale";
 import { formatCurrency } from "@/utils/format";
-import { Progress } from "@/components/ui/progress";
+import { CreditProgressBar } from "./CreditProgressBar";
 
 interface CreditInfoDialogProps {
   credit: Credit;
@@ -25,23 +25,22 @@ export const CreditInfoDialog = ({ credit, open, onOpenChange }: CreditInfoDialo
   let completedMonths = 0;
   
   // Vérifier si on est avant la première échéance
-  if (currentDate < startDate) {
+  if (isBefore(currentDate, startDate)) {
     completedMonths = 0;
   } else {
     // Compter chaque mensualité une par une
     let paymentDate = new Date(startDate);
     
-    while (paymentDate <= currentDate) {
+    while (isBefore(paymentDate, currentDate) || isSameDay(paymentDate, currentDate)) {
       completedMonths++;
       
       // Si on atteint la date de fin, on s'arrête
-      if (paymentDate.getTime() === endDate.getTime()) {
+      if (isSameDay(paymentDate, endDate)) {
         break;
       }
       
       // Passer à la prochaine mensualité
-      paymentDate = new Date(paymentDate);
-      paymentDate.setMonth(paymentDate.getMonth() + 1);
+      paymentDate = addMonths(paymentDate, 1);
     }
   }
   
@@ -104,7 +103,11 @@ export const CreditInfoDialog = ({ credit, open, onOpenChange }: CreditInfoDialo
 
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">Progression du remboursement</p>
-            <Progress value={progressPercentage} className="h-3" />
+            <CreditProgressBar 
+              dateDebut={credit.date_premiere_mensualite} 
+              dateFin={credit.date_derniere_mensualite} 
+              montantMensuel={credit.montant_mensualite} 
+            />
             
             <div className="bg-muted/20 p-3 rounded-md space-y-1">
               <p className="text-sm">Mensualités payées : {completedMonths} sur {totalMonths}</p>

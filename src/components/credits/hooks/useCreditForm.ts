@@ -6,26 +6,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Credit } from "../types";
+import { addMonths, format } from "date-fns";
 
 export const formSchema = z.object({
   nom_credit: z.string().min(1, "Le nom est requis"),
   nom_domaine: z.string().min(1, "Le domaine est requis"),
   montant_mensualite: z.string().min(1, "Le montant est requis").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Le montant doit être un nombre positif"),
   date_premiere_mensualite: z.string().min(1, "La date de première mensualité est requise"),
-  date_derniere_mensualite: z.string().min(1, "La date de dernière mensualité est requise")
-    .refine((date) => {
-      const selectedDate = new Date(date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return selectedDate > today;
-    }, "La date de dernière mensualité doit être dans le futur"),
-}).refine((data) => {
-  const firstDate = new Date(data.date_premiere_mensualite);
-  const lastDate = new Date(data.date_derniere_mensualite);
-  return firstDate < lastDate;
-}, {
-  message: "La date de première mensualité doit être antérieure à la date de dernière mensualité",
-  path: ["date_premiere_mensualite"],
+  months_count: z.union([
+    z.number().min(1, "Le nombre de mensualités doit être au moins 1"),
+    z.string().min(1, "Le nombre de mensualités est requis").refine(val => !isNaN(Number(val)) && Number(val) > 0, "Le nombre de mensualités doit être un nombre positif")
+  ]).transform(val => typeof val === 'string' ? parseInt(val, 10) : val),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -44,6 +35,24 @@ const getFaviconUrl = (domain: string) => {
 export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
   const queryClient = useQueryClient();
 
+  // Calculer le nombre de mensualités si un crédit existant est passé
+  let initialMonthsCount = "";
+  if (credit) {
+    const startDate = new Date(credit.date_premiere_mensualite);
+    const endDate = new Date(credit.date_derniere_mensualite);
+    
+    // Calculer le nombre de mois entre la première et la dernière mensualité
+    let count = 0;
+    let currentDate = new Date(startDate);
+    
+    while (currentDate <= endDate) {
+      count++;
+      currentDate = addMonths(currentDate, 1);
+    }
+    
+    initialMonthsCount = count.toString();
+  }
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,7 +60,7 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       nom_domaine: credit?.nom_domaine || "",
       montant_mensualite: credit?.montant_mensualite?.toString() || "",
       date_premiere_mensualite: credit?.date_premiere_mensualite || "",
-      date_derniere_mensualite: credit?.date_derniere_mensualite || "",
+      months_count: initialMonthsCount || "",
     },
   });
 
@@ -65,6 +74,12 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
         return;
       }
 
+      // Calculer la date de dernière mensualité
+      const firstPaymentDate = new Date(values.date_premiere_mensualite);
+      // Soustraction de 1 car la première mensualité est déjà comptée
+      const lastPaymentDate = addMonths(firstPaymentDate, Number(values.months_count) - 1);
+      const formattedLastPaymentDate = format(lastPaymentDate, "yyyy-MM-dd");
+
       // Générer l'URL du logo à partir du domaine
       const logo_url = getFaviconUrl(values.nom_domaine);
 
@@ -73,7 +88,7 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
         nom_domaine: values.nom_domaine.trim(),
         montant_mensualite: Number(values.montant_mensualite),
         date_premiere_mensualite: values.date_premiere_mensualite,
-        date_derniere_mensualite: values.date_derniere_mensualite,
+        date_derniere_mensualite: formattedLastPaymentDate,
         logo_url,
         profile_id: user.id,
       };
