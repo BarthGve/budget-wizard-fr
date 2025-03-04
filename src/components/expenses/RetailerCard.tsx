@@ -4,10 +4,12 @@ import { ExpensesChart } from "./ExpensesChart";
 import { startOfYear, endOfYear, subYears } from "date-fns";
 import { useState, useMemo, useCallback } from "react";
 import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
-import { MoveDownRight, MoveUpRight } from "lucide-react";
+import { MoveDownRight, MoveUpRight, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface RetailerCardProps {
   retailer: {
@@ -66,46 +68,64 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
 
   return (
     <>
-      <Link to={`/expenses/retailer/${retailer.id}`} className="block">
-        <Card className="pb-0 pt-6 px-6 cursor-pointer hover:shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <div className="text-xl font-semibold">
-              {retailer.name}
+      <Card className="pb-0 pt-6 px-6 hover:shadow-md transition-all">
+        <div className="flex items-center justify-between">
+          <Link 
+            to={`/expenses/retailer/${retailer.id}`} 
+            className="text-xl font-semibold hover:text-primary hover:underline transition-colors"
+          >
+            {retailer.name}
+          </Link>
+          {retailer.logo_url && (
+            <div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="w-10 h-10 p-0 rounded-full"
+                      onClick={() => setAddDialogOpen(true)}
+                    >
+                      <img 
+                        src={retailer.logo_url} 
+                        alt={retailer.name} 
+                        className="w-10 h-10 rounded-full object-contain"
+                      />
+                      <span className="sr-only">Ajouter une dépense pour {retailer.name}</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Ajouter une dépense</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
-            {retailer.logo_url && (
-              <div>
-                <img 
-                  src={retailer.logo_url} 
-                  alt={retailer.name} 
-                  className="w-10 h-10 rounded-full object-contain"
-                />
-              </div>
-            )}
+          )}
+        </div>
+        <div className="mt-4">
+          <div className="text-2xl font-bold">
+            {formatCurrency(totalCurrentYear)}
           </div>
-          <div className="mt-4">
-            <div className="text-2xl font-bold">
-              {formatCurrency(totalCurrentYear)}
+          {totalLastYear > 0 && (
+            <div className="flex items-center gap-1 mt-1">
+              {percentageChange > 0 ? (
+                <MoveUpRight className="h-4 w-4 text-red-500" />
+              ) : (
+                <MoveDownRight className="h-4 w-4 text-green-500" />
+              )}
+              <span className={cn("text-sm", 
+                percentageChange > 0 ? "text-red-500" : "text-green-500"
+              )}>
+                {Math.abs(percentageChange).toFixed(1)}%
+              </span>
             </div>
-            {totalLastYear > 0 && (
-              <div className="flex items-center gap-1 mt-1">
-                {percentageChange > 0 ? (
-                  <MoveUpRight className="h-4 w-4 text-red-500" />
-                ) : (
-                  <MoveDownRight className="h-4 w-4 text-green-500" />
-                )}
-                <span className={cn("text-sm", 
-                  percentageChange > 0 ? "text-red-500" : "text-green-500"
-                )}>
-                  {Math.abs(percentageChange).toFixed(1)}%
-                </span>
-              </div>
-            )}
-          </div>
-          <div>
-            <ExpensesChart expenses={expenses} viewMode={viewMode} />
-          </div>
-        </Card>
-      </Link>
+          )}
+        </div>
+        <div>
+          <ExpensesChart expenses={expenses} viewMode={viewMode} />
+        </div>
+      </Card>
 
       <RetailerExpensesDialog
         retailer={retailer}
