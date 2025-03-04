@@ -99,7 +99,7 @@ export const RecurringExpensesSummaryCards = ({
           }}
           onClick={() => onPeriodSelect(selectedPeriod === period ? null : period)}
         >
-          <Card>
+          <Card variant="ghost">
             <div 
             className={`bg-gradient-to-br rounded-lg from-indigo-500 via-purple-500 to-pink-500 shadow-md dark:bg-gray-800 transform-gpu cursor-pointer ${
               selectedPeriod === period ? 'ring-4 ring-white ring-opacity-50' : ''
