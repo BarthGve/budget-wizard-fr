@@ -9,9 +9,10 @@ interface CreditProgressBarProps {
   dateDebut: string;
   dateFin: string;
   montantMensuel: number;
+  disableTooltip?: boolean;
 }
 
-export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: CreditProgressBarProps) => {
+export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel, disableTooltip = false }: CreditProgressBarProps) => {
   const startDate = new Date(dateDebut);
   const endDate = new Date(dateFin);
   const currentDate = new Date();
@@ -54,10 +55,17 @@ export const CreditProgressBar = ({ dateDebut, dateFin, montantMensuel }: Credit
   const montantRembourse = completedMonths * montantMensuel;
   const montantRestant = montantTotal - montantRembourse;
 
+  if (disableTooltip) {
+    return (
+      <div className="space-y-2">
+        <Progress value={progressPercentage} className="h-3" />
+      </div>
+    );
+  }
+
   return (
     <TooltipProvider>
       <div className="space-y-2">
-       
         <Tooltip>
           <TooltipTrigger className="w-full">
             <Progress value={progressPercentage} className="h-3" />

@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { LucideIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface MenuItem {
   title: string;
@@ -62,21 +63,38 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
             ? new RegExp(item.matchPath).test(location.pathname)
             : location.pathname === item.path;
 
+          const menuLink = (
+            <NavLink
+              to={item.path}
+              className={({ isActive }) => cn(
+                "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
+                "hover:bg-primary/10",
+                collapsed && "justify-center",
+                isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
+              )}
+              end
+            >
+              <item.icon className="h-5 w-5 flex-shrink-0" />
+              {!collapsed && <span className="truncate">{item.title}</span>}
+            </NavLink>
+          );
+
           return (
             <li key={item.path}>
-              <NavLink
-                to={item.path}
-                className={({ isActive }) => cn(
-                  "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
-                  "hover:bg-primary/10",
-                  collapsed && "justify-center",
-                  isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
-                )}
-                end
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                {!collapsed && <span className="truncate">{item.title}</span>}
-              </NavLink>
+              {collapsed ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      {menuLink}
+                    </TooltipTrigger>
+                    <TooltipContent side="right" align="center">
+                      {item.title}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                menuLink
+              )}
             </li>
           );
         })}
