@@ -1,5 +1,4 @@
 
-
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, periodicityLabels } from "./types";
@@ -11,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { filterExpenses, sortExpenses, paginateExpenses } from "./table/tableUtils";
 import { SortableTableHeader } from "@/components/properties/expenses/SortableTableHeader";
 import { Button } from "@/components/ui/button";
+import { DeleteExpenseConfirmDialog } from "./dialogs/DeleteExpenseConfirmDialog";
 
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,6 +19,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [expenseToDelete, setExpenseToDelete] = useState<RecurringExpense | null>(null);
 
   const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category)));
 
@@ -28,6 +29,17 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
     } else {
       setSortField(field);
       setSortDirection("asc");
+    }
+  };
+
+  const handleDeleteClick = (expense: RecurringExpense) => {
+    setExpenseToDelete(expense);
+  };
+
+  const handleConfirmDelete = () => {
+    if (expenseToDelete) {
+      onDeleteExpense(expenseToDelete.id);
+      setExpenseToDelete(null);
     }
   };
 
@@ -145,7 +157,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                      onClick={() => onDeleteExpense(expense.id)}
+                      onClick={() => handleDeleteClick(expense)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -164,7 +176,15 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           onPageChange={setCurrentPage}
         />
       )}
+
+      <DeleteExpenseConfirmDialog
+        open={!!expenseToDelete}
+        onOpenChange={(open) => {
+          if (!open) setExpenseToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        expenseName={expenseToDelete?.name}
+      />
     </div>
   );
 };
-
