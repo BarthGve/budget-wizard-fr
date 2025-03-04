@@ -62,7 +62,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
   }
 
   return (
-    <div className="mt-8">
+    <div >
       <h2 className="text-xl font-semibold mb-4">Archives des années précédentes</h2>
       
       <Tabs defaultValue={yearlyData[0]?.year.toString()}>
