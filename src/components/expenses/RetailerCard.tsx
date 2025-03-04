@@ -1,7 +1,8 @@
+
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { ExpensesChart } from "./ExpensesChart";
-import { startOfYear, endOfYear, subYears } from "date-fns";
+import { startOfYear, endOfYear, subYears, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import { useState, useMemo, useCallback } from "react";
 import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 import { MoveDownRight, MoveUpRight, Plus } from "lucide-react";
@@ -32,33 +33,76 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const now = new Date();
   
-  const { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange } = useMemo(() => {
-    const currentYearStart = startOfYear(now);
-    const currentYearEnd = endOfYear(now);
-    
-    const currentYearExpenses = expenses.filter(expense => {
-      const expenseDate = new Date(expense.date);
-      return expenseDate >= currentYearStart && expenseDate <= currentYearEnd;
-    });
-    
-    const totalCurrentYear = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-
-    const lastYearStart = startOfYear(subYears(now, 1));
-    const lastYearEnd = endOfYear(subYears(now, 1));
-    
-    const lastYearExpenses = expenses.filter(expense => {
-      const expenseDate = new Date(expense.date);
-      return expenseDate >= lastYearStart && expenseDate <= lastYearEnd;
-    });
-    
-    const totalLastYear = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-
-    const percentageChange = totalLastYear === 0 
-      ? 100 
-      : ((totalCurrentYear - totalLastYear) / totalLastYear) * 100;
+  const { 
+    totalCurrentPeriod, 
+    totalPreviousPeriod, 
+    percentageChange 
+  } = useMemo(() => {
+    // Calculs pour le mode mensuel
+    if (viewMode === 'monthly') {
+      const currentMonthStart = startOfMonth(now);
+      const currentMonthEnd = endOfMonth(now);
       
-    return { currentYearExpenses, totalCurrentYear, totalLastYear, percentageChange };
-  }, [expenses, now]);
+      const currentMonthExpenses = expenses.filter(expense => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate >= currentMonthStart && expenseDate <= currentMonthEnd;
+      });
+      
+      const totalCurrentMonth = currentMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+      const previousMonthStart = startOfMonth(subMonths(now, 1));
+      const previousMonthEnd = endOfMonth(subMonths(now, 1));
+      
+      const previousMonthExpenses = expenses.filter(expense => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate >= previousMonthStart && expenseDate <= previousMonthEnd;
+      });
+      
+      const totalPreviousMonth = previousMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+      const monthPercentageChange = totalPreviousMonth === 0 
+        ? 100 
+        : ((totalCurrentMonth - totalPreviousMonth) / totalPreviousMonth) * 100;
+        
+      return { 
+        totalCurrentPeriod: totalCurrentMonth, 
+        totalPreviousPeriod: totalPreviousMonth, 
+        percentageChange: monthPercentageChange 
+      };
+    } 
+    // Calculs pour le mode annuel
+    else {
+      const currentYearStart = startOfYear(now);
+      const currentYearEnd = endOfYear(now);
+      
+      const currentYearExpenses = expenses.filter(expense => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate >= currentYearStart && expenseDate <= currentYearEnd;
+      });
+      
+      const totalCurrentYear = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+      const lastYearStart = startOfYear(subYears(now, 1));
+      const lastYearEnd = endOfYear(subYears(now, 1));
+      
+      const lastYearExpenses = expenses.filter(expense => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate >= lastYearStart && expenseDate <= lastYearEnd;
+      });
+      
+      const totalLastYear = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+      const yearPercentageChange = totalLastYear === 0 
+        ? 100 
+        : ((totalCurrentYear - totalLastYear) / totalLastYear) * 100;
+        
+      return { 
+        totalCurrentPeriod: totalCurrentYear, 
+        totalPreviousPeriod: totalLastYear, 
+        percentageChange: yearPercentageChange 
+      };
+    }
+  }, [expenses, now, viewMode]);
 
   const handleExpenseUpdated = useCallback(() => {
     setExpensesDialogOpen(false);
@@ -105,9 +149,9 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
         </div>
         <div className="mt-4">
           <div className="text-2xl font-bold">
-            {formatCurrency(totalCurrentYear)}
+            {formatCurrency(totalCurrentPeriod)}
           </div>
-          {totalLastYear > 0 && (
+          {totalPreviousPeriod > 0 && (
             <div className="flex items-center gap-1 mt-1">
               {percentageChange > 0 ? (
                 <MoveUpRight className="h-4 w-4 text-red-500" />

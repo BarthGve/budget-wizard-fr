@@ -144,7 +144,12 @@ const Expenses = memo(function Expenses() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="mt-8">
-            <YearlyTotalCard currentYearTotal={currentYearTotal} previousYearTotal={lastYearTotal} />
+            <YearlyTotalCard 
+              currentYearTotal={currentYearTotal} 
+              previousYearTotal={lastYearTotal} 
+              expenses={expenses || []} 
+              viewMode={viewMode}
+            />
           </motion.div>
           
           <motion.div 
