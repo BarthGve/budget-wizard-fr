@@ -16,6 +16,7 @@ import { useRetailerExpenseStats } from "@/components/expenses/retailer-detail/u
 import { ExpenseActionDetails } from "@/components/expenses/ExpenseActionDetails";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { RetailerYearlyArchives } from "@/components/expenses/retailer-detail/RetailerYearlyArchives";
+import { RetailerExpensesChart } from "@/components/expenses/retailer-detail/RetailerExpensesChart";
 
 interface Expense {
   id: string;
@@ -190,6 +191,10 @@ const RetailerDetail = () => {
           previousMonthTotal={previousMonthTotal}
           previousYearTotal={previousYearTotal}
         />
+        
+        {expenses && expenses.length > 0 && (
+          <RetailerExpensesChart expenses={expenses} />
+        )}
 
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {currentYear}</h2>

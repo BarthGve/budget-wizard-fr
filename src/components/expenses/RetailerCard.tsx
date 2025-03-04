@@ -1,7 +1,5 @@
-
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
-import { ExpensesChart } from "./ExpensesChart";
 import { startOfYear, endOfYear, subYears, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import { useState, useMemo, useCallback } from "react";
 import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
@@ -112,7 +110,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
 
   return (
     <>
-      <Card className="pb-0 pt-6 px-6 hover:shadow-md transition-all overflow-hidden">
+      <Card className="p-6 hover:shadow-md transition-all overflow-hidden">
         <div className="flex items-center justify-between">
           <Link 
             to={`/expenses/retailer/${retailer.id}`} 
@@ -165,9 +163,6 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
               </span>
             </div>
           )}
-        </div>
-        <div>
-          <ExpensesChart expenses={expenses} viewMode={viewMode} />
         </div>
       </Card>
 
