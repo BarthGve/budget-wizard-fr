@@ -46,9 +46,11 @@ export function DescriptionField({ form }: DescriptionFieldProps) {
             </FormControl>
             {description && (
               <div className="p-4 border rounded-md bg-muted/50">
-                <ReactMarkdown className="prose prose-sm max-w-none">
-                  {description}
-                </ReactMarkdown>
+                <div className="prose prose-sm max-w-none">
+                  <ReactMarkdown>
+                    {description}
+                  </ReactMarkdown>
+                </div>
               </div>
             )}
           </div>
