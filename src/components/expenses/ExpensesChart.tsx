@@ -1,4 +1,3 @@
-
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import { subYears, format, parseISO, isWithinInterval, startOfYear, endOfYear, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -31,10 +30,8 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   const today = new Date();
   const startOfCurrentYear = startOfYear(today);
 
-  // Utiliser useMemo pour éviter des recalculs coûteux à chaque rendu
   const chartData = useMemo(() => {
     if (viewMode === 'monthly') {
-      // Données des 12 derniers mois
       const last12Months = Array.from({ length: 12 }, (_, i) => {
         const month = subMonths(today, i);
         const monthExpenses = expenses.filter(expense => {
@@ -47,13 +44,12 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
         return {
           period: format(month, 'MMM yyyy', { locale: fr }),
           total: monthExpenses.reduce((sum, expense) => sum + expense.amount, 0),
-          rawDate: month, // Pour le tri
+          rawDate: month,
         };
       }).reverse();
 
       return last12Months;
     } else {
-      // Données des 5 dernières années
       const fiveYearsAgo = subYears(today, 5);
       const yearlyExpenses = expenses
         .filter((expense) => {
@@ -77,14 +73,14 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
         }))
         .sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
     }
-  }, [expenses, viewMode, today]); // Dépendances correctement spécifiées
+  }, [expenses, viewMode, today]);
 
   if (chartData.length === 0) {
     return null;
   }
 
   return (
-    <div className="bg-card rounded-lg p-4 mt-4">
+    <div className="bg-card rounded-lg p-2 mt-2">
       <ChartContainer config={chartConfig}>
         <ResponsiveContainer width="100%" height={75}>
           <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 20 }}>
@@ -117,4 +113,3 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
     </div>
   );
 }
-
