@@ -23,7 +23,7 @@ export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) 
 
   return (
     <Card className="p-4">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between p-4">
         <h2 className="text-xl font-semibold">Évolution des dépenses</h2>
         
         <div className="flex items-center space-x-2">
