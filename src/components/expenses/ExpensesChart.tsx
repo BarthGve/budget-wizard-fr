@@ -82,8 +82,8 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   return (
     <div className="bg-card rounded-lg p-2 mt-2">
 
-      <ChartContainer config={chartConfig} >
-        <ResponsiveContainer >
+      <ChartContainer className="h-[250px] w-full p-0" config={chartConfig} >
+        <ResponsiveContainer width="100%" height="100%" >
 
           <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 20 }}>
             <CartesianGrid vertical={false} stroke="hsl(var(--border))" opacity={0.1} />
