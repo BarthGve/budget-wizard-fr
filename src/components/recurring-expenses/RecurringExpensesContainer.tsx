@@ -60,7 +60,7 @@ export const RecurringExpensesContainer = ({
 
   return (
     <motion.div 
-      className="space-y-6 max-w-[1600px] mx-auto px-4"
+      className="space-y-6 max-w-[1600px] mx-auto px-4 mt-4"
       initial="hidden"
       animate="visible"
       variants={containerVariants}

@@ -18,7 +18,7 @@ const Contributors = memo(function Contributors() {
   
   return (
     <DashboardLayout>
-      <div className="grid gap-6">
+      <div className="grid gap-6 mt-4">
         <ContributorsHeader />
         <Card>
           <ContributorsContent 

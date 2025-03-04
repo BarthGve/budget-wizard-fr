@@ -116,7 +116,7 @@ const Expenses = memo(function Expenses() {
   
   return <DashboardLayout>
       <motion.div 
-        className="grid gap-6"
+        className="grid gap-6 mt-4"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
