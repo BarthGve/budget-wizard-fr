@@ -3,7 +3,12 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+// Récupération de la clé API Resend depuis les variables d'environnement
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const resend = new Resend(RESEND_API_KEY);
+
+// Log pour déboguer la clé API
+console.log("RESEND_API_KEY disponible:", !!RESEND_API_KEY);
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -74,59 +79,20 @@ serve(async (req: Request) => {
     const userEmail = profile?.email || 'Adresse email non disponible';
     console.log("User info:", { userName, userEmail });
 
-    // Fetch admin roles
-    console.log("Fetching admin roles...");
-    const { data: adminRoles, error: adminRolesError } = await supabaseClient
-      .from('user_roles')
-      .select('user_id')
-      .eq('role', 'admin');
-
-    if (adminRolesError) {
-      console.error("Error fetching admin roles:", adminRolesError);
-      throw adminRolesError;
-    }
-
-    if (!adminRoles?.length) {
-      console.log("No admin roles found");
-      throw new Error('No admins found');
-    }
-
-    const adminIds = adminRoles.map(role => role.user_id);
-    console.log("Admin IDs:", adminIds);
-
-    // Get admin users' emails
-    console.log("Fetching admin users...");
-    const { data: adminUsers, error: adminUsersError } = await supabaseClient.auth.admin.listUsers();
+    // Test d'envoi d'email direct à admin@budgetwizard.fr
+    console.log("Préparation de l'envoi d'email direct à admin@budgetwizard.fr");
     
-    if (adminUsersError) {
-      console.error("Error fetching admin users:", adminUsersError);
-      throw adminUsersError;
-    }
-
-    if (!adminUsers?.users?.length) {
-      console.log("No admin users found");
-      throw new Error('No admin users found');
-    }
-
-    const adminEmails = adminUsers.users
-      .filter(user => adminIds.includes(user.id) && typeof user.email === 'string')
-      .map(user => user.email as string);
-
-    // Ajouter l'email admin@budgetwizard.fr à la liste des destinataires
-    adminEmails.push('admin@budgetwizard.fr');
-
-    console.log("Admin emails (including admin@budgetwizard.fr):", adminEmails);
-
     // Créer un lien vers la page de feedback dans l'application
-    const feedbackUrl = `${SUPABASE_URL.replace('https://', 'https://budgetwizard.app/')}/admin/feedbacks?id=${payload.record.id}`;
-    console.log("Feedback URL:", feedbackUrl);
-
-    // Send emails to administrators
-    console.log("Preparing to send emails...");
-    const emailPromises = adminEmails.map(adminEmail =>
-      resend.emails.send({
-        from: 'Budget Wizard <notification@budgetwizard.fr>',
-        to: adminEmail,
+    let feedbackUrl = "";
+    if (SUPABASE_URL) {
+      feedbackUrl = `${SUPABASE_URL.replace('https://', 'https://budgetwizard.app/')}/admin/feedbacks?id=${payload.record.id}`;
+      console.log("Feedback URL:", feedbackUrl);
+    }
+    
+    try {
+      const directEmailResult = await resend.emails.send({
+        from: "Budget Wizard <notification@budgetwizard.fr>",
+        to: "admin@budgetwizard.fr",
         subject: `Nouveau feedback : ${payload.record.title}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -145,28 +111,35 @@ serve(async (req: Request) => {
             </div>
           </div>
         `
-      })
-    );
-
-    console.log("Sending emails...");
-    const emailResults = await Promise.allSettled(emailPromises);
-    
-    // Log email sending results in detail
-    emailResults.forEach((result, index) => {
-      if (result.status === 'fulfilled') {
-        console.log(`Email sent successfully to ${adminEmails[index]}:`, result.value);
-      } else {
-        console.error(`Failed to send email to ${adminEmails[index]}:`, result.reason);
-      }
-    });
-
-    return new Response(JSON.stringify({ success: true, emailResults }), { 
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-    });
+      });
+      
+      console.log("Résultat d'envoi d'email direct:", JSON.stringify(directEmailResult, null, 2));
+      
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: "Email envoyé avec succès à admin@budgetwizard.fr",
+        result: directEmailResult 
+      }), { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      });
+    } catch (emailError) {
+      console.error("Erreur lors de l'envoi d'email direct:", emailError);
+      return new Response(JSON.stringify({ 
+        error: "Erreur lors de l'envoi d'email", 
+        details: emailError.message,
+        stack: emailError.stack
+      }), { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500
+      });
+    }
 
   } catch (error) {
     console.error('Error processing webhook:', error);
-    return new Response(JSON.stringify({ error: error.message }), { 
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      stack: error.stack 
+    }), { 
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
       status: 500 
     });
