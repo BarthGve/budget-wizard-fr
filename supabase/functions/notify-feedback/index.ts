@@ -7,8 +7,10 @@ import { Resend } from "npm:resend@2.0.0";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const resend = new Resend(RESEND_API_KEY);
 
-// Log pour déboguer la clé API
-console.log("RESEND_API_KEY disponible:", !!RESEND_API_KEY);
+// Log détaillé pour déboguer la clé API et l'environnement
+console.log("🔑 RESEND_API_KEY disponible:", !!RESEND_API_KEY);
+console.log("📝 Version de la fonction: 2.0");
+console.log("⏱️ Démarrage de la fonction à:", new Date().toISOString());
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,21 +33,23 @@ interface WebhookPayload {
 }
 
 serve(async (req: Request) => {
-  console.log("Edge function notify-feedback called");
+  console.log("🚀 Edge function notify-feedback appelée", new Date().toISOString());
+  console.log("📨 Méthode de la requête:", req.method);
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    console.log("Handling CORS preflight request");
+    console.log("🔄 Gestion de la requête CORS preflight");
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log("📥 Lecture du payload...");
     const payload: WebhookPayload = await req.json();
-    console.log("Received webhook payload:", JSON.stringify(payload, null, 2));
+    console.log("📦 Payload reçu:", JSON.stringify(payload, null, 2));
 
     if (payload.type !== 'INSERT' || payload.table !== 'feedbacks') {
-      console.log("Not a new feedback or wrong table:", payload.type, payload.table);
-      return new Response(JSON.stringify({ message: 'Not a new feedback' }), { 
+      console.log("⚠️ Pas un nouveau feedback ou mauvaise table:", payload.type, payload.table);
+      return new Response(JSON.stringify({ message: 'Pas un nouveau feedback' }), { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
         status: 200 
       });
@@ -54,16 +58,18 @@ serve(async (req: Request) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
+    console.log("🔐 Variables d'environnement Supabase disponibles:", !!SUPABASE_URL, !!SUPABASE_SERVICE_ROLE_KEY);
+
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      console.error("Missing Supabase environment variables");
-      throw new Error('Missing Supabase environment variables');
+      console.error("❌ Variables d'environnement Supabase manquantes");
+      throw new Error('Variables d\'environnement Supabase manquantes');
     }
 
-    console.log("Creating Supabase client with URL:", SUPABASE_URL);
+    console.log("🔌 Création du client Supabase avec URL:", SUPABASE_URL);
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Get the profile information
-    console.log("Fetching profile for ID:", payload.record.profile_id);
+    console.log("🔍 Récupération du profil pour ID:", payload.record.profile_id);
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
       .select('full_name, email')
@@ -71,25 +77,26 @@ serve(async (req: Request) => {
       .single();
 
     if (profileError) {
-      console.error("Error fetching profile:", profileError);
+      console.error("❌ Erreur lors de la récupération du profil:", profileError);
       throw profileError;
     }
 
     const userName = profile?.full_name || 'Utilisateur';
     const userEmail = profile?.email || 'Adresse email non disponible';
-    console.log("User info:", { userName, userEmail });
+    console.log("👤 Infos utilisateur:", { userName, userEmail });
 
     // Test d'envoi d'email direct à admin@budgetwizard.fr
-    console.log("Préparation de l'envoi d'email direct à admin@budgetwizard.fr");
+    console.log("📧 Préparation de l'envoi d'email à admin@budgetwizard.fr");
     
     // Créer un lien vers la page de feedback dans l'application
     let feedbackUrl = "";
     if (SUPABASE_URL) {
       feedbackUrl = `${SUPABASE_URL.replace('https://', 'https://budgetwizard.app/')}/admin/feedbacks?id=${payload.record.id}`;
-      console.log("Feedback URL:", feedbackUrl);
+      console.log("🔗 URL du feedback:", feedbackUrl);
     }
     
     try {
+      console.log("📨 Tentative d'envoi d'email via Resend...");
       const directEmailResult = await resend.emails.send({
         from: "Budget Wizard <notification@budgetwizard.fr>",
         to: "admin@budgetwizard.fr",
@@ -113,7 +120,7 @@ serve(async (req: Request) => {
         `
       });
       
-      console.log("Résultat d'envoi d'email direct:", JSON.stringify(directEmailResult, null, 2));
+      console.log("✅ Résultat d'envoi d'email:", JSON.stringify(directEmailResult, null, 2));
       
       return new Response(JSON.stringify({ 
         success: true, 
@@ -123,7 +130,9 @@ serve(async (req: Request) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       });
     } catch (emailError) {
-      console.error("Erreur lors de l'envoi d'email direct:", emailError);
+      console.error("❌ Erreur lors de l'envoi d'email:", emailError);
+      console.error("Stack trace:", emailError.stack);
+      
       return new Response(JSON.stringify({ 
         error: "Erreur lors de l'envoi d'email", 
         details: emailError.message,
@@ -135,7 +144,9 @@ serve(async (req: Request) => {
     }
 
   } catch (error) {
-    console.error('Error processing webhook:', error);
+    console.error('❌ Erreur lors du traitement du webhook:', error);
+    console.error('Stack trace:', error.stack);
+    
     return new Response(JSON.stringify({ 
       error: error.message,
       stack: error.stack 
