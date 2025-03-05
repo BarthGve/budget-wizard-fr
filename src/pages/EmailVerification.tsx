@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,13 +24,10 @@ const EmailVerification = () => {
       const storedEndTime = localStorage.getItem("verificationEndTime");
       if (storedEndTime) {
         const endTime = parseInt(storedEndTime, 10);
-        // Vérifier si le temps n'est pas déjà expiré
-        const now = Date.now();
-        if (endTime > now) {
-          return endTime;
-        }
+        return endTime; // Retourner le temps stocké même s'il est déjà expiré
       }
-      // Si pas de temps stocké ou déjà expiré, on crée un nouveau (2 minutes)
+      
+      // Créer un nouveau temps uniquement s'il n'en existe pas déjà un
       const newEndTime = Date.now() + 120 * 1000;
       localStorage.setItem("verificationEndTime", newEndTime.toString());
       return newEndTime;
