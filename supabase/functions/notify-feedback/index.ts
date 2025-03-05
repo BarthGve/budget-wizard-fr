@@ -9,7 +9,7 @@ const resend = new Resend(RESEND_API_KEY);
 
 // Log détaillé pour déboguer la clé API et l'environnement
 console.log("🔑 RESEND_API_KEY disponible:", !!RESEND_API_KEY);
-console.log("📝 Version de la fonction: 2.0");
+console.log("📝 Version de la fonction: 3.0");
 console.log("⏱️ Démarrage de la fonction à:", new Date().toISOString());
 
 const corsHeaders = {
@@ -35,6 +35,7 @@ interface WebhookPayload {
 serve(async (req: Request) => {
   console.log("🚀 Edge function notify-feedback appelée", new Date().toISOString());
   console.log("📨 Méthode de la requête:", req.method);
+  console.log("📋 URL de la requête:", req.url);
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -43,18 +44,38 @@ serve(async (req: Request) => {
   }
 
   try {
-    console.log("📥 Lecture du payload...");
-    const payload: WebhookPayload = await req.json();
-    console.log("📦 Payload reçu:", JSON.stringify(payload, null, 2));
-
-    if (payload.type !== 'INSERT' || payload.table !== 'feedbacks') {
-      console.log("⚠️ Pas un nouveau feedback ou mauvaise table:", payload.type, payload.table);
-      return new Response(JSON.stringify({ message: 'Pas un nouveau feedback' }), { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 200 
-      });
+    if (!RESEND_API_KEY) {
+      console.error("❌ Erreur critique: Clé API Resend manquante");
+      return new Response(
+        JSON.stringify({ error: "Configuration Resend manquante" }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
     }
 
+    console.log("📥 Lecture du payload...");
+    let payload: WebhookPayload;
+    
+    try {
+      payload = await req.json();
+      console.log("📦 Payload reçu:", JSON.stringify(payload, null, 2));
+    } catch (error) {
+      console.error("❌ Erreur lors de la lecture du payload JSON:", error);
+      return new Response(
+        JSON.stringify({ error: "Payload JSON invalide" }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // Vérification que c'est bien un INSERT sur la table feedbacks
+    if (payload.type !== 'INSERT' || payload.table !== 'feedbacks') {
+      console.log("⚠️ Pas un nouveau feedback ou mauvaise table:", payload.type, payload.table);
+      return new Response(
+        JSON.stringify({ message: 'Pas un nouveau feedback' }), 
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    // Récupération des variables d'environnement Supabase
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -68,7 +89,7 @@ serve(async (req: Request) => {
     console.log("🔌 Création du client Supabase avec URL:", SUPABASE_URL);
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Get the profile information
+    // Récupération des informations du profil
     console.log("🔍 Récupération du profil pour ID:", payload.record.profile_id);
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
@@ -85,21 +106,22 @@ serve(async (req: Request) => {
     const userEmail = profile?.email || 'Adresse email non disponible';
     console.log("👤 Infos utilisateur:", { userName, userEmail });
 
-    // Test d'envoi d'email direct à admin@budgetwizard.fr
+    // Préparation de l'envoi d'email direct
     console.log("📧 Préparation de l'envoi d'email à admin@budgetwizard.fr");
     
-    // Créer un lien vers la page de feedback dans l'application
+    // Création d'un lien vers la page de feedback dans l'application
     let feedbackUrl = "";
     if (SUPABASE_URL) {
-      feedbackUrl = `${SUPABASE_URL.replace('https://', 'https://budgetwizard.app/')}/admin/feedbacks?id=${payload.record.id}`;
+      feedbackUrl = `${SUPABASE_URL.replace('.supabase.co', '.app')}/admin/feedbacks?id=${payload.record.id}`;
       console.log("🔗 URL du feedback:", feedbackUrl);
     }
     
+    // Test d'envoi d'email avec une configuration simplifiée
     try {
       console.log("📨 Tentative d'envoi d'email via Resend...");
       const directEmailResult = await resend.emails.send({
-        from: "Budget Wizard <notification@budgetwizard.fr>",
-        to: "admin@budgetwizard.fr",
+        from: "Budget Wizard <no-reply@budgetwizard.fr>",
+        to: ["admin@budgetwizard.fr"],
         subject: `Nouveau feedback : ${payload.record.title}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -129,21 +151,23 @@ serve(async (req: Request) => {
       }), { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       });
-    } catch (emailError) {
-      console.error("❌ Erreur lors de l'envoi d'email:", emailError);
+    } catch (emailError: any) {
+      console.error("❌ Erreur lors de l'envoi d'email via Resend:", emailError);
       console.error("Stack trace:", emailError.stack);
+      console.error("Détails de l'erreur:", JSON.stringify(emailError, null, 2));
       
       return new Response(JSON.stringify({ 
         error: "Erreur lors de l'envoi d'email", 
         details: emailError.message,
-        stack: emailError.stack
+        stack: emailError.stack,
+        errorObject: JSON.stringify(emailError)
       }), { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Erreur lors du traitement du webhook:', error);
     console.error('Stack trace:', error.stack);
     
