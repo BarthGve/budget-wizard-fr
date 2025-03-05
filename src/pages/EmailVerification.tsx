@@ -35,6 +35,7 @@ const EmailVerification = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") {
         localStorage.removeItem("verificationEmail");
+        // Rediriger directement vers le dashboard au lieu de la landing page
         navigate("/dashboard");
       }
     });

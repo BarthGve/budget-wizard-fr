@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ZeroIncomeDialog } from "./ZeroIncomeDialog";
 
 /**
@@ -12,6 +12,7 @@ import { ZeroIncomeDialog } from "./ZeroIncomeDialog";
 export const AuthListener = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const location = useLocation(); // Ajout de useLocation pour connaître la page courante
   const isInitialMount = useRef(true);
   const previousAuthState = useRef<boolean | null>(null);
   const navigationInProgress = useRef(false);
@@ -20,7 +21,8 @@ export const AuthListener = () => {
 
   // Vérifier si le contributeur principal a un revenu nul
   const checkOwnerContributorIncome = async () => {
-    if (hasCheckedIncome.current) return;
+    // Ne vérifier que si l'utilisateur est sur la page dashboard
+    if (location.pathname !== "/dashboard" || hasCheckedIncome.current) return;
     
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -64,6 +66,18 @@ export const AuthListener = () => {
     }
   };
 
+  // Réinitialiser le flag de vérification des revenus lorsque la route change
+  useEffect(() => {
+    // Si l'utilisateur navigue vers le dashboard, on vérifie le revenu
+    if (location.pathname === "/dashboard") {
+      hasCheckedIncome.current = false;
+      checkOwnerContributorIncome();
+    } else {
+      // Si l'utilisateur n'est pas sur le dashboard, on masque la modale
+      setShowIncomeDialog(false);
+    }
+  }, [location.pathname]);
+
   useEffect(() => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -75,8 +89,8 @@ export const AuthListener = () => {
           // Store initial auth state
           previousAuthState.current = !!session;
           
-          // Vérifier les revenus après la connexion initiale
-          if (session) {
+          // Vérifier les revenus après la connexion initiale uniquement si sur dashboard
+          if (session && location.pathname === "/dashboard") {
             checkOwnerContributorIncome();
           }
           
@@ -100,10 +114,12 @@ export const AuthListener = () => {
           // Réinitialiser le flag pour vérifier les revenus lors de la connexion
           hasCheckedIncome.current = false;
           
-          // Vérifier les revenus après connexion
-          setTimeout(() => {
-            checkOwnerContributorIncome();
-          }, 1000); // Délai pour laisser le temps de charger les données
+          // Vérifier les revenus après connexion uniquement si sur dashboard
+          if (location.pathname === "/dashboard") {
+            setTimeout(() => {
+              checkOwnerContributorIncome();
+            }, 1000); // Délai pour laisser le temps de charger les données
+          }
         } else if (event === "SIGNED_OUT") {
           try {
             // Éviter la navigation multiple
@@ -150,7 +166,7 @@ export const AuthListener = () => {
         subscription.unsubscribe();
       }
     };
-  }, [queryClient, navigate]);
+  }, [queryClient, navigate, location.pathname]);
 
   return (
     <ZeroIncomeDialog 
