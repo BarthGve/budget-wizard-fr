@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -54,8 +55,13 @@ const EmailVerification = () => {
         // Nettoyer tous les éléments liés à la vérification
         localStorage.removeItem("verificationEmail");
         localStorage.removeItem("verificationEndTime");
-        // Rediriger directement vers le dashboard au lieu de la landing page
-        navigate("/dashboard");
+        
+        // Définir un flag dans le localStorage pour indiquer que l'utilisateur vient juste de vérifier son email
+        localStorage.setItem("justVerified", "true");
+        
+        // Rediriger vers la page de connexion au lieu de dashboard
+        // Cela permettra de s'assurer que l'authentification est correctement initialisée
+        navigate("/login");
       }
     });
 

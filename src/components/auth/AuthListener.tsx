@@ -12,7 +12,7 @@ import { ZeroIncomeDialog } from "./ZeroIncomeDialog";
 export const AuthListener = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const location = useLocation(); // Ajout de useLocation pour connaître la page courante
+  const location = useLocation();
   const isInitialMount = useRef(true);
   const previousAuthState = useRef<boolean | null>(null);
   const navigationInProgress = useRef(false);
@@ -66,6 +66,20 @@ export const AuthListener = () => {
     }
   };
 
+  // Gérer la redirection post-vérification email
+  useEffect(() => {
+    const justVerified = localStorage.getItem("justVerified") === "true";
+    
+    if (justVerified && location.pathname === "/login") {
+      // Nettoyer le flag
+      localStorage.removeItem("justVerified");
+      
+      // Si l'utilisateur vient de vérifier son email et est sur la page login,
+      // on lui permet de se connecter normalement sans redirection automatique
+      console.log("Email vérifié, login requis");
+    }
+  }, [location.pathname, navigate]);
+
   // Réinitialiser le flag de vérification des revenus lorsque la route change
   useEffect(() => {
     // Si l'utilisateur navigue vers le dashboard, on vérifie le revenu
@@ -106,6 +120,9 @@ export const AuthListener = () => {
         previousAuthState.current = currentAuthState;
 
         if (event === "SIGNED_IN") {
+          // Vérifier si l'utilisateur vient de vérifier son email
+          const justVerified = localStorage.getItem("justVerified") === "true";
+          
           // Invalidation simple des caches pertinents
           queryClient.invalidateQueries({ queryKey: ["auth"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
@@ -113,6 +130,13 @@ export const AuthListener = () => {
           
           // Réinitialiser le flag pour vérifier les revenus lors de la connexion
           hasCheckedIncome.current = false;
+          
+          // Si l'utilisateur est déjà sur la page de login et vient juste de vérifier son email,
+          // on le redirige vers le dashboard
+          if (location.pathname === "/login" && justVerified) {
+            localStorage.removeItem("justVerified");
+            navigate("/dashboard");
+          }
           
           // Vérifier les revenus après connexion uniquement si sur dashboard
           if (location.pathname === "/dashboard") {
