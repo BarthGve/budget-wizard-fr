@@ -36,7 +36,7 @@ serve(async (req: Request) => {
 
   try {
     const payload: WebhookPayload = await req.json();
-    console.log("Received webhook payload:", payload);
+    console.log("Received webhook payload:", JSON.stringify(payload, null, 2));
 
     if (payload.type !== 'INSERT' || payload.table !== 'feedbacks') {
       console.log("Not a new feedback or wrong table:", payload.type, payload.table);
@@ -67,11 +67,12 @@ serve(async (req: Request) => {
 
     if (profileError) {
       console.error("Error fetching profile:", profileError);
+      throw profileError;
     }
 
     const userName = profile?.full_name || 'Utilisateur';
     const userEmail = profile?.email || 'Adresse email non disponible';
-    console.log("User name resolved to:", userName);
+    console.log("User info:", { userName, userEmail });
 
     // Fetch admin roles
     console.log("Fetching admin roles...");
@@ -111,19 +112,20 @@ serve(async (req: Request) => {
       .filter(user => adminIds.includes(user.id) && typeof user.email === 'string')
       .map(user => user.email as string);
 
-    // Ajouter l'email admin@budgetwizard à la liste des destinataires
-    adminEmails.push('admin@budgetwizard');
+    // Ajouter l'email admin@budgetwizard.fr à la liste des destinataires
+    adminEmails.push('admin@budgetwizard.fr');
 
-    console.log("Admin emails (including admin@budgetwizard):", adminEmails);
+    console.log("Admin emails (including admin@budgetwizard.fr):", adminEmails);
 
     // Créer un lien vers la page de feedback dans l'application
     const feedbackUrl = `${SUPABASE_URL.replace('https://', 'https://budgetwizard.app/')}/admin/feedbacks?id=${payload.record.id}`;
+    console.log("Feedback URL:", feedbackUrl);
 
     // Send emails to administrators
     console.log("Preparing to send emails...");
     const emailPromises = adminEmails.map(adminEmail =>
       resend.emails.send({
-        from: 'Budget Wizard <notifications@budgetwizard.fr>',
+        from: 'Budget Wizard <notification@budgetwizard.fr>',
         to: adminEmail,
         subject: `Nouveau feedback : ${payload.record.title}`,
         html: `
@@ -149,16 +151,16 @@ serve(async (req: Request) => {
     console.log("Sending emails...");
     const emailResults = await Promise.allSettled(emailPromises);
     
-    // Log email sending results
+    // Log email sending results in detail
     emailResults.forEach((result, index) => {
       if (result.status === 'fulfilled') {
-        console.log(`Email sent successfully to ${adminEmails[index]}`);
+        console.log(`Email sent successfully to ${adminEmails[index]}:`, result.value);
       } else {
         console.error(`Failed to send email to ${adminEmails[index]}:`, result.reason);
       }
     });
 
-    return new Response(JSON.stringify({ success: true }), { 
+    return new Response(JSON.stringify({ success: true, emailResults }), { 
       headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
     });
 
