@@ -11,7 +11,7 @@ const EmailVerification = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [isResending, setIsResending] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(120); // 2 minutes in seconds
+  const [remainingTime, setRemainingTime] = useState<number>(0);
 
   useEffect(() => {
     // Get the email from localStorage (set during registration)
@@ -20,21 +20,44 @@ const EmailVerification = () => {
       setEmail(storedEmail);
     }
 
+    // Récupérer l'heure de fin du compteur depuis localStorage ou en créer une nouvelle
+    const getOrCreateEndTime = () => {
+      const storedEndTime = localStorage.getItem("verificationEndTime");
+      if (storedEndTime) {
+        const endTime = parseInt(storedEndTime, 10);
+        // Vérifier si le temps n'est pas déjà expiré
+        const now = Date.now();
+        if (endTime > now) {
+          return endTime;
+        }
+      }
+      // Si pas de temps stocké ou déjà expiré, on crée un nouveau (2 minutes)
+      const newEndTime = Date.now() + 120 * 1000;
+      localStorage.setItem("verificationEndTime", newEndTime.toString());
+      return newEndTime;
+    };
+
+    // Initialiser avec l'heure de fin stockée ou une nouvelle
+    const endTime = getOrCreateEndTime();
+
     // Set up countdown timer
     const timer = setInterval(() => {
-      setRemainingTime((prev) => {
-        if (prev <= 0) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
+      const now = Date.now();
+      const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
+      
+      setRemainingTime(timeLeft);
+      
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+      }
     }, 1000);
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") {
+        // Nettoyer tous les éléments liés à la vérification
         localStorage.removeItem("verificationEmail");
+        localStorage.removeItem("verificationEndTime");
         // Rediriger directement vers le dashboard au lieu de la landing page
         navigate("/dashboard");
       }
@@ -61,8 +84,12 @@ const EmailVerification = () => {
 
       if (error) throw error;
 
+      // Réinitialiser le compteur à 2 minutes
+      const newEndTime = Date.now() + 120 * 1000;
+      localStorage.setItem("verificationEndTime", newEndTime.toString());
+      setRemainingTime(120);
+      
       toast.success("Email de vérification envoyé");
-      setRemainingTime(120); // Reset timer to 2 minutes
     } catch (error: any) {
       toast.error(error.message || "Erreur lors de l'envoi de l'email");
     } finally {
