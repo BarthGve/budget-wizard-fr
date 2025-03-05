@@ -61,7 +61,7 @@ serve(async (req: Request) => {
     console.log("Fetching profile for ID:", payload.record.profile_id);
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
-      .select('full_name')
+      .select('full_name, email')
       .eq('id', payload.record.profile_id)
       .single();
 
@@ -70,6 +70,7 @@ serve(async (req: Request) => {
     }
 
     const userName = profile?.full_name || 'Utilisateur';
+    const userEmail = profile?.email || 'Adresse email non disponible';
     console.log("User name resolved to:", userName);
 
     // Fetch admin roles
@@ -110,7 +111,13 @@ serve(async (req: Request) => {
       .filter(user => adminIds.includes(user.id) && typeof user.email === 'string')
       .map(user => user.email as string);
 
-    console.log("Admin emails:", adminEmails);
+    // Ajouter l'email admin@budgetwizard à la liste des destinataires
+    adminEmails.push('admin@budgetwizard');
+
+    console.log("Admin emails (including admin@budgetwizard):", adminEmails);
+
+    // Créer un lien vers la page de feedback dans l'application
+    const feedbackUrl = `${SUPABASE_URL.replace('https://', 'https://budgetwizard.app/')}/admin/feedbacks?id=${payload.record.id}`;
 
     // Send emails to administrators
     console.log("Preparing to send emails...");
@@ -122,13 +129,18 @@ serve(async (req: Request) => {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h1 style="color: #333;">Nouveau feedback reçu</h1>
-            <p style="color: #666;">Un nouveau feedback a été soumis par ${userName}.</p>
+            <p style="color: #666;">Un nouveau feedback a été soumis par ${userName} (${userEmail}).</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <h2 style="color: #444; margin-top: 0;">${payload.record.title}</h2>
               <p style="color: #666;">${payload.record.content}</p>
               <p style="color: #888;">Note : ${payload.record.rating}/5</p>
             </div>
             <p style="color: #666;">Date de soumission : ${new Date(payload.record.created_at).toLocaleString('fr-FR')}</p>
+            <div style="margin-top: 20px;">
+              <a href="${feedbackUrl}" style="background-color: #4F46E5; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                Voir le feedback dans l'application
+              </a>
+            </div>
           </div>
         `
       })
