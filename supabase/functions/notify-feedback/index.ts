@@ -9,7 +9,7 @@ const resend = new Resend(RESEND_API_KEY);
 
 // Log détaillé pour déboguer la clé API et l'environnement
 console.log("🔑 RESEND_API_KEY disponible:", !!RESEND_API_KEY);
-console.log("📝 Version de la fonction: 3.0");
+console.log("📝 Version de la fonction: 4.0");
 console.log("⏱️ Démarrage de la fonction à:", new Date().toISOString());
 
 const corsHeaders = {
@@ -36,6 +36,9 @@ serve(async (req: Request) => {
   console.log("🚀 Edge function notify-feedback appelée", new Date().toISOString());
   console.log("📨 Méthode de la requête:", req.method);
   console.log("📋 URL de la requête:", req.url);
+
+  // Afficher les en-têtes de la requête pour déboguer
+  console.log("🔍 En-têtes de la requête:", JSON.stringify(Object.fromEntries([...new Headers(req.headers)])));
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -76,6 +79,7 @@ serve(async (req: Request) => {
     }
 
     // Récupération des variables d'environnement Supabase
+    // Notez qu'on n'utilise pas ces clés pour l'authentification
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -110,17 +114,14 @@ serve(async (req: Request) => {
     console.log("📧 Préparation de l'envoi d'email à admin@budgetwizard.fr");
     
     // Création d'un lien vers la page de feedback dans l'application
-    let feedbackUrl = "";
-    if (SUPABASE_URL) {
-      feedbackUrl = `${SUPABASE_URL.replace('.supabase.co', '.app')}/admin/feedbacks?id=${payload.record.id}`;
-      console.log("🔗 URL du feedback:", feedbackUrl);
-    }
+    let feedbackUrl = `https://budgetwizard.fr/admin/feedbacks?id=${payload.record.id}`;
+    console.log("🔗 URL du feedback:", feedbackUrl);
     
     // Test d'envoi d'email avec une configuration simplifiée
     try {
       console.log("📨 Tentative d'envoi d'email via Resend...");
       const directEmailResult = await resend.emails.send({
-        from: "Budget Wizard <no-reply@budgetwizard.fr>",
+        from: "Budget Wizard <notifications@budgetwizard.fr>",
         to: ["admin@budgetwizard.fr"],
         subject: `Nouveau feedback : ${payload.record.title}`,
         html: `
