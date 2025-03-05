@@ -1,38 +1,42 @@
 
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useParams, Link } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { EditExpenseDialog } from "@/components/expenses/EditExpenseDialog";
 import { RetailerHeader } from "@/components/expenses/retailer-detail/RetailerHeader";
 import { RetailerStats } from "@/components/expenses/retailer-detail/RetailerStats";
 import { RetailerExpensesTable } from "@/components/expenses/retailer-detail/RetailerExpensesTable";
 import { useRetailerExpenseStats } from "@/components/expenses/retailer-detail/useRetailerExpenseStats";
-import { ExpenseActionDetails } from "@/components/expenses/ExpenseActionDetails";
-import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { RetailerYearlyArchives } from "@/components/expenses/retailer-detail/RetailerYearlyArchives";
-
-interface Expense {
-  id: string;
-  date: string;
-  amount: number;
-  comment?: string;
-  retailer_id: string;
-}
+import { RetailerExpensesChart } from "@/components/expenses/retailer-detail/RetailerExpensesChart";
+import { useRetailerDetail } from "@/components/expenses/retailer-detail/useRetailerDetail";
+import { RetailerDialogs } from "@/components/expenses/retailer-detail/RetailerDialogs";
 
 const RetailerDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
-  const [expenseToView, setExpenseToView] = useState<Expense | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
-  const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
+  
+  // Utiliser le hook personnalisé pour gérer les données et fonctions
+  const {
+    retailer,
+    expenses,
+    isLoadingRetailer,
+    isLoadingExpenses,
+    expenseToEdit,
+    expenseToView,
+    editDialogOpen,
+    detailsDialogOpen,
+    addExpenseDialogOpen,
+    setEditDialogOpen,
+    setDetailsDialogOpen,
+    setAddExpenseDialogOpen,
+    handleViewExpenseDetails,
+    handleEditExpense,
+    handleDeleteExpense,
+    handleExpenseUpdated,
+    handleAddExpense
+  } = useRetailerDetail(id);
 
   useEffect(() => {
     console.log("RetailerDetail mounted with id:", id);
@@ -42,49 +46,7 @@ const RetailerDetail = () => {
     };
   }, [id]);
 
-  const { data: retailer, isLoading: isLoadingRetailer } = useQuery({
-    queryKey: ["retailer", id],
-    queryFn: async () => {
-      console.log("Fetching retailer with id:", id);
-      const { data, error } = await supabase
-        .from("retailers")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching retailer:", error);
-        toast.error("Erreur lors du chargement des données de l'enseigne");
-        throw error;
-      }
-
-      console.log("Retailer data fetched successfully:", data);
-      return data;
-    }
-  });
-
-  const { data: expenses, isLoading: isLoadingExpenses, refetch: refetchExpenses } = useQuery({
-    queryKey: ["retailer-expenses", id],
-    queryFn: async () => {
-      console.log("Fetching expenses for retailer:", id);
-      const { data, error } = await supabase
-        .from("expenses")
-        .select("*")
-        .eq("retailer_id", id)
-        .order("date", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching expenses:", error);
-        toast.error("Erreur lors du chargement des dépenses");
-        throw error;
-      }
-
-      console.log("Expenses fetched successfully, count:", data?.length);
-      return data;
-    },
-    enabled: !!id
-  });
-
+  // Utiliser les statistiques des dépenses
   const {
     currentYearExpenses,
     monthlyTotal,
@@ -96,47 +58,6 @@ const RetailerDetail = () => {
     previousMonthTotal,
     previousYearTotal
   } = useRetailerExpenseStats(expenses);
-
-  const handleViewExpenseDetails = (expense: Expense) => {
-    setExpenseToView(expense);
-    setDetailsDialogOpen(true);
-  };
-
-  const handleEditExpense = (expense: Expense) => {
-    setExpenseToEdit(expense);
-    setEditDialogOpen(true);
-  };
-
-  const handleDeleteExpense = async (expenseId: string) => {
-    try {
-      const { error } = await supabase
-        .from("expenses")
-        .delete()
-        .eq("id", expenseId);
-
-      if (error) {
-        console.error("Error deleting expense:", error);
-        toast.error("Erreur lors de la suppression de la dépense");
-        return;
-      }
-
-      toast.success("Dépense supprimée avec succès");
-      refetchExpenses();
-    } catch (error) {
-      console.error("Error in delete operation:", error);
-      toast.error("Une erreur s'est produite");
-    }
-  };
-
-  const handleExpenseUpdated = () => {
-    setEditDialogOpen(false);
-    setAddExpenseDialogOpen(false);
-    refetchExpenses();
-  };
-
-  const handleAddExpense = () => {
-    setAddExpenseDialogOpen(true);
-  };
 
   if (isLoadingRetailer) {
     return (
@@ -190,6 +111,10 @@ const RetailerDetail = () => {
           previousMonthTotal={previousMonthTotal}
           previousYearTotal={previousYearTotal}
         />
+        
+        {expenses && expenses.length > 0 && (
+          <RetailerExpensesChart expenses={expenses} />
+        )}
 
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {currentYear}</h2>
@@ -202,32 +127,25 @@ const RetailerDetail = () => {
             onViewDetails={handleViewExpenseDetails}
           />
         </Card>
-
+        <Card className="p-6">
         {expenses && expenses.length > 0 && (
           <RetailerYearlyArchives
             expenses={expenses}
             currentYear={currentYear}
           />
         )}
-
-        <EditExpenseDialog
-          open={editDialogOpen}
-          onOpenChange={setEditDialogOpen}
-          expense={expenseToEdit}
-          onExpenseUpdated={handleExpenseUpdated}
-        />
-
-        <ExpenseActionDetails
-          expense={expenseToView}
-          open={detailsDialogOpen}
-          onOpenChange={setDetailsDialogOpen}
-        />
-
-        <AddExpenseDialog
-          onExpenseAdded={handleExpenseUpdated}
-          preSelectedRetailer={retailer}
-          open={addExpenseDialogOpen}
-          onOpenChange={setAddExpenseDialogOpen}
+</Card>
+        <RetailerDialogs
+          expenseToEdit={expenseToEdit}
+          expenseToView={expenseToView}
+          editDialogOpen={editDialogOpen}
+          detailsDialogOpen={detailsDialogOpen}
+          addExpenseDialogOpen={addExpenseDialogOpen}
+          setEditDialogOpen={setEditDialogOpen}
+          setDetailsDialogOpen={setDetailsDialogOpen}
+          setAddExpenseDialogOpen={setAddExpenseDialogOpen}
+          handleExpenseUpdated={handleExpenseUpdated}
+          retailer={retailer}
         />
       </div>
     </DashboardLayout>

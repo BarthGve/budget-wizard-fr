@@ -57,7 +57,7 @@ export function RetailerExpensesTable({
     : expenses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex justify-between items-center">
         <div className="text-sm text-muted-foreground">
           {expenses.length} dépense{expenses.length !== 1 ? 's' : ''} au total
@@ -90,16 +90,16 @@ export function RetailerExpensesTable({
           <TableBody>
             {paginatedExpenses.map((expense) => (
               <TableRow key={expense.id}>
-                <TableCell>
+                <TableCell className="p-2">
                   {new Date(expense.date).toLocaleDateString('fr-FR')}
                 </TableCell>
-                <TableCell className="font-medium">
+                <TableCell className="font-medium p-2">
                   {formatCurrency(expense.amount)}
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-2">
                   {expense.comment || "-"}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right p-2">
                   <ExpenseActionsDropdown
                     onViewDetails={() => onViewDetails && onViewDetails(expense)}
                     onEdit={() => onEditExpense(expense)}
