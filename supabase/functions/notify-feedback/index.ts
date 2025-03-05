@@ -123,7 +123,7 @@ serve(async (req: Request) => {
     console.log("Preparing to send emails...");
     const emailPromises = adminEmails.map(adminEmail =>
       resend.emails.send({
-        from: 'Budget Wizard <notifications@vision2tech.fr>',
+        from: 'Budget Wizard <notifications@budgetwizard.fr>',
         to: adminEmail,
         subject: `Nouveau feedback : ${payload.record.title}`,
         html: `
