@@ -1,8 +1,12 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.48.1';
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,6 +32,33 @@ const handler = async (req: Request): Promise<Response> => {
     const { userName, userEmail, signupDate }: NewUserNotificationRequest = await req.json();
     
     console.log(`Détails d'inscription: Nom: ${userName}, Email: ${userEmail}, Date: ${signupDate}`);
+
+    // Vérifier si un admin a désactivé les notifications
+    const { data: adminProfiles, error: adminError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', (await supabase.rpc('list_admins')).data || []);
+
+    if (adminError) {
+      console.error("Erreur lors de la récupération des profils admin:", adminError);
+      throw adminError;
+    }
+
+    console.log(`${adminProfiles?.length || 0} profils admin trouvés`);
+    
+    // Vérifier si au moins un admin souhaite recevoir les notifications
+    const shouldSendNotification = adminProfiles?.some(profile => profile.notif_inscriptions !== false);
+    
+    if (!shouldSendNotification) {
+      console.log("Les notifications d'inscription sont désactivées, aucun email ne sera envoyé");
+      return new Response(JSON.stringify({ success: false, reason: "notifications_disabled" }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    }
 
     const adminEmail = "admin@budgetwizard.fr";
     

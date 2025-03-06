@@ -10,6 +10,7 @@ import { Profile } from "@/types/profile";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 interface UserDropdownProps {
   collapsed: boolean;
@@ -22,6 +23,7 @@ export const UserDropdown = ({
 }: UserDropdownProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAdmin } = usePagePermissions();
 
   const handleLogout = async () => {
     try {
@@ -118,10 +120,12 @@ export const UserDropdown = ({
             <span>Mon compte</span>
           </DropdownMenuItem>
      
-      {/*    <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/notifications")}>
-            <Bell className="mr-2 h-4 w-4" />
-            <span>Notifications</span>
-          </DropdownMenuItem> */}
+          {isAdmin && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/user-settings")}>
+              <Bell className="mr-2 h-4 w-4" />
+              <span>Notifications d'inscription</span>
+            </DropdownMenuItem>
+          )}
 
           <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />

@@ -432,6 +432,7 @@ export type Database = {
           encryption_enabled: boolean | null
           full_name: string | null
           id: string
+          notif_inscriptions: boolean | null
           profile_type: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage: number | null
           updated_at: string | null
@@ -442,6 +443,7 @@ export type Database = {
           encryption_enabled?: boolean | null
           full_name?: string | null
           id: string
+          notif_inscriptions?: boolean | null
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
           updated_at?: string | null
@@ -452,6 +454,7 @@ export type Database = {
           encryption_enabled?: boolean | null
           full_name?: string | null
           id?: string
+          notif_inscriptions?: boolean | null
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
           updated_at?: string | null

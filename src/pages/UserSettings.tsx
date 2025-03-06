@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { PaymentSettings } from "@/components/settings/PaymentSettings";
@@ -9,10 +10,10 @@ import { RetailersSettings } from "@/components/settings/RetailersSettings";
 import { ExpenseCategoriesSettings } from "@/components/settings/expense-categories/ExpenseCategoriesSettings";
 import { User, Settings2 } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { useLocation } from "react-router-dom"; // Assurez-vous d'importer useLocation
+import { useLocation } from "react-router-dom"; 
 
 const UserSettings = () => {
-  const { profile } = usePagePermissions();
+  const { profile, isAdmin } = usePagePermissions();
   const canAccessRetailers = !!profile;
   
   // Utiliser useLocation pour obtenir les paramètres de l'URL
@@ -23,7 +24,8 @@ const UserSettings = () => {
   console.log('Debug permissions:', {
     profileType: profile?.profile_type,
     finalAccess: canAccessRetailers,
-    activeTab // Log de l'onglet actif
+    isAdmin,
+    activeTab
   });
 
   return (
@@ -49,7 +51,7 @@ const UserSettings = () => {
           <TabsContent value="profile" className="space-y-6">
             <ProfileSettings />
             <SecuritySettings />
-           {/* <NotificationSettings />*/}
+            {isAdmin && <NotificationSettings />}
            {/*<PaymentSettings /> */} 
             {/*<PrivacySettings /> */}
           </TabsContent>
