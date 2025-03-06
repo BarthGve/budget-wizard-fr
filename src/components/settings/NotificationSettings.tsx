@@ -15,9 +15,15 @@ export const NotificationSettings = () => {
   const { currentUser } = useCurrentUser();
   const { isAdmin, profile } = usePagePermissions();
   const queryClient = useQueryClient();
+  
   const [isSignupNotificationEnabled, setIsSignupNotificationEnabled] = useState<boolean>(
     profile?.notif_inscriptions !== false
   );
+  
+  const [isChangelogNotificationEnabled, setIsChangelogNotificationEnabled] = useState<boolean>(
+    profile?.notif_changelog !== false
+  );
+  
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleSignupNotificationToggle = async (enabled: boolean) => {
@@ -47,9 +53,34 @@ export const NotificationSettings = () => {
       setIsUpdating(false);
     }
   };
-
-  // Si l'utilisateur n'est pas admin, ne pas afficher cette section
-  if (!isAdmin) return null;
+  
+  const handleChangelogNotificationToggle = async (enabled: boolean) => {
+    if (!currentUser) return;
+    
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ notif_changelog: enabled })
+        .eq('id', currentUser.id);
+      
+      if (error) throw error;
+      
+      setIsChangelogNotificationEnabled(enabled);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      
+      toast.success(
+        enabled 
+          ? "Notifications de changelog activées" 
+          : "Notifications de changelog désactivées"
+      );
+    } catch (error: any) {
+      console.error("Erreur lors de la mise à jour des préférences de notification:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <Card>
@@ -61,31 +92,61 @@ export const NotificationSettings = () => {
         <CardDescription>Configurez vos préférences de notifications</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Notifications de changelog pour tous les utilisateurs */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <Label>Notifications d'inscription</Label>
+              <Label>Notifications de changelog</Label>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
                     <InfoIcon className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Recevez un email lorsqu'un nouvel utilisateur s'inscrit</p>
+                    <p>Recevez un email lors de l'ajout de nouvelles fonctionnalités</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
             <p className="text-sm text-muted-foreground">
-              Email de notification pour chaque nouvelle inscription
+              Email de notification pour chaque mise à jour de l'application
             </p>
           </div>
           <Switch 
-            checked={isSignupNotificationEnabled}
-            onCheckedChange={handleSignupNotificationToggle}
+            checked={isChangelogNotificationEnabled}
+            onCheckedChange={handleChangelogNotificationToggle}
             disabled={isUpdating}
           />
         </div>
+        
+        {/* Notifications d'inscription pour les admins uniquement */}
+        {isAdmin && (
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <Label>Notifications d'inscription</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Recevez un email lorsqu'un nouvel utilisateur s'inscrit</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Email de notification pour chaque nouvelle inscription
+              </p>
+            </div>
+            <Switch 
+              checked={isSignupNotificationEnabled}
+              onCheckedChange={handleSignupNotificationToggle}
+              disabled={isUpdating}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -31,6 +31,10 @@ export const ChangelogEntryDialog = ({
   const { mutate: notifyUsers } = useMutation({
     mutationFn: async (id: string) => {
       setIsNotifying(true);
+      
+      // Ajout d'un toast pour indiquer que l'envoi a commencé
+      toast.info("Envoi des notifications en cours...");
+      
       const { data, error } = await supabase.functions.invoke("notify-changelog", {
         body: { id, manual: true }
       });
@@ -38,8 +42,16 @@ export const ChangelogEntryDialog = ({
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      toast.success("Notification envoyée aux utilisateurs avec succès");
+    onSuccess: (data) => {
+      console.log("Réponse de la fonction notify-changelog:", data);
+      
+      // Afficher un message approprié en fonction des données renvoyées
+      if (data.message?.includes("Aucun utilisateur")) {
+        toast.info("Aucun utilisateur à notifier");
+      } else {
+        toast.success("Notification envoyée aux utilisateurs avec succès");
+      }
+      
       setIsNotifying(false);
     },
     onError: (error) => {

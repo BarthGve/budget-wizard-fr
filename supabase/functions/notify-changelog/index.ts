@@ -36,9 +36,10 @@ const handler = async (req: Request): Promise<Response> => {
     let params: NotifyParams = {};
     if (req.method === "POST") {
       params = await req.json();
+      console.log("Paramètres reçus:", JSON.stringify(params));
+    } else {
+      console.log("Requête reçue sans paramètres JSON");
     }
-    
-    console.log("Paramètres reçus:", params);
     
     // Récupérer l'entrée du changelog (la plus récente ou celle spécifiée)
     let changelogEntry;
@@ -49,8 +50,12 @@ const handler = async (req: Request): Promise<Response> => {
         .eq("id", params.id)
         .single();
         
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur lors de la récupération de l'entrée:", error);
+        throw error;
+      }
       changelogEntry = data;
+      console.log("Entrée changelog trouvée par ID:", changelogEntry);
     } else {
       const { data, error } = await supabaseAdmin
         .from("changelog_entries")
@@ -59,15 +64,25 @@ const handler = async (req: Request): Promise<Response> => {
         .limit(1)
         .single();
         
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur lors de la récupération de la dernière entrée:", error);
+        throw error;
+      }
       changelogEntry = data;
+      console.log("Dernière entrée changelog trouvée:", changelogEntry);
     }
     
-    console.log("Entrée changelog trouvée:", changelogEntry);
+    if (!changelogEntry) {
+      console.error("Aucune entrée changelog trouvée");
+      throw new Error("Aucune entrée changelog trouvée");
+    }
     
     // Obtenir les IDs des administrateurs
     const { data: adminIds, error: adminError } = await supabaseAdmin.rpc("list_admins");
-    if (adminError) throw adminError;
+    if (adminError) {
+      console.error("Erreur lors de la récupération des IDs admin:", adminError);
+      throw adminError;
+    }
     
     console.log("IDs admin trouvés:", adminIds);
     
@@ -78,7 +93,10 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("notif_changelog", true)
       .not("id", "in", `(${adminIds.map(admin => `'${admin.id}'`).join(",")})`);
       
-    if (usersError) throw usersError;
+    if (usersError) {
+      console.error("Erreur lors de la récupération des utilisateurs:", usersError);
+      throw usersError;
+    }
     
     console.log(`${users?.length || 0} utilisateurs à notifier trouvés`);
     
@@ -97,6 +115,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emails = users.filter(user => user.email).map(user => user.email);
     
     if (emails.length === 0) {
+      console.log("Aucun email valide trouvé");
       return new Response(
         JSON.stringify({ message: "Aucun email valide trouvé" }),
         {
@@ -106,7 +125,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
     
-    console.log(`Envoi d'emails à ${emails.length} utilisateurs`);
+    console.log(`Envoi d'emails à ${emails.length} utilisateurs:`, emails);
     
     // Construction du contenu HTML de l'email
     const emailHtml = `
@@ -123,7 +142,7 @@ const handler = async (req: Request): Promise<Response> => {
       <p>— L'équipe BudgetWizard</p>
     `;
     
-    // Envoi des emails en batch
+    // Envoi des emails en lots (batches)
     const batchSize = 20; // Nombre d'emails par lot
     const batches = [];
     
@@ -136,6 +155,7 @@ const handler = async (req: Request): Promise<Response> => {
     const results = [];
     for (const batch of batches) {
       try {
+        console.log(`Envoi d'un lot de ${batch.length} emails avec Resend`);
         const result = await resend.emails.send({
           from: "BudgetWizard <notifications@budgetwizard.fr>",
           bcc: batch, // Utilisation de BCC pour préserver la confidentialité
@@ -147,7 +167,7 @@ const handler = async (req: Request): Promise<Response> => {
         console.log(`Lot d'emails envoyé avec succès:`, result);
       } catch (error) {
         console.error("Erreur lors de l'envoi du lot d'emails:", error);
-        results.push({ error });
+        results.push({ error: String(error) });
       }
     }
     
@@ -162,10 +182,10 @@ const handler = async (req: Request): Promise<Response> => {
       }
     );
     
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erreur dans la fonction notify-changelog:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || String(error) }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
