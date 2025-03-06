@@ -123,7 +123,7 @@ export const UserDropdown = ({
           {isAdmin && (
             <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/user-settings")}>
               <Bell className="mr-2 h-4 w-4" />
-              <span>Notifications d'inscription</span>
+              <span>Notifications</span>
             </DropdownMenuItem>
           )}
 
