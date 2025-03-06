@@ -1,15 +1,14 @@
 
-export type ProfileType = 'basic' | 'pro';
+export type ProfileType = "basic" | "pro";
 
 export interface Profile {
   id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  color_palette: string | null;
-  savings_goal_percentage: number | null;
-  updated_at: string | null;
-  email: string | null;
+  email?: string;
+  username?: string;
+  full_name?: string;
+  avatar_url?: string | null;
+  updated_at?: string;
   profile_type: ProfileType;
-  encryption_enabled: boolean | null;
+  notif_changelog?: boolean;
   notif_inscriptions?: boolean;
 }

@@ -1,102 +1,96 @@
 
-import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertTriangle, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-const Unsubscribe = () => {
+export const Unsubscribe = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  const type = searchParams.get("type");
+  const type = searchParams.get("type") || "changelog";
   
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [message, setMessage] = useState("");
-  
+  const [message, setMessage] = useState<string>("");
+
   useEffect(() => {
-    const unsubscribe = async () => {
-      if (!token || !type) {
+    const handleUnsubscribe = async () => {
+      if (!token) {
         setStatus("error");
-        setMessage("Lien de désinscription invalide. Le token ou le type de notification est manquant.");
+        setMessage("Token de désinscription invalide ou manquant");
         return;
       }
-      
+
       try {
         const { data, error } = await supabase.functions.invoke("unsubscribe", {
           body: { token, type }
         });
-        
+
         if (error) {
           console.error("Erreur lors de la désinscription:", error);
           setStatus("error");
-          setMessage("Une erreur est survenue lors de la désinscription. Veuillez réessayer plus tard.");
+          setMessage(error.message || "Une erreur est survenue lors de la désinscription");
           return;
         }
-        
-        if (data?.success) {
-          setStatus("success");
-          setMessage("Vous avez été désinscrit avec succès des notifications.");
-        } else {
-          setStatus("error");
-          setMessage(data?.error || "Une erreur est survenue lors de la désinscription.");
-        }
-      } catch (err) {
-        console.error("Erreur:", err);
+
+        setStatus("success");
+        setMessage("Vous avez été désinscrit avec succès des notifications");
+      } catch (error: any) {
+        console.error("Erreur:", error);
         setStatus("error");
-        setMessage("Une erreur inattendue est survenue. Veuillez réessayer plus tard.");
+        setMessage(error.message || "Une erreur est survenue");
       }
     };
-    
-    unsubscribe();
+
+    handleUnsubscribe();
   }, [token, type]);
-  
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
+      <Card className="max-w-md w-full">
         <CardHeader>
-          <div className="flex flex-col items-center text-center">
-            {status === "loading" && (
-              <div className="animate-pulse mb-4 text-primary">
-                <AlertTriangle className="h-12 w-12" />
-              </div>
-            )}
-            {status === "success" && (
-              <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
-            )}
-            {status === "error" && (
-              <XCircle className="h-12 w-12 text-red-500 mb-4" />
-            )}
-            
-            <CardTitle>
-              {status === "loading" ? "Traitement de votre demande..." : 
-               status === "success" ? "Désinscription réussie" : 
-               "Erreur de désinscription"}
-            </CardTitle>
-            
-            <CardDescription className="mt-2">
-              {status === "loading" ? "Veuillez patienter pendant que nous traitons votre demande..." : message}
-            </CardDescription>
-          </div>
+          <CardTitle className="text-2xl font-bold">Désinscription</CardTitle>
+          <CardDescription>
+            Gestion de vos préférences de notification
+          </CardDescription>
         </CardHeader>
-        
-        <CardContent className="text-center">
-          {status !== "loading" && (
-            <p className="text-sm text-muted-foreground">
-              {status === "success" 
-                ? "Vous ne recevrez plus de notifications concernant les mises à jour de BudgetWizard." 
-                : "Vous pouvez également gérer vos préférences de notification depuis votre profil."}
-            </p>
+        <CardContent className="flex flex-col items-center justify-center py-8">
+          {status === "loading" && (
+            <>
+              <Loader2 className="h-16 w-16 text-primary animate-spin mb-4" />
+              <p className="text-center text-muted-foreground">
+                Traitement de votre demande en cours...
+              </p>
+            </>
+          )}
+
+          {status === "success" && (
+            <>
+              <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <Check className="h-8 w-8 text-green-600" />
+              </div>
+              <p className="text-center font-medium">{message}</p>
+              <p className="text-center text-muted-foreground mt-2">
+                Vous ne recevrez plus de notifications concernant les mises à jour de l'application.
+              </p>
+            </>
+          )}
+
+          {status === "error" && (
+            <>
+              <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                <AlertTriangle className="h-8 w-8 text-red-600" />
+              </div>
+              <p className="text-center font-medium">Erreur</p>
+              <p className="text-center text-muted-foreground mt-2">{message}</p>
+            </>
           )}
         </CardContent>
-        
         <CardFooter className="flex justify-center">
-          <Link to="/">
-            <Button className="flex items-center">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Retour à l'accueil
-            </Button>
-          </Link>
+          <Button variant="outline" onClick={() => window.location.href = "/"}>
+            Retour à l'accueil
+          </Button>
         </CardFooter>
       </Card>
     </div>

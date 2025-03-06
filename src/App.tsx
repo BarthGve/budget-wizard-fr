@@ -1,86 +1,156 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
-import Dashboard from "./pages/Index";
-import Contributors from "./pages/Contributors";
-import UserSettings from "./pages/UserSettings";
-import Savings from "./pages/Savings";
-import NotFound from "./pages/NotFound";
-import RecurringExpenses from "./pages/RecurringExpenses";
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Properties from "./pages/Properties";
-import PropertyDetail from "./pages/PropertyDetail";
-import Admin from "./pages/Admin";
-import AdminFeedbacks from "./pages/admin/Feedbacks";
-import Stocks from "./pages/Stocks";
-import Credits from "./pages/Credits";
-import Expenses from "./pages/Expenses";
-import RetailerDetail from "./pages/RetailerDetail";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import Changelog from "./pages/Changelog";
-import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import EmailVerification from "./pages/EmailVerification";
-import { AuthListener } from "./components/auth/AuthListener";
-import { useState } from "react";
+import { Toaster } from "sonner";
+import { AuthListener } from "@/components/auth/AuthListener";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { StyledLoader } from "@/components/ui/StyledLoader";
 
-const App = () => {
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 1000 * 60,
-        retry: 1,
-        refetchOnWindowFocus: false,
-      },
-    },
-  }));
+// Lazy-loaded page components
+const Landing = lazy(() => import("@/pages/Landing"));
+const Login = lazy(() => import("@/pages/Login"));
+const Register = lazy(() => import("@/pages/Register"));
+const Index = lazy(() => import("@/pages/Index"));
+const EmailVerification = lazy(() => import("@/pages/EmailVerification"));
+const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+const Contributors = lazy(() => import("@/pages/Contributors"));
+const RecurringExpenses = lazy(() => import("@/pages/RecurringExpenses"));
+const Admin = lazy(() => import("@/pages/Admin"));
+const Properties = lazy(() => import("@/pages/Properties"));
+const PropertyDetail = lazy(() => import("@/pages/PropertyDetail"));
+const Expenses = lazy(() => import("@/pages/Expenses"));
+const RetailerDetail = lazy(() => import("@/pages/RetailerDetail"));
+const UserSettings = lazy(() => import("@/pages/UserSettings"));
+const Savings = lazy(() => import("@/pages/Savings"));
+const Credits = lazy(() => import("@/pages/Credits"));
+const Stocks = lazy(() => import("@/pages/Stocks"));
+const Changelog = lazy(() => import("@/pages/Changelog"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
 
+function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AuthListener />
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/email-verification" element={<EmailVerification />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/unsubscribe" element={<Unsubscribe />} />
-              <Route path="/changelog" element={<Changelog />} />
-              
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/contributors" element={<ProtectedRoute><Contributors /></ProtectedRoute>} />
-              <Route path="/user-settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
-              <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />
-              <Route path="/properties" element={<ProtectedRoute><Properties /></ProtectedRoute>} />
-              <Route path="/properties/:id" element={<ProtectedRoute><PropertyDetail /></ProtectedRoute>} />
-              <Route path="/recurring-expenses" element={<ProtectedRoute><RecurringExpenses /></ProtectedRoute>} />
-              <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
-              <Route path="/expenses/retailer/:id" element={<ProtectedRoute><RetailerDetail /></ProtectedRoute>} />
-              <Route path="/stocks" element={<ProtectedRoute><Stocks /></ProtectedRoute>} />
-              <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
-              
-              <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
-              <Route path="/admin/feedbacks" element={<ProtectedRoute requireAdmin><AdminFeedbacks /></ProtectedRoute>} />
-              <Route path="/admin/changelog" element={<ProtectedRoute requireAdmin><Changelog /></ProtectedRoute>} />
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <AuthListener />
+      <Suspense fallback={<StyledLoader />}>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/email-verification" element={<EmailVerification />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/changelog" element={<Changelog />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="/contributors"
+            element={
+              <ProtectedRoute>
+                <Contributors />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recurring-expenses"
+            element={
+              <ProtectedRoute>
+                <RecurringExpenses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/properties"
+            element={
+              <ProtectedRoute>
+                <Properties />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/properties/:id"
+            element={
+              <ProtectedRoute>
+                <PropertyDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/expenses"
+            element={
+              <ProtectedRoute>
+                <Expenses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/retailers/:id"
+            element={
+              <ProtectedRoute>
+                <RetailerDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <UserSettings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/savings"
+            element={
+              <ProtectedRoute>
+                <Savings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/credits"
+            element={
+              <ProtectedRoute>
+                <Credits />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/stocks"
+            element={
+              <ProtectedRoute>
+                <Stocks />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* Catch-all route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+
+      <Toaster position="top-right" closeButton />
+    </BrowserRouter>
   );
-};
+}
 
 export default App;
