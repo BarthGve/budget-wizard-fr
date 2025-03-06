@@ -12,5 +12,4 @@ export interface Profile {
   profile_type: ProfileType;
   encryption_enabled: boolean | null;
   notif_inscriptions?: boolean;
-  notif_changelog?: boolean;
 }
