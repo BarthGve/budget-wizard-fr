@@ -60,6 +60,24 @@ const handler = async (req: Request): Promise<Response> => {
     // Récupérer les emails des administrateurs directement depuis auth.users
     const adminEmails = [];
     
+    // Utilisation de listUsers au lieu de getUser pour chaque admin
+    // Cette méthode est plus efficace et nous permet de filtrer correctement
+    const { data: { users: allUsers }, error: usersError } = await supabase.auth.admin.listUsers({});
+    
+    if (usersError) {
+      console.error("Erreur lors de la récupération des utilisateurs:", usersError);
+      throw usersError;
+    }
+    
+    console.log(`Nombre total d'utilisateurs trouvés: ${allUsers?.length || 0}`);
+    
+    // Créer un dictionnaire d'utilisateurs pour une recherche plus rapide
+    const userMap = new Map();
+    allUsers?.forEach(user => {
+      userMap.set(user.id, user);
+    });
+    
+    // Parcourir la liste des IDs d'admin et vérifier les préférences de notification
     for (const adminId of adminIdList) {
       // Récupérer d'abord le profil pour vérifier si les notifications sont activées
       const { data: profile, error: profileError } = await supabase
@@ -79,21 +97,15 @@ const handler = async (req: Request): Promise<Response> => {
         continue; // Passer à l'admin suivant
       }
       
-      // Récupérer l'email de l'admin via le service role
-      const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers({
-        perPage: 1,
-        page: 1,
-        filters: {
-          id: adminId
-        }
-      });
+      // Récupérer l'utilisateur depuis notre dictionnaire
+      const adminUser = userMap.get(adminId);
       
-      if (usersError || !users || users.length === 0) {
-        console.warn(`Erreur ou aucun utilisateur trouvé pour l'admin ${adminId}:`, usersError);
+      if (!adminUser) {
+        console.warn(`Aucun utilisateur trouvé pour l'admin ${adminId}`);
         continue; // Passer à l'admin suivant
       }
       
-      const adminEmail = users[0].email;
+      const adminEmail = adminUser.email;
       if (adminEmail) {
         console.log(`Email trouvé pour l'admin ${adminId}: ${adminEmail}`);
         adminEmails.push(adminEmail);
