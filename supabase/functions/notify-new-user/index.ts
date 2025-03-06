@@ -33,15 +33,40 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log(`Détails d'inscription: Nom: ${userName}, Email: ${userEmail}, Date: ${signupDate}`);
 
-    // Vérifier si un admin a désactivé les notifications
-    const { data: adminProfiles, error: adminError } = await supabase
+    // Récupérer les IDs des administrateurs depuis la fonction RPC
+    const { data: adminIds, error: rpcError } = await supabase.rpc('list_admins');
+    
+    if (rpcError) {
+      console.error("Erreur lors de la récupération des IDs admin:", rpcError);
+      throw rpcError;
+    }
+
+    console.log(`${adminIds?.length || 0} IDs admin trouvés:`, adminIds);
+    
+    if (!adminIds || adminIds.length === 0) {
+      console.log("Aucun administrateur trouvé, aucun email ne sera envoyé");
+      return new Response(JSON.stringify({ success: false, reason: "no_admins" }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    }
+
+    // Extraire les IDs des administrateurs
+    const adminIdList = adminIds.map(item => item.id);
+    console.log("Liste des IDs admin:", adminIdList);
+
+    // Récupérer les profils des administrateurs avec leurs préférences de notification
+    const { data: adminProfiles, error: profilesError } = await supabase
       .from('profiles')
       .select('*')
-      .in('id', (await supabase.rpc('list_admins')).data || []);
+      .in('id', adminIdList);
 
-    if (adminError) {
-      console.error("Erreur lors de la récupération des profils admin:", adminError);
-      throw adminError;
+    if (profilesError) {
+      console.error("Erreur lors de la récupération des profils admin:", profilesError);
+      throw profilesError;
     }
 
     console.log(`${adminProfiles?.length || 0} profils admin trouvés`);
