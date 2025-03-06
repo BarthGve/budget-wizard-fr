@@ -105,12 +105,12 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       localStorage.setItem("verificationEmail", values.email);
       
       // Mettre à jour l'email
-      // Correction: await the updateUser call and destructure data correctly
-      const { data, error } = await supabase.auth.updateUser({
+      // Corrigé : attendre la réponse et destructurer correctement
+      const updateResponse = await supabase.auth.updateUser({
         email: values.email,
       });
-
-      if (error) throw error;
+      
+      if (updateResponse.error) throw updateResponse.error;
 
       // Réinitialiser et fermer la modal
       setShowEmailDialog(false);
