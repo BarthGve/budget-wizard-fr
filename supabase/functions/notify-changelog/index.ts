@@ -21,6 +21,7 @@ const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 serve(async (req: Request) => {
   console.log("📝 Edge Function notify-changelog: Demande reçue");
+  console.log("📝 Méthode de la requête:", req.method);
   
   // Gestion des requêtes OPTIONS (CORS pre-flight)
   if (req.method === "OPTIONS") {
@@ -43,8 +44,27 @@ serve(async (req: Request) => {
       );
     }
     
+    // Récupération du corps de la requête
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log("📝 Corps de la requête:", JSON.stringify(requestBody));
+    } catch (jsonError) {
+      console.error("❌ Erreur lors du parsing JSON:", jsonError);
+      return new Response(
+        JSON.stringify({ 
+          error: "Corps de requête JSON invalide",
+          details: jsonError.message
+        }),
+        { 
+          status: 400, 
+          headers: { "Content-Type": "application/json", ...corsHeaders } 
+        }
+      );
+    }
+    
     // Récupération de l'ID de l'entrée changelog et du flag manuel
-    const { id, manual = false } = await req.json();
+    const { id, manual = false } = requestBody;
     console.log(`📝 Traitement de la notification pour l'entrée changelog: ${id}, manuel: ${manual}`);
     
     if (!id) {
@@ -102,7 +122,7 @@ serve(async (req: Request) => {
     }
     
     const userEmails = emailsData.map(item => item.email);
-    console.log(`📝 ${userEmails.length} emails d'utilisateurs récupérés`);
+    console.log(`📝 ${userEmails.length} emails d'utilisateurs récupérés:`, userEmails);
     
     if (userEmails.length === 0) {
       console.log("⚠️ Aucun email d'utilisateur trouvé pour l'envoi");
@@ -224,7 +244,11 @@ serve(async (req: Request) => {
     `;
     
     try {
-      console.log(`📝 Envoi d'emails à ${userEmails.length} destinataires`);
+      console.log(`📝 Envoi d'emails à ${userEmails.length} destinataires: ${userEmails.join(', ')}`);
+      
+      // Pour le développement, limiter à un seul email de test si nécessaire
+      // const testEmails = ["test@example.com"];
+      
       const emailResponse = await resend.emails.send({
         from: "BudgetWizard <notifications@budgetwizard.fr>",
         to: userEmails,
@@ -237,7 +261,8 @@ serve(async (req: Request) => {
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: `Notification envoyée à ${userEmails.length} utilisateurs` 
+          message: `Notification envoyée à ${userEmails.length} utilisateurs`,
+          emailResponse 
         }),
         { 
           status: 200, 
@@ -251,7 +276,8 @@ serve(async (req: Request) => {
       return new Response(
         JSON.stringify({ 
           error: "Erreur lors de l'envoi des emails",
-          details: emailError.message
+          details: emailError.message,
+          stack: emailError.stack
         }),
         { 
           status: 500, 
@@ -267,7 +293,8 @@ serve(async (req: Request) => {
     return new Response(
       JSON.stringify({ 
         error: "Erreur interne du serveur",
-        details: error.message
+        details: error.message,
+        stack: error.stack
       }),
       { 
         status: 500, 

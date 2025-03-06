@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { ChangelogEntryForm } from "./ChangelogEntryForm";
 import { ChangelogEntry } from "./types";
@@ -30,56 +31,59 @@ export const ChangelogEntryDialog = ({
   // Mutation pour notifier les utilisateurs
   const { mutate: notifyUsers, isPending: isNotifying } = useMutation({
     mutationFn: async (id: string) => {
-      console.log("Envoi de notification pour l'entrée:", id);
-      try {
-        // Vérification préliminaire
-        if (!id) {
-          console.error("ID d'entrée manquant");
-          throw new Error("ID d'entrée manquant");
-        }
+      console.log("[DEBUG] Début de l'envoi de notification pour l'entrée:", id);
+      
+      // Vérification préliminaire
+      if (!id) {
+        console.error("[DEBUG] ID d'entrée manquant");
+        throw new Error("ID d'entrée manquant");
+      }
 
-        console.log("Appel de la fonction Edge avec body:", { id, manual: true });
-        
-        // Appel de la fonction Edge avec monitoring plus détaillé
+      const payload = { id, manual: true };
+      console.log("[DEBUG] Payload pour la fonction Edge:", JSON.stringify(payload));
+      
+      try {
+        // Appel de la fonction Edge avec monitoring détaillé
+        console.log("[DEBUG] Avant l'appel à supabase.functions.invoke");
         const { data, error } = await supabase.functions.invoke("notify-changelog", {
-          body: { id, manual: true }
+          body: payload
         });
         
         if (error) {
-          console.error("Erreur lors de l'invocation de la fonction Edge:", error);
-          console.error("Message d'erreur:", error.message);
-          console.error("Détails supplémentaires:", error.context || "Aucun détail supplémentaire");
+          console.error("[DEBUG] Erreur retournée par la fonction Edge:", error);
+          console.error("[DEBUG] Message d'erreur:", error.message);
+          console.error("[DEBUG] Détails supplémentaires:", error.context || "Aucun détail supplémentaire");
           throw new Error(`Erreur lors de l'invocation: ${error.message}`);
         }
         
-        console.log("Réponse de la fonction Edge:", data);
+        console.log("[DEBUG] Réponse de la fonction Edge:", data);
         return data;
       } catch (err: any) {
-        console.error("Exception lors de l'envoi de notification:", err);
-        console.error("Message d'erreur:", err.message);
-        console.error("Stack trace:", err.stack);
+        console.error("[DEBUG] Exception lors de l'appel de la fonction Edge:", err);
+        console.error("[DEBUG] Message d'erreur:", err.message);
+        console.error("[DEBUG] Stack trace:", err.stack);
         throw err;
       }
     },
     onSuccess: (data) => {
-      console.log("Notification envoyée avec succès:", data);
+      console.log("[DEBUG] Notification envoyée avec succès:", data);
       toast.success("Notification envoyée aux utilisateurs");
     },
     onError: (error: any) => {
-      console.error("Erreur lors de l'envoi de notification:", error);
-      console.error("Message d'erreur détaillé:", error.message);
+      console.error("[DEBUG] Erreur lors de l'envoi de notification:", error);
+      console.error("[DEBUG] Message d'erreur détaillé:", error.message);
       toast.error(`Erreur lors de l'envoi de la notification: ${error.message || "Erreur inconnue"}`);
     }
   });
 
   const handleNotify = () => {
     if (!entry?.id) {
-      console.error("Tentative de notification sans ID d'entrée valide");
+      console.error("[DEBUG] Tentative de notification sans ID d'entrée valide");
       toast.error("Impossible d'envoyer la notification: entrée invalide");
       return;
     }
     
-    console.log("Démarrage du processus de notification pour l'entrée:", entry.id);
+    console.log("[DEBUG] Démarrage du processus de notification pour l'entrée:", entry.id);
     notifyUsers(entry.id);
   };
 
@@ -90,6 +94,9 @@ export const ChangelogEntryDialog = ({
           <DialogTitle>
             {entry ? "Modifier l'entrée" : "Nouvelle entrée"}
           </DialogTitle>
+          <DialogDescription>
+            {entry ? "Modifiez les détails de cette entrée de changelog" : "Créez une nouvelle entrée de changelog"}
+          </DialogDescription>
         </DialogHeader>
         
         <ChangelogEntryForm
