@@ -21,8 +21,8 @@ export const AuthListener = () => {
 
   // Vérifier si le contributeur principal a un revenu nul
   const checkOwnerContributorIncome = async () => {
-    // Ne vérifier que si l'utilisateur est sur la page dashboard
-    if (location.pathname !== "/dashboard" || hasCheckedIncome.current) return;
+    // Ne vérifier que si l'utilisateur est sur la page d'accueil (/)
+    if (location.pathname !== "/" || hasCheckedIncome.current) return;
     
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -82,12 +82,12 @@ export const AuthListener = () => {
 
   // Réinitialiser le flag de vérification des revenus lorsque la route change
   useEffect(() => {
-    // Si l'utilisateur navigue vers le dashboard, on vérifie le revenu
-    if (location.pathname === "/dashboard") {
+    // Si l'utilisateur navigue vers la page d'accueil, on vérifie le revenu
+    if (location.pathname === "/") {
       hasCheckedIncome.current = false;
       checkOwnerContributorIncome();
     } else {
-      // Si l'utilisateur n'est pas sur le dashboard, on masque la modale
+      // Si l'utilisateur n'est pas sur la page d'accueil, on masque la modale
       setShowIncomeDialog(false);
     }
   }, [location.pathname]);
@@ -103,8 +103,8 @@ export const AuthListener = () => {
           // Store initial auth state
           previousAuthState.current = !!session;
           
-          // Vérifier les revenus après la connexion initiale uniquement si sur dashboard
-          if (session && location.pathname === "/dashboard") {
+          // Vérifier les revenus après la connexion initiale uniquement si sur page d'accueil
+          if (session && location.pathname === "/") {
             checkOwnerContributorIncome();
           }
           
@@ -132,14 +132,14 @@ export const AuthListener = () => {
           hasCheckedIncome.current = false;
           
           // Si l'utilisateur est déjà sur la page de login et vient juste de vérifier son email,
-          // on le redirige vers le dashboard
+          // on le redirige vers la page d'accueil
           if (location.pathname === "/login" && justVerified) {
             localStorage.removeItem("justVerified");
-            navigate("/dashboard");
+            navigate("/");
           }
           
-          // Vérifier les revenus après connexion uniquement si sur dashboard
-          if (location.pathname === "/dashboard") {
+          // Vérifier les revenus après connexion uniquement si sur la page d'accueil
+          if (location.pathname === "/") {
             setTimeout(() => {
               checkOwnerContributorIncome();
             }, 1000); // Délai pour laisser le temps de charger les données

@@ -36,7 +36,8 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
         onSubmit();
       }
       
-      navigate("/dashboard");
+      // Rediriger vers la route principale "/" au lieu de "/dashboard"
+      navigate("/");
     } catch (error: any) {
       console.error("Erreur de connexion:", error);
       setError(error.message || "Une erreur est survenue lors de la connexion");
