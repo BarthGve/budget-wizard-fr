@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -47,6 +48,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
+      // Enregistrement du feedback dans la base de données
       const { error } = await supabase.from("feedbacks").insert({
         title: title.trim(),
         content: content.trim(),
