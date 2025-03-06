@@ -1,14 +1,16 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { User, Upload } from "lucide-react";
+import { User, Upload, Bell } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Profile } from "@/types/profile";
+import { Switch } from "@/components/ui/switch";
 
 export const ProfileSettings = () => {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -35,11 +37,19 @@ export const ProfileSettings = () => {
 
   // Utiliser le nom du profil directement depuis l'objet profile
   const [fullName, setFullName] = useState(profile?.full_name || "");
+  
+  // État pour les préférences de notification
+  const [notifChangelog, setNotifChangelog] = useState(
+    profile?.notif_changelog !== false // Par défaut activé
+  );
 
-  // Mettre à jour fullName quand profile change
+  // Mettre à jour fullName et notifChangelog quand profile change
   useEffect(() => {
-    if (profile?.full_name) {
-      setFullName(profile.full_name);
+    if (profile) {
+      if (profile.full_name) {
+        setFullName(profile.full_name);
+      }
+      setNotifChangelog(profile.notif_changelog !== false);
     }
   }, [profile]);
 
@@ -107,6 +117,7 @@ export const ProfileSettings = () => {
         .update({
           full_name: fullName,
           avatar_url: avatarUrl,
+          notif_changelog: notifChangelog,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
@@ -178,6 +189,25 @@ export const ProfileSettings = () => {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="John Doe"
               />
+            </div>
+            
+            {/* Section des préférences de notification */}
+            <div className="pt-4 border-t">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="flex items-center">
+                    <Bell className="h-4 w-4 mr-2" />
+                    Notifications du changelog
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Recevoir un email lorsqu'une nouvelle fonctionnalité est ajoutée
+                  </p>
+                </div>
+                <Switch 
+                  checked={notifChangelog} 
+                  onCheckedChange={setNotifChangelog}
+                />
+              </div>
             </div>
 
             <Button 
