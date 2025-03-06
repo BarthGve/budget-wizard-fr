@@ -5,6 +5,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
 
 // Initialisation de Resend avec la clé API
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+console.log("Initialisation de la fonction Edge notify-changelog");
+console.log("RESEND_API_KEY configurée:", !!Deno.env.get("RESEND_API_KEY"));
 
 // Configuration des en-têtes CORS
 const corsHeaders = {
@@ -17,6 +19,11 @@ const corsHeaders = {
 const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_URL") || "",
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
+);
+
+console.log("Supabase client initialisé:", 
+  !!Deno.env.get("SUPABASE_URL"), 
+  !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
 );
 
 interface NotifyParams {
@@ -44,6 +51,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Récupérer l'entrée du changelog (la plus récente ou celle spécifiée)
     let changelogEntry;
     if (params.id) {
+      console.log(`Recherche de l'entrée changelog avec ID: ${params.id}`);
       const { data, error } = await supabaseAdmin
         .from("changelog_entries")
         .select("*")
@@ -57,6 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
       changelogEntry = data;
       console.log("Entrée changelog trouvée par ID:", changelogEntry);
     } else {
+      console.log("Recherche de la dernière entrée changelog");
       const { data, error } = await supabaseAdmin
         .from("changelog_entries")
         .select("*")
@@ -78,6 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
     
     // Obtenir les IDs des administrateurs
+    console.log("Récupération des IDs admin");
     const { data: adminIds, error: adminError } = await supabaseAdmin.rpc("list_admins");
     if (adminError) {
       console.error("Erreur lors de la récupération des IDs admin:", adminError);
@@ -87,18 +97,29 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("IDs admin trouvés:", adminIds);
     
     // Récupérer tous les utilisateurs non-admin ayant activé les notifications changelog
-    const { data: users, error: usersError } = await supabaseAdmin
+    console.log("Récupération des utilisateurs à notifier");
+    const adminIdsArray = adminIds.map(admin => admin.id);
+    
+    // Construction de la requête pour récupérer les profils
+    let query = supabaseAdmin
       .from("profiles")
-      .select("id, full_name, email")
-      .eq("notif_changelog", true)
-      .not("id", "in", `(${adminIds.map(admin => `'${admin.id}'`).join(",")})`);
+      .select("id, full_name, email:auth.users!id(email)")
+      .eq("notif_changelog", true);
+    
+    // Exclure les administrateurs seulement s'il y en a
+    if (adminIdsArray.length > 0) {
+      console.log("Exclusion des administrateurs de la liste de notification");
+      query = query.not("id", "in", `(${adminIdsArray.join(",")})`);
+    }
+    
+    const { data: users, error: usersError } = await query;
       
     if (usersError) {
       console.error("Erreur lors de la récupération des utilisateurs:", usersError);
       throw usersError;
     }
     
-    console.log(`${users?.length || 0} utilisateurs à notifier trouvés`);
+    console.log(`${users?.length || 0} utilisateurs à notifier trouvés:`, users);
     
     // Si aucun utilisateur à notifier, terminer
     if (!users || users.length === 0) {
@@ -112,7 +133,11 @@ const handler = async (req: Request): Promise<Response> => {
     }
     
     // Récupérer les emails des utilisateurs
-    const emails = users.filter(user => user.email).map(user => user.email);
+    const emails = users
+      .filter(user => user.email && user.email[0]?.email)
+      .map(user => user.email[0]?.email);
+    
+    console.log("Emails extraits:", emails);
     
     if (emails.length === 0) {
       console.log("Aucun email valide trouvé");
@@ -156,6 +181,8 @@ const handler = async (req: Request): Promise<Response> => {
     for (const batch of batches) {
       try {
         console.log(`Envoi d'un lot de ${batch.length} emails avec Resend`);
+        console.log(`Email contenu: `, emailHtml.substring(0, 100) + "...");
+        
         const result = await resend.emails.send({
           from: "BudgetWizard <notifications@budgetwizard.fr>",
           bcc: batch, // Utilisation de BCC pour préserver la confidentialité
@@ -195,4 +222,5 @@ const handler = async (req: Request): Promise<Response> => {
 };
 
 // Démarrage du serveur
+console.log("Démarrage du serveur pour la fonction notify-changelog");
 serve(handler);

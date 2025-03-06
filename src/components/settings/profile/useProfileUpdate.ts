@@ -131,7 +131,7 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
 
   const handleResendVerification = async () => {
     try {
-      // Correction: Utiliser await pour attendre la résolution de la promesse
+      // Utiliser await pour résoudre la promesse avant d'accéder à ses propriétés
       const { data } = await supabase.auth.getUser();
       const { new_email } = data.user || {};
       

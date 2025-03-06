@@ -35,15 +35,21 @@ export const ChangelogEntryDialog = ({
       // Ajout d'un toast pour indiquer que l'envoi a commencé
       toast.info("Envoi des notifications en cours...");
       
+      console.log("Appel de la fonction Edge notify-changelog avec ID:", id);
       const { data, error } = await supabase.functions.invoke("notify-changelog", {
         body: { id, manual: true }
       });
       
-      if (error) throw error;
+      console.log("Réponse de la fonction notify-changelog:", data, error);
+      
+      if (error) {
+        console.error("Erreur lors de l'appel à notify-changelog:", error);
+        throw error;
+      }
       return data;
     },
     onSuccess: (data) => {
-      console.log("Réponse de la fonction notify-changelog:", data);
+      console.log("Notification envoyée avec succès:", data);
       
       // Afficher un message approprié en fonction des données renvoyées
       if (data.message?.includes("Aucun utilisateur")) {
@@ -56,7 +62,7 @@ export const ChangelogEntryDialog = ({
     },
     onError: (error) => {
       console.error("Erreur lors de l'envoi des notifications:", error);
-      toast.error("Erreur lors de l'envoi des notifications");
+      toast.error("Erreur lors de l'envoi des notifications. Vérifiez la console pour plus d'informations.");
       setIsNotifying(false);
     }
   });
@@ -64,7 +70,11 @@ export const ChangelogEntryDialog = ({
   // Fonction pour gérer le clic sur le bouton de notification
   const handleNotifyClick = () => {
     if (entry?.id) {
+      console.log("Démarrage de la notification pour l'entrée:", entry.id);
       notifyUsers(entry.id);
+    } else {
+      console.error("Impossible d'envoyer la notification: ID d'entrée manquant");
+      toast.error("Impossible d'envoyer la notification: ID d'entrée manquant");
     }
   };
 
