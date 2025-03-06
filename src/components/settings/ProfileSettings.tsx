@@ -29,16 +29,18 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 
 export const ProfileSettings = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const { data: profile } = useQuery<Profile>({
+  const { data: profile, refetch: refetchProfile } = useQuery<Profile>({
     queryKey: ["profile"],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -52,6 +54,16 @@ export const ProfileSettings = () => {
 
       if (error) throw error;
       return data as Profile;
+    },
+  });
+
+  // Récupérer également les données de l'utilisateur pour avoir l'email actuel et le statut de vérification
+  const { data: userData } = useQuery({
+    queryKey: ["current-user"],
+    queryFn: async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) throw error;
+      return user;
     },
   });
 
@@ -175,7 +187,7 @@ export const ProfileSettings = () => {
     try {
       // Vérifier le mot de passe avant de procéder
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: profile?.email || "",
+        email: userData?.email || "",
         password: values.password,
       });
 
@@ -183,6 +195,9 @@ export const ProfileSettings = () => {
         throw new Error("Mot de passe incorrect");
       }
 
+      // Préparer la redirection vers la page de vérification d'email
+      localStorage.setItem("verificationEmail", values.email);
+      
       // Mettre à jour l'email
       const { error } = await supabase.auth.updateUser({
         email: values.email,
@@ -193,6 +208,9 @@ export const ProfileSettings = () => {
       // Réinitialiser le formulaire et fermer la modal
       emailForm.reset();
       setShowEmailDialog(false);
+      
+      // Rediriger vers la page de vérification d'email
+      navigate("/email-verification?type=emailChange");
       
       toast.success(
         "Un email de vérification a été envoyé à votre nouvelle adresse. Veuillez vérifier votre boîte mail pour confirmer le changement."
@@ -259,21 +277,49 @@ export const ProfileSettings = () => {
 
             <div className="space-y-2">
               <Label htmlFor="email">Adresse email</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="email"
-                  value={profile?.email || ""}
-                  disabled
-                  className="flex-1 bg-muted"
-                />
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={() => setShowEmailDialog(true)}
-                >
-                  <Mail className="h-4 w-4 mr-2" />
-                  Modifier
-                </Button>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="email"
+                    value={userData?.email || ""}
+                    disabled
+                    className="flex-1 bg-muted"
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={() => setShowEmailDialog(true)}
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Modifier
+                  </Button>
+                </div>
+                
+                {userData?.new_email && (
+                  <div className="bg-amber-50 border border-amber-200 p-3 rounded-md">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5" />
+                      <div className="text-sm text-amber-800">
+                        <p className="font-medium">Changement d'email en cours</p>
+                        <p>
+                          Une demande de changement vers {userData.new_email} est en attente de confirmation.
+                          Vérifiez votre boîte mail et cliquez sur le lien pour confirmer le changement.
+                        </p>
+                        <Button 
+                          type="button" 
+                          variant="link" 
+                          className="p-0 h-auto text-amber-800 underline" 
+                          onClick={() => {
+                            localStorage.setItem("verificationEmail", userData.new_email || "");
+                            navigate("/email-verification?type=emailChange");
+                          }}
+                        >
+                          Renvoyer l'email de vérification
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
