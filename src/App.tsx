@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthListener } from "@/components/auth/AuthListener";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { StyledLoader } from "@/components/ui/StyledLoader";
+import StyledLoader from "@/components/ui/StyledLoader";
 
 // Lazy-loaded page components
 const Landing = lazy(() => import("@/pages/Landing"));
