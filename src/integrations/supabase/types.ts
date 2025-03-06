@@ -896,6 +896,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_admins: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+        }[]
+      }
       list_users: {
         Args: {
           page_number?: number

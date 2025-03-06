@@ -34,6 +34,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Détails d'inscription: Nom: ${userName}, Email: ${userEmail}, Date: ${signupDate}`);
 
     // Récupérer les IDs des administrateurs depuis la fonction RPC
+    console.log("Appel de la fonction list_admins...");
     const { data: adminIds, error: rpcError } = await supabase.rpc('list_admins');
     
     if (rpcError) {
@@ -69,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw profilesError;
     }
 
-    console.log(`${adminProfiles?.length || 0} profils admin trouvés`);
+    console.log(`${adminProfiles?.length || 0} profils admin trouvés:`, adminProfiles);
     
     // Vérifier si au moins un admin souhaite recevoir les notifications
     const shouldSendNotification = adminProfiles?.some(profile => profile.notif_inscriptions !== false);
@@ -85,11 +86,28 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    const adminEmail = "admin@budgetwizard.fr";
+    // Récupérer les emails des administrateurs qui ont activé les notifications
+    const adminEmails = adminProfiles
+      ?.filter(profile => profile.notif_inscriptions !== false)
+      ?.map(profile => profile.email)
+      ?.filter(Boolean);
+      
+    console.log(`Envoi d'emails aux admins (${adminEmails?.length || 0}):`, adminEmails);
+    
+    if (!adminEmails || adminEmails.length === 0) {
+      console.log("Aucun email d'administrateur valide trouvé");
+      return new Response(JSON.stringify({ success: false, reason: "no_valid_emails" }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    }
     
     const emailResponse = await resend.emails.send({
       from: "BudgetWizard <notifications@budgetwizard.fr>",
-      to: [adminEmail],
+      to: adminEmails,
       subject: "📢 Nouvel utilisateur inscrit sur BudgetWizard",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
