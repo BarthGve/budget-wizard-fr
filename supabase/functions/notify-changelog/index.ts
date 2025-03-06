@@ -4,9 +4,10 @@ import { Resend } from "npm:resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
 
 // Initialisation de Resend avec la clé API
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const resendApiKey = Deno.env.get("RESEND_API_KEY");
+const resend = new Resend(resendApiKey);
 console.log("Initialisation de la fonction Edge notify-changelog");
-console.log("RESEND_API_KEY configurée:", !!Deno.env.get("RESEND_API_KEY"));
+console.log("RESEND_API_KEY configurée:", !!resendApiKey, "Longueur:", resendApiKey?.length || 0);
 
 // Configuration des en-têtes CORS
 const corsHeaders = {
@@ -16,14 +17,13 @@ const corsHeaders = {
 };
 
 // Initialisation du client Supabase
-const supabaseAdmin = createClient(
-  Deno.env.get("SUPABASE_URL") || "",
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
-);
+const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 console.log("Supabase client initialisé:", 
-  !!Deno.env.get("SUPABASE_URL"), 
-  !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
+  !!supabaseUrl, "URL:", supabaseUrl.substring(0, 10) + "...",
+  !!supabaseServiceRoleKey, "Key longueur:", supabaseServiceRoleKey.length
 );
 
 interface NotifyParams {
@@ -42,10 +42,16 @@ const handler = async (req: Request): Promise<Response> => {
     
     let params: NotifyParams = {};
     if (req.method === "POST") {
-      params = await req.json();
-      console.log("Paramètres reçus:", JSON.stringify(params));
+      console.log("Méthode POST détectée, lecture du corps de la requête");
+      try {
+        params = await req.json();
+        console.log("Paramètres reçus:", JSON.stringify(params));
+      } catch (e) {
+        console.error("Erreur lors de la lecture du corps de la requête:", e);
+        throw new Error(`Erreur lors de la lecture du corps de la requête: ${e.message}`);
+      }
     } else {
-      console.log("Requête reçue sans paramètres JSON");
+      console.log("Requête reçue sans paramètres JSON, méthode:", req.method);
     }
     
     // Récupérer l'entrée du changelog (la plus récente ou celle spécifiée)
@@ -98,7 +104,8 @@ const handler = async (req: Request): Promise<Response> => {
     
     // Récupérer tous les utilisateurs non-admin ayant activé les notifications changelog
     console.log("Récupération des utilisateurs à notifier");
-    const adminIdsArray = adminIds.map(admin => admin.id);
+    const adminIdsArray = adminIds ? adminIds.map(admin => admin.id) : [];
+    console.log("adminIdsArray:", adminIdsArray);
     
     // Construction de la requête pour récupérer les profils
     let query = supabaseAdmin
@@ -110,8 +117,12 @@ const handler = async (req: Request): Promise<Response> => {
     if (adminIdsArray.length > 0) {
       console.log("Exclusion des administrateurs de la liste de notification");
       query = query.not("id", "in", `(${adminIdsArray.join(",")})`);
+    } else {
+      console.log("Pas d'administrateurs à exclure");
     }
     
+    // Exécuter la requête
+    console.log("Exécution de la requête pour récupérer les utilisateurs à notifier");
     const { data: users, error: usersError } = await query;
       
     if (usersError) {
@@ -133,9 +144,13 @@ const handler = async (req: Request): Promise<Response> => {
     }
     
     // Récupérer les emails des utilisateurs
+    console.log("Extraction des emails des utilisateurs");
     const emails = users
       .filter(user => user.email && user.email[0]?.email)
-      .map(user => user.email[0]?.email);
+      .map(user => {
+        console.log("User email data:", user.email);
+        return user.email[0]?.email;
+      });
     
     console.log("Emails extraits:", emails);
     
@@ -181,7 +196,7 @@ const handler = async (req: Request): Promise<Response> => {
     for (const batch of batches) {
       try {
         console.log(`Envoi d'un lot de ${batch.length} emails avec Resend`);
-        console.log(`Email contenu: `, emailHtml.substring(0, 100) + "...");
+        console.log(`Email contenu (extrait): `, emailHtml.substring(0, 100) + "...");
         
         const result = await resend.emails.send({
           from: "BudgetWizard <notifications@budgetwizard.fr>",
@@ -194,6 +209,7 @@ const handler = async (req: Request): Promise<Response> => {
         console.log(`Lot d'emails envoyé avec succès:`, result);
       } catch (error) {
         console.error("Erreur lors de l'envoi du lot d'emails:", error);
+        console.error("Détails de l'erreur:", JSON.stringify(error, null, 2));
         results.push({ error: String(error) });
       }
     }
@@ -211,8 +227,13 @@ const handler = async (req: Request): Promise<Response> => {
     
   } catch (error: any) {
     console.error("Erreur dans la fonction notify-changelog:", error);
+    console.error("Stack trace:", error.stack);
     return new Response(
-      JSON.stringify({ error: error.message || String(error) }),
+      JSON.stringify({ 
+        error: error.message || String(error),
+        stack: error.stack,
+        details: JSON.stringify(error, null, 2)
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
