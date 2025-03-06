@@ -105,7 +105,8 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       localStorage.setItem("verificationEmail", values.email);
       
       // Mettre à jour l'email
-      const { error } = await supabase.auth.updateUser({
+      // Correction: await the updateUser call and destructure data correctly
+      const { data, error } = await supabase.auth.updateUser({
         email: values.email,
       });
 

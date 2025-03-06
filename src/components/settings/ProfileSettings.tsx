@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -55,9 +55,16 @@ export const ProfileSettings = () => {
     handleResendVerification
   } = useProfileUpdate(profile);
 
+  // Mettre à jour fullName quand profile change
+  useEffect(() => {
+    if (profile?.full_name) {
+      setFullName(profile.full_name);
+    }
+  }, [profile]);
+
   // Handler pour le formulaire de profil
-  const onSubmit = (e: React.FormEvent) => {
-    handleProfileUpdate(e, fullName || profile?.full_name || "");
+  const onSubmit = async (e: React.FormEvent) => {
+    await handleProfileUpdate(e, fullName || profile?.full_name || "");
   };
 
   return (
