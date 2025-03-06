@@ -432,6 +432,7 @@ export type Database = {
           encryption_enabled: boolean | null
           full_name: string | null
           id: string
+          notif_changelog: boolean | null
           notif_inscriptions: boolean | null
           profile_type: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage: number | null
@@ -443,6 +444,7 @@ export type Database = {
           encryption_enabled?: boolean | null
           full_name?: string | null
           id: string
+          notif_changelog?: boolean | null
           notif_inscriptions?: boolean | null
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
@@ -454,6 +456,7 @@ export type Database = {
           encryption_enabled?: boolean | null
           full_name?: string | null
           id?: string
+          notif_changelog?: boolean | null
           notif_inscriptions?: boolean | null
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
@@ -782,6 +785,44 @@ export type Database = {
           },
         ]
       }
+      unsubscribe_tokens: {
+        Row: {
+          created_at: string | null
+          expires_at: string
+          id: string
+          notification_type: string
+          profile_id: string
+          status: string | null
+          token: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          notification_type: string
+          profile_id: string
+          status?: string | null
+          token: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          notification_type?: string
+          profile_id?: string
+          status?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unsubscribe_tokens_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -866,6 +907,12 @@ export type Database = {
         Returns: {
           credits_rembourses_count: number
           total_mensualites_remboursees: number
+        }[]
+      }
+      get_non_admin_user_emails: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          email: string
         }[]
       }
       get_total_users: {
