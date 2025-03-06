@@ -3,25 +3,18 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Mail, ArrowLeft, RefreshCw, Clock3 } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const EmailVerification = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [email, setEmail] = useState<string>("");
   const [isResending, setIsResending] = useState(false);
   const [remainingTime, setRemainingTime] = useState<number>(0);
-  const [isEmailChange, setIsEmailChange] = useState(false);
 
   useEffect(() => {
-    // Vérifier si c'est une vérification de changement d'email
-    const params = new URLSearchParams(location.search);
-    const type = params.get("type");
-    setIsEmailChange(type === "emailChange");
-    
-    // Get the email from localStorage (set during registration or email change)
+    // Get the email from localStorage (set during registration)
     const storedEmail = localStorage.getItem("verificationEmail");
     if (storedEmail) {
       setEmail(storedEmail);
@@ -58,7 +51,6 @@ const EmailVerification = () => {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      console.log("Event detected in EmailVerification:", event);
       if (event === "SIGNED_IN") {
         // Nettoyer tous les éléments liés à la vérification
         localStorage.removeItem("verificationEmail");
@@ -70,17 +62,6 @@ const EmailVerification = () => {
         // Rediriger vers la page de connexion au lieu de dashboard
         // Cela permettra de s'assurer que l'authentification est correctement initialisée
         navigate("/login");
-      } else if (event === "USER_UPDATED") {
-        // Si c'est une mise à jour de l'utilisateur (changement d'email)
-        console.log("User updated after email verification");
-        
-        // Nettoyer les données de vérification
-        localStorage.removeItem("verificationEmail");
-        localStorage.removeItem("verificationEndTime");
-        
-        // Informer l'utilisateur et rediriger
-        toast.success("Votre adresse email a été mise à jour avec succès");
-        navigate("/user-settings");
       }
     });
 
@@ -88,7 +69,7 @@ const EmailVerification = () => {
       clearInterval(timer);
       subscription.unsubscribe();
     };
-  }, [navigate, location.search]);
+  }, [navigate]);
 
   const handleResendEmail = async () => {
     if (!email) {
@@ -99,7 +80,7 @@ const EmailVerification = () => {
     setIsResending(true);
     try {
       const { error } = await supabase.auth.resend({
-        type: isEmailChange ? 'email_change' : 'signup',
+        type: 'signup',
         email: email,
       });
 
@@ -137,9 +118,7 @@ const EmailVerification = () => {
           </Link>
           <div className="flex flex-col items-center text-center">
             <Mail className="h-12 w-12 text-primary mb-4" />
-            <CardTitle>
-              {isEmailChange ? "Vérifiez votre nouvelle adresse email" : "Vérifiez votre email"}
-            </CardTitle>
+            <CardTitle>Vérifiez votre email</CardTitle>
             <CardDescription className="mt-2">
               Nous avons envoyé un email de vérification à{" "}
               <span className="font-medium">{email}</span>
