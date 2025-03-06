@@ -66,7 +66,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   }
 
   if (requireAdmin && !isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Permettre l'accès aux routes toujours accessibles
@@ -96,7 +96,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   // Vérifier les permissions pour les autres routes
   if (!canAccessPage(location.pathname)) {
     console.log("Access denied to path:", location.pathname);
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

@@ -1,9 +1,9 @@
-
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ZeroIncomeDialog } from "./ZeroIncomeDialog";
+import { toast } from "sonner";
 
 /**
  * Composant qui écoute les changements d'état d'authentification
@@ -21,8 +21,8 @@ export const AuthListener = () => {
 
   // Vérifier si le contributeur principal a un revenu nul
   const checkOwnerContributorIncome = async () => {
-    // Ne vérifier que si l'utilisateur est sur la page d'accueil (/)
-    if (location.pathname !== "/" || hasCheckedIncome.current) return;
+    // Ne vérifier que si l'utilisateur est sur la page dashboard
+    if (location.pathname !== "/dashboard" || hasCheckedIncome.current) return;
     
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -66,6 +66,41 @@ export const AuthListener = () => {
     }
   };
 
+  // Détecter et gérer les actions de vérification d'email
+  useEffect(() => {
+    // Récupérer le hash de l'URL
+    const hash = window.location.hash;
+    
+    // Vérifier si le hash contient un token de type recovery ou email_change
+    if (hash && (hash.includes("type=recovery") || hash.includes("type=email_change"))) {
+      console.log("Token de vérification détecté dans l'URL:", hash);
+      
+      // Extraire le token et le type
+      const hashParams = new URLSearchParams(hash.substring(1));
+      const type = hashParams.get("type");
+      
+      if (type === "email_change") {
+        // Traiter la confirmation de changement d'email
+        supabase.auth.onAuthStateChange(async (event, session) => {
+          if (event === "USER_UPDATED") {
+            console.log("Événement USER_UPDATED détecté");
+            
+            // Invalider les requêtes pour forcer le rafraîchissement des données
+            queryClient.invalidateQueries({ queryKey: ["auth"] });
+            queryClient.invalidateQueries({ queryKey: ["current-user"] });
+            queryClient.invalidateQueries({ queryKey: ["profile"] });
+            
+            // Informer l'utilisateur
+            toast.success("Votre adresse email a été mise à jour avec succès");
+            
+            // Rediriger vers les paramètres utilisateur
+            navigate("/user-settings");
+          }
+        });
+      }
+    }
+  }, [navigate, queryClient]);
+
   // Gérer la redirection post-vérification email
   useEffect(() => {
     const justVerified = localStorage.getItem("justVerified") === "true";
@@ -82,12 +117,12 @@ export const AuthListener = () => {
 
   // Réinitialiser le flag de vérification des revenus lorsque la route change
   useEffect(() => {
-    // Si l'utilisateur navigue vers la page d'accueil, on vérifie le revenu
-    if (location.pathname === "/") {
+    // Si l'utilisateur navigue vers le dashboard, on vérifie le revenu
+    if (location.pathname === "/dashboard") {
       hasCheckedIncome.current = false;
       checkOwnerContributorIncome();
     } else {
-      // Si l'utilisateur n'est pas sur la page d'accueil, on masque la modale
+      // Si l'utilisateur n'est pas sur le dashboard, on masque la modale
       setShowIncomeDialog(false);
     }
   }, [location.pathname]);
@@ -96,6 +131,8 @@ export const AuthListener = () => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log("Événement d'authentification détecté:", event);
+        
         // Skip initial session check to avoid double navigation
         if (isInitialMount.current && event === "INITIAL_SESSION") {
           isInitialMount.current = false;
@@ -103,8 +140,8 @@ export const AuthListener = () => {
           // Store initial auth state
           previousAuthState.current = !!session;
           
-          // Vérifier les revenus après la connexion initiale uniquement si sur page d'accueil
-          if (session && location.pathname === "/") {
+          // Vérifier les revenus après la connexion initiale uniquement si sur dashboard
+          if (session && location.pathname === "/dashboard") {
             checkOwnerContributorIncome();
           }
           
@@ -113,7 +150,7 @@ export const AuthListener = () => {
 
         // Important: Avoid unnecessary cache invalidations if auth state didn't actually change
         const currentAuthState = !!session;
-        if (previousAuthState.current === currentAuthState && event !== "SIGNED_OUT") {
+        if (previousAuthState.current === currentAuthState && event !== "SIGNED_OUT" && event !== "USER_UPDATED") {
           return;
         }
         
@@ -132,18 +169,26 @@ export const AuthListener = () => {
           hasCheckedIncome.current = false;
           
           // Si l'utilisateur est déjà sur la page de login et vient juste de vérifier son email,
-          // on le redirige vers la page d'accueil
+          // on le redirige vers le dashboard
           if (location.pathname === "/login" && justVerified) {
             localStorage.removeItem("justVerified");
-            navigate("/");
+            navigate("/dashboard");
           }
           
-          // Vérifier les revenus après connexion uniquement si sur la page d'accueil
-          if (location.pathname === "/") {
+          // Vérifier les revenus après connexion uniquement si sur dashboard
+          if (location.pathname === "/dashboard") {
             setTimeout(() => {
               checkOwnerContributorIncome();
             }, 1000); // Délai pour laisser le temps de charger les données
           }
+        } else if (event === "USER_UPDATED") {
+          // Gérer la mise à jour du profil utilisateur
+          console.log("Profil utilisateur mis à jour");
+          
+          // Invalider les requêtes pour rafraîchir les données
+          queryClient.invalidateQueries({ queryKey: ["auth"] });
+          queryClient.invalidateQueries({ queryKey: ["current-user"] });
+          queryClient.invalidateQueries({ queryKey: ["profile"] });
         } else if (event === "SIGNED_OUT") {
           try {
             // Éviter la navigation multiple
