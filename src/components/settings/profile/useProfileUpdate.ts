@@ -106,11 +106,11 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       
       // Mettre à jour l'email
       // Corrigé : attendre la réponse et destructurer correctement
-      const updateResponse = await supabase.auth.updateUser({
+      const { data, error } = await supabase.auth.updateUser({
         email: values.email,
       });
       
-      if (updateResponse.error) throw updateResponse.error;
+      if (error) throw error;
 
       // Réinitialiser et fermer la modal
       setShowEmailDialog(false);
