@@ -105,7 +105,6 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       localStorage.setItem("verificationEmail", values.email);
       
       // Mettre à jour l'email
-      // Correction: utiliser await correctement pour obtenir la réponse
       const { error } = await supabase.auth.updateUser({
         email: values.email,
       });
@@ -130,11 +129,19 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
     }
   };
 
-  const handleResendVerification = () => {
-    const { new_email } = supabase.auth.getUser().data.user || {};
-    if (new_email) {
-      localStorage.setItem("verificationEmail", new_email);
-      navigate("/email-verification?type=emailChange");
+  const handleResendVerification = async () => {
+    try {
+      // Récupérer l'utilisateur courant avec await pour résoudre la promesse
+      const { data: userData } = await supabase.auth.getUser();
+      
+      // Vérifier si un nouvel email est en attente
+      if (userData.user?.new_email) {
+        localStorage.setItem("verificationEmail", userData.user.new_email);
+        navigate("/email-verification?type=emailChange");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des informations de l'utilisateur:", error);
+      toast.error("Impossible de renvoyer l'email de vérification");
     }
   };
 
