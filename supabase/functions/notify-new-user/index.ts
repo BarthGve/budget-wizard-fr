@@ -59,43 +59,55 @@ const handler = async (req: Request): Promise<Response> => {
     const adminIdList = adminIds.map(item => item.id);
     console.log("Liste des IDs admin:", adminIdList);
 
-    // Récupérer les profils des administrateurs avec leurs préférences de notification
-    const { data: adminProfiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('*')
-      .in('id', adminIdList);
-
-    if (profilesError) {
-      console.error("Erreur lors de la récupération des profils admin:", profilesError);
-      throw profilesError;
-    }
-
-    console.log(`${adminProfiles?.length || 0} profils admin trouvés:`, adminProfiles);
+    // Récupérer les emails des administrateurs directement depuis auth.users
+    // Nous utilisons une approche différente car auth.users n'est pas accessible directement via l'API
+    // Nous allons récupérer les emails un par un
+    const adminEmails = [];
     
-    // Vérifier si au moins un admin souhaite recevoir les notifications
-    const shouldSendNotification = adminProfiles?.some(profile => profile.notif_inscriptions !== false);
-    
-    if (!shouldSendNotification) {
-      console.log("Les notifications d'inscription sont désactivées, aucun email ne sera envoyé");
-      return new Response(JSON.stringify({ success: false, reason: "notifications_disabled" }), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders,
-        },
-      });
-    }
-
-    // Récupérer les emails des administrateurs qui ont activé les notifications
-    const adminEmails = adminProfiles
-      ?.filter(profile => profile.notif_inscriptions !== false)
-      ?.map(profile => profile.email)
-      ?.filter(Boolean);
+    for (const adminId of adminIdList) {
+      // Récupérer d'abord le profil pour vérifier si les notifications sont activées
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('notif_inscriptions')
+        .eq('id', adminId)
+        .single();
+        
+      if (profileError) {
+        console.warn(`Erreur lors de la récupération du profil pour l'admin ${adminId}:`, profileError);
+        continue; // Passer à l'admin suivant
+      }
       
-    console.log(`Envoi d'emails aux admins (${adminEmails?.length || 0}):`, adminEmails);
+      // Vérifier si les notifications sont activées pour cet admin
+      if (profile.notif_inscriptions === false) {
+        console.log(`Notifications désactivées pour l'admin ${adminId}, ignoré`);
+        continue; // Passer à l'admin suivant
+      }
+      
+      // Récupérer l'email de l'admin via le service role
+      const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers({
+        perPage: 1,
+        page: 1,
+        filters: {
+          id: adminId
+        }
+      });
+      
+      if (usersError || !users || users.length === 0) {
+        console.warn(`Erreur ou aucun utilisateur trouvé pour l'admin ${adminId}:`, usersError);
+        continue; // Passer à l'admin suivant
+      }
+      
+      const adminEmail = users[0].email;
+      if (adminEmail) {
+        console.log(`Email trouvé pour l'admin ${adminId}: ${adminEmail}`);
+        adminEmails.push(adminEmail);
+      }
+    }
     
-    if (!adminEmails || adminEmails.length === 0) {
-      console.log("Aucun email d'administrateur valide trouvé");
+    console.log(`Emails d'admins à notifier (${adminEmails.length}):`, adminEmails);
+    
+    if (adminEmails.length === 0) {
+      console.log("Aucun email d'administrateur valide trouvé ou notifications désactivées");
       return new Response(JSON.stringify({ success: false, reason: "no_valid_emails" }), {
         status: 200,
         headers: {
