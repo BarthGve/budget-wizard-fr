@@ -117,9 +117,11 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
     
+    // CORRECTION: S'assurer que "to" contient uniquement les emails des administrateurs
+    // et PAS l'email du nouvel utilisateur
     const emailResponse = await resend.emails.send({
       from: "BudgetWizard <notifications@budgetwizard.fr>",
-      to: adminEmails,
+      to: adminEmails, // Uniquement les emails des administrateurs
       subject: "📢 Nouvel utilisateur inscrit sur BudgetWizard",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
@@ -137,6 +139,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     console.log("Email envoyé avec succès:", emailResponse);
+    console.log("Destinataires:", adminEmails);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
