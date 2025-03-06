@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -104,7 +105,7 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       localStorage.setItem("verificationEmail", values.email);
       
       // Mettre à jour l'email
-      // Important : await avant l'appel pour obtenir la réponse
+      // Correction: utiliser await correctement pour obtenir la réponse de updateUser
       const { error } = await supabase.auth.updateUser({
         email: values.email,
       });
