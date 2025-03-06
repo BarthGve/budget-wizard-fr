@@ -96,6 +96,11 @@ export const ChangelogEntryDialog = ({
           </DialogTitle>
           <DialogDescription>
             {entry ? "Modifiez les détails de cette entrée de changelog" : "Créez une nouvelle entrée de changelog"}
+            {isAdmin && entry && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Après avoir enregistré les modifications, vous pourrez notifier les utilisateurs
+              </p>
+            )}
           </DialogDescription>
         </DialogHeader>
         

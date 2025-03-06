@@ -34,13 +34,14 @@ export function useChangelogForm({ initialData, onSuccess, onCancel }: UseChange
 
   const { mutate: create } = useMutation({
     mutationFn: createChangelogEntry,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("✅ Entrée changelog créée avec succès:", data);
       queryClient.invalidateQueries({ queryKey: ["changelog"] });
       toast.success("Entrée ajoutée avec succès");
       onSuccess();
     },
-    onError: (error) => {
-      console.error("Error creating changelog entry:", error);
+    onError: (error: any) => {
+      console.error("❌ Erreur lors de la création de l'entrée changelog:", error);
       toast.error("Une erreur est survenue");
     },
   });
@@ -48,18 +49,20 @@ export function useChangelogForm({ initialData, onSuccess, onCancel }: UseChange
   const { mutate: update } = useMutation({
     mutationFn: ({ id, values }: { id: string; values: FormData }) => 
       updateChangelogEntry(id, values),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("✅ Entrée changelog mise à jour avec succès:", data);
       queryClient.invalidateQueries({ queryKey: ["changelog"] });
       toast.success("Entrée mise à jour avec succès");
       onSuccess();
     },
-    onError: (error) => {
-      console.error("Error updating changelog entry:", error);
+    onError: (error: any) => {
+      console.error("❌ Erreur lors de la mise à jour de l'entrée changelog:", error);
       toast.error("Une erreur est survenue");
     },
   });
 
   async function onSubmit(values: FormData) {
+    console.log("📝 Soumission du formulaire avec les valeurs:", values);
     if (initialData?.id) {
       update({ id: initialData.id, values });
     } else {
