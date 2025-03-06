@@ -42,8 +42,6 @@ const handler = async (req: Request): Promise<Response> => {
       throw rpcError;
     }
 
-    console.log(`${adminIds?.length || 0} IDs admin trouvés:`, adminIds);
-    
     if (!adminIds || adminIds.length === 0) {
       console.log("Aucun administrateur trouvé, aucun email ne sera envoyé");
       return new Response(JSON.stringify({ success: false, reason: "no_admins" }), {
@@ -54,14 +52,12 @@ const handler = async (req: Request): Promise<Response> => {
         },
       });
     }
-
-    // Extraire les IDs des administrateurs
+    
+    // Extraire les IDs des administrateurs et les afficher dans les logs
     const adminIdList = adminIds.map(item => item.id);
     console.log("Liste des IDs admin:", adminIdList);
 
     // Récupérer les emails des administrateurs directement depuis auth.users
-    // Nous utilisons une approche différente car auth.users n'est pas accessible directement via l'API
-    // Nous allons récupérer les emails un par un
     const adminEmails = [];
     
     for (const adminId of adminIdList) {
@@ -117,8 +113,7 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
     
-    // CORRECTION: S'assurer que "to" contient uniquement les emails des administrateurs
-    // et PAS l'email du nouvel utilisateur
+    // Envoyer l'email uniquement aux administrateurs
     const emailResponse = await resend.emails.send({
       from: "BudgetWizard <notifications@budgetwizard.fr>",
       to: adminEmails, // Uniquement les emails des administrateurs
