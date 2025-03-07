@@ -52,7 +52,8 @@ const userMenu: MenuItem[] = [
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
   const { canAccessPage } = usePagePermissions();
-  const { pendingCount } = isAdmin ? usePendingFeedbacks() : { pendingCount: 0 };
+  // Nous passons maintenant isAdmin directement au hook
+  const { pendingCount } = usePendingFeedbacks(isAdmin);
 
   const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
 
