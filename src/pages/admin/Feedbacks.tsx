@@ -49,6 +49,7 @@ export const AdminFeedbacks = () => {
         },
         () => {
           void queryClient.invalidateQueries({ queryKey: ["feedbacks"] });
+          void queryClient.invalidateQueries({ queryKey: ["pending-feedbacks-count"] });
         }
       )
       .subscribe();
