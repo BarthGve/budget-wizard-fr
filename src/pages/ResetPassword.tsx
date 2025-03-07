@@ -12,16 +12,36 @@ import { toast } from "sonner";
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     // Vérifier que l'utilisateur arrive bien avec un token de réinitialisation
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error("Session invalide ou expirée");
+      setIsCheckingSession(true);
+      console.log("Vérification de la session utilisateur pour la réinitialisation");
+      
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        console.log("Résultat de la session:", { data, error });
+        
+        if (error) throw error;
+        
+        if (!data.session) {
+          console.log("Pas de session valide trouvée");
+          toast.error("Session invalide ou expirée");
+          navigate("/login");
+          return;
+        }
+        
+        console.log("Session valide trouvée, l'utilisateur peut réinitialiser son mot de passe");
+      } catch (error: any) {
+        console.error("Erreur lors de la vérification de la session:", error);
+        toast.error("Une erreur s'est produite lors de la vérification de votre session");
         navigate("/login");
+      } finally {
+        setIsCheckingSession(false);
       }
     };
 
@@ -31,6 +51,8 @@ const ResetPassword = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    
+    console.log("Tentative de mise à jour du mot de passe");
 
     if (password !== confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas");
@@ -38,17 +60,26 @@ const ResetPassword = () => {
       return;
     }
 
+    if (password.length < 6) {
+      toast.error("Le mot de passe doit contenir au moins 6 caractères");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const { error } = await supabase.auth.updateUser({
+      const { data, error } = await supabase.auth.updateUser({
         password: password
       });
+
+      console.log("Réponse de mise à jour du mot de passe:", { data, error });
 
       if (error) throw error;
 
       toast.success("Mot de passe mis à jour avec succès");
+      console.log("Redirection vers la page de connexion");
       navigate("/login");
     } catch (error: any) {
-      console.error("Password update error:", error);
+      console.error("Détails complets de l'erreur de mise à jour:", error);
       toast.error(
         error.message || "Erreur lors de la mise à jour du mot de passe"
       );
@@ -56,6 +87,16 @@ const ResetPassword = () => {
       setIsLoading(false);
     }
   };
+
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md text-center p-8">
+          <p>Vérification de votre session...</p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
@@ -84,6 +125,7 @@ const ResetPassword = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                minLength={6}
               />
             </div>
             <div className="space-y-2">
@@ -95,6 +137,7 @@ const ResetPassword = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                minLength={6}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>

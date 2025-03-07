@@ -13,21 +13,41 @@ const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
 
+  const validateEmail = (email: string) => {
+    // Expression régulière simple pour valider le format de l'email
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Validation de l'email avant l'envoi
+    if (!validateEmail(email)) {
+      toast.error("Veuillez entrer une adresse email valide");
+      return;
+    }
+    
     setIsLoading(true);
+    console.log("Tentative d'envoi d'email de réinitialisation à:", email);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      // Construction explicite de l'URL de redirection
+      const redirectUrl = `${window.location.origin}/reset-password`;
+      console.log("URL de redirection:", redirectUrl);
+
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
       });
+
+      console.log("Réponse de Supabase:", { data, error });
 
       if (error) throw error;
 
       toast.success("Un email de réinitialisation vous a été envoyé");
       setEmail("");
     } catch (error: any) {
-      console.error("Password reset error:", error);
+      console.error("Détails complets de l'erreur:", error);
       toast.error(
         error.message || "Erreur lors de l'envoi de l'email de réinitialisation"
       );
