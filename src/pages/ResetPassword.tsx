@@ -4,13 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [password, setPassword] = useState("");
@@ -18,11 +19,18 @@ const ResetPassword = () => {
 
   useEffect(() => {
     // Vérifier que l'utilisateur arrive bien avec un token de réinitialisation
-    const checkSession = async () => {
+    const checkResetSession = async () => {
       setIsCheckingSession(true);
       console.log("Vérification de la session utilisateur pour la réinitialisation");
       
       try {
+        // Extraire le token de l'URL si présent
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+        const type = params.get('type');
+        
+        console.log("Paramètres d'URL détectés:", { token: token ? "présent" : "absent", type });
+        
         // Récupérer la session active
         const { data, error } = await supabase.auth.getSession();
         console.log("Résultat de la session:", { data, error });
@@ -32,8 +40,33 @@ const ResetPassword = () => {
           throw error;
         }
         
+        // Si nous avons un token dans l'URL, essayez de l'utiliser
+        if (token && type === 'recovery') {
+          console.log("Token de récupération détecté, tentative de récupération de la session");
+          
+          // Utiliser le hash fragment de l'URL pour la récupération
+          const { data: recoveryData, error: recoveryError } = await supabase.auth.refreshSession({
+            refresh_token: token
+          });
+          
+          console.log("Résultat de la récupération:", { 
+            data: recoveryData ? "données présentes" : "aucune donnée", 
+            error: recoveryError
+          });
+          
+          if (recoveryError) {
+            console.error("Erreur lors de la récupération avec le token:", recoveryError);
+            toast.error("Le lien de réinitialisation est invalide ou a expiré");
+            navigate("/login");
+            return;
+          }
+        }
+        
+        // Vérifier à nouveau si une session valide existe après la récupération
+        const { data: refreshedSession } = await supabase.auth.getSession();
+        
         // Vérifier si une session valide existe
-        if (!data.session) {
+        if (!refreshedSession.session) {
           console.log("Pas de session valide trouvée");
           toast.error("Session invalide ou expirée");
           navigate("/login");
@@ -50,8 +83,8 @@ const ResetPassword = () => {
       }
     };
 
-    checkSession();
-  }, [navigate]);
+    checkResetSession();
+  }, [navigate, location.search]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
