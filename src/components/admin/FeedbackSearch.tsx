@@ -13,7 +13,7 @@ export const FeedbackSearch = ({
   statusFilter,
   onStatusFilterChange
 }: FeedbackSearchProps) => {
-  return <div className="mb-6 flex gap-4">
+  return <div className="mb-6 flex gap-4p">
       <Input placeholder="Rechercher..." value={search} onChange={e => onSearchChange(e.target.value)} className="max-w-sm" />
       <Select value={statusFilter} onValueChange={onStatusFilterChange}>
         <SelectTrigger className="w-[180px]">
