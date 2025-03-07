@@ -16,32 +16,18 @@ interface ResetPasswordEmailRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  console.log("📧 Fonction send-reset-password appelée");
-  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    console.log("🌐 Réponse aux options CORS pre-flight");
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log("🔍 Parsing du corps de la requête");
     const { email, token }: ResetPasswordEmailRequest = await req.json();
-    
-    // Vérifier les données essentielles
-    if (!email || !token) {
-      console.error("❌ Email ou token manquant:", { email: !!email, token: !!token });
-      throw new Error("Email et token sont requis");
-    }
-
-    console.log("📧 Préparation de l'email pour:", email);
 
     // Construire l'URL de réinitialisation avec le token
     const resetUrl = new URL(req.headers.get("origin") || "");
     resetUrl.pathname = "/reset-password";
     resetUrl.searchParams.set("token", token);
-    
-    console.log("🔗 URL de réinitialisation générée:", resetUrl.toString());
 
     const emailResponse = await resend.emails.send({
       from: "Budget Wizard <no-reply@budgetwizard.fr>",
@@ -123,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("✅ Email envoyé avec succès:", emailResponse);
+    console.log("Email sent successfully:", emailResponse);
 
     return new Response(JSON.stringify(emailResponse), {
       status: 200,
@@ -133,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
-    console.error("❌ Erreur dans la fonction send-reset-password:", error);
+    console.error("Error in send-reset-password function:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {

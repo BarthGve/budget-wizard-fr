@@ -4,73 +4,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [token, setToken] = useState<string | null>(null);
-  const [validatingToken, setValidatingToken] = useState(true);
 
   useEffect(() => {
-    // Récupérer le token depuis l'URL
-    const params = new URLSearchParams(location.search);
-    const urlToken = params.get('token');
-    
-    if (urlToken) {
-      console.log("🔑 Token trouvé dans l'URL");
-      setToken(urlToken);
-      validateToken(urlToken);
-    } else {
-      // Vérifier si nous avons une session active ou un flux de réinitialisation en cours
-      const checkSession = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          console.log("⚠️ Aucun token trouvé et pas de session active");
-          toast.error("Session invalide ou expirée");
-          navigate("/login");
-        } else {
-          console.log("✅ Session active trouvée");
-          setValidatingToken(false);
-        }
-      };
-      
-      checkSession();
-    }
-  }, [location.search, navigate]);
-
-  const validateToken = async (token: string) => {
-    try {
-      console.log("🔍 Validation du token de réinitialisation...");
-      
-      // Pour Supabase, on utilise le token dans l'URL pour créer une session
-      // En appelant updateUser sans spécifier de password, on vérifie juste que le token est valide
-      const { error } = await supabase.auth.verifyOtp({
-        token_hash: token,
-        type: 'recovery'
-      });
-
-      if (error) {
-        console.error("❌ Token invalide:", error);
-        toast.error("Lien de réinitialisation invalide ou expiré");
+    // Vérifier que l'utilisateur arrive bien avec un token de réinitialisation
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Session invalide ou expirée");
         navigate("/login");
-        return;
       }
+    };
 
-      console.log("✅ Token validé avec succès");
-      setValidatingToken(false);
-    } catch (error) {
-      console.error("❌ Erreur lors de la validation du token:", error);
-      toast.error("Erreur lors de la validation du lien de réinitialisation");
-      navigate("/login");
-    }
-  };
+    checkSession();
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,22 +39,16 @@ const ResetPassword = () => {
     }
 
     try {
-      console.log("🔄 Mise à jour du mot de passe...");
       const { error } = await supabase.auth.updateUser({
         password: password
       });
 
       if (error) throw error;
 
-      console.log("✅ Mot de passe mis à jour avec succès");
       toast.success("Mot de passe mis à jour avec succès");
-      
-      // Rediriger vers la connexion après un court délai
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      navigate("/login");
     } catch (error: any) {
-      console.error("❌ Erreur mise à jour mot de passe:", error);
+      console.error("Password update error:", error);
       toast.error(
         error.message || "Erreur lors de la mise à jour du mot de passe"
       );
@@ -106,19 +56,6 @@ const ResetPassword = () => {
       setIsLoading(false);
     }
   };
-
-  if (validatingToken) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-md text-center p-6">
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-            <p>Validation du lien de réinitialisation...</p>
-          </div>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">

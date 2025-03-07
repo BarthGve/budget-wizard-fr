@@ -18,46 +18,16 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      console.log("📧 Demande de réinitialisation pour:", email);
-
-      // Étape 1: Obtenir un token de réinitialisation via l'API Supabase
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
       if (error) throw error;
 
-      console.log("✅ Demande de réinitialisation acceptée par Supabase");
-
-      // Étape 2: Envoyer un email personnalisé avec le token via notre fonction edge
-      try {
-        // Récupérer le hash du token depuis la réponse de Supabase (s'il est disponible)
-        // Sinon, on fait confiance à Supabase pour envoyer l'email standard
-        const resetToken = data?.token || "";
-        
-        if (resetToken) {
-          console.log("🔑 Token récupéré, envoi de l'email personnalisé");
-          
-          const { error: sendError } = await supabase.functions.invoke("send-reset-password", {
-            body: { email, token: resetToken }
-          });
-          
-          if (sendError) {
-            console.error("❌ Erreur envoi email personnalisé:", sendError);
-            // On continue car Supabase a déjà accepté la demande et devrait envoyer un email standard
-          } else {
-            console.log("✉️ Email personnalisé envoyé avec succès");
-          }
-        }
-      } catch (emailError) {
-        console.error("❌ Erreur lors de l'envoi de l'email personnalisé:", emailError);
-        // On continue même si l'email personnalisé échoue
-      }
-
       toast.success("Un email de réinitialisation vous a été envoyé");
       setEmail("");
     } catch (error: any) {
-      console.error("❌ Erreur réinitialisation:", error);
+      console.error("Password reset error:", error);
       toast.error(
         error.message || "Erreur lors de l'envoi de l'email de réinitialisation"
       );
