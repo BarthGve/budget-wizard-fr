@@ -41,11 +41,12 @@ const handler = async (req: Request): Promise<Response> => {
     await delay(500);
 
     // Récupérer les détails du feedback avec une gestion d'erreur améliorée
+    // Correction : utilisation correcte des alias et des colonnes disponibles
     const { data: feedback, error: feedbackError } = await supabase
       .from("feedbacks")
       .select(`
         *,
-        profile:profiles(full_name, email)
+        profile:profiles(full_name)
       `)
       .eq("id", feedbackId)
       .single();
