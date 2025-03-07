@@ -13,7 +13,7 @@ export const NotificationCard = ({
           <Bell className="h-5 w-5" />
           <CardTitle>Configurez vos préférences de notifications</CardTitle>
         </div>
-        <CardDescription>Configurez vos préférences de notifications</CardDescription>
+        
       </CardHeader>
       <CardContent className="space-y-4">
         {children}
