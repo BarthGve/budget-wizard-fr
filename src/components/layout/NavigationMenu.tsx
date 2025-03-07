@@ -16,6 +16,8 @@ import {
 import { cn } from "@/lib/utils";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { LucideIcon } from "lucide-react";
+import { usePendingFeedbacks } from "@/hooks/usePendingFeedbacks";
+import { Badge } from "@/components/ui/badge";
 
 interface MenuItem {
   title: string;
@@ -50,6 +52,7 @@ const userMenu: MenuItem[] = [
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
   const { canAccessPage } = usePagePermissions();
+  const { pendingCount } = isAdmin ? usePendingFeedbacks() : { pendingCount: 0 };
 
   const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
 
@@ -61,6 +64,9 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
           const isActive = item.matchPath
             ? new RegExp(item.matchPath).test(location.pathname)
             : location.pathname === item.path;
+            
+          // Vérifier si c'est le lien vers les feedbacks et s'il y a des feedbacks en attente
+          const showBadge = isAdmin && item.path === "/admin/feedbacks" && pendingCount > 0;
 
           return (
             <li key={item.path}>
@@ -74,7 +80,20 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
                 )}
                 end
               >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
+                <div className="relative">
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  {showBadge && (
+                    <Badge 
+                      variant="destructive" 
+                      className={cn(
+                        "absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center rounded-full",
+                        collapsed ? "-right-1" : "-right-1.5"
+                      )}
+                    >
+                      {pendingCount > 9 ? '9+' : pendingCount}
+                    </Badge>
+                  )}
+                </div>
                 {!collapsed && <span className="truncate">{item.title}</span>}
               </NavLink>
             </li>
