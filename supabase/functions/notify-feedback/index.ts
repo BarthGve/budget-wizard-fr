@@ -41,7 +41,6 @@ const handler = async (req: Request): Promise<Response> => {
     await delay(500);
 
     // Récupérer les détails du feedback avec une gestion d'erreur améliorée
-    // Correction : utilisation correcte des alias et des colonnes disponibles
     const { data: feedback, error: feedbackError } = await supabase
       .from("feedbacks")
       .select(`
@@ -113,25 +112,9 @@ const handler = async (req: Request): Promise<Response> => {
     const adminIdList = adminIds.map(item => item.id);
     console.log("IDs des administrateurs:", adminIdList);
 
-    // Récupérer les emails des administrateurs depuis auth.users et leurs préférences depuis profiles
-    // MODIFICATION: Utilisation d'une jointure avec auth.users pour obtenir les emails
-    const { data: adminUsers, error: usersError } = await supabase
-      .from('auth.users')
-      .select('id, email')
-      .in('id', adminIdList);
-
-    if (usersError) {
-      console.error("Erreur lors de la récupération des utilisateurs admin:", usersError);
-      return new Response(
-        JSON.stringify({ success: false, error: usersError.message }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-
-    // Récupérer les préférences de notification des administrateurs
+    // CORRECTION: Nous ne pouvons pas accéder directement à auth.users avec .from()
+    // Nous devons utiliser une fonction RPC spéciale ou auth.admin
+    // Récupérer les profils des admins, qui contiennent les préférences de notification
     const { data: adminProfiles, error: profilesError } = await supabase
       .from('profiles')
       .select('id, notif_feedbacks')
@@ -148,17 +131,35 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Combiner les données pour filtrer les administrateurs qui ont activé les notifications
-    const adminEmailsToNotify = adminUsers
-      .filter(user => {
-        const profile = adminProfiles.find(p => p.id === user.id);
-        return profile && profile.notif_feedbacks !== false;
-      })
-      .map(user => user.email);
+    // Pour les emails, nous devons faire une requête à la table auth.users
+    // en utilisant l'API d'administration de Supabase
+    // En utilisant le service_role_key, nous pouvons accéder à la table auth.users
+    const adminEmails = [];
+    for (const adminId of adminIdList) {
+      try {
+        // Utilisation de l'API d'administration pour accéder aux utilisateurs
+        const { data: user, error: userError } = await supabase.auth.admin.getUserById(adminId);
+        
+        if (userError) {
+          console.error(`Erreur lors de la récupération de l'utilisateur ${adminId}:`, userError);
+          continue;
+        }
+        
+        if (user && user.user) {
+          // Vérifier les préférences de notification
+          const profile = adminProfiles.find(p => p.id === adminId);
+          if (profile && profile.notif_feedbacks !== false) {
+            adminEmails.push(user.user.email);
+          }
+        }
+      } catch (error) {
+        console.error(`Exception lors de la récupération de l'utilisateur ${adminId}:`, error);
+      }
+    }
 
-    console.log(`Emails des administrateurs à notifier (${adminEmailsToNotify.length}):`, adminEmailsToNotify);
+    console.log(`Emails des administrateurs à notifier (${adminEmails.length}):`, adminEmails);
     
-    if (adminEmailsToNotify.length === 0) {
+    if (adminEmails.length === 0) {
       console.log("Aucun administrateur avec notifications activées");
       return new Response(JSON.stringify({ success: false, reason: "no_admins_with_notifications" }), {
         status: 200,
@@ -178,7 +179,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Envoyer l'email aux administrateurs
     const emailResponse = await resend.emails.send({
       from: "BudgetWizard <notifications@budgetwizard.fr>",
-      to: adminEmailsToNotify,
+      to: adminEmails,
       subject: `📝 Nouveau feedback de ${feedback.profile.full_name || 'un utilisateur'}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
