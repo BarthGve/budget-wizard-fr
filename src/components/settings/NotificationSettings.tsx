@@ -79,9 +79,6 @@ export const NotificationSettings = () => {
     }
   };
 
-  // Si l'utilisateur n'est pas admin, ne pas afficher la section admin
-  const showAdminSection = isAdmin;
-
   return (
     <Card>
       <CardHeader>
@@ -120,7 +117,7 @@ export const NotificationSettings = () => {
         </div>
 
         {/* Notifications d'inscription pour les admins uniquement */}
-        {showAdminSection && (
+        {isAdmin && (
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">

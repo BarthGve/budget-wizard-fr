@@ -51,7 +51,7 @@ const UserSettings = () => {
           <TabsContent value="profile" className="space-y-6">
             <ProfileSettings />
             <SecuritySettings />
-            {isAdmin && <NotificationSettings />}
+            <NotificationSettings />
            {/*<PaymentSettings /> */} 
             {/*<PrivacySettings /> */}
           </TabsContent>
