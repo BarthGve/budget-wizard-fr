@@ -32,24 +32,31 @@ const ForgotPassword = () => {
     console.log("Tentative d'envoi d'email de réinitialisation à:", email);
 
     try {
-      // Construction explicite de l'URL de redirection
+      // Construction explicite de l'URL de redirection avec origin pour garantir l'URL complète
       const redirectUrl = `${window.location.origin}/reset-password`;
       console.log("URL de redirection:", redirectUrl);
 
+      // Appel direct à l'API Supabase pour réinitialiser le mot de passe
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
       });
 
       console.log("Réponse de Supabase:", { data, error });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur détaillée:", error);
+        throw error;
+      }
 
+      // Message de succès même si l'email n'existe pas (sécurité)
       toast.success("Un email de réinitialisation vous a été envoyé");
       setEmail("");
     } catch (error: any) {
-      console.error("Détails complets de l'erreur:", error);
+      console.error("Erreur lors de l'envoi de l'email de réinitialisation:", error);
+      
+      // Message générique pour éviter la divulgation d'informations
       toast.error(
-        error.message || "Erreur lors de l'envoi de l'email de réinitialisation"
+        "Une erreur s'est produite. Veuillez vérifier votre email et réessayer."
       );
     } finally {
       setIsLoading(false);

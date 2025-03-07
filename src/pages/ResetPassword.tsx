@@ -23,11 +23,16 @@ const ResetPassword = () => {
       console.log("Vérification de la session utilisateur pour la réinitialisation");
       
       try {
+        // Récupérer la session active
         const { data, error } = await supabase.auth.getSession();
         console.log("Résultat de la session:", { data, error });
         
-        if (error) throw error;
+        if (error) {
+          console.error("Erreur lors de la vérification de la session:", error);
+          throw error;
+        }
         
+        // Vérifier si une session valide existe
         if (!data.session) {
           console.log("Pas de session valide trouvée");
           toast.error("Session invalide ou expirée");
@@ -54,6 +59,7 @@ const ResetPassword = () => {
     
     console.log("Tentative de mise à jour du mot de passe");
 
+    // Validation des mots de passe
     if (password !== confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas");
       setIsLoading(false);
@@ -67,19 +73,27 @@ const ResetPassword = () => {
     }
 
     try {
+      // Appel à l'API Supabase pour mettre à jour le mot de passe
       const { data, error } = await supabase.auth.updateUser({
         password: password
       });
 
       console.log("Réponse de mise à jour du mot de passe:", { data, error });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur détaillée:", error);
+        throw error;
+      }
 
       toast.success("Mot de passe mis à jour avec succès");
       console.log("Redirection vers la page de connexion");
-      navigate("/login");
+      
+      // Redirection vers la page de connexion après 2 secondes
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (error: any) {
-      console.error("Détails complets de l'erreur de mise à jour:", error);
+      console.error("Erreur lors de la mise à jour du mot de passe:", error);
       toast.error(
         error.message || "Erreur lors de la mise à jour du mot de passe"
       );
@@ -88,6 +102,7 @@ const ResetPassword = () => {
     }
   };
 
+  // Afficher un message de chargement pendant la vérification de la session
   if (isCheckingSession) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
