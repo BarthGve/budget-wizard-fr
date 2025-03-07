@@ -21,6 +21,9 @@ interface FeedbackNotificationRequest {
   feedbackId: string;
 }
 
+// Fonction pour attendre un court délai (en ms)
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const handler = async (req: Request): Promise<Response> => {
   console.log("Fonction notify-feedback appelée");
   
@@ -34,7 +37,10 @@ const handler = async (req: Request): Promise<Response> => {
     const { feedbackId }: FeedbackNotificationRequest = await req.json();
     console.log(`Notification pour le feedback ID: ${feedbackId}`);
 
-    // Récupérer les détails du feedback
+    // Attendre un court délai pour s'assurer que le feedback est persisté
+    await delay(500);
+
+    // Récupérer les détails du feedback avec une gestion d'erreur améliorée
     const { data: feedback, error: feedbackError } = await supabase
       .from("feedbacks")
       .select(`
@@ -44,10 +50,37 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("id", feedbackId)
       .single();
 
-    if (feedbackError || !feedback) {
+    if (feedbackError) {
       console.error("Erreur lors de la récupération du feedback:", feedbackError);
-      throw new Error("Feedback non trouvé");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: feedbackError.message, 
+          details: `Impossible de trouver le feedback avec l'ID: ${feedbackId}` 
+        }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
+
+    if (!feedback) {
+      console.error(`Feedback non trouvé avec l'ID: ${feedbackId}`);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Feedback non trouvé", 
+          feedbackId 
+        }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    console.log("Feedback récupéré avec succès:", feedback.id);
 
     // Récupérer les IDs des administrateurs
     console.log("Récupération des administrateurs...");
@@ -55,7 +88,13 @@ const handler = async (req: Request): Promise<Response> => {
     
     if (rpcError) {
       console.error("Erreur lors de la récupération des administrateurs:", rpcError);
-      throw rpcError;
+      return new Response(
+        JSON.stringify({ success: false, error: rpcError.message }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
     if (!adminIds || adminIds.length === 0) {
@@ -81,7 +120,13 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (profilesError) {
       console.error("Erreur lors de la récupération des profils admin:", profilesError);
-      throw profilesError;
+      return new Response(
+        JSON.stringify({ success: false, error: profilesError.message }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
     // Filtrer les administrateurs qui ont activé les notifications de feedback

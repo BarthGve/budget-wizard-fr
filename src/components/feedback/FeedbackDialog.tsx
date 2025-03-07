@@ -38,12 +38,18 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
   // Fonction pour notifier les administrateurs
   const notifyAdmins = async (feedbackId: string) => {
     try {
-      await supabase.functions.invoke("notify-feedback", {
+      const { error } = await supabase.functions.invoke("notify-feedback", {
         body: { feedbackId }
       });
-      console.log("Notification envoyée aux administrateurs");
+      
+      if (error) {
+        console.error("Erreur lors de l'envoi de la notification:", error);
+        // On ne bloque pas le flux principal si la notification échoue
+      } else {
+        console.log("Notification envoyée aux administrateurs");
+      }
     } catch (error) {
-      console.error("Erreur lors de l'envoi de la notification:", error);
+      console.error("Erreur lors de l'appel de la fonction notify-feedback:", error);
       // On ne bloque pas le flux principal si la notification échoue
     }
   };
@@ -72,17 +78,18 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
 
       if (error) throw error;
 
-      // Notification des administrateurs
-      if (feedback) {
-        await notifyAdmins(feedback.id);
-      }
-
+      // Afficher confirmation avant la notification pour une UX plus réactive
       toast.success("Merci pour votre feedback !");
       setShowConfetti(true); // Activer les confettis
       setIsOpen(false);
       setTitle("");
       setContent("");
       setRating(null);
+
+      // Notification des administrateurs
+      if (feedback) {
+        await notifyAdmins(feedback.id);
+      }
     } catch (error) {
       console.error("Error submitting feedback:", error);
       toast.error("Une erreur est survenue lors de l'envoi du feedback");
