@@ -15,11 +15,15 @@ export const NotificationSettings = () => {
   const { currentUser } = useCurrentUser();
   const { isAdmin, profile } = usePagePermissions();
   const queryClient = useQueryClient();
+  
   const [isSignupNotificationEnabled, setIsSignupNotificationEnabled] = useState<boolean>(
     profile?.notif_inscriptions !== false
   );
   const [isChangelogNotificationEnabled, setIsChangelogNotificationEnabled] = useState<boolean>(
     profile?.notif_changelog !== false
+  );
+  const [isFeedbackNotificationEnabled, setIsFeedbackNotificationEnabled] = useState<boolean>(
+    profile?.notif_feedbacks !== false
   );
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -79,6 +83,34 @@ export const NotificationSettings = () => {
     }
   };
 
+  const handleFeedbackNotificationToggle = async (enabled: boolean) => {
+    if (!currentUser || !isAdmin) return;
+    
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ notif_feedbacks: enabled })
+        .eq('id', currentUser.id);
+      
+      if (error) throw error;
+      
+      setIsFeedbackNotificationEnabled(enabled);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      
+      toast.success(
+        enabled 
+          ? "Notifications de feedback activées" 
+          : "Notifications de feedback désactivées"
+      );
+    } catch (error: any) {
+      console.error("Erreur lors de la mise à jour des préférences de notification:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -116,33 +148,63 @@ export const NotificationSettings = () => {
           />
         </div>
 
-        {/* Notifications d'inscription pour les admins uniquement */}
+        {/* Notifications exclusives pour les administrateurs */}
         {isAdmin && (
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-2">
-                <Label>Notifications d'inscription</Label>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <InfoIcon className="h-4 w-4 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Recevez un email lorsqu'un nouvel utilisateur s'inscrit</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+          <>
+            {/* Notifications d'inscription */}
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <Label>Notifications d'inscription</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Recevez un email lorsqu'un nouvel utilisateur s'inscrit</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Email de notification pour chaque nouvelle inscription
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Email de notification pour chaque nouvelle inscription
-              </p>
+              <Switch 
+                checked={isSignupNotificationEnabled}
+                onCheckedChange={handleSignupNotificationToggle}
+                disabled={isUpdating}
+              />
             </div>
-            <Switch 
-              checked={isSignupNotificationEnabled}
-              onCheckedChange={handleSignupNotificationToggle}
-              disabled={isUpdating}
-            />
-          </div>
+
+            {/* Notifications de feedback */}
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <Label>Notifications de feedback</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Recevez un email lorsqu'un utilisateur soumet un nouveau feedback</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Email de notification pour chaque nouveau feedback
+                </p>
+              </div>
+              <Switch 
+                checked={isFeedbackNotificationEnabled}
+                onCheckedChange={handleFeedbackNotificationToggle}
+                disabled={isUpdating}
+              />
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

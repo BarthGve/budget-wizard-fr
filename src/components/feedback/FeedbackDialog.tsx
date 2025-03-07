@@ -35,6 +35,19 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     }
   }, [showConfetti]);
 
+  // Fonction pour notifier les administrateurs
+  const notifyAdmins = async (feedbackId: string) => {
+    try {
+      await supabase.functions.invoke("notify-feedback", {
+        body: { feedbackId }
+      });
+      console.log("Notification envoyée aux administrateurs");
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de la notification:", error);
+      // On ne bloque pas le flux principal si la notification échoue
+    }
+  };
+
   const handleSubmit = async () => {
     if (!title.trim() || !content.trim() || !rating) {
       toast.error("Veuillez remplir tous les champs");
@@ -49,15 +62,20 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
       if (!user) throw new Error("Non authentifié");
 
       // Enregistrement du feedback dans la base de données
-      const { error } = await supabase.from("feedbacks").insert({
+      const { data: feedback, error } = await supabase.from("feedbacks").insert({
         title: title.trim(),
         content: content.trim(),
         rating,
         profile_id: user.id,
         status: "pending"
-      });
+      }).select('id').single();
 
       if (error) throw error;
+
+      // Notification des administrateurs
+      if (feedback) {
+        await notifyAdmins(feedback.id);
+      }
 
       toast.success("Merci pour votre feedback !");
       setShowConfetti(true); // Activer les confettis
