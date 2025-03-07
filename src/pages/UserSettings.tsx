@@ -1,6 +1,6 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { NotificationSettings } from "@/components/settings/NotificationSettings";
+import { NotificationSettings } from "@/components/settings/notification-settings";
 import { PaymentSettings } from "@/components/settings/PaymentSettings";
 import { PrivacySettings } from "@/components/settings/PrivacySettings";
 import { ProfileSettings } from "@/components/settings/ProfileSettings";
