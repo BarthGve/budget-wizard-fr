@@ -101,15 +101,22 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
         throw new Error("Mot de passe incorrect");
       }
 
-      // Préparer la redirection vers la page de vérification d'email
+      console.log("Demande de changement d'email de", user.email, "vers", values.email);
+      
+      // Stocker le nouvel email pour la page de vérification
       localStorage.setItem("verificationEmail", values.email);
       
       // Mettre à jour l'email
-      const { error } = await supabase.auth.updateUser({
+      const { data, error } = await supabase.auth.updateUser({
         email: values.email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/email-verification?type=emailChange`
+        }
       });
       
       if (error) throw error;
+      
+      console.log("Réponse de updateUser:", data);
 
       // Réinitialiser et fermer la modal
       setShowEmailDialog(false);
@@ -136,8 +143,11 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       
       // Vérifier si un nouvel email est en attente
       if (userData.user?.new_email) {
+        console.log("Nouvel email en attente de vérification:", userData.user.new_email);
         localStorage.setItem("verificationEmail", userData.user.new_email);
         navigate("/email-verification?type=emailChange");
+      } else {
+        toast.error("Aucun changement d'email en attente");
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des informations de l'utilisateur:", error);

@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -66,27 +67,38 @@ export const AuthListener = () => {
     }
   };
 
-  // Détecter et gérer les actions de vérification d'email
-  useEffect(() => {
-    // Récupérer le hash de l'URL
+  // Analyser les paramètres et le hash de l'URL pour détecter les actions d'authentification
+  const processAuthAction = () => {
+    // Récupérer le hash et les paramètres de l'URL
     const hash = window.location.hash;
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get("type") || "";
     
-    // Vérifier si le hash contient un token de type recovery ou email_change
-    if (hash && (hash.includes("type=recovery") || hash.includes("type=email_change"))) {
-      console.log("Token de vérification détecté dans l'URL:", hash);
+    // Analyser le hash pour les tokens de type email_change
+    if (hash) {
+      console.log("Analyse du hash pour actions d'authentification:", hash);
       
-      // Extraire le token et le type
+      // Extraire le type depuis le hash (format #type=email_change&...)
       const hashParams = new URLSearchParams(hash.substring(1));
-      const type = hashParams.get("type");
+      const hashType = hashParams.get("type");
       
-      if (type === "email_change") {
-        // Traiter la confirmation de changement d'email
-        supabase.auth.onAuthStateChange(async (event, session) => {
+      // Si le hash contient un token de changement d'email, le traiter immédiatement
+      if (hashType === "email_change" || hash.includes("type=email_change")) {
+        console.log("Token de changement d'email détecté dans l'URL");
+        
+        // Laisser Supabase traiter le token
+        supabase.auth.onAuthStateChange((event) => {
+          console.log("Événement auth détecté lors du changement d'email:", event);
+          
           if (event === "USER_UPDATED") {
-            console.log("Événement USER_UPDATED détecté");
+            console.log("Email mis à jour avec succès");
             
-            // Invalider les requêtes pour forcer le rafraîchissement des données
-            queryClient.invalidateQueries({ queryKey: ["auth"] });
+            // Nettoyer l'URL après le traitement du token
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            
+            // Invalider les caches pour forcer un rafraîchissement des données
             queryClient.invalidateQueries({ queryKey: ["current-user"] });
             queryClient.invalidateQueries({ queryKey: ["profile"] });
             
@@ -99,6 +111,27 @@ export const AuthListener = () => {
         });
       }
     }
+    
+    // Gérer la redirection après vérification d'email
+    if (type === "emailChange" || type === "recovery") {
+      console.log("Paramètre de type détecté dans l'URL:", type);
+    }
+  };
+
+  // Détecter et gérer les actions de vérification d'email
+  useEffect(() => {
+    // Appel de la fonction de traitement des actions d'authentification
+    processAuthAction();
+    
+    // Écouter les changements d'URL qui pourraient contenir de nouveaux tokens
+    const handleLocationChange = () => {
+      processAuthAction();
+    };
+    
+    window.addEventListener("hashchange", handleLocationChange);
+    return () => {
+      window.removeEventListener("hashchange", handleLocationChange);
+    };
   }, [navigate, queryClient]);
 
   // Gérer la redirection post-vérification email
@@ -185,10 +218,31 @@ export const AuthListener = () => {
           // Gérer la mise à jour du profil utilisateur
           console.log("Profil utilisateur mis à jour");
           
-          // Invalider les requêtes pour rafraîchir les données
-          queryClient.invalidateQueries({ queryKey: ["auth"] });
-          queryClient.invalidateQueries({ queryKey: ["current-user"] });
-          queryClient.invalidateQueries({ queryKey: ["profile"] });
+          // Vérifier s'il s'agit d'une confirmation de changement d'email
+          if (session?.user?.email_confirmed_at) {
+            console.log("Email confirmé:", session.user.email);
+            
+            // Invalider les requêtes pour rafraîchir les données
+            queryClient.invalidateQueries({ queryKey: ["auth"] });
+            queryClient.invalidateQueries({ queryKey: ["current-user"] });
+            queryClient.invalidateQueries({ queryKey: ["profile"] });
+            
+            // Vérifier s'il s'agit d'un changement d'email en examinant l'URL
+            if (location.hash.includes("type=email_change") || location.search.includes("type=emailChange")) {
+              console.log("Confirmation de changement d'email détectée");
+              
+              // Nettoyer l'URL après le traitement du token
+              if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+              }
+              
+              // Informer l'utilisateur
+              toast.success("Votre adresse email a été mise à jour avec succès");
+              
+              // Rediriger vers les paramètres utilisateur
+              navigate("/user-settings");
+            }
+          }
         } else if (event === "SIGNED_OUT") {
           try {
             // Éviter la navigation multiple
@@ -235,7 +289,7 @@ export const AuthListener = () => {
         subscription.unsubscribe();
       }
     };
-  }, [queryClient, navigate, location.pathname]);
+  }, [queryClient, navigate, location.pathname, location.hash, location.search]);
 
   return (
     <ZeroIncomeDialog 

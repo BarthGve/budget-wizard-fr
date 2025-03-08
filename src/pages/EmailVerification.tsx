@@ -21,7 +21,7 @@ const EmailVerification = () => {
     const type = params.get("type");
     setIsEmailChange(type === "emailChange");
     
-    // Get the email from localStorage (set during registration or email change)
+    // Récupérer l'email depuis localStorage (défini lors de l'inscription ou du changement d'email)
     const storedEmail = localStorage.getItem("verificationEmail");
     if (storedEmail) {
       setEmail(storedEmail);
@@ -44,10 +44,10 @@ const EmailVerification = () => {
     // Initialiser avec l'heure de fin stockée ou une nouvelle
     const endTime = getOrCreateEndTime();
 
-    // Set up countdown timer
+    // Configuration du compteur
     const timer = setInterval(() => {
       const now = Date.now();
-      const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
+      const timeLeft = Math.max(0, Math.floor((endTime - now) /, 1000));
       
       setRemainingTime(timeLeft);
       
@@ -56,9 +56,10 @@ const EmailVerification = () => {
       }
     }, 1000);
 
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      console.log("Event detected in EmailVerification:", event);
+    // Écouter les changements d'état d'authentification
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Event detected in EmailVerification:", event, session);
+      
       if (event === "SIGNED_IN") {
         // Nettoyer tous les éléments liés à la vérification
         localStorage.removeItem("verificationEmail");
@@ -74,13 +75,17 @@ const EmailVerification = () => {
         // Si c'est une mise à jour de l'utilisateur (changement d'email)
         console.log("User updated after email verification");
         
-        // Nettoyer les données de vérification
-        localStorage.removeItem("verificationEmail");
-        localStorage.removeItem("verificationEndTime");
-        
-        // Informer l'utilisateur et rediriger
-        toast.success("Votre adresse email a été mise à jour avec succès");
-        navigate("/user-settings");
+        if (isEmailChange && session) {
+          console.log("Email change confirmed:", session.user.email);
+          
+          // Nettoyer les données de vérification
+          localStorage.removeItem("verificationEmail");
+          localStorage.removeItem("verificationEndTime");
+          
+          // Informer l'utilisateur et rediriger
+          toast.success("Votre adresse email a été mise à jour avec succès");
+          navigate("/user-settings");
+        }
       }
     });
 
@@ -88,7 +93,7 @@ const EmailVerification = () => {
       clearInterval(timer);
       subscription.unsubscribe();
     };
-  }, [navigate, location.search]);
+  }, [navigate, location.search, isEmailChange]);
 
   const handleResendEmail = async () => {
     if (!email) {
@@ -98,8 +103,12 @@ const EmailVerification = () => {
 
     setIsResending(true);
     try {
+      // Type correct en fonction du contexte
+      const type = isEmailChange ? 'email_change' : 'signup';
+      console.log(`Renvoi d'email de type ${type} à ${email}`);
+      
       const { error } = await supabase.auth.resend({
-        type: isEmailChange ? 'email_change' : 'signup',
+        type: type,
         email: email,
       });
 
@@ -112,6 +121,7 @@ const EmailVerification = () => {
       
       toast.success("Email de vérification envoyé");
     } catch (error: any) {
+      console.error("Erreur lors du renvoi de l'email:", error);
       toast.error(error.message || "Erreur lors de l'envoi de l'email");
     } finally {
       setIsResending(false);
