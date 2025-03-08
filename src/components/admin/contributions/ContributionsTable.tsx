@@ -26,6 +26,7 @@ export const ContributionsTable = () => {
         .from("contributions")
         .select(`
           id, 
+          profile_id,
           title, 
           content, 
           type, 

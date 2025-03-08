@@ -21,7 +21,12 @@ import { ContributionDialog } from "../contributions/ContributionDialog";
 import { FeedbackTrigger } from "../feedback/FeedbackTrigger";
 import { ContributionTrigger } from "../feedback/ContributionTrigger";
 
-export function Sidebar({ collapsed = false, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
   const location = useLocation();
   const currentPath = location.pathname;
   const { isAdmin } = useCurrentUser();

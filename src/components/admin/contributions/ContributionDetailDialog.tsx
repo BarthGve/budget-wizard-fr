@@ -4,12 +4,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ContributionStatus } from "./types";
+import { Contribution, ContributionStatus } from "./types";
 
 interface ContributionDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  contribution: any;
+  contribution: Contribution;
   onStatusChange: (id: string, status: ContributionStatus) => void;
 }
 
@@ -24,9 +24,8 @@ const statusBadges = {
 const typeLabels: Record<string, string> = {
   feature: "Nouvelle fonctionnalité",
   improvement: "Amélioration",
-  bugfix: "Correction de bug",
-  design: "Design/UI",
-  performance: "Performance",
+  bug: "Correction de bug",
+  idea: "Idée",
   other: "Autre"
 };
 
@@ -67,8 +66,8 @@ export const ContributionDetailDialog = ({
                 </p>
               </div>
             </div>
-            <Badge variant={statusBadges[contribution.status as ContributionStatus].variant}>
-              {statusBadges[contribution.status as ContributionStatus].label}
+            <Badge variant={statusBadges[contribution.status].variant}>
+              {statusBadges[contribution.status].label}
             </Badge>
           </div>
           

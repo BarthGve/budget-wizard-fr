@@ -10,4 +10,9 @@ export interface Contribution {
   status: ContributionStatus;
   created_at: string;
   updated_at: string;
+  profiles?: {
+    id: string;
+    full_name: string;
+    avatar_url: string;
+  };
 }

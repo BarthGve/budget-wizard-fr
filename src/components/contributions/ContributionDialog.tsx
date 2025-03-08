@@ -24,7 +24,7 @@ const CONTRIBUTION_TYPES = [
 ];
 
 export const ContributionDialog = ({ isOpen, onOpenChange }: ContributionDialogProps) => {
-  const { user } = useCurrentUser();
+  const { currentUser } = useCurrentUser();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [type, setType] = useState('');
@@ -51,7 +51,7 @@ export const ContributionDialog = ({ isOpen, onOpenChange }: ContributionDialogP
       const { error } = await supabase
         .from('contributions')
         .insert({
-          profile_id: user?.id,
+          profile_id: currentUser?.id,
           title,
           content,
           type,
