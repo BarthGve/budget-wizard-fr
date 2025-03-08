@@ -23,7 +23,13 @@ export const useNotificationSettings = () => {
 
         if (error) throw error;
 
-        setProfile(data);
+        // Nous récupérons l'email depuis l'utilisateur authentifié
+        const profileWithEmail: Profile = {
+          ...data,
+          email: user.email // Ajout de l'email depuis l'utilisateur authentifié
+        };
+
+        setProfile(profileWithEmail);
         setIsChangelogNotificationEnabled(data.notif_changelog ?? false);
       } catch (error) {
         console.error("Erreur lors de la récupération du profil:", error);

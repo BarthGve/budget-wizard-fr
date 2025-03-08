@@ -8,9 +8,11 @@ import { AdminNotifications } from "./AdminNotifications";
 import { ChangelogNotification } from "./ChangelogNotification";
 import { NotificationToggle } from "./NotificationToggle";
 import { useUser } from "@/contexts/UserContext";
+import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 export const NotificationSettings = () => {
   const { user } = useUser();
+  const { isAdmin } = usePagePermissions(); // On utilise usePagePermissions pour obtenir isAdmin
   const { 
     isChangelogNotificationEnabled, 
     isUpdating, 
@@ -44,7 +46,7 @@ export const NotificationSettings = () => {
           />
         </div>
 
-        {profile.is_admin && <AdminNotifications />}
+        {isAdmin && <AdminNotifications />}
         
         {/* Informations sur la gestion des notifications */}
         <div className="rounded-md bg-blue-50 p-4 mt-6">
