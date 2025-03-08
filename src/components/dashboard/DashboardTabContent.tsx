@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -129,9 +128,9 @@ export const DashboardTabContent = ({
     }));
   }, [contributors]);
 
-  // Memoize if we should show contributors section
+  // Memoize if we should show contributors section - montrer si plus d'un contributeur
   const showContributorsSection = useMemo(() => {
-    return mappedContributors.length > 1;
+    return mappedContributors.length >= 2;
   }, [mappedContributors.length]);
 
   return (

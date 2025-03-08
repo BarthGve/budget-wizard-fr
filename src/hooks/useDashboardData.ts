@@ -5,6 +5,7 @@ import { useRealtimeListeners } from "./useRealtimeListeners";
 import { useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const useDashboardData = () => {
   // Get the current authenticated user with performance optimization
@@ -18,7 +19,7 @@ export const useDashboardData = () => {
   // Fetch dashboard data based on the current user
   const { dashboardData, refetchDashboard } = useDashboardQueries(currentUser?.id);
 
-  // Configuration d'un écouteur spécifique pour les contributeurs
+  // Configuration d'un écouteur spécifique pour les contributeurs avec haute priorité
   useEffect(() => {
     if (!currentUser?.id) return;
     
@@ -51,9 +52,20 @@ export const useDashboardData = () => {
           
           // Rafraîchir les données immédiatement
           refetchDashboard();
+          
+          // Notification visuelle pour informer l'utilisateur
+          if (payload.eventType === 'INSERT') {
+            toast.success("Contributeur ajouté avec succès");
+          } else if (payload.eventType === 'UPDATE') {
+            toast.success("Contributeur mis à jour");
+          } else if (payload.eventType === 'DELETE') {
+            toast.success("Contributeur supprimé");
+          }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Canal contributeurs ${channelId} status:`, status);
+      });
     
     // Stocker la référence du canal
     contributorsChannelRef.current = channel;

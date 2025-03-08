@@ -23,30 +23,32 @@ export const RevenueCard = ({
 
   // Mettre à jour le montant affiché lorsque totalRevenue change
   useEffect(() => {
-    // Animation simple d'interpolation numérique
-    const startValue = displayedRevenue;
-    const endValue = totalRevenue;
-    const duration = 800; // ms
-    const startTime = Date.now();
-    
-    const animateValue = () => {
-      const now = Date.now();
-      const elapsed = now - startTime;
+    if (totalRevenue !== displayedRevenue) {
+      // Animation simple d'interpolation numérique
+      const startValue = displayedRevenue;
+      const endValue = totalRevenue;
+      const duration = 800; // ms
+      const startTime = Date.now();
       
-      if (elapsed >= duration) {
-        setDisplayedRevenue(endValue);
-        return;
-      }
-      
-      const progress = elapsed / duration;
-      const currentValue = startValue + (endValue - startValue) * progress;
-      setDisplayedRevenue(currentValue);
+      const animateValue = () => {
+        const now = Date.now();
+        const elapsed = now - startTime;
+        
+        if (elapsed >= duration) {
+          setDisplayedRevenue(endValue);
+          return;
+        }
+        
+        const progress = elapsed / duration;
+        const currentValue = startValue + (endValue - startValue) * progress;
+        setDisplayedRevenue(currentValue);
+        
+        requestAnimationFrame(animateValue);
+      };
       
       requestAnimationFrame(animateValue);
-    };
-    
-    requestAnimationFrame(animateValue);
-  }, [totalRevenue]);
+    }
+  }, [totalRevenue, displayedRevenue]);
 
   return (
     <Card className="bg-background hover:shadow-md transition-all duration-300">
