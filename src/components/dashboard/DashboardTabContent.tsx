@@ -6,6 +6,7 @@ import { DashboardCards } from "./dashboard-content/DashboardCards";
 import { DashboardCharts } from "./dashboard-content/DashboardCharts";
 import { DashboardContributors } from "./dashboard-content/DashboardContributors";
 import { Credit } from "@/components/credits/types";
+import { useMemo, memo } from "react";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -49,6 +50,23 @@ interface DashboardTabContentProps {
   }>;
 }
 
+// Composants memoizés pour éviter les re-rendus inutiles
+const MemoizedDashboardCards = memo(DashboardCards);
+const MemoizedDashboardCharts = memo(DashboardCharts);
+const MemoizedDashboardContributors = memo(DashboardContributors);
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
+};
+
 export const DashboardTabContent = ({
   revenue,
   expenses,
@@ -64,7 +82,7 @@ export const DashboardTabContent = ({
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-  const { data: credits } = useQuery({
+  const { data: credits = [] } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -77,40 +95,44 @@ export const DashboardTabContent = ({
       }
 
       return data as Credit[];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Cache de 5 minutes
+    refetchOnWindowFocus: false, // Désactiver le refetch automatique lors du focus
   });
 
-  const activeCredits = credits?.filter(credit => credit.statut === 'actif') || [];
-  const repaidThisMonth = credits?.filter(credit => {
-    const repaymentDate = new Date(credit.date_derniere_mensualite);
-    return credit.statut === 'remboursé' && repaymentDate >= firstDayOfMonth;
-  }) || [];
+  // Memoize credit calculations to prevent recalculation on each render
+  const { activeCredits, repaidThisMonth, totalMensualites } = useMemo(() => {
+    const active = credits.filter(credit => credit.statut === 'actif') || [];
+    const repaid = credits.filter(credit => {
+      const repaymentDate = new Date(credit.date_derniere_mensualite);
+      return credit.statut === 'remboursé' && repaymentDate >= firstDayOfMonth;
+    }) || [];
 
-  const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
-  const totalRepaidThisMonth = repaidThisMonth.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
+    const activeMensualites = active.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
+    const repaidThisMonthSum = repaid.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
 
-  const totalMensualites = totalActiveMensualites + totalRepaidThisMonth;
+    return {
+      activeCredits: active,
+      repaidThisMonth: repaid, 
+      totalMensualites: activeMensualites + repaidThisMonthSum
+    };
+  }, [credits, firstDayOfMonth]);
 
-  // Map contributors to ensure all required properties are present
-  const mappedContributors = contributors.map(contributor => ({
-    ...contributor,
-    is_owner: contributor.is_owner ?? false, // Provide a default value if is_owner is undefined
-    percentage_contribution: contributor.percentage_contribution ?? 0, // S'assurer que percentage_contribution existe
-    expenseShare: 0, // Add default values for required Contributor properties
-    creditShare: 0
-  }));
+  // Memoize mapped contributors to avoid unnecessary recalculations
+  const mappedContributors = useMemo(() => {
+    return contributors.map(contributor => ({
+      ...contributor,
+      is_owner: contributor.is_owner ?? false, 
+      percentage_contribution: contributor.percentage_contribution ?? 0,
+      expenseShare: 0,
+      creditShare: 0
+    }));
+  }, [contributors]);
 
-  // Animation variants for staggered children
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.1
-      }
-    }
-  };
+  // Memoize if we should show contributors section
+  const showContributorsSection = useMemo(() => {
+    return mappedContributors.length > 1;
+  }, [mappedContributors.length]);
 
   return (
     <motion.div 
@@ -119,7 +141,7 @@ export const DashboardTabContent = ({
       animate="visible"
       variants={containerVariants}
     >
-      <DashboardCards 
+      <MemoizedDashboardCards 
         revenue={revenue}
         expenses={expenses}
         totalMensualites={totalMensualites}
@@ -134,7 +156,7 @@ export const DashboardTabContent = ({
         }))}
       />
       
-      <DashboardCharts 
+      <MemoizedDashboardCharts 
         expenses={expenses}
         savings={savings}
         totalMensualites={totalMensualites}
@@ -143,9 +165,8 @@ export const DashboardTabContent = ({
         monthlySavings={monthlySavings}
       />
       
-      {/* Afficher le composant des contributeurs uniquement s'il y a plus d'un contributeur */}
-      {mappedContributors.length > 1 && (
-        <DashboardContributors 
+      {showContributorsSection && (
+        <MemoizedDashboardContributors 
           contributors={mappedContributors}
           expenses={expenses}
           totalMensualites={totalMensualites}

@@ -5,132 +5,118 @@ import { useEffect, useRef } from "react";
 
 export const useRealtimeListeners = () => {
   const queryClient = useQueryClient();
-  const channelRef = useRef(null);
-  const monthlySavingsChannelRef = useRef(null);
-  const projectsChannelRef = useRef(null);
+  
+  // Utiliser des refs pour stocker les références des canaux
+  const channelsRef = useRef<{
+    contributors: any | null;
+    monthlySavings: any | null;
+    projects: any | null;
+    recurringExpenses: any | null;
+  }>({
+    contributors: null,
+    monthlySavings: null,
+    projects: null,
+    recurringExpenses: null
+  });
 
-  // Set up real-time listener for contributor changes with improved channel management
-  useEffect(() => {
-    // Cleanup previous channel if it exists
-    if (channelRef.current) {
-      console.log('Removing existing contributors channel in useRealtimeListeners');
-      supabase.removeChannel(channelRef.current);
+  // Fonction d'invalidation optimisée pour cibler uniquement les données nécessaires
+  const invalidateDashboardData = () => {
+    queryClient.invalidateQueries({ 
+      queryKey: ["dashboard-data"],
+      exact: false,
+      refetchType: 'active' // Ne refetch que les requêtes actives
+    });
+  };
+
+  // Fonction réutilisable pour configurer un canal avec gestion optimisée
+  const setupChannel = (tableName: string, channelKey: keyof typeof channelsRef.current, additionalInvalidations?: string[]) => {
+    // Nettoyer le canal existant si nécessaire
+    if (channelsRef.current[channelKey]) {
+      supabase.removeChannel(channelsRef.current[channelKey]);
+      channelsRef.current[channelKey] = null;
     }
+
+    // Créer un nouvel ID de canal unique
+    const channelId = `${tableName}-channel-${Date.now()}`;
     
-    // Create a new channel with a unique ID
-    const channelId = `dashboard-data-${Date.now()}`;
-    console.log(`Setting up contributors channel: ${channelId}`);
-    
+    // Configurer le nouveau canal
     const channel = supabase
       .channel(channelId)
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
           schema: 'public',
-          table: 'contributors'
+          table: tableName
         },
         (payload) => {
-          console.log('Contributors table changed from useRealtimeListeners hook:', payload);
-          // Selectively invalidate only the necessary queries
-          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+          console.log(`${tableName} changed:`, payload.eventType);
+          
+          // Invalidation ciblée des données
+          invalidateDashboardData();
+          
+          // Invalidations supplémentaires si spécifiées
+          if (additionalInvalidations) {
+            additionalInvalidations.forEach(key => {
+              queryClient.invalidateQueries({ 
+                queryKey: [key],
+                exact: false, 
+                refetchType: 'active'
+              });
+            });
+          }
         }
       )
-      .subscribe((status) => {
-        console.log(`Contributors channel status: ${status}`);
-      });
+      .subscribe();
     
-    // Store the channel reference
-    channelRef.current = channel;
+    // Stocker la référence du canal
+    channelsRef.current[channelKey] = channel;
+  };
 
-    // Cleanup function
+  // Configuration des écouteurs pour les contributeurs
+  useEffect(() => {
+    setupChannel('contributors', 'contributors');
+    
     return () => {
-      if (channelRef.current) {
-        console.log('Cleaning up contributors channel in useRealtimeListeners unmount');
-        supabase.removeChannel(channelRef.current);
-        channelRef.current = null;
+      if (channelsRef.current.contributors) {
+        supabase.removeChannel(channelsRef.current.contributors);
+        channelsRef.current.contributors = null;
+      }
+    };
+  }, [queryClient]); // queryClient est stable
+
+  // Configuration des écouteurs pour les épargnes mensuelles
+  useEffect(() => {
+    setupChannel('monthly_savings', 'monthlySavings', ['savings-projects']);
+    
+    return () => {
+      if (channelsRef.current.monthlySavings) {
+        supabase.removeChannel(channelsRef.current.monthlySavings);
+        channelsRef.current.monthlySavings = null;
       }
     };
   }, [queryClient]);
 
-  // Set up real-time listener for monthly savings changes
+  // Configuration des écouteurs pour les projets d'épargne
   useEffect(() => {
-    if (monthlySavingsChannelRef.current) {
-      console.log('Removing existing monthly savings channel in useRealtimeListeners');
-      supabase.removeChannel(monthlySavingsChannelRef.current);
-    }
+    setupChannel('projets_epargne', 'projects', ['savings-projects']);
     
-    const channelId = `monthly-savings-changes-${Date.now()}`;
-    console.log(`Setting up monthly savings channel: ${channelId}`);
-    
-    const channel = supabase
-      .channel(channelId)
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'monthly_savings'
-        },
-        (payload) => {
-          console.log('Monthly savings table changed:', payload);
-          // Invalidate both dashboard data and savings projects
-          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-          queryClient.invalidateQueries({ queryKey: ["savings-projects"] });
-        }
-      )
-      .subscribe((status) => {
-        console.log(`Monthly savings channel status: ${status}`);
-      });
-    
-    monthlySavingsChannelRef.current = channel;
-
     return () => {
-      if (monthlySavingsChannelRef.current) {
-        console.log('Cleaning up monthly savings channel in useRealtimeListeners unmount');
-        supabase.removeChannel(monthlySavingsChannelRef.current);
-        monthlySavingsChannelRef.current = null;
+      if (channelsRef.current.projects) {
+        supabase.removeChannel(channelsRef.current.projects);
+        channelsRef.current.projects = null;
       }
     };
   }, [queryClient]);
 
-  // Set up real-time listener for projects changes
+  // Configuration des écouteurs pour les dépenses récurrentes
   useEffect(() => {
-    if (projectsChannelRef.current) {
-      console.log('Removing existing projects channel in useRealtimeListeners');
-      supabase.removeChannel(projectsChannelRef.current);
-    }
+    setupChannel('recurring_expenses', 'recurringExpenses');
     
-    const channelId = `projects-changes-${Date.now()}`;
-    console.log(`Setting up projects channel: ${channelId}`);
-    
-    const channel = supabase
-      .channel(channelId)
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'projets_epargne'
-        },
-        (payload) => {
-          console.log('Projects table changed:', payload);
-          // Invalidate both dashboard data and savings projects
-          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
-          queryClient.invalidateQueries({ queryKey: ["savings-projects"] });
-        }
-      )
-      .subscribe((status) => {
-        console.log(`Projects channel status: ${status}`);
-      });
-    
-    projectsChannelRef.current = channel;
-
     return () => {
-      if (projectsChannelRef.current) {
-        console.log('Cleaning up projects channel in useRealtimeListeners unmount');
-        supabase.removeChannel(projectsChannelRef.current);
-        projectsChannelRef.current = null;
+      if (channelsRef.current.recurringExpenses) {
+        supabase.removeChannel(channelsRef.current.recurringExpenses);
+        channelsRef.current.recurringExpenses = null;
       }
     };
   }, [queryClient]);

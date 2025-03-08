@@ -23,36 +23,73 @@ export function useDashboardViewCalculations(
   recurringExpenses: Array<any> | undefined,
   profile: any | undefined
 ) {
-  return useMemo(() => {
-    // Calcul des revenus
-    const totalRevenue = calculateTotalRevenue(contributors || []);
-    const yearlyRevenue = totalRevenue * 12;
+  // Memoize individual calculations to prevent recalculations on each render
+  const totalRevenue = useMemo(() => 
+    calculateTotalRevenue(contributors || []), 
+    [contributors]
+  );
 
-    // Calcul des dépenses
-    const monthlyExpenses = calculateMonthlyExpenses(recurringExpenses || []);
-    const yearlyExpenses = calculateYearlyExpenses(recurringExpenses || []);
+  const monthlyExpenses = useMemo(() => 
+    calculateMonthlyExpenses(recurringExpenses || []), 
+    [recurringExpenses]
+  );
 
-    // Calcul des épargnes
-    const totalMonthlySavings = calculateTotalSavings(monthlySavings || []);
-    const yearlyMonthlySavings = totalMonthlySavings * 12;
+  const yearlyExpenses = useMemo(() => 
+    calculateYearlyExpenses(recurringExpenses || []), 
+    [recurringExpenses]
+  );
 
-    // Calcul des soldes
-    const monthlyBalance = totalRevenue - monthlyExpenses - totalMonthlySavings;
-    const yearlyBalance = yearlyRevenue - yearlyExpenses - yearlyMonthlySavings;
+  const totalMonthlySavings = useMemo(() => 
+    calculateTotalSavings(monthlySavings || []), 
+    [monthlySavings]
+  );
 
-    // Calcul de l'objectif d'épargne
-    const savingsGoal = profile?.savings_goal_percentage 
-      ? (currentView === "yearly" ? yearlyRevenue : totalRevenue) * profile.savings_goal_percentage / 100 
+  const yearlyRevenue = useMemo(() => totalRevenue * 12, [totalRevenue]);
+  const yearlyMonthlySavings = useMemo(() => totalMonthlySavings * 12, [totalMonthlySavings]);
+
+  // Memoize balance calculations using previously memoized values
+  const monthlyBalance = useMemo(() => 
+    totalRevenue - monthlyExpenses - totalMonthlySavings, 
+    [totalRevenue, monthlyExpenses, totalMonthlySavings]
+  );
+
+  const yearlyBalance = useMemo(() => 
+    yearlyRevenue - yearlyExpenses - yearlyMonthlySavings, 
+    [yearlyRevenue, yearlyExpenses, yearlyMonthlySavings]
+  );
+
+  // Memoize savings goal calculation
+  const savingsGoal = useMemo(() => {
+    const baseAmount = currentView === "yearly" ? yearlyRevenue : totalRevenue;
+    return profile?.savings_goal_percentage 
+      ? baseAmount * profile.savings_goal_percentage / 100 
       : 0;
+  }, [currentView, yearlyRevenue, totalRevenue, profile?.savings_goal_percentage]);
 
-    // Préparation des données pour les graphiques
-    const expensesForPieChart = getExpensesForPieChart(recurringExpenses || [], currentView);
-    const savingsForPieChart = getSavingsForPieChart(monthlySavings || [], currentView);
-    
-    // Préparation des parts de contributions et de dépenses
-    const contributorShares = getCumulativeContributionPercentages(contributors || [], totalRevenue);
-    const expenseShares = getCumulativeExpensePercentages(contributors || [], monthlyExpenses);
+  // Memoize chart data preparation
+  const expensesForPieChart = useMemo(() => 
+    getExpensesForPieChart(recurringExpenses || [], currentView),
+    [recurringExpenses, currentView]
+  );
 
+  const savingsForPieChart = useMemo(() => 
+    getSavingsForPieChart(monthlySavings || [], currentView),
+    [monthlySavings, currentView]
+  );
+
+  // Memoize share calculations
+  const contributorShares = useMemo(() => 
+    getCumulativeContributionPercentages(contributors || [], totalRevenue),
+    [contributors, totalRevenue]
+  );
+
+  const expenseShares = useMemo(() => 
+    getCumulativeExpensePercentages(contributors || [], monthlyExpenses),
+    [contributors, monthlyExpenses]
+  );
+
+  // Final return value memoization
+  return useMemo(() => {
     return {
       revenue: currentView === "monthly" ? totalRevenue : yearlyRevenue,
       expenses: currentView === "monthly" ? monthlyExpenses : yearlyExpenses,
@@ -74,7 +111,22 @@ export function useDashboardViewCalculations(
         savings: yearlyMonthlySavings,
       }
     };
-  }, [currentView, contributors, monthlySavings, recurringExpenses, profile]);
+  }, [
+    currentView, 
+    totalRevenue, 
+    yearlyRevenue, 
+    monthlyExpenses, 
+    yearlyExpenses, 
+    totalMonthlySavings,
+    yearlyMonthlySavings,
+    monthlyBalance,
+    yearlyBalance,
+    savingsGoal,
+    contributorShares,
+    expenseShares,
+    expensesForPieChart,
+    savingsForPieChart
+  ]);
 }
 
 // Fonction utilitaire pour préparer les données des dépenses pour le graphique en camembert

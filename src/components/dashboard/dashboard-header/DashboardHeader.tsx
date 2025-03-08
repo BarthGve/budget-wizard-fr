@@ -1,7 +1,7 @@
 
-import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
+import { memo } from "react";
 
 interface DashboardHeaderProps {
   currentView: "monthly" | "yearly";
@@ -9,37 +9,43 @@ interface DashboardHeaderProps {
   currentMonthName: string;
 }
 
-export const DashboardHeader = ({ 
+// Animation variants pour les onglets
+const tabVariants = {
+  inactive: { 
+    scale: 0.95,
+    opacity: 0.7,
+    y: 0 
+  },
+  active: { 
+    scale: 1,
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 20
+    }
+  },
+  hover: { 
+    scale: 1.05,
+    y: -2,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 20
+    }
+  }
+};
+
+// Composant d'en-tête optimisé avec mémoisation
+export const DashboardHeader = memo(({ 
   currentView, 
   setCurrentView, 
   currentMonthName 
 }: DashboardHeaderProps) => {
-  // Animation variants pour les onglets
-  const tabVariants = {
-    inactive: { 
-      scale: 0.95,
-      opacity: 0.7,
-      y: 0 
-    },
-    active: { 
-      scale: 1,
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20
-      }
-    },
-    hover: { 
-      scale: 1.05,
-      y: -2,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20
-      }
-    }
+  // Fonction de changement de vue
+  const handleViewChange = (value: string) => {
+    setCurrentView(value as "monthly" | "yearly");
   };
 
   return (
@@ -62,11 +68,11 @@ export const DashboardHeader = ({
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
         >
           <Tabs
             defaultValue={currentView}
-            onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
+            onValueChange={handleViewChange}
             className="w-[250px]"
           >
             <TabsList className="grid w-full grid-cols-2">
@@ -92,4 +98,7 @@ export const DashboardHeader = ({
       </div>
     </motion.div>
   );
-};
+});
+
+// Affichage explicite du nom du composant pour le débogage
+DashboardHeader.displayName = "DashboardHeader";
