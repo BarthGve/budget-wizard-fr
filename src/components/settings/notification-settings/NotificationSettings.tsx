@@ -4,11 +4,9 @@ import { Bell } from "lucide-react";
 import { useNotificationSettings } from "./useNotificationSettings";
 import { AdminNotifications } from "./AdminNotifications";
 import { NotificationToggle } from "./NotificationToggle";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 export const NotificationSettings = () => {
-  const { currentUser } = useCurrentUser();
   const { isAdmin } = usePagePermissions();
   const { profile, updateNotificationSettings, isUpdating } = useNotificationSettings();
 
@@ -33,7 +31,7 @@ export const NotificationSettings = () => {
             id="notif_changelog"
             label="Mises à jour de l'application"
             description="Recevez des notifications lorsque l'application est mise à jour avec de nouvelles fonctionnalités"
-            checked={profile.notif_changelog}
+            checked={profile.notif_changelog || false}
             disabled={isUpdating}
             onCheckedChange={(checked) => updateNotificationSettings('notif_changelog', checked)}
           />
