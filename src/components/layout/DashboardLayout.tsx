@@ -150,10 +150,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
       <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'}`}>
-        <MemoizedSidebar 
-          collapsed={false} 
-          onToggle={() => setShowMobileSidebar(false)} 
-        />
+        <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
       </div>
 
       {isMobile && (
