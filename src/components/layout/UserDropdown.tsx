@@ -1,6 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
-import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag } from "lucide-react";
+import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag, LightbulbIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { ContributionDialog } from "../contribution/ContributionDialog";
 
 interface UserDropdownProps {
   collapsed: boolean;
@@ -126,6 +127,13 @@ export const UserDropdown = ({
               <span>Notifications</span>
             </DropdownMenuItem>
           )}
+          
+          <DropdownMenuItem className="cursor-pointer" asChild>
+            <div onClick={() => setIsOpen(true)}>
+              <LightbulbIcon className="mr-2 h-4 w-4" />
+              <span>Contribuer au projet</span>
+            </div>
+          </DropdownMenuItem>
 
           <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
@@ -133,6 +141,9 @@ export const UserDropdown = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      
+      {/* Dialog de contribution */}
+      <ContributionDialog />
     </div>
   );
 };

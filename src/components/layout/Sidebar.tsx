@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { ProjectAnnouncementCard } from "./ProjectAnnouncementCard";
+import { ContributionDialog } from "../contribution/ContributionDialog";
 
 interface SidebarProps {
   className?: string;
@@ -149,6 +151,13 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
           {!isAdmin && (
             <div className="px-4 py-2">
               <FeedbackDialog collapsed={collapsed} />
+            </div>
+          )}
+          
+          {/* Contribution dialog */}
+          {!isAdmin && (
+            <div className="px-4 py-2">
+              <ContributionDialog collapsed={collapsed} />
             </div>
           )}
           

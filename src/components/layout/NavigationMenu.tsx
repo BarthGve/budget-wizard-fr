@@ -12,6 +12,7 @@ import {
   CreditCard,
   ShoppingBasket,
   List,
+  ClipboardPen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
@@ -35,6 +36,7 @@ interface NavigationMenuProps {
 const adminMenu: MenuItem[] = [
   { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "^/admin$" },
   { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "^/admin/feedbacks$" },
+  { title: "Contributions", icon: ClipboardPen, path: "/admin/contributions", matchPath: "^/admin/contributions$" },
   { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog$" }
 ];
 
