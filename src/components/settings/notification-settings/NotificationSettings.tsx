@@ -11,7 +11,12 @@ import { useUser } from "@/contexts/UserContext";
 
 export const NotificationSettings = () => {
   const { user } = useUser();
-  const { isAdmin, profile, updateNotificationSettings, isUpdating } = useNotificationSettings();
+  const { 
+    isChangelogNotificationEnabled, 
+    isUpdating, 
+    handleChangelogNotificationToggle,
+    profile
+  } = useNotificationSettings();
 
   if (!profile) {
     return <div>Chargement des paramètres de notification...</div>;
@@ -31,20 +36,15 @@ export const NotificationSettings = () => {
           <h3 className="text-lg font-medium">Notifications générales</h3>
           
           <NotificationToggle
-            id="notif_changelog"
             label="Mises à jour de l'application"
             description="Recevez des notifications lorsque l'application est mise à jour avec de nouvelles fonctionnalités"
-            checked={profile.notif_changelog}
+            checked={isChangelogNotificationEnabled}
             disabled={isUpdating}
-            onCheckedChange={(checked) => updateNotificationSettings('notif_changelog', checked)}
+            onCheckedChange={handleChangelogNotificationToggle}
           />
         </div>
 
-        {isAdmin && <AdminNotifications 
-          profile={profile} 
-          isUpdating={isUpdating} 
-          updateNotificationSettings={updateNotificationSettings} 
-        />}
+        {profile.is_admin && <AdminNotifications />}
         
         {/* Informations sur la gestion des notifications */}
         <div className="rounded-md bg-blue-50 p-4 mt-6">
