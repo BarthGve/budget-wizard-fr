@@ -87,7 +87,7 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
     setIsUpdatingEmail(true);
     
     try {
-      // Récupérer l'utilisateur actuel
+      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
       
@@ -100,22 +100,50 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       if (signInError) {
         throw new Error("Mot de passe incorrect");
       }
-      
-      // Stocker l'email pour la page de vérification
+
+      // Préparer la redirection vers la page de vérification d'email
       localStorage.setItem("verificationEmail", values.email);
       
-      // Utilisez uniquement la mise à jour native de Supabase Auth
-      // Cela envoie un seul email de vérification
+      // Créer le lien de vérification manuel
+      const { data: { host } } = await supabase.auth.getSession();
+      const siteUrl = window.location.origin;
+      
+      // Générer un jeton de sécurité unique
+      const timestamp = new Date().getTime();
+      const random = Math.random().toString(36).substring(2, 15);
+      const securityToken = `${timestamp}_${random}`;
+      
+      // Stocker le jeton dans le localStorage pour pouvoir vérifier plus tard
+      localStorage.setItem("emailChangeToken", securityToken);
+      
+      // Construire le lien de vérification
+      const verificationLink = `${siteUrl}/email-verification?type=emailChange&token=${securityToken}`;
+      
+      // Envoyer un email personnalisé via notre fonction Edge
+      const { error: emailError } = await supabase.functions.invoke('email-change-verification', {
+        body: {
+          oldEmail: user.email,
+          newEmail: values.email,
+          verificationLink
+        }
+      });
+      
+      if (emailError) {
+        console.error("Erreur lors de l'envoi de l'email:", emailError);
+        throw new Error("Erreur lors de l'envoi de l'email de vérification");
+      }
+      
+      // Mettre à jour l'email dans Supabase
       const { error } = await supabase.auth.updateUser({
         email: values.email,
       });
       
       if (error) throw error;
 
-      // Fermer la modal
+      // Réinitialiser et fermer la modal
       setShowEmailDialog(false);
       
-      // Rediriger vers la page de vérification
+      // Rediriger vers la page de vérification d'email
       navigate("/email-verification?type=emailChange");
       
       toast.success(
@@ -132,20 +160,31 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
 
   const handleResendVerification = async () => {
     try {
-      // Récupérer l'utilisateur courant
+      // Récupérer l'utilisateur courant avec await pour résoudre la promesse
       const { data: userData } = await supabase.auth.getUser();
       
       // Vérifier si un nouvel email est en attente
       if (userData.user?.new_email) {
+        const siteUrl = window.location.origin;
+        const securityToken = `${new Date().getTime()}_${Math.random().toString(36).substring(2, 15)}`;
+        localStorage.setItem("emailChangeToken", securityToken);
         localStorage.setItem("verificationEmail", userData.user.new_email);
         
-        // Utiliser uniquement l'API Supabase pour renvoyer l'email de vérification
-        const { error } = await supabase.auth.resend({
-          type: 'email_change',
-          email: userData.user.new_email,
+        const verificationLink = `${siteUrl}/email-verification?type=emailChange&token=${securityToken}`;
+        
+        // Envoyer un email personnalisé via notre fonction Edge
+        const { error: emailError } = await supabase.functions.invoke('email-change-verification', {
+          body: {
+            oldEmail: userData.user.email || "votre adresse actuelle",
+            newEmail: userData.user.new_email,
+            verificationLink
+          }
         });
         
-        if (error) throw error;
+        if (emailError) {
+          console.error("Erreur lors du renvoi de l'email:", emailError);
+          throw new Error("Erreur lors du renvoi de l'email de vérification");
+        }
         
         navigate("/email-verification?type=emailChange");
         toast.success("Un nouvel email de vérification a été envoyé");
@@ -153,7 +192,7 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
         toast.info("Aucun changement d'email en attente");
       }
     } catch (error) {
-      console.error("Erreur lors du renvoi de l'email de vérification:", error);
+      console.error("Erreur lors de la récupération des informations de l'utilisateur:", error);
       toast.error("Impossible de renvoyer l'email de vérification");
     }
   };

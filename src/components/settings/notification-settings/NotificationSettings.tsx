@@ -8,17 +8,10 @@ import { AdminNotifications } from "./AdminNotifications";
 import { ChangelogNotification } from "./ChangelogNotification";
 import { NotificationToggle } from "./NotificationToggle";
 import { useUser } from "@/contexts/UserContext";
-import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 export const NotificationSettings = () => {
   const { user } = useUser();
-  const { isAdmin } = usePagePermissions(); // On utilise usePagePermissions pour obtenir isAdmin
-  const { 
-    isChangelogNotificationEnabled, 
-    isUpdating, 
-    handleChangelogNotificationToggle,
-    profile
-  } = useNotificationSettings();
+  const { isAdmin, profile, updateNotificationSettings, isUpdating } = useNotificationSettings();
 
   if (!profile) {
     return <div>Chargement des paramètres de notification...</div>;
@@ -38,15 +31,20 @@ export const NotificationSettings = () => {
           <h3 className="text-lg font-medium">Notifications générales</h3>
           
           <NotificationToggle
+            id="notif_changelog"
             label="Mises à jour de l'application"
             description="Recevez des notifications lorsque l'application est mise à jour avec de nouvelles fonctionnalités"
-            checked={isChangelogNotificationEnabled}
+            checked={profile.notif_changelog}
             disabled={isUpdating}
-            onCheckedChange={handleChangelogNotificationToggle}
+            onCheckedChange={(checked) => updateNotificationSettings('notif_changelog', checked)}
           />
         </div>
 
-        {isAdmin && <AdminNotifications />}
+        {isAdmin && <AdminNotifications 
+          profile={profile} 
+          isUpdating={isUpdating} 
+          updateNotificationSettings={updateNotificationSettings} 
+        />}
         
         {/* Informations sur la gestion des notifications */}
         <div className="rounded-md bg-blue-50 p-4 mt-6">

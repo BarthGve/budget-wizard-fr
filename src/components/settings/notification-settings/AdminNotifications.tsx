@@ -1,58 +1,42 @@
 
 import { NotificationToggle } from "./NotificationToggle";
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
-export const AdminNotifications = () => {
-  const [isSignupNotificationEnabled, setIsSignupNotificationEnabled] = useState(false);
-  const [isFeedbackNotificationEnabled, setIsFeedbackNotificationEnabled] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+interface AdminNotificationsProps {
+  isSignupNotificationEnabled: boolean;
+  isFeedbackNotificationEnabled: boolean;
+  isUpdating: boolean;
+  onSignupToggle: (enabled: boolean) => void;
+  onFeedbackToggle: (enabled: boolean) => void;
+}
 
-  const handleToggle = async (type: string, checked: boolean) => {
-    setIsUpdating(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ [type]: checked })
-        .eq('id', (await supabase.auth.getUser()).data.user?.id);
-
-      if (error) throw error;
-
-      if (type === 'notif_signup') {
-        setIsSignupNotificationEnabled(checked);
-      } else if (type === 'notif_feedback') {
-        setIsFeedbackNotificationEnabled(checked);
-      }
-      
-      toast.success("Préférences de notification mises à jour");
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour des préférences:", error);
-      toast.error("Erreur lors de la mise à jour des préférences");
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
+export const AdminNotifications = ({
+  isSignupNotificationEnabled,
+  isFeedbackNotificationEnabled,
+  isUpdating,
+  onSignupToggle,
+  onFeedbackToggle
+}: AdminNotificationsProps) => {
   return (
-    <div className="space-y-4 mt-6 border-t pt-6">
-      <h3 className="text-lg font-medium">Notifications d'administration</h3>
-      
+    <>
+      {/* Notifications d'inscription */}
       <NotificationToggle
-        label="Nouvelles inscriptions"
-        description="Recevez des notifications lorsque de nouveaux utilisateurs s'inscrivent"
+        label="Notifications d'inscription"
+        description="Email de notification pour chaque nouvelle inscription"
+        tooltipContent="Recevez un email lorsqu'un nouvel utilisateur s'inscrit"
         checked={isSignupNotificationEnabled}
+        onCheckedChange={onSignupToggle}
         disabled={isUpdating}
-        onCheckedChange={(checked) => handleToggle('notif_signup', checked)}
       />
-      
+
+      {/* Notifications de feedback */}
       <NotificationToggle
-        label="Nouveaux feedbacks"
-        description="Recevez des notifications lorsque des utilisateurs soumettent des feedbacks"
+        label="Notifications de feedback"
+        description="Email de notification pour chaque nouveau feedback"
+        tooltipContent="Recevez un email lorsqu'un utilisateur soumet un nouveau feedback"
         checked={isFeedbackNotificationEnabled}
+        onCheckedChange={onFeedbackToggle}
         disabled={isUpdating}
-        onCheckedChange={(checked) => handleToggle('notif_feedback', checked)}
       />
-    </div>
+    </>
   );
 };

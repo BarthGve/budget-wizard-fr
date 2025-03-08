@@ -1,71 +1,98 @@
 
-import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Profile } from "@/types/profile";
 
-export const useNotificationSettings = () => {
-  const [isChangelogNotificationEnabled, setIsChangelogNotificationEnabled] = useState(false);
+export const useNotificationSettings = (profile?: Profile | null) => {
+  const { currentUser } = useCurrentUser();
+  const queryClient = useQueryClient();
+  
+  const [isSignupNotificationEnabled, setIsSignupNotificationEnabled] = useState<boolean>(
+    profile?.notif_inscriptions !== false
+  );
+  const [isChangelogNotificationEnabled, setIsChangelogNotificationEnabled] = useState<boolean>(
+    profile?.notif_changelog !== false
+  );
+  const [isFeedbackNotificationEnabled, setIsFeedbackNotificationEnabled] = useState<boolean>(
+    profile?.notif_feedbacks !== false
+  );
   const [isUpdating, setIsUpdating] = useState(false);
-  const [profile, setProfile] = useState<Profile | null>(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        if (error) throw error;
-
-        // Nous récupérons l'email depuis l'utilisateur authentifié
-        const profileWithEmail: Profile = {
-          ...data,
-          email: user.email // Ajout de l'email depuis l'utilisateur authentifié
-        };
-
-        setProfile(profileWithEmail);
-        setIsChangelogNotificationEnabled(data.notif_changelog ?? false);
-      } catch (error) {
-        console.error("Erreur lors de la récupération du profil:", error);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  const handleChangelogNotificationToggle = async (checked: boolean) => {
+  const updateNotificationSetting = async (
+    settingName: 'notif_inscriptions' | 'notif_changelog' | 'notif_feedbacks',
+    enabled: boolean, 
+    successMessage: { enabled: string, disabled: string },
+    setStateFn: (enabled: boolean) => void
+  ) => {
+    if (!currentUser) return;
+    
     setIsUpdating(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
-
       const { error } = await supabase
-        .from("profiles")
-        .update({ notif_changelog: checked })
-        .eq("id", user.id);
-
+        .from('profiles')
+        .update({ [settingName]: enabled })
+        .eq('id', currentUser.id);
+      
       if (error) throw error;
-
-      setIsChangelogNotificationEnabled(checked);
-      toast.success("Préférences de notification mises à jour");
+      
+      setStateFn(enabled);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      
+      toast.success(enabled ? successMessage.enabled : successMessage.disabled);
     } catch (error: any) {
-      console.error("Erreur lors de la mise à jour des préférences:", error);
-      toast.error(error.message || "Erreur lors de la mise à jour des préférences");
+      console.error("Erreur lors de la mise à jour des préférences de notification:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
     } finally {
       setIsUpdating(false);
     }
   };
 
+  const handleSignupNotificationToggle = async (enabled: boolean) => {
+    await updateNotificationSetting(
+      'notif_inscriptions',
+      enabled,
+      {
+        enabled: "Notifications d'inscription activées",
+        disabled: "Notifications d'inscription désactivées"
+      },
+      setIsSignupNotificationEnabled
+    );
+  };
+
+  const handleChangelogNotificationToggle = async (enabled: boolean) => {
+    await updateNotificationSetting(
+      'notif_changelog',
+      enabled,
+      {
+        enabled: "Notifications des nouveautés activées",
+        disabled: "Notifications des nouveautés désactivées"
+      },
+      setIsChangelogNotificationEnabled
+    );
+  };
+
+  const handleFeedbackNotificationToggle = async (enabled: boolean) => {
+    await updateNotificationSetting(
+      'notif_feedbacks',
+      enabled,
+      {
+        enabled: "Notifications de feedback activées",
+        disabled: "Notifications de feedback désactivées"
+      },
+      setIsFeedbackNotificationEnabled
+    );
+  };
+
   return {
+    isSignupNotificationEnabled,
     isChangelogNotificationEnabled,
+    isFeedbackNotificationEnabled,
     isUpdating,
+    handleSignupNotificationToggle,
     handleChangelogNotificationToggle,
-    profile
+    handleFeedbackNotificationToggle
   };
 };

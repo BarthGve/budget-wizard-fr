@@ -1,50 +1,50 @@
 
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
 import { InfoIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-export interface NotificationToggleProps {
+interface NotificationToggleProps {
   label: string;
   description: string;
+  tooltipContent: string;
   checked: boolean;
-  disabled: boolean;
   onCheckedChange: (checked: boolean) => void;
-  tooltipContent?: string; // Ajout de la prop optionnelle
+  disabled?: boolean;
 }
 
 export const NotificationToggle = ({
   label,
   description,
-  checked,
-  disabled,
-  onCheckedChange,
   tooltipContent,
+  checked,
+  onCheckedChange,
+  disabled = false
 }: NotificationToggleProps) => {
   return (
-    <div className="flex items-start space-x-4">
-      <div className="flex-1">
-        <div className="flex items-center space-x-2">
-          <Label className="text-base">{label}</Label>
-          {tooltipContent && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tooltipContent}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+    <div className="flex items-center justify-between">
+      <div className="space-y-0.5">
+        <div className="flex items-center gap-2">
+          <Label>{label}</Label>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <InfoIcon className="h-4 w-4 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tooltipContent}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-        <p className="text-sm text-gray-500">{description}</p>
+        <p className="text-sm text-muted-foreground">
+          {description}
+        </p>
       </div>
-      <Switch
+      <Switch 
         checked={checked}
-        disabled={disabled}
         onCheckedChange={onCheckedChange}
+        disabled={disabled}
       />
     </div>
   );

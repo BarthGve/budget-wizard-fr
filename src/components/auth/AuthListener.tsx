@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -71,8 +70,6 @@ export const AuthListener = () => {
   useEffect(() => {
     // Récupérer le hash de l'URL
     const hash = window.location.hash;
-    
-    console.log("Hash détecté dans l'URL:", hash);
     
     // Vérifier si le hash contient un token de type recovery ou email_change
     if (hash && (hash.includes("type=recovery") || hash.includes("type=email_change"))) {
