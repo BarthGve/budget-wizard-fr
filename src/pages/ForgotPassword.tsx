@@ -33,13 +33,13 @@ const ForgotPassword = () => {
 
     try {
       // Détection automatique de l'origine pour la construction de l'URL de redirection
-      const origin = window.location.origin; // Ex: https://budgetwizard.fr
+      const origin = window.location.origin;
       const redirectUrl = `${origin}/reset-password`;
       console.log("URL de redirection configurée:", redirectUrl);
 
-      // Appel à l'API Supabase pour réinitialiser le mot de passe
+      // Important: Utiliser options.emailRedirectTo au lieu de redirectTo
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl,
+        redirectTo: redirectUrl
       });
 
       console.log("Réponse de Supabase:", { data, error });

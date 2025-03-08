@@ -22,51 +22,60 @@ const ResetPassword = () => {
     const checkResetSession = async () => {
       setIsCheckingSession(true);
       console.log("Vérification de la session utilisateur pour la réinitialisation");
+      console.log("URL complète:", window.location.href);
+      console.log("Search params:", location.search);
+      console.log("Hash:", location.hash);
       
       try {
-        // Extraire le hash fragment de l'URL
-        const hash = location.hash; // ex: #access_token=...&type=recovery
-        console.log("Hash de l'URL:", hash ? "présent" : "absent");
-
-        // Essayer de récupérer directement la session actuelle
-        const { data, error } = await supabase.auth.getSession();
-        console.log("Session existante:", data.session ? "présente" : "absente");
+        // Récupérer la session actuelle
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        console.log("Session initiale:", sessionData);
         
-        if (error) {
-          console.error("Erreur lors de la vérification de la session:", error);
-          throw error;
+        if (sessionError) {
+          console.error("Erreur lors de la vérification de la session:", sessionError);
+          throw sessionError;
+        }
+
+        // Vérifier si nous avons déjà une session valide
+        if (sessionData.session) {
+          console.log("Session valide déjà présente, l'utilisateur peut réinitialiser son mot de passe");
+          setIsCheckingSession(false);
+          return;
         }
         
-        // Si nous n'avons pas de session valide, essayer de la récupérer à partir du hash
-        if (!data.session && hash) {
-          console.log("Tentative de récupération de la session à partir du hash");
+        // Pas de session - essayer d'extraire les informations du hash ou des paramètres d'URL
+        if (location.hash) {
+          console.log("Hash détecté, tentative de récupération de la session");
           
-          // Utiliser setSession pour établir la session
+          // Pour les liens avec un hash fragment (#access_token=...)
+          // Appel explicite pour établir la session à partir du hash
           await supabase.auth.getSession();
           
-          // Vérifier à nouveau si nous avons une session valide
+          // Vérifier si nous avons maintenant une session valide
           const { data: refreshedSession, error: refreshError } = await supabase.auth.getSession();
-          console.log("Session après récupération:", refreshedSession.session ? "présente" : "absente");
+          console.log("Session après récupération du hash:", refreshedSession);
           
-          if (refreshError || !refreshedSession.session) {
+          if (refreshError) {
             console.error("Erreur lors de la récupération avec le hash:", refreshError);
             toast.error("Le lien de réinitialisation est invalide ou a expiré");
             navigate("/login");
             return;
           }
-        }
-        
-        // Vérifier une dernière fois si nous avons une session valide
-        const { data: finalCheck } = await supabase.auth.getSession();
-        
-        if (!finalCheck.session) {
-          console.log("Pas de session valide trouvée");
-          toast.error("Session invalide ou expirée");
+          
+          if (!refreshedSession.session) {
+            console.log("Pas de session valide trouvée après récupération du hash");
+            toast.error("Session invalide ou expirée");
+            navigate("/login");
+            return;
+          }
+          
+          console.log("Session valide récupérée via hash, l'utilisateur peut réinitialiser son mot de passe");
+        } else {
+          console.log("Aucun hash ni token valide trouvé dans l'URL");
+          toast.error("Lien de réinitialisation invalide");
           navigate("/login");
           return;
         }
-        
-        console.log("Session valide trouvée, l'utilisateur peut réinitialiser son mot de passe");
       } catch (error: any) {
         console.error("Erreur lors de la vérification de la session:", error);
         toast.error("Une erreur s'est produite lors de la vérification de votre session");
