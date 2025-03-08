@@ -16,6 +16,7 @@ const ResetPassword = () => {
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [sessionActive, setSessionActive] = useState(false);
 
   useEffect(() => {
     // Vérifier que l'utilisateur arrive bien avec un token de réinitialisation
@@ -27,9 +28,18 @@ const ResetPassword = () => {
       console.log("Hash:", location.hash);
       
       try {
+        // On vérifie si un hash de type Supabase est présent dans l'URL
+        const hasSupabaseHash = location.hash && 
+          (location.hash.includes('#access_token=') || 
+           location.hash.includes('#error=') || 
+           location.hash.includes('#type=recovery'));
+        
+        console.log("Hash Supabase détecté:", hasSupabaseHash);
+        
         // Récupérer la session actuelle
+        // Cela déclenchera automatiquement le traitement du hash par Supabase
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-        console.log("Session initiale:", sessionData);
+        console.log("Session initiale:", sessionData?.session ? "Session présente" : "Pas de session active");
         
         if (sessionError) {
           console.error("Erreur lors de la vérification de la session:", sessionError);
@@ -39,21 +49,22 @@ const ResetPassword = () => {
         // Vérifier si nous avons déjà une session valide
         if (sessionData.session) {
           console.log("Session valide déjà présente, l'utilisateur peut réinitialiser son mot de passe");
+          setSessionActive(true);
           setIsCheckingSession(false);
           return;
         }
         
-        // Pas de session - essayer d'extraire les informations du hash ou des paramètres d'URL
-        if (location.hash) {
-          console.log("Hash détecté, tentative de récupération de la session");
+        // Si pas de session mais hash présent, essayer d'établir une session
+        if (hasSupabaseHash) {
+          console.log("Hash détecté, tentative d'établissement de session via setSession");
           
-          // Pour les liens avec un hash fragment (#access_token=...)
-          // Appel explicite pour établir la session à partir du hash
+          // On force Supabase à traiter le hash et établir une session si valide
+          // (bien que getSession devrait déjà avoir fait cela)
           await supabase.auth.getSession();
           
           // Vérifier si nous avons maintenant une session valide
           const { data: refreshedSession, error: refreshError } = await supabase.auth.getSession();
-          console.log("Session après récupération du hash:", refreshedSession);
+          console.log("Session après tentative d'établissement:", refreshedSession?.session ? "Session établie" : "Échec d'établissement de session");
           
           if (refreshError) {
             console.error("Erreur lors de la récupération avec le hash:", refreshError);
@@ -62,16 +73,19 @@ const ResetPassword = () => {
             return;
           }
           
-          if (!refreshedSession.session) {
-            console.log("Pas de session valide trouvée après récupération du hash");
-            toast.error("Session invalide ou expirée");
-            navigate("/login");
+          if (refreshedSession.session) {
+            console.log("Session valide établie via hash, l'utilisateur peut réinitialiser son mot de passe");
+            setSessionActive(true);
+            setIsCheckingSession(false);
             return;
           }
           
-          console.log("Session valide récupérée via hash, l'utilisateur peut réinitialiser son mot de passe");
+          console.log("Pas de session valide établie malgré la présence d'un hash");
+          toast.error("Session invalide ou expirée");
+          navigate("/login");
+          return;
         } else {
-          console.log("Aucun hash ni token valide trouvé dans l'URL");
+          console.log("Aucun hash de réinitialisation trouvé dans l'URL");
           toast.error("Lien de réinitialisation invalide");
           navigate("/login");
           return;
@@ -108,12 +122,27 @@ const ResetPassword = () => {
     }
 
     try {
+      // Vérifier d'abord que nous avons toujours une session valide
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      if (!sessionData.session) {
+        console.error("Session perdue avant la mise à jour du mot de passe");
+        toast.error("Votre session a expiré. Veuillez recommencer le processus de réinitialisation.");
+        navigate("/forgot-password");
+        return;
+      }
+      
+      console.log("Session valide confirmée avant mise à jour du mot de passe");
+      
       // Appel à l'API Supabase pour mettre à jour le mot de passe
       const { data, error } = await supabase.auth.updateUser({
         password: password
       });
 
-      console.log("Réponse de mise à jour du mot de passe:", { data, error });
+      console.log("Réponse de mise à jour du mot de passe:", { 
+        succès: !!data && !error, 
+        erreur: error ? true : false 
+      });
 
       if (error) {
         console.error("Erreur détaillée:", error);
@@ -143,6 +172,23 @@ const ResetPassword = () => {
       <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md text-center p-8">
           <p>Vérification de votre session...</p>
+        </Card>
+      </div>
+    );
+  }
+
+  // Afficher un message d'erreur si la session n'est pas valide
+  if (!sessionActive) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md text-center p-8">
+          <CardTitle className="mb-4">Session invalide</CardTitle>
+          <CardDescription className="mb-4">
+            Votre lien de réinitialisation est invalide ou a expiré.
+          </CardDescription>
+          <Button onClick={() => navigate("/forgot-password")}>
+            Demander un nouveau lien
+          </Button>
         </Card>
       </div>
     );
