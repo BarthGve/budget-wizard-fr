@@ -47,7 +47,7 @@ const EmailVerification = () => {
     // Configuration du compteur
     const timer = setInterval(() => {
       const now = Date.now();
-      const timeLeft = Math.max(0, Math.floor((endTime - now) /, 1000));
+      const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
       
       setRemainingTime(timeLeft);
       
