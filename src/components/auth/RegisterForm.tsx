@@ -86,10 +86,10 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Nom</Label>
+          <Label htmlFor="name">Prénom</Label>
           <Input 
             id="name" 
-            placeholder="Votre nom"
+            placeholder="Votre prénom"
             value={formData.name}
             onChange={handleChange}
             disabled={isLoading}

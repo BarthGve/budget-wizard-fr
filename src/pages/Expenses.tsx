@@ -6,13 +6,14 @@ import { YearlyTotalCard } from "@/components/expenses/YearlyTotalCard";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
-import { useCallback, useState, memo } from "react";
+import { useCallback, useState, memo, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { startOfYear, endOfYear, subYears } from "date-fns";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { motion } from "framer-motion";
+import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
 
 // Utilisation de memo pour éviter les re-renders inutiles
 const Expenses = memo(function Expenses() {
@@ -22,6 +23,9 @@ const Expenses = memo(function Expenses() {
   } = useRetailers();
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
+  
+  // Activer les écouteurs en temps réel
+  useRealtimeListeners();
   
   // Configuration optimisée de la requête
   const {
@@ -48,6 +52,40 @@ const Expenses = memo(function Expenses() {
     refetchOnMount: true,
     refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
   });
+
+  // Configuration d'un écouteur spécifique pour les changements dans la table des dépenses
+  useEffect(() => {
+    console.log("Mise en place de l'écouteur pour les dépenses sur la page expenses");
+    
+    const channel = supabase
+      .channel(`expenses-realtime-${Date.now()}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'expenses'
+        },
+        (payload) => {
+          console.log(`Changement détecté dans les dépenses:`, payload);
+          
+          // Forcer le rechargement des données des dépenses
+          queryClient.invalidateQueries({ 
+            queryKey: ["expenses"],
+            exact: false,
+            refetchType: 'all' // Forcer le rechargement
+          });
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Statut du canal expenses-realtime:`, status);
+      });
+    
+    return () => {
+      console.log("Nettoyage de l'écouteur expenses-realtime");
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Optimiser avec useCallback pour éviter les recréations de fonctions
   const handleExpenseUpdated = useCallback(() => {
@@ -145,6 +183,7 @@ const Expenses = memo(function Expenses() {
 
           <motion.div variants={itemVariants} className="mt-8">
             <YearlyTotalCard 
+              key={`total-card-${currentYearTotal}`}
               currentYearTotal={currentYearTotal} 
               previousYearTotal={lastYearTotal} 
               expenses={expenses || []} 
@@ -158,7 +197,7 @@ const Expenses = memo(function Expenses() {
           >
             {expensesByRetailer?.map(({retailer, expenses: retailerExpenses}, index) => 
               <motion.div 
-                key={retailer.id}
+                key={`${retailer.id}-${retailerExpenses.reduce((sum, exp) => sum + exp.amount, 0)}`}
                 variants={itemVariants}
                 custom={index}
                 whileHover={{

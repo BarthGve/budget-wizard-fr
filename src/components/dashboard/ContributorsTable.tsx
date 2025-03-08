@@ -24,7 +24,8 @@ export const ContributorsTable = ({
   const [dialogOpen, setDialogOpen] = useState(false);
   const { data: profile } = useProfileAvatar();
 
-  if (contributors.length <= 1) return null;
+  // Afficher le tableau même s'il n'y a qu'un seul contributeur
+  if (!contributors || contributors.length === 0) return null;
 
   const isDarkTheme = theme === "dark";
 

@@ -34,6 +34,7 @@ export const addContributorService = async (
         name: newContributor.name,
         email: newContributor.email ? newContributor.email.trim() : null, // On s'assure que l'email est null si vide
         total_contribution: contribution,
+        percentage_contribution: 0, // Initialiser à 0, sera recalculé après
         profile_id: userId,
       },
     ])
@@ -43,8 +44,13 @@ export const addContributorService = async (
   if (insertError) throw insertError;
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
-  // Recalculer les pourcentages manuellement
+  // Recalculer les pourcentages via la fonction côté serveur
   await recalculatePercentages(userId);
 
+  // Attendre 2 secondes avant de retourner les données pour laisser le temps 
+  // à Supabase de propager les changements et pour que l'animation ait le temps de se dérouler
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
+  // Récupérer la liste à jour des contributeurs
   return await fetchContributorsService();
 };

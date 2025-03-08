@@ -1,15 +1,16 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Send, Star } from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Send } from "lucide-react";
 import Confetti from "react-confetti";
 import { useWindowSize } from "@/hooks/use-window-size";
+import { AnimatePresence } from "framer-motion";
+import { FeedbackTrigger } from "./FeedbackTrigger";
+import { FeedbackRating, ratingTexts, ratingEmojis } from "./components/FeedbackRating";
+import { FeedbackForm } from "./components/FeedbackForm";
+import { FeedbackAvatar } from "./components/FeedbackAvatar";
+import { useFeedbackSubmit } from "./hooks/useFeedbackSubmit";
 
 interface FeedbackDialogProps {
   collapsed?: boolean;
@@ -20,9 +21,11 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [rating, setRating] = useState<number | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const { width, height } = useWindowSize();
+  const [step, setStep] = useState(1);
+  const [hoverRating, setHoverRating] = useState(0);
+  const { isSubmitting, submitFeedback } = useFeedbackSubmit();
 
   useEffect(() => {
     if (showConfetti) {
@@ -34,40 +37,29 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     }
   }, [showConfetti]);
 
+  const handleRatingChange = (value: number) => {
+    setRating(value);
+    // Passage automatique à l'étape 2 après sélection d'une note
+    setTimeout(() => {
+      setStep(2);
+    }, 500);
+  };
+
   const handleSubmit = async () => {
-    if (!title.trim() || !content.trim() || !rating) {
-      toast.error("Veuillez remplir tous les champs");
+    // À l'étape 1, pas de soumission nécessaire car le passage est automatique
+    if (step === 1) {
       return;
     }
-
-    setIsSubmitting(true);
-    try {
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
-
-      const { error } = await supabase.from("feedbacks").insert({
-        title: title.trim(),
-        content: content.trim(),
-        rating,
-        profile_id: user.id,
-        status: "pending"
-      });
-
-      if (error) throw error;
-
-      toast.success("Merci pour votre feedback !");
-      setShowConfetti(true); // Activer les confettis
+    
+    const success = await submitFeedback(title, content, rating);
+    
+    if (success) {
+      setShowConfetti(true);
       setIsOpen(false);
       setTitle("");
       setContent("");
       setRating(null);
-    } catch (error) {
-      console.error("Error submitting feedback:", error);
-      toast.error("Une erreur est survenue lors de l'envoi du feedback");
-    } finally {
-      setIsSubmitting(false);
+      setStep(1);
     }
   };
 
@@ -78,82 +70,84 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
           width={width}
           height={height}
           recycle={false}
-          numberOfPieces={200}
+          numberOfPieces={500}
           gravity={0.2}
         />
       )}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button 
-            variant="ghost" 
-            className={cn(
-              "w-full",
-              collapsed ? "w-10 px-0 justify-center" : "justify-start"
-            )}
-          >
-            <Send className="h-4 w-4" />
-            {!collapsed && <span className="ml-2 font-normal">Laissez-nous un avis</span>}
-          </Button>
+          <FeedbackTrigger collapsed={collapsed} onClick={() => setIsOpen(true)} />
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold">⭐️ Votre avis nous intéresse ⭐️</DialogTitle>
-            <DialogDescription className="text-center text-base">
-              Aidez-nous à améliorer notre produit en partageant vos impressions
+        
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-xl border border-primary/20 shadow-xl dark:shadow-primary/5 backdrop-blur-sm">
+          {/* Nous retirons la croix ici car Dialog inclut déjà une croix par défaut */}
+          
+          <div className="bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 dark:from-primary/10 dark:via-primary/5 dark:to-primary/10 px-6 pt-8 pb-6">
+            <div className="flex items-center justify-center mb-3">
+              <FeedbackAvatar />
+            </div>
+            <DialogTitle className="text-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+              Votre avis compte
+            </DialogTitle>
+            <DialogDescription className="text-center text-base mt-2">
+              {step === 1 ? 
+                "Comment évaluez-vous votre expérience ?" : 
+                "Partagez vos impressions pour nous aider à améliorer"}
             </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Titre</Label>
-              <Input
-                id="title"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                placeholder="Résumez votre feedback"
-                className="w-full"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="content">Feedback</Label>
-              <Textarea
-                id="content"
-                value={content}
-                onChange={e => setContent(e.target.value)}
-                placeholder="Partagez vos impressions"
-                className="min-h-[100px]"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Note</Label>
-              <div className="flex space-x-2">
-                {[1, 2, 3, 4, 5].map(value => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setRating(value)}
-                    className="p-1 hover:scale-110 transition-transform"
-                  >
-                    <Star
-                      className={cn(
-                        "h-6 w-6",
-                        value <= (rating || 0)
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300"
-                      )}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-full bg-primary hover:bg-primary-hover"
-            >
-              <Send className="mr-2 h-4 w-4" />
-              {isSubmitting ? "Envoi..." : "Envoyer"}
-            </Button>
           </div>
+          
+          <AnimatePresence mode="wait">
+            {step === 1 ? (
+              <FeedbackRating 
+                rating={rating} 
+                setRating={handleRatingChange}
+                hoverRating={hoverRating}
+                setHoverRating={setHoverRating}
+              />
+            ) : (
+              <FeedbackForm 
+                rating={rating}
+                title={title}
+                setTitle={setTitle}
+                content={content}
+                setContent={setContent}
+              />
+            )}
+          </AnimatePresence>
+          
+          <DialogFooter className="px-6 py-4 bg-gray-50 dark:bg-zinc-900/50">
+            {step === 2 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setStep(1)}
+                className="mr-auto"
+                disabled={isSubmitting}
+              >
+                Retour
+              </Button>
+            )}
+            {/* Le bouton Envoyer ne doit s'afficher que dans la deuxième étape */}
+            {step === 2 && (
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="relative overflow-hidden group bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                    Envoi...
+                  </>
+                ) : (
+                  <>
+                    Envoyer
+                    <Send className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
+                <span className="absolute inset-0 -z-10 bg-gradient-to-r from-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              </Button>
+            )}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

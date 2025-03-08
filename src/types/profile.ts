@@ -11,4 +11,7 @@ export interface Profile {
   email: string | null;
   profile_type: ProfileType;
   encryption_enabled: boolean | null;
+  notif_inscriptions?: boolean;
+  notif_changelog?: boolean;
+  notif_feedbacks?: boolean;
 }

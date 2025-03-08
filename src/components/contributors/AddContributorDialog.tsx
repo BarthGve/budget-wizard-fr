@@ -13,7 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Loader2 } from "lucide-react";
+import { useQueryClient } from '@tanstack/react-query';
+import { Progress } from "@/components/ui/progress";
 
 interface AddContributorDialogProps {
   onAdd: (contributor: NewContributor) => void;
@@ -22,11 +24,13 @@ interface AddContributorDialogProps {
 export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [newContributor, setNewContributor] = useState<NewContributor>({
     name: "",
     email: "",
     total_contribution: "",
   });
+  const queryClient = useQueryClient();
 
   const handleAdd = async () => {
     if (!newContributor.name || !newContributor.total_contribution) {
@@ -34,12 +38,45 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
     }
     
     setIsSubmitting(true);
+    setProgress(0);
+    
+    // Animation de progression
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        // Augmenter progressivement jusqu'à 95% maximum
+        // pour donner l'impression que ça charge sans atteindre 100%
+        const nextProgress = prev + Math.random() * 10;
+        return nextProgress > 95 ? 95 : nextProgress;
+      });
+    }, 200);
     
     try {
       await onAdd(newContributor);
-      setNewContributor({ name: "", email: "", total_contribution: "" });
-      setIsOpen(false);
-    } finally {
+      // Une fois terminé, passer rapidement à 100%
+      clearInterval(progressInterval);
+      setProgress(100);
+      
+      // Reset du formulaire et fermeture après une courte pause
+      setTimeout(() => {
+        setNewContributor({ name: "", email: "", total_contribution: "" });
+        setIsOpen(false);
+        setProgress(0);
+        
+        // Forcer une invalidation immédiate de toutes les requêtes liées au dashboard
+        queryClient.invalidateQueries({ 
+          queryKey: ["dashboard-data"],
+          exact: false,
+          refetchType: 'all'
+        });
+        queryClient.invalidateQueries({ 
+          queryKey: ["contributors"],
+          exact: false,
+          refetchType: 'all'
+        });
+      }, 300);
+    } catch (error) {
+      clearInterval(progressInterval);
+      setProgress(0);
       setIsSubmitting(false);
     }
   };
@@ -50,7 +87,11 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      // Ne pas permettre de fermer pendant la soumission
+      if (isSubmitting && !open) return;
+      setIsOpen(open);
+    }}>
       <DialogTrigger asChild>
         <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md ">
           <UserPlus className="mr-2 h-4 w-4" />
@@ -65,7 +106,26 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleFormSubmit} className="space-y-4">
-          <div className="grid gap-4 py-4">
+          {isSubmitting && (
+            <div className="space-y-3 my-4">
+              <div className="flex items-center justify-center">
+                <div className="relative h-16 w-16 flex items-center justify-center">
+                  {/* Cercle animé externe */}
+                  <div className="absolute inset-0 rounded-full border-4 border-t-indigo-500 border-r-purple-500 border-b-pink-400 border-l-indigo-300 animate-spin"></div>
+                  {/* Cercle interne */}
+                  <div className="absolute inset-[6px] bg-background rounded-full flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 text-indigo-500 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+              <div className="text-center text-sm font-medium bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 bg-clip-text text-transparent">
+                Création du contributeur en cours...
+              </div>
+              <Progress value={progress} className="h-2 w-full" />
+            </div>
+          )}
+          
+          <div className={`grid gap-4 py-4 ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}>
             <div className="grid gap-2">
               <Label htmlFor="name">Nom</Label>
               <Input
@@ -78,6 +138,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                   })
                 }
                 required
+                disabled={isSubmitting}
               />
             </div>
             <div className="grid gap-2">
@@ -92,6 +153,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                     email: e.target.value,
                   })
                 }
+                disabled={isSubmitting}
               />
             </div>
             <div className="grid gap-2">
@@ -107,6 +169,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                   })
                 }
                 required
+                disabled={isSubmitting}
               />
             </div>
           </div>
@@ -127,7 +190,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
               className="bg-primary text-primary-foreground hover:bg-primary-hover"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Ajout en cours..." : "Ajouter"}
+              {isSubmitting ? "En cours..." : "Ajouter"}
             </Button>
           </DialogFooter>
         </form>

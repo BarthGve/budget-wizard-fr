@@ -68,6 +68,9 @@ export const ContributorCard = ({
     queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 
+  // S'assurer que percentage_contribution a une valeur par défaut
+  const percentageContribution = contributor.percentage_contribution ?? 0;
+
   return (
     <div className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card">
       <div className="flex items-center space-x-4">
@@ -89,7 +92,7 @@ export const ContributorCard = ({
         <div className="text-right">
           <p className="font-medium">{contributor.total_contribution} €</p>
           <p className="text-sm text-gray-500">
-            {contributor.percentage_contribution.toFixed(1)}% du budget
+            {percentageContribution.toFixed(1)}% du budget
           </p>
         </div>
         

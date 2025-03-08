@@ -12,24 +12,54 @@ import { toast } from "sonner";
 const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const validateEmail = (email: string) => {
+    // Expression régulière simple pour valider le format de l'email
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Validation de l'email avant l'envoi
+    if (!validateEmail(email)) {
+      toast.error("Veuillez entrer une adresse email valide");
+      return;
+    }
+    
     setIsLoading(true);
+    console.log("Tentative d'envoi d'email de réinitialisation à:", email);
 
     try {
+      // Récupérer l'URL actuelle pour former le lien de redirection
+      const currentUrl = window.location.origin;
+      const redirectUrl = `${currentUrl}/reset-password`;
+      console.log("URL de redirection configurée:", redirectUrl);
+
+      // Appel à l'API Supabase pour l'envoi de l'email de réinitialisation
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: redirectUrl
       });
 
-      if (error) throw error;
+      console.log("Réponse de Supabase:", { error });
 
+      if (error) {
+        console.error("Erreur détaillée:", error);
+        throw error;
+      }
+
+      // Message de succès même si l'email n'existe pas (sécurité)
       toast.success("Un email de réinitialisation vous a été envoyé");
+      setSent(true);
       setEmail("");
     } catch (error: any) {
-      console.error("Password reset error:", error);
+      console.error("Erreur lors de l'envoi de l'email de réinitialisation:", error);
+      
+      // Message générique pour éviter la divulgation d'informations
       toast.error(
-        error.message || "Erreur lors de l'envoi de l'email de réinitialisation"
+        "Une erreur s'est produite. Veuillez vérifier votre email et réessayer."
       );
     } finally {
       setIsLoading(false);
@@ -53,23 +83,37 @@ const ForgotPassword = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="vous@exemple.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
-              />
+          {sent ? (
+            <div className="text-center space-y-4">
+              <p className="text-green-600">Un email de réinitialisation a été envoyé à votre adresse email.</p>
+              <p>Veuillez vérifier votre boîte de réception (et également vos dossiers spam/indésirables).</p>
+              <Button
+                onClick={() => setSent(false)}
+                variant="outline"
+                className="mt-2"
+              >
+                Renvoyer l'email
+              </Button>
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Envoi en cours..." : "Envoyer le lien"}
-            </Button>
-          </form>
+          ) : (
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="vous@exemple.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Envoi en cours..." : "Envoyer le lien"}
+              </Button>
+            </form>
+          )}
         </CardContent>
       </Card>
     </div>

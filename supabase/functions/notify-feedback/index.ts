@@ -1,160 +1,222 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.48.1';
 
+// Initialisation des clients
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Configuration des en-têtes CORS
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": 
+    "authorization, x-client-info, apikey, content-type",
 };
 
-interface WebhookPayload {
-  type: 'INSERT' | 'UPDATE' | 'DELETE';
-  table: string;
-  record: {
-    id: string;
-    title: string;
-    content: string;
-    rating: number;
-    profile_id: string;
-    created_at: string;
-  };
-  schema: string;
-  old_record: null | Record<string, any>;
+// Interface pour les données du feedback
+interface FeedbackNotificationRequest {
+  feedbackId: string;
 }
 
-serve(async (req: Request) => {
-  console.log("Edge function notify-feedback called");
+// Fonction pour attendre un court délai (en ms)
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    console.log("Handling CORS preflight request");
+const handler = async (req: Request): Promise<Response> => {
+  console.log("Fonction notify-feedback appelée");
+  
+  // Gérer les requêtes CORS preflight
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const payload: WebhookPayload = await req.json();
-    console.log("Received webhook payload:", payload);
+    // Récupérer l'ID du feedback depuis la requête
+    const { feedbackId }: FeedbackNotificationRequest = await req.json();
+    console.log(`Notification pour le feedback ID: ${feedbackId}`);
 
-    if (payload.type !== 'INSERT' || payload.table !== 'feedbacks') {
-      console.log("Not a new feedback or wrong table:", payload.type, payload.table);
-      return new Response(JSON.stringify({ message: 'Not a new feedback' }), { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 200 
-      });
-    }
+    // Attendre un court délai pour s'assurer que le feedback est persisté
+    await delay(500);
 
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      console.error("Missing Supabase environment variables");
-      throw new Error('Missing Supabase environment variables');
-    }
-
-    console.log("Creating Supabase client with URL:", SUPABASE_URL);
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    // Get the profile information
-    console.log("Fetching profile for ID:", payload.record.profile_id);
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('full_name')
-      .eq('id', payload.record.profile_id)
+    // Récupérer les détails du feedback avec une gestion d'erreur améliorée
+    const { data: feedback, error: feedbackError } = await supabase
+      .from("feedbacks")
+      .select(`
+        *,
+        profile:profiles(full_name)
+      `)
+      .eq("id", feedbackId)
       .single();
 
-    if (profileError) {
-      console.error("Error fetching profile:", profileError);
+    if (feedbackError) {
+      console.error("Erreur lors de la récupération du feedback:", feedbackError);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: feedbackError.message, 
+          details: `Impossible de trouver le feedback avec l'ID: ${feedbackId}` 
+        }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
-    const userName = profile?.full_name || 'Utilisateur';
-    console.log("User name resolved to:", userName);
-
-    // Fetch admin roles
-    console.log("Fetching admin roles...");
-    const { data: adminRoles, error: adminRolesError } = await supabaseClient
-      .from('user_roles')
-      .select('user_id')
-      .eq('role', 'admin');
-
-    if (adminRolesError) {
-      console.error("Error fetching admin roles:", adminRolesError);
-      throw adminRolesError;
+    if (!feedback) {
+      console.error(`Feedback non trouvé avec l'ID: ${feedbackId}`);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Feedback non trouvé", 
+          feedbackId 
+        }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
-    if (!adminRoles?.length) {
-      console.log("No admin roles found");
-      throw new Error('No admins found');
-    }
+    console.log("Feedback récupéré avec succès:", feedback.id);
 
-    const adminIds = adminRoles.map(role => role.user_id);
-    console.log("Admin IDs:", adminIds);
-
-    // Get admin users' emails
-    console.log("Fetching admin users...");
-    const { data: adminUsers, error: adminUsersError } = await supabaseClient.auth.admin.listUsers();
+    // Récupérer les IDs des administrateurs
+    console.log("Récupération des administrateurs...");
+    const { data: adminIds, error: rpcError } = await supabase.rpc('list_admins');
     
-    if (adminUsersError) {
-      console.error("Error fetching admin users:", adminUsersError);
-      throw adminUsersError;
+    if (rpcError) {
+      console.error("Erreur lors de la récupération des administrateurs:", rpcError);
+      return new Response(
+        JSON.stringify({ success: false, error: rpcError.message }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
-    if (!adminUsers?.users?.length) {
-      console.log("No admin users found");
-      throw new Error('No admin users found');
+    if (!adminIds || adminIds.length === 0) {
+      console.log("Aucun administrateur trouvé");
+      return new Response(JSON.stringify({ success: false, reason: "no_admins" }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
     }
-
-    const adminEmails = adminUsers.users
-      .filter(user => adminIds.includes(user.id) && typeof user.email === 'string')
-      .map(user => user.email as string);
-
-    console.log("Admin emails:", adminEmails);
-
-    // Send emails to administrators
-    console.log("Preparing to send emails...");
-    const emailPromises = adminEmails.map(adminEmail =>
-      resend.emails.send({
-        from: 'Budget Wizard <notifications@vision2tech.fr>',
-        to: adminEmail,
-        subject: `Nouveau feedback : ${payload.record.title}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #333;">Nouveau feedback reçu</h1>
-            <p style="color: #666;">Un nouveau feedback a été soumis par ${userName}.</p>
-            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <h2 style="color: #444; margin-top: 0;">${payload.record.title}</h2>
-              <p style="color: #666;">${payload.record.content}</p>
-              <p style="color: #888;">Note : ${payload.record.rating}/5</p>
-            </div>
-            <p style="color: #666;">Date de soumission : ${new Date(payload.record.created_at).toLocaleString('fr-FR')}</p>
-          </div>
-        `
-      })
-    );
-
-    console.log("Sending emails...");
-    const emailResults = await Promise.allSettled(emailPromises);
     
-    // Log email sending results
-    emailResults.forEach((result, index) => {
-      if (result.status === 'fulfilled') {
-        console.log(`Email sent successfully to ${adminEmails[index]}`);
-      } else {
-        console.error(`Failed to send email to ${adminEmails[index]}:`, result.reason);
+    // Extraire les IDs des administrateurs
+    const adminIdList = adminIds.map(item => item.id);
+    console.log("IDs des administrateurs:", adminIdList);
+
+    // CORRECTION: Nous ne pouvons pas accéder directement à auth.users avec .from()
+    // Nous devons utiliser une fonction RPC spéciale ou auth.admin
+    // Récupérer les profils des admins, qui contiennent les préférences de notification
+    const { data: adminProfiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, notif_feedbacks')
+      .in('id', adminIdList);
+
+    if (profilesError) {
+      console.error("Erreur lors de la récupération des profils admin:", profilesError);
+      return new Response(
+        JSON.stringify({ success: false, error: profilesError.message }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Pour les emails, nous devons faire une requête à la table auth.users
+    // en utilisant l'API d'administration de Supabase
+    // En utilisant le service_role_key, nous pouvons accéder à la table auth.users
+    const adminEmails = [];
+    for (const adminId of adminIdList) {
+      try {
+        // Utilisation de l'API d'administration pour accéder aux utilisateurs
+        const { data: user, error: userError } = await supabase.auth.admin.getUserById(adminId);
+        
+        if (userError) {
+          console.error(`Erreur lors de la récupération de l'utilisateur ${adminId}:`, userError);
+          continue;
+        }
+        
+        if (user && user.user) {
+          // Vérifier les préférences de notification
+          const profile = adminProfiles.find(p => p.id === adminId);
+          if (profile && profile.notif_feedbacks !== false) {
+            adminEmails.push(user.user.email);
+          }
+        }
+      } catch (error) {
+        console.error(`Exception lors de la récupération de l'utilisateur ${adminId}:`, error);
       }
+    }
+
+    console.log(`Emails des administrateurs à notifier (${adminEmails.length}):`, adminEmails);
+    
+    if (adminEmails.length === 0) {
+      console.log("Aucun administrateur avec notifications activées");
+      return new Response(JSON.stringify({ success: false, reason: "no_admins_with_notifications" }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    }
+    
+    // Formater la date de création
+    const createdAt = new Date(feedback.created_at).toLocaleString('fr-FR', {
+      dateStyle: 'full',
+      timeStyle: 'short'
     });
 
-    return new Response(JSON.stringify({ success: true }), { 
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    // Envoyer l'email aux administrateurs
+    const emailResponse = await resend.emails.send({
+      from: "BudgetWizard <notifications@budgetwizard.fr>",
+      to: adminEmails,
+      subject: `📝 Nouveau feedback de ${feedback.profile.full_name || 'un utilisateur'}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+          <h2 style="color: #3f51b5;">Nouveau feedback reçu</h2>
+          <p>Bonjour,</p>
+          <p>Un nouveau feedback vient d'être soumis sur BudgetWizard.</p>
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p><strong>Utilisateur :</strong> ${feedback.profile.full_name || 'Anonyme'}</p>
+            <p><strong>Titre :</strong> ${feedback.title}</p>
+            <p><strong>Note :</strong> ${feedback.rating}/5</p>
+            <p><strong>Message :</strong> ${feedback.content}</p>
+            <p><strong>Date :</strong> ${createdAt}</p>
+          </div>
+          <p><a href="https://app.budgetwizard.fr/admin/feedbacks" style="background-color: #3f51b5; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block;">✨ Consulter les feedbacks</a></p>
+        </div>
+      `,
     });
 
-  } catch (error) {
-    console.error('Error processing webhook:', error);
-    return new Response(JSON.stringify({ error: error.message }), { 
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-      status: 500 
+    console.log("Email envoyé avec succès:", emailResponse);
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        ...corsHeaders,
+      },
     });
+  } catch (error: any) {
+    console.error("Erreur lors de l'envoi de l'email de notification:", error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
+    );
   }
-});
+};
+
+serve(handler);

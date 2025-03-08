@@ -15,10 +15,38 @@ export const GlobalBalanceCard = ({
 }: GlobalBalanceCardProps) => {
   const [displayedBalance, setDisplayedBalance] = useState(balance);
   
-  // Update the displayed balance when the actual balance changes
+  // Mettre à jour le solde affiché avec animation lors des changements
   useEffect(() => {
-    setDisplayedBalance(balance);
-  }, [balance]);
+    if (balance !== displayedBalance) {
+      console.log("Balance changed:", balance);
+      
+      // Animation simple d'interpolation numérique par dizaine
+      const startValue = displayedBalance;
+      const endValue = balance;
+      const duration = 800; // ms
+      const startTime = Date.now();
+      
+      const animateValue = () => {
+        const now = Date.now();
+        const elapsed = now - startTime;
+        
+        if (elapsed >= duration) {
+          setDisplayedBalance(endValue);
+          return;
+        }
+        
+        const progress = elapsed / duration;
+        // Calculer la valeur intermédiaire et arrondir par dizaine
+        const rawValue = startValue + (endValue - startValue) * progress;
+        const currentValue = Math.round(rawValue / 10) * 10; // Arrondi à la dizaine
+        setDisplayedBalance(currentValue);
+        
+        requestAnimationFrame(animateValue);
+      };
+      
+      requestAnimationFrame(animateValue);
+    }
+  }, [balance, displayedBalance]);
 
   return(
     <Card className={cn(

@@ -12,7 +12,6 @@ import { Menu } from "lucide-react";
 import { useState, useMemo, memo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
-// Memoization du Sidebar pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
 
 interface DashboardLayoutProps {
@@ -22,19 +21,27 @@ interface DashboardLayoutProps {
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isMobile = useIsMobile();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
+  const { contributors, recurringExpenses, monthlySavings, refetch } = useDashboardData();
   const queryClient = useQueryClient();
   const channelRef = useRef(null);
 
-  // Configurer des écouteurs pour la modification des contributeurs avec gestion améliorée
+  // Forcer un rafraîchissement des données lors du montage du composant
   useEffect(() => {
-    // Nettoyer le channel précédent s'il existe
+    // Rafraîchir les données dès le chargement
+    const timeoutId = setTimeout(() => {
+      refetch();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [refetch]);
+
+  // Configurer un canal dédié pour les contributeurs dans le layout
+  useEffect(() => {
     if (channelRef.current) {
-      console.log('Removing existing channel in DashboardLayout');
+      console.log('Suppression du canal existant dans DashboardLayout');
       supabase.removeChannel(channelRef.current);
     }
     
-    // Configurer un canal pour les modifications de contributeurs avec ID unique
     const channel = supabase
       .channel('dashboard-layout-' + Date.now())
       .on(
@@ -44,27 +51,39 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           schema: 'public',
           table: 'contributors'
         },
-        () => {
-          console.log('Contributors table changed from Dashboard layout, invalidating queries');
-          // Invalider uniquement les requêtes nécessaires
-          queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+        (payload) => {
+          console.log('Contributeurs modifiés depuis DashboardLayout, invalidation des requêtes');
+          queryClient.invalidateQueries({ 
+            queryKey: ['dashboard-data'],
+            refetchType: 'all'
+          });
+          
+          queryClient.invalidateQueries({ 
+            queryKey: ['contributors'],
+            refetchType: 'all'
+          });
+
+          // Forcer un rafraîchissement immédiat
+          setTimeout(() => {
+            refetch();
+          }, 300);
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('État du canal DashboardLayout:', status);
+      });
       
-    // Stocker la référence du channel
     channelRef.current = channel;
 
     return () => {
       if (channelRef.current) {
-        console.log('Cleaning up channel in DashboardLayout unmount');
+        console.log('Nettoyage du canal dans DashboardLayout démontage');
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
     };
-  }, [queryClient]);
+  }, [queryClient, refetch]);
 
-  // Optimisation de la requête des crédits avec staleTime
   const { data: credits } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
@@ -79,11 +98,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour réduire les requêtes inutiles
-    refetchOnWindowFocus: false // Désactiver le refetch automatique lors du focus de la fenêtre
+    staleTime: 1000 * 30, // Réduire à 30 secondes pour plus de réactivité
+    refetchOnWindowFocus: true, // Activer le rechargement lors du focus
+    refetchOnReconnect: true // Activer le rechargement lors de la reconnexion
   });
 
-  // Gestion optimisée du profil utilisateur
   const { data: userProfile } = useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
@@ -106,11 +125,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         isAdmin
       };
     },
-    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour le profil
-    refetchOnWindowFocus: false
+    staleTime: 1000 * 30, // Réduire à 30 secondes pour plus de réactivité
+    refetchOnWindowFocus: true, // Activer le rechargement lors du focus
+    refetchOnReconnect: true // Activer le rechargement lors de la reconnexion
   });
 
-  // Calculs memoizés pour éviter les recalculs inutiles
   const totalRevenue = useMemo(() => 
     contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0,
     [contributors]
@@ -125,7 +144,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  // Optimisation du rendu avec un conteneur memoizé pour éviter les re-renders inutiles
+  // Memoized content to prevent unnecessary re-renders
   const MemoizedContent = useMemo(() => (
     <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!userProfile?.isAdmin && (

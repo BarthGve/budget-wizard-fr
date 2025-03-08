@@ -1,14 +1,16 @@
+
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { startOfYear, endOfYear, subYears, startOfMonth, endOfMonth, subMonths } from "date-fns";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
-import { MoveDownRight, MoveUpRight, Plus } from "lucide-react";
+import { MoveDownRight, MoveUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface RetailerCardProps {
   retailer: {
@@ -29,6 +31,7 @@ interface RetailerCardProps {
 export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [prevTotal, setPrevTotal] = useState(0);
   const now = new Date();
   
   const { 
@@ -102,11 +105,20 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     }
   }, [expenses, now, viewMode]);
 
+  // Effet pour détecter les changements de montant total
+  useEffect(() => {
+    setPrevTotal(totalCurrentPeriod);
+  }, [totalCurrentPeriod]);
+
   const handleExpenseUpdated = useCallback(() => {
     setExpensesDialogOpen(false);
     setAddDialogOpen(false);
     onExpenseUpdated();
   }, [onExpenseUpdated]);
+
+  // Déterminer si le montant a augmenté ou diminué pour l'animation
+  const hasIncreased = totalCurrentPeriod > prevTotal;
+  const hasChanged = totalCurrentPeriod !== prevTotal && prevTotal !== 0;
 
   return (
     <>
@@ -114,7 +126,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
         <div className="flex items-center justify-between">
           <Link 
             to={`/expenses/retailer/${retailer.id}`} 
-            className="text-xl font-semibold hover:text-primary  transition-colors"
+            className="text-xl font-semibold hover:text-primary transition-colors"
           >
             {retailer.name}
           </Link>
@@ -146,9 +158,18 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
           )}
         </div>
         <div className="mt-4 flex items-center gap-2">
-          <div className="text-2xl font-bold">
-            {formatCurrency(totalCurrentPeriod)}
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={totalCurrentPeriod}
+              initial={hasChanged ? { opacity: 0, y: hasIncreased ? 20 : -20 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: hasIncreased ? -20 : 20 }}
+              transition={{ duration: 0.3 }}
+              className="text-2xl font-bold"
+            >
+              {formatCurrency(totalCurrentPeriod)}
+            </motion.div>
+          </AnimatePresence>
           {totalPreviousPeriod > 0 && (
             <div className="flex items-center gap-1 mt-1">
               {percentageChange > 0 ? (

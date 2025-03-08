@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -63,6 +63,37 @@ export function useRetailerDetail(retailerId: string | undefined) {
     },
     enabled: !!retailerId
   });
+
+  // Configuration d'un écouteur realtime pour les dépenses
+  useEffect(() => {
+    if (!retailerId) return;
+
+    // Créer un canal pour écouter les changements sur la table expenses
+    const channel = supabase
+      .channel(`expenses-changes-${retailerId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'expenses',
+          filter: `retailer_id=eq.${retailerId}`
+        },
+        (payload) => {
+          console.log(`Changement détecté pour les dépenses:`, payload);
+          // Rafraîchir les données automatiquement
+          refetchExpenses();
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Statut du canal expenses-changes:`, status);
+      });
+
+    // Nettoyage lors du démontage du composant
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [retailerId, refetchExpenses]);
 
   // Fonctions de gestion des dépenses
   const handleViewExpenseDetails = (expense: Expense) => {

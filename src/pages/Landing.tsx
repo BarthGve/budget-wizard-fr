@@ -67,7 +67,7 @@ const Landing = () => {
   };
 
   const technologies = [
-    { icon: "/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.png", name: "Lovable AI" },
+    { icon: "/lovable-uploads/icone_lovable.jpeg", name: "Lovable AI" },
     { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", name: "React" },
     { icon: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg", name: "TypeScript" },
     { icon: "https://cdn.worldvectorlogo.com/logos/tailwindcss.svg", name: "Tailwind CSS" },

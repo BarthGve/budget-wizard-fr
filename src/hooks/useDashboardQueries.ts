@@ -9,67 +9,72 @@ export const useDashboardQueries = (userId: string | undefined) => {
     queryFn: async () => {
       if (!userId) throw new Error("User ID requis");
 
-      // Requêtes parallèles pour optimiser le chargement
-      const [
-        { data: contributors, error: contributorsError },
-        { data: monthlySavings, error: savingsError },
-        { data: profile, error: profileError },
-        { data: recurringExpenses, error: expensesError }
-      ] = await Promise.all([
-        supabase
-          .from("contributors")
-          .select("*")
-          .eq("profile_id", userId)
-          .order("created_at"),
-        supabase
-          .from("monthly_savings")
-          .select("*")
-          .eq("profile_id", userId)
-          .order("created_at"),
-        supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", userId)
-          .single(),
-        supabase
-          .from("recurring_expenses")
-          .select("*")
-          .eq("profile_id", userId)
-          .order("created_at")
-      ]);
+      try {
+        // Requêtes parallèles pour optimiser le chargement
+        const [
+          { data: contributors, error: contributorsError },
+          { data: monthlySavings, error: savingsError },
+          { data: profile, error: profileError },
+          { data: recurringExpenses, error: expensesError }
+        ] = await Promise.all([
+          supabase
+            .from("contributors")
+            .select("*")
+            .eq("profile_id", userId)
+            .order("created_at"),
+          supabase
+            .from("monthly_savings")
+            .select("*")
+            .eq("profile_id", userId)
+            .order("created_at"),
+          supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", userId)
+            .single(),
+          supabase
+            .from("recurring_expenses")
+            .select("*")
+            .eq("profile_id", userId)
+            .order("created_at")
+        ]);
 
-      // Gestion centralisée des erreurs
-      if (contributorsError) {
-        console.error("Error fetching contributors:", contributorsError);
-        toast.error("Erreur lors du chargement des contributeurs");
-        throw contributorsError;
-      }
-      if (savingsError) {
-        console.error("Error fetching monthly savings:", savingsError);
-        toast.error("Erreur lors du chargement de l'épargne mensuelle");
-        throw savingsError;
-      }
-      if (profileError) {
-        console.error("Error fetching profile:", profileError);
-        toast.error("Erreur lors du chargement du profil");
-        throw profileError;
-      }
-      if (expensesError) {
-        console.error("Error fetching recurring expenses:", expensesError);
-        toast.error("Erreur lors du chargement des charges récurrentes");
-        throw expensesError;
-      }
+        // Gestion centralisée des erreurs
+        if (contributorsError) throw contributorsError;
+        if (savingsError) throw savingsError;
+        if (profileError) throw profileError;
+        if (expensesError) throw expensesError;
 
-      return {
-        contributors: contributors || [],
-        monthlySavings: monthlySavings || [],
-        profile,
-        recurringExpenses: recurringExpenses || []
-      };
+        console.log("Dashboard data fetched successfully:", { 
+          contributorsCount: contributors?.length, 
+          savingsCount: monthlySavings?.length,
+          expensesCount: recurringExpenses?.length
+        });
+
+        return {
+          contributors: contributors || [],
+          monthlySavings: monthlySavings || [],
+          profile,
+          recurringExpenses: recurringExpenses || []
+        };
+      } catch (error: any) {
+        console.error("Error fetching dashboard data:", error);
+        toast.error("Erreur lors du chargement des données: " + (error.message || "Erreur inconnue"));
+        throw error;
+      }
     },
     enabled: !!userId,
-    staleTime: 1000 * 30, // Réduire le cache à 30 secondes pour être plus réactif
-    retry: 1 // Limite les tentatives de reconnexion
+    staleTime: 1000 * 15, // Réduire à 15 secondes pour actualiser plus souvent
+    gcTime: 1000 * 60 * 5, // Garde en cache pour 5 minutes après être devenu inactif
+    refetchOnWindowFocus: true, // Refetch quand la fenêtre prend le focus
+    refetchOnReconnect: true, // Refetch à la reconnexion
+    retry: (failureCount, error) => {
+      // Limiter les tentatives de reconnexion pour les erreurs critiques
+      if (error instanceof Error && error.message.includes("réseau")) {
+        return failureCount < 3;
+      }
+      return failureCount < 2; // Augmenter les tentatives de reconnexion
+    }
   });
 
   return {

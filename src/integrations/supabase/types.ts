@@ -66,6 +66,47 @@ export type Database = {
         }
         Relationships: []
       }
+      contributions: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          profile_id: string
+          status: Database["public"]["Enums"]["contribution_status"]
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          profile_id: string
+          status?: Database["public"]["Enums"]["contribution_status"]
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+          status?: Database["public"]["Enums"]["contribution_status"]
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contributions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contributors: {
         Row: {
           created_at: string
@@ -432,6 +473,9 @@ export type Database = {
           encryption_enabled: boolean | null
           full_name: string | null
           id: string
+          notif_changelog: boolean | null
+          notif_feedbacks: boolean | null
+          notif_inscriptions: boolean | null
           profile_type: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage: number | null
           updated_at: string | null
@@ -442,6 +486,9 @@ export type Database = {
           encryption_enabled?: boolean | null
           full_name?: string | null
           id: string
+          notif_changelog?: boolean | null
+          notif_feedbacks?: boolean | null
+          notif_inscriptions?: boolean | null
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
           updated_at?: string | null
@@ -452,6 +499,9 @@ export type Database = {
           encryption_enabled?: boolean | null
           full_name?: string | null
           id?: string
+          notif_changelog?: boolean | null
+          notif_feedbacks?: boolean | null
+          notif_inscriptions?: boolean | null
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
           updated_at?: string | null
@@ -779,6 +829,44 @@ export type Database = {
           },
         ]
       }
+      unsubscribe_tokens: {
+        Row: {
+          created_at: string | null
+          expires_at: string
+          id: string
+          notification_type: string
+          profile_id: string
+          status: string | null
+          token: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          notification_type: string
+          profile_id: string
+          status?: string | null
+          token: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          notification_type?: string
+          profile_id?: string
+          status?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unsubscribe_tokens_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -805,6 +893,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      are_contribution_notifications_enabled: {
+        Args: {
+          admin_id: string
+        }
+        Returns: boolean
+      }
       can_access_page: {
         Args: {
           user_id: string
@@ -865,6 +959,12 @@ export type Database = {
           total_mensualites_remboursees: number
         }[]
       }
+      get_non_admin_user_emails: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          email: string
+        }[]
+      }
       get_total_users: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -892,6 +992,12 @@ export type Database = {
           role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      list_admins: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+        }[]
       }
       list_users: {
         Args: {
@@ -945,6 +1051,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       changelog_entry_type: "new" | "improvement" | "bugfix"
+      contribution_status: "pending" | "in_progress" | "completed"
       credit_status: "actif" | "remboursé" | "dépassé"
       feedback_status: "pending" | "read" | "published"
       mode_planification_type: "par_date" | "par_mensualite"

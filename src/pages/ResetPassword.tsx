@@ -4,51 +4,160 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [sessionActive, setSessionActive] = useState(false);
 
   useEffect(() => {
     // Vérifier que l'utilisateur arrive bien avec un token de réinitialisation
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error("Session invalide ou expirée");
+    const checkResetSession = async () => {
+      setIsCheckingSession(true);
+      console.log("Vérification de la session utilisateur pour la réinitialisation");
+      console.log("URL complète:", window.location.href);
+      console.log("Search params:", location.search);
+      console.log("Hash:", location.hash);
+      
+      try {
+        // On vérifie si un hash de type Supabase est présent dans l'URL
+        const hasSupabaseHash = location.hash && 
+          (location.hash.includes('#access_token=') || 
+           location.hash.includes('#error=') || 
+           location.hash.includes('#type=recovery'));
+        
+        console.log("Hash Supabase détecté:", hasSupabaseHash);
+        
+        // Récupérer la session actuelle
+        // Cela déclenchera automatiquement le traitement du hash par Supabase
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        console.log("Session initiale:", sessionData?.session ? "Session présente" : "Pas de session active");
+        
+        if (sessionError) {
+          console.error("Erreur lors de la vérification de la session:", sessionError);
+          throw sessionError;
+        }
+
+        // Vérifier si nous avons déjà une session valide
+        if (sessionData.session) {
+          console.log("Session valide déjà présente, l'utilisateur peut réinitialiser son mot de passe");
+          setSessionActive(true);
+          setIsCheckingSession(false);
+          return;
+        }
+        
+        // Si pas de session mais hash présent, essayer d'établir une session
+        if (hasSupabaseHash) {
+          console.log("Hash détecté, tentative d'établissement de session via setSession");
+          
+          // On force Supabase à traiter le hash et établir une session si valide
+          // (bien que getSession devrait déjà avoir fait cela)
+          await supabase.auth.getSession();
+          
+          // Vérifier si nous avons maintenant une session valide
+          const { data: refreshedSession, error: refreshError } = await supabase.auth.getSession();
+          console.log("Session après tentative d'établissement:", refreshedSession?.session ? "Session établie" : "Échec d'établissement de session");
+          
+          if (refreshError) {
+            console.error("Erreur lors de la récupération avec le hash:", refreshError);
+            toast.error("Le lien de réinitialisation est invalide ou a expiré");
+            navigate("/login");
+            return;
+          }
+          
+          if (refreshedSession.session) {
+            console.log("Session valide établie via hash, l'utilisateur peut réinitialiser son mot de passe");
+            setSessionActive(true);
+            setIsCheckingSession(false);
+            return;
+          }
+          
+          console.log("Pas de session valide établie malgré la présence d'un hash");
+          toast.error("Session invalide ou expirée");
+          navigate("/login");
+          return;
+        } else {
+          console.log("Aucun hash de réinitialisation trouvé dans l'URL");
+          toast.error("Lien de réinitialisation invalide");
+          navigate("/login");
+          return;
+        }
+      } catch (error: any) {
+        console.error("Erreur lors de la vérification de la session:", error);
+        toast.error("Une erreur s'est produite lors de la vérification de votre session");
         navigate("/login");
+      } finally {
+        setIsCheckingSession(false);
       }
     };
 
-    checkSession();
-  }, [navigate]);
+    checkResetSession();
+  }, [navigate, location]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    
+    console.log("Tentative de mise à jour du mot de passe");
 
+    // Validation des mots de passe
     if (password !== confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas");
       setIsLoading(false);
       return;
     }
 
+    if (password.length < 6) {
+      toast.error("Le mot de passe doit contenir au moins 6 caractères");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const { error } = await supabase.auth.updateUser({
+      // Vérifier d'abord que nous avons toujours une session valide
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      if (!sessionData.session) {
+        console.error("Session perdue avant la mise à jour du mot de passe");
+        toast.error("Votre session a expiré. Veuillez recommencer le processus de réinitialisation.");
+        navigate("/forgot-password");
+        return;
+      }
+      
+      console.log("Session valide confirmée avant mise à jour du mot de passe");
+      
+      // Appel à l'API Supabase pour mettre à jour le mot de passe
+      const { data, error } = await supabase.auth.updateUser({
         password: password
       });
 
-      if (error) throw error;
+      console.log("Réponse de mise à jour du mot de passe:", { 
+        succès: !!data && !error, 
+        erreur: error ? true : false 
+      });
+
+      if (error) {
+        console.error("Erreur détaillée:", error);
+        throw error;
+      }
 
       toast.success("Mot de passe mis à jour avec succès");
-      navigate("/login");
+      console.log("Redirection vers la page de connexion");
+      
+      // Redirection vers la page de connexion après 2 secondes
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (error: any) {
-      console.error("Password update error:", error);
+      console.error("Erreur lors de la mise à jour du mot de passe:", error);
       toast.error(
         error.message || "Erreur lors de la mise à jour du mot de passe"
       );
@@ -56,6 +165,34 @@ const ResetPassword = () => {
       setIsLoading(false);
     }
   };
+
+  // Afficher un message de chargement pendant la vérification de la session
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md text-center p-8">
+          <p>Vérification de votre session...</p>
+        </Card>
+      </div>
+    );
+  }
+
+  // Afficher un message d'erreur si la session n'est pas valide
+  if (!sessionActive) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md text-center p-8">
+          <CardTitle className="mb-4">Session invalide</CardTitle>
+          <CardDescription className="mb-4">
+            Votre lien de réinitialisation est invalide ou a expiré.
+          </CardDescription>
+          <Button onClick={() => navigate("/forgot-password")}>
+            Demander un nouveau lien
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
@@ -84,6 +221,7 @@ const ResetPassword = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                minLength={6}
               />
             </div>
             <div className="space-y-2">
@@ -95,6 +233,7 @@ const ResetPassword = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                minLength={6}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>

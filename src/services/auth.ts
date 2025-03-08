@@ -19,6 +19,36 @@ export interface LoginCredentials {
 }
 
 /**
+ * Envoie une notification à l'administrateur concernant le nouvel utilisateur
+ */
+const notifyAdmin = async (name: string, email: string) => {
+  try {
+    const signupDate = new Date().toLocaleString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const { error } = await supabase.functions.invoke("notify-new-user", {
+      body: {
+        userName: name,
+        userEmail: email,
+        signupDate
+      }
+    });
+
+    if (error) {
+      console.error("Erreur lors de la notification admin:", error);
+    }
+  } catch (error) {
+    // On ne fait que logger l'erreur pour ne pas impacter l'expérience utilisateur
+    console.error("Échec de l'envoi de notification admin:", error);
+  }
+};
+
+/**
  * Inscrit un nouvel utilisateur avec une méthode directe et fiable
  * qui évite complètement les déclencheurs (triggers)
  */
@@ -106,6 +136,11 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     localStorage.setItem("verificationEmail", credentials.email);
     
     console.log("Inscription réussie:", data.user.id);
+    
+    // Envoyer une notification à l'administrateur (en arrière-plan)
+    // Cette opération ne bloque pas le processus d'inscription
+    notifyAdmin(credentials.name, credentials.email);
+    
     return data;
   } catch (error: any) {
     console.error("Erreur finale lors de l'inscription:", error);

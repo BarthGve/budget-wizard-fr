@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -38,7 +37,6 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     }
   }, [isMobile]);
 
-  // Récupère d'abord l'utilisateur actuel pour avoir son ID
   const { data: currentUser } = useQuery({
     queryKey: ["current-user-for-sidebar"],
     queryFn: async () => {
@@ -149,10 +147,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
           
           {/* Feedback dialog */}
           {!isAdmin && (
-            <div className={cn(
-              "pt-4 pb-4 px-4",
-              collapsed && "flex justify-center"
-            )}>
+            <div className="px-4 py-2">
               <FeedbackDialog collapsed={collapsed} />
             </div>
           )}

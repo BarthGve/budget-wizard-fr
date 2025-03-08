@@ -24,6 +24,9 @@ export function ContributorTableRow({
   const initials = getInitials(contributor.name);
   const avatarColors = getAvatarColor(contributor.name, isDarkTheme);
   
+  // Utiliser une valeur par défaut pour percentage_contribution
+  const percentageContribution = contributor.percentage_contribution ?? 0;
+  
   return (
     <TableRow 
       className="cursor-pointer hover:bg-muted/50"
@@ -54,7 +57,7 @@ export function ContributorTableRow({
         </div>
       </TableCell>
       <TableCell className="text-right">{contributor.total_contribution.toFixed(2)} €</TableCell>
-      <TableCell className="text-right">{contributor.percentage_contribution.toFixed(1)}%</TableCell>
+      <TableCell className="text-right">{percentageContribution.toFixed(1)}%</TableCell>
       <TableCell className="text-right">{expenseShare.toFixed(2)} €</TableCell>
       <TableCell className="text-right">{creditShare.toFixed(2)} €</TableCell>
     </TableRow>

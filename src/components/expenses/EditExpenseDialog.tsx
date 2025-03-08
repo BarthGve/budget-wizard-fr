@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ExpenseForm } from "./ExpenseForm";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface EditExpenseDialogProps {
   open: boolean;
@@ -17,6 +18,8 @@ export function EditExpenseDialog({
   expense, 
   onExpenseUpdated 
 }: EditExpenseDialogProps) {
+  const queryClient = useQueryClient();
+  
   const handleSubmit = async (formData: any) => {
     try {
       const { error } = await supabase
@@ -33,6 +36,18 @@ export function EditExpenseDialog({
         toast.error("Erreur lors de la mise à jour de la dépense");
         return;
       }
+
+      // Invalidation de toutes les requêtes liées aux dépenses
+      queryClient.invalidateQueries({ 
+        queryKey: ["expenses"],
+        exact: false
+      });
+      
+      // Invalidation des requêtes spécifiques au détaillant
+      queryClient.invalidateQueries({ 
+        queryKey: ["retailer-expenses", expense.retailer_id],
+        exact: false
+      });
 
       toast.success("Dépense mise à jour avec succès");
       onExpenseUpdated();

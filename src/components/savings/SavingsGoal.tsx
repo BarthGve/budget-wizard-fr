@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SavingsGoalProps {
   savingsPercentage: number;
@@ -22,6 +22,11 @@ export const SavingsGoal = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [localPercentage, setLocalPercentage] = useState(savingsPercentage);
+  
+  // Synchroniser le state local avec les props
+  useEffect(() => {
+    setLocalPercentage(savingsPercentage);
+  }, [savingsPercentage]);
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
@@ -88,26 +93,35 @@ export const SavingsGoal = ({
       return;
     }
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({ savings_goal_percentage: value })
-      .eq("id", user.id);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ savings_goal_percentage: value })
+        .eq("id", user.id);
 
-    if (error) {
+      if (error) {
+        throw error;
+      }
+
+      // Invalidation ciblée des queries
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["profile"] }),
+        queryClient.invalidateQueries({ queryKey: ["dashboard-data"] })
+      ]);
+      
+      toast({
+        title: "Succès",
+        description: "Votre objectif d'épargne a été mis à jour",
+      });
+    } catch (error: any) {
+      console.error("Erreur lors de la mise à jour de l'objectif:", error);
       toast({
         title: "Erreur",
-        description: "Impossible de mettre à jour votre objectif d'épargne",
+        description: "Impossible de mettre à jour votre objectif d'épargne: " + (error.message || "Erreur inconnue"),
         variant: "destructive",
       });
       setLocalPercentage(savingsPercentage);
-      return;
     }
-
-    await queryClient.invalidateQueries({ queryKey: ["profile"] });
-    toast({
-      title: "Succès",
-      description: "Votre objectif d'épargne a été mis à jour",
-    });
   };
 
   const targetMonthlySavings = (totalIncome * localPercentage) / 100;

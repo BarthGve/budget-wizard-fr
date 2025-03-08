@@ -26,7 +26,7 @@ export const recalculatePercentages = async (userId: string) => {
   
   // 2. Calculer le total des contributions
   const totalContributions = contributors.reduce(
-    (sum, contributor) => sum + contributor.total_contribution, 
+    (sum, contributor) => sum + (contributor.total_contribution || 0), 
     0
   );
   
@@ -36,7 +36,8 @@ export const recalculatePercentages = async (userId: string) => {
   if (totalContributions > 0) {
     // Correction: utiliser des mises à jour individuelles pour une précision maximale
     for (const contributor of contributors) {
-      const percentage = (contributor.total_contribution / totalContributions) * 100;
+      const contribution = contributor.total_contribution || 0;
+      const percentage = (contribution / totalContributions) * 100;
       console.log(`Mise à jour de ${contributor.id}: ${percentage.toFixed(2)}%`);
       
       await supabase
