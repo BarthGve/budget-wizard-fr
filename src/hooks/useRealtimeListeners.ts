@@ -57,7 +57,7 @@ export const useRealtimeListeners = () => {
         (payload) => {
           console.log(`${tableName} changed:`, payload.eventType);
           
-          // Invalidation forcée des données pour tous les événements liés aux contributeurs
+          // Invalidation forcée des données pour tous les événements
           invalidateDashboardData();
           
           // Invalidations supplémentaires si spécifiées
@@ -140,7 +140,7 @@ export const useRealtimeListeners = () => {
     };
   }, [queryClient]);
 
-  // Nouveau: Écouteur spécifique pour les dépenses
+  // Écouteur spécifique pour les dépenses
   useEffect(() => {
     // Configuration de l'écouteur avec invalidation des requêtes liées aux dépenses
     setupChannel('expenses', 'expenses', ['expenses', 'retailer-expenses']);

@@ -47,8 +47,8 @@ export const addContributorService = async (
   // Recalculer les pourcentages via la fonction côté serveur
   await recalculatePercentages(userId);
 
-  // Attendre 500ms avant de retourner les données pour laisser le temps à Supabase de propager les changements
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // Attendre 1000ms (1 seconde) avant de retourner les données pour laisser le temps à Supabase de propager les changements
+  await new Promise(resolve => setTimeout(resolve, 1000));
   
   // Récupérer la liste à jour des contributeurs
   return await fetchContributorsService();

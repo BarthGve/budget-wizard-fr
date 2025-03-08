@@ -44,7 +44,7 @@ export const GlobalBalanceCard = ({
       
       requestAnimationFrame(animateValue);
     }
-  }, [balance]);
+  }, [balance, displayedBalance]);
 
   return(
     <Card className={cn(

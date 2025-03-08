@@ -2,7 +2,7 @@
 import { useCurrentUser } from "./useCurrentUser";
 import { useDashboardQueries } from "./useDashboardQueries";
 import { useRealtimeListeners } from "./useRealtimeListeners";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ export const useDashboardData = () => {
   const { currentUser } = useCurrentUser();
   const queryClient = useQueryClient();
   const contributorsChannelRef = useRef<any>(null);
+  const [lastContributorEvent, setLastContributorEvent] = useState<number>(0);
   
   // Set up real-time listeners for data changes
   useRealtimeListeners();
@@ -44,14 +45,20 @@ export const useDashboardData = () => {
         (payload) => {
           console.log(`Contributeur modifié dans le dashboard:`, payload);
           
+          // Stocker le timestamp de l'événement pour éviter les doubles traitements
+          setLastContributorEvent(Date.now());
+          
           // Force le rechargement immédiat des données du dashboard
           queryClient.invalidateQueries({ 
             queryKey: ["dashboard-data"],
-            exact: false 
+            exact: false,
+            refetchType: 'all' // Force un rechargement complet
           });
           
-          // Rafraîchir les données immédiatement
-          refetchDashboard();
+          // Rafraîchir les données immédiatement et avec insistance
+          setTimeout(() => {
+            refetchDashboard();
+          }, 100);
           
           // Notification visuelle pour informer l'utilisateur
           if (payload.eventType === 'INSERT') {
@@ -77,6 +84,22 @@ export const useDashboardData = () => {
       }
     };
   }, [currentUser?.id, queryClient, refetchDashboard]);
+
+  // Forcer un rafraîchissement périodique si nécessaire
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    // Si nous avons eu un événement de contributeur dans les 5 dernières secondes, 
+    // forcer un rafraîchissement pour s'assurer que tout est à jour
+    if (lastContributorEvent > 0 && Date.now() - lastContributorEvent < 5000) {
+      const timeoutId = setTimeout(() => {
+        console.log("Rafraîchissement forcé après événement contributeur");
+        refetchDashboard();
+      }, 1500);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentUser?.id, lastContributorEvent, refetchDashboard]);
 
   // Wrapped in useCallback to prevent recreation on each render
   const refetch = useCallback(() => {

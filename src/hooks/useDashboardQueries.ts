@@ -45,6 +45,12 @@ export const useDashboardQueries = (userId: string | undefined) => {
         if (profileError) throw profileError;
         if (expensesError) throw expensesError;
 
+        console.log("Dashboard data fetched successfully:", { 
+          contributorsCount: contributors?.length, 
+          savingsCount: monthlySavings?.length,
+          expensesCount: recurringExpenses?.length
+        });
+
         return {
           contributors: contributors || [],
           monthlySavings: monthlySavings || [],
@@ -58,16 +64,16 @@ export const useDashboardQueries = (userId: string | undefined) => {
       }
     },
     enabled: !!userId,
-    staleTime: 1000 * 60, // Réduire à 1 minute pour actualiser plus souvent
+    staleTime: 1000 * 30, // Réduire à 30 secondes pour actualiser plus souvent
     gcTime: 1000 * 60 * 5, // Garde en cache pour 5 minutes après être devenu inactif
-    refetchOnWindowFocus: false, 
-    refetchOnReconnect: true, 
+    refetchOnWindowFocus: true, // Refetch quand la fenêtre prend le focus
+    refetchOnReconnect: true, // Refetch à la reconnexion
     retry: (failureCount, error) => {
       // Limiter les tentatives de reconnexion pour les erreurs critiques
       if (error instanceof Error && error.message.includes("réseau")) {
         return failureCount < 3;
       }
-      return failureCount < 1;
+      return failureCount < 2; // Augmenter les tentatives de reconnexion
     }
   });
 

@@ -1,3 +1,4 @@
+
 import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { GlobalBalanceCard } from "../common/GlobalBalanceCard";
@@ -20,10 +21,21 @@ interface DashboardLayoutProps {
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isMobile = useIsMobile();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
+  const { contributors, recurringExpenses, monthlySavings, refetch } = useDashboardData();
   const queryClient = useQueryClient();
   const channelRef = useRef(null);
 
+  // Forcer un rafraîchissement des données lors du montage du composant
+  useEffect(() => {
+    // Rafraîchir les données dès le chargement
+    const timeoutId = setTimeout(() => {
+      refetch();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [refetch]);
+
+  // Configurer un canal dédié pour les contributeurs dans le layout
   useEffect(() => {
     if (channelRef.current) {
       console.log('Suppression du canal existant dans DashboardLayout');
@@ -50,6 +62,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             queryKey: ['contributors'],
             refetchType: 'all'
           });
+
+          // Forcer un rafraîchissement immédiat
+          setTimeout(() => {
+            refetch();
+          }, 500);
         }
       )
       .subscribe((status) => {
@@ -65,7 +82,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         channelRef.current = null;
       }
     };
-  }, [queryClient]);
+  }, [queryClient, refetch]);
 
   const { data: credits } = useQuery({
     queryKey: ["credits"],
@@ -81,8 +98,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false
+    staleTime: 1000 * 60, // Réduire à 1 minute pour plus de réactivité
+    refetchOnWindowFocus: true // Activer le rechargement lors du focus
   });
 
   const { data: userProfile } = useQuery({
@@ -107,8 +124,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         isAdmin
       };
     },
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false
+    staleTime: 1000 * 60, // Réduire à 1 minute pour plus de réactivité
+    refetchOnWindowFocus: true // Activer le rechargement lors du focus
   });
 
   const totalRevenue = useMemo(() => 
@@ -125,6 +142,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
+  // Memoized content to prevent unnecessary re-renders
   const MemoizedContent = useMemo(() => (
     <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!userProfile?.isAdmin && (
