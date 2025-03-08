@@ -1,202 +1,201 @@
-import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { 
+  LayoutDashboard, 
+  CreditCard, 
+  Settings, 
+  PiggyBank, 
+  Home,
+  Menu,
+  User,
+  MessageSquare,
+  ShieldCheck
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Profile } from "@/types/profile";
-import { NavigationMenu } from "./NavigationMenu";
-import { UserDropdown } from "./UserDropdown";
-import { ThemeToggle } from "../theme/ThemeToggle";
-import { appConfig } from "@/config/app.config";
-import { Badge } from "@/components/ui/badge";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useLatestVersion } from "@/hooks/useLatestVersion";
-import { FeedbackTrigger } from "../feedback/FeedbackTrigger";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
-import { ContributionTrigger } from "../feedback/ContributionTrigger";
 import { ContributionDialog } from "../contributions/ContributionDialog";
+import { FeedbackTrigger } from "../feedback/FeedbackTrigger";
+import { ContributionTrigger } from "../feedback/ContributionTrigger";
 
-interface SidebarProps {
-  className?: string;
-  onClose?: () => void;
-}
+export function Sidebar({ collapsed = false, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+  const location = useLocation();
+  const currentPath = location.pathname;
+  const { isAdmin } = useCurrentUser();
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
+  const [contributionDialogOpen, setContributionDialogOpen] = useState(false);
 
-export function Sidebar({ className }: SidebarProps) {
-  const isMobile = useIsMobile();
-  const [collapsed, setCollapsed] = useState(() => {
-    const saved = localStorage.getItem("sidebarCollapsed");
-    return saved ? JSON.parse(saved) : (isMobile ? true : false);
-  });
-  const { latestVersion } = useLatestVersion();
-
-  useEffect(() => {
-    localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
-  }, [collapsed]);
-
-  useEffect(() => {
-    if (isMobile) {
-      setCollapsed(true);
-    }
-  }, [isMobile]);
-
-  const { data: currentUser } = useQuery({
-    queryKey: ["current-user-for-sidebar"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
-    },
-    staleTime: 1000 * 60, // 1 minute
-  });
-
-  const { data: profile } = useQuery<Profile>({
-    queryKey: ["profile-for-sidebar", currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser) throw new Error("User not authenticated");
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", currentUser.id)
-        .single();
-
-      if (error) throw error;
-
-      const profileData = {
-        ...data,
-        email: currentUser.email
-      } as Profile;
-
-      return profileData;
-    },
-    enabled: !!currentUser,
-    staleTime: 1000 * 60, // 1 minute
-  });
-
-  const { data: isAdmin } = useQuery({
-    queryKey: ["isAdmin-for-sidebar", currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser) return false;
-
-      const { data, error } = await supabase.rpc('has_role', {
-        user_id: currentUser.id,
-        role: 'admin'
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!currentUser,
-    staleTime: 1000 * 60, // 1 minute
-  });
-
-  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
-  const [showContributionDialog, setShowContributionDialog] = useState(false);
-
-  const handleClickOutside = (e: MouseEvent) => {
-    if (isMobile && onClose && (e.target as HTMLElement).closest('.sidebar-content') === null) {
-      onClose();
-    }
+  // Fonction pour vérifier si un lien est actif
+  const isActive = (path: string) => {
+    return currentPath === path || currentPath.startsWith(`${path}/`);
   };
 
-  useEffect(() => {
-    if (isMobile) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }
-  }, [isMobile, onClose]);
+  const links = [
+    {
+      title: "Tableau de bord",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+      active: isActive("/dashboard"),
+    },
+    {
+      title: "Dépenses",
+      href: "/expenses",
+      icon: CreditCard,
+      active: isActive("/expenses"),
+    },
+    {
+      title: "Épargne",
+      href: "/savings",
+      icon: PiggyBank,
+      active: isActive("/savings"),
+    },
+    {
+      title: "Immobilier",
+      href: "/properties",
+      icon: Home,
+      active: isActive("/properties"),
+    },
+  ];
+
+  const accountLinks = [
+    {
+      title: "Mon compte",
+      href: "/user-settings",
+      icon: User,
+      active: isActive("/user-settings"),
+    },
+    {
+      title: "Paramètres",
+      href: "/settings",
+      icon: Settings,
+      active: isActive("/settings"),
+    },
+  ];
+
+  const adminLinks = isAdmin ? [
+    {
+      title: "Administration",
+      href: "/admin",
+      icon: ShieldCheck,
+      active: isActive("/admin"),
+    },
+  ] : [];
 
   return (
-    <>
-      <aside
-        className={cn(
-          "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col touch-scroll sidebar-content",
-          collapsed ? "w-16" : "w-64",
-          isMobile && "fixed z-50 shadow-lg",
-          className
-        )}
-      >
-        <div className="flex flex-col flex-1 ios-top-safe">
-          <div className="p-4 border-b rounded-r-xl border-border">
-            <div className="flex flex-col">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h1
-                    className={cn(   
-                      "font-bold text-foreground tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in transition-all duration-300",
-                      collapsed ? "text-sm" : "text-xl"
-                    )}
-                  >
-                    {collapsed ? appConfig.initiales : appConfig.name}
-                  </h1>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ThemeToggle collapsed={collapsed} />
-                </div>
-              </div>
-              {!collapsed && (
-               <div className="flex items-baseline gap-2">
-                 <span className="text-xs text-muted-foreground">
-                   v{latestVersion || appConfig.version}
-                 </span>
-               </div>
-              )}
-            </div>
+    <div
+      className={cn(
+        "flex flex-col h-full bg-card border-r transition-all duration-300 ease-in-out",
+        collapsed ? "w-[70px]" : "w-[240px]"
+      )}
+    >
+      <div className="flex items-center justify-between p-4">
+        {!collapsed && (
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-xl">FinGenius</span>
           </div>
-  
-          <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
-          
-          <div className="mt-auto">
-            <ProjectAnnouncementCard collapsed={collapsed} userId={currentUser?.id} />
-            
-            <div className="px-2">
-              <FeedbackTrigger 
-                collapsed={collapsed} 
-                onClick={() => setShowFeedbackDialog(true)}
-              />
-            </div>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggle}
+          className={cn(collapsed && "mx-auto")}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+      </div>
 
-            {!isAdmin && (
-              <div className="px-2">
-                <ContributionTrigger 
-                  collapsed={collapsed} 
-                  onClick={() => setShowContributionDialog(true)}
-                />
-              </div>
-            )}
-            
-            <UserDropdown collapsed={collapsed} profile={profile} />
-          </div>
-        </div>
-  
-        {!isMobile && (
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className={cn(
-              "absolute -right-3 top-20 p-1.5 rounded-full bg-background border border-border hover:bg-accent transition-colors",
-              "z-50 shadow-sm touch-manipulation"
-            )}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {collapsed ? (
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <ChevronLeft className="h-4 w-4 text-muted-foreground" />
-            )}
-          </button>
+      <div className="flex-1 overflow-auto py-2">
+        <nav className="grid gap-1 px-2">
+          {links.map((link, index) => (
+            <Link
+              key={index}
+              to={link.href}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
+                link.active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+              )}
+            >
+              <link.icon className={cn("h-5 w-5 flex-none")} />
+              {!collapsed && <span>{link.title}</span>}
+            </Link>
+          ))}
+        </nav>
+
+        <Separator className="my-4" />
+
+        {/* Section compte utilisateur */}
+        <nav className="grid gap-1 px-2">
+          {accountLinks.map((link, index) => (
+            <Link
+              key={index}
+              to={link.href}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
+                link.active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+              )}
+            >
+              <link.icon className={cn("h-5 w-5 flex-none")} />
+              {!collapsed && <span>{link.title}</span>}
+            </Link>
+          ))}
+        </nav>
+
+        {isAdmin && (
+          <>
+            <Separator className="my-4" />
+            <nav className="grid gap-1 px-2">
+              {adminLinks.map((link, index) => (
+                <Link
+                  key={index}
+                  to={link.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
+                    link.active
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                  )}
+                >
+                  <link.icon className={cn("h-5 w-5 flex-none")} />
+                  {!collapsed && <span>{link.title}</span>}
+                </Link>
+              ))}
+            </nav>
+          </>
         )}
-      </aside>
-      
+      </div>
+
+      {/* Section feedback et contribution */}
+      {!isAdmin && (
+        <div className="mt-auto p-2">
+          <FeedbackTrigger 
+            collapsed={collapsed} 
+            onClick={() => setFeedbackDialogOpen(true)} 
+          />
+          
+          <ContributionTrigger 
+            collapsed={collapsed} 
+            onClick={() => setContributionDialogOpen(true)} 
+          />
+        </div>
+      )}
+
+      {/* Dialogs */}
       <FeedbackDialog 
-        open={showFeedbackDialog} 
-        onOpenChange={setShowFeedbackDialog} 
+        isOpen={feedbackDialogOpen} 
+        onOpenChange={setFeedbackDialogOpen} 
       />
       
-      <ContributionDialog 
-        open={showContributionDialog} 
-        onOpenChange={setShowContributionDialog} 
+      <ContributionDialog
+        isOpen={contributionDialogOpen}
+        onOpenChange={setContributionDialogOpen}
       />
-    </>
+    </div>
   );
 }

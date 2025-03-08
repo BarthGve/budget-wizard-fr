@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   BrowserRouter,
@@ -11,13 +12,23 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { supabase } from "@/integrations/supabase/client";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { Button } from './components/ui/button';
 import StyledLoader from './components/ui/StyledLoader';
+
+// Pages
 import Admin from './pages/Admin';
 import Feedbacks from './pages/admin/Feedbacks';
 import Changelog from './pages/admin/Changelog';
 import Contributions from "./pages/admin/Contributions";
+import PublicPage from './pages/PublicPage';
+import Dashboard from './pages/Dashboard';
+import UserSettings from './pages/UserSettings';
+import Settings from './pages/Settings';
+import NoMatch from './pages/NoMatch';
+import Expenses from './pages/Expenses';
+import ExpensesRetailerDetail from './pages/RetailerDetail';
+import Savings from './pages/Savings';
+import Properties from './pages/Properties';
+import PropertyDetail from './pages/PropertyDetail';
 
 const queryClient = new QueryClient();
 

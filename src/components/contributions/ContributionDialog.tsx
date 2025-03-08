@@ -1,106 +1,97 @@
 
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { toast } from 'sonner';
 
 interface ContributionDialogProps {
-  open: boolean;
+  isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Types de contributions disponibles
-const contributionTypes = [
-  { id: "feature", label: "Nouvelle fonctionnalité" },
-  { id: "improvement", label: "Amélioration" },
-  { id: "bugfix", label: "Correction de bug" },
-  { id: "design", label: "Design/UI" },
-  { id: "performance", label: "Performance" },
-  { id: "other", label: "Autre" }
+const CONTRIBUTION_TYPES = [
+  { id: "feature", name: "Nouvelle fonctionnalité" },
+  { id: "improvement", name: "Amélioration" },
+  { id: "bug", name: "Bug" },
+  { id: "idea", name: "Idée" },
+  { id: "other", name: "Autre" }
 ];
 
-export const ContributionDialog = ({ open, onOpenChange }: ContributionDialogProps) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [type, setType] = useState<string>("");
+export const ContributionDialog = ({ isOpen, onOpenChange }: ContributionDialogProps) => {
+  const { user } = useCurrentUser();
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [type, setType] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { currentUser } = useCurrentUser();
 
   const resetForm = () => {
-    setTitle("");
-    setContent("");
-    setType("");
+    setTitle('');
+    setContent('');
+    setType('');
   };
 
-  const handleSubmit = async () => {
-    // Validation du formulaire
-    if (!title.trim()) {
-      toast.error("Veuillez saisir un titre");
-      return;
-    }
-    if (!content.trim()) {
-      toast.error("Veuillez saisir un message");
-      return;
-    }
-    if (!type) {
-      toast.error("Veuillez sélectionner une catégorie");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!title || !content || !type) {
+      toast.error("Veuillez remplir tous les champs.");
       return;
     }
 
     try {
       setIsSubmitting(true);
       
-      // Envoi de la contribution à Supabase
-      const { error } = await supabase.from("contributions").insert({
-        profile_id: currentUser?.id,
-        title: title.trim(),
-        content: content.trim(),
-        type,
-        status: "pending" // Statut par défaut: à traiter
-      });
+      // Insérer la contribution dans la base de données
+      const { error } = await supabase
+        .from('contributions')
+        .insert({
+          profile_id: user?.id,
+          title,
+          content,
+          type,
+          status: 'pending'
+        });
 
       if (error) throw error;
       
-      toast.success("Merci pour votre contribution!");
+      toast.success("Votre contribution a été soumise avec succès !");
       resetForm();
       onOpenChange(false);
-      
-    } catch (error: any) {
-      console.error("Erreur lors de l'envoi de la contribution:", error);
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+    } catch (error) {
+      console.error("Erreur lors de la soumission de la contribution:", error);
+      toast.error("Une erreur est survenue lors de la soumission. Veuillez réessayer.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleClose = () => {
-    resetForm();
-    onOpenChange(false);
-  };
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-xl">Contribuez au projet</DialogTitle>
+          <DialogTitle>Contribuez au projet</DialogTitle>
+          <DialogDescription>
+            Partagez vos idées, suggestions ou signalez des problèmes pour nous aider à améliorer l'application.
+          </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4 py-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="type">Catégorie</Label>
-            <Select value={type} onValueChange={setType}>
-              <SelectTrigger>
+            <Label htmlFor="contribution-type">Catégorie</Label>
+            <Select value={type} onValueChange={setType} required>
+              <SelectTrigger id="contribution-type">
                 <SelectValue placeholder="Sélectionnez une catégorie" />
               </SelectTrigger>
               <SelectContent>
-                {contributionTypes.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.label}
+                {CONTRIBUTION_TYPES.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>
+                    {type.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -108,36 +99,42 @@ export const ContributionDialog = ({ open, onOpenChange }: ContributionDialogPro
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="title">Titre</Label>
-            <input
-              id="title"
-              className="w-full rounded-md border border-input bg-background px-3 py-2"
+            <Label htmlFor="contribution-title">Titre</Label>
+            <Input
+              id="contribution-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Résumez votre idée en quelques mots"
+              placeholder="Titre de votre contribution"
+              required
             />
           </div>
-          
+
           <div className="space-y-2">
-            <Label htmlFor="content">Détails</Label>
+            <Label htmlFor="contribution-content">Message</Label>
             <Textarea
-              id="content"
+              id="contribution-content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Décrivez votre suggestion ou idée en détail..."
-              className="min-h-[150px]"
+              placeholder="Décrivez votre idée ou le problème rencontré en détail..."
+              className="min-h-[120px]"
+              required
             />
           </div>
-        </div>
-        
-        <DialogFooter>
-          <Button variant="outline" onClick={handleClose} disabled={isSubmitting}>
-            Annuler
-          </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Envoi en cours..." : "Envoyer"}
-          </Button>
-        </DialogFooter>
+
+          <DialogFooter>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
+            >
+              Annuler
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Envoi en cours..." : "Envoyer"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

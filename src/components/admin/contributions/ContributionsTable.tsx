@@ -1,49 +1,21 @@
 
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Edit, Trash } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { ContributionDetailDialog } from "./ContributionDetailDialog";
+import { Contribution, ContributionStatus } from "./types";
 import { format } from "date-fns";
-import { MoreVertical, Trash } from "lucide-react";
-import { ContributionStatus } from "./types";
-
-// Objet pour mapper les status aux badges
-const statusBadges = {
-  pending: { label: "À traiter", variant: "outline" as const },
-  in_progress: { label: "En cours", variant: "secondary" as const },
-  completed: { label: "Traité", variant: "default" as const }
-};
-
-// Objet pour mapper les types aux libellés
-const typeLabels: Record<string, string> = {
-  feature: "Nouvelle fonctionnalité",
-  improvement: "Amélioration",
-  bugfix: "Correction de bug",
-  design: "Design/UI",
-  performance: "Performance",
-  other: "Autre"
-};
+import { fr } from "date-fns/locale";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const ContributionsTable = () => {
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [selectedContribution, setSelectedContribution] = useState<Contribution | null>(null);
   const queryClient = useQueryClient();
 
   // Récupération des contributions
@@ -59,12 +31,33 @@ export const ContributionsTable = () => {
           type, 
           status, 
           created_at,
+          updated_at,
           profiles(id, full_name, avatar_url)
         `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as Contribution[];
+    }
+  });
+
+  // Mutation pour supprimer une contribution
+  const deleteContributionMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("contributions")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-contributions"] });
+      toast.success("Contribution supprimée avec succès");
+    },
+    onError: (error) => {
+      console.error("Erreur lors de la suppression:", error);
+      toast.error("Erreur lors de la suppression");
     }
   });
 
@@ -88,54 +81,60 @@ export const ContributionsTable = () => {
     }
   });
 
-  // Mutation pour supprimer une contribution
-  const deleteContributionMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("contributions")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-contributions"] });
-      toast.success("Contribution supprimée avec succès");
-      setDeleteId(null); // Fermer la boîte de dialogue
-    },
-    onError: (error) => {
-      console.error("Erreur lors de la suppression:", error);
-      toast.error("Erreur lors de la suppression");
+  const handleDelete = (id: string) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette contribution ?")) {
+      deleteContributionMutation.mutate(id);
     }
-  });
+  };
 
-  // Gestionnaire pour changer le statut
   const handleStatusChange = (id: string, newStatus: ContributionStatus) => {
     updateStatusMutation.mutate({ id, status: newStatus });
-  };
-
-  // Gestionnaire pour la confirmation de suppression
-  const handleDelete = (id: string) => {
-    setDeleteId(id);
-  };
-
-  // Gestionnaire pour confirmer la suppression
-  const confirmDelete = () => {
-    if (deleteId) {
-      deleteContributionMutation.mutate(deleteId);
+    
+    // Mettre à jour également la contribution sélectionnée pour l'UI
+    if (selectedContribution && selectedContribution.id === id) {
+      setSelectedContribution({
+        ...selectedContribution,
+        status: newStatus
+      });
     }
   };
 
-  const getInitials = (name: string) => {
-    return name
-      ?.split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase() || '?';
+  // Fonction pour afficher le badge de statut
+  const getStatusBadge = (status: ContributionStatus) => {
+    switch (status) {
+      case "pending":
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">À traiter</Badge>;
+      case "in_progress":
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">En cours</Badge>;
+      case "completed":
+        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Traité</Badge>;
+      default:
+        return <Badge variant="outline">Inconnu</Badge>;
+    }
+  };
+
+  // Format du type de contribution
+  const formatType = (type: string) => {
+    const types: Record<string, string> = {
+      "feature": "Nouvelle fonctionnalité",
+      "improvement": "Amélioration",
+      "bug": "Bug",
+      "idea": "Idée",
+      "other": "Autre"
+    };
+    return types[type] || type;
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center p-8">Chargement des contributions...</div>;
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </div>
+    );
   }
 
   return (
@@ -144,77 +143,55 @@ export const ContributionsTable = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Utilisateur</TableHead>
-              <TableHead>Catégorie</TableHead>
               <TableHead>Titre</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Utilisateur</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Statut</TableHead>
-              <TableHead className="w-[70px]">Actions</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {contributions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  Aucune contribution pour le moment
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  Aucune contribution n'a été soumise pour le moment.
                 </TableCell>
               </TableRow>
             ) : (
-              contributions.map((contribution: any) => (
+              contributions.map((contribution) => (
                 <TableRow key={contribution.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={contribution.profiles?.avatar_url} alt={contribution.profiles?.full_name || 'Utilisateur'} />
-                        <AvatarFallback>{getInitials(contribution.profiles?.full_name || 'Utilisateur')}</AvatarFallback>
-                      </Avatar>
-                      <span>{contribution.profiles?.full_name || 'Utilisateur'}</span>
-                    </div>
+                  <TableCell className="font-medium">
+                    <Button
+                      variant="link"
+                      className="p-0 h-auto font-medium text-left hover:underline"
+                      onClick={() => setSelectedContribution(contribution)}
+                    >
+                      {contribution.title}
+                    </Button>
                   </TableCell>
-                  <TableCell>{typeLabels[contribution.type] || contribution.type}</TableCell>
-                  <TableCell className="max-w-[200px] truncate" title={contribution.title}>
-                    {contribution.title}
-                  </TableCell>
+                  <TableCell>{formatType(contribution.type)}</TableCell>
+                  <TableCell>{contribution.profiles?.full_name || "Utilisateur inconnu"}</TableCell>
                   <TableCell>
-                    {format(new Date(contribution.created_at), 'dd/MM/yyyy')}
+                    {format(new Date(contribution.created_at), "d MMMM yyyy", { locale: fr })}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant={statusBadges[contribution.status as ContributionStatus].variant}>
-                      {statusBadges[contribution.status as ContributionStatus].label}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
+                  <TableCell>{getStatusBadge(contribution.status)}</TableCell>
+                  <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Menu</span>
-                          <MoreVertical className="h-4 w-4" />
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem 
-                          onSelect={() => handleStatusChange(contribution.id, "pending")}
-                          disabled={contribution.status === "pending"}
-                        >
-                          Marquer comme "À traiter"
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setSelectedContribution(contribution)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Voir les détails
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onSelect={() => handleStatusChange(contribution.id, "in_progress")}
-                          disabled={contribution.status === "in_progress"}
-                        >
-                          Marquer comme "En cours"
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onSelect={() => handleStatusChange(contribution.id, "completed")}
-                          disabled={contribution.status === "completed"}
-                        >
-                          Marquer comme "Traité"
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          className="text-destructive focus:text-destructive"
-                          onSelect={() => handleDelete(contribution.id)}
-                        >
-                          <Trash className="h-4 w-4 mr-2" />
+                        <DropdownMenuItem onClick={() => handleDelete(contribution.id)}>
+                          <Trash className="mr-2 h-4 w-4" />
                           Supprimer
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -227,22 +204,14 @@ export const ContributionsTable = () => {
         </Table>
       </div>
 
-      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette contribution ?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Cette action est irréversible. La contribution sera définitivement supprimée.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
-              Supprimer
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {selectedContribution && (
+        <ContributionDetailDialog
+          open={!!selectedContribution}
+          onOpenChange={(open) => !open && setSelectedContribution(null)}
+          contribution={selectedContribution}
+          onStatusChange={handleStatusChange}
+        />
+      )}
     </>
   );
 };
