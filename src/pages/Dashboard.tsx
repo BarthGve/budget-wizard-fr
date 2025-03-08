@@ -19,7 +19,6 @@ import {
   calculateTotalSavings,
   calculateGlobalBalance,
 } from "@/utils/dashboardCalculations";
-import { Credit } from "@/components/credits/types";
 import { BadgeEuro, CreditCard, PiggyBank, ShoppingBasket } from "lucide-react";
 
 // Page de tableau de bord
@@ -32,7 +31,7 @@ const Dashboard = () => {
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
 
   // Récupérer les crédits
-  const { data: credits, isLoading: isLoadingCredits } = useQuery({
+  const { data: credits = [], isLoading: isLoadingCredits } = useQuery({
     queryKey: ["credits-for-dashboard"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -44,7 +43,7 @@ const Dashboard = () => {
         return [];
       }
 
-      return data as Credit[];
+      return data || [];
     }
   });
 
@@ -56,10 +55,10 @@ const Dashboard = () => {
   
   // Montants prédéfinis pour la démo (à adapter selon vos besoins réels)
   const demo = {
-    revenus: 3695,
-    charges: 950,
+    revenus: totalRevenue || 3695,
+    charges: totalExpenses || 950,
     credits: 65,
-    epargne: 1011,
+    epargne: totalSavings || 1011,
     cibleEpargne: 1219,
     resteEpargne: 208,
     payé: 259,
@@ -112,7 +111,7 @@ const Dashboard = () => {
               <p className="text-muted-foreground">Chargement des données...</p>
             </div>
           </Card>
-        ) : contributors && contributors.length > 0 ? (
+        ) : (contributors && contributors.length > 0) ? (
           <>
             {/* Première rangée de cartes */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

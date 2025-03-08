@@ -14,6 +14,7 @@ interface ProjectAnnouncementCardProps {
 export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnouncementCardProps) => {
   const [hasContributed, setHasContributed] = useState(false);
   const [showCard, setShowCard] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Vérifier si l'utilisateur a déjà contribué
   useEffect(() => {
@@ -23,7 +24,7 @@ export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnounceme
       const { data, error } = await supabase
         .from('contributions')
         .select('id')
-        .eq('user_id', userId)
+        .eq('profile_id', userId)
         .limit(1);
       
       if (!error && data) {
@@ -75,19 +76,27 @@ export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnounceme
               >
                 Masquer
               </button>
-              <ContributionDialog>
-                <ContributionTrigger hasContributed={hasContributed} />
-              </ContributionDialog>
+              <div onClick={() => setIsOpen(true)}>
+                <ContributionTrigger 
+                  hasContributed={hasContributed} 
+                  onClick={() => setIsOpen(true)}
+                />
+              </div>
             </div>
           </>
         ) : (
           <div className="flex flex-col items-center justify-center">
-            <ContributionDialog>
-              <ContributionTrigger hasContributed={hasContributed} isCollapsed={true} />
-            </ContributionDialog>
+            <div onClick={() => setIsOpen(true)}>
+              <ContributionTrigger 
+                hasContributed={hasContributed} 
+                isCollapsed={true}
+                onClick={() => setIsOpen(true)}
+              />
+            </div>
           </div>
         )}
       </CardContent>
+      <ContributionDialog open={isOpen} onOpenChange={setIsOpen} />
     </Card>
   );
 };

@@ -2,22 +2,23 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Send, LightbulbIcon } from "lucide-react";
+import { Send } from "lucide-react";
 import Confetti from "react-confetti";
 import { useWindowSize } from "@/hooks/use-window-size";
-import { AnimatePresence } from "framer-motion";
 import { ContributionTrigger } from "./ContributionTrigger";
 import { ContributionAvatar } from "./ContributionAvatar";
 import { ContributionForm } from "./ContributionForm";
 import { useContributionSubmit } from "./hooks/useContributionSubmit";
 
 interface ContributionDialogProps {
+  children?: React.ReactNode;
   collapsed?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
 export const ContributionDialog = ({ 
+  children,
   collapsed, 
   open: externalOpen, 
   onOpenChange: externalOnOpenChange 
@@ -74,11 +75,11 @@ export const ContributionDialog = ({
         />
       )}
       <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
-        {!externalOpen && (
+        {!externalOpen && children ? (
           <DialogTrigger asChild>
-            <ContributionTrigger collapsed={collapsed} onClick={() => handleOpenChange(true)} />
+            {children}
           </DialogTrigger>
-        )}
+        ) : null}
         
         <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-xl border border-primary/20 shadow-xl dark:shadow-primary/5 backdrop-blur-sm">
           <div className="bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 dark:from-primary/10 dark:via-primary/5 dark:to-primary/10 px-6 pt-8 pb-6">
