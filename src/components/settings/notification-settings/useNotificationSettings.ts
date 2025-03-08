@@ -41,5 +41,6 @@ export const useNotificationSettings = () => {
   return {
     isUpdating,
     updateNotificationSettings,
+    profile: currentUser?.profile
   };
 };

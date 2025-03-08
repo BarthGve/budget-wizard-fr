@@ -1,38 +1,43 @@
 
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { InfoIcon } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface NotificationToggleProps {
-  id?: string;
+  id: string;
   label: string;
   description: string;
-  tooltipContent?: string;
   checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
   disabled?: boolean;
+  tooltipContent?: string;
+  onCheckedChange: (checked: boolean) => void;
 }
 
 export const NotificationToggle = ({
   id,
   label,
   description,
-  tooltipContent,
   checked,
-  onCheckedChange,
-  disabled = false
+  disabled = false,
+  tooltipContent,
+  onCheckedChange
 }: NotificationToggleProps) => {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between space-x-2">
       <div className="space-y-0.5">
-        <div className="flex items-center gap-2">
-          <Label htmlFor={id}>{label}</Label>
+        <div className="flex items-center">
+          <label
+            htmlFor={id}
+            className="text-sm font-medium text-gray-900 cursor-pointer"
+          >
+            {label}
+          </label>
+          
           {tooltipContent && (
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
-                  <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                <TooltipTrigger asChild>
+                  <HelpCircle className="ml-1 h-4 w-4 text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{tooltipContent}</p>
@@ -41,11 +46,9 @@ export const NotificationToggle = ({
             </TooltipProvider>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">
-          {description}
-        </p>
+        <div className="text-sm text-muted-foreground">{description}</div>
       </div>
-      <Switch 
+      <Switch
         id={id}
         checked={checked}
         onCheckedChange={onCheckedChange}

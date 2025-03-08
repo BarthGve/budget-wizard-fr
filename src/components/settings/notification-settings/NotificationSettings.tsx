@@ -1,19 +1,16 @@
 
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useNotificationSettings } from "./useNotificationSettings";
 import { AdminNotifications } from "./AdminNotifications";
-import { ChangelogNotification } from "./ChangelogNotification";
 import { NotificationToggle } from "./NotificationToggle";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 export const NotificationSettings = () => {
   const { currentUser } = useCurrentUser();
-  const { isAdmin, profile } = usePagePermissions();
-  const { updateNotificationSettings, isUpdating } = useNotificationSettings();
+  const { isAdmin } = usePagePermissions();
+  const { profile, updateNotificationSettings, isUpdating } = useNotificationSettings();
 
   if (!profile) {
     return <div>Chargement des paramètres de notification...</div>;
@@ -42,13 +39,14 @@ export const NotificationSettings = () => {
           />
         </div>
 
-        {isAdmin && <AdminNotifications 
-          profile={profile} 
-          isUpdating={isUpdating} 
-          updateNotificationSettings={updateNotificationSettings} 
-        />}
-        
-        {/* Informations sur la gestion des notifications */}
+        {isAdmin && (
+          <AdminNotifications
+            profile={profile}
+            isUpdating={isUpdating}
+            updateNotificationSettings={updateNotificationSettings}
+          />
+        )}
+
         <div className="rounded-md bg-blue-50 p-4 mt-6">
           <div className="flex">
             <div className="flex-shrink-0">
@@ -57,9 +55,7 @@ export const NotificationSettings = () => {
             <div className="ml-3">
               <h3 className="text-sm font-medium text-blue-800">À propos des notifications</h3>
               <div className="mt-2 text-sm text-blue-700">
-                <p>
-                  Les notifications sont envoyées par email. Vous pouvez modifier vos préférences à tout moment.
-                </p>
+                <p>Les notifications sont envoyées par email. Vous pouvez modifier vos préférences à tout moment.</p>
               </div>
             </div>
           </div>

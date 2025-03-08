@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,42 +16,34 @@ const EmailVerification = () => {
   const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
-    // Vérifier si c'est une vérification de changement d'email
     const params = new URLSearchParams(location.search);
     const type = params.get("type");
     const token = params.get("token");
     setIsEmailChange(type === "emailChange");
     
-    // Get the email from localStorage (set during registration or email change)
     const storedEmail = localStorage.getItem("verificationEmail");
     if (storedEmail) {
       setEmail(storedEmail);
     }
 
-    // Si nous avons un token dans l'URL et que c'est un changement d'email,
-    // essayons de vérifier immédiatement
     if (token && type === "emailChange") {
       verifyEmailChange(token);
     }
 
-    // Récupérer l'heure de fin du compteur depuis localStorage ou en créer une nouvelle
     const getOrCreateEndTime = () => {
       const storedEndTime = localStorage.getItem("verificationEndTime");
       if (storedEndTime) {
         const endTime = parseInt(storedEndTime, 10);
-        return endTime; // Retourner le temps stocké même s'il est déjà expiré
+        return endTime;
       }
       
-      // Créer un nouveau temps uniquement s'il n'en existe pas déjà un
       const newEndTime = Date.now() + 120 * 1000;
       localStorage.setItem("verificationEndTime", newEndTime.toString());
       return newEndTime;
     };
 
-    // Initialiser avec l'heure de fin stockée ou une nouvelle
     const endTime = getOrCreateEndTime();
 
-    // Set up countdown timer
     const timer = setInterval(() => {
       const now = Date.now();
       const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
@@ -64,30 +55,18 @@ const EmailVerification = () => {
       }
     }, 1000);
 
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       console.log("Event detected in EmailVerification:", event);
       if (event === "SIGNED_IN") {
-        // Nettoyer tous les éléments liés à la vérification
         localStorage.removeItem("verificationEmail");
         localStorage.removeItem("verificationEndTime");
-        
-        // Définir un flag dans le localStorage pour indiquer que l'utilisateur vient juste de vérifier son email
         localStorage.setItem("justVerified", "true");
-        
-        // Rediriger vers la page de connexion au lieu de dashboard
-        // Cela permettra de s'assurer que l'authentification est correctement initialisée
         navigate("/login");
       } else if (event === "USER_UPDATED") {
-        // Si c'est une mise à jour de l'utilisateur (changement d'email)
         console.log("User updated after email verification");
-        
-        // Nettoyer les données de vérification
         localStorage.removeItem("verificationEmail");
         localStorage.removeItem("verificationEndTime");
         localStorage.removeItem("emailChangeToken");
-        
-        // Informer l'utilisateur et rediriger
         toast.success("Votre adresse email a été mise à jour avec succès");
         navigate("/user-settings");
       }
@@ -102,7 +81,6 @@ const EmailVerification = () => {
   const verifyEmailChange = async (token: string) => {
     setIsVerifying(true);
     try {
-      // Vérifier que le token correspond à celui stocké dans le localStorage
       const storedToken = localStorage.getItem("emailChangeToken");
       
       if (token !== storedToken) {
@@ -110,7 +88,6 @@ const EmailVerification = () => {
         return;
       }
       
-      // Obtenir l'utilisateur actuel
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user || !user.new_email) {
@@ -118,18 +95,16 @@ const EmailVerification = () => {
         return;
       }
       
-      // Confirmer le changement d'email
-      await supabase.auth.updateUser({
-        email: user.new_email,
-        email_confirm: true
+      const { error } = await supabase.auth.updateUser({
+        email: user.new_email
       });
       
-      // Nettoyer les données de vérification
+      if (error) throw error;
+      
       localStorage.removeItem("verificationEmail");
       localStorage.removeItem("verificationEndTime");
       localStorage.removeItem("emailChangeToken");
       
-      // Informer l'utilisateur et rediriger
       toast.success("Votre adresse email a été mise à jour avec succès");
       navigate("/user-settings");
     } catch (error: any) {
@@ -149,7 +124,6 @@ const EmailVerification = () => {
     setIsResending(true);
     try {
       if (isEmailChange) {
-        // Récupérer l'utilisateur courant
         const { data: userData } = await supabase.auth.getUser();
         
         if (userData.user?.new_email) {
@@ -159,7 +133,6 @@ const EmailVerification = () => {
           
           const verificationLink = `${siteUrl}/email-verification?type=emailChange&token=${securityToken}`;
           
-          // Envoyer un email personnalisé via notre fonction Edge
           const { error: emailError } = await supabase.functions.invoke('email-change-verification', {
             body: {
               oldEmail: userData.user.email || "votre adresse actuelle",
@@ -173,7 +146,6 @@ const EmailVerification = () => {
           throw new Error("Aucun changement d'email en attente");
         }
       } else {
-        // Pour la vérification d'inscription
         const { error } = await supabase.auth.resend({
           type: 'signup',
           email: email,
@@ -182,7 +154,6 @@ const EmailVerification = () => {
         if (error) throw error;
       }
 
-      // Réinitialiser le compteur à 2 minutes
       const newEndTime = Date.now() + 120 * 1000;
       localStorage.setItem("verificationEndTime", newEndTime.toString());
       setRemainingTime(120);
