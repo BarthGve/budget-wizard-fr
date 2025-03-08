@@ -13,14 +13,12 @@ export const useRealtimeListeners = () => {
     projects: any | null;
     recurringExpenses: any | null;
     profiles: any | null;
-    expenses: any | null;
   }>({
     contributors: null,
     monthlySavings: null,
     projects: null,
     recurringExpenses: null,
-    profiles: null,
-    expenses: null
+    profiles: null
   });
 
   // Fonction d'invalidation optimisée pour cibler uniquement les données nécessaires
@@ -136,18 +134,6 @@ export const useRealtimeListeners = () => {
       if (channelsRef.current.profiles) {
         supabase.removeChannel(channelsRef.current.profiles);
         channelsRef.current.profiles = null;
-      }
-    };
-  }, [queryClient]);
-  
-  // Nouvel écouteur pour les dépenses
-  useEffect(() => {
-    setupChannel('expenses', 'expenses', ['expenses', 'expenses-stats', 'retailer-expenses']);
-    
-    return () => {
-      if (channelsRef.current.expenses) {
-        supabase.removeChannel(channelsRef.current.expenses);
-        channelsRef.current.expenses = null;
       }
     };
   }, [queryClient]);
