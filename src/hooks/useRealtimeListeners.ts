@@ -12,21 +12,22 @@ export const useRealtimeListeners = () => {
     monthlySavings: any | null;
     projects: any | null;
     recurringExpenses: any | null;
-    profiles: any | null; // Ajout d'un canal pour les profils
+    profiles: any | null;
   }>({
     contributors: null,
     monthlySavings: null,
     projects: null,
     recurringExpenses: null,
-    profiles: null // Initialisation du nouveau canal
+    profiles: null
   });
 
   // Fonction d'invalidation optimisée pour cibler uniquement les données nécessaires
   const invalidateDashboardData = () => {
+    console.log("Invalidation forcée des données du dashboard");
     queryClient.invalidateQueries({ 
       queryKey: ["dashboard-data"],
       exact: false,
-      refetchType: 'active' // Ne refetch que les requêtes actives
+      refetchType: 'all' // Forcer toutes les requêtes à se recharger
     });
   };
 
@@ -54,7 +55,7 @@ export const useRealtimeListeners = () => {
         (payload) => {
           console.log(`${tableName} changed:`, payload.eventType);
           
-          // Invalidation ciblée des données
+          // Invalidation forcée des données pour tous les événements liés aux contributeurs
           invalidateDashboardData();
           
           // Invalidations supplémentaires si spécifiées
@@ -63,19 +64,21 @@ export const useRealtimeListeners = () => {
               queryClient.invalidateQueries({ 
                 queryKey: [key],
                 exact: false, 
-                refetchType: 'active'
+                refetchType: 'all' // Forcer le rechargement
               });
             });
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Statut du canal ${tableName}:`, status);
+      });
     
     // Stocker la référence du canal
     channelsRef.current[channelKey] = channel;
   };
 
-  // Configuration des écouteurs pour les contributeurs
+  // Configuration des écouteurs pour les contributeurs avec priorité maximale
   useEffect(() => {
     setupChannel('contributors', 'contributors');
     
@@ -123,7 +126,7 @@ export const useRealtimeListeners = () => {
     };
   }, [queryClient]);
 
-  // Nouveau listener pour les mises à jour des profils
+  // Écouteur pour les mises à jour des profils
   useEffect(() => {
     setupChannel('profiles', 'profiles', ['profile']);
     

@@ -44,8 +44,12 @@ export const addContributorService = async (
   if (insertError) throw insertError;
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
-  // Recalculer les pourcentages manuellement
+  // Recalculer les pourcentages via la fonction côté serveur
   await recalculatePercentages(userId);
 
+  // Attendre 100ms avant de retourner les données pour laisser le temps à Supabase de propager les changements
+  await new Promise(resolve => setTimeout(resolve, 100));
+  
+  // Récupérer la liste à jour des contributeurs
   return await fetchContributorsService();
 };
