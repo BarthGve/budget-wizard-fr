@@ -14,6 +14,8 @@ import { useWindowSize } from "@/hooks/use-window-size";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AnimatePresence, motion } from "framer-motion";
 import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/components/ui/tabs";
+import { useProfileAvatar } from "@/hooks/useProfileAvatar";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface FeedbackDialogProps {
   collapsed?: boolean;
@@ -29,6 +31,8 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
   const { width, height } = useWindowSize();
   const [step, setStep] = useState(1);
   const [hoverRating, setHoverRating] = useState(0);
+  const { data: profileData } = useProfileAvatar();
+  const { currentUser } = useCurrentUser();
 
   // Textes et émojis pour les différentes notes
   const ratingTexts = [
@@ -92,17 +96,14 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
 
     setIsSubmitting(true);
     try {
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
+      if (!currentUser) throw new Error("Non authentifié");
 
       // Enregistrement du feedback dans la base de données
       const { data: feedback, error } = await supabase.from("feedbacks").insert({
         title: title.trim(),
         content: content.trim(),
         rating,
-        profile_id: user.id,
+        profile_id: currentUser.id,
         status: "pending"
       }).select('id').single();
 
@@ -127,6 +128,19 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Obtenir les initiales du prénom et nom pour l'avatar fallback
+  const getInitials = () => {
+    if (!currentUser?.email) return "FB";
+    
+    const email = currentUser.email;
+    const nameParts = email.split('@')[0].split(/[._-]/);
+    
+    if (nameParts.length >= 2) {
+      return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
+    }
+    return nameParts[0].substring(0, 2).toUpperCase();
   };
 
   return (
@@ -176,8 +190,11 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
           <div className="bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 dark:from-primary/10 dark:via-primary/5 dark:to-primary/10 px-6 pt-8 pb-6">
             <div className="flex items-center justify-center mb-3">
               <Avatar className="h-12 w-12 border-2 border-primary/20">
-                <AvatarImage src="/api/placeholder/64/64" alt="Avatar" />
-                <AvatarFallback className="bg-primary/10 text-primary">FB</AvatarFallback>
+                {profileData?.avatar_url ? (
+                  <AvatarImage src={profileData.avatar_url} alt="Avatar utilisateur" />
+                ) : (
+                  <AvatarFallback className="bg-primary/10 text-primary">{getInitials()}</AvatarFallback>
+                )}
               </Avatar>
             </div>
             <DialogTitle className="text-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
