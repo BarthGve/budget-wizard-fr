@@ -40,9 +40,8 @@ export const DashboardContributors = ({
     }
   };
 
-  // Afficher le tableau si nous avons au moins un contributeur
-  // (modification de la condition pour afficher même avec 1 seul contributeur)
-  if (!contributors || contributors.length === 0) return null;
+  // N'afficher le tableau que s'il y a plus d'un contributeur
+  if (!contributors || contributors.length <= 1) return null;
 
   return (
     <motion.div variants={itemVariants}>
