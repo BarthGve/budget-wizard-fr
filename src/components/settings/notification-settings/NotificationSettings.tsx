@@ -7,11 +7,13 @@ import { useNotificationSettings } from "./useNotificationSettings";
 import { AdminNotifications } from "./AdminNotifications";
 import { ChangelogNotification } from "./ChangelogNotification";
 import { NotificationToggle } from "./NotificationToggle";
-import { useUser } from "@/contexts/UserContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 export const NotificationSettings = () => {
-  const { user } = useUser();
-  const { isAdmin, profile, updateNotificationSettings, isUpdating } = useNotificationSettings();
+  const { currentUser } = useCurrentUser();
+  const { isAdmin, profile } = usePagePermissions();
+  const { updateNotificationSettings, isUpdating } = useNotificationSettings();
 
   if (!profile) {
     return <div>Chargement des paramètres de notification...</div>;
