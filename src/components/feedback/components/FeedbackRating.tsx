@@ -66,7 +66,11 @@ export const FeedbackRating = ({ rating, setRating, hoverRating, setHoverRating 
             </Button>
           ))}
         </div>
-     
+        {(hoverRating || rating) ? (
+          <p className="text-center text-sm font-medium text-primary/80 mt-2">
+            {ratingTexts[(hoverRating || rating || 1) - 1]}
+          </p>
+        ) : null}
       </div>
     </motion.div>
   );
