@@ -94,7 +94,7 @@ const Dashboard = () => {
         {isLoading ? (
           <Card className="p-6">
             <div className="flex flex-col items-center justify-center h-64 w-full">
-              <StyledLoader className="h-12 w-12 mb-4" />
+              <StyledLoader />
               <p className="text-muted-foreground">Chargement des données...</p>
             </div>
           </Card>
