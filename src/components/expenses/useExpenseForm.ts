@@ -29,7 +29,13 @@ export function useExpenseForm(onExpenseAdded: () => void) {
 
       toast.success("La dépense a été ajoutée");
       
-      // Invalidation de toutes les requêtes liées aux dépenses pour ce détaillant
+      // Invalidation de toutes les requêtes liées aux dépenses
+      queryClient.invalidateQueries({ 
+        queryKey: ["expenses"],
+        exact: false
+      });
+      
+      // Invalidation des requêtes spécifiques au détaillant
       queryClient.invalidateQueries({ 
         queryKey: ["retailer-expenses", values.retailerId],
         exact: false

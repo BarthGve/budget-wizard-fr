@@ -4,7 +4,8 @@ import { subYears, format, parseISO, isWithinInterval, startOfYear, endOfYear, s
 import { fr } from "date-fns/locale";
 import { formatCurrency } from "@/utils/format";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Expense {
   id: string;
@@ -28,8 +29,15 @@ const chartConfig = {
 };
 
 export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
+  // État pour suivre la version des données pour les animations
+  const [dataVersion, setDataVersion] = useState(0);
   const today = new Date();
   const startOfCurrentYear = startOfYear(today);
+
+  // Surveiller les changements dans les dépenses pour déclencher l'animation
+  useEffect(() => {
+    setDataVersion(prev => prev + 1);
+  }, [expenses]);
 
   const chartData = useMemo(() => {
     if (viewMode === 'monthly') {
@@ -82,37 +90,46 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
 
   return (
     <div className="bg-card rounded-lg p-2 mt-2">
-
-      <ChartContainer className="h-[250px] w-full p-0" config={chartConfig} >
-        <ResponsiveContainer width="100%" height="100%" >
-
-          <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 20 }}>
-            <CartesianGrid vertical={false} stroke="hsl(var(--border))" opacity={0.1} />
-            <XAxis 
-              dataKey="period"
-              axisLine={false}
-              tickLine={false}
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              tickMargin={10}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent 
-                  formatter={(value: number) => formatCurrency(value)}
-                  labelFormatter={(label) => viewMode === 'yearly' ? `Année ${label}` : label}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={dataVersion}
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.3 }}
+          className="w-full h-full"
+        >
+          <ChartContainer className="h-[250px] w-full p-0" config={chartConfig} >
+            <ResponsiveContainer width="100%" height="100%" >
+              <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 20 }}>
+                <CartesianGrid vertical={false} stroke="hsl(var(--border))" opacity={0.1} />
+                <XAxis 
+                  dataKey="period"
+                  axisLine={false}
+                  tickLine={false}
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickMargin={10}
                 />
-              }
-            />
-            <Bar 
-              dataKey="total" 
-              fill="#8B5CF6"
-              radius={[4, 4, 0, 0]}
-              maxBarSize={50}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </ChartContainer>
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent 
+                      formatter={(value: number) => formatCurrency(value)}
+                      labelFormatter={(label) => viewMode === 'yearly' ? `Année ${label}` : label}
+                    />
+                  }
+                />
+                <Bar 
+                  dataKey="total" 
+                  fill="#8B5CF6"
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={50}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

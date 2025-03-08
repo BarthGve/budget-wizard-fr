@@ -13,12 +13,14 @@ export const useRealtimeListeners = () => {
     projects: any | null;
     recurringExpenses: any | null;
     profiles: any | null;
+    expenses: any | null; // Ajout d'une référence pour les dépenses
   }>({
     contributors: null,
     monthlySavings: null,
     projects: null,
     recurringExpenses: null,
-    profiles: null
+    profiles: null,
+    expenses: null // Initialisation de la référence des dépenses
   });
 
   // Fonction d'invalidation optimisée pour cibler uniquement les données nécessaires
@@ -134,6 +136,19 @@ export const useRealtimeListeners = () => {
       if (channelsRef.current.profiles) {
         supabase.removeChannel(channelsRef.current.profiles);
         channelsRef.current.profiles = null;
+      }
+    };
+  }, [queryClient]);
+
+  // Nouveau: Écouteur spécifique pour les dépenses
+  useEffect(() => {
+    // Configuration de l'écouteur avec invalidation des requêtes liées aux dépenses
+    setupChannel('expenses', 'expenses', ['expenses', 'retailer-expenses']);
+    
+    return () => {
+      if (channelsRef.current.expenses) {
+        supabase.removeChannel(channelsRef.current.expenses);
+        channelsRef.current.expenses = null;
       }
     };
   }, [queryClient]);

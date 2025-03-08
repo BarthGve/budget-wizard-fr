@@ -4,7 +4,8 @@ import { MoveUpRight, MoveDownRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/format";
 import { startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears } from "date-fns";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface YearlyTotalCardProps {
   currentYearTotal: number;
@@ -18,6 +19,8 @@ interface YearlyTotalCardProps {
 }
 
 export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses, viewMode }: YearlyTotalCardProps) {
+  const [prevAmount, setPrevAmount] = useState(0);
+  
   const { totalAmount, percentageChange, periodLabel } = useMemo(() => {
     const now = new Date();
     
@@ -68,9 +71,15 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
     }
   }, [expenses, viewMode, currentYearTotal, previousYearTotal]);
 
+  // Effet pour détecter les changements de montant total
+  useEffect(() => {
+    setPrevAmount(totalAmount);
+  }, [totalAmount]);
+
   const isIncrease = percentageChange > 0;
   const comparisonLabel = viewMode === 'monthly' ? "par rapport au mois précédent" : "par rapport à l'année précédente";
-
+  const hasChanged = totalAmount !== prevAmount && prevAmount !== 0;
+  
   return (
     <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-shadow duration-300 hover:shadow-xl">
       <CardHeader className="py-[16px]">
@@ -83,9 +92,19 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          <p className="text-2xl font-bold text-white">
-            {formatCurrency(totalAmount)}
-          </p>
+          <AnimatePresence mode="wait">
+            <motion.p 
+              key={totalAmount}
+              className="text-2xl font-bold text-white"
+              initial={hasChanged ? { opacity: 0, y: totalAmount > prevAmount ? 20 : -20 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: totalAmount > prevAmount ? -20 : 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {formatCurrency(totalAmount)}
+            </motion.p>
+          </AnimatePresence>
+          
           {(viewMode === 'yearly' && previousYearTotal > 0) || (viewMode === 'monthly' && percentageChange !== 0) ? (
             <div className="flex items-center gap-1">
               {isIncrease ? (
