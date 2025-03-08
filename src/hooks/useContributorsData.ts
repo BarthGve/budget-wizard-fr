@@ -84,7 +84,14 @@ export const useContributorsData = () => {
     
     // Mise à jour optimiste plus propre
     queryClient.setQueryData(["contributors"], [
-      { ...newContributor, id: optimisticId, total_contribution: contributionValue },
+      { 
+        ...newContributor, 
+        id: optimisticId, 
+        total_contribution: contributionValue, 
+        percentage_contribution: 0, // Ajouter un pourcentage initial à 0
+        is_owner: false,
+        profile_id: "temp" 
+      },
       ...currentContributors
     ]);
 

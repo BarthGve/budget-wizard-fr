@@ -34,6 +34,7 @@ export const addContributorService = async (
         name: newContributor.name,
         email: newContributor.email ? newContributor.email.trim() : null, // On s'assure que l'email est null si vide
         total_contribution: contribution,
+        percentage_contribution: 0, // Initialiser à 0, sera recalculé après
         profile_id: userId,
       },
     ])
