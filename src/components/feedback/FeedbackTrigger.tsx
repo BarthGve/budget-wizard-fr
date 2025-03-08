@@ -14,7 +14,7 @@ export const FeedbackTrigger = ({ collapsed, onClick }: FeedbackTriggerProps) =>
       variant="ghost" 
       onClick={onClick}
       className={cn(
-        "group relative w-full text-primary flex items-center px-4 py-2 rounded-lg transition-colors",
+        "group relative w-full flex items-center px-4 py-2 rounded-lg transition-colors",
         "hover:bg-primary/10",
         collapsed && "justify-center px-0",
         !collapsed && "justify-start"
@@ -25,7 +25,7 @@ export const FeedbackTrigger = ({ collapsed, onClick }: FeedbackTriggerProps) =>
         !collapsed && "mr-2"
       )} />
       {!collapsed && (
-        <span className="truncate">Votre avis</span>
+        <span className="truncate">Laissez nous un avis</span>
       )}
     </Button>
   );
