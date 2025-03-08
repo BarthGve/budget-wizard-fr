@@ -58,10 +58,10 @@ export const useDashboardQueries = (userId: string | undefined) => {
       }
     },
     enabled: !!userId,
-    staleTime: 1000 * 60 * 2, // Cache de 2 minutes pour réduire les requêtes inutiles
+    staleTime: 1000 * 60, // Réduire à 1 minute pour actualiser plus souvent
     gcTime: 1000 * 60 * 5, // Garde en cache pour 5 minutes après être devenu inactif
-    refetchOnWindowFocus: false, // Désactive le rechargement sur focus de fenêtre
-    refetchOnReconnect: true, // Active le rechargement à la reconnexion réseau
+    refetchOnWindowFocus: false, 
+    refetchOnReconnect: true, 
     retry: (failureCount, error) => {
       // Limiter les tentatives de reconnexion pour les erreurs critiques
       if (error instanceof Error && error.message.includes("réseau")) {

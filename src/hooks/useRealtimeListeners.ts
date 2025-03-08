@@ -12,11 +12,13 @@ export const useRealtimeListeners = () => {
     monthlySavings: any | null;
     projects: any | null;
     recurringExpenses: any | null;
+    profiles: any | null; // Ajout d'un canal pour les profils
   }>({
     contributors: null,
     monthlySavings: null,
     projects: null,
-    recurringExpenses: null
+    recurringExpenses: null,
+    profiles: null // Initialisation du nouveau canal
   });
 
   // Fonction d'invalidation optimisée pour cibler uniquement les données nécessaires
@@ -117,6 +119,18 @@ export const useRealtimeListeners = () => {
       if (channelsRef.current.recurringExpenses) {
         supabase.removeChannel(channelsRef.current.recurringExpenses);
         channelsRef.current.recurringExpenses = null;
+      }
+    };
+  }, [queryClient]);
+
+  // Nouveau listener pour les mises à jour des profils
+  useEffect(() => {
+    setupChannel('profiles', 'profiles', ['profile']);
+    
+    return () => {
+      if (channelsRef.current.profiles) {
+        supabase.removeChannel(channelsRef.current.profiles);
+        channelsRef.current.profiles = null;
       }
     };
   }, [queryClient]);
