@@ -4,10 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import StyledLoader from "../ui/StyledLoader";
-import { memo } from "react";
+import { memo, ReactNode } from "react";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
   requireAdmin?: boolean;
 }
 
