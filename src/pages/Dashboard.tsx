@@ -7,7 +7,6 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { Button } from "@/components/ui/button";
 import {
