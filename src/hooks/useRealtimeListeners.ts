@@ -26,7 +26,7 @@ export const useRealtimeListeners = () => {
     queryClient.invalidateQueries({ 
       queryKey: ["dashboard-data"],
       exact: false,
-      refetchType: 'all' // Refetch toutes les requêtes, pas seulement les actives
+      refetchType: 'active' // Ne refetch que les requêtes actives
     });
   };
 
@@ -63,7 +63,7 @@ export const useRealtimeListeners = () => {
               queryClient.invalidateQueries({ 
                 queryKey: [key],
                 exact: false, 
-                refetchType: 'all' // Refetch toutes les requêtes
+                refetchType: 'active'
               });
             });
           }
@@ -77,7 +77,7 @@ export const useRealtimeListeners = () => {
 
   // Configuration des écouteurs pour les contributeurs
   useEffect(() => {
-    setupChannel('contributors', 'contributors', ['contributors']);
+    setupChannel('contributors', 'contributors');
     
     return () => {
       if (channelsRef.current.contributors) {
@@ -123,7 +123,7 @@ export const useRealtimeListeners = () => {
     };
   }, [queryClient]);
 
-  // Écouteur pour les mises à jour des profils
+  // Nouveau listener pour les mises à jour des profils
   useEffect(() => {
     setupChannel('profiles', 'profiles', ['profile']);
     
