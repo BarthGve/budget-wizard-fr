@@ -44,8 +44,9 @@ export const addContributorService = async (
   if (insertError) throw insertError;
   if (!insertedContributor) throw new Error("Erreur lors de l'ajout du contributeur");
 
-  // Recalculer les pourcentages manuellement
+  // Recalculer les pourcentages 
   await recalculatePercentages(userId);
 
+  // Retourner les contributeurs mis à jour
   return await fetchContributorsService();
 };
