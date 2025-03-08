@@ -107,10 +107,14 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       localStorage.setItem("verificationEmail", values.email);
       
       // Mettre à jour l'email
-      // Correction: L'API Supabase attend emailRedirectTo directement dans updateUser, pas dans un sous-objet options
+      // Correction: La syntaxe correcte pour updateUser avec redirection email
+      const redirectTo = `${window.location.origin}/email-verification?type=emailChange`;
+      
+      // Utiliser la syntaxe correcte pour updateUser
       const { data, error } = await supabase.auth.updateUser({
         email: values.email,
-        emailRedirectTo: `${window.location.origin}/email-verification?type=emailChange`
+      }, {
+        redirectTo: redirectTo
       });
       
       if (error) throw error;
