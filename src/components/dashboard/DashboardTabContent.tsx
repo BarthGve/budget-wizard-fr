@@ -95,6 +95,7 @@ export const DashboardTabContent = ({
   const mappedContributors = contributors.map(contributor => ({
     ...contributor,
     is_owner: contributor.is_owner ?? false, // Provide a default value if is_owner is undefined
+    percentage_contribution: contributor.percentage_contribution ?? 0, // S'assurer que percentage_contribution existe
     expenseShare: 0, // Add default values for required Contributor properties
     creditShare: 0
   }));
@@ -142,11 +143,14 @@ export const DashboardTabContent = ({
         monthlySavings={monthlySavings}
       />
       
-      <DashboardContributors 
-        contributors={mappedContributors}
-        expenses={expenses}
-        totalMensualites={totalMensualites}
-      />
+      {/* Afficher le composant des contributeurs uniquement s'il y a plus d'un contributeur */}
+      {mappedContributors.length > 1 && (
+        <DashboardContributors 
+          contributors={mappedContributors}
+          expenses={expenses}
+          totalMensualites={totalMensualites}
+        />
+      )}
     </motion.div>
   );
 };

@@ -20,6 +20,15 @@ export function ContributorsTableList({
   avatarUrl,
   onSelectContributor,
 }: ContributorsTableListProps) {
+  // Vérifier si les contributeurs existent et afficher un message si la liste est vide
+  if (!contributors || contributors.length === 0) {
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        Aucun contributeur disponible pour affichage.
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -34,12 +43,12 @@ export function ContributorsTableList({
         </TableHeader>
         <TableBody>
           {contributors.map((contributor) => {
-            const expenseShare = (totalExpenses * contributor.percentage_contribution) / 100;
-            const creditShare = (totalCredits * contributor.percentage_contribution) / 100;
+            const expenseShare = (totalExpenses * (contributor.percentage_contribution || 0)) / 100;
+            const creditShare = (totalCredits * (contributor.percentage_contribution || 0)) / 100;
             
             return (
               <ContributorTableRow
-                key={contributor.name}
+                key={contributor.id}
                 contributor={contributor}
                 expenseShare={expenseShare}
                 creditShare={creditShare}

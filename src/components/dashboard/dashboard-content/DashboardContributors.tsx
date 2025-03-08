@@ -40,6 +40,9 @@ export const DashboardContributors = ({
     }
   };
 
+  // Vérifier si le tableau doit être affiché (plus d'un contributeur)
+  if (!contributors || contributors.length <= 1) return null;
+
   return (
     <motion.div variants={itemVariants}>
       <ContributorsTable 
@@ -49,4 +52,4 @@ export const DashboardContributors = ({
       />
     </motion.div>
   );
-};
+}
