@@ -109,130 +109,186 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
           gravity={0.2}
         />
       )}
-     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-  <DialogTrigger asChild>
-    <Button 
-      variant="ghost" 
-      className={cn(
-        "w-full transition-all duration-200 hover:bg-primary/10 group",
-        collapsed ? "w-10 px-0 justify-center" : "justify-start"
-      )}
-    >
-      <Send className="h-4 w-4 group-hover:text-primary transition-colors" />
-      {!collapsed && (
-        <span className="ml-2 font-normal opacity-90 group-hover:opacity-100">
-          Laissez-nous un avis
-        </span>
-      )}
-    </Button>
-  </DialogTrigger>
-  
-  <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-auto rounded-xl border-0 shadow-2xl p-0">
-    {/* Header avec gradient - fixé pendant le défilement */}
-    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 text-white sticky top-0 z-10">
-      <DialogHeader>
-        <DialogTitle className="text-center text-2xl font-bold flex items-center justify-center gap-2">
-          <span className="opacity-90">✨</span> Votre avis compte <span className="opacity-90">✨</span>
-        </DialogTitle>
-        <DialogDescription className="text-center text-base text-white/80 mt-2">
-          Aidez-nous à améliorer notre produit en partageant vos impressions
-        </DialogDescription>
-      </DialogHeader>
-    </div>
-    
-    {/* Contenu - scrollable si nécessaire */}
-    <div className="p-6 space-y-6 overflow-y-auto">
-      <div className="space-y-2">
-        <Label htmlFor="title" className="text-sm font-medium">Titre</Label>
-        <Input
-          id="title"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          placeholder="Résumez votre feedback"
-          className="w-full rounded-md border border-gray-200 transition-all focus-visible:ring-1 focus-visible:ring-primary"
-        />
-      </div>
+  <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button 
+          variant="ghost" 
+          className={cn(
+            "group relative overflow-hidden transition-all hover:bg-primary/10 dark:hover:bg-primary/20",
+            collapsed ? "w-10 p-0 justify-center" : "justify-start px-3 py-2"
+          )}
+        >
+          <MessageSquare className={cn("h-4 w-4 transition-transform group-hover:scale-110", 
+            !collapsed && "mr-2")} />
+          {!collapsed && (
+            <span className="font-normal">Votre avis</span>
+          )}
+          <span className={cn(
+            "absolute inset-0 -z-10 bg-gradient-to-r from-primary/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100",
+            collapsed ? "rounded-full" : "rounded-md"
+          )} />
+        </Button>
+      </DialogTrigger>
       
-      <div className="space-y-2">
-        <Label htmlFor="content" className="text-sm font-medium">Feedback</Label>
-        <Textarea
-          id="content"
-          value={content}
-          onChange={e => setContent(e.target.value)}
-          placeholder="Partagez vos impressions"
-          className="min-h-[100px] rounded-md border border-gray-200 resize-none transition-all focus-visible:ring-1 focus-visible:ring-primary"
-        />
-      </div>
-     
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">Votre note</Label>
-        <div className="flex items-center justify-center p-3 bg-gray-50 rounded-lg">
-          {[1, 2, 3, 4, 5].map(value => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setRating(value)}
-              className="p-2 hover:scale-110 transition-transform focus:outline-none"
-            >
-              <Star
-                className={cn(
-                  "h-7 w-7 transition-all duration-200",
-                  value <= (rating || 0)
-                    ? "fill-amber-400 text-amber-400"
-                    : "text-gray-300 hover:text-gray-400"
-                )}
-              />
-            </button>
-          ))}
+      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-xl border border-primary/20 shadow-xl dark:shadow-primary/5 backdrop-blur-sm">
+        <div className="absolute top-3 right-3 z-10">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 rounded-full hover:bg-zinc-800/10 dark:hover:bg-white/10" 
+            onClick={() => setIsOpen(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
-      </div>
-    </div>
-    
-    {/* Footer - fixé en bas */}
-    <div className="p-5 bg-gray-50 flex justify-end gap-3 border-t border-gray-100 sticky bottom-0 z-10">
-      <Button 
-        variant="outline" 
-        onClick={() => setIsOpen(false)}
-        className="px-4 transition-all hover:bg-gray-100"
-      >
-        Annuler
-      </Button>
-      
-      <Button
-        onClick={handleSubmit}
-        disabled={isSubmitting}
-        className="px-5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:opacity-90 transition-opacity shadow-md"
-      >
-        {isSubmitting ? (
-          <>
-            <span className="inline-block animate-spin mr-2">
-              <svg className="h-4 w-4" viewBox="0 0 24 24">
-                <circle 
-                  className="opacity-25" 
-                  cx="12" cy="12" r="10" 
-                  stroke="currentColor" 
-                  strokeWidth="4" 
-                  fill="none" 
-                />
-                <path 
-                  className="opacity-75" 
-                  fill="currentColor" 
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" 
-                />
-              </svg>
-            </span>
-            Envoi en cours...
-          </>
-        ) : (
-          <>
-            <Send className="mr-2 h-4 w-4" />
-            Envoyer mon avis
-          </>
-        )}
-      </Button>
-    </div>
-  </DialogContent>
-</Dialog>
+        
+        <div className="bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 dark:from-primary/10 dark:via-primary/5 dark:to-primary/10 px-6 pt-8 pb-6">
+          <div className="flex items-center justify-center mb-3">
+            <Avatar className="h-12 w-12 border-2 border-primary/20">
+              <AvatarImage src="/api/placeholder/64/64" alt="Avatar" />
+              <AvatarFallback className="bg-primary/10 text-primary">FB</AvatarFallback>
+            </Avatar>
+          </div>
+          <DialogTitle className="text-center text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+            Votre avis compte
+          </DialogTitle>
+          <DialogDescription className="text-center text-base mt-2">
+            {step === 1 ? 
+              "Comment évaluez-vous votre expérience ?" : 
+              "Partagez vos impressions pour nous aider à améliorer"}
+          </DialogDescription>
+        </div>
+        
+        <AnimatePresence mode="wait">
+          {step === 1 ? (
+            <motion.div 
+              key="step1"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="px-6 py-6"
+            >
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex items-center justify-center space-x-2 mb-4">
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <Button
+                      key={value}
+                      type="button"
+                      variant="ghost"
+                      size="lg"
+                      onClick={() => handleRatingChange(value)}
+                      onMouseEnter={() => setHoverRating(value)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      className={cn(
+                        "group p-2 h-16 w-16 rounded-xl transition-all duration-200 hover:scale-105",
+                        value <= (hoverRating || rating) ? "bg-primary/10" : "bg-transparent"
+                      )}
+                    >
+                      <div className="flex flex-col items-center">
+                        <span className="text-2xl mb-1">{ratingEmojis[value-1]}</span>
+                        <Star
+                          className={cn(
+                            "h-6 w-6 transition-all duration-200",
+                            value <= (hoverRating || rating)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300 group-hover:text-gray-400"
+                          )}
+                        />
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+                {(hoverRating || rating) > 0 && (
+                  <span className="text-sm text-center text-gray-500 dark:text-gray-400 mt-2">
+                    {ratingTexts[(hoverRating || rating) - 1]}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="step2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="px-6 py-6"
+            >
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <Label htmlFor="title" className="text-sm font-medium">Titre</Label>
+                    <div className="flex items-center space-x-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={cn(
+                            "h-3 w-3",
+                            i < rating
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
+                          )}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <Input
+                    id="title"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    placeholder="Résumez votre expérience en quelques mots"
+                    className="w-full border-primary/20 focus:border-primary focus:ring-primary/20"
+                    autoFocus
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="content" className="text-sm font-medium">Détails</Label>
+                  <Textarea
+                    id="content"
+                    value={content}
+                    onChange={e => setContent(e.target.value)}
+                    placeholder="Partagez vos suggestions, commentaires ou idées d'amélioration..."
+                    className="min-h-[120px] border-primary/20 focus:border-primary focus:ring-primary/20"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        <DialogFooter className="px-6 py-4 bg-gray-50 dark:bg-zinc-900/50">
+          {step === 2 && (
+            <Button 
+              variant="outline" 
+              onClick={() => setStep(1)}
+              className="mr-auto"
+              disabled={isSubmitting}
+            >
+              Retour
+            </Button>
+          )}
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || (step === 1 && rating === 0)}
+            className="relative overflow-hidden group bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                Envoi...
+              </>
+            ) : (
+              <>
+                {step === 1 ? "Continuer" : "Envoyer"}
+                <Send className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </>
+            )}
+            <span className="absolute inset-0 -z-10 bg-gradient-to-r from-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
 
     </>
