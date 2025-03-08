@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { RetailerCard } from "@/components/expenses/RetailerCard";
@@ -6,7 +5,7 @@ import { YearlyTotalCard } from "@/components/expenses/YearlyTotalCard";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
-import { useCallback, useState, memo } from "react";
+import { useCallback, useState, memo, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { startOfYear, endOfYear, subYears } from "date-fns";
@@ -14,7 +13,6 @@ import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner
 import StyledLoader from "@/components/ui/StyledLoader";
 import { motion } from "framer-motion";
 
-// Utilisation de memo pour éviter les re-renders inutiles
 const Expenses = memo(function Expenses() {
   const queryClient = useQueryClient();
   const {
@@ -23,10 +21,10 @@ const Expenses = memo(function Expenses() {
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
   
-  // Configuration optimisée de la requête
   const {
     data: expenses,
-    isLoading
+    isLoading,
+    refetch: refetchExpenses
   } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
@@ -43,27 +41,49 @@ const Expenses = memo(function Expenses() {
       if (error) throw error;
       return data;
     },
-    staleTime: 1000 * 60 * 5, // Garder les données fraîches pendant 5 minutes
-    refetchOnWindowFocus: false, // Désactiver le refetch au focus de la fenêtre
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
-    refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
+    refetchOnReconnect: false
   });
 
-  // Optimiser avec useCallback pour éviter les recréations de fonctions
   const handleExpenseUpdated = useCallback(() => {
     queryClient.invalidateQueries({
       queryKey: ["expenses"],
-      exact: true // Invalidation ciblée uniquement
+      exact: true
     });
     setAddExpenseDialogOpen(false);
   }, [queryClient]);
+
+  useEffect(() => {
+    const expensesChannel = supabase
+      .channel('expenses-global-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'expenses'
+        },
+        (payload) => {
+          console.log('Changement détecté sur les dépenses:', payload);
+          refetchExpenses();
+        }
+      )
+      .subscribe((status) => {
+        console.log('Statut du canal expenses-global:', status);
+      });
+
+    return () => {
+      supabase.removeChannel(expensesChannel);
+    };
+  }, [refetchExpenses]);
 
   const expensesByRetailer = retailers?.map(retailer => ({
     retailer,
     expenses: expenses?.filter(expense => expense.retailer_id === retailer.id) || []
   }));
 
-  // Calcul des totaux pour la carte de total annuel
   const now = new Date();
   const currentYearExpenses = expenses?.filter(expense => {
     const expenseDate = new Date(expense.date);
@@ -78,7 +98,6 @@ const Expenses = memo(function Expenses() {
   }) || [];
   const lastYearTotal = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   
-  // Définition des variants pour les animations
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
