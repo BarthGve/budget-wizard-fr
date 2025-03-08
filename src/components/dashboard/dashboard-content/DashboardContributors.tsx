@@ -41,6 +41,7 @@ export const DashboardContributors = ({
   };
 
   // Afficher le tableau si nous avons au moins un contributeur
+  // (modification de la condition pour afficher même avec 1 seul contributeur)
   if (!contributors || contributors.length === 0) return null;
 
   return (
