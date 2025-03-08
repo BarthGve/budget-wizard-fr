@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,9 +87,11 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
     setIsUpdatingEmail(true);
     
     try {
+      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
       
+      // Vérifier le mot de passe avant de procéder
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: user.email || "",
         password: values.password,
@@ -98,39 +101,20 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
         throw new Error("Mot de passe incorrect");
       }
 
+      // Préparer la redirection vers la page de vérification d'email
       localStorage.setItem("verificationEmail", values.email);
       
-      const siteUrl = window.location.origin;
-      
-      const timestamp = new Date().getTime();
-      const random = Math.random().toString(36).substring(2, 15);
-      const securityToken = `${timestamp}_${random}`;
-      
-      localStorage.setItem("emailChangeToken", securityToken);
-      
-      const verificationLink = `${siteUrl}/email-verification?type=emailChange&token=${securityToken}`;
-      
-      const { error: emailError } = await supabase.functions.invoke('email-change-verification', {
-        body: {
-          oldEmail: user.email,
-          newEmail: values.email,
-          verificationLink
-        }
-      });
-      
-      if (emailError) {
-        console.error("Erreur lors de l'envoi de l'email:", emailError);
-        throw new Error("Erreur lors de l'envoi de l'email de vérification");
-      }
-      
+      // Mettre à jour l'email
       const { error } = await supabase.auth.updateUser({
         email: values.email,
       });
       
       if (error) throw error;
 
+      // Réinitialiser et fermer la modal
       setShowEmailDialog(false);
       
+      // Rediriger vers la page de vérification d'email
       navigate("/email-verification?type=emailChange");
       
       toast.success(
@@ -147,33 +131,13 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
 
   const handleResendVerification = async () => {
     try {
+      // Récupérer l'utilisateur courant avec await pour résoudre la promesse
       const { data: userData } = await supabase.auth.getUser();
       
+      // Vérifier si un nouvel email est en attente
       if (userData.user?.new_email) {
-        const siteUrl = window.location.origin;
-        const securityToken = `${new Date().getTime()}_${Math.random().toString(36).substring(2, 15)}`;
-        localStorage.setItem("emailChangeToken", securityToken);
         localStorage.setItem("verificationEmail", userData.user.new_email);
-        
-        const verificationLink = `${siteUrl}/email-verification?type=emailChange&token=${securityToken}`;
-        
-        const { error: emailError } = await supabase.functions.invoke('email-change-verification', {
-          body: {
-            oldEmail: userData.user.email || "votre adresse actuelle",
-            newEmail: userData.user.new_email,
-            verificationLink
-          }
-        });
-        
-        if (emailError) {
-          console.error("Erreur lors du renvoi de l'email:", emailError);
-          throw new Error("Erreur lors du renvoi de l'email de vérification");
-        }
-        
         navigate("/email-verification?type=emailChange");
-        toast.success("Un nouvel email de vérification a été envoyé");
-      } else {
-        toast.info("Aucun changement d'email en attente");
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des informations de l'utilisateur:", error);

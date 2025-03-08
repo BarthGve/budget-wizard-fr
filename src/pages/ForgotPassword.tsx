@@ -34,7 +34,7 @@ const ForgotPassword = () => {
     try {
       // Utilisation de l'URL absolue configurée dans Supabase
       // Cette URL doit correspondre exactement à celle configurée dans Supabase
-      const redirectUrl = `${window.location.origin}/reset-password`;
+      const redirectUrl = "https://budgetwizard.fr/reset-password";
       console.log("URL de redirection configurée:", redirectUrl);
 
       // Appel direct à l'API Supabase pour réinitialiser le mot de passe
@@ -47,26 +47,6 @@ const ForgotPassword = () => {
       if (error) {
         console.error("Erreur détaillée:", error);
         throw error;
-      }
-
-      // On vérifie si on doit utiliser notre propre fonction pour l'envoi de l'email
-      const useCustomResetEmail = false; // Modifiez cette valeur pour basculer entre les méthodes
-
-      if (useCustomResetEmail) {
-        try {
-          // Tenter d'appeler notre fonction Edge personnalisée pour envoyer un email
-          const { error: customEmailError } = await supabase.functions.invoke('send-reset-password', {
-            body: { email, token: "token-temporaire-pour-test" }
-          });
-          
-          if (customEmailError) {
-            console.warn("Erreur lors de l'envoi de l'email personnalisé, on utilise le mécanisme par défaut:", customEmailError);
-          } else {
-            console.log("Email personnalisé envoyé avec succès");
-          }
-        } catch (customError) {
-          console.warn("Exception lors de l'appel à la fonction personnalisée:", customError);
-        }
       }
 
       // Message de succès même si l'email n'existe pas (sécurité)

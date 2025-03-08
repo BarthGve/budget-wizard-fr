@@ -25,7 +25,8 @@ const handler = async (req: Request): Promise<Response> => {
     const { email, token }: ResetPasswordEmailRequest = await req.json();
 
     // Construire l'URL de réinitialisation avec le token
-    const resetUrl = new URL(`${req.headers.get("origin") || ""}/reset-password`);
+    const resetUrl = new URL(req.headers.get("origin") || "");
+    resetUrl.pathname = "/reset-password";
     resetUrl.searchParams.set("token", token);
 
     const emailResponse = await resend.emails.send({
@@ -96,10 +97,10 @@ const handler = async (req: Request): Promise<Response> => {
         <a href="${resetUrl.toString()}" class="button">Réinitialiser mon mot de passe</a>
         <p>Ce lien est valable pendant 1 heure.</p>
         <p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité.</p>
-        <p>Cordialement,<br><strong>L'équipe Budget Wizard</strong></p>
+        <p>Cordialement,<br><strong>L'équipe Budget Partagé</strong></p>
     </div>
     <div class="footer">
-        &copy; ${new Date().getFullYear()} Budget Wizard. Tous droits réservés.  
+        &copy; 2025 Budget Partagé. Tous droits réservés.  
     </div>
 </div>
 
