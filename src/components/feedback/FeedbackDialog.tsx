@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Send, Star, MessageSquare, X } from "lucide-react";
+import { Send, Star, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -13,7 +12,6 @@ import Confetti from "react-confetti";
 import { useWindowSize } from "@/hooks/use-window-size";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AnimatePresence, motion } from "framer-motion";
-import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/components/ui/tabs";
 import { useProfileAvatar } from "@/hooks/useProfileAvatar";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
@@ -34,7 +32,6 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
   const { data: profileData } = useProfileAvatar();
   const { currentUser } = useCurrentUser();
 
-  // Textes et émojis pour les différentes notes
   const ratingTexts = [
     "Très insatisfait",
     "Insatisfait",
@@ -55,7 +52,6 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     }
   }, [showConfetti]);
 
-  // Fonction pour notifier les administrateurs
   const notifyAdmins = async (feedbackId: string) => {
     try {
       const { error } = await supabase.functions.invoke("notify-feedback", {
@@ -98,7 +94,6 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     try {
       if (!currentUser) throw new Error("Non authentifié");
 
-      // Enregistrement du feedback dans la base de données
       const { data: feedback, error } = await supabase.from("feedbacks").insert({
         title: title.trim(),
         content: content.trim(),
@@ -109,16 +104,14 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
 
       if (error) throw error;
 
-      // Afficher confirmation avant la notification pour une UX plus réactive
       toast.success("Merci pour votre feedback !");
-      setShowConfetti(true); // Activer les confettis
+      setShowConfetti(true);
       setIsOpen(false);
       setTitle("");
       setContent("");
       setRating(null);
       setStep(1);
 
-      // Notification des administrateurs
       if (feedback) {
         await notifyAdmins(feedback.id);
       }
@@ -130,7 +123,6 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     }
   };
 
-  // Obtenir les initiales du prénom et nom pour l'avatar fallback
   const getInitials = () => {
     if (!currentUser?.email) return "FB";
     
@@ -159,19 +151,19 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
           <Button 
             variant="ghost" 
             className={cn(
-              "group relative overflow-hidden transition-all hover:bg-primary/10 dark:hover:bg-primary/20",
-              collapsed ? "w-10 p-0 justify-center" : "justify-start px-3 py-2"
+              "group relative w-full flex items-center px-4 py-2 rounded-lg transition-colors",
+              "hover:bg-primary/10",
+              collapsed && "justify-center px-0",
+              !collapsed && "justify-start"
             )}
           >
-            <MessageSquare className={cn("h-4 w-4 transition-transform group-hover:scale-110", 
-              !collapsed && "mr-2")} />
-            {!collapsed && (
-              <span className="font-normal">Votre avis</span>
-            )}
-            <span className={cn(
-              "absolute inset-0 -z-10 bg-gradient-to-r from-primary/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100",
-              collapsed ? "rounded-full" : "rounded-md"
+            <MessageSquare className={cn(
+              "h-5 w-5 flex-shrink-0 transition-transform group-hover:scale-110",
+              !collapsed && "mr-2"
             )} />
+            {!collapsed && (
+              <span className="truncate">Votre avis</span>
+            )}
           </Button>
         </DialogTrigger>
         
@@ -183,7 +175,10 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
               className="h-8 w-8 rounded-full hover:bg-zinc-800/10 dark:hover:bg-white/10" 
               onClick={() => setIsOpen(false)}
             >
-              <X className="h-4 w-4" />
+              <span className="sr-only">Fermer</span>
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4">
+                <path d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path>
+              </svg>
             </Button>
           </div>
           
