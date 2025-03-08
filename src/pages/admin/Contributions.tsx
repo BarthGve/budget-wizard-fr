@@ -4,9 +4,19 @@ import { useState } from "react";
 import { ContributionViewToggle } from "@/components/admin/ContributionViewToggle";
 import { ContributionsTable } from "@/components/admin/ContributionsTable";
 import { ContributionsKanban } from "@/components/admin/ContributionsKanban";
+import { useContributions } from "@/hooks/useContributions";
 
 export const ContributionsPage = () => {
-  const [view, setView] = useState<"list" | "kanban">("list");
+  const [view, setView] = useState<"table" | "kanban">("table");
+  
+  const {
+    filteredContributions,
+    setSelectedContribution,
+    handleStatusUpdate,
+    deleteContribution,
+    updateStatus,
+    handleDragEnd
+  } = useContributions();
 
   return (
     <DashboardLayout>
@@ -21,12 +31,23 @@ export const ContributionsPage = () => {
           <ContributionViewToggle view={view} onChange={setView} />
         </div>
 
-        {view === "list" ? (
-          <ContributionsTable />
+        {view === "table" ? (
+          <ContributionsTable 
+            contributions={filteredContributions}
+            onViewDetails={(contribution) => setSelectedContribution(contribution)}
+            onStatusUpdate={handleStatusUpdate}
+            onDelete={deleteContribution}
+            onUpdateStatus={updateStatus}
+          />
         ) : (
-          <ContributionsKanban />
+          <ContributionsKanban 
+            contributions={filteredContributions}
+            onDragEnd={handleDragEnd}
+          />
         )}
       </div>
     </DashboardLayout>
   );
 };
+
+export default ContributionsPage;
