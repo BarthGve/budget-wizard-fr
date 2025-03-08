@@ -87,7 +87,7 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
     setIsUpdatingEmail(true);
     
     try {
-      // Get current user
+      // Récupérer l'utilisateur actuel
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
       
@@ -104,7 +104,8 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       // Stocker l'email pour la page de vérification
       localStorage.setItem("verificationEmail", values.email);
       
-      // Mise à jour de l'email via Supabase Auth (envoi automatique de l'email de vérification)
+      // Utilisez uniquement la mise à jour native de Supabase Auth
+      // Cela envoie un seul email de vérification
       const { error } = await supabase.auth.updateUser({
         email: values.email,
       });
@@ -138,7 +139,7 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       if (userData.user?.new_email) {
         localStorage.setItem("verificationEmail", userData.user.new_email);
         
-        // Demander à Supabase de renvoyer l'email de vérification
+        // Utiliser uniquement l'API Supabase pour renvoyer l'email de vérification
         const { error } = await supabase.auth.resend({
           type: 'email_change',
           email: userData.user.new_email,
@@ -152,7 +153,7 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
         toast.info("Aucun changement d'email en attente");
       }
     } catch (error) {
-      console.error("Erreur lors de la récupération des informations de l'utilisateur:", error);
+      console.error("Erreur lors du renvoi de l'email de vérification:", error);
       toast.error("Impossible de renvoyer l'email de vérification");
     }
   };
