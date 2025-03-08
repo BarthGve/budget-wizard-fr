@@ -40,8 +40,7 @@ export const DashboardContributors = ({
     }
   };
 
-  // Afficher le tableau même s'il n'y a qu'un seul contributeur
-  // Mais ne pas l'afficher s'il n'y a pas de contributeurs du tout
+  // Afficher le tableau si nous avons au moins un contributeur
   if (!contributors || contributors.length === 0) return null;
 
   return (

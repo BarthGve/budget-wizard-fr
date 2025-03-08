@@ -95,7 +95,7 @@ export const useDashboardData = () => {
       const timeoutId = setTimeout(() => {
         console.log("Rafraîchissement forcé après événement contributeur");
         refetchDashboard();
-      }, 1500);
+      }, 1000);
       
       return () => clearTimeout(timeoutId);
     }

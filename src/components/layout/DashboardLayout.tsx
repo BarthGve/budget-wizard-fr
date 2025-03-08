@@ -66,7 +66,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           // Forcer un rafraîchissement immédiat
           setTimeout(() => {
             refetch();
-          }, 500);
+          }, 300);
         }
       )
       .subscribe((status) => {
@@ -98,8 +98,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       return data as Credit[];
     },
-    staleTime: 1000 * 60, // Réduire à 1 minute pour plus de réactivité
-    refetchOnWindowFocus: true // Activer le rechargement lors du focus
+    staleTime: 1000 * 30, // Réduire à 30 secondes pour plus de réactivité
+    refetchOnWindowFocus: true, // Activer le rechargement lors du focus
+    refetchOnReconnect: true // Activer le rechargement lors de la reconnexion
   });
 
   const { data: userProfile } = useQuery({
@@ -124,8 +125,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         isAdmin
       };
     },
-    staleTime: 1000 * 60, // Réduire à 1 minute pour plus de réactivité
-    refetchOnWindowFocus: true // Activer le rechargement lors du focus
+    staleTime: 1000 * 30, // Réduire à 30 secondes pour plus de réactivité
+    refetchOnWindowFocus: true, // Activer le rechargement lors du focus
+    refetchOnReconnect: true // Activer le rechargement lors de la reconnexion
   });
 
   const totalRevenue = useMemo(() => 

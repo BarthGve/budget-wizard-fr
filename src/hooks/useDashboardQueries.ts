@@ -64,7 +64,7 @@ export const useDashboardQueries = (userId: string | undefined) => {
       }
     },
     enabled: !!userId,
-    staleTime: 1000 * 30, // Réduire à 30 secondes pour actualiser plus souvent
+    staleTime: 1000 * 15, // Réduire à 15 secondes pour actualiser plus souvent
     gcTime: 1000 * 60 * 5, // Garde en cache pour 5 minutes après être devenu inactif
     refetchOnWindowFocus: true, // Refetch quand la fenêtre prend le focus
     refetchOnReconnect: true, // Refetch à la reconnexion

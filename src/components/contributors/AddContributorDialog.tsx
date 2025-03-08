@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserPlus } from "lucide-react";
+import { useQueryClient } from '@tanstack/react-query';
 
 interface AddContributorDialogProps {
   onAdd: (contributor: NewContributor) => void;
@@ -27,6 +28,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
     email: "",
     total_contribution: "",
   });
+  const queryClient = useQueryClient();
 
   const handleAdd = async () => {
     if (!newContributor.name || !newContributor.total_contribution) {
@@ -39,6 +41,20 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
       await onAdd(newContributor);
       setNewContributor({ name: "", email: "", total_contribution: "" });
       setIsOpen(false);
+      
+      // Forcer une invalidation immédiate de toutes les requêtes liées au dashboard
+      setTimeout(() => {
+        queryClient.invalidateQueries({ 
+          queryKey: ["dashboard-data"],
+          exact: false,
+          refetchType: 'all'
+        });
+        queryClient.invalidateQueries({ 
+          queryKey: ["contributors"],
+          exact: false,
+          refetchType: 'all'
+        });
+      }, 100);
     } finally {
       setIsSubmitting(false);
     }

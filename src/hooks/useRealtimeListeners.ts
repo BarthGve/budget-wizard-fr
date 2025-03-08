@@ -26,11 +26,29 @@ export const useRealtimeListeners = () => {
   // Fonction d'invalidation optimisée pour cibler uniquement les données nécessaires
   const invalidateDashboardData = () => {
     console.log("Invalidation forcée des données du dashboard");
+    
+    // Invalider toutes les données du dashboard avec une priorité élevée
     queryClient.invalidateQueries({ 
       queryKey: ["dashboard-data"],
-      exact: false,
-      refetchType: 'all' // Forcer toutes les requêtes à se recharger
+      refetchType: 'all', // Forcer un rechargement complet
+      exact: false
     });
+    
+    // Forcer le rafraîchissement immédiat
+    setTimeout(() => {
+      queryClient.refetchQueries({ 
+        queryKey: ["dashboard-data"],
+        exact: false,
+        type: 'all'
+      });
+      
+      // Invalider également d'autres requêtes potentiellement affectées
+      queryClient.invalidateQueries({ 
+        queryKey: ["contributors"],
+        exact: false, 
+        refetchType: 'all'
+      });
+    }, 100);
   };
 
   // Fonction réutilisable pour configurer un canal avec gestion optimisée

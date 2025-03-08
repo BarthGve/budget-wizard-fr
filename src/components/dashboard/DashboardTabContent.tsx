@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -95,8 +96,9 @@ export const DashboardTabContent = ({
 
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 5, // Cache de 5 minutes
-    refetchOnWindowFocus: false, // Désactiver le refetch automatique lors du focus
+    staleTime: 1000 * 30, // Réduit à 30 secondes pour plus de réactivité
+    refetchOnWindowFocus: true, // Activer le rechargement lors du focus
+    refetchOnReconnect: true, // Activer le rechargement lors de la reconnexion
   });
 
   // Memoize credit calculations to prevent recalculation on each render
@@ -128,9 +130,10 @@ export const DashboardTabContent = ({
     }));
   }, [contributors]);
 
-  // Memoize if we should show contributors section - montrer si plus d'un contributeur
+  // Afficher la section des contributeurs même s'il n'y en a qu'un
+  // Permet de voir immédiatement l'ajout d'un nouveau contributeur
   const showContributorsSection = useMemo(() => {
-    return mappedContributors.length >= 2;
+    return mappedContributors.length > 0;
   }, [mappedContributors.length]);
 
   return (
