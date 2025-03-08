@@ -1,177 +1,218 @@
-import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Profile } from "@/types/profile";
-import { NavigationMenu } from "./NavigationMenu";
-import { UserDropdown } from "./UserDropdown";
-import { ThemeToggle } from "../theme/ThemeToggle";
-import { appConfig } from "@/config/app.config";
-import { Badge } from "@/components/ui/badge";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useLatestVersion } from "@/hooks/useLatestVersion";
-import { FeedbackDialog } from "../feedback/FeedbackDialog";
-import { ProjectAnnouncementCard } from "./ProjectAnnouncementCard";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/components/ui/use-toast"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
+import { cn } from "@/lib/utils"
+import { CalendarIcon, Check, ChevronsUpDown, Contact2, FileText, Home, LayoutDashboard, ListChecks, LucideIcon, Menu, MessageSquare, Plus, Settings, User2, Users } from "lucide-react"
+import { useState } from "react"
+import { NavLink, useLocation, useNavigate } from "react-router-dom"
+import { FeedbackDialog } from "../feedback/FeedbackDialog"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { useTheme } from "next-themes"
+import { supabase } from "@/integrations/supabase/client"
 
-interface SidebarProps {
-  className?: string;
-  onClose?: () => void;
+interface CollapsibleSidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
 }
 
-export const Sidebar = ({ className, onClose }: SidebarProps) => {
-  const isMobile = useIsMobile();
-  const [collapsed, setCollapsed] = useState(() => {
-    const saved = localStorage.getItem("sidebarCollapsed");
-    return saved ? JSON.parse(saved) : (isMobile ? true : false);
-  });
-  const { latestVersion } = useLatestVersion();
+const sidebarItems = [
+  {
+    href: "/dashboard",
+    icon: Home,
+    label: "Accueil",
+  },
+  {
+    href: "/contributors",
+    icon: Users,
+    label: "Contributeurs",
+  },
+  {
+    href: "/savings",
+    icon: Plus,
+    label: "Épargnes",
+  },
+  {
+    href: "/properties",
+    icon: LayoutDashboard,
+    label: "Immeubles",
+  },
+  {
+    href: "/recurring-expenses",
+    icon: ListChecks,
+    label: "Dépenses récurrentes",
+  },
+   {
+    href: "/expenses",
+    icon: FileText,
+    label: "Dépenses",
+  },
+  {
+    href: "/credits",
+    icon: Contact2,
+    label: "Crédits",
+  },
+  {
+    href: "/stocks",
+    icon: MessageSquare,
+    label: "Bourse",
+  },
+]
 
-  useEffect(() => {
-    localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
-  }, [collapsed]);
+// Mise à jour du FeedbackDialog pour utiliser les bonnes props
+export const Sidebar = ({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) => {
+  const { toast } = useToast()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isMobile = useIsMobile()
+  const { theme, setTheme } = useTheme()
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const { currentUser, isLoading } = useCurrentUser()
 
-  useEffect(() => {
-    if (isMobile) {
-      setCollapsed(true);
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      toast({
+        title: "Erreur lors de la déconnexion",
+        description: "Veuillez réessayer.",
+        variant: "destructive",
+      })
+    } else {
+      toast({
+        title: "Déconnexion réussie!",
+      })
+      navigate("/login")
     }
-  }, [isMobile]);
-
-  const { data: currentUser } = useQuery({
-    queryKey: ["current-user-for-sidebar"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
-    },
-    staleTime: 1000 * 60, // 1 minute
-  });
-
-  const { data: profile } = useQuery<Profile>({
-    queryKey: ["profile-for-sidebar", currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser) throw new Error("User not authenticated");
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", currentUser.id)
-        .single();
-
-      if (error) throw error;
-
-      const profileData = {
-        ...data,
-        email: currentUser.email
-      } as Profile;
-
-      return profileData;
-    },
-    enabled: !!currentUser,
-    staleTime: 1000 * 60, // 1 minute
-  });
-
-  const { data: isAdmin } = useQuery({
-    queryKey: ["isAdmin-for-sidebar", currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser) return false;
-
-      const { data, error } = await supabase.rpc('has_role', {
-        user_id: currentUser.id,
-        role: 'admin'
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!currentUser,
-    staleTime: 1000 * 60, // 1 minute
-  });
-
-  const handleClickOutside = (e: MouseEvent) => {
-    if (isMobile && onClose && (e.target as HTMLElement).closest('.sidebar-content') === null) {
-      onClose();
-    }
-  };
-
-  useEffect(() => {
-    if (isMobile) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }
-  }, [isMobile, onClose]);
+  }
 
   return (
-    <aside
-      className={cn(
-        "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col touch-scroll sidebar-content",
-        collapsed ? "w-16" : "w-64",
-        isMobile && "fixed z-50 shadow-lg",
-        className
-      )}
-    >
-      <div className="flex flex-col flex-1 ios-top-safe">
-        <div className="p-4 border-b rounded-r-xl border-border">
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h1
-                  className={cn(   
-                    "font-bold text-foreground tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in transition-all duration-300",
-                    collapsed ? "text-sm" : "text-xl"
-                  )}
-                >
-                  {collapsed ? appConfig.initiales : appConfig.name}
-                </h1>
-              </div>
-              <div className="flex items-center gap-2">
-                <ThemeToggle collapsed={collapsed} />
-              </div>
-            </div>
-            {!collapsed && (
-             <div className="flex items-baseline gap-2">
-               <span className="text-xs text-muted-foreground">
-                 v{latestVersion || appConfig.version}
-               </span>
-             </div>
-            )}
-          </div>
-        </div>
-  
-        <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
-        
-        <div className="mt-auto">
-          {/* Project announcement card */}
-          <ProjectAnnouncementCard collapsed={collapsed} userId={currentUser?.id} />
-          
-          {/* Feedback dialog */}
-          {!isAdmin && (
-            <div className="px-4 py-2">
-              <FeedbackDialog collapsed={collapsed} />
-            </div>
-          )}
-          
-          <UserDropdown collapsed={collapsed} profile={profile} />
-        </div>
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 w-64">
+      <div className="flex items-center justify-between p-4">
+        <span className="font-bold text-xl">Budget App</span>
+        {isMobile && (
+          <Button variant="outline" size="icon" onClick={onToggle}>
+            <Menu className="h-5 w-5" />
+          </Button>
+        )}
       </div>
-  
-      {!isMobile && (
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className={cn(
-            "absolute -right-3 top-20 p-1.5 rounded-full bg-background border border-border hover:bg-accent transition-colors",
-            "z-50 shadow-sm touch-manipulation"
-          )}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          ) : (
-            <ChevronLeft className="h-4 w-4 text-muted-foreground" />
-          )}
-        </button>
-      )}
-    </aside>
-  );
-};
+
+      <ScrollArea className="flex-1 space-y-4 p-4">
+        <div className="space-y-2">
+          <h4 className="font-medium text-sm leading-none">Tableau de bord</h4>
+          <p className="text-sm text-muted-foreground">
+            Suivez vos finances personnelles.
+          </p>
+        </div>
+        <Separator />
+        <div className="space-y-1">
+          {sidebarItems.map((item) => (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              className={({ isActive }) =>
+                cn(
+                  "group flex items-center space-x-2 rounded-md p-2 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors",
+                  isActive
+                    ? "bg-gray-200 dark:bg-gray-700 text-foreground"
+                    : "text-muted-foreground"
+                )
+              }
+            >
+              <item.icon className="h-4 w-4" />
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+        </div>
+        <Separator />
+        <div className="space-y-1">
+          <NavLink
+            to="/user-settings"
+            className={({ isActive }) =>
+              cn(
+                "group flex items-center space-x-2 rounded-md p-2 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors",
+                isActive
+                  ? "bg-gray-200 dark:bg-gray-700 text-foreground"
+                  : "text-muted-foreground"
+              )
+            }
+          >
+            <Settings className="h-4 w-4" />
+            <span>Paramètres</span>
+          </NavLink>
+        </div>
+      </ScrollArea>
+
+      <Separator />
+
+      <div className="p-4">
+        <Button variant="outline" className="w-full mb-2" onClick={() => setFeedbackOpen(true)}>
+          Feedback
+        </Button>
+        <FeedbackDialog
+          open={feedbackOpen}
+          onOpenChange={setFeedbackOpen}
+        />
+        <Button variant="destructive" className="w-full" onClick={handleLogout}>
+          Se déconnecter
+        </Button>
+      </div>
+    </div>
+  )
+}
