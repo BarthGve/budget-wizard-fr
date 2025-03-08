@@ -1,31 +1,32 @@
 
 import { Button } from "@/components/ui/button";
-import { LightbulbIcon } from "lucide-react";
+import { Gift, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ContributionTriggerProps {
-  collapsed?: boolean;
-  onClick: () => void;
+  hasContributed: boolean;
+  isCollapsed?: boolean;
 }
 
-export const ContributionTrigger = ({ collapsed, onClick }: ContributionTriggerProps) => {
+export const ContributionTrigger = ({ 
+  hasContributed,
+  isCollapsed
+}: ContributionTriggerProps) => {
   return (
     <Button 
-      variant="ghost" 
-      onClick={onClick}
+      size={isCollapsed ? "icon" : "sm"} 
       className={cn(
-        "group relative w-full flex items-center px-4 py-2 rounded-lg transition-colors",
-        "hover:bg-primary/10",
-        collapsed && "justify-center px-0",
-        !collapsed && "justify-start"
+        "bg-violet-600 hover:bg-violet-700 text-white font-medium",
+        hasContributed && "bg-green-600 hover:bg-green-700"
       )}
     >
-      <LightbulbIcon className={cn(
-        "h-5 w-5 flex-shrink-0 transition-transform group-hover:scale-110",
-        !collapsed && "mr-2"
-      )} />
-      {!collapsed && (
-        <span className="truncate">Contribuer au projet</span>
+      {isCollapsed ? (
+        <Gift className="h-4 w-4" />
+      ) : (
+        <>
+          {hasContributed ? "Contribuer à nouveau" : "Contribuer"}
+          <Gift className="ml-2 h-4 w-4" />
+        </>
       )}
     </Button>
   );

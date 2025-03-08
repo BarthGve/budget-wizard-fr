@@ -11,6 +11,7 @@ export const ContributionsPage = () => {
   
   const {
     filteredContributions,
+    isLoading,
     setSelectedContribution,
     handleStatusUpdate,
     deleteContribution,

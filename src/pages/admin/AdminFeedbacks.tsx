@@ -13,7 +13,7 @@ const AdminFeedbacks = () => {
   const [statusFilter, setStatusFilter] = useState<"pending" | "read" | "published" | "all">("all");
   
   const { 
-    filteredFeedbacks, // Utilisation de filteredFeedbacks au lieu de feedbacks
+    filteredFeedbacks,
     isLoading,
     setSelectedFeedback,
     handleStatusUpdate,
