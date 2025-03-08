@@ -109,7 +109,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
           gravity={0.2}
         />
       )}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+     <Dialog open={isOpen} onOpenChange={setIsOpen}>
   <DialogTrigger asChild>
     <Button 
       variant="ghost" 
@@ -127,9 +127,9 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     </Button>
   </DialogTrigger>
   
-  <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden rounded-xl border-0 shadow-2xl">
-    {/* Header avec gradient */}
-    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 text-white">
+  <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-auto rounded-xl border-0 shadow-2xl p-0">
+    {/* Header avec gradient - fixé pendant le défilement */}
+    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 text-white sticky top-0 z-10">
       <DialogHeader>
         <DialogTitle className="text-center text-2xl font-bold flex items-center justify-center gap-2">
           <span className="opacity-90">✨</span> Votre avis compte <span className="opacity-90">✨</span>
@@ -140,8 +140,8 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
       </DialogHeader>
     </div>
     
-    {/* Contenu */}
-    <div className="p-6 space-y-6">
+    {/* Contenu - scrollable si nécessaire */}
+    <div className="p-6 space-y-6 overflow-y-auto">
       <div className="space-y-2">
         <Label htmlFor="title" className="text-sm font-medium">Titre</Label>
         <Input
@@ -160,7 +160,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
           value={content}
           onChange={e => setContent(e.target.value)}
           placeholder="Partagez vos impressions"
-          className="min-h-[120px] rounded-md border border-gray-200 resize-none transition-all focus-visible:ring-1 focus-visible:ring-primary"
+          className="min-h-[100px] rounded-md border border-gray-200 resize-none transition-all focus-visible:ring-1 focus-visible:ring-primary"
         />
       </div>
      
@@ -176,7 +176,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
             >
               <Star
                 className={cn(
-                  "h-8 w-8 transition-all duration-200",
+                  "h-7 w-7 transition-all duration-200",
                   value <= (rating || 0)
                     ? "fill-amber-400 text-amber-400"
                     : "text-gray-300 hover:text-gray-400"
@@ -188,8 +188,8 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
       </div>
     </div>
     
-    {/* Footer */}
-    <div className="p-6 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+    {/* Footer - fixé en bas */}
+    <div className="p-5 bg-gray-50 flex justify-end gap-3 border-t border-gray-100 sticky bottom-0 z-10">
       <Button 
         variant="outline" 
         onClick={() => setIsOpen(false)}
@@ -205,7 +205,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
       >
         {isSubmitting ? (
           <>
-            <span className="animate-spin mr-2">
+            <span className="inline-block animate-spin mr-2">
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <circle 
                   className="opacity-25" 
@@ -233,6 +233,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
     </div>
   </DialogContent>
 </Dialog>
+
 
     </>
   );
