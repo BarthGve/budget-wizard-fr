@@ -24,49 +24,42 @@ const ResetPassword = () => {
       console.log("Vérification de la session utilisateur pour la réinitialisation");
       
       try {
-        // Extraire le token de l'URL si présent
-        const params = new URLSearchParams(location.search);
-        const token = params.get('token');
-        const type = params.get('type');
-        
-        console.log("Paramètres d'URL détectés:", { token: token ? "présent" : "absent", type });
-        
-        // Récupérer la session active
+        // Extraire le hash fragment de l'URL
+        const hash = location.hash; // ex: #access_token=...&type=recovery
+        console.log("Hash de l'URL:", hash ? "présent" : "absent");
+
+        // Essayer de récupérer directement la session actuelle
         const { data, error } = await supabase.auth.getSession();
-        console.log("Résultat de la session:", { data, error });
+        console.log("Session existante:", data.session ? "présente" : "absente");
         
         if (error) {
           console.error("Erreur lors de la vérification de la session:", error);
           throw error;
         }
         
-        // Si nous avons un token dans l'URL, essayez de l'utiliser
-        if (token && type === 'recovery') {
-          console.log("Token de récupération détecté, tentative de récupération de la session");
+        // Si nous n'avons pas de session valide, essayer de la récupérer à partir du hash
+        if (!data.session && hash) {
+          console.log("Tentative de récupération de la session à partir du hash");
           
-          // Utiliser le hash fragment de l'URL pour la récupération
-          const { data: recoveryData, error: recoveryError } = await supabase.auth.refreshSession({
-            refresh_token: token
-          });
+          // Utiliser setSession pour établir la session
+          await supabase.auth.getSession();
           
-          console.log("Résultat de la récupération:", { 
-            data: recoveryData ? "données présentes" : "aucune donnée", 
-            error: recoveryError
-          });
+          // Vérifier à nouveau si nous avons une session valide
+          const { data: refreshedSession, error: refreshError } = await supabase.auth.getSession();
+          console.log("Session après récupération:", refreshedSession.session ? "présente" : "absente");
           
-          if (recoveryError) {
-            console.error("Erreur lors de la récupération avec le token:", recoveryError);
+          if (refreshError || !refreshedSession.session) {
+            console.error("Erreur lors de la récupération avec le hash:", refreshError);
             toast.error("Le lien de réinitialisation est invalide ou a expiré");
             navigate("/login");
             return;
           }
         }
         
-        // Vérifier à nouveau si une session valide existe après la récupération
-        const { data: refreshedSession } = await supabase.auth.getSession();
+        // Vérifier une dernière fois si nous avons une session valide
+        const { data: finalCheck } = await supabase.auth.getSession();
         
-        // Vérifier si une session valide existe
-        if (!refreshedSession.session) {
+        if (!finalCheck.session) {
           console.log("Pas de session valide trouvée");
           toast.error("Session invalide ou expirée");
           navigate("/login");
@@ -84,7 +77,7 @@ const ResetPassword = () => {
     };
 
     checkResetSession();
-  }, [navigate, location.search]);
+  }, [navigate, location]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
