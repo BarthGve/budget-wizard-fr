@@ -4,7 +4,7 @@ import { PiggyBank } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useNavigate } from "react-router-dom";
 
 interface MonthlySaving {
@@ -25,36 +25,25 @@ export const SavingsPieChart = ({
   totalSavings
 }: SavingsPieChartProps) => {
   const navigate = useNavigate();
-  
-  // Préparer les données pour le graphique
   const chartData = monthlySavings.map((saving, index) => ({
     name: saving.name,
     value: saving.amount,
     fill: COLORS[index % COLORS.length]
   }));
 
-  // Si aucune donnée, ajouter un exemple fictif pour la démo
-  if (chartData.length === 0) {
-    chartData.push(
-      { name: 'Épargne précaution', value: 500, fill: COLORS[0] },
-      { name: 'Projet vacances', value: 300, fill: COLORS[1] },
-      { name: 'Achat immobilier', value: 211, fill: COLORS[2] }
-    );
-  }
-
   const chartConfig = {
     value: {
       label: "Montant"
     },
-    ...Object.fromEntries(chartData.map((item, index) => [item.name, {
-      label: item.name,
+    ...Object.fromEntries(monthlySavings.map((saving, index) => [saving.name, {
+      label: saving.name,
       color: COLORS[index % COLORS.length]
     }]))
   };
 
   return (
     <Card 
-      className="flex flex-col h-full cursor-pointer"
+      className="flex flex-col h-full cursor-pointer "
       onClick={() => navigate("/savings")}
     >
       <CardHeader className="items-center pb-0">
@@ -97,7 +86,7 @@ export const SavingsPieChart = ({
                   return (
                     <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
                       <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-2xl font-bold">
-                        {totalSavings} €
+                        {formatCurrency(totalSavings)}
                       </tspan>
                       <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground text-sm">
                         par mois

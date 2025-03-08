@@ -1,22 +1,25 @@
 
-import * as React from "react";
-import { ShoppingBasket } from "lucide-react";
-import { Label, Pie, PieChart } from "recharts";
-import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { Label, Pie, PieChart } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { formatCurrency } from "@/utils/format";
 import { useNavigate } from "react-router-dom";
 
 interface RecurringExpense {
   id: string;
   name: string;
   amount: number;
-  category?: string;
+  category: string;
 }
 
 interface RecurringExpensesPieChartProps {
   recurringExpenses: RecurringExpense[];
   totalExpenses: number;
+}
+
+interface CategoryTotal {
+  category: string;
+  amount: number;
 }
 
 const COLORS = ['#9b87f5', '#7E69AB', '#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#8E9196'];
@@ -26,46 +29,38 @@ export const RecurringExpensesPieChart = ({
   totalExpenses
 }: RecurringExpensesPieChartProps) => {
   const navigate = useNavigate();
-  
-  // Grouper les dépenses par catégorie
-  const expensesByCategory = recurringExpenses.reduce((acc, expense) => {
-    const category = expense.category || 'Autre';
-    if (!acc[category]) {
-      acc[category] = 0;
+  const categoryTotals = recurringExpenses.reduce<CategoryTotal[]>((acc, expense) => {
+    const existingCategory = acc.find(cat => cat.category === expense.category);
+    if (existingCategory) {
+      existingCategory.amount += expense.amount;
+    } else {
+      acc.push({
+        category: expense.category,
+        amount: expense.amount
+      });
     }
-    acc[category] += expense.amount;
     return acc;
-  }, {} as Record<string, number>);
+  }, []);
 
-  const chartData = Object.entries(expensesByCategory).map(([name, value], index) => ({
-    name,
-    value,
+  const chartData = categoryTotals.map((category, index) => ({
+    name: category.category,
+    value: category.amount,
     fill: COLORS[index % COLORS.length]
   }));
-
-  // Si aucune donnée, ajouter un exemple fictif pour la démo
-  if (chartData.length === 0) {
-    chartData.push(
-      { name: 'Logement', value: 450, fill: COLORS[0] },
-      { name: 'Services', value: 280, fill: COLORS[1] },
-      { name: 'Transport', value: 120, fill: COLORS[2] },
-      { name: 'Santé', value: 100, fill: COLORS[3] }
-    );
-  }
 
   const chartConfig = {
     value: {
       label: "Montant"
     },
-    ...Object.fromEntries(chartData.map((item, index) => [item.name, {
-      label: item.name,
+    ...Object.fromEntries(categoryTotals.map((category, index) => [category.category, {
+      label: category.category,
       color: COLORS[index % COLORS.length]
     }]))
   };
 
   return (
     <Card 
-      className="flex flex-col h-full cursor-pointer"
+      className="flex flex-col h-full cursor-pointer hover:bg-accent/10 transition-colors"
       onClick={() => navigate("/recurring-expenses")}
     >
       <CardHeader className="items-center pb-0">
@@ -108,7 +103,7 @@ export const RecurringExpensesPieChart = ({
                   return (
                     <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
                       <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-2xl font-bold">
-                        {totalExpenses.toFixed(1)} €
+                        {formatCurrency(totalExpenses)}
                       </tspan>
                       <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground text-sm">
                         pour le mois

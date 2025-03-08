@@ -27,6 +27,7 @@ export const UserDropdown = ({
 
   const handleLogout = async () => {
     try {
+      // Vider le cache avant la déconnexion pour garantir un état propre
       queryClient.clear();
       
       const { error } = await supabase.auth.signOut();
@@ -45,46 +46,53 @@ export const UserDropdown = ({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
         <Button 
-          variant="ghost" 
+  variant="ghost" 
+  className={cn(
+    "w-full h-auto",
+    // Si collapsed, on centre le contenu, sinon on garde l'alignement à gauche
+    collapsed ? "justify-center p-0" : "justify-start p-2"
+  )}>
+  <div className={cn(
+    "flex items-center w-full",
+    // Si collapsed, on supprime le gap et on centre
+    collapsed ? "justify-center" : "gap-3"
+  )}>
+    <div className="relative">
+      <Avatar className={cn(
+        "transition-all duration-300",
+        // Si collapsed, on réduit légèrement la taille de l'avatar
+        collapsed ? "h-10 w-10" : "h-12 w-12"
+      )}>
+        <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
+        <AvatarFallback>
+          {(profile?.full_name || "?")[0]?.toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      {profile?.profile_type === "pro" && (
+        <Badge 
           className={cn(
-            "w-full h-auto",
-            collapsed ? "justify-center p-0" : "justify-start p-2"
+            "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
+            // Si collapsed, on peut ajuster la taille du badge
+            collapsed ? "scale-90" : ""
           )}>
-          <div className={cn(
-            "flex items-center w-full",
-            collapsed ? "justify-center" : "gap-3"
-          )}>
-            <div className="relative">
-              <Avatar className={cn(
-                "transition-all duration-300",
-                collapsed ? "h-10 w-10" : "h-12 w-12"
-              )}>
-                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
-                <AvatarFallback>
-                  {(profile?.full_name || "?")[0]?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {profile?.profile_type === "pro" && (
-                <Badge 
-                  className={cn(
-                    "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
-                    collapsed ? "scale-90" : ""
-                  )}>
-                  Pro
-                </Badge>
-              )}
-            </div>
-            {!collapsed && (
-              <div className="flex items-center justify-between flex-1">
-                <div className="flex flex-col items-start">
-                  <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
-                  <span className="text-xs text-muted-foreground">{profile?.email}</span>
-                </div>
-                <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
-              </div>
-            )}
-          </div>
-        </Button>
+          Pro
+        </Badge>
+      )}
+    </div>
+    {/* Le reste du contenu qui n'apparaît que quand non collapsed */}
+    {!collapsed && (
+      <div className="flex items-center justify-between flex-1">
+        <div className="flex flex-col items-start">
+          <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
+
+          <span className="text-xs text-muted-foreground">{profile?.email}</span>
+
+        </div>
+        <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
+      </div>
+    )}
+  </div>
+</Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="right" sideOffset={20} className="w-[240px]">
           <div className="flex items-center gap-3 p-2 border-b">

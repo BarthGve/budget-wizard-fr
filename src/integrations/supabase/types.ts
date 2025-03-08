@@ -66,47 +66,6 @@ export type Database = {
         }
         Relationships: []
       }
-      contributions: {
-        Row: {
-          content: string
-          created_at: string
-          id: string
-          profile_id: string
-          status: Database["public"]["Enums"]["contribution_status"]
-          title: string
-          type: string
-          updated_at: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          id?: string
-          profile_id: string
-          status?: Database["public"]["Enums"]["contribution_status"]
-          title: string
-          type: string
-          updated_at?: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          profile_id?: string
-          status?: Database["public"]["Enums"]["contribution_status"]
-          title?: string
-          type?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "contributions_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       contributors: {
         Row: {
           created_at: string
@@ -893,12 +852,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      are_contribution_notifications_enabled: {
-        Args: {
-          admin_id: string
-        }
-        Returns: boolean
-      }
       can_access_page: {
         Args: {
           user_id: string
@@ -1051,7 +1004,6 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       changelog_entry_type: "new" | "improvement" | "bugfix"
-      contribution_status: "pending" | "in_progress" | "completed"
       credit_status: "actif" | "remboursé" | "dépassé"
       feedback_status: "pending" | "read" | "published"
       mode_planification_type: "par_date" | "par_mensualite"

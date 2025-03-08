@@ -1,10 +1,10 @@
 
-import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { ContributionDialog } from "@/components/contribution/ContributionDialog";
-import { ContributionTrigger } from "@/components/contribution/ContributionTrigger";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Rocket, PartyPopper } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 interface ProjectAnnouncementCardProps {
   collapsed: boolean;
@@ -12,91 +12,73 @@ interface ProjectAnnouncementCardProps {
 }
 
 export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnouncementCardProps) => {
-  const [hasContributed, setHasContributed] = useState(false);
-  const [showCard, setShowCard] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
-
-  // Vérifier si l'utilisateur a déjà contribué
-  useEffect(() => {
-    if (!userId) return;
-
-    const checkContributions = async () => {
+  const navigate = useNavigate();
+  const [dismissed, setDismissed] = useState(false);
+  
+  // Check if user has already created a project
+  const { data: hasProjects } = useQuery({
+    queryKey: ['has-projects', userId],
+    queryFn: async () => {
+      if (!userId) return true; // If no user ID, don't show card
+      
       const { data, error } = await supabase
-        .from('contributions')
+        .from('projets_epargne')
         .select('id')
         .eq('profile_id', userId)
         .limit(1);
       
-      if (!error && data) {
-        setHasContributed(data.length > 0);
+      if (error) {
+        console.error('Error checking projects:', error);
+        return false;
       }
-    };
-
-    checkContributions();
-  }, [userId]);
-
-  const handleDismiss = () => {
-    setShowCard(false);
-    localStorage.setItem('project_announcement_dismissed', 'true');
+      
+      return data && data.length > 0;
+    },
+    enabled: !!userId,
+  });
+  
+  // If user has projects or card was dismissed, don't show it
+  if (hasProjects || dismissed) {
+    return null;
+  }
+  
+  const handleCreateProject = () => {
+    navigate('/savings');
+    setDismissed(true);
   };
-
-  // Vérifier si la carte a été précédemment masquée
-  useEffect(() => {
-    const dismissed = localStorage.getItem('project_announcement_dismissed');
-    if (dismissed === 'true') {
-      setShowCard(false);
-    }
-  }, []);
-
-  if (!showCard) return null;
-
+  
+  if (collapsed) {
+    return (
+      <div className="px-3 mb-3">
+        <Card 
+          className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100 hover:from-indigo-100 hover:to-purple-100 transition-all cursor-pointer hover:shadow-lg"
+          onClick={handleCreateProject}
+        >
+          <CardContent className="p-3 flex flex-col items-center gap-2">
+            <Rocket className="h-5 w-5 text-indigo-500" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
   return (
-    <Card 
-      className={cn(
-        "mb-4 mx-2 bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-950 dark:to-purple-900 border-violet-200 dark:border-violet-800 overflow-hidden",
-        collapsed && "mx-1"
-      )}
-    >
-      <CardContent className={cn(
-        "p-3 flex flex-col space-y-2",
-        collapsed && "p-2"
-      )}>
-        {!collapsed ? (
-          <>
-            <p className="text-sm font-medium text-violet-800 dark:text-violet-300">
-              Vous aimez l'application?
-            </p>
-            <p className="text-xs text-violet-700 dark:text-violet-400">
-              Contribuez au projet et aidez-nous à l'améliorer!
-            </p>
-            <div className="flex justify-between items-center pt-1">
-              <button 
-                onClick={handleDismiss}
-                className="text-xs text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300"
-              >
-                Masquer
-              </button>
-              <div onClick={() => setIsOpen(true)}>
-                <ContributionTrigger 
-                  hasContributed={hasContributed} 
-                  onClick={() => setIsOpen(true)}
-                />
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center">
-            <div onClick={() => setIsOpen(true)}>
-              <ContributionTrigger 
-                hasContributed={hasContributed} 
-                isCollapsed={true}
-                onClick={() => setIsOpen(true)}
-              />
+    <div className="px-4 mb-3">
+      <Card 
+        className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100 hover:from-indigo-100 hover:to-purple-100 transition-all cursor-pointer hover:shadow-lg"
+        onClick={handleCreateProject}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <PartyPopper className="h-5 w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
+            <div className="space-y-2">
+              <p className="text-xs text-gray-800">
+                Nouveau: créer un projet d'épargne !
+              </p>
             </div>
           </div>
-        )}
-      </CardContent>
-      <ContributionDialog open={isOpen} onOpenChange={setIsOpen} />
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
