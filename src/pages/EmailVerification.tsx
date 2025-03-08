@@ -25,6 +25,16 @@ const EmailVerification = () => {
     const storedEmail = localStorage.getItem("verificationEmail");
     if (storedEmail) {
       setEmail(storedEmail);
+    } else {
+      // Si pas d'email stocké, essayer de récupérer le nouvel email depuis l'utilisateur actuel
+      const checkUserEmail = async () => {
+        const { data } = await supabase.auth.getUser();
+        if (data.user?.new_email) {
+          setEmail(data.user.new_email);
+          localStorage.setItem("verificationEmail", data.user.new_email);
+        }
+      };
+      checkUserEmail();
     }
 
     // Récupérer l'heure de fin du compteur depuis localStorage ou en créer une nouvelle
@@ -107,9 +117,15 @@ const EmailVerification = () => {
       const type = isEmailChange ? 'email_change' : 'signup';
       console.log(`Renvoi d'email de type ${type} à ${email}`);
       
+      // Options de redirection pour le lien de vérification
+      const redirectTo = `${window.location.origin}/email-verification?type=${isEmailChange ? 'emailChange' : 'signup'}`;
+      
       const { error } = await supabase.auth.resend({
         type: type,
         email: email,
+        options: {
+          emailRedirectTo: redirectTo
+        }
       });
 
       if (error) throw error;

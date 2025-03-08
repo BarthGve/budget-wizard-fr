@@ -106,16 +106,14 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       // Stocker le nouvel email pour la page de vérification
       localStorage.setItem("verificationEmail", values.email);
       
-      // Mettre à jour l'email
-      // Correction: La syntaxe correcte pour updateUser avec redirection email
+      // Utiliser la syntaxe correcte pour updateUser
+      // Documentation: https://supabase.com/docs/reference/javascript/auth-updateuser
       const redirectTo = `${window.location.origin}/email-verification?type=emailChange`;
       
-      // Utiliser la syntaxe correcte pour updateUser
-      const { data, error } = await supabase.auth.updateUser({
-        email: values.email,
-      }, {
-        redirectTo: redirectTo
-      });
+      const { data, error } = await supabase.auth.updateUser(
+        { email: values.email },
+        { emailRedirectTo: redirectTo }
+      );
       
       if (error) throw error;
       
@@ -147,8 +145,23 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       // Vérifier si un nouvel email est en attente
       if (userData.user?.new_email) {
         console.log("Nouvel email en attente de vérification:", userData.user.new_email);
+        
+        // Renvoyer l'email de vérification uniquement à la nouvelle adresse
+        const redirectTo = `${window.location.origin}/email-verification?type=emailChange`;
+        
+        const { error } = await supabase.auth.resend({
+          type: 'email_change',
+          email: userData.user.new_email,
+          options: {
+            emailRedirectTo: redirectTo
+          }
+        });
+        
+        if (error) throw error;
+        
         localStorage.setItem("verificationEmail", userData.user.new_email);
         navigate("/email-verification?type=emailChange");
+        toast.success("Email de vérification renvoyé avec succès");
       } else {
         toast.error("Aucun changement d'email en attente");
       }
