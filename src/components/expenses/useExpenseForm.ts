@@ -2,8 +2,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ExpenseFormData } from "./types";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function useExpenseForm(onExpenseAdded: () => void) {
+  const queryClient = useQueryClient();
+
   const handleSubmit = async (values: ExpenseFormData) => {
     try {
       const { data: session } = await supabase.auth.getSession();
@@ -25,6 +28,19 @@ export function useExpenseForm(onExpenseAdded: () => void) {
       if (error) throw error;
 
       toast.success("La dépense a été ajoutée");
+      
+      // Invalidation de toutes les requêtes liées aux dépenses pour ce détaillant
+      queryClient.invalidateQueries({ 
+        queryKey: ["retailer-expenses", values.retailerId],
+        exact: false
+      });
+      
+      // Invalidation des statistiques globales des dépenses
+      queryClient.invalidateQueries({ 
+        queryKey: ["expenses-stats"],
+        exact: false
+      });
+      
       onExpenseAdded();
       return true;
     } catch (error) {

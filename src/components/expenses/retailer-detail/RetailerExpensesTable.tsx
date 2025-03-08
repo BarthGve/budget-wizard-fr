@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/utils/format";
@@ -31,6 +32,11 @@ export function RetailerExpensesTable({
 }: RetailerExpensesTableProps) {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // Réinitialiser la page actuelle lorsque les dépenses changent
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [expenses?.length]);
 
   if (isLoading) {
     return (
