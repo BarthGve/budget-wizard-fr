@@ -13,7 +13,7 @@ const AdminFeedbacks = () => {
   const [statusFilter, setStatusFilter] = useState<"pending" | "read" | "published" | "all">("all");
   
   const { 
-    feedbacks, 
+    filteredFeedbacks, // Utilisation de filteredFeedbacks au lieu de feedbacks
     isLoading,
     setSelectedFeedback,
     handleStatusUpdate,
@@ -24,7 +24,7 @@ const AdminFeedbacks = () => {
   } = useFeedbacks();
 
   // Filtrer les feedback en fonction du terme de recherche et du statut
-  const filteredFeedbacks = feedbacks?.filter(feedback => {
+  const filteredFeedbacks2 = filteredFeedbacks?.filter(feedback => {
     const matchesSearch = feedback.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          feedback.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          feedback.profile.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -55,16 +55,9 @@ const AdminFeedbacks = () => {
           </div>
         </div>
 
-        <FeedbackSearch 
-          search={searchTerm}
-          onSearchChange={setSearchTerm}
-          statusFilter={statusFilter}
-          onStatusFilterChange={setStatusFilter}
-        />
-
         {view === "table" ? (
           <FeedbacksTable 
-            feedbacks={filteredFeedbacks}
+            feedbacks={filteredFeedbacks2}
             onViewDetails={(feedback) => setSelectedFeedback(feedback)}
             onStatusUpdate={handleStatusUpdate}
             onDelete={deleteFeedback}
@@ -73,7 +66,7 @@ const AdminFeedbacks = () => {
           />
         ) : (
           <FeedbacksKanban 
-            feedbacks={filteredFeedbacks}
+            feedbacks={filteredFeedbacks2}
             onDragEnd={handleDragEnd}
           />
         )}

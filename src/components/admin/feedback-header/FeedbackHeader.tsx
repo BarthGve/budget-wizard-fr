@@ -28,7 +28,7 @@ export const FeedbackHeader = ({
           <CardTitle>Liste des feedbacks</CardTitle>
           <FeedbackViewToggle 
             view={view}
-            onViewChange={onViewChange}
+            onChange={onViewChange} // Correction ici: utilisation de onChange au lieu de onViewChange
           />
         </div>
       </CardHeader>
