@@ -138,7 +138,10 @@ export const UserDropdown = ({
         </DropdownMenuContent>
       </DropdownMenu>
       
-      <ContributionDialog open={isContributionOpen} onOpenChange={setIsContributionOpen} />
+      <ContributionDialog 
+        open={isContributionOpen} 
+        onOpenChange={setIsContributionOpen} 
+      />
     </div>
   );
 };
