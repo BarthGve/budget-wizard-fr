@@ -23,6 +23,7 @@ export const ratingTexts = [
 export const ratingEmojis = ["😠", "😕", "😐", "🙂", "😄"];
 
 export const FeedbackRating = ({ rating, setRating, hoverRating, setHoverRating }: FeedbackRatingProps) => {
+  // Cette fonction est appelée lorsque l'utilisateur clique sur une note
   const handleRatingChange = (value: number) => {
     setRating(value);
   };
