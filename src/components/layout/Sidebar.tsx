@@ -14,7 +14,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { ProjectAnnouncementCard } from "./ProjectAnnouncementCard";
-import { ContributionDialog } from "../contribution/ContributionDialog";
 
 interface SidebarProps {
   className?: string;
@@ -154,12 +153,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
             </div>
           )}
           
-          {/* Contribution dialog */}
-          {!isAdmin && (
-            <div className="px-4 py-2">
-              <ContributionDialog collapsed={collapsed} />
-            </div>
-          )}
+          {/* Note: Removed the ContributionDialog from here since it's already in UserDropdown */}
           
           <UserDropdown collapsed={collapsed} profile={profile} />
         </div>

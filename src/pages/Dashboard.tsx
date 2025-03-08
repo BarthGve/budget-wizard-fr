@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
+import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent";
 
 // Page de tableau de bord par défaut
 const Dashboard = () => {
@@ -37,14 +38,19 @@ const Dashboard = () => {
                   <TabsTrigger value="monthly">Mensuel</TabsTrigger>
                   <TabsTrigger value="yearly">Annuel</TabsTrigger>
                 </TabsList>
+                <TabsContent value="monthly">
+                  <DashboardTabContent view="monthly" />
+                </TabsContent>
+                <TabsContent value="yearly">
+                  <DashboardTabContent view="yearly" />
+                </TabsContent>
               </Tabs>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-          <p className="text-lg text-gray-500">Bienvenue sur votre tableau de bord</p>
-        </div>
+        {/* Contenu du tableau de bord basé sur la vue sélectionnée */}
+        <DashboardTabContent view={currentView} />
       </div>
     </DashboardLayout>
   );
