@@ -37,7 +37,7 @@ const ForgotPassword = () => {
       const redirectUrl = "https://budgetwizard.fr/reset-password";
       console.log("URL de redirection configurée:", redirectUrl);
 
-      // Étape 1: Appel à l'API Supabase pour créer un token de réinitialisation
+      // Appel direct à l'API Supabase pour réinitialiser le mot de passe
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
       });
@@ -47,39 +47,6 @@ const ForgotPassword = () => {
       if (error) {
         console.error("Erreur détaillée:", error);
         throw error;
-      }
-
-      // Étape 2: Si Supabase réussit, envoyer un email personnalisé via notre fonction edge
-      try {
-        // Récupérer le token depuis la réponse de Supabase (si disponible)
-        // Note: Supabase ne renvoie pas directement le token dans la réponse API
-        // Nous utilisons ici la méthode de récupération d'un jeton temporaire
-
-        // Obtenir la session pour extraire les informations d'authentification
-        const { data: authData } = await supabase.auth.getSession();
-        if (authData?.session?.access_token) {
-          const token = authData.session.access_token;
-          
-          console.log("Envoi d'un email personnalisé via la fonction edge");
-          
-          const response = await supabase.functions.invoke("send-reset-password", {
-            body: { 
-              email,
-              token: token
-            }
-          });
-          
-          console.log("Réponse de la fonction edge:", response);
-          
-          if (response.error) {
-            console.error("Erreur lors de l'envoi de l'email personnalisé:", response.error);
-            // Ne pas interrompre le flux si l'email personnalisé échoue,
-            // car Supabase a déjà envoyé son email par défaut
-          }
-        }
-      } catch (emailError) {
-        console.error("Erreur lors de l'envoi de l'email personnalisé:", emailError);
-        // Ne pas interrompre le flux si l'email personnalisé échoue
       }
 
       // Message de succès même si l'email n'existe pas (sécurité)
