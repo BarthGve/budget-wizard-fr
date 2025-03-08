@@ -13,9 +13,15 @@ import { useContributionSubmit } from "./hooks/useContributionSubmit";
 
 interface ContributionDialogProps {
   collapsed?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const ContributionDialog = ({ collapsed }: ContributionDialogProps) => {
+export const ContributionDialog = ({ 
+  collapsed, 
+  open: externalOpen, 
+  onOpenChange: externalOnOpenChange 
+}: ContributionDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState("suggestion");
   const [title, setTitle] = useState("");
@@ -23,6 +29,16 @@ export const ContributionDialog = ({ collapsed }: ContributionDialogProps) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const { width, height } = useWindowSize();
   const { isSubmitting, submitContribution } = useContributionSubmit();
+
+  // Utiliser les props externes si fournies, sinon utiliser l'état local
+  const dialogOpen = externalOpen !== undefined ? externalOpen : isOpen;
+  const handleOpenChange = (open: boolean) => {
+    if (externalOnOpenChange) {
+      externalOnOpenChange(open);
+    } else {
+      setIsOpen(open);
+    }
+  };
 
   useEffect(() => {
     if (showConfetti) {
@@ -39,7 +55,7 @@ export const ContributionDialog = ({ collapsed }: ContributionDialogProps) => {
     
     if (success) {
       setShowConfetti(true);
-      setIsOpen(false);
+      handleOpenChange(false);
       setType("suggestion");
       setTitle("");
       setContent("");
@@ -57,10 +73,12 @@ export const ContributionDialog = ({ collapsed }: ContributionDialogProps) => {
           gravity={0.2}
         />
       )}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <ContributionTrigger collapsed={collapsed} onClick={() => setIsOpen(true)} />
-        </DialogTrigger>
+      <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
+        {!externalOpen && (
+          <DialogTrigger asChild>
+            <ContributionTrigger collapsed={collapsed} onClick={() => handleOpenChange(true)} />
+          </DialogTrigger>
+        )}
         
         <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-xl border border-primary/20 shadow-xl dark:shadow-primary/5 backdrop-blur-sm">
           <div className="bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 dark:from-primary/10 dark:via-primary/5 dark:to-primary/10 px-6 pt-8 pb-6">
