@@ -1,106 +1,153 @@
-
-import { NavLink, useLocation } from "react-router-dom";
+import { useState } from "react";
 import {
-  LayoutDashboard,
-  Users,
-  Banknote,
-  PiggyBank,
-  ClipboardList,
-  Home,
-  TrendingUp,
-  Mailbox,
-  CreditCard,
-  ShoppingBasket,
-  List,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+  NavigationMenu as NavigationMenuPrimitive,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle
+} from "@/components/ui/navigation-menu"
+import { usePathname } from 'react-router-dom';
+import { cn } from "@/lib/utils"
+import { Home, LayoutDashboard, Settings, Users, MessageSquare, Lightbulb, ListChecks } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { LucideIcon } from "lucide-react";
-import { usePendingFeedbacks } from "@/hooks/usePendingFeedbacks";
-import { Badge } from "@/components/ui/badge";
 
-interface MenuItem {
-  title: string;
-  icon: LucideIcon;
-  path: string;
-  matchPath?: string;
-}
+const LIST_STYLES = "grid gap-6 p-4 sm:grid-cols-2 md:grid-cols-3";
+const LINK_STYLES = "block font-medium text-sm";
 
-interface NavigationMenuProps {
-  collapsed: boolean;
-  isAdmin: boolean;
-}
+const configurations = [
+  {
+    title: "Interface",
+    href: "/docs/installation",
+    description: "How to install dependencies and structure your app.",
+  },
+  {
+    title: "Theme",
+    href: "/docs/configuration",
+    description: "Set up authentication with magic-link or OAuth providers.",
+  },
+  {
+    title: "Authentication",
+    href: "/docs/configuration",
+    description: "Set up authentication with magic-link or OAuth providers.",
+  },
+]
 
-// Définir les menus en dehors du composant
-const adminMenu: MenuItem[] = [
-  { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "^/admin$" },
-  { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "^/admin/feedbacks$" },
-  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog$" }
-];
+export const NavigationMenu = ({ collapsed }: { collapsed: boolean }) => {
+  const pathname = usePathname();
+  const { isAdmin } = usePagePermissions();
 
-const userMenu: MenuItem[] = [
-  { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
-  { title: "Revenus", icon: Banknote, path: "/contributors" },
-  { title: "Dépenses", icon: ShoppingBasket, path: "/expenses" },
-  { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
-  { title: "Crédits", icon: CreditCard, path: "/credits" },
-  { title: "Épargne", icon: PiggyBank, path: "/savings" },
-  { title: "Bourse", icon: TrendingUp, path: "/stocks" },
-  { title: "Immobilier", icon: Home, path: "/properties" },
-];
+  // Configuration des éléments de menu
+  const menuItems = [
+    {
+      title: "Navigation",
+      items: [
+        {
+          name: "Dashboard",
+          path: "/dashboard",
+          icon: LayoutDashboard,
+          permissions: ["basic", "pro"],
+        },
+        {
+          name: "Accueil",
+          path: "/",
+          icon: Home,
+          permissions: ["basic", "pro"],
+        },
+      ],
+    },
+    {
+      title: "Fonctionnalités",
+      items: [
+        {
+          name: "Dépenses",
+          path: "/expenses",
+          icon: ListChecks,
+          permissions: ["basic", "pro"],
+        },
+        {
+          name: "Epargne",
+          path: "/savings",
+          icon: Settings,
+          permissions: ["basic", "pro"],
+        },
+      ],
+    },
+  ];
 
-export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
-  const location = useLocation();
-  const { canAccessPage } = usePagePermissions();
-  // Nous passons maintenant isAdmin directement au hook
-  const { pendingCount } = usePendingFeedbacks(isAdmin);
-
-  const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
+  // Configuration des éléments de menu pour les administrateurs
+  const adminMenuItems = [
+    {
+      title: "Administration",
+      items: [
+        {
+          name: "Dashboard",
+          path: "/admin",
+          icon: LayoutDashboard,
+          permissions: ["admin"],
+        },
+      ],
+    },
+    {
+      title: "Gestion",
+      items: [
+        {
+          name: "Feedbacks",
+          path: "/admin/feedbacks",
+          icon: MessageSquare,
+          permissions: ["admin"],
+        },
+        {
+          name: "Changelog",
+          path: "/admin/changelog",
+          icon: Settings,
+          permissions: ["admin"],
+        },
+        {
+          name: "Utilisateurs",
+          path: "/admin/users",
+          icon: Users,
+          permissions: ["admin"],
+        },
+        {
+          name: "Contributions",
+          path: "/admin/contributions",
+          icon: Lightbulb, // Utiliser Lightbulb de Lucide pour l'icône des contributions
+          permissions: ["admin"],
+        },
+      ],
+    },
+  ];
 
   return (
-    <nav className="flex flex-col h-full justify-between p-4">
-      <ul className="space-y-2">
-        {menuItems.map((item) => {
-          // Use a proper matching logic for active state
-          const isActive = item.matchPath
-            ? new RegExp(item.matchPath).test(location.pathname)
-            : location.pathname === item.path;
-            
-          // Vérifier si c'est le lien vers les feedbacks et s'il y a des feedbacks en attente
-          const showBadge = isAdmin && item.path === "/admin/feedbacks" && pendingCount > 0;
-
-          return (
-            <li key={item.path}>
-              <NavLink
-                to={item.path}
-                className={({ isActive }) => cn(
-                  "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
-                  "hover:bg-primary/10",
-                  collapsed && "justify-center",
-                  isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
-                )}
-                end
-              >
-                <div className="relative">
-                  <item.icon className="h-5 w-5 flex-shrink-0" />
-                  {showBadge && (
-                    <Badge 
-                      variant="destructive" 
-                      className={cn(
-                        "absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center rounded-full",
-                        collapsed ? "-right-1" : "-right-1.5"
-                      )}
-                    >
-                      {pendingCount > 9 ? '9+' : pendingCount}
-                    </Badge>
+    <NavigationMenuPrimitive className="relative">
+      <NavigationMenuList className="max-md:grid max-md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] md:flex md:items-center md:gap-6">
+        {(isAdmin ? adminMenuItems : menuItems).map((menuSection, index) => (
+          <div key={index}>
+            {menuSection.title && (
+              <div className="hidden px-4 text-sm font-semibold opacity-70 md:block">
+                {menuSection.title}
+              </div>
+            )}
+            {menuSection.items.map((item) => (
+              <NavigationMenuItem key={item.name}>
+                <NavigationMenuLink
+                  className={cn(
+                    navigationMenuTriggerStyle(),
+                    "data-[active]:text-foreground data-[active]:shadow-sm",
+                    pathname === item.path ? "bg-secondary text-secondary-foreground" : "hover:bg-secondary/50",
+                    "flex h-9 w-full items-center justify-start rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground md:w-auto md:px-3"
                   )}
-                </div>
-                {!collapsed && <span className="truncate">{item.title}</span>}
-              </NavLink>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+                  href={item.path}
+                >
+                  {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+                  <span>{item.name}</span>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            ))}
+          </div>
+        ))}
+      </NavigationMenuList>
+    </NavigationMenuPrimitive>
   );
 };
