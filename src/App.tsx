@@ -46,27 +46,75 @@ const App = () => {
               <Route path="/verify-email" element={<EmailVerification />} />
               
               {/* Routes protégées */}
-              <Route element={<ProtectedRoute>
-                <Routes>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  
-                  {/* Autres routes protégées */}
-                  <Route path="/contributors" element={<Contributors />} />
-                  <Route path="/expenses" element={<Expenses />} />
-                  <Route path="/recurring-expenses" element={<RecurringExpenses />} />
-                  <Route path="/credits" element={<Credits />} />
-                  <Route path="/savings" element={<Savings />} />
-                  <Route path="/stocks" element={<Stocks />} />
-                  <Route path="/properties" element={<Properties />} />
-                  <Route path="/user-settings" element={<UserSettings />} />
-                  
-                  {/* Routes Admin */}
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/admin/feedbacks" element={<AdminFeedbacks />} />
-                  <Route path="/admin/contributions" element={<ContributionsPage />} />
-                  <Route path="/admin/changelog" element={<Changelog />} />
-                </Routes>
-              </ProtectedRoute>} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              
+              {/* Autres routes protégées */}
+              <Route path="/contributors" element={
+                <ProtectedRoute>
+                  <Contributors />
+                </ProtectedRoute>
+              } />
+              <Route path="/expenses" element={
+                <ProtectedRoute>
+                  <Expenses />
+                </ProtectedRoute>
+              } />
+              <Route path="/recurring-expenses" element={
+                <ProtectedRoute>
+                  <RecurringExpenses />
+                </ProtectedRoute>
+              } />
+              <Route path="/credits" element={
+                <ProtectedRoute>
+                  <Credits />
+                </ProtectedRoute>
+              } />
+              <Route path="/savings" element={
+                <ProtectedRoute>
+                  <Savings />
+                </ProtectedRoute>
+              } />
+              <Route path="/stocks" element={
+                <ProtectedRoute>
+                  <Stocks />
+                </ProtectedRoute>
+              } />
+              <Route path="/properties" element={
+                <ProtectedRoute>
+                  <Properties />
+                </ProtectedRoute>
+              } />
+              <Route path="/user-settings" element={
+                <ProtectedRoute>
+                  <UserSettings />
+                </ProtectedRoute>
+              } />
+              
+              {/* Routes Admin */}
+              <Route path="/admin" element={
+                <ProtectedRoute requireAdmin={true}>
+                  <Admin />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/feedbacks" element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminFeedbacks />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/contributions" element={
+                <ProtectedRoute requireAdmin={true}>
+                  <ContributionsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/changelog" element={
+                <ProtectedRoute requireAdmin={true}>
+                  <Changelog />
+                </ProtectedRoute>
+              } />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
