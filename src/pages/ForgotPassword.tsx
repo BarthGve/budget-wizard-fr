@@ -32,43 +32,21 @@ const ForgotPassword = () => {
     console.log("Tentative d'envoi d'email de réinitialisation à:", email);
 
     try {
-      // Méthode 1: Utilisation de Supabase directement
-      const origin = window.location.origin;
+      // Détection automatique de l'origine pour la construction de l'URL de redirection
+      const origin = window.location.origin; // Ex: https://budgetwizard.fr
       const redirectUrl = `${origin}/reset-password`;
       console.log("URL de redirection configurée:", redirectUrl);
 
+      // Appel à l'API Supabase pour réinitialiser le mot de passe
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
       });
 
-      if (error) {
-        console.error("Erreur Supabase:", error);
-        throw error;
-      }
+      console.log("Réponse de Supabase:", { data, error });
 
-      console.log("Réponse de Supabase:", { data });
-      
-      // Méthode 2: Utilisation de notre fonction edge comme solution de secours
-      try {
-        const response = await fetch(`${origin}/functions/v1/send-reset-password`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.SUPABASE_ANON_KEY || ''}`
-          },
-          body: JSON.stringify({ email }),
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.warn("Fonction edge avertissement:", errorData);
-          // Ne pas lancer d'erreur ici car nous avons déjà essayé avec Supabase
-        } else {
-          console.log("Email envoyé via la fonction edge avec succès");
-        }
-      } catch (edgeError) {
-        console.warn("Erreur avec la fonction edge (ignorée):", edgeError);
-        // Ne pas lancer d'erreur ici car nous avons déjà essayé avec Supabase
+      if (error) {
+        console.error("Erreur détaillée:", error);
+        throw error;
       }
 
       // Message de succès même si l'email n'existe pas (sécurité)
