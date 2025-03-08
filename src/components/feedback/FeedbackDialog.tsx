@@ -39,16 +39,15 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
 
   const handleRatingChange = (value: number) => {
     setRating(value);
-    if (step === 1) {
-      setTimeout(() => {
-        setStep(2);
-      }, 500);
-    }
+    // Passage automatique à l'étape 2 après sélection d'une note
+    setTimeout(() => {
+      setStep(2);
+    }, 500);
   };
 
   const handleSubmit = async () => {
+    // À l'étape 1, pas de soumission nécessaire car le passage est automatique
     if (step === 1) {
-      setStep(2);
       return;
     }
     
@@ -127,11 +126,11 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
                 Retour
               </Button>
             )}
-            {/* Le bouton Continuer/Envoyer ne doit s'afficher que dans la première étape si un rating est sélectionné */}
-            {(step === 2 || (step === 1 && rating !== null)) && (
+            {/* Le bouton Envoyer ne doit s'afficher que dans la deuxième étape */}
+            {step === 2 && (
               <Button
                 onClick={handleSubmit}
-                disabled={isSubmitting || (step === 1 && !rating)}
+                disabled={isSubmitting}
                 className="relative overflow-hidden group bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white"
               >
                 {isSubmitting ? (
@@ -141,7 +140,7 @@ export const FeedbackDialog = ({ collapsed }: FeedbackDialogProps) => {
                   </>
                 ) : (
                   <>
-                    {step === 1 ? "Continuer" : "Envoyer"}
+                    Envoyer
                     <Send className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </>
                 )}
