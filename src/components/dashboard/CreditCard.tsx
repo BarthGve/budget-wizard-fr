@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
@@ -47,16 +48,18 @@ export const CreditCard = ({
             <div className="flex flex-col">
               <p className="text-xl font-bold leading-none">{Math.round(totalMensualites)} €</p>
             </div>
-            <Tooltip>
-              <TooltipTrigger>
-                <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
-                  {Math.round(tauxEndettement)}%
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Taux d'endettement</p>
-              </TooltipContent>
-            </Tooltip>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
+                    {Math.round(tauxEndettement)}%
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Taux d'endettement</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </CardContent>

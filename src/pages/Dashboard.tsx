@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
   const [currentView, setCurrentView] = useState<'monthly' | 'yearly'>('monthly');
-  const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
+  const { contributors = [], recurringExpenses = [], monthlySavings = [] } = useDashboardData();
   
   // Récupération des crédits
   const { data: credits = [] } = useQuery({
@@ -48,6 +48,24 @@ const Dashboard = () => {
   ];
   const currentMonthName = monthNames[new Date().getMonth()];
 
+  // Préparation des données pour les contributeurs avec les parts de dépenses et crédits
+  const contributorsWithShares = contributors.map(contributor => {
+    const expenseShare = (contributor.percentage_contribution * totalExpenses) / 100;
+    const creditShare = (contributor.percentage_contribution * totalMensualites) / 100;
+    
+    return {
+      ...contributor,
+      expenseShare,
+      creditShare
+    };
+  });
+
+  // Conversion des periodicities pour assurer qu'elles correspondent aux types attendus
+  const typedRecurringExpenses = recurringExpenses.map(expense => ({
+    ...expense,
+    periodicity: (expense.periodicity as "monthly" | "quarterly" | "yearly")
+  }));
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -64,7 +82,7 @@ const Dashboard = () => {
           savings={totalSavings}
           savingsGoal={0}
           contributorShares={contributorShares}
-          recurringExpenses={recurringExpenses || []}
+          recurringExpenses={typedRecurringExpenses}
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <DashboardCharts 
@@ -72,11 +90,11 @@ const Dashboard = () => {
             savings={totalSavings}
             totalMensualites={totalMensualites}
             credits={credits}
-            recurringExpenses={recurringExpenses || []}
+            recurringExpenses={typedRecurringExpenses}
             monthlySavings={monthlySavings || []}
           />
           <DashboardContributors 
-            contributors={contributors || []}
+            contributors={contributorsWithShares}
             expenses={totalExpenses}
             totalMensualites={totalMensualites}
           />

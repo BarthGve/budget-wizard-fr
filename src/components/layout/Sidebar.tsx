@@ -1,206 +1,208 @@
 
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  CreditCard, 
-  Settings, 
-  PiggyBank, 
-  Home,
-  Menu,
-  User,
-  MessageSquare,
-  ShieldCheck
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
-import { FeedbackDialog } from "../feedback/FeedbackDialog";
-import { ContributionDialog } from "../contributions/ContributionDialog";
-import { FeedbackTrigger } from "../feedback/FeedbackTrigger";
-import { ContributionTrigger } from "../feedback/ContributionTrigger";
+import { useLocation, Link } from "react-router-dom";
+import { MessageSquareText, ArrowLeftFromLine, ArrowRightFromLine, Settings, Save, CreditCard, PieChart, BadgeDollarSign, Home, Building, Wrench, Heart, HeartHandshake } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
+import { ContributionDialog } from "@/components/contributions/ContributionDialog";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
 }
 
-export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
+export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
   const location = useLocation();
-  const currentPath = location.pathname;
-  const { isAdmin } = useCurrentUser();
+  const { currentUser, isAdmin } = useCurrentUser();
+  
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [contributionDialogOpen, setContributionDialogOpen] = useState(false);
 
-  // Fonction pour vérifier si un lien est actif
   const isActive = (path: string) => {
-    return currentPath === path || currentPath.startsWith(`${path}/`);
+    return location.pathname === path;
   };
 
-  const links = [
-    {
-      title: "Tableau de bord",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-      active: isActive("/dashboard"),
-    },
-    {
-      title: "Dépenses",
-      href: "/expenses",
-      icon: CreditCard,
-      active: isActive("/expenses"),
-    },
-    {
-      title: "Épargne",
-      href: "/savings",
-      icon: PiggyBank,
-      active: isActive("/savings"),
-    },
-    {
-      title: "Immobilier",
-      href: "/properties",
-      icon: Home,
-      active: isActive("/properties"),
-    },
-  ];
-
-  const accountLinks = [
-    {
-      title: "Mon compte",
-      href: "/user-settings",
-      icon: User,
-      active: isActive("/user-settings"),
-    },
-    {
-      title: "Paramètres",
-      href: "/settings",
-      icon: Settings,
-      active: isActive("/settings"),
-    },
-  ];
-
-  const adminLinks = isAdmin ? [
-    {
-      title: "Administration",
-      href: "/admin",
-      icon: ShieldCheck,
-      active: isActive("/admin"),
-    },
-  ] : [];
-
   return (
-    <div
-      className={cn(
-        "flex flex-col h-full bg-card border-r transition-all duration-300 ease-in-out",
-        collapsed ? "w-[70px]" : "w-[240px]"
-      )}
-    >
-      <div className="flex items-center justify-between p-4">
-        {!collapsed && (
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-xl">FinGenius</span>
-          </div>
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onToggle}
-          className={cn(collapsed && "mx-auto")}
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-      </div>
-
-      <div className="flex-1 overflow-auto py-2">
-        <nav className="grid gap-1 px-2">
-          {links.map((link, index) => (
-            <Link
-              key={index}
-              to={link.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                link.active
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
-              )}
+    <div className={cn(
+      "h-screen sticky top-0 border-r transition-all duration-300 ease-in-out",
+      collapsed ? "w-[80px]" : "w-[250px]"
+    )}>
+      <div className="flex h-full flex-col overflow-hidden">
+        {/* Header et logo */}
+        <div className="flex h-16 items-center justify-between px-4 border-b">
+          {!collapsed && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-xl font-bold tracking-tight"
             >
-              <link.icon className={cn("h-5 w-5 flex-none")} />
-              {!collapsed && <span>{link.title}</span>}
-            </Link>
-          ))}
-        </nav>
-
-        <Separator className="my-4" />
-
-        {/* Section compte utilisateur */}
-        <nav className="grid gap-1 px-2">
-          {accountLinks.map((link, index) => (
-            <Link
-              key={index}
-              to={link.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                link.active
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
-              )}
-            >
-              <link.icon className={cn("h-5 w-5 flex-none")} />
-              {!collapsed && <span>{link.title}</span>}
-            </Link>
-          ))}
-        </nav>
-
-        {isAdmin && (
-          <>
-            <Separator className="my-4" />
-            <nav className="grid gap-1 px-2">
-              {adminLinks.map((link, index) => (
-                <Link
-                  key={index}
-                  to={link.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-                    link.active
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
-                  )}
-                >
-                  <link.icon className={cn("h-5 w-5 flex-none")} />
-                  {!collapsed && <span>{link.title}</span>}
-                </Link>
-              ))}
-            </nav>
-          </>
-        )}
-      </div>
-
-      {/* Section feedback et contribution */}
-      {!isAdmin && (
-        <div className="mt-auto p-2">
-          <FeedbackTrigger 
-            collapsed={collapsed} 
-            onClick={() => setFeedbackDialogOpen(true)} 
-          />
-          
-          <ContributionTrigger 
-            collapsed={collapsed} 
-            onClick={() => setContributionDialogOpen(true)} 
-          />
+              Financy
+            </motion.div>
+          )}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onToggle}
+            className={cn(
+              "h-8 w-8 rounded-full",
+              collapsed && "mx-auto"
+            )}
+          >
+            {collapsed ? <ArrowRightFromLine className="h-4 w-4" /> : <ArrowLeftFromLine className="h-4 w-4" />}
+          </Button>
         </div>
-      )}
-
-      {/* Dialogs */}
+        
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+          <Link to="/dashboard">
+            <Button 
+              variant={isActive("/dashboard") ? "secondary" : "ghost"} 
+              className={cn(
+                "w-full justify-start",
+                collapsed && "justify-center"
+              )}
+            >
+              <Home className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+              {!collapsed && <span>Tableau de bord</span>}
+            </Button>
+          </Link>
+          
+          <Link to="/expenses">
+            <Button 
+              variant={isActive("/expenses") ? "secondary" : "ghost"} 
+              className={cn(
+                "w-full justify-start",
+                collapsed && "justify-center"
+              )}
+            >
+              <BadgeDollarSign className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+              {!collapsed && <span>Dépenses</span>}
+            </Button>
+          </Link>
+          
+          <Link to="/recurring-expenses">
+            <Button 
+              variant={isActive("/recurring-expenses") ? "secondary" : "ghost"} 
+              className={cn(
+                "w-full justify-start",
+                collapsed && "justify-center"
+              )}
+            >
+              <PieChart className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+              {!collapsed && <span>Charges fixes</span>}
+            </Button>
+          </Link>
+          
+          <Link to="/credits">
+            <Button 
+              variant={isActive("/credits") ? "secondary" : "ghost"} 
+              className={cn(
+                "w-full justify-start",
+                collapsed && "justify-center"
+              )}
+            >
+              <CreditCard className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+              {!collapsed && <span>Crédits</span>}
+            </Button>
+          </Link>
+          
+          <Link to="/savings">
+            <Button 
+              variant={isActive("/savings") ? "secondary" : "ghost"} 
+              className={cn(
+                "w-full justify-start",
+                collapsed && "justify-center"
+              )}
+            >
+              <Save className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+              {!collapsed && <span>Épargnes</span>}
+            </Button>
+          </Link>
+          
+          <Link to="/properties">
+            <Button 
+              variant={isActive("/properties") ? "secondary" : "ghost"} 
+              className={cn(
+                "w-full justify-start",
+                collapsed && "justify-center"
+              )}
+            >
+              <Building className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+              {!collapsed && <span>Patrimoine</span>}
+            </Button>
+          </Link>
+          
+          {isAdmin && (
+            <Link to="/admin">
+              <Button 
+                variant={location.pathname.startsWith("/admin") ? "secondary" : "ghost"} 
+                className={cn(
+                  "w-full justify-start",
+                  collapsed && "justify-center"
+                )}
+              >
+                <Wrench className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+                {!collapsed && <span>Administration</span>}
+              </Button>
+            </Link>
+          )}
+        </nav>
+        
+        {/* Footer avec feedback et paramètres */}
+        <div className="p-3 border-t space-y-1">
+          {!isAdmin && (
+            <Button 
+              variant="ghost" 
+              className={cn(
+                "w-full justify-start",
+                collapsed && "justify-center"
+              )}
+              onClick={() => setContributionDialogOpen(true)}
+            >
+              <HeartHandshake className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+              {!collapsed && <span>Contribuer</span>}
+            </Button>
+          )}
+          
+          <Button 
+            variant="ghost" 
+            className={cn(
+              "w-full justify-start",
+              collapsed && "justify-center"
+            )}
+            onClick={() => setFeedbackDialogOpen(true)}
+          >
+            <Heart className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+            {!collapsed && <span>Feedback</span>}
+          </Button>
+          
+          <Link to="/settings">
+            <Button 
+              variant={isActive("/settings") ? "secondary" : "ghost"} 
+              className={cn(
+                "w-full justify-start",
+                collapsed && "justify-center"
+              )}
+            >
+              <Settings className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+              {!collapsed && <span>Paramètres</span>}
+            </Button>
+          </Link>
+        </div>
+      </div>
+      
       <FeedbackDialog 
-        isOpen={feedbackDialogOpen} 
-        onOpenChange={setFeedbackDialogOpen} 
+        open={feedbackDialogOpen}
+        onOpenChange={setFeedbackDialogOpen}
       />
       
-      <ContributionDialog
-        isOpen={contributionDialogOpen}
+      <ContributionDialog 
+        open={contributionDialogOpen}
         onOpenChange={setContributionDialogOpen}
       />
     </div>
   );
-}
+};

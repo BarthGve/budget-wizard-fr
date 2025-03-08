@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,7 +10,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { toast } from 'sonner';
 
 interface ContributionDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
@@ -23,56 +22,55 @@ const CONTRIBUTION_TYPES = [
   { id: "other", name: "Autre" }
 ];
 
-export const ContributionDialog = ({ isOpen, onOpenChange }: ContributionDialogProps) => {
+export function ContributionDialog({ open, onOpenChange }: ContributionDialogProps) {
   const { currentUser } = useCurrentUser();
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [type, setType] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
+  const [category, setCategory] = useState('');
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const resetForm = () => {
     setTitle('');
-    setContent('');
-    setType('');
+    setMessage('');
+    setCategory('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitting(true);
     
-    if (!title || !content || !type) {
-      toast.error("Veuillez remplir tous les champs.");
-      return;
-    }
-
     try {
-      setIsSubmitting(true);
+      const { error } = await supabase.from("contributions").insert({
+        profile_id: currentUser?.id,
+        title,
+        content: message,
+        type: category,
+        status: "pending"
+      });
       
-      // Insérer la contribution dans la base de données
-      const { error } = await supabase
-        .from('contributions')
-        .insert({
-          profile_id: currentUser?.id,
-          title,
-          content,
-          type,
-          status: 'pending'
-        });
-
       if (error) throw error;
       
-      toast.success("Votre contribution a été soumise avec succès !");
+      toast({
+        title: "Contribution envoyée",
+        description: "Merci pour votre proposition !",
+      });
+      
       resetForm();
       onOpenChange(false);
     } catch (error) {
-      console.error("Erreur lors de la soumission de la contribution:", error);
-      toast.error("Une erreur est survenue lors de la soumission. Veuillez réessayer.");
+      console.error("Erreur lors de l'envoi de la contribution:", error);
+      toast({
+        title: "Une erreur est survenue",
+        description: "Impossible d'envoyer votre contribution. Veuillez réessayer.",
+        variant: "destructive",
+      });
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Contribuez au projet</DialogTitle>
@@ -84,7 +82,7 @@ export const ContributionDialog = ({ isOpen, onOpenChange }: ContributionDialogP
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
             <Label htmlFor="contribution-type">Catégorie</Label>
-            <Select value={type} onValueChange={setType} required>
+            <Select value={category} onValueChange={setCategory} required>
               <SelectTrigger id="contribution-type">
                 <SelectValue placeholder="Sélectionnez une catégorie" />
               </SelectTrigger>
@@ -113,8 +111,8 @@ export const ContributionDialog = ({ isOpen, onOpenChange }: ContributionDialogP
             <Label htmlFor="contribution-content">Message</Label>
             <Textarea
               id="contribution-content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               placeholder="Décrivez votre idée ou le problème rencontré en détail..."
               className="min-h-[120px]"
               required
