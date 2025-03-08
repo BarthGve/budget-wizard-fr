@@ -20,7 +20,7 @@ export const GlobalBalanceCard = ({
     if (balance !== displayedBalance) {
       console.log("Balance changed:", balance);
       
-      // Animation simple d'interpolation numérique
+      // Animation simple d'interpolation numérique par dizaine
       const startValue = displayedBalance;
       const endValue = balance;
       const duration = 800; // ms
@@ -36,7 +36,9 @@ export const GlobalBalanceCard = ({
         }
         
         const progress = elapsed / duration;
-        const currentValue = startValue + (endValue - startValue) * progress;
+        // Calculer la valeur intermédiaire et arrondir par dizaine
+        const rawValue = startValue + (endValue - startValue) * progress;
+        const currentValue = Math.round(rawValue / 10) * 10; // Arrondi à la dizaine
         setDisplayedBalance(currentValue);
         
         requestAnimationFrame(animateValue);
