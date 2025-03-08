@@ -1,104 +1,106 @@
 
-import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { NavLink, useLocation } from "react-router-dom";
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+  LayoutDashboard,
+  Users,
+  Banknote,
+  PiggyBank,
+  ClipboardList,
+  Home,
+  TrendingUp,
+  Mailbox,
+  CreditCard,
+  ShoppingBasket,
+  List,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { LucideIcon } from "lucide-react";
+import { usePendingFeedbacks } from "@/hooks/usePendingFeedbacks";
+import { Badge } from "@/components/ui/badge";
 
-// Fonction pour vérifier si un lien est actif
-const isActive = (currentPath: string, linkPath: string) => {
-  return currentPath === linkPath || currentPath.startsWith(`${linkPath}/`);
-};
+interface MenuItem {
+  title: string;
+  icon: LucideIcon;
+  path: string;
+  matchPath?: string;
+}
 
-export const MainNavigationMenu = () => {
+interface NavigationMenuProps {
+  collapsed: boolean;
+  isAdmin: boolean;
+}
+
+// Définir les menus en dehors du composant
+const adminMenu: MenuItem[] = [
+  { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "^/admin$" },
+  { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "^/admin/feedbacks$" },
+  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog$" }
+];
+
+const userMenu: MenuItem[] = [
+  { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
+  { title: "Revenus", icon: Banknote, path: "/contributors" },
+  { title: "Dépenses", icon: ShoppingBasket, path: "/expenses" },
+  { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
+  { title: "Crédits", icon: CreditCard, path: "/credits" },
+  { title: "Épargne", icon: PiggyBank, path: "/savings" },
+  { title: "Bourse", icon: TrendingUp, path: "/stocks" },
+  { title: "Immobilier", icon: Home, path: "/properties" },
+];
+
+export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   const location = useLocation();
-  const currentPath = location.pathname;
+  const { canAccessPage } = usePagePermissions();
+  // Nous passons maintenant isAdmin directement au hook
+  const { pendingCount } = usePendingFeedbacks(isAdmin);
+
+  const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
 
   return (
-    <NavigationMenu className="hidden md:flex">
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Finances</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link
-                    to="/expenses"
-                    className={cn(
-                      "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                      isActive(currentPath, "/expenses") && "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <div className="text-sm font-medium leading-none">Dépenses</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                      Gérez vos dépenses et visualisez vos statistiques
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link
-                    to="/savings"
-                    className={cn(
-                      "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                      isActive(currentPath, "/savings") && "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <div className="text-sm font-medium leading-none">Épargne</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                      Suivez vos économies et définissez des objectifs d'épargne
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+    <nav className="flex flex-col h-full justify-between p-4">
+      <ul className="space-y-2">
+        {menuItems.map((item) => {
+          // Use a proper matching logic for active state
+          const isActive = item.matchPath
+            ? new RegExp(item.matchPath).test(location.pathname)
+            : location.pathname === item.path;
+            
+          // Vérifier si c'est le lien vers les feedbacks et s'il y a des feedbacks en attente
+          const showBadge = isAdmin && item.path === "/admin/feedbacks" && pendingCount > 0;
 
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Immobilier</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px]">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link
-                    to="/properties"
-                    className={cn(
-                      "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                      isActive(currentPath, "/properties") && "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <div className="text-sm font-medium leading-none">Mes biens</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                      Gérez vos biens immobiliers et leurs dépenses
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-
-        <NavigationMenuItem>
-          <Link to="/dashboard">
-            <Button
-              variant={isActive(currentPath, "/dashboard") ? "default" : "ghost"}
-              className="px-4 py-2"
-            >
-              Tableau de bord
-            </Button>
-          </Link>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+          return (
+            <li key={item.path}>
+              <NavLink
+                to={item.path}
+                className={({ isActive }) => cn(
+                  "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
+                  "hover:bg-primary/10",
+                  collapsed && "justify-center",
+                  isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
+                )}
+                end
+              >
+                <div className="relative">
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  {showBadge && (
+                    <Badge 
+                      variant="destructive" 
+                      className={cn(
+                        "absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center rounded-full",
+                        collapsed ? "-right-1" : "-right-1.5"
+                      )}
+                    >
+                      {pendingCount > 9 ? '9+' : pendingCount}
+                    </Badge>
+                  )}
+                </div>
+                {!collapsed && <span className="truncate">{item.title}</span>}
+              </NavLink>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 };

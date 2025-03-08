@@ -1,208 +1,177 @@
-
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useLocation, Link } from "react-router-dom";
-import { MessageSquareText, ArrowLeftFromLine, ArrowRightFromLine, Settings, Save, CreditCard, PieChart, BadgeDollarSign, Home, Building, Wrench, Heart, HeartHandshake } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
-import { ContributionDialog } from "@/components/contributions/ContributionDialog";
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Profile } from "@/types/profile";
+import { NavigationMenu } from "./NavigationMenu";
+import { UserDropdown } from "./UserDropdown";
+import { ThemeToggle } from "../theme/ThemeToggle";
+import { appConfig } from "@/config/app.config";
+import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useLatestVersion } from "@/hooks/useLatestVersion";
+import { FeedbackDialog } from "../feedback/FeedbackDialog";
+import { ProjectAnnouncementCard } from "./ProjectAnnouncementCard";
 
 interface SidebarProps {
-  collapsed: boolean;
-  onToggle: () => void;
+  className?: string;
+  onClose?: () => void;
 }
 
-export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
-  const location = useLocation();
-  const { currentUser, isAdmin } = useCurrentUser();
-  
-  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
-  const [contributionDialogOpen, setContributionDialogOpen] = useState(false);
+export const Sidebar = ({ className, onClose }: SidebarProps) => {
+  const isMobile = useIsMobile();
+  const [collapsed, setCollapsed] = useState(() => {
+    const saved = localStorage.getItem("sidebarCollapsed");
+    return saved ? JSON.parse(saved) : (isMobile ? true : false);
+  });
+  const { latestVersion } = useLatestVersion();
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
+  useEffect(() => {
+    localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
+  }, [collapsed]);
+
+  useEffect(() => {
+    if (isMobile) {
+      setCollapsed(true);
+    }
+  }, [isMobile]);
+
+  const { data: currentUser } = useQuery({
+    queryKey: ["current-user-for-sidebar"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    },
+    staleTime: 1000 * 60, // 1 minute
+  });
+
+  const { data: profile } = useQuery<Profile>({
+    queryKey: ["profile-for-sidebar", currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (error) throw error;
+
+      const profileData = {
+        ...data,
+        email: currentUser.email
+      } as Profile;
+
+      return profileData;
+    },
+    enabled: !!currentUser,
+    staleTime: 1000 * 60, // 1 minute
+  });
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin-for-sidebar", currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser) return false;
+
+      const { data, error } = await supabase.rpc('has_role', {
+        user_id: currentUser.id,
+        role: 'admin'
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentUser,
+    staleTime: 1000 * 60, // 1 minute
+  });
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (isMobile && onClose && (e.target as HTMLElement).closest('.sidebar-content') === null) {
+      onClose();
+    }
   };
 
+  useEffect(() => {
+    if (isMobile) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isMobile, onClose]);
+
   return (
-    <div className={cn(
-      "h-screen sticky top-0 border-r transition-all duration-300 ease-in-out",
-      collapsed ? "w-[80px]" : "w-[250px]"
-    )}>
-      <div className="flex h-full flex-col overflow-hidden">
-        {/* Header et logo */}
-        <div className="flex h-16 items-center justify-between px-4 border-b">
-          {!collapsed && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-xl font-bold tracking-tight"
-            >
-              Financy
-            </motion.div>
-          )}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={onToggle}
-            className={cn(
-              "h-8 w-8 rounded-full",
-              collapsed && "mx-auto"
+    <aside
+      className={cn(
+        "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col touch-scroll sidebar-content",
+        collapsed ? "w-16" : "w-64",
+        isMobile && "fixed z-50 shadow-lg",
+        className
+      )}
+    >
+      <div className="flex flex-col flex-1 ios-top-safe">
+        <div className="p-4 border-b rounded-r-xl border-border">
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h1
+                  className={cn(   
+                    "font-bold text-foreground tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in transition-all duration-300",
+                    collapsed ? "text-sm" : "text-xl"
+                  )}
+                >
+                  {collapsed ? appConfig.initiales : appConfig.name}
+                </h1>
+              </div>
+              <div className="flex items-center gap-2">
+                <ThemeToggle collapsed={collapsed} />
+              </div>
+            </div>
+            {!collapsed && (
+             <div className="flex items-baseline gap-2">
+               <span className="text-xs text-muted-foreground">
+                 v{latestVersion || appConfig.version}
+               </span>
+             </div>
             )}
-          >
-            {collapsed ? <ArrowRightFromLine className="h-4 w-4" /> : <ArrowLeftFromLine className="h-4 w-4" />}
-          </Button>
+          </div>
         </div>
+  
+        <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
         
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-          <Link to="/dashboard">
-            <Button 
-              variant={isActive("/dashboard") ? "secondary" : "ghost"} 
-              className={cn(
-                "w-full justify-start",
-                collapsed && "justify-center"
-              )}
-            >
-              <Home className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-              {!collapsed && <span>Tableau de bord</span>}
-            </Button>
-          </Link>
+        <div className="mt-auto">
+          {/* Project announcement card */}
+          <ProjectAnnouncementCard collapsed={collapsed} userId={currentUser?.id} />
           
-          <Link to="/expenses">
-            <Button 
-              variant={isActive("/expenses") ? "secondary" : "ghost"} 
-              className={cn(
-                "w-full justify-start",
-                collapsed && "justify-center"
-              )}
-            >
-              <BadgeDollarSign className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-              {!collapsed && <span>Dépenses</span>}
-            </Button>
-          </Link>
-          
-          <Link to="/recurring-expenses">
-            <Button 
-              variant={isActive("/recurring-expenses") ? "secondary" : "ghost"} 
-              className={cn(
-                "w-full justify-start",
-                collapsed && "justify-center"
-              )}
-            >
-              <PieChart className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-              {!collapsed && <span>Charges fixes</span>}
-            </Button>
-          </Link>
-          
-          <Link to="/credits">
-            <Button 
-              variant={isActive("/credits") ? "secondary" : "ghost"} 
-              className={cn(
-                "w-full justify-start",
-                collapsed && "justify-center"
-              )}
-            >
-              <CreditCard className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-              {!collapsed && <span>Crédits</span>}
-            </Button>
-          </Link>
-          
-          <Link to="/savings">
-            <Button 
-              variant={isActive("/savings") ? "secondary" : "ghost"} 
-              className={cn(
-                "w-full justify-start",
-                collapsed && "justify-center"
-              )}
-            >
-              <Save className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-              {!collapsed && <span>Épargnes</span>}
-            </Button>
-          </Link>
-          
-          <Link to="/properties">
-            <Button 
-              variant={isActive("/properties") ? "secondary" : "ghost"} 
-              className={cn(
-                "w-full justify-start",
-                collapsed && "justify-center"
-              )}
-            >
-              <Building className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-              {!collapsed && <span>Patrimoine</span>}
-            </Button>
-          </Link>
-          
-          {isAdmin && (
-            <Link to="/admin">
-              <Button 
-                variant={location.pathname.startsWith("/admin") ? "secondary" : "ghost"} 
-                className={cn(
-                  "w-full justify-start",
-                  collapsed && "justify-center"
-                )}
-              >
-                <Wrench className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-                {!collapsed && <span>Administration</span>}
-              </Button>
-            </Link>
-          )}
-        </nav>
-        
-        {/* Footer avec feedback et paramètres */}
-        <div className="p-3 border-t space-y-1">
+          {/* Feedback dialog */}
           {!isAdmin && (
-            <Button 
-              variant="ghost" 
-              className={cn(
-                "w-full justify-start",
-                collapsed && "justify-center"
-              )}
-              onClick={() => setContributionDialogOpen(true)}
-            >
-              <HeartHandshake className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-              {!collapsed && <span>Contribuer</span>}
-            </Button>
+            <div className="px-4 py-2">
+              <FeedbackDialog collapsed={collapsed} />
+            </div>
           )}
           
-          <Button 
-            variant="ghost" 
-            className={cn(
-              "w-full justify-start",
-              collapsed && "justify-center"
-            )}
-            onClick={() => setFeedbackDialogOpen(true)}
-          >
-            <Heart className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-            {!collapsed && <span>Feedback</span>}
-          </Button>
-          
-          <Link to="/settings">
-            <Button 
-              variant={isActive("/settings") ? "secondary" : "ghost"} 
-              className={cn(
-                "w-full justify-start",
-                collapsed && "justify-center"
-              )}
-            >
-              <Settings className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-              {!collapsed && <span>Paramètres</span>}
-            </Button>
-          </Link>
+          <UserDropdown collapsed={collapsed} profile={profile} />
         </div>
       </div>
-      
-      <FeedbackDialog 
-        open={feedbackDialogOpen}
-        onOpenChange={setFeedbackDialogOpen}
-      />
-      
-      <ContributionDialog 
-        open={contributionDialogOpen}
-        onOpenChange={setContributionDialogOpen}
-      />
-    </div>
+  
+      {!isMobile && (
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className={cn(
+            "absolute -right-3 top-20 p-1.5 rounded-full bg-background border border-border hover:bg-accent transition-colors",
+            "z-50 shadow-sm touch-manipulation"
+          )}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+          )}
+        </button>
+      )}
+    </aside>
   );
 };
