@@ -42,11 +42,11 @@ export const RecurringExpensesHeader = () => {
         
         <div>
           <h1 className={cn(
-            "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
-            // Light mode gradient
-            "bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500",
-            // Dark mode gradient (plus lumineux pour meilleure lisibilité)
-            "dark:bg-gradient-to-r dark:from-blue-400 dark:via-blue-300 dark:to-indigo-400"
+            "text-3xl font-bold tracking-tight",
+            // Light mode - couleur unie
+            "text-blue-700",
+            // Dark mode - couleur unie
+            "dark:text-blue-300"
           )}>
             Charges récurrentes
           </h1>
