@@ -4,13 +4,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { RecurringExpense, RecurringExpenseTableProps, ALL_CATEGORIES, periodicityLabels } from "./types";
 import { TableFilters } from "./TableFilters";
 import { motion } from "framer-motion";
-import { Trash2 } from "lucide-react";
 import { TablePagination } from "./table/TablePagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { filterExpenses, sortExpenses, paginateExpenses } from "./table/tableUtils";
 import { SortableTableHeader } from "@/components/properties/expenses/SortableTableHeader";
-import { Button } from "@/components/ui/button";
 import { DeleteExpenseConfirmDialog } from "./dialogs/DeleteExpenseConfirmDialog";
+import { RecurringExpenseDialog } from "./RecurringExpenseDialog";
+import { ExpenseActionsDropdown } from "./dialogs/ExpenseActionsDropdown";
+import { RecurringExpenseDetails } from "./RecurringExpenseDetails";
+import { Dialog } from "@/components/ui/dialog";
 
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,6 +22,9 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [expenseToDelete, setExpenseToDelete] = useState<RecurringExpense | null>(null);
+  const [selectedExpense, setSelectedExpense] = useState<RecurringExpense | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
   const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category)));
 
@@ -41,6 +46,16 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
       onDeleteExpense(expenseToDelete.id);
       setExpenseToDelete(null);
     }
+  };
+
+  const handleEditClick = (expense: RecurringExpense) => {
+    setSelectedExpense(expense);
+    setShowEditDialog(true);
+  };
+
+  const handleViewDetails = (expense: RecurringExpense) => {
+    setSelectedExpense(expense);
+    setShowDetailsDialog(true);
   };
 
   // Modification de l'appel à filterExpenses pour supprimer le filtre de périodicité
@@ -153,14 +168,11 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
                 <TableCell className="text-center py-2 font-medium">{expense.amount.toLocaleString('fr-FR')} €</TableCell>
                 <TableCell className="text-right py-2">
                   <div className="flex justify-end">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                      onClick={() => handleDeleteClick(expense)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <ExpenseActionsDropdown
+                      onViewDetails={() => handleViewDetails(expense)}
+                      onEdit={() => handleEditClick(expense)}
+                      onDelete={() => handleDeleteClick(expense)}
+                    />
                   </div>
                 </TableCell>
               </TableRow>
@@ -185,6 +197,18 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
         onConfirm={handleConfirmDelete}
         expenseName={expenseToDelete?.name}
       />
+
+      {/* Dialog pour éditer une charge récurrente */}
+      <RecurringExpenseDialog
+        expense={selectedExpense || undefined}
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+      />
+
+      {/* Dialog pour afficher les détails */}
+      <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+        {selectedExpense && <RecurringExpenseDetails expense={selectedExpense} onClose={() => setShowDetailsDialog(false)} />}
+      </Dialog>
     </div>
   );
 };
