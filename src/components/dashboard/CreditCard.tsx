@@ -73,7 +73,7 @@ export const CreditCard = ({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <motion.p 
-                className="text-3xl font-bold leading-none text-gray-800"
+                className="text-xl font-bold leading-none text-gray-800"
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
