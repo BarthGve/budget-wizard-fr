@@ -64,7 +64,23 @@ export const CreditCard = ({
               className="px-3 py-1 flex items-center gap-1"
             >
               {getStatusIcon(tauxEndettement)}
-              <span>{getStatusText(tauxEndettement)}</span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.div 
+                    className="flex items-center gap-2  p-2  shadow-sm cursor-pointer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span className="text-sm font-medium">{Math.round(tauxEndettement)}%</span>
+                  </motion.div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="flex items-center gap-1">
+                    <Info className="h-4 w-4" />
+                    Taux d'endettement mensuel
+                  </p>
+                </TooltipContent>
+              </Tooltip>
             </Badge>
           </div>
           <CardDescription>Total dû en {currentMonthName}</CardDescription>
