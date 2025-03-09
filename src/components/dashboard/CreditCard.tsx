@@ -81,23 +81,7 @@ export const CreditCard = ({
                 {Math.round(totalMensualites).toLocaleString('fr-FR')} €
               </motion.p>
               
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <motion.div 
-                    className="flex items-center gap-2 bg-white p-2 rounded-full shadow-sm cursor-pointer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="text-sm font-medium">{Math.round(tauxEndettement)}%</span>
-                  </motion.div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="flex items-center gap-1">
-                    <Info className="h-4 w-4" />
-                    Taux d'endettement mensuel
-                  </p>
-                </TooltipContent>
-              </Tooltip>
+          
             </div>
           </div>
         </CardContent>
