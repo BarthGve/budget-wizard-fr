@@ -70,31 +70,30 @@ export const SavingsPieChart = ({
       whileHover={{ y: -3 }}
     >
       <Card 
-        className="bg-gradient-to-br from-background to-green-50 backdrop-blur-sm shadow-lg border border-green-100 cursor-pointer h-[370px] flex flex-col"
+        className="bg-gradient-to-br from-background to-green-50 backdrop-blur-sm shadow-lg border border-green-100 cursor-pointer h-[320px] flex flex-col"
         onClick={() => navigate("/savings")}
       >
-        <CardHeader className="py-4">
+        <CardHeader className="py-3 pb-0"> {/* Padding réduit */}
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <PiggyBank className="h-6 w-6 text-green-500" />
+            <CardTitle className="text-xl flex items-center gap-2"> {/* Taille de texte réduite */}
+              <PiggyBank className="h-5 w-5 text-green-500" /> {/* Icône plus petite */}
               Épargne
             </CardTitle>
           </div>
-          <CardDescription>Vue d'ensemble par versement</CardDescription>
+          <CardDescription className="text-sm">Vue d'ensemble par versement</CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col justify-between pb-4">
-          <div className="mx-auto w-full h-[220px]">
+        <CardContent className="flex-1 flex flex-col justify-center pb-2 pt-0"> {/* Centrage vertical optimisé */}
+          <div className="mx-auto w-full h-[250px]"> {/* Hauteur du graphique augmentée */}
             <ChartContainer className="h-full" config={chartConfig}>
-              <PieChart>
-                {/* Utilisation du composant Tooltip de Recharts */}
+              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}> {/* Marges supprimées */}
                 <Tooltip content={<CustomTooltip />} />
                 
                 <Pie 
                   data={chartData} 
                   dataKey="value" 
                   nameKey="name" 
-                  innerRadius={60} 
-                  outerRadius={80} 
+                  innerRadius={75} /* Rayon intérieur augmenté */
+                  outerRadius={100} /* Rayon extérieur augmenté */
                   paddingAngle={5}
                   isAnimationActive={true}
                   animationBegin={200}
@@ -107,10 +106,10 @@ export const SavingsPieChart = ({
                       return (
                         <g>
                           <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-xl font-bold">
+                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-2xl font-bold"> {/* Texte plus grand */}
                               {formatCurrency(totalSavings)}
                             </tspan>
-                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 15} className="fill-muted-foreground text-xs">
+                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 18} className="fill-muted-foreground text-sm"> {/* Position ajustée */}
                               par mois
                             </tspan>
                           </text>
@@ -122,12 +121,9 @@ export const SavingsPieChart = ({
               </PieChart>
             </ChartContainer>
           </div>
-          
-       
         </CardContent>
       </Card>
     </motion.div>
   );
 };
-
 
