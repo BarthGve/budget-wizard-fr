@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { MoveUpRight, MoveDownRight, CalendarRange } from "lucide-react";
+import { TrendingDown, TrendingUp, PieChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/format";
 import { startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears } from "date-fns";
@@ -23,7 +23,7 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   
-  const { totalAmount, percentageChange, periodLabel, comparisonValue } = useMemo(() => {
+  const { totalAmount, percentageChange, periodLabel } = useMemo(() => {
     const now = new Date();
     
     if (viewMode === 'monthly') {
@@ -57,8 +57,7 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       return {
         totalAmount: monthTotal,
         percentageChange: monthPercentage,
-        periodLabel: "Mois en cours",
-        comparisonValue: previousMonthTotal
+        periodLabel: "Mois en cours"
       };
     } else {
       // Pour la vue annuelle, utilisez les totaux déjà calculés
@@ -69,8 +68,7 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       return {
         totalAmount: currentYearTotal,
         percentageChange: yearPercentage,
-        periodLabel: "Année en cours",
-        comparisonValue: previousYearTotal
+        periodLabel: "Année en cours"
       };
     }
   }, [expenses, viewMode, currentYearTotal, previousYearTotal]);
@@ -84,113 +82,140 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
   const comparisonLabel = viewMode === 'monthly' ? "par rapport au mois précédent" : "par rapport à l'année précédente";
   const hasChanged = totalAmount !== prevAmount && prevAmount !== 0;
   
-  // Palettes de couleurs adaptatives
-  const cardStyle = useMemo(() => {
-    // Palettes pour le mode clair
-    const lightPalette = {
-      gradientFrom: "from-violet-500",
-      gradientVia: "via-purple-500",
-      gradientTo: "to-indigo-600",
-      textAccent: "text-purple-50",
-      textDescription: "text-white/80",
-      iconBackground: "bg-white/20",
-      increaseColor: "text-red-300",
-      decreaseColor: "text-emerald-300",
-    };
-    
-    // Palettes pour le mode sombre
-    const darkPalette = {
-      gradientFrom: "from-violet-900",
-      gradientVia: "via-purple-800",
-      gradientTo: "to-indigo-900",
-      textAccent: "text-purple-100",
-      textDescription: "text-white/70",
-      iconBackground: "bg-white/10",
-      increaseColor: "text-red-300",
-      decreaseColor: "text-emerald-300",
-    };
-    
-    return isDarkMode ? darkPalette : lightPalette;
-  }, [isDarkMode]);
-  
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      whileHover={{ y: -3 }}
+      whileHover={{ y: -3, transition: { duration: 0.2 } }}
     >
       <Card className={cn(
-        "overflow-hidden shadow-lg transition-all duration-300 border-0",
-        "bg-gradient-to-br",
-        cardStyle.gradientFrom,
-        cardStyle.gradientVia,
-        cardStyle.gradientTo,
-        isDarkMode ? "shadow-purple-900/30" : "shadow-purple-500/30",
-        "hover:shadow-xl"
+        "overflow-hidden transition-all duration-300 hover:shadow-xl",
+        // Light mode
+        "bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 shadow-md",
+        // Dark mode
+        "dark:bg-gradient-to-br dark:from-blue-900/30 dark:to-blue-800/20 dark:border-blue-800/50 dark:shadow-blue-900/20"
       )}>
-        <CardHeader className="py-4">
+        <CardHeader className={cn("py-4 relative overflow-hidden")}>
+          {/* Fond légèrement décoratif */}
+          <div className={cn(
+            "absolute inset-0 opacity-10 mix-blend-multiply",
+            // Light mode
+            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+            // Dark mode
+            "dark:bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] dark:from-blue-400 dark:via-blue-500 dark:to-transparent dark:opacity-5"
+          )} />
+          
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className={cn("text-2xl flex items-center gap-2", cardStyle.textAccent)}>
-              <div className={cn("p-2 rounded-full", cardStyle.iconBackground)}>
-                <CalendarRange className="h-5 w-5 text-white" />
+            <CardTitle className={cn(
+              "text-xl flex items-center gap-2",
+              // Light mode
+              "text-blue-800",
+              // Dark mode
+              "dark:text-blue-300"
+            )}>
+              <div className={cn(
+                "p-2 rounded-full",
+                // Light mode
+                "bg-blue-100 text-blue-600",
+                // Dark mode
+                "dark:bg-blue-800/40 dark:text-blue-300"
+              )}>
+                <PieChart className="h-5 w-5" />
               </div>
-              <span>Total des dépenses</span>
+              Total des dépenses
             </CardTitle>
           </div>
-          <CardDescription className={cardStyle.textDescription}>
+          <CardDescription className={cn(
+            "font-medium", 
+            // Light mode
+            "text-blue-600/80",
+            // Dark mode
+            "dark:text-blue-400/90"
+          )}>
             {periodLabel}
           </CardDescription>
         </CardHeader>
+        
         <CardContent className="pb-5">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             <AnimatePresence mode="wait">
-              <motion.p 
+              <motion.div
                 key={totalAmount}
-                className={cn("text-3xl font-bold", cardStyle.textAccent)}
-                initial={hasChanged ? { opacity: 0, y: totalAmount > prevAmount ? 20 : -20 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: totalAmount > prevAmount ? -20 : 20 }}
-                transition={{ duration: 0.3 }}
+                className={cn(
+                  "flex items-baseline",
+                  hasChanged ? "overflow-hidden" : ""
+                )}
+                initial={false}
               >
-                {formatCurrency(totalAmount)}
-              </motion.p>
+                <motion.p 
+                  key={`total-${totalAmount}`}
+                  className={cn(
+                    "text-3xl font-bold tracking-tight",
+                    // Light mode
+                    "text-blue-700",
+                    // Dark mode
+                    "dark:text-blue-200"
+                  )}
+                  initial={hasChanged ? { opacity: 0, y: totalAmount > prevAmount ? 20 : -20 } : false}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: totalAmount > prevAmount ? -20 : 20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {formatCurrency(totalAmount)}
+                </motion.p>
+              </motion.div>
             </AnimatePresence>
             
-            {comparisonValue > 0 && (
-              <motion.div 
-                className="flex items-center gap-2"
-                initial={{ opacity: 0, x: -5 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <div className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
-                  isIncrease ? "bg-red-500/20" : "bg-emerald-500/20"
-                )}>
-                  {isIncrease ? (
-                    <MoveUpRight className={cn("h-4 w-4", cardStyle.increaseColor)} />
-                  ) : (
-                    <MoveDownRight className={cn("h-4 w-4", cardStyle.decreaseColor)} />
-                  )}
-                  <span className={cn("font-medium text-sm", 
-                    isIncrease ? cardStyle.increaseColor : cardStyle.decreaseColor
+            {(viewMode === 'yearly' && previousYearTotal > 0) || (viewMode === 'monthly' && percentageChange !== 0) ? (
+              <div className={cn(
+                "p-2.5 rounded-md flex items-center gap-2",
+                // Light mode - background
+                isIncrease ? "bg-red-50" : "bg-green-50",
+                // Dark mode - background
+                isIncrease ? "dark:bg-red-950/30" : "dark:bg-green-950/30",
+                // Border
+                isIncrease ? "border border-red-100 dark:border-red-900/40" : "border border-green-100 dark:border-green-900/40"
+              )}>
+                {isIncrease ? (
+                  <TrendingUp className={cn(
+                    "h-4 w-4",
+                    // Light mode
+                    "text-red-500",
+                    // Dark mode
+                    "dark:text-red-400"
+                  )} />
+                ) : (
+                  <TrendingDown className={cn(
+                    "h-4 w-4",
+                    // Light mode
+                    "text-green-500",
+                    // Dark mode
+                    "dark:text-green-400"
+                  )} />
+                )}
+                <div className="flex flex-col">
+                  <span className={cn(
+                    "text-sm font-semibold", 
+                    // Light mode
+                    isIncrease ? "text-red-700" : "text-green-700",
+                    // Dark mode
+                    isIncrease ? "dark:text-red-300" : "dark:text-green-300"
                   )}>
                     {Math.abs(percentageChange).toFixed(1)}%
                   </span>
+                  <span className={cn(
+                    "text-xs",
+                    // Light mode
+                    isIncrease ? "text-red-600/80" : "text-green-600/80",
+                    // Dark mode
+                    isIncrease ? "dark:text-red-400/90" : "dark:text-green-400/90"
+                  )}>
+                    {comparisonLabel}
+                  </span>
                 </div>
-                <span className="text-white/70 text-sm">
-                  {comparisonLabel}
-                </span>
-              </motion.div>
-            )}
-            
-            {/* Version précédente du montant */}
-            {comparisonValue > 0 && (
-              <div className="mt-1 text-white/50 text-sm">
-                Période précédente : {formatCurrency(comparisonValue)}
               </div>
-            )}
+            ) : null}
           </div>
         </CardContent>
       </Card>
