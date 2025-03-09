@@ -62,13 +62,13 @@ export const RevenueCard = ({
       whileHover={{ y: -3 }}
     >
       <Card 
-        className="bg-gradient-to-br from-background to-emerald-50 backdrop-blur-sm shadow-lg border border-emerald-100 cursor-pointer"
+        className="bg-gradient-to-br from-background to-amber-50 backdrop-blur-sm shadow-lg border border-amber-100 cursor-pointer"
         onClick={() => navigate("/income")}
       >
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">
             <CardTitle className="text-2xl flex items-center gap-2">
-              <Banknote className="h-6 w-6 text-emerald-500" />
+              <Banknote className="h-6 w-6 text-amber-500" />
               Revenus
             </CardTitle>
           </div>
@@ -86,7 +86,6 @@ export const RevenueCard = ({
             </motion.p>
             
             
-        
           </div>
         </CardContent>
       </Card>
