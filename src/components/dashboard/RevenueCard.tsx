@@ -85,16 +85,8 @@ export const RevenueCard = ({
               {displayedRevenue.toLocaleString('fr-FR')} €
             </motion.p>
             
-            {contributorShares && contributorShares.length > 0 && (
-              <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                {contributorShares.map((share, index) => (
-                  <div key={index} className="flex items-center">
-                    <span className="font-medium">{share.name}: </span>
-                    <span>{Math.round(share.amount).toLocaleString('fr-FR')} €</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            
+        
           </div>
         </CardContent>
       </Card>
