@@ -1,9 +1,15 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ClipboardList } from 'lucide-react'  
+import { Badge } from "@/components/ui/badge";
+import { ClipboardList, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-import { RecurringExpense } from "@/components/recurring-expenses/types";
+import { motion } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ExpensesCardProps {
   totalExpenses: number;
@@ -42,32 +48,93 @@ export const ExpensesCard = ({
 
   const progressPercentage = (paidExpenses / totalExpenses) * 100;
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
+  
+  const getBadgeVariant = (percentage: number) => {
+    if (percentage >= 75) return "default";
+    if (percentage >= 50) return "secondary";
+    return "destructive";
+  };
+  
+  const getStatusIcon = (percentage: number) => {
+    if (percentage >= 75) return <CheckCircle className="h-4 w-4 text-green-500" />;
+    if (percentage >= 50) return <Info className="h-4 w-4 text-amber-500" />;
+    return <AlertCircle className="h-4 w-4 text-red-500" />;
+  };
+  
+  const getStatusText = (percentage: number) => {
+    if (percentage >= 75) return "Presque terminé";
+    if (percentage >= 50) return "En cours";
+    return "À venir";
+  };
 
-  return <Card 
-    className="bg-background cursor-pointer hover:shadow-md transition-shadow"
-    onClick={() => navigate("/recurring-expenses")}
-  >
-    <CardHeader className="py-[16px]">
-      <div className="flex flex-row items-center justify-between ">
-          <CardTitle className="text-2xl">Charges</CardTitle>
-          <ClipboardList className="h-6 w-6 text-muted-foreground" />
-      </div>
-      <CardDescription>Du mois de {currentMonthName}</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div className="space-y-2">
-        <div className="flex items-center gap-x-4">
-          <p className="font-bold text-xl whitespace-nowrap">{Math.round(totalExpenses)} €</p>
-          <Progress 
-            value={progressPercentage} 
-            className="flex-grow"
-          />
-        </div>
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>Payé : {Math.round(paidExpenses)} €</span>
-          <span>Reste : {Math.round(totalExpenses - paidExpenses)} €</span>
-        </div>
-      </div>
-    </CardContent>
-  </Card>;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -3 }}
+    >
+      <Card
+        className="bg-gradient-to-br from-background to-blue-50 backdrop-blur-sm shadow-lg border border-blue-100 cursor-pointer"
+        onClick={() => navigate("/recurring-expenses")}
+      >
+        <CardHeader className="py-4">
+          <div className="flex flex-row items-center justify-between">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <ClipboardList className="h-6 w-6 text-blue-500" />
+              Charges
+            </CardTitle>
+            <Badge 
+              variant={getBadgeVariant(progressPercentage)} 
+              className="px-3 py-1 flex items-center gap-1"
+            >
+              {getStatusIcon(progressPercentage)}
+              <span>{getStatusText(progressPercentage)}</span>
+            </Badge>
+          </div>
+          <CardDescription>Du mois de {currentMonthName}</CardDescription>
+        </CardHeader>
+        <CardContent className="pb-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <motion.p 
+                className="text-xl font-bold leading-none text-gray-800"
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+              >
+                {Math.round(totalExpenses).toLocaleString('fr-FR')} €
+              </motion.p>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.div 
+                    className="flex items-center gap-2 bg-white p-2 rounded-full shadow-sm cursor-pointer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Progress 
+                      value={progressPercentage} 
+                      className="w-16 h-2"
+                    />
+                  </motion.div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="flex items-center gap-1">
+                    <Info className="h-4 w-4" />
+                    {Math.round(progressPercentage)}% des charges payées
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>Payé : {Math.round(paidExpenses).toLocaleString('fr-FR')} €</span>
+              <span>Reste : {Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
 };
