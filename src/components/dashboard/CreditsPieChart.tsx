@@ -83,19 +83,19 @@ export const CreditsPieChart = ({
         className="bg-gradient-to-br from-background to-violet-50 backdrop-blur-sm shadow-lg border border-violet-100 cursor-pointer h-[320px] flex flex-col"
         onClick={() => navigate("/credits")}
       >
-        <CardHeader className="py-3 pb-0"> {/* Réduit le padding */}
+        <CardHeader className="py-3 pb-0">
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-xl flex items-center gap-2"> {/* Taille de texte optimisée */}
-              <CreditCard className="h-5 w-5 text-violet-500" /> {/* Icône plus petite */}
+            <CardTitle className="text-xl flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-violet-500" />
               Crédits
             </CardTitle>
           </div>
           <CardDescription className="text-sm">Vue d'ensemble des mensualités</CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col justify-center pb-2 pt-0"> {/* Centrage vertical et espacement optimisé */}
-          <div className="mx-auto w-full h-[250px]"> {/* Hauteur du graphique augmentée */}
+        <CardContent className="flex-1 flex flex-col justify-center pb-2 pt-0">
+          <div className="mx-auto w-full h-[250px]">
             <ChartContainer className="h-full" config={chartConfig}>
-              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}> {/* Marges nulles pour maximiser l'espace */}
+              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                 <Tooltip content={<CustomTooltip />} />
                 
                 <Pie 
@@ -116,10 +116,10 @@ export const CreditsPieChart = ({
                       return (
                         <g>
                           <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-2xl font-bold"> {/* Montant plus grand */}
+                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-2xl font-bold">
                               {formatCurrency(totalCredits)}
                             </tspan>
-                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 18} className="fill-muted-foreground text-sm"> {/* Position ajustée */}
+                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 18} className="fill-muted-foreground text-sm">
                               par mois
                             </tspan>
                           </text>
