@@ -33,7 +33,7 @@ export async function notifyChangelogEntry(id: string) {
   }
 }
 
-export async function createChangelogEntry(values: FormData) {
+export async function createChangelogEntry(values: FormData, skipNotification: boolean = false) {
   const { data, error } = await supabase
     .from("changelog_entries")
     .insert({
@@ -48,14 +48,14 @@ export async function createChangelogEntry(values: FormData) {
 
   if (error) throw error;
   
-  // Notification automatique pour la nouvelle entrée
-  try {
-    if (data?.id) {
+  // Notification automatique pour la nouvelle entrée seulement si skipNotification est false
+  if (!skipNotification && data?.id) {
+    try {
       await notifyChangelogEntry(data.id);
+    } catch (notifyError) {
+      console.error("Erreur lors de la notification automatique:", notifyError);
+      // Ne pas bloquer la création de l'entrée si la notification échoue
     }
-  } catch (notifyError) {
-    console.error("Erreur lors de la notification automatique:", notifyError);
-    // Ne pas bloquer la création de l'entrée si la notification échoue
   }
   
   return data;

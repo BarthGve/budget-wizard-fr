@@ -33,7 +33,7 @@ export function useChangelogForm({ initialData, onSuccess, onCancel }: UseChange
   });
 
   const { mutate: create } = useMutation({
-    mutationFn: createChangelogEntry,
+    mutationFn: (values: FormData) => createChangelogEntry(values, true), // Désactiver la notification automatique
     onSuccess: (data) => {
       console.log("✅ Entrée changelog créée avec succès:", data);
       queryClient.invalidateQueries({ queryKey: ["changelog"] });
