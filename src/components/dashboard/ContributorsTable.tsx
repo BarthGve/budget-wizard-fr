@@ -8,6 +8,7 @@ import { ContributorsTableHeader } from "./contributor-table/ContributorsTableHe
 import { ContributorsTableContent } from "./contributor-table/ContributorsTableContent";
 import { motion } from "framer-motion";
 import { Users } from "lucide-react"; // Icône pour les contributeurs
+import { cn } from "@/lib/utils";
 
 interface ContributorsTableProps {
   contributors: Array<Contributor>;
@@ -42,11 +43,41 @@ export const ContributorsTable = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <Card className="bg-background shadow-md border border-gray-100 overflow-hidden">
+        <Card className={cn(
+          "overflow-hidden shadow-md",
+          // Light mode styling
+          "bg-white border border-gray-100",
+          // Dark mode styling
+          "dark:bg-gray-900/95 dark:border-gray-800 dark:shadow-lg dark:shadow-gray-900/30"
+        )}>
           {/* En-tête stylisé avec titre et icône */}
-          <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white flex items-center gap-2">
-            <Users className="h-5 w-5 text-gray-500" />
-            <h3 className="text-lg font-medium">Contributeurs</h3>
+          <div className={cn(
+            "px-4 py-3 border-b flex items-center gap-2",
+            // Light mode styling
+            "border-gray-100 bg-gradient-to-r from-gray-50 to-white",
+            // Dark mode styling
+            "dark:border-gray-800/80 dark:bg-gradient-to-r dark:from-gray-900/95 dark:to-gray-850/90"
+          )}>
+            <div className={cn(
+              "p-1.5 rounded-full",
+              // Light mode
+              "bg-gray-100",
+              // Dark mode
+              "dark:bg-gray-800"
+            )}>
+              <Users className={cn(
+                "h-4 w-4", 
+                "text-gray-500", 
+                "dark:text-gray-300"
+              )} />
+            </div>
+            <h3 className={cn(
+              "text-lg font-medium",
+              "text-gray-800",
+              "dark:text-gray-200"
+            )}>
+              Contributeurs
+            </h3>
           </div>
           
           <ContributorsTableHeader />
