@@ -6,7 +6,7 @@ import { fr } from "date-fns/locale";
 
 export interface RecurringExpenseDetailsProps {
   expense: RecurringExpense;
-  onClose?: () => void; // Ajouter la prop onClose comme optionnelle
+  onClose?: () => void;
 }
 
 export const RecurringExpenseDetails = ({ expense, onClose }: RecurringExpenseDetailsProps) => {
