@@ -55,7 +55,7 @@ export const ExpenseSections = ({
         />
       </div>
 
-      {/* Ajout du graphique de catégories */}
+      {/* Graphique des dépenses par catégorie */}
       <RecurringExpensesCategoryChart 
         expenses={recurringExpenses} 
         selectedPeriod={selectedPeriod} 

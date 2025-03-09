@@ -27,11 +27,13 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
 
   // Filtrer les dépenses en fonction de la période sélectionnée
   const filteredExpenses = useMemo(() => {
+    // Si une périodicité est déjà sélectionnée depuis l'extérieur, utiliser ces dépenses uniquement
     if (selectedPeriod) {
       return expenses.filter(expense => expense.periodicity === selectedPeriod);
     }
-    return expenses;
-  }, [expenses, selectedPeriod]);
+    // Sinon filtrer selon la périodicité choisie dans le graphique lui-même
+    return expenses.filter(expense => expense.periodicity === chartPeriodicity);
+  }, [expenses, selectedPeriod, chartPeriodicity]);
 
   // Calculer les données par catégorie pour le graphique
   const chartData = useMemo(() => {
@@ -39,42 +41,21 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     const categoryMap = new Map<string, number>();
     
     filteredExpenses.forEach(expense => {
-      const amount = expense.amount;
-      // Ajuster le montant selon la périodicité affichée
-      let adjustedAmount = amount;
-      
-      if (chartPeriodicity === "monthly") {
-        if (expense.periodicity === "quarterly") {
-          adjustedAmount = amount / 3;
-        } else if (expense.periodicity === "yearly") {
-          adjustedAmount = amount / 12;
-        }
-      } else if (chartPeriodicity === "quarterly") {
-        if (expense.periodicity === "monthly") {
-          adjustedAmount = amount * 3;
-        } else if (expense.periodicity === "yearly") {
-          adjustedAmount = amount / 4;
-        }
-      } else if (chartPeriodicity === "yearly") {
-        if (expense.periodicity === "monthly") {
-          adjustedAmount = amount * 12;
-        } else if (expense.periodicity === "quarterly") {
-          adjustedAmount = amount * 4;
-        }
-      }
-      
       const currentAmount = categoryMap.get(expense.category) || 0;
-      categoryMap.set(expense.category, currentAmount + adjustedAmount);
+      categoryMap.set(expense.category, currentAmount + expense.amount);
     });
     
     // Convertir en tableau pour Recharts et trier par montant (décroissant)
     return Array.from(categoryMap.entries())
       .map(([category, total]) => ({ category, total }))
       .sort((a, b) => b.total - a.total);
-  }, [filteredExpenses, chartPeriodicity]);
+  }, [filteredExpenses]);
 
   // Gérer le changement de périodicité du graphique
   const handlePeriodicityChange = () => {
+    // Ne pas permettre de changer la périodicité du graphique si une est déjà sélectionnée
+    if (selectedPeriod) return;
+    
     if (chartPeriodicity === "monthly") {
       setChartPeriodicity("quarterly");
     } else if (chartPeriodicity === "quarterly") {
@@ -91,6 +72,11 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     yearly: "Annuel"
   };
 
+  // Déterminer le texte du bouton selon si la périodicité est contrainte par une sélection externe
+  const buttonText = selectedPeriod 
+    ? periodicityLabels[selectedPeriod] 
+    : periodicityLabels[chartPeriodicity];
+
   return (
     <motion.div variants={itemVariants}>
       <Card className="w-full">
@@ -103,17 +89,18 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
             variant="outline"
             size="sm"
             onClick={handlePeriodicityChange}
+            disabled={!!selectedPeriod}
             className="flex items-center gap-1"
           >
             <ChevronLeft className="h-4 w-4" />
-            {periodicityLabels[chartPeriodicity]}
+            {buttonText}
             <ChevronRight className="h-4 w-4" />
           </Button>
         </CardHeader>
         <CardContent className="px-2">
           <AnimatePresence mode="wait">
             <motion.div
-              key={`chart-${dataVersion}-${chartPeriodicity}`}
+              key={`chart-${dataVersion}-${selectedPeriod || chartPeriodicity}`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
