@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Banknote } from 'lucide-react';
 import { useEffect, useState } from "react";
@@ -61,7 +62,7 @@ export const RevenueCard = ({
       whileHover={{ y: -3 }}
     >
       <Card 
-        className="bg-gradient-to-br from-background to-amber-50 backdrop-blur-sm shadow-lg border border-amber-100 cursor-pointer h-[190px] flex flex-col"
+        className="bg-gradient-to-br from-background to-amber-50 backdrop-blur-sm shadow-lg border border-amber-100 cursor-pointer"
         onClick={() => navigate("/income")}
       >
         <CardHeader className="py-4">
@@ -73,7 +74,7 @@ export const RevenueCard = ({
           </div>
           <CardDescription>Des contributeurs</CardDescription>
         </CardHeader>
-        <CardContent className="pb-4 flex-grow flex flex-col justify-between">
+        <CardContent className="pb-4">
           <div className="space-y-4">
             <motion.p 
               className="font-bold text-xl leading-none text-gray-800"
@@ -84,13 +85,7 @@ export const RevenueCard = ({
               {displayedRevenue.toLocaleString('fr-FR')} €
             </motion.p>
             
-          
-          </div>
-          
-          {/* Espace réservé pour maintenir la hauteur cohérente */}
-          <div className="text-xs text-muted-foreground mt-auto">
-            {!contributorShares || contributorShares.length === 0 ? 
-              "Cliquez pour voir le détail des revenus" : ""}
+            
           </div>
         </CardContent>
       </Card>
