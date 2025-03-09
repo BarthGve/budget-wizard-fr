@@ -17,6 +17,14 @@ export const NotificationSection: FC<NotificationSectionProps> = ({
   onNotify,
   onClose
 }) => {
+  // Nouvelle fonction de gestion combinée
+  const handleNotify = () => {
+    onNotify(entry.id);
+    // Fermer la modale après avoir lancé la notification
+    // La notification se fait en arrière-plan, donc on peut fermer tout de suite
+    onClose();
+  };
+
   return (
     <div className="space-y-4 py-4">
       <div className="bg-muted/50 p-4 rounded-lg border border-muted-foreground/20">
@@ -36,7 +44,7 @@ export const NotificationSection: FC<NotificationSectionProps> = ({
             Non, pas maintenant
           </Button>
           <Button 
-            onClick={() => onNotify(entry.id)}
+            onClick={handleNotify}
             disabled={isNotifying}
             className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
           >

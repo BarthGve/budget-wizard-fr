@@ -51,6 +51,7 @@ export function useChangelogNotification() {
       toast.success("Notification envoyée aux utilisateurs");
       // Réinitialiser l'état après notification
       setNewlyCreatedEntry(null);
+      // Nous ne fermons pas la modale ici car cette logique est maintenant gérée dans NotificationSection
     },
     onError: (error: any) => {
       console.error("[DEBUG] Erreur lors de l'envoi de notification:", error);
