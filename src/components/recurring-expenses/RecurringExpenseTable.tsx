@@ -94,7 +94,8 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           />
         </Table>
       </div>
-<CardFooter>
+<CardFooter className="justify-center">
+
       {totalPages > 1 && (
         <TablePagination
           currentPage={currentPage}
