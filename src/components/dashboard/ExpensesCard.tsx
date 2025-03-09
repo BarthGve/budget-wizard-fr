@@ -94,14 +94,12 @@ export const ExpensesCard = ({
                     <Info className="h-4 w-4" />
                     {Math.round(progressPercentage)}% des charges payées
                   </p>
+                  <span>Reste : {Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
                 </TooltipContent>
               </Tooltip>
             </div>
             
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Payé : {Math.round(paidExpenses).toLocaleString('fr-FR')} €</span>
-              <span>Reste : {Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
-            </div>
+            
           </div>
         </CardContent>
       </Card>

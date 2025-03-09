@@ -123,24 +123,7 @@ export const SavingsPieChart = ({
             </ChartContainer>
           </div>
           
-          <div className="mt-auto space-y-2">
-            {/* Légende simplifiée */}
-            <div className="grid grid-cols-2 gap-1 text-sm">
-              {chartData.slice(0, 4).map((item, index) => (
-                <div key={index} className="flex items-center gap-1.5">
-                  <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.fill }} />
-                  <span className="truncate" title={item.name}>
-                    {item.name.length > 10 ? `${item.name.slice(0, 10)}...` : item.name}
-                  </span>
-                </div>
-              ))}
-            </div>
-            
-            {/* Message récapitulatif */}
-            <div className="text-xs text-muted-foreground text-center pt-1">
-              {formatSavingSummary()}
-            </div>
-          </div>
+       
         </CardContent>
       </Card>
     </motion.div>
