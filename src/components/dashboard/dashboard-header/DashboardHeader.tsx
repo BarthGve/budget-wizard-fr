@@ -110,11 +110,7 @@ export const DashboardHeader = memo(({
           
           <div>
             <h1 className={cn(
-              "text-3xl font-bold tracking-tight bg-gradient-to-r bg-clip-text text-transparent",
-              // Gradient de base (mode clair)
-              currentGradient,
-              // Gradient adapté au mode sombre (plus lumineux)
-              isDarkMode && "from-purple-800 via-violet-300 to-fuchsia-400"
+              "text-3xl font-bold text-primary"
             )}>
               Tableau de bord
             </h1>
