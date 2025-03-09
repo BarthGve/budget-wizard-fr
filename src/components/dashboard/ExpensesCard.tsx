@@ -103,31 +103,36 @@ export const ExpensesCard = ({
               
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="w-2/3">
+                  <div className="w-2/3 relative">
+                    <div className={cn(
+                      "absolute inset-0 bg-blue-500/10 dark:bg-blue-400/5 rounded-full blur-sm",
+                      "opacity-0 dark:opacity-100 transition-opacity"
+                    )} />
                     <Progress 
                       value={progressPercentage}
                       className={cn(
                         "h-2.5 rounded-full",
                         // Light mode - progress background
-                        "bg-gray-200",
+                        "bg-blue-100/50",
                         // Dark mode - progress background
-                        "dark:bg-gray-800"
+                        "dark:bg-blue-950/70"
                       )}
-                      // La couleur de l'indicateur de progression
+                      // Définition personnalisée des styles de progression
                       style={{
-                        '--progress-foreground': 'var(--blue-500)',
-                        '--progress-background': 'var(--gray-200)'
+                        // Utiliser une couleur plus vive en mode clair et plus douce en mode sombre
+                        '--progress-color-light': 'rgb(59, 130, 246)',  // blue-500
+                        '--progress-color-dark': 'rgb(96, 165, 250)',   // blue-400
                       } as React.CSSProperties}
                     />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="dark:bg-gray-800 dark:border-gray-700">
-                  <p className="flex items-center gap-1 dark:text-white">
-                    <Info className="h-4 w-4" />
+                <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
+                  <p className="flex items-center gap-1.5 dark:text-white font-medium">
+                    <Info className="h-4 w-4 text-blue-500 dark:text-blue-400" />
                     {Math.round(progressPercentage)}% des charges payées
                   </p>
-                  <span className="dark:text-gray-300">
-                    Reste : <span className="font-medium dark:text-blue-300">{Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
+                  <span className="dark:text-gray-300 mt-1 block">
+                    Reste : <span className="font-medium text-blue-600 dark:text-blue-300">{Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
                   </span>
                 </TooltipContent>
               </Tooltip>
