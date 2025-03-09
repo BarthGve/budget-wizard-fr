@@ -1,10 +1,11 @@
 
-import { PiggyBank } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Link } from "react-router-dom";
+import { ChartContainer } from "@/components/ui/chart";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { CreditCard } from "lucide-react";
 
 interface Credit {
   nom_credit: string;
@@ -18,12 +19,15 @@ interface CreditsPieChartProps {
   totalMensualites: number;
 }
 
-const COLORS = ['#9b87f5', '#7E69AB', '#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#8E9196'];
+// Palette de couleurs plus harmonieuse avec le thème violet primaire
+const COLORS = ['#9b87f5', '#a78bfa', '#8B5CF6', '#7C3AED', '#6D28D9', '#5b21b6', '#4c1d95'];
 
 export const CreditsPieChart = ({
   credits,
   totalMensualites
 }: CreditsPieChartProps) => {
+  const navigate = useNavigate();
+
   const chartData = credits
     .filter(credit => {
       const today = new Date();
@@ -48,65 +52,91 @@ export const CreditsPieChart = ({
     }]))
   };
 
+  // Format custom pour afficher la structure des crédits
+  const formatCreditSummary = () => {
+    if (credits.length === 0) return "Aucun crédit actif";
+    if (credits.length === 1) return `1 crédit: ${credits[0].nom_credit}`;
+    return `${credits.length} crédits actifs`;
+  };
+
   return (
-    <Link to="/credits" className="block h-full">
-      <Card className="flex flex-col h-full hover:bg-accent/10 transition-colors">
-        <CardHeader className="items-center pb-0">
-          <CardTitle>Crédits</CardTitle>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -3 }}
+    >
+      <Card 
+        className="bg-gradient-to-br from-background to-purple-50 backdrop-blur-sm shadow-lg border border-purple-100 cursor-pointer h-[370px] flex flex-col"
+        onClick={() => navigate("/credits")}
+      >
+        <CardHeader className="py-4">
+          <div className="flex flex-row items-center justify-between">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <CreditCard className="h-6 w-6 text-purple-500" />
+              Crédits
+            </CardTitle>
+          </div>
           <CardDescription>Vue d'ensemble des mensualités</CardDescription>
         </CardHeader>
-        <CardContent className="flex-1">
-          <ChartContainer className="mx-auto aspect-square max-h-[200px]" config={chartConfig}>
-            <PieChart>
-              <ChartTooltip cursor={false} content={({
-                active,
-                payload
-              }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div className="rounded-lg border bg-background p-2 shadow-sm">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-medium">{payload[0].name}</div>
-                        <div className="text-right font-medium">
-                          {formatCurrency(payload[0].value as number)}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              }} />
-              <Pie 
-                data={chartData} 
-                dataKey="value" 
-                nameKey="name" 
-                innerRadius={60} 
-                outerRadius={80} 
-                paddingAngle={5}
-              >
-                <Label content={({
-                  viewBox
-                }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                        <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-2xl font-bold">
-                          {formatCurrency(totalMensualites)}
-                        </tspan>
-                        <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground text-sm">
-                          pour le mois
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }} />
-              </Pie>
-            </PieChart>
-          </ChartContainer>
+        <CardContent className="flex-1 flex flex-col justify-between pb-4">
+          <div className="mx-auto w-full h-[220px]">
+            <ChartContainer className="h-full" config={chartConfig}>
+              <PieChart>
+                <Pie 
+                  data={chartData} 
+                  dataKey="value" 
+                  nameKey="name" 
+                  innerRadius={60} 
+                  outerRadius={80} 
+                  paddingAngle={5}
+                >
+                  <Label content={({
+                    viewBox
+                  }) => {
+                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                      return (
+                        <g>
+                          <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-xl font-bold">
+                              {formatCurrency(totalMensualites)}
+                            </tspan>
+                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 15} className="fill-muted-foreground text-xs">
+                              par mois
+                            </tspan>
+                          </text>
+                        </g>
+                      );
+                    }
+                  }} />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+          </div>
+          
+          <div className="mt-auto space-y-2">
+            {/* Légende simplifiée */}
+            <div className="grid grid-cols-2 gap-1 text-sm">
+              {chartData.slice(0, 4).map((item, index) => (
+                <div key={index} className="flex items-center gap-1.5">
+                  <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.fill }} />
+                  <span className="truncate" title={item.name}>
+                    {item.name.length > 10 ? `${item.name.slice(0, 10)}...` : item.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+            
+            {/* Message récapitulatif */}
+            <div className="text-xs text-muted-foreground text-center pt-1">
+              {formatCreditSummary()}
+            </div>
+          </div>
         </CardContent>
       </Card>
-    </Link>
+    </motion.div>
   );
 };
 
 export default CreditsPieChart;
+
