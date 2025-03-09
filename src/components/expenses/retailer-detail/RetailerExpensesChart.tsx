@@ -45,7 +45,7 @@ export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) 
       animate="visible"
       variants={containerVariants}
     >
-      <Card className="backdrop-blur-sm bg-background/95 shadow-lg border-purple-100">
+      <Card className="backdrop-blur-sm bg-background/95  border-purple-100">
         <CardHeader className="pb-2">
           <motion.div 
             className="flex items-center justify-between" 
