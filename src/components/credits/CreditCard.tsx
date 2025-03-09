@@ -15,7 +15,9 @@ interface CreditCardProps {
 }
 
 export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) => {
-  const [showInfoDialog, setShowInfoDialog] = useState(false);
+  // Le dialog est maintenant géré par CreditActions, donc nous n'avons plus besoin de ce state ici
+  // Nous gardons la ligne commentée pour montrer ce qui a été retiré
+  // const [showInfoDialog, setShowInfoDialog] = useState(false);
 
   return (
     <>
@@ -60,7 +62,7 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
           )}
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between p-1">
-            <CreditCardInfo credit={credit} index={index} onClick={() => setShowInfoDialog(true)} />
+            <CreditCardInfo credit={credit} index={index} />
             <CreditCardDetails credit={credit} index={index} />
             <motion.div 
               className="px-4 py-2"
@@ -73,12 +75,6 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
           </div>
         </Card>
       </motion.div>
-
-      <CreditInfoDialog
-        credit={credit}
-        open={showInfoDialog}
-        onOpenChange={setShowInfoDialog}
-      />
     </>
   );
 };
@@ -86,14 +82,12 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
 interface CreditCardInfoProps {
   credit: Credit;
   index: number;
-  onClick: () => void;
 }
 
-export const CreditCardInfo = ({ credit, index, onClick }: CreditCardInfoProps) => {
+export const CreditCardInfo = ({ credit, index }: CreditCardInfoProps) => {
   return (
     <div 
       className="flex items-center px-4 gap-4 md:w-1/3 cursor-pointer hover:bg-muted/20 rounded-md p-2 transition-colors"
-      onClick={onClick}
     >
       {credit.logo_url ? (
         <img
