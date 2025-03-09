@@ -2,6 +2,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Banknote } from 'lucide-react';
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface ContributorShare {
   name: string;
@@ -20,11 +22,11 @@ export const RevenueCard = ({
   contributorShares
 }: RevenueCardProps) => {
   const [displayedRevenue, setDisplayedRevenue] = useState(totalRevenue);
+  const navigate = useNavigate();
 
   // Mettre à jour le montant affiché lorsque totalRevenue change
   useEffect(() => {
     if (totalRevenue !== displayedRevenue) {
-      console.log("Revenue changed:", totalRevenue);
       // Animation simple d'interpolation numérique par centaine
       const startValue = displayedRevenue;
       const endValue = totalRevenue;
@@ -53,17 +55,49 @@ export const RevenueCard = ({
   }, [totalRevenue, displayedRevenue]);
 
   return (
-    <Card className="bg-background hover:shadow-md transition-all duration-300">
-      <CardHeader className="py-[16px]">
-        <div className="flex flex-row items-center justify-between">
-          <CardTitle className="text-2xl">Revenus</CardTitle>
-          <Banknote className="h-6 w-6 text-muted-foreground" />
-        </div>
-        <CardDescription>Des contributeurs</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="font-bold text-xl">{displayedRevenue.toLocaleString('fr-FR')} €</p>
-      </CardContent>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -3 }}
+    >
+      <Card 
+        className="bg-gradient-to-br from-background to-emerald-50 backdrop-blur-sm shadow-lg border border-emerald-100 cursor-pointer"
+        onClick={() => navigate("/income")}
+      >
+        <CardHeader className="py-4">
+          <div className="flex flex-row items-center justify-between">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <Banknote className="h-6 w-6 text-emerald-500" />
+              Revenus
+            </CardTitle>
+          </div>
+          <CardDescription>Des contributeurs</CardDescription>
+        </CardHeader>
+        <CardContent className="pb-4">
+          <div className="space-y-4">
+            <motion.p 
+              className="font-bold text-xl leading-none text-gray-800"
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+            >
+              {displayedRevenue.toLocaleString('fr-FR')} €
+            </motion.p>
+            
+            {contributorShares && contributorShares.length > 0 && (
+              <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                {contributorShares.map((share, index) => (
+                  <div key={index} className="flex items-center">
+                    <span className="font-medium">{share.name}: </span>
+                    <span>{Math.round(share.amount).toLocaleString('fr-FR')} €</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
