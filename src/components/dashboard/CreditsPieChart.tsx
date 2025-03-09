@@ -1,4 +1,3 @@
-
 import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -80,31 +79,30 @@ export const CreditsPieChart = ({
       whileHover={{ y: -3 }}
     >
       <Card 
-        className="bg-gradient-to-br from-background to-purple-50 backdrop-blur-sm shadow-lg border border-purple-100 cursor-pointer h-[370px] flex flex-col"
+        className="bg-gradient-to-br from-background to-purple-50 backdrop-blur-sm shadow-lg border border-purple-100 cursor-pointer h-[320px] flex flex-col"
         onClick={() => navigate("/credits")}
       >
-        <CardHeader className="py-4">
+        <CardHeader className="py-3 pb-0"> {/* Padding réduit */}
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <CreditCard className="h-6 w-6 text-purple-500" />
+            <CardTitle className="text-xl flex items-center gap-2"> {/* Taille du texte réduite */}
+              <CreditCard className="h-5 w-5 text-purple-500" /> {/* Icône plus petite */}
               Crédits
             </CardTitle>
           </div>
-          <CardDescription>Vue d'ensemble des mensualités</CardDescription>
+          <CardDescription className="text-sm">Vue d'ensemble des mensualités</CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col justify-between pb-4">
-          <div className="mx-auto w-full h-[220px]">
+        <CardContent className="flex-1 flex flex-col justify-center pb-2 pt-0"> {/* Centrage vertical et padding optimisés */}
+          <div className="mx-auto w-full h-[250px]"> {/* Hauteur du graphique augmentée */}
             <ChartContainer className="h-full" config={chartConfig}>
-              <PieChart>
-                {/* Ajout du Tooltip */}
+              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}> {/* Marges supprimées */}
                 <Tooltip content={<CustomTooltip />} />
                 
                 <Pie 
                   data={chartData} 
                   dataKey="value" 
                   nameKey="name" 
-                  innerRadius={60} 
-                  outerRadius={80} 
+                  innerRadius={75} /* Rayon intérieur augmenté */
+                  outerRadius={100} /* Rayon extérieur augmenté */
                   paddingAngle={5}
                   isAnimationActive={true}
                   animationBegin={200}
@@ -117,10 +115,10 @@ export const CreditsPieChart = ({
                       return (
                         <g>
                           <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-xl font-bold">
+                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-2xl font-bold"> {/* Taille du texte augmentée */}
                               {formatCurrency(totalMensualites)}
                             </tspan>
-                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 15} className="fill-muted-foreground text-xs">
+                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 18} className="fill-muted-foreground text-sm"> {/* Position et taille ajustées */}
                               par mois
                             </tspan>
                           </text>
@@ -132,8 +130,6 @@ export const CreditsPieChart = ({
               </PieChart>
             </ChartContainer>
           </div>
-          
-       
         </CardContent>
       </Card>
     </motion.div>
@@ -141,3 +137,4 @@ export const CreditsPieChart = ({
 };
 
 export default CreditsPieChart;
+
