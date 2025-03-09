@@ -1,5 +1,5 @@
 
-import { Label, Pie, PieChart } from "recharts";
+import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
@@ -21,6 +21,19 @@ interface CreditsPieChartProps {
 
 // Palette de couleurs plus harmonieuse avec le thème violet primaire
 const COLORS = ['#9b87f5', '#a78bfa', '#8B5CF6', '#7C3AED', '#6D28D9', '#5b21b6', '#4c1d95'];
+
+// Composant personnalisé pour le tooltip
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-background/95 backdrop-blur-sm shadow-md border border-border rounded-lg p-2 text-sm">
+        <p className="font-medium">{payload[0].name}</p>
+        <p className="font-semibold text-purple-600">{formatCurrency(payload[0].value)}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export const CreditsPieChart = ({
   credits,
@@ -83,6 +96,9 @@ export const CreditsPieChart = ({
           <div className="mx-auto w-full h-[220px]">
             <ChartContainer className="h-full" config={chartConfig}>
               <PieChart>
+                {/* Ajout du Tooltip */}
+                <Tooltip content={<CustomTooltip />} />
+                
                 <Pie 
                   data={chartData} 
                   dataKey="value" 
@@ -90,6 +106,9 @@ export const CreditsPieChart = ({
                   innerRadius={60} 
                   outerRadius={80} 
                   paddingAngle={5}
+                  isAnimationActive={true}
+                  animationBegin={200}
+                  animationDuration={800}
                 >
                   <Label content={({
                     viewBox
@@ -114,14 +133,7 @@ export const CreditsPieChart = ({
             </ChartContainer>
           </div>
           
-          <div className="mt-auto space-y-2">
-            
-            
-            {/* Message récapitulatif */}
-            <div className="text-xs text-muted-foreground text-center pt-1">
-              {formatCreditSummary()}
-            </div>
-          </div>
+       
         </CardContent>
       </Card>
     </motion.div>
@@ -129,4 +141,3 @@ export const CreditsPieChart = ({
 };
 
 export default CreditsPieChart;
-
