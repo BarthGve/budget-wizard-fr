@@ -76,6 +76,7 @@ export const RevenueCard = ({
         </CardHeader>
         <CardContent className="pb-4">
           <div className="space-y-4">
+          <div className="flex items-center justify-between">
             <motion.p 
               className="font-bold text-xl leading-none text-gray-800"
               initial={{ scale: 0.9 }}
@@ -85,7 +86,7 @@ export const RevenueCard = ({
               {displayedRevenue.toLocaleString('fr-FR')} €
             </motion.p>
             
-            
+            </div>
           </div>
         </CardContent>
       </Card>
