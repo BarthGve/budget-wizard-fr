@@ -117,12 +117,12 @@ export const ExpensesCard = ({
                         // Dark mode - progress background
                         "dark:bg-blue-950/70"
                       )}
-                      // Définition personnalisée des styles de progression
-                      style={{
-                        // Utiliser une couleur plus vive en mode clair et plus douce en mode sombre
-                        '--progress-color-light': 'rgb(59, 130, 246)',  // blue-500
-                        '--progress-color-dark': 'rgb(96, 165, 250)',   // blue-400
-                      } as React.CSSProperties}
+                      // On supprime les variables CSS personnalisées ici
+                      indicatorClassName={cn(
+                        // Définit explicitement une couleur bleue pour l'indicateur de progression
+                        "bg-blue-500", 
+                        "dark:bg-blue-400"
+                      )}
                     />
                   </div>
                 </TooltipTrigger>
