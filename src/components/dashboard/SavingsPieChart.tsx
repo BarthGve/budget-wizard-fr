@@ -1,6 +1,5 @@
-
 import * as React from "react";
-import { Label, Pie, PieChart } from "recharts";
+import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
@@ -21,6 +20,19 @@ interface SavingsPieChartProps {
 
 // Palette de couleurs verte pour l'épargne
 const COLORS = ['#22c55e', '#16a34a', '#15803d', '#166534', '#14532d', '#10b981', '#34d399'];
+
+// Composant personnalisé pour le tooltip
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-background/95 backdrop-blur-sm shadow-md border border-border rounded-lg p-2 text-sm">
+        <p className="font-medium">{payload[0].name}</p>
+        <p className="font-semibold text-green-600">{formatCurrency(payload[0].value)}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export const SavingsPieChart = ({
   monthlySavings,
@@ -74,6 +86,9 @@ export const SavingsPieChart = ({
           <div className="mx-auto w-full h-[220px]">
             <ChartContainer className="h-full" config={chartConfig}>
               <PieChart>
+                {/* Utilisation du composant Tooltip de Recharts */}
+                <Tooltip content={<CustomTooltip />} />
+                
                 <Pie 
                   data={chartData} 
                   dataKey="value" 
@@ -81,6 +96,9 @@ export const SavingsPieChart = ({
                   innerRadius={60} 
                   outerRadius={80} 
                   paddingAngle={5}
+                  isAnimationActive={true}
+                  animationBegin={200}
+                  animationDuration={800}
                 >
                   <Label content={({
                     viewBox
@@ -128,4 +146,5 @@ export const SavingsPieChart = ({
     </motion.div>
   );
 };
+
 
