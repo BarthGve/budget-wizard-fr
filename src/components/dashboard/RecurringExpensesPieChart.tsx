@@ -1,9 +1,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label, Pie, PieChart } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Label, Pie, PieChart, Tooltip } from "recharts";
+import { ChartContainer } from "@/components/ui/chart";
 import { formatCurrency } from "@/utils/format";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Receipt } from "lucide-react";
 
 interface RecurringExpense {
   id: string;
@@ -22,7 +24,21 @@ interface CategoryTotal {
   amount: number;
 }
 
-const COLORS = ['#9b87f5', '#7E69AB', '#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#8E9196'];
+// Palette de couleurs bleues pour les dépenses
+const COLORS = ['#3b82f6', '#2563eb', '#1d4ed8', '#0ea5e9', '#0284c7', '#0369a1', '#38bdf8'];
+
+// Composant personnalisé pour le tooltip
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-background/95 backdrop-blur-sm shadow-md border border-border rounded-lg p-2 text-sm">
+        <p className="font-medium">{payload[0].name}</p>
+        <p className="font-semibold text-blue-600">{formatCurrency(payload[0].value)}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export const RecurringExpensesPieChart = ({
   recurringExpenses,
@@ -59,63 +75,68 @@ export const RecurringExpensesPieChart = ({
   };
 
   return (
-    <Card 
-      className="flex flex-col h-full cursor-pointer hover:bg-accent/10 transition-colors"
-      onClick={() => navigate("/recurring-expenses")}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -3 }}
     >
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Charges</CardTitle>
-        <CardDescription>Vue d'ensemble par catégorie</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1">
-        <ChartContainer className="mx-auto aspect-square max-h-[200px]" config={chartConfig}>
-          <PieChart>
-            <ChartTooltip cursor={false} content={({
-              active,
-              payload
-            }) => {
-              if (active && payload && payload.length) {
-                return (
-                  <div className="rounded-lg border bg-background p-2 shadow-sm">
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="font-medium">{payload[0].name}</div>
-                      <div className="text-right font-medium">
-                        {formatCurrency(payload[0].value as number)}
-                      </div>
-                    </div>
-                  </div>
-                );
-              }
-              return null;
-            }} />
-            <Pie 
-              data={chartData} 
-              dataKey="value" 
-              nameKey="name" 
-              innerRadius={60} 
-              outerRadius={80} 
-              paddingAngle={5}
-            >
-              <Label content={({
-                viewBox
-              }) => {
-                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                  return (
-                    <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                      <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-2xl font-bold">
-                        {formatCurrency(totalExpenses)}
-                      </tspan>
-                      <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground text-sm">
-                        pour le mois
-                      </tspan>
-                    </text>
-                  );
-                }
-              }} />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+      <Card 
+        className="bg-gradient-to-br from-background to-blue-50 backdrop-blur-sm shadow-lg border border-blue-100 cursor-pointer h-[370px] flex flex-col"
+        onClick={() => navigate("/recurring-expenses")}
+      >
+        <CardHeader className="py-4">
+          <div className="flex flex-row items-center justify-between">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <Receipt className="h-6 w-6 text-blue-500" />
+              Charges
+            </CardTitle>
+          </div>
+          <CardDescription>Vue d'ensemble par catégorie</CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1 flex flex-col justify-between pb-4">
+          <div className="mx-auto w-full h-[220px]">
+            <ChartContainer className="h-full" config={chartConfig}>
+              <PieChart>
+                {/* Ajout du Tooltip personnalisé */}
+                <Tooltip content={<CustomTooltip />} />
+                
+                <Pie 
+                  data={chartData} 
+                  dataKey="value" 
+                  nameKey="name" 
+                  innerRadius={60} 
+                  outerRadius={80} 
+                  paddingAngle={5}
+                  isAnimationActive={true}
+                  animationBegin={200}
+                  animationDuration={800}
+                >
+                  <Label content={({
+                    viewBox
+                  }) => {
+                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                      return (
+                        <g>
+                          <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-xl font-bold">
+                              {formatCurrency(totalExpenses)}
+                            </tspan>
+                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 15} className="fill-muted-foreground text-xs">
+                              par mois
+                            </tspan>
+                          </text>
+                        </g>
+                      );
+                    }
+                  }} />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
+
