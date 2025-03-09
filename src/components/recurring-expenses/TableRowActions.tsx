@@ -5,6 +5,7 @@ import { RecurringExpenseDialog } from "./RecurringExpenseDialog";
 import { RecurringExpenseDetails } from "./RecurringExpenseDetails";
 import { DeleteExpenseDialog } from "./dialogs/DeleteExpenseDialog";
 import { ExpenseActionsDropdown } from "./dialogs/ExpenseActionsDropdown";
+import { Dialog } from "@/components/ui/dialog";
 
 interface TableRowActionsProps {
   expense: RecurringExpense;
@@ -29,11 +30,10 @@ export const TableRowActions = ({ expense, onDeleteExpense }: TableRowActionsPro
         onDelete={() => setShowDeleteDialog(true)}
       />
 
-      <RecurringExpenseDetails 
-        expense={expense}
-        open={showDetailsDialog}
-        onOpenChange={setShowDetailsDialog}
-      />
+      {/* Utiliser Dialog pour contrôler l'ouverture et passer RecurringExpenseDetails comme children */}
+      <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+        <RecurringExpenseDetails expense={expense} />
+      </Dialog>
 
       <RecurringExpenseDialog 
         expense={expense}

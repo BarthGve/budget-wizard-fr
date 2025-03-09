@@ -7,9 +7,11 @@ import { fr } from "date-fns/locale";
 export interface RecurringExpenseDetailsProps {
   expense: RecurringExpense;
   onClose?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const RecurringExpenseDetails = ({ expense, onClose }: RecurringExpenseDetailsProps) => {
+export const RecurringExpenseDetails = ({ expense, onClose, open, onOpenChange }: RecurringExpenseDetailsProps) => {
   const formattedDate = expense.created_at 
     ? format(new Date(expense.created_at), "dd MMMM yyyy", { locale: fr })
     : "Date inconnue";
@@ -27,6 +29,60 @@ export const RecurringExpenseDetails = ({ expense, onClose }: RecurringExpenseDe
     }
   };
 
+  // Si les props open et onOpenChange sont fournies, utiliser Dialog directement
+  if (open !== undefined && onOpenChange) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              {expense.logo_url && (
+                <img
+                  src={expense.logo_url}
+                  alt={expense.name}
+                  className="w-8 h-8 rounded-full object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/placeholder.svg";
+                  }}
+                />
+              )}
+              {expense.name}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="text-muted-foreground">Catégorie</div>
+              <div className="font-medium">{expense.category}</div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="text-muted-foreground">Montant</div>
+              <div className="font-medium">{expense.amount.toLocaleString('fr-FR')} €</div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="text-muted-foreground">Périodicité</div>
+              <div className="font-medium">{periodicityLabels[expense.periodicity]}</div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="text-muted-foreground">Prélèvement</div>
+              <div className="font-medium">{getDebitInfo()}</div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="text-muted-foreground">Date d'ajout</div>
+              <div className="font-medium">{formattedDate}</div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Retourner uniquement le contenu si pas de props open/onOpenChange
   return (
     <DialogContent className="sm:max-w-[500px]">
       <DialogHeader>
