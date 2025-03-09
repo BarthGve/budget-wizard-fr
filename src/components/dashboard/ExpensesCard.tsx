@@ -84,13 +84,13 @@ export const ExpensesCard = ({
               <ClipboardList className="h-6 w-6 text-blue-500" />
               Charges
             </CardTitle>
-            <Badge 
+          {/*  <Badge 
               variant={getBadgeVariant(progressPercentage)} 
               className="px-3 py-1 flex items-center gap-1"
             >
               {getStatusIcon(progressPercentage)}
               <span>{getStatusText(progressPercentage)}</span>
-            </Badge>
+            </Badge> */}
           </div>
           <CardDescription>Du mois de {currentMonthName}</CardDescription>
         </CardHeader>
