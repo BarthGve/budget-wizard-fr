@@ -11,7 +11,7 @@ import { useChangelogForm } from "./hooks/useChangelogForm";
 
 interface ChangelogEntryFormProps {
   initialData?: ChangelogEntry;
-  onSuccess: () => void;
+  onSuccess: (entry?: ChangelogEntry) => void;
   onCancel: () => void;
 }
 

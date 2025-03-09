@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface UseChangelogFormProps {
   initialData?: ChangelogEntry;
-  onSuccess: () => void;
+  onSuccess: (entry?: ChangelogEntry) => void;
   onCancel: () => void;
 }
 
@@ -38,7 +38,8 @@ export function useChangelogForm({ initialData, onSuccess, onCancel }: UseChange
       console.log("✅ Entrée changelog créée avec succès:", data);
       queryClient.invalidateQueries({ queryKey: ["changelog"] });
       toast.success("Entrée ajoutée avec succès");
-      onSuccess();
+      // Passer l'entrée créée au composant parent
+      onSuccess(data);
     },
     onError: (error: any) => {
       console.error("❌ Erreur lors de la création de l'entrée changelog:", error);
@@ -53,7 +54,8 @@ export function useChangelogForm({ initialData, onSuccess, onCancel }: UseChange
       console.log("✅ Entrée changelog mise à jour avec succès:", data);
       queryClient.invalidateQueries({ queryKey: ["changelog"] });
       toast.success("Entrée mise à jour avec succès");
-      onSuccess();
+      // Passer l'entrée mise à jour au composant parent
+      onSuccess(data);
     },
     onError: (error: any) => {
       console.error("❌ Erreur lors de la mise à jour de l'entrée changelog:", error);
