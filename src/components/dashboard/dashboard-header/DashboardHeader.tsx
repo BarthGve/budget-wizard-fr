@@ -45,7 +45,7 @@ const TITLE_GRADIENTS = {
   // Option 2: Violet royal vers rose aube
   royalViolet: "from-violet-700 via-purple-600 to-fuchsia-500",
   // Option 3: Violet cosmique
-  cosmicViolet: "from-indigo-600 via-violet-600 to-purple-500"
+  cosmicViolet: "from-indigo-800 via-violet-600 to-purple-500"
 };
 
 // Composant d'en-tête optimisé avec mémoisation
@@ -114,7 +114,7 @@ export const DashboardHeader = memo(({
               // Gradient de base (mode clair)
               currentGradient,
               // Gradient adapté au mode sombre (plus lumineux)
-              isDarkMode && "from-purple-400 via-violet-300 to-fuchsia-400"
+              isDarkMode && "from-purple-800 via-violet-300 to-fuchsia-400"
             )}>
               Tableau de bord
             </h1>
