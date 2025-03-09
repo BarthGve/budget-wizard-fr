@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
@@ -9,7 +8,7 @@ import { Receipt } from "lucide-react";
 
 interface RecurringExpense {
   id: string;
-  name: string;
+  name: string;    
   amount: number;
   category: string;
 }
@@ -24,10 +23,8 @@ interface CategoryTotal {
   amount: number;
 }
 
-// Palette de couleurs bleues pour les dépenses
 const COLORS = ['#3b82f6', '#2563eb', '#1d4ed8', '#0ea5e9', '#0284c7', '#0369a1', '#38bdf8'];
 
-// Composant personnalisé pour le tooltip
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
@@ -82,31 +79,30 @@ export const RecurringExpensesPieChart = ({
       whileHover={{ y: -3 }}
     >
       <Card 
-        className="bg-gradient-to-br from-background to-blue-50 backdrop-blur-sm shadow-lg border border-blue-100 cursor-pointer h-[370px] flex flex-col"
+        className="bg-gradient-to-br from-background to-blue-50 backdrop-blur-sm shadow-lg border border-blue-100 cursor-pointer h-[320px] flex flex-col"
         onClick={() => navigate("/recurring-expenses")}
       >
-        <CardHeader className="py-4">
+        <CardHeader className="py-3 pb-0"> {/* Réduire le padding vertical */}
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <Receipt className="h-6 w-6 text-blue-500" />
+            <CardTitle className="text-xl flex items-center gap-2"> {/* Réduire la taille du titre */}
+              <Receipt className="h-5 w-5 text-blue-500" /> {/* Réduire la taille de l'icône */}
               Charges
             </CardTitle>
           </div>
-          <CardDescription>Vue d'ensemble par catégorie</CardDescription>
+          <CardDescription className="text-sm">Vue d'ensemble par catégorie</CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col justify-between pb-4">
-          <div className="mx-auto w-full h-[220px]">
+        <CardContent className="flex-1 flex flex-col justify-center pb-2 pt-0"> {/* Centrer verticalement */}
+          <div className="mx-auto w-full h-[250px]"> {/* Augmenter la hauteur du conteneur */}
             <ChartContainer className="h-full" config={chartConfig}>
-              <PieChart>
-                {/* Ajout du Tooltip personnalisé */}
+              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}> {/* Supprimer les marges */}
                 <Tooltip content={<CustomTooltip />} />
                 
                 <Pie 
                   data={chartData} 
                   dataKey="value" 
                   nameKey="name" 
-                  innerRadius={60} 
-                  outerRadius={80} 
+                  innerRadius={75} 
+                  outerRadius={100} 
                   paddingAngle={5}
                   isAnimationActive={true}
                   animationBegin={200}
@@ -119,10 +115,10 @@ export const RecurringExpensesPieChart = ({
                       return (
                         <g>
                           <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-xl font-bold">
+                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-2xl font-bold"> {/* Agrandir le texte */}
                               {formatCurrency(totalExpenses)}
                             </tspan>
-                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 15} className="fill-muted-foreground text-xs">
+                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 18} className="fill-muted-foreground text-sm"> {/* Ajuster la position */}
                               par mois
                             </tspan>
                           </text>
@@ -139,4 +135,5 @@ export const RecurringExpensesPieChart = ({
     </motion.div>
   );
 };
+
 
