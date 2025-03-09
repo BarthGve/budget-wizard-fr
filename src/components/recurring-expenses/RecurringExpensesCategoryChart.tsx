@@ -101,7 +101,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     <motion.div variants={itemVariants}>
       <Card className="w-full backdrop-blur-sm bg-background/95 shadow-lg border border-purple-100">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-xl font-medium flex items-center gap-2">
+          <CardTitle className="text-xl font-semibold flex items-center gap-2">
             <BarChartIcon className="h-8 w-8 text-purple-500" />
             Dépenses par catégorie
           </CardTitle>
