@@ -1,12 +1,11 @@
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { TrendingDown, TrendingUp, ReceiptText } from "lucide-react";
+import { MoveUpRight, MoveDownRight, CalendarRange } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/format";
-import { startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears, format } from "date-fns";
+import { startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears } from "date-fns";
 import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { fr } from "date-fns/locale";
+import { useTheme } from "next-themes";
 
 interface YearlyTotalCardProps {
   currentYearTotal: number;
@@ -21,8 +20,10 @@ interface YearlyTotalCardProps {
 
 export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses, viewMode }: YearlyTotalCardProps) {
   const [prevAmount, setPrevAmount] = useState(0);
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
   
-  const { totalAmount, percentageChange, periodLabel, periodDetail } = useMemo(() => {
+  const { totalAmount, percentageChange, periodLabel, comparisonValue } = useMemo(() => {
     const now = new Date();
     
     if (viewMode === 'monthly') {
@@ -56,8 +57,8 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       return {
         totalAmount: monthTotal,
         percentageChange: monthPercentage,
-        periodLabel: "Total mensuel",
-        periodDetail: format(now, 'MMMM yyyy', { locale: fr })
+        periodLabel: "Mois en cours",
+        comparisonValue: previousMonthTotal
       };
     } else {
       // Pour la vue annuelle, utilisez les totaux déjà calculés
@@ -68,8 +69,8 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       return {
         totalAmount: currentYearTotal,
         percentageChange: yearPercentage,
-        periodLabel: "Total annuel",
-        periodDetail: format(now, 'yyyy')
+        periodLabel: "Année en cours",
+        comparisonValue: previousYearTotal
       };
     }
   }, [expenses, viewMode, currentYearTotal, previousYearTotal]);
@@ -80,70 +81,119 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
   }, [totalAmount]);
 
   const isIncrease = percentageChange > 0;
-  const comparisonLabel = viewMode === 'monthly' ? "vs mois précédent" : "vs année précédente";
+  const comparisonLabel = viewMode === 'monthly' ? "par rapport au mois précédent" : "par rapport à l'année précédente";
   const hasChanged = totalAmount !== prevAmount && prevAmount !== 0;
   
+  // Palettes de couleurs adaptatives
+  const cardStyle = useMemo(() => {
+    // Palettes pour le mode clair
+    const lightPalette = {
+      gradientFrom: "from-violet-500",
+      gradientVia: "via-purple-500",
+      gradientTo: "to-indigo-600",
+      textAccent: "text-purple-50",
+      textDescription: "text-white/80",
+      iconBackground: "bg-white/20",
+      increaseColor: "text-red-300",
+      decreaseColor: "text-emerald-300",
+    };
+    
+    // Palettes pour le mode sombre
+    const darkPalette = {
+      gradientFrom: "from-violet-900",
+      gradientVia: "via-purple-800",
+      gradientTo: "to-indigo-900",
+      textAccent: "text-purple-100",
+      textDescription: "text-white/70",
+      iconBackground: "bg-white/10",
+      increaseColor: "text-red-300",
+      decreaseColor: "text-emerald-300",
+    };
+    
+    return isDarkMode ? darkPalette : lightPalette;
+  }, [isDarkMode]);
+  
   return (
-    <Card className="overflow-hidden">
-      <div className="relative">
-        {/* Fond avec dégradé bleu */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500" />
-        
-        {/* Effet de grille */}
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
-        
-        {/* Effet de lumière */}
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-cyan-300 rounded-full opacity-20 blur-3xl"></div>
-        
-        {/* Contenu */}
-        <div className="relative">
-          <CardHeader className="py-4 flex flex-row items-start justify-between">
-            <div>
-              <CardTitle className="text-2xl text-white font-bold">{periodLabel}</CardTitle>
-              <CardDescription className="text-white/80 font-medium">
-                {periodDetail}
-              </CardDescription>
-            </div>
-            <div className="p-2 bg-white/10 backdrop-blur-sm rounded-lg">
-              <ReceiptText className="h-6 w-6 text-white" />
-            </div>
-          </CardHeader>
-          
-          <CardContent className="pb-6">
-            <div className="flex flex-col gap-3">
-              <AnimatePresence mode="wait">
-                <motion.div 
-                  key={totalAmount}
-                  className="flex items-baseline gap-1"
-                  initial={hasChanged ? { opacity: 0, y: totalAmount > prevAmount ? 20 : -20 } : false}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: totalAmount > prevAmount ? -20 : 20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <span className="text-3xl font-bold text-white">
-                    {formatCurrency(totalAmount)}
-                  </span>
-                </motion.div>
-              </AnimatePresence>
-              
-              {(viewMode === 'yearly' && previousYearTotal > 0) || (viewMode === 'monthly' && percentageChange !== 0) ? (
-                <div className="flex items-center gap-2 p-1.5 px-3 bg-white/10 backdrop-blur-sm rounded-full w-fit">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -3 }}
+    >
+      <Card className={cn(
+        "overflow-hidden shadow-lg transition-all duration-300 border-0",
+        "bg-gradient-to-br",
+        cardStyle.gradientFrom,
+        cardStyle.gradientVia,
+        cardStyle.gradientTo,
+        isDarkMode ? "shadow-purple-900/30" : "shadow-purple-500/30",
+        "hover:shadow-xl"
+      )}>
+        <CardHeader className="py-4">
+          <div className="flex flex-row items-center justify-between">
+            <CardTitle className={cn("text-2xl flex items-center gap-2", cardStyle.textAccent)}>
+              <div className={cn("p-2 rounded-full", cardStyle.iconBackground)}>
+                <CalendarRange className="h-5 w-5 text-white" />
+              </div>
+              <span>Total des dépenses</span>
+            </CardTitle>
+          </div>
+          <CardDescription className={cardStyle.textDescription}>
+            {periodLabel}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pb-5">
+          <div className="flex flex-col gap-4">
+            <AnimatePresence mode="wait">
+              <motion.p 
+                key={totalAmount}
+                className={cn("text-3xl font-bold", cardStyle.textAccent)}
+                initial={hasChanged ? { opacity: 0, y: totalAmount > prevAmount ? 20 : -20 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: totalAmount > prevAmount ? -20 : 20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {formatCurrency(totalAmount)}
+              </motion.p>
+            </AnimatePresence>
+            
+            {comparisonValue > 0 && (
+              <motion.div 
+                className="flex items-center gap-2"
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
+                  isIncrease ? "bg-red-500/20" : "bg-emerald-500/20"
+                )}>
                   {isIncrease ? (
-                    <TrendingUp className="h-4 w-4 text-red-300" />
+                    <MoveUpRight className={cn("h-4 w-4", cardStyle.increaseColor)} />
                   ) : (
-                    <TrendingDown className="h-4 w-4 text-green-300" />
+                    <MoveDownRight className={cn("h-4 w-4", cardStyle.decreaseColor)} />
                   )}
-                  <span className={cn("text-sm font-medium", 
-                    isIncrease ? "text-red-300" : "text-green-300"
+                  <span className={cn("font-medium text-sm", 
+                    isIncrease ? cardStyle.increaseColor : cardStyle.decreaseColor
                   )}>
-                    {Math.abs(percentageChange).toFixed(1)}% {comparisonLabel}
+                    {Math.abs(percentageChange).toFixed(1)}%
                   </span>
                 </div>
-              ) : null}
-            </div>
-          </CardContent>
-        </div>
-      </div>
-    </Card>
+                <span className="text-white/70 text-sm">
+                  {comparisonLabel}
+                </span>
+              </motion.div>
+            )}
+            
+            {/* Version précédente du montant */}
+            {comparisonValue > 0 && (
+              <div className="mt-1 text-white/50 text-sm">
+                Période précédente : {formatCurrency(comparisonValue)}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
