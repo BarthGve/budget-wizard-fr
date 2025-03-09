@@ -50,7 +50,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="border border-purple-100">
         <CardHeader>
       <motion.div 
         className="flex flex-col gap-4"
