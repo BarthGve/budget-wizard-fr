@@ -14,6 +14,7 @@ import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner
 import StyledLoader from "@/components/ui/StyledLoader";
 import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
+import { Receipt, ReceiptText } from "lucide-react"; // Ajout d'une icône pertinente
 
 // Utilisation de memo pour éviter les re-renders inutiles
 const Expenses = memo(function Expenses() {
@@ -160,10 +161,30 @@ const Expenses = memo(function Expenses() {
         variants={containerVariants}
       >
         <motion.div variants={itemVariants} className="space-y-2">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in">Dépenses</h1>
-              <p className="text-muted-foreground">Suivez les dépenses que vous réalisez auprès de certaines enseignes.</p>
+          <motion.div 
+            className="pb-4 mb-2 border-b border-gray-100 flex justify-between items-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-start gap-3">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+                className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-lg shadow-sm mt-0.5"
+              >
+                <ReceiptText className="h-6 w-6 text-blue-600" />
+              </motion.div>
+            
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                  Dépenses
+                </h1>
+                <p className="text-muted-foreground text-sm mt-1">
+                  Suivez les dépenses que vous réalisez auprès de certaines enseignes
+                </p>
+              </div>
             </div>
         
             <div className="flex items-center gap-8">
@@ -175,7 +196,7 @@ const Expenses = memo(function Expenses() {
               </div>
               <AddExpenseDialog onExpenseAdded={handleExpenseUpdated} open={addExpenseDialogOpen} onOpenChange={setAddExpenseDialogOpen} />
             </div>
-          </div>
+          </motion.div>
 
           <motion.div variants={itemVariants}>
             <CreateRetailerBanner />
