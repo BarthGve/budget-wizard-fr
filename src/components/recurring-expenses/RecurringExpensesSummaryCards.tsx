@@ -212,4 +212,3 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
     </motion.div>
   );
 }
-
