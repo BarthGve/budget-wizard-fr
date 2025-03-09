@@ -9,6 +9,7 @@ import { ExpenseTableHeader } from "./table/TableHeader";
 import { ExpenseTableRows } from "./table/ExpenseTableRows";
 import { TableDialogs } from "./table/TableDialogs";
 import { ItemsPerPageSelect } from "./table/ItemsPerPageSelect";
+import { Card } from "../ui/card";
 
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const {
@@ -49,12 +50,14 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
 
   return (
     <div className="space-y-4">
+      <Card>
       <motion.div 
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
+       
         <TableFilters
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -108,6 +111,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
         setShowDetailsDialog={setShowDetailsDialog}
         onDeleteExpense={onDeleteExpense}
       />
+      </Card>
     </div>
   );
 };
