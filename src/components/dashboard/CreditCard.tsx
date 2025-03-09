@@ -29,7 +29,7 @@ export const CreditCard = ({
   };
   
   const getStatusIcon = (taux: number) => {
-    if (taux < 30) return <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400" />;
+    if (taux < 30) return <CheckCircle className="h-4 w-4 text-white" />;
     if (taux < 40) return <Info className="h-4 w-4 text-amber-500 dark:text-amber-400" />;
     return <AlertCircle className="h-4 w-4 text-red-500 dark:text-red-400" />;
   };
