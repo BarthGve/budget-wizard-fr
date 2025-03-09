@@ -9,7 +9,7 @@ import { ExpenseTableHeader } from "./table/TableHeader";
 import { ExpenseTableRows } from "./table/ExpenseTableRows";
 import { TableDialogs } from "./table/TableDialogs";
 import { ItemsPerPageSelect } from "./table/ItemsPerPageSelect";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 
 export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringExpenseTableProps) => {
   const {
@@ -51,7 +51,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
   return (
     <div className="space-y-4">
       <Card>
-        <CardContent>
+        <CardHeader>
       <motion.div 
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 10 }}
@@ -77,7 +77,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           onChange={handleItemsPerPageChange}
         />
       </div>
-      </CardContent>
+      </CardHeader>
       
       <div className="overflow-x-auto">
         <Table>
@@ -94,7 +94,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           />
         </Table>
       </div>
-
+<CardFooter>
       {totalPages > 1 && (
         <TablePagination
           currentPage={currentPage}
@@ -102,7 +102,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
           onPageChange={setCurrentPage}
         />
       )}
-
+</CardFooter>
       <TableDialogs
         expenseToDelete={expenseToDelete}
         selectedExpense={selectedExpense}
