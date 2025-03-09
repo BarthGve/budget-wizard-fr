@@ -88,11 +88,11 @@ export const CreditsPieChart = ({
     >
       <Card 
         className={cn(
-          "cursor-pointer h-[320px] flex flex-col shadow-sm transition-all duration-300 hover:shadow-lg",
-          // Light mode - fond blanc
-          "bg-white border border-gray-100",
-          // Dark mode - fond adapté
-          "dark:bg-gray-900/80 dark:border-purple-900/20 dark:shadow-purple-900/5"
+          "cursor-pointer h-[320px] flex flex-col transition-all duration-300",
+          // Light mode - fond blanc avec effet d'ombre élégant
+          "bg-white border border-gray-200/60 shadow-lg hover:shadow-xl",
+          // Dark mode - fond adapté avec effet d'ombre violet
+          "dark:bg-gray-900/90 dark:border-purple-900/30 dark:shadow-purple-900/20 dark:hover:shadow-purple-800/30"
         )}
         onClick={() => navigate("/credits")}
       >
@@ -112,7 +112,7 @@ export const CreditsPieChart = ({
           <CardDescription className="text-sm dark:text-gray-400">Vue d'ensemble des mensualités</CardDescription>
         </CardHeader>
         
-        <CardContent className="flex-1 flex items-center justify-center pb-2 pt-0 w-full">
+        <CardContent className="flex-1 flex items-center justify-center p-0 w-full">
           <div className="w-full max-w-[250px] mx-auto h-[230px] flex items-center justify-center">
             <ChartContainer className="h-full w-full" config={chartConfig}>
               <PieChart width={250} height={230}>
@@ -126,7 +126,7 @@ export const CreditsPieChart = ({
                   cy="50%" /* Centrage exact vertical */
                   innerRadius={65} 
                   outerRadius={90}
-                  paddingAngle={5}
+                  paddingAngle={4}
                   isAnimationActive={true}
                   animationBegin={200}
                   animationDuration={800}
