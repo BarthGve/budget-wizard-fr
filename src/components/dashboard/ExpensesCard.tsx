@@ -1,8 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { ClipboardList, CheckCircle, AlertCircle, Info } from 'lucide-react';
+import { ClipboardList, Info } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -48,24 +47,6 @@ export const ExpensesCard = ({
 
   const progressPercentage = (paidExpenses / totalExpenses) * 100;
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
-  
-  const getBadgeVariant = (percentage: number) => {
-    if (percentage >= 75) return "default";
-    if (percentage >= 50) return "secondary";
-    return "destructive";
-  };
-  
-  const getStatusIcon = (percentage: number) => {
-    if (percentage >= 75) return <CheckCircle className="h-4 w-4 text-green-500" />;
-    if (percentage >= 50) return <Info className="h-4 w-4 text-amber-500" />;
-    return <AlertCircle className="h-4 w-4 text-red-500" />;
-  };
-  
-  const getStatusText = (percentage: number) => {
-    if (percentage >= 75) return "Presque terminé";
-    if (percentage >= 50) return "En cours";
-    return "À venir";
-  };
 
   return (
     <motion.div
@@ -84,21 +65,14 @@ export const ExpensesCard = ({
               <ClipboardList className="h-6 w-6 text-blue-500" />
               Charges
             </CardTitle>
-          {/*  <Badge 
-              variant={getBadgeVariant(progressPercentage)} 
-              className="px-3 py-1 flex items-center gap-1"
-            >
-              {getStatusIcon(progressPercentage)}
-              <span>{getStatusText(progressPercentage)}</span>
-            </Badge> */}
           </div>
           <CardDescription>Du mois de {currentMonthName}</CardDescription>
         </CardHeader>
         <CardContent className="pb-4">
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
               <motion.p 
-                className="text-xl font-bold leading-none text-gray-800"
+                className="text-xl font-bold leading-none text-gray-800 w-1/3"
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
@@ -108,16 +82,12 @@ export const ExpensesCard = ({
               
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <motion.div 
-                    className="flex items-center gap-2 bg-white p-2 rounded-full shadow-sm cursor-pointer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
+                  <div className="w-2/3">
                     <Progress 
                       value={progressPercentage} 
-                      className="w-16 h-2"
+                      className="h-2"
                     />
-                  </motion.div>
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="flex items-center gap-1">
