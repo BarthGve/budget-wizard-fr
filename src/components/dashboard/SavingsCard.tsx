@@ -74,18 +74,16 @@ export const SavingsCard = memo(({
                     <Info className="h-4 w-4" />
                     {Math.round(progressPercentage)}% de l'objectif atteint
                   </p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-            
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Cible : {Math.round(savingsGoal).toLocaleString('fr-FR')} €</span>
-              <span>
+                  <span>
                 Reste : <span className={`font-medium ${isGoalReached ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}>
                   {remainingAmount.toLocaleString('fr-FR')} €
                 </span>
               </span>
+                </TooltipContent>
+              </Tooltip>
             </div>
+            
+            
           </div>
         </CardContent>
       </Card>
