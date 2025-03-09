@@ -7,6 +7,7 @@ import { RecurringExpensesSummaryCards } from "../RecurringExpensesSummaryCards"
 import { itemVariants } from "../animations/AnimationVariants";
 import { RecurringExpensesHeader } from "../RecurringExpensesHeader";
 import { MutableRefObject } from "react";
+import { RecurringExpensesCategoryChart } from "../RecurringExpensesCategoryChart";
 
 interface ExpenseSectionsProps {
   recurringExpenses: RecurringExpense[];
@@ -53,6 +54,12 @@ export const ExpenseSections = ({
           selectedPeriod={selectedPeriod}
         />
       </div>
+
+      {/* Ajout du graphique de catégories */}
+      <RecurringExpensesCategoryChart 
+        expenses={recurringExpenses} 
+        selectedPeriod={selectedPeriod} 
+      />
 
       <motion.div 
         className="w-full overflow-hidden"
