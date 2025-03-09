@@ -1,11 +1,12 @@
 
 import * as React from "react";
-import { PiggyBank } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { PiggyBank } from "lucide-react";
 
 interface MonthlySaving {
   id: string;
@@ -18,7 +19,8 @@ interface SavingsPieChartProps {
   totalSavings: number;
 }
 
-const COLORS = ['#9b87f5', '#7E69AB', '#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#8E9196'];
+// Palette de couleurs verte pour l'épargne
+const COLORS = ['#22c55e', '#16a34a', '#15803d', '#166534', '#14532d', '#10b981', '#34d399'];
 
 export const SavingsPieChart = ({
   monthlySavings,
@@ -41,64 +43,89 @@ export const SavingsPieChart = ({
     }]))
   };
 
+  // Format custom pour afficher la structure de l'épargne
+  const formatSavingSummary = () => {
+    if (monthlySavings.length === 0) return "Aucune épargne programmée";
+    if (monthlySavings.length === 1) return `1 compte: ${monthlySavings[0].name}`;
+    return `${monthlySavings.length} comptes d'épargne actifs`;
+  };
+
   return (
-    <Card 
-      className="flex flex-col h-full cursor-pointer "
-      onClick={() => navigate("/savings")}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -3 }}
     >
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Epargne</CardTitle>
-        <CardDescription>Vue d'ensemble par versement</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1">
-        <ChartContainer className="mx-auto aspect-square max-h-[200px]" config={chartConfig}>
-          <PieChart>
-            <ChartTooltip cursor={false} content={({
-              active,
-              payload
-            }) => {
-              if (active && payload && payload.length) {
-                return (
-                  <div className="rounded-lg border bg-background p-2 shadow-sm">
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="font-medium">{payload[0].name}</div>
-                      <div className="text-right font-medium">
-                        {formatCurrency(payload[0].value as number)}
-                      </div>
-                    </div>
-                  </div>
-                );
-              }
-              return null;
-            }} />
-            <Pie 
-              data={chartData} 
-              dataKey="value" 
-              nameKey="name" 
-              innerRadius={60} 
-              outerRadius={80} 
-              paddingAngle={5}
-            >
-              <Label content={({
-                viewBox
-              }) => {
-                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                  return (
-                    <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                      <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-2xl font-bold">
-                        {formatCurrency(totalSavings)}
-                      </tspan>
-                      <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground text-sm">
-                        par mois
-                      </tspan>
-                    </text>
-                  );
-                }
-              }} />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+      <Card 
+        className="bg-gradient-to-br from-background to-green-50 backdrop-blur-sm shadow-lg border border-green-100 cursor-pointer h-[370px] flex flex-col"
+        onClick={() => navigate("/savings")}
+      >
+        <CardHeader className="py-4">
+          <div className="flex flex-row items-center justify-between">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <PiggyBank className="h-6 w-6 text-green-500" />
+              Épargne
+            </CardTitle>
+          </div>
+          <CardDescription>Vue d'ensemble par versement</CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1 flex flex-col justify-between pb-4">
+          <div className="mx-auto w-full h-[220px]">
+            <ChartContainer className="h-full" config={chartConfig}>
+              <PieChart>
+                <Pie 
+                  data={chartData} 
+                  dataKey="value" 
+                  nameKey="name" 
+                  innerRadius={60} 
+                  outerRadius={80} 
+                  paddingAngle={5}
+                >
+                  <Label content={({
+                    viewBox
+                  }) => {
+                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                      return (
+                        <g>
+                          <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                            <tspan x={viewBox.cx} y={viewBox.cy - 5} className="fill-foreground text-xl font-bold">
+                              {formatCurrency(totalSavings)}
+                            </tspan>
+                            <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 15} className="fill-muted-foreground text-xs">
+                              par mois
+                            </tspan>
+                          </text>
+                        </g>
+                      );
+                    }
+                  }} />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+          </div>
+          
+          <div className="mt-auto space-y-2">
+            {/* Légende simplifiée */}
+            <div className="grid grid-cols-2 gap-1 text-sm">
+              {chartData.slice(0, 4).map((item, index) => (
+                <div key={index} className="flex items-center gap-1.5">
+                  <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.fill }} />
+                  <span className="truncate" title={item.name}>
+                    {item.name.length > 10 ? `${item.name.slice(0, 10)}...` : item.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+            
+            {/* Message récapitulatif */}
+            <div className="text-xs text-muted-foreground text-center pt-1">
+              {formatSavingSummary()}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
+
