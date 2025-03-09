@@ -114,7 +114,30 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
         toast.success("Charge récurrente ajoutée avec succès");
       }
 
+      // Invalidation des requêtes pour mettre à jour les données
       queryClient.invalidateQueries({ queryKey: ["recurring-expenses"] });
+      
+      // Ajouter l'invalidation du dashboard pour mettre à jour la balance globale
+      queryClient.invalidateQueries({ 
+        queryKey: ["dashboard-data"],
+        exact: false,
+        refetchType: 'all'
+      });
+      
+      // Force refresh immédiat
+      setTimeout(() => {
+        queryClient.refetchQueries({ 
+          queryKey: ["dashboard-data"],
+          exact: false
+        });
+        
+        // Rafraîchir les crédits qui affectent le solde global
+        queryClient.refetchQueries({
+          queryKey: ["credits"],
+          exact: false
+        });
+      }, 100);
+      
       onSuccess();
       form.reset();
     } catch (error) {

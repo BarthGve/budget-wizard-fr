@@ -207,7 +207,7 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
 
       {/* Dialog pour afficher les détails */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        {selectedExpense && <RecurringExpenseDetails expense={selectedExpense} onClose={() => setShowDetailsDialog(false)} />}
+        {selectedExpense && <RecurringExpenseDetails expense={selectedExpense} />}
       </Dialog>
     </div>
   );

@@ -1,78 +1,77 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { RecurringExpense, periodicityLabels } from "./types";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { formatDebitDate } from "./utils";
-import { RecurringExpense, periodicityLabels } from "./types";
 
-interface RecurringExpenseDetailsProps {
+export interface RecurringExpenseDetailsProps {
   expense: RecurringExpense;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onClose?: () => void; // Ajouter la prop onClose comme optionnelle
 }
 
-export const RecurringExpenseDetails = ({
-  expense,
-  open,
-  onOpenChange,
-}: RecurringExpenseDetailsProps) => {
+export const RecurringExpenseDetails = ({ expense, onClose }: RecurringExpenseDetailsProps) => {
+  const formattedDate = expense.created_at 
+    ? format(new Date(expense.created_at), "dd MMMM yyyy", { locale: fr })
+    : "Date inconnue";
+
+  const getDebitInfo = () => {
+    switch (expense.periodicity) {
+      case "monthly":
+        return `Le ${expense.debit_day} de chaque mois`;
+      case "quarterly":
+        return `Le ${expense.debit_day} du mois ${expense.debit_month || 1} chaque trimestre`;
+      case "yearly":
+        return `Le ${expense.debit_day} du mois ${expense.debit_month || 1} chaque année`;
+      default:
+        return "Information non disponible";
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Détails de la charge</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            {expense.logo_url && (
-              <img
-                src={expense.logo_url}
-                alt={expense.name}
-                className="w-12 h-12 rounded-full object-contain"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder.svg";
-                }}
-              />
-            )}
-            <div>
-              <h3 className="font-semibold text-lg">{expense.name}</h3>
-              <p className="text-sm text-muted-foreground">{expense.category}</p>
-            </div>
-          </div>
+    <DialogContent className="sm:max-w-[500px]">
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-3">
+          {expense.logo_url && (
+            <img
+              src={expense.logo_url}
+              alt={expense.name}
+              className="w-8 h-8 rounded-full object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "/placeholder.svg";
+              }}
+            />
+          )}
+          {expense.name}
+        </DialogTitle>
+      </DialogHeader>
 
-          <div className="grid gap-2">
-            <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Montant</span>
-              <span className="font-medium">
-                {new Intl.NumberFormat('fr-FR', {
-                  style: 'currency',
-                  currency: 'EUR'
-                }).format(expense.amount)}
-              </span>
-            </div>
-
-            <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Périodicité</span>
-              <span className="font-medium">{periodicityLabels[expense.periodicity]}</span>
-            </div>
-
-            <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Prélèvement</span>
-              <span className="font-medium">
-                {formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}
-              </span>
-            </div>
-
-            <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Créée le</span>
-              <span className="font-medium">
-                {format(new Date(expense.created_at), 'dd MMMM yyyy', { locale: fr })}
-              </span>
-            </div>
-          </div>
+      <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="text-muted-foreground">Catégorie</div>
+          <div className="font-medium">{expense.category}</div>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="text-muted-foreground">Montant</div>
+          <div className="font-medium">{expense.amount.toLocaleString('fr-FR')} €</div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="text-muted-foreground">Périodicité</div>
+          <div className="font-medium">{periodicityLabels[expense.periodicity]}</div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="text-muted-foreground">Prélèvement</div>
+          <div className="font-medium">{getDebitInfo()}</div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="text-muted-foreground">Date d'ajout</div>
+          <div className="font-medium">{formattedDate}</div>
+        </div>
+      </div>
+    </DialogContent>
   );
 };
