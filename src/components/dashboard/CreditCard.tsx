@@ -59,7 +59,13 @@ export const CreditCard = ({
               <CreditCardIcon className="h-6 w-6 text-purple-500" />
               Crédits
             </CardTitle>
-          
+            <Badge 
+              variant={getBadgeVariant(tauxEndettement)} 
+              className="px-3 py-1 flex items-center gap-1"
+            >
+              {getStatusIcon(tauxEndettement)}
+              <span>{getStatusText(tauxEndettement)}</span>
+            </Badge>
           </div>
           <CardDescription>Total dû en {currentMonthName}</CardDescription>
         </CardHeader>
