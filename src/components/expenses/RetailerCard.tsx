@@ -126,7 +126,6 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
 
   return (
     <>
-      {/* Important: Enlevez l'animation motion.div externe et mettez-la sur la Card directement */}
       <Card 
         className={cn(
           "overflow-hidden transition-all duration-200 h-full relative",
@@ -180,8 +179,10 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
                 to={`/expenses/retailer/${retailer.id}`}
                 className={cn(
                   "text-lg font-medium transition-colors",
-                  "text-gray-800 hover:text-blue-600",
-                  "dark:text-gray-200 dark:hover:text-blue-400"
+                  // Teinte bleue pour le nom de l'enseigne
+                  "text-blue-900 hover:text-blue-600",
+                  // Dark mode
+                  "dark:text-blue-300 dark:hover:text-blue-400"
                 )}
               >
                 {retailer.name}
@@ -218,7 +219,8 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
                     transition={{ duration: 0.3 }}
                     className={cn(
                       "text-2xl font-bold",
-                      "text-gray-800 dark:text-gray-200"
+                      // Teinte bleue pour le montant
+                      "text-blue-800 dark:text-blue-200"
                     )}
                   >
                     {formatCurrency(totalCurrentPeriod)}
