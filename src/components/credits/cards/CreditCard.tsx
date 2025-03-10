@@ -1,4 +1,5 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { 
   Card,
@@ -15,8 +16,7 @@ interface CreditCardProps {
   amount: number;
   subtitle: string;
   badgeText: string;
-  colorScheme: "purple" | "green" | "blue";
-  actionMenu?: ReactNode; // Ajout du menu d'actions en option
+  colorScheme: "purple" | "green" | "blue";  // Ajout du schéma bleu
 }
 
 export const CreditCard = ({
@@ -26,11 +26,8 @@ export const CreditCard = ({
   amount,
   subtitle,
   badgeText,
-  colorScheme = "blue",
-  actionMenu
+  colorScheme = "blue"  // Par défaut bleu maintenant
 }: CreditCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
   // Choix des couleurs en fonction du schéma
   const colors = {
     purple: {
@@ -77,14 +74,12 @@ export const CreditCard = ({
     <Card 
       className={cn(
         "overflow-hidden transition-all duration-200 h-full relative",
-        "border shadow-sm",
-        isHovered && "shadow-md translate-y-[-5px]", // Animation conditionnelle
+        "border shadow-sm hover:shadow-md hover:translate-y-[-5px]",
         // Light mode - garde le fond blanc
         "bg-white",
         "border-gray-100",
         // Dark mode
-        "dark:bg-gray-800/90", 
-        isHovered && "dark:bg-gray-800/70", // Effet hover conditionnel
+        "dark:bg-gray-800/90 dark:hover:bg-gray-800/70", 
         currentColors.darkBorder
       )}
     >
@@ -95,15 +90,12 @@ export const CreditCard = ({
         "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
       )} />
         
-      {/* Padding réduit en haut: pt-4 au lieu de pt-6 */}
-      <CardHeader className="pb-2 pt-4 relative z-10">
+      <CardHeader className="pb-2 pt-6 relative z-10">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <div className={cn(
               // Common
-              "p-2",
-              // Angles plus arrondis
-              "rounded-full",
+              "p-2 rounded-lg",
               // Couleurs spécifiques
               currentColors.icon
             )}>
@@ -116,16 +108,6 @@ export const CreditCard = ({
               {title}
             </CardTitle>
           </div>
-          
-          {/* Menu d'actions qui contrôle l'effet hover */}
-          {actionMenu && (
-            <div 
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              {actionMenu}
-            </div>
-          )}
         </div>
           
         <CardDescription className={cn(
@@ -136,10 +118,10 @@ export const CreditCard = ({
         </CardDescription>
       </CardHeader>
         
-      {/* Padding réduit en bas: pb-4 au lieu de pb-6 */}
-      <CardContent className="pt-1 pb-4 relative z-10">
+      <CardContent className="pt-1 pb-6 relative z-10">
         <p className={cn(
           "text-2xl font-bold",
+          // Utilisation de la couleur amount dédiée pour le montant
           currentColors.amount
         )}>
           {amount.toLocaleString('fr-FR')} €
