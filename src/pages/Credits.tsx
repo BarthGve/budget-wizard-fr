@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -138,38 +138,37 @@ const Credits = memo(function Credits() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <div>
-            <h1 className={cn(
-              "text-3xl font-bold tracking-tight",
-              // Un dégradé de violets plus chaud et distinctif pour les crédits
-              "bg-gradient-to-r from-purple-600 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent",
-              // Ajustement pour le mode sombre
-              "dark:from-purple-400 dark:via-violet-400 dark:to-fuchsia-400"
+          <div className="flex items-center gap-3">
+            <div className={cn(
+              "p-2 rounded-lg",
+              "bg-purple-100 dark:bg-purple-900/30"
             )}>
-              Crédits
-            </h1>
-            <p className={cn(
-              "text-muted-foreground",
-              "dark:text-gray-400"
-            )}>
-              Gérez vos crédits et leurs échéances
-            </p>
+              <CreditCard className={cn("h-5 w-5", "text-purple-600 dark:text-purple-400")} />
+            </div>
+            <div>
+              <h1 className={cn(
+                "text-3xl font-bold tracking-tight",
+                "text-gray-900 dark:text-gray-50"
+              )}>
+                Crédits
+              </h1>
+              <p className={cn(
+                "text-muted-foreground",
+                "dark:text-gray-400"
+              )}>
+                Gérez vos crédits et leurs échéances
+              </p>
+            </div>
           </div>
           <CreditDialog 
             trigger={
               <Button 
+                size="sm"
                 className={cn(
-                  // Base button style
-                  "text-white font-medium shadow-sm transition-all duration-200",
-                  // Gradient background avec couleur violette dominante
-                  "bg-gradient-to-r from-purple-600 to-violet-500",
-                  // Effets hover avec dégradé légèrement plus foncé et ombre plus prononcée
-                  "hover:from-purple-700 hover:to-violet-600 hover:shadow",
-                  // Animation subtile pour le bouton
-                  "active:scale-[0.98]",
-                  // Mode sombre ajustements
-                  "dark:from-purple-500 dark:to-violet-500 dark:shadow-violet-900/20",
-                  "dark:hover:from-purple-600 dark:hover:to-violet-600"
+                  "bg-purple-600 hover:bg-purple-700",
+                  "text-white shadow-sm",
+                  "dark:bg-purple-600 dark:hover:bg-purple-700",
+                  "dark:text-white"
                 )}
               >
                 <Plus className="mr-2 h-4 w-4" />
@@ -200,9 +199,7 @@ const Credits = memo(function Credits() {
           >
             <h2 className={cn(
               "font-bold tracking-tight text-2xl mb-4",
-              // Même dégradé que le titre principal pour la cohérence
-              "bg-gradient-to-r from-purple-600 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent",
-              "dark:from-purple-400 dark:via-violet-400 dark:to-fuchsia-400"
+              "text-gray-900 dark:text-gray-50"
             )}>
               Crédits en cours
             </h2>
@@ -214,11 +211,8 @@ const Credits = memo(function Credits() {
               />
             ) : (
               <div className={cn(
-                // Design de base pour l'état vide
                 "text-center rounded-lg border p-8",
-                // Style clair
                 "bg-white border-gray-200",
-                // Style sombre
                 "dark:bg-gray-800/50 dark:border-gray-700"
               )}>
                 <h3 className={cn(
@@ -235,13 +229,13 @@ const Credits = memo(function Credits() {
                 </p>
                 <CreditDialog 
                   trigger={
-                    <Button 
+                    <Button
+                      size="sm" 
                       className={cn(
-                        "text-white font-medium shadow-sm transition-all duration-200",
-                        "bg-gradient-to-r from-purple-600 to-violet-500",
-                        "hover:from-purple-700 hover:to-violet-600 hover:shadow",
-                        "dark:from-purple-500 dark:to-violet-500",
-                        "dark:hover:from-purple-600 dark:hover:to-violet-600"
+                        "bg-purple-600 hover:bg-purple-700",
+                        "text-white shadow-sm",
+                        "dark:bg-purple-600 dark:hover:bg-purple-700",
+                        "dark:text-white"
                       )}
                     >
                       <Plus className="mr-2 h-4 w-4" />
