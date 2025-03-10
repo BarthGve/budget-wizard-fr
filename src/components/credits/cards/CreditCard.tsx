@@ -16,7 +16,7 @@ interface CreditCardProps {
   subtitle: string;
   badgeText: string;
   colorScheme: "purple" | "green" | "blue";
-  actionMenu?: ReactNode; // Ajout du menu d'actions en option
+  actionMenu?: ReactNode;
 }
 
 export const CreditCard = ({
@@ -78,13 +78,13 @@ export const CreditCard = ({
       className={cn(
         "overflow-hidden transition-all duration-200 h-full relative",
         "border shadow-sm",
-        isHovered && "shadow-md translate-y-[-5px]", // Animation conditionnelle
+        isHovered && "shadow-md translate-y-[-5px]",
         // Light mode - garde le fond blanc
         "bg-white",
         "border-gray-100",
         // Dark mode
         "dark:bg-gray-800/90", 
-        isHovered && "dark:bg-gray-800/70", // Effet hover conditionnel
+        isHovered && "dark:bg-gray-800/70",
         currentColors.darkBorder
       )}
     >
@@ -95,16 +95,13 @@ export const CreditCard = ({
         "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
       )} />
         
-      {/* Padding réduit en haut: pt-4 au lieu de pt-6 */}
-      <CardHeader className="pb-2 pt-4 relative z-10">
+      {/* Padding supprimé en haut: pt-0 au lieu de pt-4 */}
+      <CardHeader className="pb-0 pt-0 relative z-10">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <div className={cn(
-              // Common
               "p-2",
-              // Angles plus arrondis
               "rounded-full",
-              // Couleurs spécifiques
               currentColors.icon
             )}>
               {icon}
@@ -117,7 +114,6 @@ export const CreditCard = ({
             </CardTitle>
           </div>
           
-          {/* Menu d'actions qui contrôle l'effet hover */}
           {actionMenu && (
             <div 
               onMouseEnter={() => setIsHovered(true)}
@@ -136,8 +132,8 @@ export const CreditCard = ({
         </CardDescription>
       </CardHeader>
         
-      {/* Padding réduit en bas: pb-4 au lieu de pb-6 */}
-      <CardContent className="pt-1 pb-4 relative z-10">
+      {/* Padding supprimé en bas: pb-0 au lieu de pb-4 */}
+      <CardContent className="pt-1 pb-0 relative z-10">
         <p className={cn(
           "text-2xl font-bold",
           currentColors.amount
