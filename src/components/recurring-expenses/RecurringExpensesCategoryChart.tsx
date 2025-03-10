@@ -1,12 +1,14 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart as BarChartIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { RecurringExpense } from "./types";
 import { formatCurrency } from "@/utils/format";
 import { itemVariants } from "./animations/AnimationVariants";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface RecurringExpensesCategoryChartProps {
   expenses: RecurringExpense[];
@@ -14,6 +16,9 @@ interface RecurringExpensesCategoryChartProps {
 }
 
 export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: RecurringExpensesCategoryChartProps) => {
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
+  
   // État local pour le type de périodicité à afficher dans le graphique
   const [chartPeriodicity, setChartPeriodicity] = useState<"monthly" | "quarterly" | "yearly">("monthly");
   // Trackons un ID de données pour l'animation
@@ -85,11 +90,21 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     ? periodicityLabels[selectedPeriod] 
     : periodicityLabels[chartPeriodicity];
 
-  // Générer des couleurs pour les barres avec un dégradé de violet
+  // Générer des couleurs pour les barres - maintenant en bleu pour la cohérence
   const getBarColor = (index: number) => {
-    const baseColor = '#8B5CF6';
-    const lightenedColor = '#A78BFA';
-    return index === activeIndex ? baseColor : lightenedColor;
+    const baseColors = {
+      light: {
+        active: '#2563EB', // blue-600
+        inactive: '#60A5FA' // blue-400
+      },
+      dark: {
+        active: '#3B82F6', // blue-500
+        inactive: '#93C5FD' // blue-300
+      }
+    };
+    
+    const colors = isDarkMode ? baseColors.dark : baseColors.light;
+    return index === activeIndex ? colors.active : colors.inactive;
   };
 
   // Formater les pourcentages
@@ -99,25 +114,79 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
 
   return (
     <motion.div variants={itemVariants}>
-      <Card className="w-full backdrop-blur-sm bg-background/95 border border-purple-100">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-xl font-semibold flex items-center gap-2">
-            <BarChartIcon className="h-6 w-6 text-purple-500" />
-            Dépenses par catégorie
-          </CardTitle>
+      <Card className={cn(
+        "w-full relative overflow-hidden",
+        "border shadow-sm",
+        // Light mode
+        "bg-white border-blue-100",
+        // Dark mode
+        "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10"
+      )}>
+        <div className={cn(
+          "absolute inset-0 opacity-5",
+          // Light mode
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+          // Dark mode
+          "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+        )} />
+        
+        <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+          <div>
+            <CardTitle className={cn(
+              "text-xl font-semibold flex items-center gap-2",
+              // Light mode
+              "text-blue-700",
+              // Dark mode
+              "dark:text-blue-300"
+            )}>
+              <div className={cn(
+                "p-1.5 rounded",
+                // Light mode
+                "bg-blue-100",
+                // Dark mode
+                "dark:bg-blue-800/40"
+              )}>
+                <BarChartIcon className={cn(
+                  "h-5 w-5",
+                  // Light mode
+                  "text-blue-600",
+                  // Dark mode
+                  "dark:text-blue-400"
+                )} />
+              </div>
+              Dépenses par catégorie
+            </CardTitle>
+            <CardDescription className={cn(
+              "mt-1 text-sm",
+              // Light mode
+              "text-blue-600/80",
+              // Dark mode
+              "dark:text-blue-400/90"
+            )}>
+              Répartition des charges {selectedPeriod ? periodicityLabels[selectedPeriod].toLowerCase() : chartPeriodicity === "monthly" ? "mensuelles" : chartPeriodicity === "quarterly" ? "trimestrielles" : "annuelles"}
+            </CardDescription>
+          </div>
+          
           <Button
             variant="outline"
             size="sm"
             onClick={handlePeriodicityChange}
             disabled={!!selectedPeriod}
-            className="flex items-center gap-1 hover:bg-purple-50 transition-colors"
+            className={cn(
+              "flex items-center gap-1 transition-colors font-medium",
+              // Light mode
+              "border-blue-200 hover:bg-blue-50 text-blue-700",
+              // Dark mode
+              "dark:border-blue-800 dark:hover:bg-blue-900/30 dark:text-blue-300"
+            )}
           >
             <ChevronLeft className="h-4 w-4" />
             {buttonText}
             <ChevronRight className="h-4 w-4" />
           </Button>
         </CardHeader>
-        <CardContent className="px-2">
+        
+        <CardContent className="px-2 pb-6 relative z-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={`chart-${dataVersion}-${selectedPeriod || chartPeriodicity}`}
@@ -146,6 +215,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                         tickFormatter={(value) => formatCurrency(value)} 
                         axisLine={false}
                         tickLine={false}
+                        tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
                       />
                       <YAxis 
                         type="category" 
@@ -156,6 +226,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                         }
                         axisLine={false}
                         tickLine={false}
+                        tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
                       />
                       <Tooltip 
                         formatter={(value) => [
@@ -164,10 +235,11 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                         ]}
                         labelFormatter={(label) => `Catégorie: ${label}`}
                         contentStyle={{
-                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                          border: '1px solid #f3f4f6'
+                          border: isDarkMode ? '1px solid #1e40af' : '1px solid #bfdbfe',
+                          color: isDarkMode ? '#bfdbfe' : '#1e40af'
                         }}
                       />
                       <Bar 
@@ -188,12 +260,22 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                  <div className={cn(
+                    "h-full flex items-center justify-center",
+                    // Light mode
+                    "text-blue-500/70",
+                    // Dark mode
+                    "dark:text-blue-400/70"
+                  )}>
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.3 }}
+                      className="text-center"
                     >
+                      <div className="mb-2">
+                        <BarChartIcon className="h-12 w-12 mx-auto opacity-30" />
+                      </div>
                       Aucune donnée disponible pour cette période
                     </motion.div>
                   </div>
