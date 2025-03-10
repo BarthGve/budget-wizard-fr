@@ -1,83 +1,57 @@
 
-import { motion } from "framer-motion";
+import { appConfig } from "@/config/app.config";
 
-interface Technology {
+interface TechStackItem {
   icon: string;
   name: string;
 }
 
 interface TechStackProps {
-  technologies: Technology[];
+  technologies: TechStackItem[];
   appVersion?: string;
 }
 
-export const TechStack = ({ technologies = [], appVersion = "1.0.0" }: TechStackProps) => {
-  // S'assurer que technologies n'est jamais undefined
-  const safeTech = technologies || [];
-  
+export const TechStack = ({ technologies, appVersion }: TechStackProps) => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <section className="py-12 bg-gradient-to-b from-background to-background/80">
-      <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="space-y-2"
-          >
-            <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl">
-              Technologies utilisées
-            </h2>
-            <p className="max-w-[700px] text-muted-foreground">
-              BudgetWizard est construit avec des technologies modernes pour vous offrir la meilleure expérience.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-8 mt-8"
-          >
-            {safeTech.map((tech, index) => (
-              <motion.div
-                key={tech.name}
-                className="flex flex-col items-center space-y-2"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-              >
-                <div className="relative h-16 w-16 overflow-hidden">
-                  <img
-                    src={tech.icon}
-                    alt={tech.name}
-                    className="h-full w-full object-contain"
-                    onError={(e) => {
-                      // Gérer les erreurs de chargement d'image
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder.svg";
-                    }}
-                  />
-                </div>
-                <p className="text-sm font-medium">{tech.name}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="mt-12 text-xs text-muted-foreground"
-          >
-            <p>Version {appVersion || "1.0.0"}</p>
-          </motion.div>
+    <div className="py-4 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900/80 dark:to-gray-900">
+    <div className="container mx-auto px-4">
+      {/* Technologies employées */}
+      <div className="mb-6">
+      <h3 className="text-sm font-medium text-gray-400 dark:text-gray-500 mb-6 text-center">
+  <span className="inline-block grayscale opacity-60">🚀</span> Propulsé par
+</h3>
+        <div className="flex flex-wrap gap-8 justify-center max-w-3xl mx-auto">
+          {technologies.map((tech, index) => (
+            <div key={index} className="group flex flex-col items-center transition-all duration-300">
+              <div className="h-10 w-10 flex items-center justify-center mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-2 group-hover:shadow-md transition-all">
+                <img
+                  src={tech.icon}
+                  alt={tech.name}
+                  className="max-h-6 max-w-6 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all"
+                />
+              </div>
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary-foreground transition-colors">
+                {tech.name}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
-    </section>
+      
+      {/* Divider */}
+      <div className="max-w-4xl mx-auto border-t border-gray-200 dark:border-gray-800 mb-2"></div>
+      
+      {/* Copyright */}
+      <div className="text-center">
+        <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
+          <span className="font-medium">{appConfig.name}</span>
+          <span className="text-xs bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded-full">v{appVersion || appConfig.version}</span>
+          <span>© {currentYear}</span>
+        </p>
+      </div>
+    </div>
+  </div>
   );
 };

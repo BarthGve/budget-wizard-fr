@@ -1,100 +1,61 @@
 
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { UserPlus } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface HeroProps {
   title: string;
   description: string;
   registerButtonText: string;
-  isLoaded?: boolean;
+  isLoaded: boolean;
 }
 
-export const Hero = ({
-  title,
-  description,
-  registerButtonText,
-  isLoaded = true
-}: HeroProps) => {
-  const navigate = useNavigate();
-
-  // Protéger contre les valeurs undefined
-  const safeTitle = title || "Bienvenue sur BudgetWizard";
-  const safeDescription = description || "Gérez vos finances personnelles avec facilité";
-  const safeButtonText = registerButtonText || "S'inscrire";
-
+export const Hero = ({ title, description, registerButtonText, isLoaded }: HeroProps) => {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 relative">
-      <div className="container px-4 md:px-6">
-        <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-          <div className="flex flex-col justify-center space-y-4">
-            <div className="space-y-2">
-              <motion.h1
-                className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
-                transition={{ duration: 0.5 }}
-              >
-                {safeTitle}
-              </motion.h1>
-              <motion.p
-                className="max-w-[600px] text-muted-foreground md:text-xl"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
-                {safeDescription}
-              </motion.p>
-            </div>
-            <motion.div
-              className="flex flex-col gap-2 min-[400px]:flex-row"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+    <div className="container mx-auto px-4 pt-32 pb-24">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className={`space-y-8 transform transition-all duration-700 ${
+          isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+        }`}>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+            <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              {title}
+            </span>
+          </h1>
+          <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
+            {description}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <Button
+              size="lg"
+              className="group text-lg px-8 py-6 shadow-lg hover:shadow-primary/20"
+              asChild
             >
-              <Button 
-                size="lg"
-                onClick={() => navigate("/register")}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                {safeButtonText}
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={() => navigate("/login")}
-              >
-                Se connecter
-              </Button>
-            </motion.div>
+              <Link to="/register">
+                <UserPlus className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
+                {registerButtonText}
+              </Link>
+            </Button>
           </div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 0.9 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="mx-auto aspect-video overflow-hidden rounded-xl border bg-background object-cover shadow-xl sm:w-full lg:order-last"
-          >
+        </div>
+
+        <div className={`transform-fix transform transition-all duration-1000 ${
+          isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+        }`}>
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-3xl blur-3xl" />
             <img
               src="/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.avif"
-              width={550}
-              height={310}
-              alt="BudgetWizard Screenshot"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // Gérer les erreurs de chargement d'image
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
+              alt="Budget Wizard"
+              className="relative w-full h-auto max-w-2xl mx-auto transform-fix hover:scale-105 transition-transform duration-500"
+              style={{
+                WebkitBackfaceVisibility: 'hidden',
+                backfaceVisibility: 'hidden'
               }}
             />
-          </motion.div>
+          </div>
         </div>
       </div>
-      <motion.div
-        className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] dark:bg-black dark:bg-[linear-gradient(to_right,#1a1a1a_1px,transparent_1px),linear-gradient(to_bottom,#1a1a1a_1px,transparent_1px)]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isLoaded ? 0.7 : 0 }}
-        transition={{ duration: 1 }}
-      />
-    </section>
+    </div>
   );
 };

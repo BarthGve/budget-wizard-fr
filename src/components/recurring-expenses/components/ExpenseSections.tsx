@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { RecurringExpense } from "../types";
 import { RecurringExpenseTable } from "../RecurringExpenseTable";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
-import { YearlyTotalCard } from "../RecurringExpensesSummaryCards"; // Importation corrigée
+import { RecurringExpensesSummaryCards } from "../RecurringExpensesSummaryCards";
 import { itemVariants } from "../animations/AnimationVariants";
 import { RecurringExpensesHeader } from "../RecurringExpensesHeader";
 import { MutableRefObject } from "react";
@@ -37,13 +37,6 @@ export const ExpenseSections = ({
     ? recurringExpenses.filter(expense => expense.periodicity === selectedPeriod)
     : recurringExpenses;
 
-  // Créer les données pour YearlyTotalCard
-  const allExpensesWithDates = recurringExpenses.map(expense => ({
-    id: expense.id,
-    date: expense.created_at,
-    amount: expense.amount
-  }));
-
   return (
     <>
       <RecurringExpensesHeader />
@@ -53,12 +46,12 @@ export const ExpenseSections = ({
       </motion.div>
 
       <div ref={cardsRef}>
-        {/* Utilisation du composant YearlyTotalCard à la place de RecurringExpensesSummaryCards */}
-        <YearlyTotalCard
-          currentYearTotal={monthlyTotal + quarterlyTotal * 3 + yearlyTotal}
-          previousYearTotal={0}
-          expenses={allExpensesWithDates}
-          viewMode="yearly"
+        <RecurringExpensesSummaryCards
+          monthlyTotal={monthlyTotal}
+          quarterlyTotal={quarterlyTotal}
+          yearlyTotal={yearlyTotal}
+          onPeriodSelect={setSelectedPeriod}
+          selectedPeriod={selectedPeriod}
         />
       </div>
 

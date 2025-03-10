@@ -1,92 +1,157 @@
 
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Star } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useCallback } from "react";
 
-interface TestimonialsProps {
-  testimonials: {
-    id: string;
-    rating: number;
-    review: string;
-    status: string;
-    profile: {
-      full_name: string;
-      avatar_url: string | null;
-    };
-  }[];
+interface TestimonialProfile {
+  full_name: string;
+  avatar_url: string;
 }
 
-export const Testimonials = ({ testimonials = [] }: TestimonialsProps) => {
-  // Protection supplémentaire contre les valeurs undefined
-  const safeTestimonials = testimonials || [];
-  
-  // Si aucun témoignage, ne pas rendre la section
-  if (!safeTestimonials.length) {
-    return null;
+interface Testimonial {
+  id: string;
+  rating: number;
+  title: string;
+  content: string;
+  created_at: string;
+  profile: TestimonialProfile;
+}
+
+interface TestimonialsProps {
+  testimonials: Testimonial[];
+}
+
+export const Testimonials = ({ testimonials }: TestimonialsProps) => {
+  const [api, setApi] = useState<any>(null);
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }).map((_, index) => (
+      <Star
+        key={index}
+        className={`h-4 w-4 ${
+          index < rating 
+            ? "fill-yellow-400 text-yellow-400" 
+            : "text-gray-300"
+        }`}
+      />
+    ));
+  };
+
+  const scrollToNext = useCallback(() => {
+    if (api) {
+      api.scrollNext();
+    }
+  }, [api]);
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCount(api.scrollSnapList().length);
+    
+    const onSelect = () => {
+      setCurrent(api.selectedScrollSnap());
+    };
+    
+    api.on("select", onSelect);
+    
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      scrollToNext();
+    }, 10000);  // Auto scroll every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [scrollToNext]);
+
+  const testimonialsChunks = [];
+  for (let i = 0; i < testimonials.length; i += 3) {
+    testimonialsChunks.push(testimonials.slice(i, i + 3));
   }
 
   return (
-    <section className="py-12 md:py-20 bg-background relative overflow-hidden">
-      <div className="container px-4 md:px-6">
-        <div className="text-center mb-12">
-          <motion.h2 
-            className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+    <div className="container mx-auto px-4 py-24">
+      <div className="relative p-8 rounded-3xl overflow-hidden bg-gradient-to-b from-primary/5 to-transparent border border-primary/20">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-20" />
+        <div className="relative">
+          <h2 className="text-3xl font-bold text-center mb-12">
+            Ce que nos utilisateurs disent de nous
+          </h2>
+          
+          <Carousel 
+            setApi={setApi}
+            className="w-full"
+            opts={{ 
+              align: "start",
+              loop: true
+            }}
           >
-            Ce que nos utilisateurs disent
-          </motion.h2>
-          <motion.p 
-            className="mt-4 text-muted-foreground"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            Découvrez l'expérience de nos utilisateurs avec BudgetWizard
-          </motion.p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {safeTestimonials.map((testimonial, index) => (
-            <motion.div
-              key={testimonial.id}
-              className={cn(
-                "bg-card p-6 rounded-xl border shadow-sm",
-                "hover:shadow-md transition-shadow duration-300"
-              )}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <div className="flex items-center mb-4">
-                <Avatar className="h-10 w-10 mr-3">
-                  <AvatarImage src={testimonial.profile?.avatar_url || ""} alt={testimonial.profile?.full_name || "Utilisateur"} />
-                  <AvatarFallback>{testimonial.profile?.full_name?.charAt(0) || "U"}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">{testimonial.profile?.full_name || "Utilisateur"}</p>
-                  <div className="flex items-center">
-                    {Array.from({ length: testimonial.rating || 0 }).map((_, i) => (
-                      <svg
-                        key={i}
-                        className="w-4 h-4 text-yellow-500 fill-current"
-                        viewBox="0 0 24 24"
+            <CarouselContent>
+              {testimonialsChunks.map((chunk, index) => (
+                <CarouselItem key={index} className="md:basis-full">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {chunk.map((testimonial) => (
+                      <div
+                        key={testimonial.id}
+                        className="bg-white/5 p-6 rounded-xl backdrop-blur-sm border border-primary/10"
                       >
-                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                      </svg>
+                        <div className="flex items-start gap-4 mb-4">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage src={testimonial.profile.avatar_url} />
+                            <AvatarFallback>
+                              {testimonial.profile.full_name?.[0]?.toUpperCase() || "?"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-semibold">
+                              {testimonial.profile.full_name}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {format(new Date(testimonial.created_at), 'PP', { locale: fr })}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex space-x-1 mb-3">
+                          {renderStars(testimonial.rating)}
+                        </div>
+                        <p className="text-lg font-medium mb-2">{testimonial.title}</p>
+                        <p className="text-muted-foreground">
+                          {testimonial.content}
+                        </p>
+                      </div>
                     ))}
                   </div>
-                </div>
-              </div>
-              <p className="text-muted-foreground">{testimonial.review || ""}</p>
-            </motion.div>
-          ))}
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex justify-center gap-2 mt-8">
+              {Array.from({ length: count }).map((_, i) => (
+                <button
+                  key={i}
+                  className={`h-2 w-2 rounded-full ${
+                    current === i ? "bg-primary" : "bg-primary/20"
+                  }`}
+                  onClick={() => api?.scrollTo(i)}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+            <div className="hidden md:flex">
+              <CarouselPrevious />
+              <CarouselNext />
+            </div>
+          </Carousel>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
