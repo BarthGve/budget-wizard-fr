@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard as CreditCardIcon, AlertCircle, CheckCircle, Info } from 'lucide-react';
@@ -34,12 +35,6 @@ export const CreditCard = ({
     return <AlertCircle className="h-4 w-4 text-red-500 dark:text-red-400" />;
   };
   
-  const getStatusText = (taux: number) => {
-    if (taux < 30) return "Sain";
-    if (taux < 40) return "Attention";
-    return "Critique";
-  };
-  
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
   
   return (
@@ -51,9 +46,9 @@ export const CreditCard = ({
     >
       <Card
         className={cn(
-          "backdrop-blur-sm cursor-pointer transition-all duration-300 hover:shadow-xl",
+          "backdrop-blur-sm cursor-pointer transition-all duration-300 hover:shadow-md",
           // Light mode styles
-          "bg-gradient-to-br from-background to-purple-50 shadow-lg border border-purple-100",
+          "bg-gradient-to-br from-white to-purple-50 shadow-sm border border-purple-100",
           // Dark mode styles
           "dark:bg-gradient-to-br dark:from-gray-900 dark:to-purple-950 dark:border-purple-900/50 dark:shadow-purple-900/10"
         )}
@@ -61,7 +56,7 @@ export const CreditCard = ({
       >
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
                 "bg-purple-100 text-purple-600", // Light mode
@@ -69,12 +64,12 @@ export const CreditCard = ({
               )}>
                 <CreditCardIcon className="h-5 w-5" />
               </div>
-              <span className="dark:text-white">Crédits</span>
+              <span className="text-gray-800 dark:text-white">Crédits</span>
             </CardTitle>
             <Badge 
               variant={getBadgeVariant(tauxEndettement)} 
               className={cn(
-                "bg-purple-400 px-3 py-1 flex items-center gap-1",
+                "bg-purple-500 px-3 py-1 flex items-center gap-1",
                 // Améliorer la visibilité des badges en dark mode
                 "dark:bg-opacity-90 dark:font-medium"
               )}

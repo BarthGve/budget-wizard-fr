@@ -1,48 +1,42 @@
 
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { CreditDialog } from "../CreditDialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const NoActiveCredits = () => {
   return (
-    <div className={cn(
-      // Design de base pour l'état vide
-      "text-center rounded-lg border p-8",
-      // Style clair
-      "bg-white border-gray-200",
-      // Style sombre
-      "dark:bg-gray-800/50 dark:border-gray-700"
+    <Card className={cn(
+      "border shadow-sm overflow-hidden",
+      // Light mode
+      "bg-white border-purple-100", 
+      // Dark mode
+      "dark:bg-gray-800/90 dark:border-purple-800/50"
     )}>
-      <h3 className={cn(
-        "text-lg font-medium mb-2",
-        "text-gray-800 dark:text-gray-200"
-      )}>
-        Aucun crédit actif
-      </h3>
-      <p className={cn(
-        "text-sm mb-6 max-w-md mx-auto",
-        "text-gray-600 dark:text-gray-400"
-      )}>
-        Vous n'avez pas encore de crédit en cours. Ajoutez votre premier crédit pour commencer à suivre vos remboursements.
-      </p>
-      <CreditDialog 
-        trigger={
-          <Button 
-            className={cn(
-              "text-white font-medium shadow-sm transition-all duration-200",
-              "bg-gradient-to-r from-purple-600 to-violet-500",
-              "hover:from-purple-700 hover:to-violet-600 hover:shadow",
-              "dark:from-purple-500 dark:to-violet-500",
-              "dark:hover:from-purple-600 dark:hover:to-violet-600"
-            )}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Ajouter votre premier crédit
-          </Button>
-        } 
-      />
-    </div>
+      <CardContent className="py-12">
+        <div className={cn(
+          "flex flex-col items-center justify-center gap-4 text-center",
+          // Light mode
+          "text-purple-500/80",
+          // Dark mode
+          "dark:text-purple-400/80"
+        )}>
+          <CreditCard className="h-12 w-12 opacity-40" />
+          <div className="space-y-2">
+            <h3 className={cn(
+              "font-semibold text-lg",
+              // Light mode
+              "text-purple-700",
+              // Dark mode
+              "dark:text-purple-300"
+            )}>
+              Aucun crédit actif
+            </h3>
+            <p className="max-w-md text-sm text-gray-500 dark:text-gray-400">
+              Vous n'avez pas encore de crédits actifs. Commencez par ajouter un nouveau crédit.
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

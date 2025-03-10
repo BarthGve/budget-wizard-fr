@@ -1,3 +1,4 @@
+
 import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,11 +20,11 @@ interface CreditsPieChartProps {
   totalMensualites: number;
 }
 
-// Palette de couleurs plus harmonieuse avec le thème violet primaire
-const COLORS = ['#9b87f5', '#a78bfa', '#8B5CF6', '#7C3AED', '#6D28D9', '#5b21b6', '#4c1d95'];
+// Palette de couleurs adaptée du violet au pourpre
+const COLORS = ['#c4b5fd', '#a78bfa', '#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6', '#4c1d95'];
 
-// Couleurs pour dark mode - légèrement plus lumineuses pour meilleure visibilité
-const DARK_COLORS = ['#b39dff', '#b69eff', '#9d78ff', '#8b52ff', '#7d3fef', '#6d32d9', '#5d29b6'];
+// Couleurs pour dark mode - légèrement plus lumineuses
+const DARK_COLORS = ['#ddd6fe', '#c4b5fd', '#a78bfa', '#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6'];
 
 // Composant personnalisé pour le tooltip
 const CustomTooltip = ({ active, payload }: any) => {
@@ -52,7 +53,7 @@ export const CreditsPieChart = ({
       const today = new Date();
       const lastPaymentDate = new Date(credit.date_derniere_mensualite);
       const isInCurrentMonth = lastPaymentDate.getMonth() === today.getMonth() && 
-                             lastPaymentDate.getFullYear() === today.getFullYear();
+                            lastPaymentDate.getFullYear() === today.getFullYear();
       return credit.statut === 'actif' || isInCurrentMonth;
     })
     .map((credit, index) => ({
@@ -71,13 +72,6 @@ export const CreditsPieChart = ({
     }]))
   };
 
-  // Format custom pour afficher la structure des crédits
-  const formatCreditSummary = () => {
-    if (credits.length === 0) return "Aucun crédit actif";
-    if (credits.length === 1) return `1 crédit: ${credits[0].nom_credit}`;
-    return `${credits.length} crédits actifs`;
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -89,16 +83,16 @@ export const CreditsPieChart = ({
       <Card 
         className={cn(
           "cursor-pointer h-[320px] flex flex-col transition-all duration-300",
-          // Light mode - fond blanc avec effet d'ombre élégant
-          "bg-white border border-gray-200/60 shadow-lg hover:shadow-xl",
-          // Dark mode - fond adapté avec effet d'ombre violet
+          // Light mode
+          "bg-white border border-purple-100/60 shadow-sm hover:shadow-md",
+          // Dark mode
           "dark:bg-gray-900/90 dark:border-purple-900/30 dark:shadow-purple-900/20 dark:hover:shadow-purple-800/30"
         )}
         onClick={() => navigate("/credits")}
       >
         <CardHeader className="py-3 pb-0">
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-xl flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-1.5 rounded-full",
                 "bg-purple-100 text-purple-600", // Light mode
@@ -106,10 +100,10 @@ export const CreditsPieChart = ({
               )}>
                 <CreditCard className="h-4 w-4" />
               </div>
-              <span className="dark:text-white">Crédits</span>
+              <span className="text-gray-800 dark:text-white">Répartition</span>
             </CardTitle>
           </div>
-          <CardDescription className="text-sm dark:text-gray-400">Vue d'ensemble des mensualités</CardDescription>
+          <CardDescription className="text-sm text-gray-500 dark:text-gray-400">Vue d'ensemble des mensualités</CardDescription>
         </CardHeader>
         
         <CardContent className="flex-1 flex items-center justify-center p-0 w-full">
@@ -122,8 +116,8 @@ export const CreditsPieChart = ({
                   data={chartData} 
                   dataKey="value" 
                   nameKey="name" 
-                  cx="50%" /* Centrage exact horizontal */
-                  cy="50%" /* Centrage exact vertical */
+                  cx="50%" 
+                  cy="50%" 
                   innerRadius={65} 
                   outerRadius={90}
                   paddingAngle={4}
