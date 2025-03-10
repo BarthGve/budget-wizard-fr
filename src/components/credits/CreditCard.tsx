@@ -45,7 +45,7 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
           "dark:bg-gray-800/90 dark:border-purple-800/40 dark:hover:border-purple-700/60"
         )}
       >
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between p-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between ">
           <CreditCardInfo credit={credit} index={index} />
           <CreditCardDetails credit={credit} index={index} />
           <motion.div 
