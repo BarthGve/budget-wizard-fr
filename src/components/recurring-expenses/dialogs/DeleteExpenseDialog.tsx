@@ -6,12 +6,14 @@ interface DeleteExpenseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirmDelete: () => Promise<void>;
+  expenseName?: string; // Ajout de la propriété expenseName optionnelle
 }
 
 export const DeleteExpenseDialog = ({ 
   open, 
   onOpenChange, 
-  onConfirmDelete 
+  onConfirmDelete,
+  expenseName
 }: DeleteExpenseDialogProps) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -19,7 +21,7 @@ export const DeleteExpenseDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Supprimer la charge</AlertDialogTitle>
           <AlertDialogDescription>
-            Êtes-vous sûr de vouloir supprimer cette charge ? Cette action ne peut pas être annulée.
+            Êtes-vous sûr de vouloir supprimer {expenseName ? `la charge "${expenseName}"` : "cette charge"} ? Cette action ne peut pas être annulée.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
