@@ -14,7 +14,7 @@ import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner
 import StyledLoader from "@/components/ui/StyledLoader";
 import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
-import { ReceiptText } from "lucide-react";
+import { ShoppingBasket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 
@@ -184,7 +184,7 @@ const Expenses = memo(function Expenses() {
                   "dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-cyan-800/30 dark:shadow-blue-900/10"
                 )}
               >
-                <ReceiptText className={cn(
+                <ShoppingBasket className={cn(
                   "h-6 w-6",
                   "text-blue-600",
                   "dark:text-blue-400"

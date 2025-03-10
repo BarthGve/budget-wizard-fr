@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar } from "lucide-react";
+import { Plus, ClipboardList } from "lucide-react";
 import { motion } from "framer-motion";
 import { RecurringExpenseDialog } from "@/components/recurring-expenses/RecurringExpenseDialog";
 import { useTheme } from "next-themes";
@@ -33,7 +33,7 @@ export const RecurringExpensesHeader = () => {
             "dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 dark:shadow-blue-900/10"
           )}
         >
-          <Calendar className={cn(
+          <ClipboardList className={cn(
             "h-6 w-6",
             "text-blue-600",
             "dark:text-blue-400"
