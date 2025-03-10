@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ClipboardList, Info } from 'lucide-react';
@@ -117,7 +118,6 @@ export const ExpensesCard = ({
                         // Dark mode - progress background
                         "dark:bg-blue-950/70"
                       )}
-                      // On supprime les variables CSS personnalisées ici
                       indicatorClassName={cn(
                         // Définit explicitement une couleur bleue pour l'indicateur de progression
                         "bg-blue-500", 
