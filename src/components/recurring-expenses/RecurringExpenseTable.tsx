@@ -155,17 +155,17 @@ export const RecurringExpenseTable = ({ expenses, onDeleteExpense }: RecurringEx
             />
           </div>
           
-          <TableFilters
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            categoryFilter={categoryFilter}
-            onCategoryFilterChange={setCategoryFilter}
-            uniqueCategories={uniqueCategories}
-          />
-          
-          <div className="flex justify-start items-center mt-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <TableFilters
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              categoryFilter={categoryFilter}
+              onCategoryFilterChange={setCategoryFilter}
+              uniqueCategories={uniqueCategories}
+            />
+            
             <div className={cn(
-              "text-sm px-2 py-1 rounded-md",
+              "text-sm px-2.5 py-1.5 rounded-md whitespace-nowrap",
               // Light mode
               "bg-blue-100/70 text-blue-700",
               // Dark mode
