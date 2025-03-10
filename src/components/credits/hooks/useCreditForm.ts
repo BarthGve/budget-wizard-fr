@@ -77,14 +77,13 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       // Calculer la date de dernière mensualité
       const firstPaymentDate = new Date(values.date_premiere_mensualite);
       // Soustraction de 1 car la première mensualité est déjà comptée
-      let lastPaymentDate = addMonths(firstPaymentDate, Number(values.months_count) - 1);
+      const lastPaymentDate = addMonths(firstPaymentDate, Number(values.months_count) - 1);
       
       // Vérifier si la date de dernière mensualité est dans le futur
-      const today = new Date();
       if (!isFuture(lastPaymentDate)) {
-        // Si non, ajuster la date pour qu'elle soit au moins égale à demain
-        lastPaymentDate = addDays(today, 1);
-        console.log("Date de dernière mensualité ajustée au futur:", lastPaymentDate);
+        // Au lieu d'ajuster silencieusement la date, afficher un message d'erreur
+        toast.error("La date de dernière mensualité doit être dans le futur. Veuillez augmenter le nombre de mensualités ou choisir une date de première mensualité plus récente.");
+        return; // Arrêter l'exécution de la fonction pour ne pas soumettre le formulaire
       }
       
       const formattedLastPaymentDate = format(lastPaymentDate, "yyyy-MM-dd");
