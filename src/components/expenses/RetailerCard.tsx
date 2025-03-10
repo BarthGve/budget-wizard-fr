@@ -194,8 +194,10 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
               size="sm"
               className={cn(
                 "rounded-full h-8 w-8 p-0",
-                "bg-gray-100 text-gray-700 hover:bg-gray-200",
-                "dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                // Nouvelles couleurs bleues pour le bouton
+                "bg-blue-100 text-blue-700 hover:bg-blue-200",
+                // Dark mode
+                "dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/50"
               )}
               onClick={() => setAddDialogOpen(true)}
             >
