@@ -21,48 +21,68 @@ const Landing = () => {
   useEffect(() => {
     setIsLoaded(true);
     fetchTestimonials();
-    initLogo3D();
+    
+    // Protection contre les problèmes potentiels avec Three.js
+    try {
+      initLogo3D();
+    } catch (error) {
+      console.error("Erreur lors de l'initialisation du logo 3D:", error);
+    }
   }, []);
 
   const initLogo3D = () => {
+    // Vérification supplémentaire pour éviter les erreurs undefined
     if (!logoRef.current || !containerRef.current) return;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setSize(80, 80);
+    try {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ alpha: true });
+      renderer.setSize(80, 80);
 
-    const texture = new THREE.TextureLoader().load(logoRef.current.src);
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ map: texture });
-    const cube = new THREE.Mesh(geometry, material);
-    
-    scene.add(cube);
-    camera.position.z = 2;
+      const texture = new THREE.TextureLoader().load(logoRef.current.src);
+      const geometry = new THREE.BoxGeometry(1, 1, 1);
+      const material = new THREE.MeshBasicMaterial({ map: texture });
+      const cube = new THREE.Mesh(geometry, material);
+      
+      scene.add(cube);
+      camera.position.z = 2;
 
-    containerRef.current.appendChild(renderer.domElement);
+      containerRef.current.appendChild(renderer.domElement);
 
-    const animate = () => {
-      requestAnimationFrame(animate);
-      cube.rotation.y += 0.01;
-      renderer.render(scene, camera);
-    };
+      const animate = () => {
+        requestAnimationFrame(animate);
+        if (cube) {
+          cube.rotation.y += 0.01;
+        }
+        renderer.render(scene, camera);
+      };
 
-    animate();
+      animate();
+    } catch (error) {
+      console.error("Erreur dans l'animation 3D:", error);
+    }
   };
 
   const fetchTestimonials = async () => {
-    const { data, error } = await supabase
-      .from('feedbacks')
-      .select(`
-        *,
-        profile:profiles(full_name, avatar_url)
-      `)
-      .eq('status', 'published')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('feedbacks')
+        .select(`
+          *,
+          profile:profiles(full_name, avatar_url)
+        `)
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      setTestimonials(data);
+      if (!error && data) {
+        setTestimonials(data || []);
+      } else if (error) {
+        console.error("Erreur lors du chargement des témoignages:", error);
+      }
+    } catch (error) {
+      console.error("Exception lors du chargement des témoignages:", error);
+      setTestimonials([]);
     }
   };
 
@@ -73,7 +93,7 @@ const Landing = () => {
     { icon: "https://cdn.worldvectorlogo.com/logos/tailwindcss.svg", name: "Tailwind CSS" },
     { icon: "https://app.supabase.com/img/supabase-logo.svg", name: "Supabase" },
     { icon: "https://ui.shadcn.com/favicon.ico", name: "shadcn/ui" },
-   ];
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-background">
@@ -91,12 +111,18 @@ const Landing = () => {
         isLoaded={isLoaded}
       />
 
-      <Testimonials testimonials={testimonials} />
+      <Testimonials testimonials={testimonials || []} />
 
       <TechStack 
         technologies={technologies} 
         appVersion={latestVersion || appConfig.version}
       />
+
+      {/* Référence cachée pour le logo 3D */}
+      <div className="hidden">
+        <img ref={logoRef} src="/lovable-uploads/icone_lovable.jpeg" alt="Logo" />
+        <div ref={containerRef}></div>
+      </div>
     </div>
   );
 };
