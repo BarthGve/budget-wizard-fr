@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Credit } from "../types";
-import { addMonths, format } from "date-fns";
+import { addMonths, format, isFuture, addDays } from "date-fns";
 
 export const formSchema = z.object({
   nom_credit: z.string().min(1, "Le nom est requis"),
@@ -77,7 +77,16 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       // Calculer la date de dernière mensualité
       const firstPaymentDate = new Date(values.date_premiere_mensualite);
       // Soustraction de 1 car la première mensualité est déjà comptée
-      const lastPaymentDate = addMonths(firstPaymentDate, Number(values.months_count) - 1);
+      let lastPaymentDate = addMonths(firstPaymentDate, Number(values.months_count) - 1);
+      
+      // Vérifier si la date de dernière mensualité est dans le futur
+      const today = new Date();
+      if (!isFuture(lastPaymentDate)) {
+        // Si non, ajuster la date pour qu'elle soit au moins égale à demain
+        lastPaymentDate = addDays(today, 1);
+        console.log("Date de dernière mensualité ajustée au futur:", lastPaymentDate);
+      }
+      
       const formattedLastPaymentDate = format(lastPaymentDate, "yyyy-MM-dd");
 
       // Générer l'URL du logo à partir du domaine
