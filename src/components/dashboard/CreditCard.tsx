@@ -74,7 +74,7 @@ export const CreditCard = ({
             <Badge 
               variant={getBadgeVariant(tauxEndettement)} 
               className={cn(
-                "px-3 py-1 flex items-center gap-1",
+                "bg-purple-100 px-3 py-1 flex items-center gap-1",
                 // Améliorer la visibilité des badges en dark mode
                 "dark:bg-opacity-90 dark:font-medium"
               )}
