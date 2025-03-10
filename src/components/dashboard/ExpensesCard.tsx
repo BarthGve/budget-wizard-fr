@@ -110,7 +110,7 @@ export const ExpensesCard = ({
                       "opacity-0 dark:opacity-100 transition-opacity"
                     )} />
                     <Progress 
-                      value={progressPercentage}
+                      value={progressPercentage} 
                       className={cn(
                         "h-2.5 rounded-full",
                         // Light mode - progress background
