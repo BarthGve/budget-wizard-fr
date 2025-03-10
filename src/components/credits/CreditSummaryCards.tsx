@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle 
 } from "@/components/ui/card";
+import { CreditCard, Banknote } from "lucide-react";
 
 interface CreditSummaryCardsProps {
   activeCredits: any[];
@@ -74,12 +75,12 @@ export const CreditSummaryCards = memo(({
         Remboursements du mois
       </CardTitle>
       <CardDescription className="text-green-50/90 dark:text-green-200/80">
-        {monthlyStats.credits_rembourses_count} crédit(s) à échéance
+        {repaidThisMonth} crédit(s) à échéance
       </CardDescription>
     </CardHeader>
     <CardContent>
       <div className="text-2xl font-bold text-white">
-        {monthlyStats.total_mensualites_remboursees.toLocaleString('fr-FR')} €
+        {totalRepaidMensualitesThisMonth.toLocaleString('fr-FR')} €
       </div>
       <div className="text-green-50/90 dark:text-green-200/80 mt-2 flex items-center">
         <span>Mensualités échues</span>
