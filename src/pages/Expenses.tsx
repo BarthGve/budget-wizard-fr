@@ -14,11 +14,15 @@ import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner
 import StyledLoader from "@/components/ui/StyledLoader";
 import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
-import { Receipt, ReceiptText } from "lucide-react"; // Ajout d'une icône pertinente
+import { ReceiptText } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 // Utilisation de memo pour éviter les re-renders inutiles
 const Expenses = memo(function Expenses() {
   const queryClient = useQueryClient();
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
   const {
     retailers
   } = useRetailers();
@@ -172,16 +176,36 @@ const Expenses = memo(function Expenses() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
-                className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-lg shadow-sm mt-0.5"
+                className={cn(
+                  "p-2.5 rounded-lg shadow-sm mt-0.5",
+                  // Light mode
+                  "bg-gradient-to-br from-blue-100 to-cyan-50",
+                  // Dark mode
+                  "dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-cyan-800/30 dark:shadow-blue-900/10"
+                )}
               >
-                <ReceiptText className="h-6 w-6 text-blue-600" />
+                <ReceiptText className={cn(
+                  "h-6 w-6",
+                  "text-blue-600",
+                  "dark:text-blue-400"
+                )} />
               </motion.div>
             
               <div>
-                <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                <h1 className={cn(
+                  "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
+                  // Light mode gradient
+                  "bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500",
+                  // Dark mode gradient
+                  "dark:bg-gradient-to-r dark:from-blue-400 dark:via-blue-300 dark:to-cyan-400"
+                )}>
                   Dépenses
                 </h1>
-                <p className="text-muted-foreground text-sm mt-1">
+                <p className={cn(
+                  "text-sm mt-1",
+                  "text-gray-500",
+                  "dark:text-gray-400"
+                )}>
                   Suivez les dépenses que vous réalisez auprès de certaines enseignes
                 </p>
               </div>
