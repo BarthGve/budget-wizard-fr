@@ -54,25 +54,25 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
             "h-10 px-4 border transition-all duration-200 rounded-md",
             "hover:scale-[1.02] active:scale-[0.98]",
             // Light mode
-            "bg-white border-indigo-200 text-indigo-600",
-            "hover:border-indigo-300 hover:bg-indigo-50/50 hover:text-indigo-700",
+            "bg-white border-blue-200 text-blue-600",
+            "hover:border-blue-300 hover:bg-blue-50/50 hover:text-blue-700",
             // Dark mode
-            "dark:bg-gray-800 dark:border-indigo-800/60 dark:text-indigo-400",
-            "dark:hover:bg-indigo-900/20 dark:hover:border-indigo-700 dark:hover:text-indigo-300"
+            "dark:bg-gray-800 dark:border-blue-800/60 dark:text-blue-400",
+            "dark:hover:bg-blue-900/20 dark:hover:border-blue-700 dark:hover:text-blue-300"
           )}
           style={{
             boxShadow: isDarkMode
-              ? "0 2px 10px -2px rgba(79, 70, 229, 0.15)"
-              : "0 2px 10px -2px rgba(79, 70, 229, 0.1)"
+              ? "0 2px 10px -2px rgba(37, 99, 235, 0.15)"
+              : "0 2px 10px -2px rgba(37, 99, 235, 0.1)"
           }}
         >
           <div className="flex items-center gap-1.5">
             <span className={cn(
               "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
               // Light mode
-              "bg-indigo-100/80 text-indigo-600",
+              "bg-blue-100/80 text-blue-600",
               // Dark mode
-              "dark:bg-indigo-800/50 dark:text-indigo-300"
+              "dark:bg-blue-800/50 dark:text-blue-300"
             )}>
               <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
             </span>
@@ -93,8 +93,8 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
           )}
           style={{
             boxShadow: isDarkMode
-              ? "0 25px 50px -12px rgba(2, 6, 23, 0.4), 0 0 0 1px rgba(79, 70, 229, 0.1)"
-              : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(79, 70, 229, 0.1)"
+              ? "0 25px 50px -12px rgba(2, 6, 23, 0.4), 0 0 0 1px rgba(37, 99, 235, 0.1)"
+              : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)"
           }}
         >
           {/* En-tête avec dégradé subtil */}
@@ -102,18 +102,18 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
             className={cn(
               "relative overflow-hidden",
               // Light mode
-              "bg-gradient-to-br from-indigo-50 to-white",
+              "bg-gradient-to-br from-blue-50 to-white",
               // Dark mode
-              "dark:bg-gradient-to-br dark:from-indigo-900/20 dark:to-gray-800/90"
+              "dark:bg-gradient-to-br dark:from-blue-900/20 dark:to-gray-800/90"
             )}
           >
             {/* Cercle décoratif en arrière-plan */}
             <div className={cn(
               "absolute -top-24 -right-24 w-64 h-64 rounded-full opacity-20",
               // Light mode
-              "bg-gradient-to-br from-indigo-400 to-purple-500",
+              "bg-gradient-to-br from-blue-400 to-blue-600",
               // Dark mode
-              "dark:from-indigo-500 dark:to-purple-600 dark:opacity-10"
+              "dark:from-blue-500 dark:to-blue-700 dark:opacity-10"
             )} />
 
             {/* Header avec contenu amélioré */}
@@ -122,9 +122,9 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
                 <div className={cn(
                   "p-2.5 rounded-xl",
                   // Light mode
-                  "bg-indigo-100 text-indigo-600",
+                  "bg-blue-100 text-blue-600",
                   // Dark mode
-                  "dark:bg-indigo-800/40 dark:text-indigo-400"
+                  "dark:bg-blue-800/40 dark:text-blue-400"
                 )}>
                   <Receipt size={22} />
                 </div>
@@ -134,9 +134,9 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
                     className={cn(
                       "text-xl font-bold",
                       // Light mode
-                      "text-indigo-700",
+                      "text-blue-700",
                       // Dark mode
-                      "dark:text-indigo-300"
+                      "dark:text-blue-300"
                     )}
                   >
                     Ajouter une dépense
@@ -146,9 +146,9 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
                     className={cn(
                       "mt-1.5 text-sm",
                       // Light mode
-                      "text-indigo-600/70",
+                      "text-blue-600/70",
                       // Dark mode
-                      "dark:text-indigo-300/70"
+                      "dark:text-blue-300/70"
                     )}
                   >
                     Créez une nouvelle dépense en complétant le formulaire ci-dessous
@@ -162,9 +162,9 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
           <div className={cn(
             "h-px w-full",
             // Light mode
-            "bg-gradient-to-r from-transparent via-indigo-100 to-transparent",
+            "bg-gradient-to-r from-transparent via-blue-100 to-transparent",
             // Dark mode
-            "dark:from-transparent dark:via-indigo-900/30 dark:to-transparent"
+            "dark:from-transparent dark:via-blue-900/30 dark:to-transparent"
           )} />
 
           {/* Conteneur pour le formulaire */}
