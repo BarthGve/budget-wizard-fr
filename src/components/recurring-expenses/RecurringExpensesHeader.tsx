@@ -71,7 +71,7 @@ export const RecurringExpensesHeader = () => {
           trigger={
             <Button 
               className={cn(
-                "relative overflow-hidden group rounded-full pl-5 pr-6  h-auto font-medium transition-all duration-300",
+                "relative overflow-hidden group rounded-full pl-5 pr-6 py-6 h-auto font-medium transition-all duration-300",
                 // Default state
                 "border-0 shadow-lg", 
                 // Animation états
