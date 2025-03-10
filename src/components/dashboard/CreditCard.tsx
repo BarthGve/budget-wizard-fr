@@ -29,7 +29,7 @@ export const CreditCard = ({
   };
   
   const getStatusIcon = (taux: number) => {
-    if (taux < 30) return <CheckCircle className="h-4 w-4 text-white" />;
+    if (taux < 30) return <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400" />;
     if (taux < 40) return <Info className="h-4 w-4 text-amber-500 dark:text-amber-400" />;
     return <AlertCircle className="h-4 w-4 text-red-500 dark:text-red-400" />;
   };
@@ -74,7 +74,7 @@ export const CreditCard = ({
             <Badge 
               variant={getBadgeVariant(tauxEndettement)} 
               className={cn(
-                "bg-purple-400 px-3 py-1 flex items-center gap-1",
+                "px-3 py-1 flex items-center gap-1",
                 // Améliorer la visibilité des badges en dark mode
                 "dark:bg-opacity-90 dark:font-medium"
               )}

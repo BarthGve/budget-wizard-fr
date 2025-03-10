@@ -1,11 +1,12 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { TrendingDown, TrendingUp, PieChart } from "lucide-react";
+import { TrendingDown, TrendingUp, ReceiptText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/format";
-import { startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears } from "date-fns";
+import { startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears, format } from "date-fns";
 import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "next-themes";
+import { fr } from "date-fns/locale";
 
 interface YearlyTotalCardProps {
   currentYearTotal: number;
@@ -20,10 +21,8 @@ interface YearlyTotalCardProps {
 
 export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses, viewMode }: YearlyTotalCardProps) {
   const [prevAmount, setPrevAmount] = useState(0);
-  const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
   
-  const { totalAmount, percentageChange, periodLabel } = useMemo(() => {
+  const { totalAmount, percentageChange, periodLabel, periodDetail } = useMemo(() => {
     const now = new Date();
     
     if (viewMode === 'monthly') {
@@ -57,7 +56,8 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       return {
         totalAmount: monthTotal,
         percentageChange: monthPercentage,
-        periodLabel: "Mois en cours"
+        periodLabel: "Total mensuel",
+        periodDetail: format(now, 'MMMM yyyy', { locale: fr })
       };
     } else {
       // Pour la vue annuelle, utilisez les totaux déjà calculés
@@ -68,7 +68,8 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       return {
         totalAmount: currentYearTotal,
         percentageChange: yearPercentage,
-        periodLabel: "Année en cours"
+        periodLabel: "Total annuel",
+        periodDetail: format(now, 'yyyy')
       };
     }
   }, [expenses, viewMode, currentYearTotal, previousYearTotal]);
@@ -79,146 +80,70 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
   }, [totalAmount]);
 
   const isIncrease = percentageChange > 0;
-  const comparisonLabel = viewMode === 'monthly' ? "par rapport au mois précédent" : "par rapport à l'année précédente";
+  const comparisonLabel = viewMode === 'monthly' ? "vs mois précédent" : "vs année précédente";
   const hasChanged = totalAmount !== prevAmount && prevAmount !== 0;
   
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      whileHover={{ y: -3, transition: { duration: 0.2 } }}
-    >
-      <Card className={cn(
-        "overflow-hidden transition-all duration-300 hover:shadow-xl",
-        // Light mode
-        "bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 shadow-md",
-        // Dark mode
-        "dark:bg-gradient-to-br dark:from-blue-900/30 dark:to-blue-800/20 dark:border-blue-800/50 dark:shadow-blue-900/20"
-      )}>
-        <CardHeader className={cn("py-4 relative overflow-hidden")}>
-          {/* Fond légèrement décoratif */}
-          <div className={cn(
-            "absolute inset-0 opacity-10 mix-blend-multiply",
-            // Light mode
-            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
-            // Dark mode
-            "dark:bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] dark:from-blue-400 dark:via-blue-500 dark:to-transparent dark:opacity-5"
-          )} />
-          
-          <div className="flex flex-row items-center justify-between">
-            <CardTitle className={cn(
-              "text-xl flex items-center gap-2",
-              // Light mode
-              "text-blue-800",
-              // Dark mode
-              "dark:text-blue-300"
-            )}>
-              <div className={cn(
-                "p-2 rounded-full",
-                // Light mode
-                "bg-blue-100 text-blue-600",
-                // Dark mode
-                "dark:bg-blue-800/40 dark:text-blue-300"
-              )}>
-                <PieChart className="h-5 w-5" />
-              </div>
-              Total des dépenses
-            </CardTitle>
-          </div>
-          <CardDescription className={cn(
-            "font-medium", 
-            // Light mode
-            "text-blue-600/80",
-            // Dark mode
-            "dark:text-blue-400/90"
-          )}>
-            {periodLabel}
-          </CardDescription>
-        </CardHeader>
+    <Card className="overflow-hidden">
+      <div className="relative">
+        {/* Fond avec dégradé bleu */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500" />
         
-        <CardContent className="pb-5">
-          <div className="flex flex-col gap-3">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={totalAmount}
-                className={cn(
-                  "flex items-baseline",
-                  hasChanged ? "overflow-hidden" : ""
-                )}
-                initial={false}
-              >
-                <motion.p 
-                  key={`total-${totalAmount}`}
-                  className={cn(
-                    "text-3xl font-bold tracking-tight",
-                    // Light mode
-                    "text-blue-700",
-                    // Dark mode
-                    "dark:text-blue-200"
-                  )}
+        {/* Effet de grille */}
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
+        
+        {/* Effet de lumière */}
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-cyan-300 rounded-full opacity-20 blur-3xl"></div>
+        
+        {/* Contenu */}
+        <div className="relative">
+          <CardHeader className="py-4 flex flex-row items-start justify-between">
+            <div>
+              <CardTitle className="text-2xl text-white font-bold">{periodLabel}</CardTitle>
+              <CardDescription className="text-white/80 font-medium">
+                {periodDetail}
+              </CardDescription>
+            </div>
+            <div className="p-2 bg-white/10 backdrop-blur-sm rounded-lg">
+              <ReceiptText className="h-6 w-6 text-white" />
+            </div>
+          </CardHeader>
+          
+          <CardContent className="pb-6">
+            <div className="flex flex-col gap-3">
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={totalAmount}
+                  className="flex items-baseline gap-1"
                   initial={hasChanged ? { opacity: 0, y: totalAmount > prevAmount ? 20 : -20 } : false}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: totalAmount > prevAmount ? -20 : 20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {formatCurrency(totalAmount)}
-                </motion.p>
-              </motion.div>
-            </AnimatePresence>
-            
-            {(viewMode === 'yearly' && previousYearTotal > 0) || (viewMode === 'monthly' && percentageChange !== 0) ? (
-              <div className={cn(
-                "p-2.5 rounded-md flex items-center gap-2",
-                // Light mode - background
-                isIncrease ? "bg-red-50" : "bg-green-50",
-                // Dark mode - background
-                isIncrease ? "dark:bg-red-950/30" : "dark:bg-green-950/30",
-                // Border
-                isIncrease ? "border border-red-100 dark:border-red-900/40" : "border border-green-100 dark:border-green-900/40"
-              )}>
-                {isIncrease ? (
-                  <TrendingUp className={cn(
-                    "h-4 w-4",
-                    // Light mode
-                    "text-red-500",
-                    // Dark mode
-                    "dark:text-red-400"
-                  )} />
-                ) : (
-                  <TrendingDown className={cn(
-                    "h-4 w-4",
-                    // Light mode
-                    "text-green-500",
-                    // Dark mode
-                    "dark:text-green-400"
-                  )} />
-                )}
-                <div className="flex flex-col">
-                  <span className={cn(
-                    "text-sm font-semibold", 
-                    // Light mode
-                    isIncrease ? "text-red-700" : "text-green-700",
-                    // Dark mode
-                    isIncrease ? "dark:text-red-300" : "dark:text-green-300"
-                  )}>
-                    {Math.abs(percentageChange).toFixed(1)}%
+                  <span className="text-3xl font-bold text-white">
+                    {formatCurrency(totalAmount)}
                   </span>
-                  <span className={cn(
-                    "text-xs",
-                    // Light mode
-                    isIncrease ? "text-red-600/80" : "text-green-600/80",
-                    // Dark mode
-                    isIncrease ? "dark:text-red-400/90" : "dark:text-green-400/90"
+                </motion.div>
+              </AnimatePresence>
+              
+              {(viewMode === 'yearly' && previousYearTotal > 0) || (viewMode === 'monthly' && percentageChange !== 0) ? (
+                <div className="flex items-center gap-2 p-1.5 px-3 bg-white/10 backdrop-blur-sm rounded-full w-fit">
+                  {isIncrease ? (
+                    <TrendingUp className="h-4 w-4 text-red-300" />
+                  ) : (
+                    <TrendingDown className="h-4 w-4 text-green-300" />
+                  )}
+                  <span className={cn("text-sm font-medium", 
+                    isIncrease ? "text-red-300" : "text-green-300"
                   )}>
-                    {comparisonLabel}
+                    {Math.abs(percentageChange).toFixed(1)}% {comparisonLabel}
                   </span>
                 </div>
-              </div>
-            ) : null}
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+              ) : null}
+            </div>
+          </CardContent>
+        </div>
+      </div>
+    </Card>
   );
 }

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { RecurringExpense } from "../types";
 import { RecurringExpenseTable } from "../RecurringExpenseTable";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
-import { YearlyTotalCard } from "../RecurringExpensesSummaryCards";
+import { RecurringExpensesSummaryCards } from "../RecurringExpensesSummaryCards";
 import { itemVariants } from "../animations/AnimationVariants";
 import { RecurringExpensesHeader } from "../RecurringExpensesHeader";
 import { MutableRefObject } from "react";
@@ -46,12 +46,10 @@ export const ExpenseSections = ({
       </motion.div>
 
       <div ref={cardsRef}>
-        {/* Utiliser YearlyTotalCard avec les props correspondantes */}
-        <YearlyTotalCard
-          currentYearTotal={monthlyTotal}
-          previousYearTotal={0}
-          expenses={recurringExpenses}
-          viewMode="monthly"
+        <RecurringExpensesSummaryCards
+          monthlyTotal={monthlyTotal}
+          quarterlyTotal={quarterlyTotal}
+          yearlyTotal={yearlyTotal}
           onPeriodSelect={setSelectedPeriod}
           selectedPeriod={selectedPeriod}
         />

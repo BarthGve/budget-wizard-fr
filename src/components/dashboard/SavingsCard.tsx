@@ -38,7 +38,7 @@ export const SavingsCard = memo(({
     >
       <Card 
         className={cn(
-          "backdrop-blur-sm cursor-pointer hover:shadow-xl transition-all duration-300",
+          "backdrop-blur-sm cursor-pointer hover:shadow-lg transition-all duration-300",
           // Light mode styles
           "bg-gradient-to-br from-background to-green-50 border border-green-100 shadow-md",
           // Dark mode styles
@@ -68,7 +68,7 @@ export const SavingsCard = memo(({
                 className={cn(
                   "text-xl font-bold leading-none w-1/3",
                   "text-gray-800", // Light mode
-                  "dark:text-green-100" // Dark mode - légèrement teinté de vert
+                  "dark:text-gray-100" // Dark mode
                 )}
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -79,47 +79,38 @@ export const SavingsCard = memo(({
               
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="w-2/3 relative">
-                    {/* Effet de lueur subtil pour le mode sombre */}
-                    <div className={cn(
-                      "absolute inset-0 bg-green-500/10 dark:bg-green-400/5 rounded-full blur-sm",
-                      "opacity-0 dark:opacity-100 transition-opacity",
-                      isGoalReached ? "dark:bg-green-300/10" : "" // Lueur plus forte si objectif atteint
-                    )} />
-                    
+                  <div className="w-2/3">
                     <Progress 
                       value={progressPercentage} 
                       className={cn(
                         "h-2.5 rounded-full",
                         // Light mode - progress background
-                        "bg-green-100/50",
+                        "bg-gray-200",
                         // Dark mode - progress background
-                        "dark:bg-green-950/70",
-                        // Définition des couleurs pour l'indicateur via sélecteurs CSS
-                        isGoalReached 
-                          ? "[&>div]:bg-green-500 dark:[&>div]:bg-green-400" // vert plus vif si objectif atteint
-                          : "[&>div]:bg-green-400 dark:[&>div]:bg-green-500" // vert normal sinon
+                        "dark:bg-gray-800"
                       )}
+                      // La couleur de l'indicateur de progression
+                      style={{
+                        '--progress-foreground': isGoalReached 
+                          ? 'var(--green-500)' 
+                          : 'var(--green-400)'
+                      } as React.CSSProperties}
                     />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
-                  <p className="flex items-center gap-1.5 dark:text-white font-medium">
-                    <Info className="h-4 w-4 text-green-500 dark:text-green-400" />
+                <TooltipContent className="dark:bg-gray-800 dark:border-gray-700">
+                  <p className="flex items-center gap-1 dark:text-white">
+                    <Info className="h-4 w-4" />
                     {Math.round(progressPercentage)}% de l'objectif atteint
                   </p>
-                  <span className="dark:text-gray-300 mt-1 block">
-                    {isGoalReached ? (
-                      <span className="font-medium text-green-600 dark:text-green-400">
-                        Objectif atteint ! (+{Math.abs(remainingAmount).toLocaleString('fr-FR')} €)
-                      </span>
-                    ) : (
-                      <>
-                        Reste : <span className="font-medium text-red-600 dark:text-red-400">
-                          {remainingAmount.toLocaleString('fr-FR')} €
-                        </span>
-                      </>
-                    )}
+                  <span className="dark:text-gray-300">
+                    Reste : <span className={cn(
+                      "font-medium",
+                      isGoalReached ? "text-green-600" : "text-destructive",
+                      isGoalReached ? "dark:text-green-400" : "dark:text-red-400"
+                    )}>
+                      {remainingAmount.toLocaleString('fr-FR')} €
+                    </span>
                   </span>
                 </TooltipContent>
               </Tooltip>
@@ -133,3 +124,4 @@ export const SavingsCard = memo(({
 
 // Nom d'affichage pour le débogage
 SavingsCard.displayName = "SavingsCard";
+
