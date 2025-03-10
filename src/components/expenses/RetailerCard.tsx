@@ -126,158 +126,149 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
 
   return (
     <>
-      <motion.div
-        whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      >
-        <Card className={cn(
+      {/* Important: Enlevez l'animation motion.div externe et mettez-la sur la Card directement */}
+      <Card 
+        className={cn(
           "overflow-hidden transition-all duration-200 h-full relative",
-          "border shadow-sm hover:shadow-md",
-          // Light mode
-          "bg-white",
-          // Dark mode
+          "border shadow-sm hover:shadow-md hover:translate-y-[-5px]",
+          "bg-white border-gray-100",
           "dark:bg-gray-800/90 dark:hover:bg-gray-800/70 dark:border-gray-700/50"
-        )}>
-          {/* Fond radial gradient subtil */}
-          <div className={cn(
-            "absolute inset-0 opacity-3",
-            // Light mode
-            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-300 via-gray-200 to-transparent",
-            // Dark mode
-            "dark:opacity-5 dark:from-gray-500 dark:via-gray-600 dark:to-transparent"
-          )} />
-          
-          <div className="p-5 relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                {retailer.logo_url ? (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className={cn(
-                          "rounded-lg overflow-hidden border",
-                          "border-gray-200 dark:border-gray-700",
-                          "w-10 h-10 flex items-center justify-center"
-                        )}>
-                          <img 
-                            src={retailer.logo_url} 
-                            alt={retailer.name} 
-                            className="w-8 h-8 object-contain"
-                          />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{retailer.name}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ) : (
-                  <div className={cn(
-                    "p-2 rounded-lg",
-                    // Light mode
-                    "bg-gray-100 text-gray-700",
-                    // Dark mode
-                    "dark:bg-gray-800 dark:text-gray-300"
-                  )}>
-                    <Store className="h-4 w-4" />
-                  </div>
-                )}
-                
-                <Link 
-                  to={`/expenses/retailer/${retailer.id}`}
-                  className={cn(
-                    "text-lg font-semibold transition-colors",
-                    // Light mode
-                    "text-gray-800 hover:text-blue-600",
-                    // Dark mode
-                    "dark:text-gray-200 dark:hover:text-blue-400"
-                  )}
-                >
-                  {retailer.name}
-                </Link>
-              </div>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  "rounded-full h-8 w-8 p-0",
-                  "bg-gray-100 text-gray-700 hover:bg-gray-200",
-                  "dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-                )}
-                onClick={() => setAddDialogOpen(true)}
-              >
-                <PlusCircle className="h-4 w-4" />
-                <span className="sr-only">Ajouter une dépense pour {retailer.name}</span>
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              <div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {periodLabel}
-                </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={totalCurrentPeriod}
-                      initial={hasChanged ? { opacity: 0, y: hasIncreased ? 20 : -20 } : false}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: hasIncreased ? -20 : 20 }}
-                      transition={{ duration: 0.3 }}
-                      className={cn(
-                        "text-2xl font-bold",
-                        "text-gray-800 dark:text-gray-200"
-                      )}
-                    >
-                      {formatCurrency(totalCurrentPeriod)}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </div>
-              
-              {totalPreviousPeriod > 0 && (
+        )}
+      >
+        {/* Fond radial gradient ultra-subtil */}
+        <div className={cn(
+          "absolute inset-0",
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
+          "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
+        )} />
+        
+        <div className="p-5 relative z-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              {retailer.logo_url ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className={cn(
+                        "rounded-full overflow-hidden border",
+                        "border-gray-100 dark:border-gray-700",
+                        "w-10 h-10 flex items-center justify-center"
+                      )}>
+                        <img 
+                          src={retailer.logo_url} 
+                          alt={retailer.name} 
+                          className="w-9 h-9 object-contain rounded-full"
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{retailer.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
                 <div className={cn(
-                  "flex items-center gap-1.5 text-sm",
+                  "p-2 rounded-full",
+                  "bg-gray-100 text-gray-700",
+                  "dark:bg-gray-800 dark:text-gray-300"
                 )}>
-                  <div className={cn(
-                    "p-1 rounded",
-                    // Light mode - background
-                    isIncrease ? "bg-red-100" : "bg-green-100",
-                    // Dark mode - background
-                    isIncrease ? "dark:bg-red-900/30" : "dark:bg-green-900/30",
-                  )}>
-                    {isIncrease ? (
-                      <TrendingUp className={cn(
-                        "h-3 w-3",
-                        "text-red-600 dark:text-red-300"
-                      )} />
-                    ) : (
-                      <TrendingDown className={cn(
-                        "h-3 w-3",
-                        "text-green-600 dark:text-green-300"
-                      )} />
-                    )}
-                  </div>
-                  
-                  <span className={cn(
-                    "font-medium", 
-                    // Light mode
-                    isIncrease ? "text-red-600" : "text-green-600",
-                    // Dark mode
-                    isIncrease ? "dark:text-red-300" : "dark:text-green-300"
-                  )}>
-                    {Math.abs(percentageChange).toFixed(1)}%
-                  </span>
-                  
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {comparisonLabel}
-                  </span>
+                  <Store className="h-4 w-4" />
                 </div>
               )}
+              
+              <Link 
+                to={`/expenses/retailer/${retailer.id}`}
+                className={cn(
+                  "text-lg font-medium transition-colors",
+                  "text-gray-800 hover:text-blue-600",
+                  "dark:text-gray-200 dark:hover:text-blue-400"
+                )}
+              >
+                {retailer.name}
+              </Link>
             </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "rounded-full h-8 w-8 p-0",
+                "bg-gray-100 text-gray-700 hover:bg-gray-200",
+                "dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              )}
+              onClick={() => setAddDialogOpen(true)}
+            >
+              <PlusCircle className="h-4 w-4" />
+              <span className="sr-only">Ajouter une dépense pour {retailer.name}</span>
+            </Button>
           </div>
-        </Card>
-      </motion.div>
+          
+          <div className="space-y-3">
+            <div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                {periodLabel}
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={totalCurrentPeriod}
+                    initial={hasChanged ? { opacity: 0, y: hasIncreased ? 20 : -20 } : false}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: hasIncreased ? -20 : 20 }}
+                    transition={{ duration: 0.3 }}
+                    className={cn(
+                      "text-2xl font-bold",
+                      "text-gray-800 dark:text-gray-200"
+                    )}
+                  >
+                    {formatCurrency(totalCurrentPeriod)}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+            
+            {totalPreviousPeriod > 0 && (
+              <div className={cn(
+                "flex items-center gap-1.5 text-sm",
+              )}>
+                <div className={cn(
+                  "p-1 rounded",
+                  // Light mode - background
+                  isIncrease ? "bg-red-100" : "bg-green-100",
+                  // Dark mode - background
+                  isIncrease ? "dark:bg-red-900/30" : "dark:bg-green-900/30",
+                )}>
+                  {isIncrease ? (
+                    <TrendingUp className={cn(
+                      "h-3 w-3",
+                      "text-red-600 dark:text-red-300"
+                    )} />
+                  ) : (
+                    <TrendingDown className={cn(
+                      "h-3 w-3",
+                      "text-green-600 dark:text-green-300"
+                    )} />
+                  )}
+                </div>
+                
+                <span className={cn(
+                  "font-medium", 
+                  // Light mode
+                  isIncrease ? "text-red-600" : "text-green-600",
+                  // Dark mode
+                  isIncrease ? "dark:text-red-300" : "dark:text-green-300"
+                )}>
+                  {Math.abs(percentageChange).toFixed(1)}%
+                </span>
+                
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {comparisonLabel}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
 
       <RetailerExpensesDialog
         retailer={retailer}
