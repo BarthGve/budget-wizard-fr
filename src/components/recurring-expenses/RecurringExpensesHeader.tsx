@@ -1,15 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar, ArrowUpCircle } from "lucide-react";
+import { Plus, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { RecurringExpenseDialog } from "@/components/recurring-expenses/RecurringExpenseDialog";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 export const RecurringExpensesHeader = () => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
-  const [isHovered, setIsHovered] = useState(false);
   
   return (
     <motion.div 
@@ -70,76 +68,34 @@ export const RecurringExpensesHeader = () => {
         <RecurringExpenseDialog
           trigger={
             <Button 
+              variant="outline"
               className={cn(
-                "relative overflow-hidden group rounded-full pl-5 pr-6 py-6 h-auto font-medium transition-all duration-300",
-                // Default state
-                "border-0 shadow-lg", 
-                // Animation états
-                "hover:shadow-xl active:scale-[0.98]",
-                // Light mode styling
-                "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
-                "hover:from-blue-600 hover:to-blue-700",
-                // Dark mode styling
-                "dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-700 dark:text-blue-50",
-                "dark:hover:from-blue-500 dark:hover:to-blue-600"
+                "h-10 px-4 border transition-all duration-200 rounded-md",
+                "hover:scale-[1.02] active:scale-[0.98]",
+                // Light mode
+                "bg-white border-blue-200 text-blue-600",
+                "hover:border-blue-300 hover:bg-blue-50/50 hover:text-blue-700",
+                // Dark mode
+                "dark:bg-gray-800 dark:border-blue-800/60 dark:text-blue-400",
+                "dark:hover:bg-blue-900/20 dark:hover:border-blue-700 dark:hover:text-blue-300"
               )}
               style={{
-                boxShadow: isHovered
-                  ? isDarkMode
-                    ? "0 8px 24px -4px rgba(30, 64, 175, 0.4), 0 2px 8px -2px rgba(30, 64, 175, 0.3)"
-                    : "0 8px 24px -4px rgba(37, 99, 235, 0.35), 0 2px 8px -2px rgba(37, 99, 235, 0.25)"
-                  : isDarkMode
-                    ? "0 6px 20px -4px rgba(30, 64, 175, 0.35), 0 2px 6px -2px rgba(30, 64, 175, 0.2)"
-                    : "0 6px 20px -4px rgba(37, 99, 235, 0.3), 0 2px 6px -2px rgba(37, 99, 235, 0.2)"
+                boxShadow: isDarkMode
+                  ? "0 2px 10px -2px rgba(30, 64, 175, 0.15)"
+                  : "0 2px 10px -2px rgba(37, 99, 235, 0.1)"
               }}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
             >
-              {/* Cercle d'effet de particules (visible uniquement au survol) */}
-              <span className={cn(
-                "absolute inset-0 overflow-hidden rounded-full",
-                "transition-opacity duration-500",
-                isHovered ? "opacity-100" : "opacity-0"
-              )}>
+              <div className="flex items-center gap-1.5">
                 <span className={cn(
-                  "absolute w-12 h-12 rounded-full",
-                  "transform -translate-x-1/2 -translate-y-1/2",
-                  "bg-blue-300/20 dark:bg-blue-300/15",
-                  "animate-ripple-fast"
-                )} style={{ left: "50%", top: "50%" }} />
-                <span className={cn(
-                  "absolute w-16 h-16 rounded-full",
-                  "transform -translate-x-1/2 -translate-y-1/2",
-                  "bg-blue-300/15 dark:bg-blue-300/10",
-                  "animate-ripple-slow",
-                  "delay-150"
-                )} style={{ left: "50%", top: "50%" }} />
-              </span>
-              
-              {/* Icône et texte */}
-              <div className="flex items-center gap-2.5 relative z-10">
-                <span className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
-                  "bg-blue-400/30 dark:bg-blue-300/20",
-                  "group-hover:scale-110"
+                  "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
+                  // Light mode
+                  "bg-blue-100/80 text-blue-600",
+                  // Dark mode
+                  "dark:bg-blue-800/50 dark:text-blue-300"
                 )}>
-                  <motion.div
-                    animate={isHovered ? { rotate: 180, scale: 1.1 } : { rotate: 0, scale: 1 }}
-                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                  >
-                    <Plus className="h-5 w-5 text-white" strokeWidth={2.5} />
-                  </motion.div>
+                  <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
                 </span>
-                
-                <motion.span 
-                  className="font-semibold text-sm"
-                  animate={isHovered 
-                    ? { y: 0, opacity: 1 } 
-                    : { y: 0, opacity: 1 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  Ajouter une charge
-                </motion.span>
+                <span className="font-medium text-sm">Ajouter</span>
               </div>
             </Button>
           }
