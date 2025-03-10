@@ -13,7 +13,7 @@ import { DebitDayField } from "./form-fields/DebitDayField";
 import { DebitMonthField } from "./form-fields/DebitMonthField";
 import { DomainField } from "./form-fields/DomainField";
 
-interface RecurringExpenseFormProps {
+export interface RecurringExpenseFormProps {
   expense?: {
     id: string;
     name: string;
@@ -23,9 +23,11 @@ interface RecurringExpenseFormProps {
     debit_day: number;
     debit_month: number | null;
     logo_url?: string;
+    notes?: string;
   };
   onSuccess: () => void;
   onCancel: () => void;
+  variant?: string; // Ajout de la propriété variant optionnelle
 }
 
 const extractDomainFromLogoUrl = (logoUrl?: string) => {
@@ -42,6 +44,7 @@ export function RecurringExpenseForm({
   expense,
   onSuccess,
   onCancel,
+  variant, // Ajout du paramètre variant ici, même s'il n'est pas utilisé dans le composant
 }: RecurringExpenseFormProps) {
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
