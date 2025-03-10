@@ -99,7 +99,7 @@ export const RecurringExpensesSummaryCards = ({
         >
           <Card 
             className={cn(
-              "overflow-hidden transition-all duration-200 cursor-pointer h-full",
+              "overflow-hidden transition-all duration-200 cursor-pointer h-full relative",
               // Base styling
               "border shadow-sm hover:shadow-md",
               // Selected state
@@ -117,15 +117,16 @@ export const RecurringExpensesSummaryCards = ({
                 : undefined
             }}
           >
-            <CardHeader className="pb-2 pt-6 relative overflow-hidden">
-              <div className={cn(
-                "absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 rounded-full opacity-10",
-                // Light mode gradient
-                "bg-gradient-to-br from-blue-500 to-blue-600",
-                // Dark mode gradient
-                "dark:from-blue-400 dark:to-blue-500 dark:opacity-15"
-              )} />
-              
+            {/* Ajout du fond radial gradient comme dans RecurringExpensesCategoryChart */}
+            <div className={cn(
+              "absolute inset-0 opacity-5",
+              // Light mode
+              "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+              // Dark mode
+              "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+            )} />
+            
+            <CardHeader className="pb-2 pt-6 relative z-10">
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2">
                   <div className={cn(
@@ -161,7 +162,7 @@ export const RecurringExpensesSummaryCards = ({
               </CardDescription>
             </CardHeader>
             
-            <CardContent className="pt-1 pb-6">
+            <CardContent className="pt-1 pb-6 relative z-10">
               <p className={cn(
                 "text-2xl font-bold",
                 // Light mode
