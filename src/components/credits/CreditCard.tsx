@@ -1,3 +1,4 @@
+
 import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 import { 
@@ -26,7 +27,7 @@ export const CreditCard = ({
   icon,
   title,
   description,
-  amount,
+  amount = 0, // Valeur par défaut pour éviter les undefined
   subtitle,
   badgeText,
   colorScheme = "purple", // Changé pour purple par défaut pour correspondre au design du site
@@ -36,6 +37,9 @@ export const CreditCard = ({
   dateFin
 }: CreditCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  
+  // S'assurer que amount est un nombre valide
+  const safeAmount = typeof amount === 'number' ? amount : 0;
   
   return (
     <motion.div
@@ -138,7 +142,7 @@ export const CreditCard = ({
                 // Dark mode
                 "dark:text-gray-200"
               )}>
-                {amount.toLocaleString("fr-FR") + " €"}
+                {safeAmount.toLocaleString("fr-FR") + " €"}
               </h4>
             </div>
 
@@ -177,7 +181,7 @@ export const CreditCard = ({
                 <CreditProgressBar 
                   dateDebut={dateDebut}
                   dateFin={dateFin}
-                  montantMensuel={amount}
+                  montantMensuel={safeAmount}
                 />
               </div>
             </div>
