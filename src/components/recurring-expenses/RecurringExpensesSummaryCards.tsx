@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { MoveUpRight, MoveDownRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -12,13 +13,22 @@ interface YearlyTotalCardProps {
   previousYearTotal: number;
   expenses: Array<{
     id: string;
-    date: string;
+    date?: string;
     amount: number;
   }>;
   viewMode: 'monthly' | 'yearly';
+  onPeriodSelect?: (period: "monthly" | "quarterly" | "yearly" | null) => void;
+  selectedPeriod?: "monthly" | "quarterly" | "yearly" | null;
 }
 
-export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses, viewMode }: YearlyTotalCardProps) {
+export function YearlyTotalCard({ 
+  currentYearTotal, 
+  previousYearTotal, 
+  expenses, 
+  viewMode,
+  onPeriodSelect,
+  selectedPeriod 
+}: YearlyTotalCardProps) {
   const [prevAmount, setPrevAmount] = useState(0);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -32,6 +42,7 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       const currentMonthEnd = endOfMonth(now);
       
       const currentMonthExpenses = expenses.filter(expense => {
+        if (!expense.date) return false;
         const expenseDate = new Date(expense.date);
         return expenseDate >= currentMonthStart && expenseDate <= currentMonthEnd;
       });
@@ -43,6 +54,7 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       const previousMonthEnd = endOfMonth(subMonths(now, 1));
       
       const previousMonthExpenses = expenses.filter(expense => {
+        if (!expense.date) return false;
         const expenseDate = new Date(expense.date);
         return expenseDate >= previousMonthStart && expenseDate <= previousMonthEnd;
       });
