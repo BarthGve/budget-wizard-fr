@@ -81,7 +81,7 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       
       // Vérifier si la date de dernière mensualité est dans le futur
       if (!isFuture(lastPaymentDate)) {
-        // Afficher un message d'erreur
+        // Au lieu d'ajuster silencieusement la date, afficher un message d'erreur
         toast.error("La date de dernière mensualité doit être dans le futur. Veuillez augmenter le nombre de mensualités ou choisir une date de première mensualité plus récente.");
         return; // Arrêter l'exécution de la fonction pour ne pas soumettre le formulaire
       }
