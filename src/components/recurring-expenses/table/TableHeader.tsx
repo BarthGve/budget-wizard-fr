@@ -1,5 +1,5 @@
 
-import { TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableHead, TableHeader as ShadcnTableHeader, TableRow } from "@/components/ui/table";
 import { RecurringExpense } from "../types";
 import { SortableTableHeader } from "@/components/properties/expenses/SortableTableHeader";
 
@@ -9,13 +9,13 @@ interface TableHeaderProps {
   onSort: (field: keyof RecurringExpense) => void;
 }
 
-export const ExpenseTableHeader = ({ 
+export const TableHeader = ({ 
   sortField, 
   sortDirection, 
   onSort 
 }: TableHeaderProps) => {
   return (
-    <TableHeader>
+    <ShadcnTableHeader>
       <TableRow>
         <SortableTableHeader
           field="name"
@@ -48,6 +48,6 @@ export const ExpenseTableHeader = ({
         />
         <TableHead className="text-right"></TableHead>
       </TableRow>
-    </TableHeader>
+    </ShadcnTableHeader>
   );
 };

@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 import { RecurringExpense } from "../types";
-import { RecurringExpenseTable } from "../RecurringExpenseTable";
+import { RecurringExpenseTable } from "../table/RecurringExpenseTable";
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import { RecurringExpensesSummaryCards } from "../RecurringExpensesSummaryCards";
 import { itemVariants } from "../animations/AnimationVariants";
