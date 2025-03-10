@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { PiggyBank, Info } from 'lucide-react';
@@ -93,26 +94,13 @@ export const SavingsCard = memo(({
                         // Light mode - progress background
                         "bg-green-100/50",
                         // Dark mode - progress background
-                        "dark:bg-green-950/70"
+                        "dark:bg-green-950/70",
+                        // Définition des couleurs pour l'indicateur via sélecteurs CSS
+                        isGoalReached 
+                          ? "[&>div]:bg-green-500 dark:[&>div]:bg-green-400" // vert plus vif si objectif atteint
+                          : "[&>div]:bg-green-400 dark:[&>div]:bg-green-500" // vert normal sinon
                       )}
                     />
-                    
-                    {/* Style personnalisé pour la barre de progression */}
-                    <style jsx>{`
-                      :global(.progress-root) {
-                        --progress-foreground: ${isGoalReached 
-                          ? 'rgb(34, 197, 94)' // green-500
-                          : 'rgb(74, 222, 128)' // green-400
-                        };
-                      }
-                      
-                      :global(.dark .progress-root) {
-                        --progress-foreground: ${isGoalReached 
-                          ? 'rgb(74, 222, 128)' // green-400
-                          : 'rgb(34, 197, 94)' // green-500
-                        };
-                      }
-                    `}</style>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
