@@ -1,4 +1,3 @@
-
 import { memo, useCallback, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -13,10 +12,14 @@ import StyledLoader from "@/components/ui/StyledLoader";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Credit } from "@/components/credits/types";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 const Credits = memo(function Credits() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -111,6 +114,8 @@ const Credits = memo(function Credits() {
       queryKey: ["credits-monthly-stats"],
       exact: true
     });
+    
+    toast.success("Le crédit a été supprimé avec succès");
   }, [queryClient]);
 
   const isLoading = isLoadingCredits || isLoadingStats;
@@ -134,14 +139,39 @@ const Credits = memo(function Credits() {
           transition={{ duration: 0.5 }}
         >
           <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">Crédits</h1>
-            <p className="text-muted-foreground">
+            <h1 className={cn(
+              "text-3xl font-bold tracking-tight",
+              // Un dégradé de violets plus chaud et distinctif pour les crédits
+              "bg-gradient-to-r from-purple-600 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent",
+              // Ajustement pour le mode sombre
+              "dark:from-purple-400 dark:via-violet-400 dark:to-fuchsia-400"
+            )}>
+              Crédits
+            </h1>
+            <p className={cn(
+              "text-muted-foreground",
+              "dark:text-gray-400"
+            )}>
               Gérez vos crédits et leurs échéances
             </p>
           </div>
           <CreditDialog 
             trigger={
-              <Button className="text-primary-foreground bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-md">
+              <Button 
+                className={cn(
+                  // Base button style
+                  "text-white font-medium shadow-sm transition-all duration-200",
+                  // Gradient background avec couleur violette dominante
+                  "bg-gradient-to-r from-purple-600 to-violet-500",
+                  // Effets hover avec dégradé légèrement plus foncé et ombre plus prononcée
+                  "hover:from-purple-700 hover:to-violet-600 hover:shadow",
+                  // Animation subtile pour le bouton
+                  "active:scale-[0.98]",
+                  // Mode sombre ajustements
+                  "dark:from-purple-500 dark:to-violet-500 dark:shadow-violet-900/20",
+                  "dark:hover:from-purple-600 dark:hover:to-violet-600"
+                )}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Ajouter un crédit
               </Button>
@@ -168,11 +198,59 @@ const Credits = memo(function Credits() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent text-2xl mb-4">Crédits en cours</h2>
-            <CreditsList 
-              credits={activeCredits} 
-              onCreditDeleted={handleCreditDeleted} 
-            />
+            <h2 className={cn(
+              "font-bold tracking-tight text-2xl mb-4",
+              // Même dégradé que le titre principal pour la cohérence
+              "bg-gradient-to-r from-purple-600 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent",
+              "dark:from-purple-400 dark:via-violet-400 dark:to-fuchsia-400"
+            )}>
+              Crédits en cours
+            </h2>
+            
+            {activeCredits.length > 0 ? (
+              <CreditsList 
+                credits={activeCredits} 
+                onCreditDeleted={handleCreditDeleted} 
+              />
+            ) : (
+              <div className={cn(
+                // Design de base pour l'état vide
+                "text-center rounded-lg border p-8",
+                // Style clair
+                "bg-white border-gray-200",
+                // Style sombre
+                "dark:bg-gray-800/50 dark:border-gray-700"
+              )}>
+                <h3 className={cn(
+                  "text-lg font-medium mb-2",
+                  "text-gray-800 dark:text-gray-200"
+                )}>
+                  Aucun crédit actif
+                </h3>
+                <p className={cn(
+                  "text-sm mb-6 max-w-md mx-auto",
+                  "text-gray-600 dark:text-gray-400"
+                )}>
+                  Vous n'avez pas encore de crédit en cours. Ajoutez votre premier crédit pour commencer à suivre vos remboursements.
+                </p>
+                <CreditDialog 
+                  trigger={
+                    <Button 
+                      className={cn(
+                        "text-white font-medium shadow-sm transition-all duration-200",
+                        "bg-gradient-to-r from-purple-600 to-violet-500",
+                        "hover:from-purple-700 hover:to-violet-600 hover:shadow",
+                        "dark:from-purple-500 dark:to-violet-500",
+                        "dark:hover:from-purple-600 dark:hover:to-violet-600"
+                      )}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Ajouter votre premier crédit
+                    </Button>
+                  } 
+                />
+              </div>
+            )}
           </motion.div>
         </div>
       </motion.div>
