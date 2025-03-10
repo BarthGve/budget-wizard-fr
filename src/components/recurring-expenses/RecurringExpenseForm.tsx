@@ -27,7 +27,7 @@ export interface RecurringExpenseFormProps {
   };
   onSuccess: () => void;
   onCancel: () => void;
-  variant?: string; // Ajout de la propriété variant optionnelle
+  variant?: string;
 }
 
 const extractDomainFromLogoUrl = (logoUrl?: string) => {
@@ -44,7 +44,7 @@ export function RecurringExpenseForm({
   expense,
   onSuccess,
   onCancel,
-  variant, // Ajout du paramètre variant ici, même s'il n'est pas utilisé dans le composant
+  variant,
 }: RecurringExpenseFormProps) {
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
