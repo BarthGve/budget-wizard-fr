@@ -48,7 +48,7 @@ export const SavingsCard = memo(({
       >
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
                 "bg-green-100 text-green-600", // Light mode

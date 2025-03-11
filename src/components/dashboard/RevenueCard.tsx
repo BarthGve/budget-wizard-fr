@@ -69,11 +69,11 @@ export const RevenueCard = ({
           // Dark mode styles
           "dark:bg-gradient-to-br dark:from-gray-900 dark:to-amber-950 dark:border-amber-900/50 dark:shadow-amber-900/10"
         )}
-        onClick={() => navigate("/income")}
+        onClick={() => navigate("/contributors")}
       >
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
                 "bg-amber-100 text-amber-600", // Light mode
