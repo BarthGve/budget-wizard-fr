@@ -89,7 +89,7 @@ export const CreditCardInfo = ({ credit, index }: CreditCardInfoProps) => {
           <img
             src={credit.logo_url}
             alt={credit.nom_credit}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src = "/placeholder.svg";
             }}
