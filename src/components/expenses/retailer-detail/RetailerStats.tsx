@@ -25,37 +25,37 @@ export function RetailerStats({
   className
 }: RetailerStatsProps) {
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-3 gap-5 ${className || ""}`}>
+    <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${className || ""}`}>
       {/* Carte des dépenses mensuelles */}
       <RetailerStatsCard
-        title="Mensuel"
+        title="Dépenses du mois"
         amount={monthlyTotal}
         count={monthlyCount}
-        label="Charges mensuelles"
-        color="blue"
+        label="achats ce mois-ci"
+        className="bg-gradient-to-br from-blue-600/90 to-indigo-700/90 text-white border-blue-400/20"
         previousAmount={previousMonthTotal}
-        icon={<Calendar className="h-5 w-5" />}
+        icon={<Calendar className="h-5 w-5 text-blue-200" />}
       />
       
       {/* Carte des dépenses annuelles */}
       <RetailerStatsCard
-        title="Annuel"
+        title="Dépenses de l'année"
         amount={yearlyTotal}
         count={yearlyCount}
-        label="Charges annuelles"
-        color="purple"
+        label="achats cette année"
+        className="bg-gradient-to-br from-violet-600/90 to-purple-700/90 text-white border-purple-400/20"
         previousAmount={previousYearTotal}
-        icon={<Wallet className="h-5 w-5" />}
+        icon={<Wallet className="h-5 w-5 text-purple-200" />}
       />
       
       {/* Carte de la moyenne mensuelle */}
       <RetailerStatsCard
-        title="Moyenne"
+        title="Moyenne mensuelle"
         amount={monthlyAverage}
         count={monthlyAverageCount}
-        label="Moyenne par mois"
-        color="orange"
-        icon={<Calculator className="h-5 w-5" />}
+        label="achats par mois"
+        className="bg-gradient-to-br from-amber-500/90 to-orange-600/90 text-white border-orange-400/20"
+        icon={<Calculator className="h-5 w-5 text-orange-200" />}
       />
     </div>
   );
