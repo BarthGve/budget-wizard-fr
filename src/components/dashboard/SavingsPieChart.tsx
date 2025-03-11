@@ -89,7 +89,7 @@ export const SavingsPieChart = ({
       >
         <CardHeader className="py-3 pb-0">
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="text-xl flex items-center gap-2">
               <div className={cn(
                 "p-1.5 rounded-full",
                 "bg-green-100 text-green-600", // Light mode
