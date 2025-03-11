@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,6 +26,7 @@ interface RetailerExpensesTableProps {
   onDeleteExpense: (expenseId: string) => void;
   onViewDetails?: (expense: Expense) => void;
   colorScheme?: "blue" | "purple" | "green";
+  currentYear?: number;
 }
 
 export function RetailerExpensesTable({
@@ -33,7 +35,8 @@ export function RetailerExpensesTable({
   onEditExpense,
   onDeleteExpense,
   onViewDetails,
-  colorScheme = "blue"
+  colorScheme = "blue",
+  currentYear = new Date().getFullYear()
 }: RetailerExpensesTableProps) {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -103,28 +106,31 @@ export function RetailerExpensesTable({
 
   if (isLoading) {
     return (
-      <div className="space-y-4 rounded-md border">
-        <div className={cn("p-3 rounded-t-md border-b", currentColors.accentBg)}>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-4 w-[120px]" />
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {currentYear}</h2>
+        <div className="rounded-md border">
+          <div className={cn("p-3 rounded-t-md border-b", currentColors.accentBg)}>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-[120px]" />
+              </div>
+              <Skeleton className="h-8 w-[150px]" />
             </div>
-            <Skeleton className="h-8 w-[150px]" />
           </div>
-        </div>
-        <div className="p-4 space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex justify-between items-center px-2 py-4 rounded-md">
-              <div className="flex gap-6 w-full">
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-5 w-40" />
-                <div className="ml-auto">
-                  <Skeleton className="h-8 w-8 rounded-full" />
+          <div className="p-4 space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex justify-between items-center px-2 py-4 rounded-md">
+                <div className="flex gap-6 w-full">
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-5 w-40" />
+                  <div className="ml-auto">
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -132,18 +138,21 @@ export function RetailerExpensesTable({
 
   if (expenses.length === 0) {
     return (
-      <div className="rounded-md border overflow-hidden">
-        <div className={cn("px-4 py-3 border-b", currentColors.accentBg)}>
-          <div className="font-medium">Historique des dépenses</div>
-        </div>
-        <div className="p-8 text-center">
-          <div className="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
-            <DollarSign className="h-6 w-6 text-gray-400" />
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {currentYear}</h2>
+        <div className="rounded-md border overflow-hidden">
+          <div className={cn("px-4 py-3 border-b", currentColors.accentBg)}>
+            <div className="font-medium">Historique des dépenses</div>
           </div>
-          <h3 className="text-lg font-medium mb-1">Aucune dépense enregistrée</h3>
-          <p className="text-muted-foreground max-w-md mx-auto mb-4">
-            Vous n'avez pas encore ajouté de dépenses pour ce commerçant.
-          </p>
+          <div className="p-8 text-center">
+            <div className="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+              <DollarSign className="h-6 w-6 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium mb-1">Aucune dépense enregistrée</h3>
+            <p className="text-muted-foreground max-w-md mx-auto mb-4">
+              Vous n'avez pas encore ajouté de dépenses pour ce commerçant.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -156,143 +165,146 @@ export function RetailerExpensesTable({
     : sortedExpenses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="rounded-md border overflow-hidden">
-      <div className={cn("px-4 py-3 border-b", currentColors.accentBg)}>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Historique des dépenses</span>
-            {sortedExpenses.length > 0 && (
-              <Badge variant="outline" className={cn("ml-2", currentColors.badge)}>
-                {sortedExpenses.length} dépense{sortedExpenses.length !== 1 ? 's' : ''}
-              </Badge>
-            )}
+    <div>
+      <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {currentYear}</h2>
+      <div className="rounded-md border overflow-hidden">
+        <div className={cn("px-4 py-3 border-b", currentColors.accentBg)}>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Historique des dépenses</span>
+              {sortedExpenses.length > 0 && (
+                <Badge variant="outline" className={cn("ml-2", currentColors.badge)}>
+                  {sortedExpenses.length} dépense{sortedExpenses.length !== 1 ? 's' : ''}
+                </Badge>
+              )}
+            </div>
+            <Select value={String(itemsPerPage)} onValueChange={(value) => {
+              setItemsPerPage(Number(value));
+              setCurrentPage(1);
+            }}>
+              <SelectTrigger className="w-[180px] h-8 text-xs">
+                <SelectValue placeholder="Lignes par page" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10 par page</SelectItem>
+                <SelectItem value="25">25 par page</SelectItem>
+                <SelectItem value="-1">Tout afficher</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Select value={String(itemsPerPage)} onValueChange={(value) => {
-            setItemsPerPage(Number(value));
-            setCurrentPage(1);
-          }}>
-            <SelectTrigger className="w-[180px] h-8 text-xs">
-              <SelectValue placeholder="Lignes par page" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10 par page</SelectItem>
-              <SelectItem value="25">25 par page</SelectItem>
-              <SelectItem value="-1">Tout afficher</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
-      </div>
-      
-      <div className="overflow-x-auto bg-white dark:bg-gray-950">
-        <Table>
-          <TableHeader className="bg-gray-50 dark:bg-gray-900">
-            <TableRow>
-              <TableHead className="w-[120px]">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className={cn("p-0 hover:bg-transparent flex items-center gap-1", currentColors.headerBg)}
-                  onClick={() => handleSort('date')}
-                >
-                  <Calendar className="h-3.5 w-3.5 mr-1" />
-                  Date
-                  {sortBy === 'date' && (
-                    <ArrowUpDown className={cn("h-3 w-3 ml-1", currentColors.sortIcon)} />
-                  )}
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className={cn("p-0 hover:bg-transparent flex items-center gap-1", currentColors.headerBg)}
-                  onClick={() => handleSort('amount')}
-                >
-                  <DollarSign className="h-3.5 w-3.5 mr-1" />
-                  Montant
-                  {sortBy === 'amount' && (
-                    <ArrowUpDown className={cn("h-3 w-3 ml-1", currentColors.sortIcon)} />
-                  )}
-                </Button>
-              </TableHead>
-              <TableHead>
-                <div className="flex items-center gap-1">
-                  <MessageSquareText className="h-3.5 w-3.5 mr-1" />
-                  Commentaire
-                </div>
-              </TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedExpenses.map((expense, index) => (
-              <TableRow 
-                key={expense.id}
-                className={cn(
-                  "transition-colors cursor-pointer", 
-                  currentColors.hover,
-                  onViewDetails && "cursor-pointer hover:cursor-pointer",
-                  index % 2 === 0 ? "bg-white dark:bg-gray-950" : "bg-gray-50/50 dark:bg-gray-900/20"
-                )}
-                onClick={() => onViewDetails && onViewDetails(expense)}
-              >
-                <TableCell className="py-3">
-                  <div className="flex items-center">
-                    <div className={cn(
-                      "w-8 h-8 rounded-md flex items-center justify-center mr-2",
-                      currentColors.accentBg
-                    )}>
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                    </div>
-                    <span className="font-medium">
-                      {new Date(expense.date).toLocaleDateString('fr-FR', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric'
-                      })}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className={cn("font-semibold", currentColors.amountText)}>
-                    {formatCurrency(expense.amount)}
-                  </span>
-                </TableCell>
-                <TableCell className="max-w-xs truncate">
-                  {expense.comment ? (
-                    <span className="text-sm">{expense.comment}</span>
-                  ) : (
-                    <span className="text-sm text-gray-400 italic">Aucun commentaire</span>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end space-x-1">
-                    <ExpenseActionsDropdown
-                      onViewDetails={() => onViewDetails && onViewDetails(expense)}
-                      onEdit={() => onEditExpense(expense)}
-                      onDelete={() => onDeleteExpense(expense.id)}
-                    />
-                    {onViewDetails && (
-                      <ChevronRight className="h-4 w-4 text-gray-400" />
+        
+        <div className="overflow-x-auto bg-white dark:bg-gray-950">
+          <Table>
+            <TableHeader className="bg-gray-50 dark:bg-gray-900">
+              <TableRow>
+                <TableHead className="w-[120px]">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className={cn("p-0 hover:bg-transparent flex items-center gap-1", currentColors.headerBg)}
+                    onClick={() => handleSort('date')}
+                  >
+                    <Calendar className="h-3.5 w-3.5 mr-1" />
+                    Date
+                    {sortBy === 'date' && (
+                      <ArrowUpDown className={cn("h-3 w-3 ml-1", currentColors.sortIcon)} />
                     )}
+                  </Button>
+                </TableHead>
+                <TableHead>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className={cn("p-0 hover:bg-transparent flex items-center gap-1", currentColors.headerBg)}
+                    onClick={() => handleSort('amount')}
+                  >
+                    <DollarSign className="h-3.5 w-3.5 mr-1" />
+                    Montant
+                    {sortBy === 'amount' && (
+                      <ArrowUpDown className={cn("h-3 w-3 ml-1", currentColors.sortIcon)} />
+                    )}
+                  </Button>
+                </TableHead>
+                <TableHead>
+                  <div className="flex items-center gap-1">
+                    <MessageSquareText className="h-3.5 w-3.5 mr-1" />
+                    Commentaire
                   </div>
-                </TableCell>
+                </TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="border-t p-2 bg-gray-50 dark:bg-gray-900">
-          <TablePagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            colorScheme={colorScheme}
-          />
+            </TableHeader>
+            <TableBody>
+              {paginatedExpenses.map((expense, index) => (
+                <TableRow 
+                  key={expense.id}
+                  className={cn(
+                    "transition-colors cursor-pointer", 
+                    currentColors.hover,
+                    onViewDetails && "cursor-pointer hover:cursor-pointer",
+                    index % 2 === 0 ? "bg-white dark:bg-gray-950" : "bg-gray-50/50 dark:bg-gray-900/20"
+                  )}
+                  onClick={() => onViewDetails && onViewDetails(expense)}
+                >
+                  <TableCell className="py-3">
+                    <div className="flex items-center">
+                      <div className={cn(
+                        "w-8 h-8 rounded-md flex items-center justify-center mr-2",
+                        currentColors.accentBg
+                      )}>
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                      </div>
+                      <span className="font-medium">
+                        {new Date(expense.date).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className={cn("font-semibold", currentColors.amountText)}>
+                      {formatCurrency(expense.amount)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {expense.comment ? (
+                      <span className="text-sm">{expense.comment}</span>
+                    ) : (
+                      <span className="text-sm text-gray-400 italic">Aucun commentaire</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end space-x-1">
+                      <ExpenseActionsDropdown
+                        onViewDetails={() => onViewDetails && onViewDetails(expense)}
+                        onEdit={() => onEditExpense(expense)}
+                        onDelete={() => onDeleteExpense(expense.id)}
+                      />
+                      {onViewDetails && (
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
-      )}
+
+        {totalPages > 1 && (
+          <div className="border-t p-2 bg-gray-50 dark:bg-gray-900">
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              colorScheme={colorScheme}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
