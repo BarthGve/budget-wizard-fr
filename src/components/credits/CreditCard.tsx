@@ -80,7 +80,7 @@ export const CreditCardInfo = ({ credit, index }: CreditCardInfoProps) => {
     >
       {credit.logo_url ? (
         <div className={cn(
-          "w-10 h-10 rounded-lg p-1 flex items-center justify-center overflow-hidden",
+          "w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden",
           // Light mode
           "bg-white border border-purple-100 shadow-sm",
           // Dark mode
@@ -89,7 +89,7 @@ export const CreditCardInfo = ({ credit, index }: CreditCardInfoProps) => {
           <img
             src={credit.logo_url}
             alt={credit.nom_credit}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             onError={(e) => {
               (e.target as HTMLImageElement).src = "/placeholder.svg";
             }}

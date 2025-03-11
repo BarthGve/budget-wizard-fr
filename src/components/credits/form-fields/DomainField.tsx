@@ -33,6 +33,7 @@ export const DomainField = ({ form }: DomainFieldProps) => {
               isValid={isLogoValid}
               isChecking={isCheckingLogo}
               domain={domain}
+              className="object-contain"
             />
           </div>
           <FormDescription>

@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Credit } from "./types";
 import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
@@ -126,7 +125,7 @@ export const CreditInfoDialog = ({
             <div className="flex items-center space-x-4">
               {credit.logo_url ? (
                 <div className={cn(
-                  "w-14 h-14 rounded-xl p-1 flex items-center justify-center overflow-hidden",
+                  "w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center",
                   "border shadow-sm",
                   currentColors.border,
                   "bg-white dark:bg-gray-800"
@@ -257,4 +256,3 @@ export const CreditInfoDialog = ({
     </Dialog>
   );
 };
-
