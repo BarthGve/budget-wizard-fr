@@ -99,7 +99,7 @@ export const RecurringExpensesPieChart = ({
       >
         <CardHeader className="py-3 pb-0">
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-xl flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-1.5 rounded-full",
                 "bg-blue-100 text-blue-600", // Light mode
