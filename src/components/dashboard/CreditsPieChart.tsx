@@ -84,7 +84,7 @@ export const CreditsPieChart = ({
         className={cn(
           "cursor-pointer h-[320px] flex flex-col transition-all duration-300",
           // Light mode
-          "bg-white border border-purple-100/60 shadow-sm hover:shadow-md",
+          "bg-white border border-purple-100/60 shadow-lg hover:shadow-xl",
           // Dark mode
           "dark:bg-gray-900/90 dark:border-purple-900/30 dark:shadow-purple-900/20 dark:hover:shadow-purple-800/30"
         )}
@@ -100,7 +100,7 @@ export const CreditsPieChart = ({
               )}>
                 <CreditCard className="h-4 w-4" />
               </div>
-              <span className="text-gray-800 dark:text-white">Répartition</span>
+              <span className="text-gray-800 dark:text-white">Crédits</span>
             </CardTitle>
           </div>
           <CardDescription className="text-sm text-gray-500 dark:text-gray-400">Vue d'ensemble des mensualités</CardDescription>
