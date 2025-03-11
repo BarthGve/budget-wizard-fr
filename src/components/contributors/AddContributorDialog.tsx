@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { UserPlus, Loader2, Plus } from "lucide-react";
 import { useQueryClient } from '@tanstack/react-query';
 import { Progress } from "@/components/ui/progress";
 
@@ -92,10 +92,9 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
       setIsOpen(open);
     }}>
       <DialogTrigger asChild>
-        {/* Style de bouton adapté exactement à l'image fournie, avec les bords très arrondis */}
-        <Button className="bg-white text-amber-500 hover:bg-amber-50 border border-amber-200 rounded-full py-2 px-5 font-medium shadow-sm">
-          {/* Utilisation d'un + simple pour correspondre exactement à l'image */}
-          <span className="mr-2 text-lg font-bold">+</span>
+        {/* Style de bouton adapté à l'image fournie, avec couleurs chaudes pour les revenus */}
+        <Button className="bg-white text-amber-500 hover:bg-amber-50 border border-amber-200 rounded-xl py-2 px-4 font-medium shadow-sm">
+          <Plus className="mr-2 h-4 w-4" />
           Ajouter
         </Button>
       </DialogTrigger>
