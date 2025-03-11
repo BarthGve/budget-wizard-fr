@@ -14,6 +14,8 @@ export const DomainField = ({ form }: DomainFieldProps) => {
   const domain = form.watch("nom_domaine") || "";
   const { previewLogoUrl, isLogoValid, isCheckingLogo } = useLogoPreview(domain);
 
+  // On ne peut pas ajouter directement className à LogoPreview s'il ne l'accepte pas
+  // On devra donc créer un wrapper pour appliquer la classe
   return (
     <FormField
       control={form.control}
@@ -28,13 +30,14 @@ export const DomainField = ({ form }: DomainFieldProps) => {
                 placeholder="Ex: paypal.com, fortuneo.fr..."
               />
             </FormControl>
-            <LogoPreview
-              url={previewLogoUrl}
-              isValid={isLogoValid}
-              isChecking={isCheckingLogo}
-              domain={domain}
-              className="object-contain"
-            />
+            <div className="object-contain">
+              <LogoPreview
+                url={previewLogoUrl}
+                isValid={isLogoValid}
+                isChecking={isCheckingLogo}
+                domain={domain}
+              />
+            </div>
           </div>
           <FormDescription>
             Le logo sera automatiquement récupéré à partir du domaine

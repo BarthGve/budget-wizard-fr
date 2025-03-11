@@ -4,19 +4,22 @@ import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatCurrency } from "@/utils/format";
+import { cn } from "@/lib/utils";
 
 interface CreditProgressBarProps {
   dateDebut: string;
   dateFin: string;
   montantMensuel: number;
   withTooltip?: boolean;
+  colorScheme?: "purple" | "green" | "blue"; // Ajout de cette propriété
 }
 
 export const CreditProgressBar = ({ 
   dateDebut, 
   dateFin, 
   montantMensuel, 
-  withTooltip = true 
+  withTooltip = true,
+  colorScheme = "purple" // Valeur par défaut
 }: CreditProgressBarProps) => {
   const startDate = new Date(dateDebut);
   const endDate = new Date(dateFin);
@@ -60,9 +63,22 @@ export const CreditProgressBar = ({
   const montantRembourse = completedMonths * montantMensuel;
   const montantRestant = montantTotal - montantRembourse;
 
+  // Couleurs pour la barre de progression en fonction du colorScheme
+  const progressColors = {
+    purple: "bg-violet-600",
+    green: "bg-green-600",
+    blue: "bg-blue-600"
+  };
+
   // Si on ne veut pas de tooltip, on retourne juste la barre de progression
   if (!withTooltip) {
-    return <Progress value={progressPercentage} className="h-3" />;
+    return (
+      <Progress 
+        value={progressPercentage} 
+        className="h-3" 
+        indicatorClassName={progressColors[colorScheme]} 
+      />
+    );
   }
 
   return (
@@ -70,7 +86,11 @@ export const CreditProgressBar = ({
       <div className="space-y-2">
         <Tooltip>
           <TooltipTrigger className="w-full">
-            <Progress value={progressPercentage} className="h-3" />
+            <Progress 
+              value={progressPercentage} 
+              className="h-3" 
+              indicatorClassName={progressColors[colorScheme]} 
+            />
           </TooltipTrigger>
           <TooltipContent className="space-y-2">
             <p>Mensualités payées : {completedMonths} sur {totalMonths}</p>

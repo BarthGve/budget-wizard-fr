@@ -13,17 +13,26 @@ interface CreditFormProps {
   credit?: Credit;
   onSuccess: () => void;
   onCancel: () => void;
+  colorScheme?: "purple" | "green" | "blue"; // Ajout de cette propriété
 }
 
 export function CreditForm({
   credit,
   onSuccess,
   onCancel,
+  colorScheme = "purple", // Valeur par défaut
 }: CreditFormProps) {
   const { form, onSubmit } = useCreditForm({
     credit,
     onSuccess
   });
+
+  // Couleurs du bouton en fonction du colorScheme
+  const buttonColors = {
+    purple: "bg-violet-600 hover:bg-violet-500",
+    green: "bg-green-600 hover:bg-green-500",
+    blue: "bg-blue-600 hover:bg-blue-500"
+  };
 
   return (
     <Form {...form}>
@@ -40,7 +49,7 @@ export function CreditForm({
           <Button type="button" variant="outline" onClick={onCancel}>
             Annuler
           </Button>
-          <Button type="submit" className="bg-violet-600 hover:bg-violet-500 rounded-lg px-[16px] py-0 my-0 text-white">
+          <Button type="submit" className={`${buttonColors[colorScheme]} rounded-lg px-[16px] py-0 my-0 text-white`}>
             {credit ? "Mettre à jour" : "Ajouter"}
           </Button>
         </div>
