@@ -5,11 +5,15 @@ import { cn } from "@/lib/utils";
 interface ContributorStatsChartProps {
   expenseShare: number;
   creditShare: number;
+  expenseAmount?: number;
+  creditAmount?: number;
 }
 
 export function ContributorStatsChart({ 
   expenseShare, 
-  creditShare 
+  creditShare,
+  expenseAmount = 0,
+  creditAmount = 0
 }: ContributorStatsChartProps) {
   const { theme } = useTheme();
   const isDarkTheme = theme === "dark";
@@ -18,88 +22,83 @@ export function ContributorStatsChart({
   const formatValue = (value: number) => `${value.toFixed(2)} €`;
   
   const data = [
-    { name: "Charges", value: expenseShare },
-    { name: "Crédits", value: creditShare }
+    { 
+      name: "Charges", 
+      value: expenseShare,
+      fullValue: expenseAmount,
+      color: "#fbbf24" // Ambre-400
+    },
+    { 
+      name: "Crédits", 
+      value: creditShare,
+      fullValue: creditAmount,
+      color: "#f59e0b" // Ambre-500
+    }
   ];
   
-  // Couleurs pour le mode clair et sombre
-  const COLORS = isDarkTheme 
-    ? ["rgba(251, 191, 36, 0.8)", "rgba(245, 158, 11, 0.8)"] 
-    : ["rgba(251, 191, 36, 0.9)", "rgba(245, 158, 11, 0.9)"];
+  // Couleurs plus vives pour mieux correspondre à l'image
+  const COLORS = ["#fbbf24", "#f59e0b"];
   
-  // Styles personnalisés pour le tooltip
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className={cn(
-          "p-2 rounded-md shadow-md",
-          "bg-white dark:bg-gray-800",
-          "border border-amber-100 dark:border-amber-800/50",
-          "text-amber-800 dark:text-amber-300",
-          "text-sm font-medium"
-        )}>
-          <p>{`${payload[0].name}: ${formatValue(payload[0].value)}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-  
-  // Style personnalisé pour la légende
+  // Ne pas afficher le tooltip pour simplifier comme dans l'image
+  const CustomTooltip = ({ active, payload }: any) => null;
+
+  // Render custom legend that matches the screenshot
   const renderLegend = (props: any) => {
-    const { payload } = props;
-    
     return (
-      <ul className="flex justify-center gap-6 mt-3">
-        {
-          payload.map((entry: any, index: number) => (
-            <li key={`item-${index}`} className="flex items-center">
-              <div 
-                className="w-3 h-3 mr-2 rounded-sm"
-                style={{ background: COLORS[index % COLORS.length] }}
-              />
-              <span className={cn(
-                "text-sm",
-                "text-amber-700 dark:text-amber-400"
-              )}>
-                {entry.value} ({formatValue(entry.payload.value)})
-              </span>
-            </li>
-          ))
-        }
-      </ul>
+      <div className="flex justify-center mt-3 gap-8">
+        {data.map((entry, index) => (
+          <div key={`legend-${index}`} className="flex items-center">
+            <div className={cn(
+              "inline-block w-3 h-3 rounded-full mr-2",
+              "bg-amber-400 dark:bg-amber-400"
+            )} style={{ backgroundColor: entry.color }} />
+            <span className={cn(
+              "text-sm font-medium",
+              "text-amber-800 dark:text-amber-300"
+            )}>
+              {`${entry.name} (${formatValue(entry.value)})`}
+            </span>
+          </div>
+        ))}
+      </div>
     );
   };
 
+  // Si les deux valeurs sont 0, afficher un graphique vide avec un message
+  const isEmpty = expenseShare === 0 && creditShare === 0;
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          innerRadius={50}
-          outerRadius={80}
-          fill="#8884d8"
-          paddingAngle={5}
-          dataKey="value"
-          labelLine={false}
-          stroke={isDarkTheme ? "rgba(30, 30, 30, 0.4)" : "rgba(255, 255, 255, 0.8)"}
-          strokeWidth={2}
-        >
-          {data.map((entry, index) => (
-            <Cell 
-              key={`cell-${index}`} 
-              fill={COLORS[index % COLORS.length]} 
-              style={{
-                filter: `drop-shadow(0 4px 3px rgb(251 191 36 / 0.07))`
-              }}
-            />
-          ))}
-        </Pie>
-        <Tooltip content={<CustomTooltip />} />
-        <Legend content={renderLegend} />
-      </PieChart>
-    </ResponsiveContainer>
+    <div className="w-full h-full flex flex-col items-center justify-center">
+      {isEmpty ? (
+        <div className="text-center text-amber-600/70 dark:text-amber-400/70 text-sm">
+          Aucune contribution ce mois-ci
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={150}>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              innerRadius={35}
+              outerRadius={60}
+              paddingAngle={5}
+              dataKey="value"
+              stroke={isDarkTheme ? "rgba(30, 30, 30, 0.2)" : "rgba(255, 255, 255, 0.8)"}
+              strokeWidth={1}
+            >
+              {data.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.color} 
+                />
+              ))}
+            </Pie>
+            <Legend content={renderLegend} verticalAlign="bottom" />
+          </PieChart>
+        </ResponsiveContainer>
+      )}
+    </div>
   );
 }
