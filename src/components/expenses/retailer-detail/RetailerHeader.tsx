@@ -1,7 +1,9 @@
+
 import { Link } from "react-router-dom";
 import { ChevronLeft, Plus, Building2, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface RetailerHeaderProps {
   retailer: {
@@ -18,6 +20,9 @@ export function RetailerHeader({
   onAddExpense, 
   colorScheme = "blue" 
 }: RetailerHeaderProps) {
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
+  
   // Configuration des couleurs selon le schéma choisi
   const colors = {
     blue: {
@@ -132,22 +137,38 @@ export function RetailerHeader({
           </div>
         </div>
         
-        {/* Bouton d'ajout */}
+        {/* Bouton d'ajout - modifié pour correspondre au bouton de la page dépenses */}
         <Button 
           onClick={onAddExpense} 
+          variant="outline"
           className={cn(
-            "bg-gradient-to-r shadow-md transition-all",
-            currentColors.gradientFrom,
-            currentColors.gradientTo,
-            currentColors.hoverFrom,
-            currentColors.hoverTo,
-            "text-white font-medium",
-            "hover:shadow-lg",
-            currentColors.shadow
+            "h-10 px-4 border transition-all duration-200 rounded-md",
+            "hover:scale-[1.02] active:scale-[0.98]",
+            // Light mode
+            "bg-white border-blue-200 text-blue-600",
+            "hover:border-blue-300 hover:bg-blue-50/50 hover:text-blue-700",
+            // Dark mode
+            "dark:bg-gray-800 dark:border-blue-800/60 dark:text-blue-400",
+            "dark:hover:bg-blue-900/20 dark:hover:border-blue-700 dark:hover:text-blue-300"
           )}
+          style={{
+            boxShadow: isDarkMode
+              ? "0 2px 10px -2px rgba(37, 99, 235, 0.15)"
+              : "0 2px 10px -2px rgba(37, 99, 235, 0.1)"
+          }}
         >
-          <Plus className="h-4 w-4 mr-2" />
-          Ajouter une dépense
+          <div className="flex items-center gap-1.5">
+            <span className={cn(
+              "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
+              // Light mode
+              "bg-blue-100/80 text-blue-600",
+              // Dark mode
+              "dark:bg-blue-800/50 dark:text-blue-300"
+            )}>
+              <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
+            </span>
+            <span className="font-medium text-sm">Ajouter</span>
+          </div>
         </Button>
       </div>
     </div>
