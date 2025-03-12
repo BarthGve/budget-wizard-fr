@@ -16,7 +16,7 @@ export const TableHeader = ({
 }: TableHeaderProps) => {
   return (
     <ShadcnTableHeader>
-      <TableRow>
+      <TableRow className="bg-gray-50 dark:bg-gray-900">
         <SortableTableHeader
           field="name"
           label="Charge"

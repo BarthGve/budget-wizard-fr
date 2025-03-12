@@ -2,6 +2,8 @@
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { RecurringExpense, periodicityLabels } from "../types";
 import { ExpenseActionsDropdown } from "../dialogs/ExpenseActionsDropdown";
+import { Euro } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ExpenseTableRowsProps {
   expenses: RecurringExpense[];
@@ -18,11 +20,14 @@ export const ExpenseTableRows = ({
 }: ExpenseTableRowsProps) => {
   return (
     <TableBody>
-      {expenses.map((expense) => (
-        <TableRow key={expense.id}>
+      {expenses.map((expense, index) => (
+        <TableRow key={expense.id} className={cn(
+          "transition-colors",
+          index % 2 === 0 ? "bg-white dark:bg-gray-950" : "bg-gray-50/50 dark:bg-gray-900/20"
+        )}>
           <TableCell className="py-2">
             <div className="flex items-center gap-3">
-              {expense.logo_url && (
+              {expense.logo_url ? (
                 <img
                   src={expense.logo_url}
                   alt={expense.name}
@@ -32,6 +37,10 @@ export const ExpenseTableRows = ({
                     target.src = "/placeholder.svg";
                   }}
                 />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+                  <Euro className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                </div>
               )}
               <span className="font-semibold">{expense.name}</span>
             </div>
