@@ -1,48 +1,39 @@
 
 import { TableHead } from "@/components/ui/table";
-import { ArrowUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
-interface SortableTableHeaderProps<T> {
-  field: keyof T;
+interface SortableTableHeaderProps {
+  field: string;
   label: string;
-  currentSortField: keyof T;
+  currentSortField: string;
   sortDirection: "asc" | "desc";
-  onSort: (field: keyof T) => void;
+  onSort: (field: string) => void;
   className?: string;
-  icon?: ReactNode;
 }
 
-export function SortableTableHeader<T>({
+export function SortableTableHeader({
   field,
   label,
   currentSortField,
   sortDirection,
   onSort,
-  className,
-  icon
-}: SortableTableHeaderProps<T>) {
-  const isActive = currentSortField === field;
-  
+  className
+}: SortableTableHeaderProps) {
+  const SortIcon = () => {
+    if (field !== currentSortField) return null;
+    return sortDirection === "asc" ? (
+      <ChevronUp className="h-4 w-4 inline ml-1" />
+    ) : (
+      <ChevronDown className="h-4 w-4 inline ml-1" />
+    );
+  };
+
   return (
-    <TableHead className={className}>
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className={cn(
-          "p-0 hover:bg-transparent flex items-center gap-1", 
-          isActive ? "text-blue-700 dark:text-blue-400" : "text-muted-foreground"
-        )}
-        onClick={() => onSort(field)}
-      >
-        {icon}
-        {label}
-        {isActive && (
-          <ArrowUpDown className="ml-1 h-3 w-3 text-blue-400 dark:text-blue-500" />
-        )}
-      </Button>
+    <TableHead
+      className={`cursor-pointer hover:text-primary transition-colors ${className}`}
+      onClick={() => onSort(field)}
+    >
+      {label} <SortIcon />
     </TableHead>
   );
 }
