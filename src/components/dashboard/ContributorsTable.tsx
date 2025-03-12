@@ -50,31 +50,31 @@ export const ContributorsTable = ({
           // Dark mode styling
           "dark:bg-gray-900/95 dark:border-gray-800 dark:shadow-lg dark:shadow-gray-900/30"
         )}>
-          {/* En-tête stylisé avec titre et icône */}
+          {/* En-tête stylisé avec titre et icône - maintenant avec un fond jaune subtil */}
           <div className={cn(
             "px-4 py-3 border-b flex items-center gap-2",
-            // Light mode styling
-            "border-gray-100 bg-gradient-to-r from-gray-50 to-white",
-            // Dark mode styling
-            "dark:border-gray-800/80 dark:bg-gradient-to-r dark:from-gray-900/95 dark:to-gray-850/90"
+            // Light mode styling avec fond jaune subtil dégradé
+            "border-amber-100 bg-gradient-to-r from-amber-50/90 to-amber-50/60",
+            // Dark mode styling avec fond jaune subtil plus sombre
+            "dark:border-amber-900/20 dark:bg-gradient-to-r dark:from-amber-900/20 dark:to-amber-900/10"
           )}>
             <div className={cn(
               "p-1.5 rounded-full",
-              // Light mode
-              "bg-gray-100",
-              // Dark mode
-              "dark:bg-gray-800"
+              // Light mode - fond légèrement teinté jaune
+              "bg-amber-100/90",
+              // Dark mode - fond ambré sombre
+              "dark:bg-amber-800/30"
             )}>
               <Users className={cn(
                 "h-4 w-4", 
-                "text-gray-500", 
-                "dark:text-gray-300"
+                "text-amber-600/80", 
+                "dark:text-amber-400/90"
               )} />
             </div>
             <h3 className={cn(
               "text-lg font-medium",
-              "text-gray-800",
-              "dark:text-gray-200"
+              "text-amber-900/90",
+              "dark:text-amber-200/90"
             )}>
               Contributeurs
             </h3>
