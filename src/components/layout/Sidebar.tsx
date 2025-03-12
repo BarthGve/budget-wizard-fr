@@ -13,8 +13,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { ProjectAnnouncementCard } from "./ProjectAnnouncementCard";
-import { cn } from "@/lib/utils";
-
 
 interface SidebarProps {
   className?: string;
