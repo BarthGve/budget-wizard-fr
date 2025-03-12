@@ -1,137 +1,130 @@
-
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { getAvatarColor, getInitials } from "@/utils/avatarColors";
+import { cn } from "@/lib/utils";
+import { Crown } from "lucide-react";
 import { useState } from "react";
-import { Contributor } from "@/types/contributor";
-import { ContributorStatsChart } from "./contributor-details/ContributorStatsChart";
-import { ContributorMonthlyDetails } from "./contributor-details/ContributorMonthlyDetails";
-import { ContributorDetailsHeader } from "./contributor-details/ContributorDetailsHeader";
 
-interface ContributorDetailsDialogProps {
-  contributor: Contributor;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+interface ContributorDetailsHeaderProps {
+  name: string;
+  isOwner: boolean;
+  avatarUrl?: string | null;
+  isDarkTheme?: boolean;
 }
 
-const ITEMS_PER_PAGE = 5;
-
-export function ContributorDetailsDialog({ 
-  contributor, 
-  open, 
-  onOpenChange 
-}: ContributorDetailsDialogProps) {
+export function ContributorDetailsHeader({ 
+  name, 
+  isOwner, 
+  avatarUrl,
+  isDarkTheme: forceDarkTheme,
+}: ContributorDetailsHeaderProps) {
   const { theme } = useTheme();
-  const isDarkTheme = theme === "dark";
-  const [currentExpensePage, setCurrentExpensePage] = useState(1);
-  const [currentCreditPage, setCurrentCreditPage] = useState(1);
-
-  const { data: profile } = useQuery({
-    queryKey: ["profile-avatar-details", contributor.is_owner],
-    enabled: contributor.is_owner && open,
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("avatar_url")
-        .eq("id", user.id)
-        .single();
-
-      return data;
-    },
-  });
-
-  // Fetch monthly expenses and credits when modal is open
-  const { data: monthlyData } = useQuery({
-    queryKey: ["contributor-monthly-data", contributor.name],
-    enabled: open,
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
-
-      const [{ data: expenses }, { data: credits }] = await Promise.all([
-        supabase
-          .from("recurring_expenses")
-          .select("*")
-          .eq("profile_id", user.id),
-        supabase
-          .from("credits")
-          .select("*")
-          .eq("profile_id", user.id)
-          .eq("statut", "actif")
-      ]);
-
-      return {
-        expenses: expenses || [],
-        credits: credits || []
-      };
-    },
-  });
-
-  const paginatedData = monthlyData ? {
-    expenses: monthlyData.expenses.slice(
-      (currentExpensePage - 1) * ITEMS_PER_PAGE,
-      currentExpensePage * ITEMS_PER_PAGE
-    ),
-    credits: monthlyData.credits.slice(
-      (currentCreditPage - 1) * ITEMS_PER_PAGE,
-      currentCreditPage * ITEMS_PER_PAGE
-    )
-  } : null;
-
-  const totalPages = {
-    expenses: monthlyData ? Math.ceil(monthlyData.expenses.length / ITEMS_PER_PAGE) : 1,
-    credits: monthlyData ? Math.ceil(monthlyData.credits.length / ITEMS_PER_PAGE) : 1
-  };
-
+  const [imageError, setImageError] = useState(false);
+  
+  const isDarkTheme = forceDarkTheme !== undefined ? forceDarkTheme : theme === "dark";
+  const initials = getInitials(name);
+  const avatarColors = getAvatarColor(name, isDarkTheme);
+  
+  const bgColor = isOwner 
+    ? (isDarkTheme ? 'rgba(251, 191, 36, 0.3)' : 'rgba(251, 191, 36, 0.2)') 
+    : avatarColors.background;
+  
+  const textColor = isOwner 
+    ? (isDarkTheme ? 'rgb(251, 191, 36)' : 'rgb(217, 119, 6)') 
+    : avatarColors.text;
+  
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-    <DialogContent className="max-w-5xl w-[1000px]">
-      <DialogHeader>
-        <ContributorDetailsHeader
-          name={contributor.name}
-          isOwner={contributor.is_owner}
-          avatarUrl={profile?.avatar_url}
-          isDarkTheme={isDarkTheme}
-        />
-      </DialogHeader>
-      <div className="mt-2 grid grid-cols-3 gap-6">
-        {/* Graphique des statistiques */}
-        <div className="col-span-1">
-          <ContributorStatsChart
-            expenseShare={contributor.expenseShare || 0}
-            creditShare={contributor.creditShare || 0}
-          />
-        </div>
-        {/* Détails mensuels, placés en grid pour une meilleure répartition */}
-        {paginatedData && (
-          <div className="col-span-2 grid grid-cols-2 gap-6">
-            <ContributorMonthlyDetails
-              expenses={paginatedData.expenses}
-              currentPage={currentExpensePage}
-              totalPages={totalPages.expenses}
-              contributorPercentage={contributor.percentage_contribution}
-              onPageChange={setCurrentExpensePage}
-            />
-            <ContributorMonthlyDetails
-              expenses={paginatedData.credits}
-              currentPage={currentCreditPage}
-              totalPages={totalPages.credits}
-              contributorPercentage={contributor.percentage_contribution}
-              onPageChange={setCurrentCreditPage}
-              type="credit"
-            />
-          </div>
-        )}
+    <div className={cn(
+      "relative py-5 rounded-2xl mb-3",
+      "bg-white/60 dark:bg-gray-800/40",
+      "border border-amber-100/50 dark:border-amber-800/30",
+      "shadow-sm"
+    )}>
+      <div className={cn(
+        "absolute inset-0 rounded-2xl overflow-hidden",
+        "pointer-events-none"
+      )}>
+        <div className={cn(
+          "absolute -top-20 -right-20 w-56 h-56 rounded-full opacity-10",
+          "bg-gradient-to-br from-amber-400 to-amber-600",
+          "dark:from-amber-500 dark:to-amber-700 dark:opacity-10"
+        )} />
       </div>
-    </DialogContent>
-  </Dialog>
+      
+      <div className="flex items-center space-x-4 relative z-10 px-5">
+        <div className="relative">
+          <Avatar className={cn(
+            "h-14 w-14",
+            "ring-2 ring-offset-2",
+            isOwner 
+              ? "ring-amber-300 dark:ring-amber-500/50 ring-offset-white dark:ring-offset-gray-800" 
+              : "ring-transparent ring-offset-transparent",
+            "transition-shadow hover:shadow-md"
+          )}>
+            {avatarUrl && !imageError ? (
+              <AvatarImage 
+                src={avatarUrl} 
+                alt={name} 
+                onError={() => setImageError(true)}
+                className="object-cover"
+              />
+            ) : null}
+            <AvatarFallback 
+              className={cn(
+                "text-lg font-medium",
+                isOwner && "bg-gradient-to-tr from-amber-500/80 via-amber-400/80 to-amber-500/80"
+              )}
+              style={{
+                backgroundColor: bgColor,
+                color: textColor,
+              }}
+            >
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          
+          {isOwner && (
+            <div className={cn(
+              "absolute -top-1.5 -right-1.5",
+              "text-amber-500 dark:text-amber-400",
+              "bg-white dark:bg-gray-800",
+              "border border-amber-200 dark:border-amber-700/50",
+              "rounded-full p-0.5",
+              "shadow-sm"
+            )}>
+              <Crown size={14} />
+            </div>
+          )}
+        </div>
+        
+        <div className="flex flex-col">
+          <h2 className={cn(
+            "text-xl font-bold",
+            "text-amber-700 dark:text-amber-300",
+            "flex items-center space-x-2"
+          )}>
+            <span>{name}</span>
+            {isOwner && (
+              <span className={cn(
+                "text-xs font-normal py-0.5 px-1.5 rounded-full",
+                "bg-amber-100 text-amber-600",
+                "dark:bg-amber-900/30 dark:text-amber-400",
+                "border border-amber-200 dark:border-amber-700/50"
+              )}>
+                Propriétaire
+              </span>
+            )}
+          </h2>
+          <p className={cn(
+            "text-sm mt-0.5",
+            "text-amber-600/70 dark:text-amber-400/70"
+          )}>
+            {isOwner 
+              ? "Vous êtes le propriétaire de ce budget" 
+              : "Détails du contributeur"}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
