@@ -114,28 +114,30 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     >
       <div className="flex flex-col flex-1 ios-top-safe">
         <div className="p-4 border-b rounded-r-xl border-border">
-        <h1
-  className={cn(   
-    "font-bold tracking-tight transition-all duration-300",
-    "bg-gradient-to-r bg-clip-text text-transparent animate-fade-in",
-    "from-purple-400 via-blue-400 to-green-400", // Version plus douce
-    collapsed ? "text-sm" : "text-xl"
-  )}
->
-  {collapsed ? appConfig.initiales : appConfig.name}
-</h1>
-
+          <div className="flex flex-col gap-2">
+            <h1
+              className={cn(   
+                "font-bold tracking-tight transition-all duration-300",
+                "bg-gradient-to-r bg-clip-text text-transparent animate-fade-in",
+                "from-purple-400 via-blue-400 to-green-400", // Version plus douce
+                collapsed ? "text-sm" : "text-xl"
+              )}
+            >
+              {collapsed ? appConfig.initiales : appConfig.name}
+            </h1>
+            
             <ThemeToggle collapsed={collapsed} />
           </div>
+          
           {!collapsed && (
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline gap-2 mt-2">
               <span className="text-xs text-muted-foreground">
                 v{latestVersion || appConfig.version}
               </span>
             </div>
           )}
         </div>
-  
+
         <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
         
         <div className="mt-auto">
@@ -152,7 +154,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
           <UserDropdown collapsed={collapsed} profile={profile} />
         </div>
       </div>
-  
+
       {!isMobile && (
         <button
           onClick={() => setCollapsed(!collapsed)}
