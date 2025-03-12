@@ -106,6 +106,14 @@ export function ContributorDetailsDialog({
     credits: monthlyData ? Math.max(1, Math.ceil(monthlyData.credits.length / ITEMS_PER_PAGE)) : 1
   };
 
+  // Calculer les montants totaux pour afficher dans le graphique
+  const totalExpenseAmount = monthlyData?.expenses.reduce((sum, item) => sum + (item.amount || 0), 0) || 0;
+  const totalCreditAmount = monthlyData?.credits.reduce((sum, item) => sum + (item.montant_mensualite || 0), 0) || 0;
+  
+  // Calculer les parts du contributeur
+  const expenseShare = totalExpenseAmount * (contributor.percentage_contribution / 100);
+  const creditShare = totalCreditAmount * (contributor.percentage_contribution / 100);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
@@ -116,7 +124,7 @@ export function ContributorDetailsDialog({
           "border border-amber-100/70 dark:border-amber-800/30"
         )}
       >
-        <div className="pt-6 px-6">
+        <div className="pb-0 px-6 pt-6">
           <ContributorDetailsHeader
             name={contributor.name}
             isOwner={contributor.is_owner}
@@ -131,35 +139,37 @@ export function ContributorDetailsDialog({
           </div>
         ) : (
           <div className={cn(
-            "p-6 space-y-6",
+            "p-6 pt-2 space-y-4",
             "animate-in fade-in duration-500"
           )}>
             {/* Première rangée: Chart */}
             <div className={cn(
-              "p-5 rounded-xl",
+              "p-4 rounded-xl",
               "bg-white/70 dark:bg-gray-800/50",
               "border border-amber-100/50 dark:border-amber-800/20",
               "shadow-sm"
             )}>
               <h3 className={cn(
-                "text-lg font-semibold mb-4",
+                "text-base font-semibold mb-2",
                 "text-amber-700 dark:text-amber-300",
                 "border-b border-amber-100/70 dark:border-amber-800/30",
                 "pb-2"
               )}>
                 Répartition des contributions
               </h3>
-              <div className="h-[180px]">
+              <div className="h-[180px] flex justify-center items-center">
                 <ContributorStatsChart
-                  expenseShare={contributor.expenseShare || 0}
-                  creditShare={contributor.creditShare || 0}
+                  expenseShare={expenseShare}
+                  creditShare={creditShare}
+                  expenseAmount={totalExpenseAmount}
+                  creditAmount={totalCreditAmount}
                 />
               </div>
             </div>
             
             {/* Deuxième rangée: Détails */}
             {paginatedData && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ContributorMonthlyDetails
                   expenses={paginatedData.expenses}
                   currentPage={currentExpensePage}
