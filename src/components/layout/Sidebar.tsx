@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,8 +14,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
 import { ProjectAnnouncementCard } from "./ProjectAnnouncementCard";
-import { cn } from "@/lib/utils";
-
 
 interface SidebarProps {
   className?: string;
@@ -115,30 +114,24 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     >
       <div className="flex flex-col flex-1 ios-top-safe">
         <div className="p-4 border-b rounded-r-xl border-border">
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between">
-           <h1
-                  className={cn(   
-                    "font-bold text-foreground tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in transition-all duration-300",
-                    collapsed ? "text-sm" : "text-xl"
-                  )}
-                >
-                  {collapsed ? appConfig.initiales : appConfig.name}
-                </h1>
-              </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <ThemeToggle collapsed={collapsed} />
-              </div>
-            </div>
-            {!collapsed && (
-             <div className="flex items-baseline gap-2">
-               <span className="text-xs text-muted-foreground">
-                 v{latestVersion || appConfig.version}
-               </span>
-             </div>
-            )}
+          <div className="flex items-center justify-between">
+            <h1
+              className={cn(   
+                "font-bold text-foreground tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in transition-all duration-300",
+                collapsed ? "text-sm" : "text-xl"
+              )}
+            >
+              {collapsed ? appConfig.initiales : appConfig.name}
+            </h1>
+            <ThemeToggle collapsed={collapsed} />
           </div>
+          {!collapsed && (
+            <div className="flex items-baseline gap-2">
+              <span className="text-xs text-muted-foreground">
+                v{latestVersion || appConfig.version}
+              </span>
+            </div>
+          )}
         </div>
   
         <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
