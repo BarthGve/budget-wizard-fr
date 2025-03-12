@@ -131,6 +131,8 @@ export const RecurringExpensesPieChart = ({
                   isAnimationActive={true}
                   animationBegin={200}
                   animationDuration={800}
+                      
+                  cornerRadius={6}
                 >
                   <Label
                     content={({ viewBox }) => {
