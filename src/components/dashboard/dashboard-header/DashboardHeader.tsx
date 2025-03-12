@@ -82,9 +82,8 @@ export const DashboardHeader = memo(({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       className={cn(
-        "pb-4 mb-2 border-b",
-        "border-gray-100", // Light mode
-        "dark:border-gray-800" // Dark mode
+        "pb-4 mb-2",
+    
       )}
     >
       <div className="flex items-center justify-between">
