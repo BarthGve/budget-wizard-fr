@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { PaginationControls } from "@/components/properties/expenses/PaginationControls";
-import { Euro, CreditCard, HomeIcon, ShoppingBag } from "lucide-react";
+import { Euro, CreditCard, HomeIcon, ShoppingBag, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ContributorMonthlyDetailsProps {
@@ -30,52 +30,68 @@ export function ContributorMonthlyDetails({
 }: ContributorMonthlyDetailsProps) {
   const isCredit = type === "credit";
 
+  const getCategoryIcon = (category?: string) => {
+    if (isCredit) return <CreditCard className="h-4 w-4" />;
+    
+    if (!category) return <Tag className="h-4 w-4" />;
+    
+    const lowerCategory = category.toLowerCase();
+    if (lowerCategory.includes('logement') || lowerCategory.includes('maison')) {
+      return <HomeIcon className="h-4 w-4" />;
+    }
+    return <ShoppingBag className="h-4 w-4" />;
+  };
+
   return (
     <Card className={cn(
-      "overflow-hidden border-0 shadow-md",
+      "overflow-hidden border-0 h-full",
+      "shadow-sm",
       "bg-white dark:bg-gray-800",
-      "ring-1 ring-amber-100/50 dark:ring-amber-700/20"
+      "ring-1 ring-amber-100/30 dark:ring-amber-700/10"
     )}>
       {/* En-tête stylisé */}
       <div className={cn(
-        "px-5 py-4 flex items-center justify-between",
-        "border-b border-amber-100/70 dark:border-amber-800/30",
-        "bg-gradient-to-r from-amber-50/80 to-transparent",
-        "dark:from-amber-900/10 dark:to-transparent"
+        "px-4 py-3 flex items-center justify-between",
+        "border-b border-amber-100/50 dark:border-amber-800/20",
+        "bg-gradient-to-r from-amber-50/70 to-transparent",
+        "dark:from-amber-900/5 dark:to-transparent"
       )}>
         <h3 className={cn(
-          "text-lg font-semibold flex items-center space-x-2",
+          "text-base font-semibold flex items-center space-x-2",
           "text-amber-700 dark:text-amber-300"
         )}>
           {isCredit ? (
             <>
-              <CreditCard className="h-5 w-5 text-amber-500 dark:text-amber-400" strokeWidth={2} />
-              <span>Contributions aux crédits</span>
+              <CreditCard className="h-4 w-4 text-amber-500 dark:text-amber-400" strokeWidth={2} />
+              <span>Crédits ({expenses.length})</span>
             </>
           ) : (
             <>
-              <ShoppingBag className="h-5 w-5 text-amber-500 dark:text-amber-400" strokeWidth={2} />
-              <span>Contributions aux charges</span>
+              <ShoppingBag className="h-4 w-4 text-amber-500 dark:text-amber-400" strokeWidth={2} />
+              <span>Charges ({expenses.length})</span>
             </>
           )}
         </h3>
         <div className={cn(
-          "px-3 py-1 rounded-full text-sm font-medium",
-          "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400",
-          "border border-amber-200/50 dark:border-amber-700/30"
+          "px-2 py-1 rounded-full text-xs font-medium",
+          "bg-amber-100 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400",
+          "border border-amber-200/50 dark:border-amber-700/20"
         )}>
           {contributorPercentage}%
         </div>
       </div>
 
       {/* Liste des contributions */}
-      <div className="px-5 py-3 divide-y divide-amber-100/50 dark:divide-gray-700/70">
+      <div className={cn(
+        "px-4 pt-2 pb-3", 
+        expenses.length > 0 ? "divide-y divide-amber-100/40 dark:divide-gray-700/50" : ""
+      )}>
         {expenses.length === 0 ? (
           <div className={cn(
             "py-8 text-center text-sm",
-            "text-amber-600/70 dark:text-amber-400/70"
+            "text-amber-600/60 dark:text-amber-400/60"
           )}>
-            Aucune contribution pour le moment
+            Aucune {isCredit ? "crédit" : "charge"} pour ce mois
           </div>
         ) : (
           expenses.map((item) => {
@@ -88,47 +104,37 @@ export function ContributorMonthlyDetails({
               <div
                 key={item.id}
                 className={cn(
-                  "flex items-center justify-between py-3.5",
-                  "transition hover:bg-amber-50/50 dark:hover:bg-amber-900/5",
-                  "rounded-md -mx-1 px-1"
+                  "flex items-center justify-between py-3",
+                  "transition hover:bg-amber-50/30 dark:hover:bg-amber-900/5"
                 )}
               >
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2.5">
                   <div className={cn(
-                    "p-2 rounded-md",
-                    "bg-amber-100/60 text-amber-600 dark:bg-gray-700/70 dark:text-amber-400",
+                    "p-1.5 rounded-md",
+                    "bg-amber-100/50 text-amber-600 dark:bg-gray-700/50 dark:text-amber-400",
                     "flex items-center justify-center"
                   )}>
-                    {isCredit ? (
-                      <CreditCard className="h-4 w-4" />
-                    ) : (
-                      category?.toLowerCase().includes('logement') ||
-                      category?.toLowerCase().includes('maison') ? (
-                        <HomeIcon className="h-4 w-4" />
-                      ) : (
-                        <ShoppingBag className="h-4 w-4" />
-                      )
-                    )}
+                    {getCategoryIcon(category)}
                   </div>
                   <div>
                     <p className={cn(
-                      "font-medium",
+                      "font-medium text-sm",
                       "text-amber-800 dark:text-amber-300"
                     )}>
-                      {name}
+                      {name || 'Sans nom'}
                     </p>
-                    <p className="text-sm text-amber-600/60 dark:text-amber-400/60">
+                    <p className="text-xs text-amber-600/60 dark:text-amber-400/60">
                       {category || 'Non catégorisé'}
                     </p>
                   </div>
                 </div>
                 <div className={cn(
-                  "flex items-center space-x-1.5",
-                  "px-3 py-1.5 rounded-md",
+                  "flex items-center space-x-1",
+                  "px-2 py-1 rounded-md",
                   "bg-amber-50 dark:bg-amber-900/10",
                   "border border-amber-100 dark:border-amber-800/30",
                   "text-amber-700 dark:text-amber-400",
-                  "font-medium"
+                  "text-xs font-medium"
                 )}>
                   <Euro className="h-3 w-3" />
                   <span>
@@ -144,15 +150,15 @@ export function ContributorMonthlyDetails({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className={cn(
-          "border-t border-amber-100/70 dark:border-amber-800/30",
-          "p-4 flex justify-center"
+          "border-t border-amber-100/50 dark:border-amber-800/20",
+          "p-3 flex justify-center"
         )}>
           <PaginationControls
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={onPageChange}
             className={cn(
-              "pagination-amber",
+              "pagination-amber scale-90 transform",
               "[&_.pagination-button]:text-amber-600 [&_.pagination-button]:dark:text-amber-400",
               "[&_.pagination-button.active]:bg-amber-100 [&_.pagination-button.active]:dark:bg-amber-900/30",
               "[&_.pagination-button]:hover:bg-amber-50 [&_.pagination-button]:dark:hover:bg-amber-900/20"

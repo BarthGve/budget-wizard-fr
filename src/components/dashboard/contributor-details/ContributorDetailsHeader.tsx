@@ -21,13 +21,10 @@ export function ContributorDetailsHeader({
   const { theme } = useTheme();
   const [imageError, setImageError] = useState(false);
   
-  // Utiliser le thème du système si isDarkTheme n'est pas explicitement fourni
   const isDarkTheme = forceDarkTheme !== undefined ? forceDarkTheme : theme === "dark";
-  
   const initials = getInitials(name);
   const avatarColors = getAvatarColor(name, isDarkTheme);
   
-  // Si c'est le propriétaire, on utilise des couleurs spécifiques pour le distinguer
   const bgColor = isOwner 
     ? (isDarkTheme ? 'rgba(251, 191, 36, 0.3)' : 'rgba(251, 191, 36, 0.2)') 
     : avatarColors.background;
@@ -38,9 +35,8 @@ export function ContributorDetailsHeader({
   
   return (
     <div className={cn(
-      "relative py-6 px-6 rounded-2xl mb-5",
-      "bg-gradient-to-br from-amber-50/80 to-white",
-      "dark:from-amber-900/10 dark:to-gray-800/90",
+      "relative py-5 rounded-2xl mb-3",
+      "bg-white/60 dark:bg-gray-800/40",
       "border border-amber-100/50 dark:border-amber-800/30",
       "shadow-sm"
     )}>
@@ -48,15 +44,14 @@ export function ContributorDetailsHeader({
         "absolute inset-0 rounded-2xl overflow-hidden",
         "pointer-events-none"
       )}>
-        {/* Cercle décoratif en arrière-plan */}
         <div className={cn(
-          "absolute -top-20 -right-20 w-56 h-56 rounded-full opacity-20",
+          "absolute -top-20 -right-20 w-56 h-56 rounded-full opacity-10",
           "bg-gradient-to-br from-amber-400 to-amber-600",
           "dark:from-amber-500 dark:to-amber-700 dark:opacity-10"
         )} />
       </div>
       
-      <div className="flex items-center space-x-4 relative z-10">
+      <div className="flex items-center space-x-4 relative z-10 px-5">
         <div className="relative">
           <Avatar className={cn(
             "h-14 w-14",
@@ -88,7 +83,6 @@ export function ContributorDetailsHeader({
             </AvatarFallback>
           </Avatar>
           
-          {/* Badge de propriétaire */}
           {isOwner && (
             <div className={cn(
               "absolute -top-1.5 -right-1.5",
