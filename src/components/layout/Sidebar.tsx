@@ -114,15 +114,17 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     >
       <div className="flex flex-col flex-1 ios-top-safe">
         <div className="p-4 border-b rounded-r-xl border-border">
-          <div className="flex items-center justify-between">
-            <h1
-              className={cn(   
-                "font-bold text-foreground tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in transition-all duration-300",
-                collapsed ? "text-sm" : "text-xl"
-              )}
-            >
-              {collapsed ? appConfig.initiales : appConfig.name}
-            </h1>
+        <h1
+  className={cn(   
+    "font-bold tracking-tight transition-all duration-300",
+    "bg-gradient-to-r bg-clip-text text-transparent animate-fade-in",
+    "from-purple-400 via-blue-400 to-green-400", // Version plus douce
+    collapsed ? "text-sm" : "text-xl"
+  )}
+>
+  {collapsed ? appConfig.initiales : appConfig.name}
+</h1>
+
             <ThemeToggle collapsed={collapsed} />
           </div>
           {!collapsed && (
