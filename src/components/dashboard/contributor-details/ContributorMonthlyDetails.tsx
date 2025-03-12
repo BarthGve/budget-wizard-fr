@@ -29,6 +29,12 @@ export function ContributorMonthlyDetails({
   type = "expense"
 }: ContributorMonthlyDetailsProps) {
   const isCredit = type === "credit";
+  
+  // Formater le pourcentage avec exactement 2 décimales et virgule comme séparateur décimal
+  const formattedPercentage = contributorPercentage.toFixed(2).replace('.', ',');
+
+  // Fonction helper pour formater les nombres avec virgule
+  const formatNumber = (value: number) => value.toFixed(2).replace('.', ',');
 
   const getCategoryIcon = (category?: string) => {
     if (isCredit) return <CreditCard className="h-4 w-4" />;
@@ -77,7 +83,7 @@ export function ContributorMonthlyDetails({
           "bg-amber-100 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400",
           "border border-amber-200/50 dark:border-amber-700/20"
         )}>
-          {contributorPercentage}%
+          {formattedPercentage}%
         </div>
       </div>
 
@@ -91,7 +97,7 @@ export function ContributorMonthlyDetails({
             "py-8 text-center text-sm",
             "text-amber-600/60 dark:text-amber-400/60"
           )}>
-            Aucune {isCredit ? "crédit" : "charge"} pour ce mois
+            Aucun{isCredit ? " crédit" : "e charge"} pour ce mois
           </div>
         ) : (
           expenses.map((item) => {
@@ -138,7 +144,7 @@ export function ContributorMonthlyDetails({
                 )}>
                   <Euro className="h-3 w-3" />
                   <span>
-                    {contributionAmount.toFixed(2)}
+                    {formatNumber(contributionAmount)}
                   </span>
                 </div>
               </div>
