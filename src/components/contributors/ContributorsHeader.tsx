@@ -13,7 +13,7 @@ export const ContributorsHeader = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="pb-4 mb-2 border-b border-gray-100 flex items-center justify-between"
+      className="pb-4 mb-2 flex items-center justify-between"
     >
       <div className="flex items-start gap-3">
         <motion.div
