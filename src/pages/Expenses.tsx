@@ -164,7 +164,7 @@ const Expenses = memo(function Expenses() {
         animate="visible"
         variants={containerVariants}
       >
-        <motion.div variants={itemVariants} className="space-y-2">
+        <motion.div variants={itemVariants} className="space-y-4">
           <motion.div 
             className="pb-4 mb-2 border-b border-gray-100 flex justify-between items-center"
             initial={{ opacity: 0, y: 20 }}
