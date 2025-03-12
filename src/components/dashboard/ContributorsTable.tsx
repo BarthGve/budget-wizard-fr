@@ -73,8 +73,8 @@ export const ContributorsTable = ({
             </div>
             <h3 className={cn(
               "text-lg font-medium",
-              "text-amber-900/90",
-              "dark:text-amber-200/90"
+              "text-black,
+              "dark:text-white"
             )}>
               Contributeurs
             </h3>
