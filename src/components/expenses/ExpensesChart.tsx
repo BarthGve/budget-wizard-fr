@@ -18,12 +18,13 @@ interface ExpensesChartProps {
   viewMode: 'monthly' | 'yearly';
 }
 
+// Nouvelle configuration des couleurs du graphique avec du bleu
 const chartConfig = {
   expenses: {
     label: "Dépenses",
     theme: {
-      light: "#8B5CF6",
-      dark: "#8B5CF6"
+      light: "#3B82F6", // Bleu plus vif qui correspond à l'image de référence
+      dark: "#60A5FA"
     }
   }
 };
@@ -121,7 +122,7 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
                 />
                 <Bar 
                   dataKey="total" 
-                  fill="#8B5CF6"
+                  fill="#3B82F6" // Remplace le violet par un bleu qui correspond à l'image
                   radius={[4, 4, 0, 0]}
                   maxBarSize={50}
                 />
