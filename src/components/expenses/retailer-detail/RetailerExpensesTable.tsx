@@ -278,7 +278,7 @@ export function RetailerExpensesTable({
       )} />
       
       <CardHeader className="relative z-10">
-  <div className="flex justify-between items-start mb-2">
+  <div className="flex justify-between items-start ">
     <div>
       <CardTitle className={cn(
         "text-xl font-semibold flex items-center gap-2",
