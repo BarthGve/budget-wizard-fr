@@ -1,5 +1,7 @@
+
 import { RetailerStatsCard } from "@/components/expenses/RetailerStatsCard";
 import { Calendar, Wallet, Calculator } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface RetailerStatsProps {
   monthlyTotal: number;
@@ -24,39 +26,73 @@ export function RetailerStats({
   previousYearTotal,
   className
 }: RetailerStatsProps) {
+  // Animation variants pour l'apparition des cartes
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.4 }
+    }
+  };
+
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${className || ""}`}>
+    <motion.div 
+      className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${className || ""}`}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Carte des dépenses mensuelles */}
-      <RetailerStatsCard
-        title="Dépenses du mois"
-        amount={monthlyTotal}
-        count={monthlyCount}
-        label="achats ce mois-ci"
-        className="bg-gradient-to-br from-blue-600/90 to-indigo-700/90 text-white border-blue-400/20"
-        previousAmount={previousMonthTotal}
-        icon={<Calendar className="h-5 w-5 text-blue-200" />}
-      />
+      <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+        <RetailerStatsCard
+          title="Dépenses du mois"
+          amount={monthlyTotal}
+          count={monthlyCount}
+          label="achats ce mois-ci"
+          className="border shadow-sm overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10"
+          previousAmount={previousMonthTotal}
+          icon={<Calendar className="h-5 w-5 text-blue-500 dark:text-blue-300" />}
+          colorScheme="blue"
+        />
+      </motion.div>
       
       {/* Carte des dépenses annuelles */}
-      <RetailerStatsCard
-        title="Dépenses de l'année"
-        amount={yearlyTotal}
-        count={yearlyCount}
-        label="achats cette année"
-        className="bg-gradient-to-br from-violet-600/90 to-purple-700/90 text-white border-purple-400/20"
-        previousAmount={previousYearTotal}
-        icon={<Wallet className="h-5 w-5 text-purple-200" />}
-      />
+      <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+        <RetailerStatsCard
+          title="Dépenses de l'année"
+          amount={yearlyTotal}
+          count={yearlyCount}
+          label="achats cette année"
+          className="border shadow-sm overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10"
+          previousAmount={previousYearTotal}
+          icon={<Wallet className="h-5 w-5 text-purple-500 dark:text-purple-300" />}
+          colorScheme="purple"
+        />
+      </motion.div>
       
       {/* Carte de la moyenne mensuelle */}
-      <RetailerStatsCard
-        title="Moyenne mensuelle"
-        amount={monthlyAverage}
-        count={monthlyAverageCount}
-        label="achats par mois"
-        className="bg-gradient-to-br from-amber-500/90 to-orange-600/90 text-white border-orange-400/20"
-        icon={<Calculator className="h-5 w-5 text-orange-200" />}
-      />
-    </div>
+      <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+        <RetailerStatsCard
+          title="Moyenne mensuelle"
+          amount={monthlyAverage}
+          count={monthlyAverageCount}
+          label="achats par mois"
+          className="border shadow-sm overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10"
+          icon={<Calculator className="h-5 w-5 text-amber-500 dark:text-amber-300" />}
+          colorScheme="amber"
+        />
+      </motion.div>
+    </motion.div>
   );
 }

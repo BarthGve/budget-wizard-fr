@@ -11,6 +11,8 @@ interface RetailerStatsCardProps {
   label: string;
   className?: string;
   previousAmount?: number;  // Montant précédent pour calculer la variation
+  icon?: React.ReactNode;
+  colorScheme?: "blue" | "purple" | "amber";
 }
 
 export function RetailerStatsCard({ 
@@ -19,7 +21,9 @@ export function RetailerStatsCard({
   count, 
   label, 
   className,
-  previousAmount 
+  previousAmount,
+  icon,
+  colorScheme = "blue"
 }: RetailerStatsCardProps) {
   const hasVariation = previousAmount !== undefined && previousAmount !== 0;
   const percentageChange = hasVariation
@@ -27,31 +31,103 @@ export function RetailerStatsCard({
     : 0;
   const isIncrease = percentageChange > 0;
 
+  // Styles basés sur le colorScheme
+  const getColorStyles = () => {
+    switch(colorScheme) {
+      case "purple":
+        return {
+          iconBg: "bg-purple-100 dark:bg-purple-900/30",
+          iconText: "text-purple-600 dark:text-purple-300",
+          title: "text-purple-700 dark:text-purple-300",
+          increaseText: "text-red-500 dark:text-red-300",
+          decreaseText: "text-green-500 dark:text-green-300",
+          primaryText: "text-purple-700 dark:text-purple-200",
+          secondaryText: "text-purple-600/80 dark:text-purple-300/80"
+        };
+      case "amber":
+        return {
+          iconBg: "bg-amber-100 dark:bg-amber-900/30", 
+          iconText: "text-amber-600 dark:text-amber-300",
+          title: "text-amber-700 dark:text-amber-300",
+          increaseText: "text-red-500 dark:text-red-300",
+          decreaseText: "text-green-500 dark:text-green-300",
+          primaryText: "text-amber-700 dark:text-amber-200",
+          secondaryText: "text-amber-600/80 dark:text-amber-300/80"
+        };
+      default: // blue
+        return {
+          iconBg: "bg-blue-100 dark:bg-blue-900/30",
+          iconText: "text-blue-600 dark:text-blue-300",
+          title: "text-blue-700 dark:text-blue-300",
+          increaseText: "text-red-500 dark:text-red-300",
+          decreaseText: "text-green-500 dark:text-green-300", 
+          primaryText: "text-blue-700 dark:text-blue-200",
+          secondaryText: "text-blue-600/80 dark:text-blue-300/80"
+        };
+    }
+  };
+
+  const colors = getColorStyles();
+
   return (
-    <Card className={cn("p-6 text-white", className)}>
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <div className="mt-2 space-y-1">
+    <Card className={cn(
+      "border overflow-hidden transition-all duration-200",
+      // Light mode base
+      "bg-white hover:shadow-md",
+      // Dark mode base 
+      "dark:bg-gray-800/90 dark:hover:bg-opacity-95 dark:border-gray-700/50",
+      className
+    )}>
+      <div className="p-5">
+        {/* En-tête avec titre et icône */}
         <div className="flex items-center justify-between">
-          <p className="text-2xl font-bold">{formatCurrency(amount)}</p>
-          
-          {hasVariation && (
-            <div className="flex items-center gap-1">
-              {isIncrease ? (
-                <MoveUpRight className="h-4 w-4 text-red-400" />
-              ) : (
-                <MoveDownRight className="h-4 w-4 text-green-400" />
-              )}
-              <span className={cn("text-sm", 
-                isIncrease ? "text-red-400" : "text-green-400"
-              )}>
-                {Math.abs(percentageChange).toFixed(1)}%
-              </span>
+          <h3 className={cn("text-lg font-medium", colors.title)}>{title}</h3>
+          {icon && (
+            <div className={cn("p-2 rounded-lg", colors.iconBg)}>
+              <div className={colors.iconText}>
+                {icon}
+              </div>
             </div>
           )}
         </div>
-        <p className="text-sm opacity-90">
-          {count.toFixed(1)} {label}
-        </p>
+        
+        {/* Montant principal et nombre */}
+        <div className="mt-4 space-y-1.5">
+          <p className={cn("text-2xl font-bold", colors.primaryText)}>
+            {formatCurrency(amount)}
+          </p>
+          <p className={cn("text-sm", colors.secondaryText)}>
+            {count.toLocaleString('fr-FR')} {label}
+          </p>
+        </div>
+        
+        {/* Indicateur de variation */}
+        {hasVariation && (
+          <div className="flex items-center gap-1 mt-3">
+            {isIncrease ? (
+              <div className="flex items-center">
+                <div className="p-1 rounded-full bg-red-100/80 dark:bg-red-900/30">
+                  <MoveUpRight className="h-3 w-3 text-red-500 dark:text-red-300" />
+                </div>
+                <span className={cn("text-sm ml-1", colors.increaseText)}>
+                  +{Math.abs(percentageChange).toFixed(1)}%
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <div className="p-1 rounded-full bg-green-100/80 dark:bg-green-900/30">
+                  <MoveDownRight className="h-3 w-3 text-green-500 dark:text-green-300" />
+                </div>
+                <span className={cn("text-sm ml-1", colors.decreaseText)}>
+                  -{Math.abs(percentageChange).toFixed(1)}%
+                </span>
+              </div>
+            )}
+            <span className="text-xs ml-1 text-gray-500 dark:text-gray-400">
+              {title.includes("mois") ? "vs mois précédent" : "vs année précédente"}
+            </span>
+          </div>
+        )}
       </div>
     </Card>
   );
