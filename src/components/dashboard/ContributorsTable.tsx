@@ -7,7 +7,7 @@ import { useProfileAvatar } from "@/hooks/useProfileAvatar";
 import { ContributorsTableHeader } from "./contributor-table/ContributorsTableHeader";
 import { ContributorsTableContent } from "./contributor-table/ContributorsTableContent";
 import { motion } from "framer-motion";
-import { Users } from "lucide-react"; // Icône pour les contributeurs
+import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ContributorsTableProps {
