@@ -48,7 +48,7 @@ export const CreditCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300 hover:shadow-md",
           // Light mode styles
-          "bg-gradient-to-br from-white to-purple-50 shadow-sm border border-purple-100",
+          "bg-gradient-to-br from-white to-purple-50 shadow-lg border border-purple-100",
           // Dark mode styles
           "dark:bg-gradient-to-br dark:from-gray-900 dark:to-purple-950 dark:border-purple-900/50 dark:shadow-purple-900/10"
         )}
