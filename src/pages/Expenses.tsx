@@ -226,7 +226,7 @@ const Expenses = memo(function Expenses() {
             <CreateRetailerBanner />
           </motion.div>
 
-          <motion.div variants={itemVariants} className="mt-8">
+          <motion.div variants={itemVariants} className="mt-8 mb-8">
             <YearlyTotalCard 
               key={`total-card-${currentYearTotal}`}
               currentYearTotal={currentYearTotal} 
