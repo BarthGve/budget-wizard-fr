@@ -29,28 +29,9 @@ export const ContributorCardActions = ({
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button 
-          type="button"
-          size="icon"
-          onClick={(e) => e.stopPropagation()}
-          className={cn(
-            "h-8 w-8 rounded-lg p-0 transition-all",
-            "border",
-            // Light mode
-            "bg-white hover:bg-amber-50 border-amber-200/70 text-amber-600",
-            "hover:text-amber-700 hover:border-amber-300/70",
-            // Dark mode
-            "dark:bg-gray-800 dark:border-gray-700 dark:text-amber-400",
-            "dark:hover:bg-gray-800/90 dark:hover:border-amber-700/50 dark:hover:text-amber-300"
-          )}
-          style={{
-            boxShadow: isDarkMode 
-              ? '0 1px 3px rgba(0,0,0,0.2)'
-              : '0 1px 3px rgba(0,0,0,0.05)'
-          }}
-        >
-          <MoreVertical className="h-4 w-4" />
-        </Button>
+       <Button variant="outline" size="icon" className="h-8 w-8" type="button">
+            <MoreVertical className="h-4 w-4" />
+          </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="end" 
