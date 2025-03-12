@@ -1,104 +1,108 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
-import { useTheme } from "next-themes";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { Doughnut } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Card } from '@/components/ui/card';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+import { formatCurrency } from '@/lib/formatters';
 
-interface ContributorStatsChartProps {
-  expenseShare: number;
-  creditShare: number;
-  expenseAmount?: number;
-  creditAmount?: number;
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+interface ExpensesChartProps {
+  totalExpenses: number;
+  totalCredits: number;
 }
 
-export function ContributorStatsChart({ 
-  expenseShare, 
-  creditShare,
-  expenseAmount = 0,
-  creditAmount = 0
-}: ContributorStatsChartProps) {
+export const ExpensesChart = ({ totalExpenses, totalCredits }: ExpensesChartProps) => {
   const { theme } = useTheme();
-  const isDarkTheme = theme === "dark";
-  
-  // Formater les valeurs pour avoir 2 décimales et ajouter le symbole €
-  const formatValue = (value: number) => `${value.toFixed(2)} €`;
-  
-  const data = [
-    { 
-      name: "Charges", 
-      value: expenseShare,
-      fullValue: expenseAmount,
-      color: "#fbbf24" // Ambre-400
-    },
-    { 
-      name: "Crédits", 
-      value: creditShare,
-      fullValue: creditAmount,
-      color: "#f59e0b" // Ambre-500
-    }
-  ];
-  
-  // Couleurs plus vives pour mieux correspondre à l'image
-  const COLORS = ["#fbbf24", "#f59e0b"];
-  
-  // Ne pas afficher le tooltip pour simplifier comme dans l'image
-  const CustomTooltip = ({ active, payload }: any) => null;
+  const isDarkTheme = theme === 'dark';
 
-  // Render custom legend that matches the screenshot
-  const renderLegend = (props: any) => {
-    return (
-      <div className="flex justify-center mt-3 gap-8">
-        {data.map((entry, index) => (
-          <div key={`legend-${index}`} className="flex items-center">
-            <div className={cn(
-              "inline-block w-3 h-3 rounded-full mr-2",
-              "bg-amber-400 dark:bg-amber-400"
-            )} style={{ backgroundColor: entry.color }} />
-            <span className={cn(
-              "text-sm font-medium",
-              "text-amber-800 dark:text-amber-300"
-            )}>
-              {`${entry.name} (${formatValue(entry.value)})`}
-            </span>
-          </div>
-        ))}
-      </div>
-    );
+  // Couleurs cohérentes avec votre design
+  const expensesColor = '#FFCA28'; // Jaune ambré pour les charges
+  const creditsColor = '#FFA726';  // Orange plus foncé pour les crédits
+
+  // S'assurer qu'on a des données à afficher
+  const expensesValue = Math.max(0, totalExpenses);
+  const creditsValue = Math.max(0, totalCredits);
+  const total = expensesValue + creditsValue;
+
+  if (total === 0) return null;
+
+  const data = {
+    labels: ['Charges', 'Crédits'],
+    datasets: [
+      {
+        data: [expensesValue, creditsValue],
+        backgroundColor: [expensesColor, creditsColor],
+        borderColor: isDarkTheme ? '#1A1E2A' : '#FFFFFF',
+        borderWidth: 2,
+        borderRadius: 6, // Ajout du radius pour arrondir les segments
+        hoverOffset: 4,
+        cutout: '70%',
+      },
+    ],
   };
 
-  // Si les deux valeurs sont 0, afficher un graphique vide avec un message
-  const isEmpty = expenseShare === 0 && creditShare === 0;
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            const value = context.raw;
+            const percentage = Math.round((value / total) * 100);
+            return `${context.label}: ${formatCurrency(value)} (${percentage}%)`;
+          }
+        }
+      },
+    },
+  };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center">
-      {isEmpty ? (
-        <div className="text-center text-amber-600/70 dark:text-amber-400/70 text-sm">
-          Aucune contribution ce mois-ci
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4 }}
+      className="w-full"
+    >
+      <Card className={cn(
+        "p-4 shadow-md",
+        "bg-white border border-gray-100",
+        "dark:bg-gray-900/95 dark:border-gray-800 dark:shadow-lg dark:shadow-gray-900/30"
+      )}>
+        <div className="flex flex-col items-center space-y-6">
+          <div className="h-64 w-full relative">
+            <Doughnut data={data} options={options} />
+          </div>
+          
+          <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6 w-full">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: expensesColor }}></div>
+              <span className={cn(
+                "text-sm font-medium", 
+                "text-gray-800 dark:text-gray-200"
+              )}>
+                Charges ({formatCurrency(expensesValue)})
+              </span>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: creditsColor }}></div>
+              <span className={cn(
+                "text-sm font-medium", 
+                "text-gray-800 dark:text-gray-200"
+              )}>
+                Crédits ({formatCurrency(creditsValue)})
+              </span>
+            </div>
+          </div>
         </div>
-      ) : (
-        <ResponsiveContainer width="100%" height={150}>
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              innerRadius={35}
-              outerRadius={60}
-              paddingAngle={5}
-              dataKey="value"
-              stroke={isDarkTheme ? "rgba(30, 30, 30, 0.2)" : "rgba(255, 255, 255, 0.8)"}
-              strokeWidth={1}
-            >
-              {data.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={entry.color} 
-                />
-              ))}
-            </Pie>
-            <Legend content={renderLegend} verticalAlign="bottom" />
-          </PieChart>
-        </ResponsiveContainer>
-      )}
-    </div>
+      </Card>
+    </motion.div>
   );
-}
+};
