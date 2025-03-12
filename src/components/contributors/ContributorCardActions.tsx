@@ -34,7 +34,7 @@ export const ContributorCardActions = ({
           size="icon"
           onClick={(e) => e.stopPropagation()}
           className={cn(
-            "h-8 w-8 rounded-full p-0 transition-all",
+            "h-8 w-8 rounded-lg p-0 transition-all",
             "border",
             // Light mode
             "bg-white hover:bg-amber-50 border-amber-200/70 text-amber-600",
