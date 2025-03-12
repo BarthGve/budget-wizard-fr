@@ -180,7 +180,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
                 className={cn(
                   "text-lg font-medium transition-colors",
                   // Teinte bleue pour le nom de l'enseigne
-                  "text-blue-900 hover:text-blue-600",
+                  "text-blue-700 hover:text-blue-600",
                   // Dark mode
                   "dark:text-blue-300 dark:hover:text-blue-400"
                 )}
