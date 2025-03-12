@@ -16,6 +16,8 @@ import { UserPlus, Loader2, Plus } from "lucide-react";
 import { useQueryClient } from '@tanstack/react-query';
 import { Progress } from "@/components/ui/progress";
 
+import { cn } from "@/lib/utils";
+
 interface AddContributorDialogProps {
   onAdd: (contributor: NewContributor) => void;
 }
