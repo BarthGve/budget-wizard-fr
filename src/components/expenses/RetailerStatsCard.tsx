@@ -91,43 +91,52 @@ export function RetailerStatsCard({
           )}
         </div>
         
-        {/* Montant principal et nombre */}
+        {/* Montant principal et variation déplacée sur la même ligne */}
         <div className="mt-4 space-y-1.5">
-          <p className={cn("text-2xl font-bold", colors.primaryText)}>
-            {formatCurrency(amount)}
-          </p>
-          <p className={cn("text-sm", colors.secondaryText)}>
-            {count.toLocaleString('fr-FR')} {label}
-          </p>
-        </div>
-        
-        {/* Indicateur de variation */}
-        {hasVariation && (
-          <div className="flex items-center gap-1 mt-3">
-            {isIncrease ? (
+          <div className="flex items-center gap-2">
+            <p className={cn("text-2xl font-bold", colors.primaryText)}>
+              {formatCurrency(amount)}
+            </p>
+            
+            {/* Indicateur de variation déplacé ici */}
+            {hasVariation && (
               <div className="flex items-center">
-                <div className="p-1 rounded-full bg-red-100/80 dark:bg-red-900/30">
-                  <MoveUpRight className="h-3 w-3 text-red-500 dark:text-red-300" />
-                </div>
-                <span className={cn("text-sm ml-1", colors.increaseText)}>
-                  +{Math.abs(percentageChange).toFixed(1)}%
-                </span>
-              </div>
-            ) : (
-              <div className="flex items-center">
-                <div className="p-1 rounded-full bg-green-100/80 dark:bg-green-900/30">
-                  <MoveDownRight className="h-3 w-3 text-green-500 dark:text-green-300" />
-                </div>
-                <span className={cn("text-sm ml-1", colors.decreaseText)}>
-                  -{Math.abs(percentageChange).toFixed(1)}%
-                </span>
+                {isIncrease ? (
+                  <div className="flex items-center">
+                    <div className="p-1 rounded-full bg-red-100/80 dark:bg-red-900/30">
+                      <MoveUpRight className="h-3 w-3 text-red-500 dark:text-red-300" />
+                    </div>
+                    <span className={cn("text-xs ml-1", colors.increaseText)}>
+                      +{Math.abs(percentageChange).toFixed(1)}%
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <div className="p-1 rounded-full bg-green-100/80 dark:bg-green-900/30">
+                      <MoveDownRight className="h-3 w-3 text-green-500 dark:text-green-300" />
+                    </div>
+                    <span className={cn("text-xs ml-1", colors.decreaseText)}>
+                      -{Math.abs(percentageChange).toFixed(1)}%
+                    </span>
+                  </div>
+                )}
               </div>
             )}
-            <span className="text-xs ml-1 text-gray-500 dark:text-gray-400">
-              {title.includes("mois") ? "vs mois précédent" : "vs année précédente"}
-            </span>
           </div>
-        )}
+          
+          <div className="flex justify-between items-center">
+            <p className={cn("text-sm", colors.secondaryText)}>
+              {count.toLocaleString('fr-FR')} {label}
+            </p>
+            
+            {/* Note de comparaison */}
+            {hasVariation && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {title.includes("mois") ? "vs mois précédent" : "vs année précédente"}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </Card>
   );
