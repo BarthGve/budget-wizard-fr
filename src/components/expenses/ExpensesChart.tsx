@@ -142,7 +142,7 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
                 />
                 <Bar 
                   dataKey="total" 
-                  fill="#3B82F6" // Remplace le violet par un bleu qui correspond à l'image
+                  fill="#60A5FA" // Remplace le violet par un bleu qui correspond à l'image
                   radius={[4, 4, 0, 0]}
                   maxBarSize={50}
                 />
