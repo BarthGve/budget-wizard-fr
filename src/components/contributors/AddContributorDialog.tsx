@@ -97,23 +97,27 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
         {/* Style de bouton adapté à l'image fournie, avec couleurs chaudes pour les revenus */}
 
       
-        
-        <Button className="bg-white text-amber-500 hover:bg-amber-50 border border-amber-200 rounded-xl py-2 px-4 font-medium shadow-sm">
-       
-         <div className="flex items-center gap-1.5">
-            <span className={cn(
-              "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
-              // Light mode
-              "bg-blue-100/80 text-blue-600",
-              // Dark mode
-              "dark:bg-blue-800/50 dark:text-blue-300"
-            )}>
-              <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
-            </span>
-            <span className="font-medium text-sm">Ajouter</span>
-          </div>
-          Ajouter
-        </Button>
+     <Button className={cn(
+  "border rounded-xl py-2 px-4 font-medium shadow-sm transition-colors",
+  // Light mode
+  "bg-white text-amber-600 hover:bg-amber-50 border-amber-200",
+  // Dark mode
+  "dark:bg-slate-800 dark:text-amber-400 dark:hover:bg-slate-700 dark:border-slate-700"
+)}>
+  <div className="flex items-center gap-1.5">
+    <span className={cn(
+      "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
+      // Light mode
+      "bg-amber-100/80 text-amber-600",
+      // Dark mode
+      "dark:bg-amber-800/30 dark:text-amber-300"
+    )}>
+      <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
+    </span>
+    <span className="font-medium text-sm">Ajouter</span>
+  </div>
+</Button>
+
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
