@@ -21,42 +21,42 @@ export function ContributorStatsChart({
   // Formater les valeurs pour avoir 2 décimales et ajouter le symbole €
   const formatValue = (value: number) => `${value.toFixed(2)} €`;
   
+  // Définition des couleurs plus vives et cohérentes avec l'image
+  const expenseColor = "#FFCA28"; // Jaune doré plus vif
+  const creditColor = "#FFA726"; // Orange plus foncé
+
+  // Assurer que les valeurs sont non-négatives
+  const safeExpenseShare = Math.max(0, expenseShare);
+  const safeCreditShare = Math.max(0, creditShare);
+  
   const data = [
     { 
       name: "Charges", 
-      value: expenseShare,
+      value: safeExpenseShare,
       fullValue: expenseAmount,
-      color: "#fbbf24" // Ambre-400
+      color: expenseColor
     },
     { 
       name: "Crédits", 
-      value: creditShare,
+      value: safeCreditShare,
       fullValue: creditAmount,
-      color: "#f59e0b" // Ambre-500
+      color: creditColor
     }
   ];
-  
-  // Couleurs plus vives pour mieux correspondre à l'image
-  const COLORS = ["#fbbf24", "#f59e0b"];
-  
-  // Ne pas afficher le tooltip pour simplifier comme dans l'image
-  const CustomTooltip = ({ active, payload }: any) => null;
 
   // Render custom legend that matches the screenshot
   const renderLegend = (props: any) => {
     return (
-      <div className="flex justify-center mt-3 gap-8">
+      <div className="flex justify-center mt-6 gap-8">
         {data.map((entry, index) => (
           <div key={`legend-${index}`} className="flex items-center">
-            <div className={cn(
-              "inline-block w-3 h-3 rounded-full mr-2",
-              "bg-amber-400 dark:bg-amber-400"
-            )} style={{ backgroundColor: entry.color }} />
+            <div className="inline-block w-3 h-3 rounded-full mr-2" 
+                 style={{ backgroundColor: entry.color }} />
             <span className={cn(
               "text-sm font-medium",
               "text-amber-800 dark:text-amber-300"
             )}>
-              {`${entry.name} (${formatValue(entry.value)})`}
+              {`${entry.name} (${formatValue(entry.fullValue || entry.value)})`}
             </span>
           </div>
         ))}
@@ -65,7 +65,7 @@ export function ContributorStatsChart({
   };
 
   // Si les deux valeurs sont 0, afficher un graphique vide avec un message
-  const isEmpty = expenseShare === 0 && creditShare === 0;
+  const isEmpty = safeExpenseShare === 0 && safeCreditShare === 0;
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
@@ -74,24 +74,25 @@ export function ContributorStatsChart({
           Aucune contribution ce mois-ci
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={150}>
+        <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
               labelLine={false}
-              innerRadius={35}
-              outerRadius={60}
-              paddingAngle={5}
+              innerRadius={40}
+              outerRadius={70}
+              paddingAngle={3}
               dataKey="value"
-              stroke={isDarkTheme ? "rgba(30, 30, 30, 0.2)" : "rgba(255, 255, 255, 0.8)"}
-              strokeWidth={1}
+              stroke={isDarkTheme ? "#1A1E2A" : "#FFFFFF"} // Bordure plus contrastée
+              strokeWidth={4} // Bordure plus épaisse pour meilleure séparation
+              cornerRadius={6} // Ajout de radius aux segments comme demandé
             >
               {data.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`} 
-                  fill={entry.color} 
+                  fill={entry.color}
                 />
               ))}
             </Pie>
