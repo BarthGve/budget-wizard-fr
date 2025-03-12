@@ -237,7 +237,7 @@ const Expenses = memo(function Expenses() {
           </motion.div>
           
           <motion.div 
-            className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 mt-4"
+            className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 mt-8"
             variants={containerVariants}
           >
             {expensesByRetailer?.map(({retailer, expenses: retailerExpenses}, index) => 
