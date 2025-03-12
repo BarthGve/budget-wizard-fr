@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { ExpensesChart } from "@/components/expenses/ExpensesChart";
 import { Calendar, BarChart3, TrendingUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -91,7 +91,7 @@ export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) 
               </div>
               Évolution des dépenses
             </CardTitle>
-            <div className={cn(
+            <CardDescription className={cn(
               "mt-1 text-sm",
               // Light mode
               "text-blue-600/80",
@@ -99,7 +99,7 @@ export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) 
               "dark:text-blue-400/90"
             )}>
               Évolution de vos dépenses {viewMode === 'monthly' ? 'mensuelles' : 'annuelles'} chez ce commerçant
-            </div>
+            </CardDescription>
           </div>
           
           <div className="flex items-center p-1 bg-blue-50 rounded-full border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/60">
