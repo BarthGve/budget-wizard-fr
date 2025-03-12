@@ -279,35 +279,35 @@ export function RetailerExpensesTable({
       
       <CardHeader className="relative z-10">
   <div className="flex justify-between items-start mb-4">
-    <div className="flex items-center justify-between w-full">
-      <div>
-        <CardTitle className={cn(
-          "text-xl font-semibold flex items-center gap-2",
-          currentColors.cardHeaderText,
-          currentColors.cardHeaderTextDark
+    <div>
+      <CardTitle className={cn(
+        "text-xl font-semibold flex items-center gap-2",
+        currentColors.cardHeaderText,
+        currentColors.cardHeaderTextDark
+      )}>
+        <div className={cn(
+          "p-1.5 rounded",
+          currentColors.iconBgLight,
+          currentColors.iconBgDark
         )}>
-          <div className={cn(
-            "p-1.5 rounded",
-            currentColors.iconBgLight,
-            currentColors.iconBgDark
-          )}>
-            <TableIcon className={cn(
-              "h-5 w-5",
-              currentColors.iconLight,
-              currentColors.iconDark
-            )} />
-          </div>
-          Historique des achats de l'année {currentYear}
-        </CardTitle>
-        <CardDescription className={cn(
-          "mt-1 text-sm",
-          currentColors.cardDescText,
-          currentColors.cardDescTextDark
-        )}>
-          Consultez l'historique de vos dépenses pour ce commerçant
-        </CardDescription>
-      </div>
-      
+          <TableIcon className={cn(
+            "h-5 w-5",
+            currentColors.iconLight,
+            currentColors.iconDark
+          )} />
+        </div>
+        Historique des achats de l'année {currentYear}
+      </CardTitle>
+      <CardDescription className={cn(
+        "mt-1 text-sm",
+        currentColors.cardDescText,
+        currentColors.cardDescTextDark
+      )}>
+        Consultez l'historique de vos dépenses pour ce commerçant
+      </CardDescription>
+    </div>
+    
+    <div className="flex items-center gap-3">
       <div className={cn(
         "text-sm px-2.5 py-1.5 rounded-md whitespace-nowrap",
         currentColors.counterBgLight, currentColors.accentText,
@@ -315,25 +315,25 @@ export function RetailerExpensesTable({
       )}>
         {sortedExpenses.length} dépense{sortedExpenses.length !== 1 ? 's' : ''} au total
       </div>
+      
+      <Select value={String(itemsPerPage)} onValueChange={value => {
+        setItemsPerPage(Number(value));
+        setCurrentPage(1);
+      }}>
+        <SelectTrigger className={cn(
+          "w-[180px] h-8 text-xs", 
+          `border-${colorScheme}-200 bg-${colorScheme}-50/50 text-${colorScheme}-700`,
+          `dark:border-${colorScheme}-800/70 dark:bg-${colorScheme}-900/20 dark:text-${colorScheme}-300`
+        )}>
+          <SelectValue placeholder="Lignes par page" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="10">10 par page</SelectItem>
+          <SelectItem value="25">25 par page</SelectItem>
+          <SelectItem value="-1">Tout afficher</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
-    
-    <Select value={String(itemsPerPage)} onValueChange={value => {
-      setItemsPerPage(Number(value));
-      setCurrentPage(1);
-    }}>
-      <SelectTrigger className={cn(
-        "w-[180px] h-8 text-xs", 
-        `border-${colorScheme}-200 bg-${colorScheme}-50/50 text-${colorScheme}-700`,
-        `dark:border-${colorScheme}-800/70 dark:bg-${colorScheme}-900/20 dark:text-${colorScheme}-300`
-      )}>
-        <SelectValue placeholder="Lignes par page" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="10">10 par page</SelectItem>
-        <SelectItem value="25">25 par page</SelectItem>
-        <SelectItem value="-1">Tout afficher</SelectItem>
-      </SelectContent>
-    </Select>
   </div>
 </CardHeader>
       
