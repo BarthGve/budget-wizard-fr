@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -5,7 +6,7 @@ import { formatCurrency } from "@/utils/format";
 import { ExpenseActionsDropdown } from "@/components/recurring-expenses/dialogs/ExpenseActionsDropdown";
 import { TablePagination } from "@/components/recurring-expenses/table/TablePagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowUpDown, Calendar, DollarSign, MessageSquareText, ChevronRight } from "lucide-react";
+import { ArrowUpDown, Calendar, Euro, MessageSquareText, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -131,7 +132,7 @@ export function RetailerExpensesTable({
           </div>
           <div className="p-8 text-center">
             <div className="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
-              <DollarSign className="h-6 w-6 text-gray-400" />
+              <Euro className="h-6 w-6 text-gray-400" />
             </div>
             <h3 className="text-lg font-medium mb-1">Aucune dépense enregistrée</h3>
             <p className="text-muted-foreground max-w-md mx-auto mb-4">
@@ -185,7 +186,7 @@ export function RetailerExpensesTable({
                 </TableHead>
                 <TableHead>
                   <Button variant="ghost" size="sm" className={cn("p-0 hover:bg-transparent flex items-center gap-1", currentColors.headerBg)} onClick={() => handleSort('amount')}>
-                    <DollarSign className="h-3.5 w-3.5 mr-1" />
+                    <Euro className="h-3.5 w-3.5 mr-1" />
                     Montant
                     {sortBy === 'amount' && <ArrowUpDown className={cn("h-3 w-3 ml-1", currentColors.sortIcon)} />}
                   </Button>

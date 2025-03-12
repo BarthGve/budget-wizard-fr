@@ -2,6 +2,7 @@
 import { TableHead, TableHeader as ShadcnTableHeader, TableRow } from "@/components/ui/table";
 import { RecurringExpense } from "../types";
 import { SortableTableHeader } from "@/components/properties/expenses/SortableTableHeader";
+import { Calendar, Euro, Repeat, Tag } from "lucide-react";
 
 interface TableHeaderProps {
   sortField: keyof RecurringExpense;
@@ -23,6 +24,7 @@ export const TableHeader = ({
           currentSortField={sortField}
           sortDirection={sortDirection}
           onSort={onSort}
+          icon={<Tag className="h-3.5 w-3.5 mr-1" />}
         />
         <SortableTableHeader
           field="category"
@@ -30,6 +32,7 @@ export const TableHeader = ({
           currentSortField={sortField}
           sortDirection={sortDirection}
           onSort={onSort}
+          icon={<Tag className="h-3.5 w-3.5 mr-1" />}
         />
         <SortableTableHeader
           field="periodicity"
@@ -37,6 +40,7 @@ export const TableHeader = ({
           currentSortField={sortField}
           sortDirection={sortDirection}
           onSort={onSort}
+          icon={<Repeat className="h-3.5 w-3.5 mr-1" />}
         />
         <SortableTableHeader
           field="amount"
@@ -45,6 +49,7 @@ export const TableHeader = ({
           sortDirection={sortDirection}
           onSort={onSort}
           className="text-center"
+          icon={<Euro className="h-3.5 w-3.5 mr-1" />}
         />
         <TableHead className="text-right"></TableHead>
       </TableRow>
