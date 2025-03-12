@@ -6,6 +6,8 @@ import { formatCurrency } from "@/utils/format";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface Expense {
   id: string;
@@ -34,6 +36,8 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   const [dataVersion, setDataVersion] = useState(0);
   const today = new Date();
   const startOfCurrentYear = startOfYear(today);
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
 
   // Surveiller les changements dans les dépenses pour déclencher l'animation
   useEffect(() => {
@@ -89,8 +93,13 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
     return null;
   }
 
+  // Configurez les couleurs en fonction du thème
+  const gridColor = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
+  const axisColor = isDarkMode ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground))";
+  const backgroundColor = "transparent"; // Rendre le fond transparent pour qu'il prenne la couleur de la carte
+
   return (
-    <div className="bg-card rounded-lg p-2 mt-2">
+    <div className="rounded-lg p-2 mt-2">
       <AnimatePresence mode="wait">
         <motion.div
           key={dataVersion}
@@ -100,15 +109,26 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
           transition={{ duration: 0.3 }}
           className="w-full h-full"
         >
-          <ChartContainer className="h-[250px] w-full p-0" config={chartConfig} >
+          <ChartContainer 
+            className={cn(
+              "h-[250px] w-full p-0",
+              // Supprimer toute classe bg- ou background-
+            )} 
+            config={chartConfig}
+            style={{ background: backgroundColor }} // Rendre le fond transparent
+          >
             <ResponsiveContainer width="100%" height="100%" >
-              <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 20 }}>
-                <CartesianGrid vertical={false} stroke="hsl(var(--border))" opacity={0.1} />
+              <BarChart 
+                data={chartData} 
+                margin={{ top: 0, right: 0, left: 0, bottom: 20 }}
+                style={{ background: backgroundColor }} // Rendre le fond transparent
+              >
+                <CartesianGrid vertical={false} stroke={gridColor} opacity={0.1} />
                 <XAxis 
                   dataKey="period"
                   axisLine={false}
                   tickLine={false}
-                  stroke="hsl(var(--muted-foreground))"
+                  stroke={axisColor}
                   fontSize={12}
                   tickMargin={10}
                 />
