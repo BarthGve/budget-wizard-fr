@@ -94,30 +94,20 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
       setIsOpen(open);
     }}>
       <DialogTrigger asChild>
-        {/* Style de bouton adapté à l'image fournie, avec couleurs chaudes pour les revenus */}
-
-      
-     <Button className={cn(
-  "border rounded-xl py-2 px-4 font-medium shadow-sm transition-colors",
-  // Light mode
-  "bg-white text-amber-600 hover:bg-amber-50 border-amber-200",
-  // Dark mode
-  "dark:bg-slate-800 dark:text-amber-400 dark:hover:bg-slate-700 dark:border-slate-700"
-)}>
-  <div className="flex items-center gap-1.5">
-    <span className={cn(
-      "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
-      // Light mode
-      "bg-amber-100/80 text-amber-600",
-      // Dark mode
-      "dark:bg-amber-800/30 dark:text-amber-300"
-    )}>
-      <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
-    </span>
-    <span className="font-medium text-sm">Ajouter</span>
-  </div>
-</Button>
-
+        <Button 
+          variant="outline"
+          className={cn(
+            "rounded-full border py-2 px-5 font-medium transition-colors",
+            // Light mode
+            "bg-white text-amber-500 hover:bg-amber-50/70 border-amber-100",
+            // Dark mode
+            "dark:bg-slate-800/70 dark:text-amber-400 dark:hover:bg-slate-800 dark:border-slate-700"
+          )}
+          style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Ajouter
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -131,19 +121,52 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
             <div className="space-y-3 my-4">
               <div className="flex items-center justify-center">
                 <div className="relative h-16 w-16 flex items-center justify-center">
-                  {/* Cercle animé adapté aux couleurs chaudes */}
-                  <div className="absolute inset-0 rounded-full border-4 border-t-amber-500 border-r-orange-500 border-b-amber-400 border-l-amber-300 animate-spin"></div>
+                  {/* Cercle animé adapté aux couleurs jaunes */}
+                  <div className={cn(
+                    "absolute inset-0 rounded-full border-4 animate-spin",
+                    // Light mode
+                    "border-t-amber-500 border-r-amber-400 border-b-amber-300 border-l-amber-200",
+                    // Dark mode
+                    "dark:border-t-amber-400 dark:border-r-amber-500/70 dark:border-b-amber-500/50 dark:border-l-amber-500/30"
+                  )}></div>
                   {/* Cercle interne */}
-                  <div className="absolute inset-[6px] bg-background rounded-full flex items-center justify-center">
-                    <Loader2 className="h-6 w-6 text-amber-500 animate-pulse" />
+                  <div className={cn(
+                    "absolute inset-[6px] rounded-full flex items-center justify-center",
+                    // Light mode
+                    "bg-white",
+                    // Dark mode
+                    "dark:bg-slate-900"
+                  )}>
+                    <Loader2 className={cn(
+                      "h-6 w-6 animate-pulse",
+                      "text-amber-500",
+                      "dark:text-amber-400"
+                    )} />
                   </div>
                 </div>
               </div>
-              <div className="text-center text-sm font-medium bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400 bg-clip-text text-transparent">
+              <div className={cn(
+                "text-center text-sm font-medium",
+                // Light mode
+                "text-amber-500",
+                // Dark mode
+                "dark:text-amber-400"
+              )}>
                 Création du contributeur en cours...
               </div>
-              <Progress value={progress} className="h-2 w-full bg-amber-100">
-                <div className="h-full bg-amber-500 rounded-full"></div>
+              <Progress 
+                value={progress} 
+                className={cn(
+                  "h-2 w-full",
+                  "bg-amber-100",
+                  "dark:bg-slate-700"
+                )}
+              >
+                <div className={cn(
+                  "h-full rounded-full",
+                  "bg-amber-500",
+                  "dark:bg-amber-400"
+                )}></div>
               </Progress>
             </div>
           )}
@@ -162,6 +185,10 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                 }
                 required
                 disabled={isSubmitting}
+                className={cn(
+                  "focus-visible:ring-amber-500",
+                  "dark:focus-visible:ring-amber-400"
+                )}
               />
             </div>
             <div className="grid gap-2">
@@ -177,6 +204,10 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                   })
                 }
                 disabled={isSubmitting}
+                className={cn(
+                  "focus-visible:ring-amber-500",
+                  "dark:focus-visible:ring-amber-400"
+                )}
               />
             </div>
             <div className="grid gap-2">
@@ -193,6 +224,10 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                 }
                 required
                 disabled={isSubmitting}
+                className={cn(
+                  "focus-visible:ring-amber-500",
+                  "dark:focus-visible:ring-amber-400"
+                )}
               />
             </div>
           </div>
@@ -205,13 +240,19 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                 setIsOpen(false);
               }}
               disabled={isSubmitting}
+              className="border-slate-200 dark:border-slate-700"
             >
               Annuler
             </Button>
             <Button 
               type="submit"
-              className="bg-amber-500 text-white hover:bg-amber-600"
               disabled={isSubmitting}
+              className={cn(
+                // Light mode
+                "bg-amber-500 text-white hover:bg-amber-600",
+                // Dark mode
+                "dark:bg-amber-500/90 dark:text-slate-950 dark:hover:bg-amber-400"
+              )}
             >
               {isSubmitting ? "En cours..." : "Ajouter"}
             </Button>
