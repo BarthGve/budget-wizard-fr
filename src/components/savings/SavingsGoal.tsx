@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -65,20 +64,6 @@ export const SavingsGoal = ({
     },
   });
 
-  const colorPalette = profile?.color_palette || "default";
-  const paletteToText: Record<string, string> = {
-    default: "text-blue-500",
-    ocean: "text-sky-500",
-    forest: "text-green-500",
-    sunset: "text-orange-500",
-    candy: "text-pink-400",
-  };
-
-  const totalIncome = contributors?.reduce(
-    (acc, contributor) => acc + contributor.total_contribution,
-    0
-  ) || 0;
-
   const handleValueChange = (newValue: number[]) => {
     setLocalPercentage(newValue[0]);
   };
@@ -124,32 +109,38 @@ export const SavingsGoal = ({
     }
   };
 
+  const totalIncome = contributors?.reduce(
+    (acc, contributor) => acc + contributor.total_contribution,
+    0
+  ) || 0;
+
   const targetMonthlySavings = (totalIncome * localPercentage) / 100;
   const remainingToTarget = targetMonthlySavings - totalMonthlyAmount;
+  const isTargetMet = remainingToTarget <= 0;
 
   return (
     <div className="flex flex-col md:flex-row gap-4 h-full">
-    <Card className="flex-1 h-full">
-      <CardHeader>
-        <div className="flex items-center gap-2">
-          <Target className="h-5 w-5 text-primary" />
-          <CardTitle>Objectif d'épargne</CardTitle>
-        </div>
-        <CardDescription>
-          Définissez le pourcentage de vos revenus à épargner
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Conteneur en flex pour le slider et la card sur fond gris */}
-        <div className="flex flex-col md:flex-row items-center gap-4">
-          {/* Slider */}
-          <div className="flex-1 space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Pourcentage d'épargne</Label>
-                <span className="text-sm font-medium">{localPercentage}%</span>
-              </div>
-              <div className="px-1">
+      <Card className="flex-1 h-full">
+        <CardHeader className="pb-2">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+              <Target className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <CardTitle className="text-lg font-medium">Objectif d'épargne</CardTitle>
+          </div>
+          <CardDescription className="text-sm text-muted-foreground">
+            Définissez le pourcentage de vos revenus à épargner
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 pt-1">
+          <div className="flex flex-col md:flex-row items-stretch gap-4">
+            {/* Slider */}
+            <div className="flex-1 space-y-3">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-muted-foreground">Pourcentage d'épargne</Label>
+                  <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{localPercentage}%</span>
+                </div>
                 <Slider
                   min={0}
                   max={100}
@@ -157,37 +148,55 @@ export const SavingsGoal = ({
                   value={[localPercentage]}
                   onValueChange={handleValueChange}
                   onValueCommit={handleValueCommit}
-                  className={paletteToText[colorPalette]}
+                  className="text-emerald-500 dark:text-emerald-400"
                   aria-label="Pourcentage d'épargne"
                 />
               </div>
+              
+              {/* Progression bar */}
+              <div className="space-y-1.5 mt-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Progression</span>
+                  <span className="text-xs font-medium">
+                    {totalMonthlyAmount.toFixed(0)}€ / {targetMonthlySavings.toFixed(0)}€
+                  </span>
+                </div>
+                <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full ${isTargetMet ? 'bg-emerald-500' : 'bg-emerald-400/70'}`}
+                    style={{ 
+                      width: `${Math.min(totalMonthlyAmount / targetMonthlySavings * 100, 100)}%`,
+                      transition: 'width 0.3s ease'
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
   
-          {/* Card sur fond gris */}
-          <div className="flex-1 space-y-2 rounded-lg bg-secondary p-4">
-            <div className="flex items-center justify-between text-sm">
-              <span>Revenu total</span>
-              <span className="font-medium">{totalIncome.toFixed(0)}€</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span>Objectif mensuel</span>
-              <span className="font-medium">{targetMonthlySavings.toFixed(0)}€</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span>Total épargné</span>
-              <span className="font-medium">{totalMonthlyAmount.toFixed(0)}€</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span>Reste à épargner</span>
-              <span className={`font-medium ${remainingToTarget > 0 ? 'text-destructive' : 'text-green-500'}`}>
-                {remainingToTarget.toFixed(0)}€
-              </span>
+            {/* Card sur fond gris */}
+            <div className="flex-1 space-y-2 rounded-lg bg-secondary/50 border border-border/50 p-3.5">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Revenu total</span>
+                <span className="font-medium">{totalIncome.toFixed(0)}€</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Objectif mensuel</span>
+                <span className="font-medium text-emerald-600 dark:text-emerald-400">{targetMonthlySavings.toFixed(0)}€</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Total épargné</span>
+                <span className="font-medium">{totalMonthlyAmount.toFixed(0)}€</span>
+              </div>
+              <div className="flex items-center justify-between text-sm border-t border-border/40 mt-2 pt-2">
+                <span className="text-muted-foreground">Reste à épargner</span>
+                <span className={`font-medium ${isTargetMet ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
+                  {Math.abs(remainingToTarget).toFixed(0)}€ {isTargetMet ? 'dépassé' : 'manquant'}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
