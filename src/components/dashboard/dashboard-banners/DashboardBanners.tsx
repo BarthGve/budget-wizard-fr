@@ -33,7 +33,7 @@ export const DashboardBanners = () => {
 
   return (
     <motion.div
-      className="space-y-3 w-full max-w-3xl mx-auto"
+      className="space-y-3 w-full mx-auto"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
