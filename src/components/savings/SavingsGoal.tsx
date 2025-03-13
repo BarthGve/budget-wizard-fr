@@ -153,7 +153,7 @@ export const SavingsGoal = ({
           </div>
   
           {/* Card sur fond gris */}
-          <div className="space-y-3.5 rounded-lg bg-secondary/50 border border-border/50 p-4">
+          <div className="space-y-2 rounded-lg bg-secondary/50 border border-border/50 p-4">
             {/* Barre de progression */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
