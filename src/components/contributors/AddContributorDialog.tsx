@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -23,7 +22,7 @@ interface AddContributorDialogProps {
 }
 
 export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [newContributor, setNewContributor] = useState<NewContributor>({
@@ -46,8 +45,6 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
     // Animation de progression
     const progressInterval = setInterval(() => {
       setProgress(prev => {
-        // Augmenter progressivement jusqu'à 95% maximum
-        // pour donner l'impression que ça charge sans atteindre 100%
         const nextProgress = prev + Math.random() * 10;
         return nextProgress > 95 ? 95 : nextProgress;
       });
@@ -55,17 +52,14 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
     
     try {
       await onAdd(newContributor);
-      // Une fois terminé, passer rapidement à 100%
       clearInterval(progressInterval);
       setProgress(100);
       
-      // Reset du formulaire et fermeture après une courte pause
       setTimeout(() => {
         setNewContributor({ name: "", email: "", total_contribution: "" });
-        setIsOpen(false);
+        setOpen(false);
         setProgress(0);
         
-        // Forcer une invalidation immédiate de toutes les requêtes liées au dashboard
         queryClient.invalidateQueries({ 
           queryKey: ["dashboard-data"],
           exact: false,
@@ -90,14 +84,13 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      // Ne pas permettre de fermer pendant la soumission
-      if (isSubmitting && !open) return;
-      setIsOpen(open);
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      if (isSubmitting && !isOpen) return;
+      setOpen(isOpen);
     }}>
       <DialogTrigger asChild>
         <Button 
-          onClick={() => setIsOpen(true)}
+          onClick={() => setOpen(true)}
           variant="outline"
           className={cn(
             "h-10 px-4 border transition-all duration-200 rounded-md",
@@ -118,9 +111,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           <div className="flex items-center gap-1.5">
             <span className={cn(
               "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
-              // Light mode
               "bg-amber-100/80 text-amber-600",
-              // Dark mode
               "dark:bg-amber-800/50 dark:text-amber-300"
             )}>
               <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -130,157 +121,79 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent 
-        className={cn(
-          "p-0 overflow-hidden border-0 shadow-2xl",
-          "sm:max-w-[550px]",
-          // Light mode
-          "bg-white",
-          // Dark mode
-          "dark:bg-gray-800/95"
-        )}
-        style={{
-          boxShadow: isDarkMode
-            ? "0 25px 50px -12px rgba(2, 6, 23, 0.4), 0 0 0 1px rgba(245, 158, 11, 0.1)"
-            : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(245, 158, 11, 0.1)"
-        }}
-      >
-        {/* En-tête avec dégradé subtil */}
-        <div 
-          className={cn(
-            "relative overflow-hidden",
-            // Light mode
-            "bg-gradient-to-br from-amber-50 to-white",
-            // Dark mode
-            "dark:bg-gradient-to-br dark:from-amber-900/20 dark:to-gray-800/90"
-          )}
-        >
-          {/* Cercle décoratif en arrière-plan */}
-          <div className={cn(
-            "absolute -top-24 -right-24 w-64 h-64 rounded-full opacity-20",
-            // Light mode
-            "bg-gradient-to-br from-amber-400 to-amber-600",
-            // Dark mode
-            "dark:from-amber-500 dark:to-amber-700 dark:opacity-10"
-          )} />
-
-          {/* Header avec contenu amélioré */}
-          <div className="px-6 pt-6 pb-4 relative z-10">
-            <div className="flex items-start gap-4 mb-2">
-              <div className={cn(
-                "p-2.5 rounded-xl",
-                // Light mode
-                "bg-amber-100 text-amber-600",
-                // Dark mode
-                "dark:bg-amber-800/40 dark:text-amber-400"
-              )}>
-                <UserPlus size={22} />
-              </div>
-              
-              <div className="flex-1">
-                <DialogTitle 
-                  className={cn(
-                    "text-xl font-bold",
-                    // Light mode
-                    "text-amber-700",
-                    // Dark mode
-                    "dark:text-amber-300"
-                  )}
-                >
-                  Ajouter un contributeur
-                </DialogTitle>
-                
-                <DialogDescription 
-                  className={cn(
-                    "mt-1.5 text-sm",
-                    // Light mode
-                    "text-amber-600/70",
-                    // Dark mode
-                    "dark:text-amber-300/70"
-                  )}
-                >
-                  Ajoutez un nouveau contributeur au budget
-                </DialogDescription>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Ligne séparatrice avec dégradé */}
+      <DialogContent className="sm:max-w-[650px] overflow-hidden">
+        {/* Background gradient subtil */}
         <div className={cn(
-          "h-px w-full",
-          // Light mode
-          "bg-gradient-to-r from-transparent via-amber-100 to-transparent",
-          // Dark mode
-          "dark:from-transparent dark:via-amber-900/30 dark:to-transparent"
+          "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br",
+          "from-amber-500 to-amber-400",
+          "dark:from-amber-600 dark:to-amber-500"
         )} />
-
-        {/* Conteneur pour le formulaire */}
+        
+        {/* Fond radial gradient ultra-subtil */}
         <div className={cn(
-          "p-6",
-          // Light mode
-          "bg-white",
-          // Dark mode
-          "dark:bg-gray-800/95"
-        )}>
+          "absolute inset-0 pointer-events-none",
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
+          "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
+        )} />
+        
+        <DialogHeader className="relative z-10 mb-4">
+          <div className="flex items-center gap-3">
+            <div className={cn(
+              "p-2.5 rounded-lg",
+              "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300"
+            )}>
+              <UserPlus className="w-5 h-5" />
+            </div>
+            <DialogTitle className={cn(
+              "text-2xl font-bold",
+              "text-amber-900 dark:text-amber-200"
+            )}>
+              Ajouter un contributeur
+            </DialogTitle>
+          </div>
+          
+          <div className="ml-[52px]"> {/* Aligné avec l'icône + le texte du titre */}
+            <DialogDescription className={cn(
+              "mt-1.5 text-base",
+              "text-amber-700/80 dark:text-amber-300/80"
+            )}>
+              Ajoutez un nouveau contributeur au budget. Les informations seront mises à jour immédiatement.
+            </DialogDescription>
+          </div>
+        </DialogHeader>
+        
+        {/* Séparateur subtil */}
+        <div className={cn(
+          "w-full h-px mb-5 relative z-10",
+          "bg-gradient-to-r from-transparent via-gray-200 to-transparent",
+          "dark:via-gray-700"
+        )} />
+        
+        {/* Section du formulaire */}
+        <div className="relative z-10">
           <form onSubmit={handleFormSubmit} className="space-y-5">
             {isSubmitting && (
-              <div className="space-y-3 my-4">
+              <div className="space-y-3 my-6">
                 <div className="flex items-center justify-center">
-                  <div className="relative h-16 w-16 flex items-center justify-center">
-                    {/* Cercle animé adapté aux couleurs jaunes */}
-                    <div className={cn(
-                      "absolute inset-0 rounded-full border-4 animate-spin",
-                      // Light mode
-                      "border-t-amber-500 border-r-amber-400 border-b-amber-300 border-l-amber-200",
-                      // Dark mode
-                      "dark:border-t-amber-400 dark:border-r-amber-500/70 dark:border-b-amber-500/50 dark:border-l-amber-500/30"
-                    )}></div>
-                    {/* Cercle interne */}
-                    <div className={cn(
-                      "absolute inset-[6px] rounded-full flex items-center justify-center",
-                      // Light mode
-                      "bg-white",
-                      // Dark mode
-                      "dark:bg-slate-900"
-                    )}>
-                      <Loader2 className={cn(
-                        "h-6 w-6 animate-pulse",
-                        "text-amber-500",
-                        "dark:text-amber-400"
-                      )} />
-                    </div>
-                  </div>
+                  <Loader2 className="h-10 w-10 animate-spin text-amber-500 dark:text-amber-400" />
                 </div>
-                <div className={cn(
-                  "text-center text-sm font-medium",
-                  // Light mode
-                  "text-amber-500",
-                  // Dark mode
-                  "dark:text-amber-400"
-                )}>
+                <div className="text-center text-sm font-medium text-amber-600 dark:text-amber-400">
                   Création du contributeur en cours...
                 </div>
                 <Progress 
                   value={progress} 
-                  className={cn(
-                    "h-2 w-full",
-                    "bg-amber-100",
-                    "dark:bg-slate-700"
-                  )}
+                  className="h-2 w-full bg-amber-100 dark:bg-gray-700"
                 >
-                  <div className={cn(
-                    "h-full rounded-full",
-                    "bg-amber-500",
-                    "dark:bg-amber-400"
-                  )}></div>
+                  <div className="h-full bg-amber-500 dark:bg-amber-400 rounded-full"></div>
                 </Progress>
               </div>
             )}
             
-            <div className={`grid gap-5 ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}>
-              <div className="grid gap-2">
-                <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nom</Label>
+            <div className={`space-y-5 ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}>
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">
+                  Nom
+                </Label>
                 <Input
                   id="name"
                   value={newContributor.name}
@@ -292,17 +205,14 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                   }
                   required
                   disabled={isSubmitting}
-                  className={cn(
-                    "border rounded-md",
-                    "focus-visible:ring-amber-500",
-                    "dark:focus-visible:ring-amber-400",
-                    "border-gray-200 dark:border-gray-700",
-                    "bg-white dark:bg-gray-800"
-                  )}
+                  className="border-gray-200 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email (optionnel)</Label>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
+                  Email (optionnel)
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -314,17 +224,14 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                     })
                   }
                   disabled={isSubmitting}
-                  className={cn(
-                    "border rounded-md",
-                    "focus-visible:ring-amber-500",
-                    "dark:focus-visible:ring-amber-400",
-                    "border-gray-200 dark:border-gray-700",
-                    "bg-white dark:bg-gray-800"
-                  )}
+                  className="border-gray-200 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="contribution" className="text-gray-700 dark:text-gray-300">Contribution (€)</Label>
+              
+              <div className="space-y-2">
+                <Label htmlFor="contribution" className="text-gray-700 dark:text-gray-300">
+                  Contribution (€)
+                </Label>
                 <Input
                   id="contribution"
                   type="number"
@@ -337,13 +244,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                   }
                   required
                   disabled={isSubmitting}
-                  className={cn(
-                    "border rounded-md",
-                    "focus-visible:ring-amber-500",
-                    "dark:focus-visible:ring-amber-400",
-                    "border-gray-200 dark:border-gray-700",
-                    "bg-white dark:bg-gray-800"
-                  )}
+                  className="border-gray-200 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400"
                 />
               </div>
             </div>
@@ -354,35 +255,32 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                 type="button"
                 onClick={() => {
                   setNewContributor({ name: "", email: "", total_contribution: "" });
-                  setIsOpen(false);
+                  setOpen(false);
                 }}
                 disabled={isSubmitting}
-                className={cn(
-                  "border rounded-md",
-                  "border-gray-200 text-gray-700",
-                  "hover:bg-gray-100/70 hover:text-gray-800",
-                  "dark:border-gray-700 dark:text-gray-300",
-                  "dark:hover:bg-gray-700/50 dark:hover:text-gray-100"
-                )}
+                className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
               >
                 Annuler
               </Button>
+              
               <Button 
                 type="submit"
                 disabled={isSubmitting}
                 className={cn(
-                  "rounded-md",
-                  "bg-gradient-to-r from-amber-500 to-amber-600",
-                  "hover:from-amber-600 hover:to-amber-700",
-                  "dark:from-amber-600 dark:to-amber-700",
-                  "dark:hover:from-amber-500 dark:hover:to-amber-600",
-                  "text-white"
+                  "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700",
+                  "dark:from-amber-600 dark:to-amber-700 dark:hover:from-amber-500 dark:hover:to-amber-600",
+                  "text-white shadow-sm"
                 )}
               >
                 {isSubmitting ? "En cours..." : "Ajouter"}
               </Button>
             </div>
           </form>
+        </div>
+        
+        {/* Décoration graphique dans le coin inférieur droit */}
+        <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] z-0">
+          <UserPlus className="w-full h-full" />
         </div>
       </DialogContent>
     </Dialog>
