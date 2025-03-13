@@ -46,29 +46,27 @@ export const CreateCategoryBanner = () => {
   }
 
   return (
-    <Alert className="relative w-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200/60 dark:border-indigo-800/40 shadow-sm rounded-lg py-4 px-5">
+    <Alert className="relative w-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800 py-2.5 px-4">
       <Button
         variant="ghost"
-        className="absolute right-3 top-3 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20 transition-colors duration-200"
+        className="absolute right-1 top-1 h-7 w-7 rounded-full p-0 hover:bg-indigo-500/10"
         onClick={handleDismiss}
       >
-        <X className="h-4 w-4" />
+        <X className="h-3.5 w-3.5" />
       </Button>
-      <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300 flex items-center gap-2">
-        <span className="bg-indigo-100 dark:bg-indigo-900/40 rounded-full p-1.5 flex items-center justify-center">
-          🏷️
-        </span>
-        Mettez de l'ordre dans vos dépenses !
+      <AlertTitle className="text-base font-medium text-indigo-700 dark:text-indigo-300">
+        Mettez de l'ordre dans vos dépenses ! 🏷️
       </AlertTitle>
-      <AlertDescription className="mt-2 text-muted-foreground mb-3 pl-10">
+      <AlertDescription className="mt-0.5 text-sm text-indigo-600/70 dark:text-indigo-400/70 mb-1.5">
         Un budget bien organisé, c'est un budget maîtrisé ! Ajoutez votre première catégorie maintenant.
       </AlertDescription>
-      <div className="flex justify-end mt-2">
+      <div className="flex justify-end mt-1">
         <Button
           onClick={() => navigate("/user-settings?tab=settings")}
-          className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium transition-all duration-200 shadow-sm hover:shadow px-4 py-2"
+          size="sm"
+          className="bg-indigo-500/80 hover:bg-indigo-600/90 text-white text-sm px-3 py-1 h-auto"
         >
-          <span className="mr-2">🔥</span> Je me lance !
+          🔥 Je me lance !
         </Button>
       </div>
     </Alert>
