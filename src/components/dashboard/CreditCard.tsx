@@ -78,7 +78,7 @@ export const CreditCard = ({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="flex items-center cursor-pointer">
-                    <span className="text-sm">{Math.round(tauxEndettement)}%</span>
+                    <span className="text-xs">{Math.round(tauxEndettement)}%</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="dark:bg-gray-800 dark:border-gray-700">
