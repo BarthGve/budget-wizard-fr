@@ -121,7 +121,7 @@ export const SavingsGoal = ({
 
   return (
     <div className="h-full">
-      <Card className="h-full">
+      <Card className="h-full shadow-lg">
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
