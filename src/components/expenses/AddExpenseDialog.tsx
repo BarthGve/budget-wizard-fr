@@ -195,27 +195,27 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
             "dark:via-gray-700"
           )} />
           
-          <AlertDialogFooter className="p-4 flex-row gap-3 sm:gap-3 sm:justify-end relative z-10">
-            <AlertDialogCancel 
-              className="mt-0 border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-            >
-              Non, plus tard
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                setShowNoRetailerAlert(false);
-                navigate("/settings", { state: { scrollTo: "retailers" } });
-              }}
-              className={cn(
-                "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700",
-                "dark:from-amber-600 dark:to-amber-700 dark:hover:from-amber-500 dark:hover:to-amber-600",
-                "text-white shadow-sm"
-              )}
-            >
-              Oui, créer une enseigne
-            </AlertDialogAction>
-          </AlertDialogFooter>
-          
+         <AlertDialogFooter className="p-4 flex-row gap-3 sm:gap-3 sm:justify-end relative z-10">
+  <AlertDialogCancel 
+    className="mt-0 border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+  >
+    Non, plus tard
+  </AlertDialogCancel>
+  <AlertDialogAction
+    onClick={() => {
+      setShowNoRetailerAlert(false);
+      navigate("/settings", { state: { scrollTo: "retailers" } });
+    }}
+    className={cn(
+      "bg-blue-600 hover:bg-blue-700",
+      "dark:bg-blue-600 dark:hover:bg-blue-700",
+      "text-white shadow-sm"
+    )}
+  >
+    Oui, créer une enseigne
+  </AlertDialogAction>
+</AlertDialogFooter>
+
           {/* Décoration graphique dans le coin inférieur droit */}
           <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] z-0">
             <AlertTriangle className="w-full h-full" />
