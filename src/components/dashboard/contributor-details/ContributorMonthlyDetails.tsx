@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { PaginationControls } from "@/components/properties/expenses/PaginationControls";
 import { Euro, CreditCard, HomeIcon, ShoppingBag, Tag } from "lucide-react";
@@ -160,18 +159,17 @@ export function ContributorMonthlyDetails({
           "border-t border-amber-100/50 dark:border-amber-800/20",
           "p-3 flex justify-center"
         )}>
-          <div className={cn(
-            "pagination-amber scale-90 transform",
-            "[&_.pagination-button]:text-amber-600 [&_.pagination-button]:dark:text-amber-400",
-            "[&_.pagination-button.active]:bg-amber-100 [&_.pagination-button.active]:dark:bg-amber-900/30",
-            "[&_.pagination-button]:hover:bg-amber-50 [&_.pagination-button]:dark:hover:bg-amber-900/20"
-          )}>
-            <PaginationControls
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={onPageChange}
-            />
-          </div>
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+            className={cn(
+              "pagination-amber scale-90 transform",
+              "[&_.pagination-button]:text-amber-600 [&_.pagination-button]:dark:text-amber-400",
+              "[&_.pagination-button.active]:bg-amber-100 [&_.pagination-button.active]:dark:bg-amber-900/30",
+              "[&_.pagination-button]:hover:bg-amber-50 [&_.pagination-button]:dark:hover:bg-amber-900/20"
+            )}
+          />
         </div>
       )}
     </Card>

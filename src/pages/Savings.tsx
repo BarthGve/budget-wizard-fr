@@ -8,7 +8,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { motion } from "framer-motion";
-import { SavingsGoal } from "@/components/savings/SavingsHeader";
+import { SavingsHeader } from "@/components/savings/SavingsHeader";
 import { SavingsGoalSection } from "@/components/savings/SavingsGoalSection";
 import { ProjectsSection } from "@/components/savings/ProjectsSection";
 import { MonthlySavingsSection } from "@/components/savings/MonthlySavingsSection";
@@ -135,12 +135,7 @@ const Savings = () => {
         variants={containerVariants}
       >
         {/* Header Section */}
-        <div className="w-full">
-          <SavingsGoal 
-            savingsPercentage={profile?.savings_goal_percentage || 0}
-            totalMonthlyAmount={totalMonthlyAmount}
-          />
-        </div>
+        <SavingsHeader />
 
         {/* Savings Goal Section */}
         <SavingsGoalSection 
