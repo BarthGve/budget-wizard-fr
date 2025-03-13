@@ -203,7 +203,7 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
       <AlertDialogAction
         onClick={() => {
           setShowNoRetailerAlert(false);
-          navigate("/settings", { state: { scrollTo: "retailers" } });
+          navigate("/user-settings?tab=settings", { state: { scrollTo: "retailers" } });
         }}
         className={cn(
           "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700", // CORRIGÉ EN BLEU
