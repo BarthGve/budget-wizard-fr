@@ -140,88 +140,88 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
           </div>
         </DialogContent>
       </Dialog>
-
-      <AlertDialog 
-        open={showNoRetailerAlert}
-        onOpenChange={setShowNoRetailerAlert}
+<AlertDialog 
+  open={showNoRetailerAlert}
+  onOpenChange={setShowNoRetailerAlert}
+>
+  <AlertDialogContent className="sm:max-w-[500px] overflow-hidden p-0">
+    {/* Background gradient subtil - CORRIGÉ EN BLEU */}
+    <div className={cn(
+      "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br",
+      "from-blue-500 to-blue-400",
+      "dark:from-blue-600 dark:to-blue-500"
+    )} />
+    
+    {/* Fond radial gradient ultra-subtil */}
+    <div className={cn(
+      "absolute inset-0 pointer-events-none",
+      "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
+      "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
+    )} />
+    
+    <AlertDialogHeader className="relative z-10 p-6">
+      <div className="flex items-center gap-3">
+        <div className={cn(
+          "p-2.5 rounded-lg",
+          "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300" // CORRIGÉ EN BLEU
+        )}>
+          <AlertTriangle className="w-5 h-5" />
+        </div>
+        
+        <div>
+          <AlertDialogTitle className={cn(
+            "text-xl font-bold",
+            "text-blue-900 dark:text-blue-200" // CORRIGÉ EN BLEU
+          )}>
+            Aucune enseigne disponible
+          </AlertDialogTitle>
+          
+          <AlertDialogDescription className={cn(
+            "mt-1.5 text-base",
+            "text-blue-700/80 dark:text-blue-300/80" // CORRIGÉ EN BLEU
+          )}>
+            Vous devez d'abord créer une enseigne avant de pouvoir ajouter une dépense.
+            Souhaitez-vous créer une enseigne maintenant?
+          </AlertDialogDescription>
+        </div>
+      </div>
+    </AlertDialogHeader>
+    
+    {/* Séparateur subtil */}
+    <div className={cn(
+      "w-full h-px relative z-10",
+      "bg-gradient-to-r from-transparent via-blue-100 to-transparent", // CORRIGÉ EN BLEU
+      "dark:via-blue-900/30" // CORRIGÉ EN BLEU
+    )} />
+    
+    <AlertDialogFooter className="p-4 flex-row gap-3 sm:gap-3 sm:justify-end relative z-10">
+      <AlertDialogCancel 
+        className="mt-0 border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
       >
-        <AlertDialogContent className="sm:max-w-[500px] overflow-hidden p-0">
-          {/* Background gradient subtil */}
-          <div className={cn(
-            "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br",
-            "from-amber-500 to-amber-400",
-            "dark:from-amber-600 dark:to-amber-500"
-          )} />
-          
-          {/* Fond radial gradient ultra-subtil */}
-          <div className={cn(
-            "absolute inset-0 pointer-events-none",
-            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
-            "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
-          )} />
-          
-          <AlertDialogHeader className="relative z-10 p-6">
-            <div className="flex items-center gap-3">
-              <div className={cn(
-                "p-2.5 rounded-lg",
-                "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300"
-              )}>
-                <AlertTriangle className="w-5 h-5" />
-              </div>
-              
-              <div>
-                <AlertDialogTitle className={cn(
-                  "text-xl font-bold",
-                  "text-amber-900 dark:text-amber-200"
-                )}>
-                  Aucune enseigne disponible
-                </AlertDialogTitle>
-                
-                <AlertDialogDescription className={cn(
-                  "mt-1.5 text-base",
-                  "text-amber-700/80 dark:text-amber-300/80"
-                )}>
-                  Vous devez d'abord créer une enseigne avant de pouvoir ajouter une dépense.
-                  Souhaitez-vous créer une enseigne maintenant?
-                </AlertDialogDescription>
-              </div>
-            </div>
-          </AlertDialogHeader>
-          
-          {/* Séparateur subtil */}
-          <div className={cn(
-            "w-full h-px relative z-10",
-            "bg-gradient-to-r from-transparent via-gray-200 to-transparent",
-            "dark:via-gray-700"
-          )} />
-          
-         <AlertDialogFooter className="p-4 flex-row gap-3 sm:gap-3 sm:justify-end relative z-10">
-  <AlertDialogCancel 
-    className="mt-0 border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-  >
-    Non, plus tard
-  </AlertDialogCancel>
-  <AlertDialogAction
-    onClick={() => {
-      setShowNoRetailerAlert(false);
-      navigate("/settings", { state: { scrollTo: "retailers" } });
-    }}
-    className={cn(
-      "bg-blue-600 hover:bg-blue-700",
-      "dark:bg-blue-600 dark:hover:bg-blue-700",
-      "text-white shadow-sm"
-    )}
-  >
-    Oui, créer une enseigne
-  </AlertDialogAction>
-</AlertDialogFooter>
+        Non, plus tard
+      </AlertDialogCancel>
+      <AlertDialogAction
+        onClick={() => {
+          setShowNoRetailerAlert(false);
+          navigate("/settings", { state: { scrollTo: "retailers" } });
+        }}
+        className={cn(
+          "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700", // CORRIGÉ EN BLEU
+          "dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-600", // CORRIGÉ EN BLEU
+          "text-white shadow-sm"
+        )}
+      >
+        Oui, créer une enseigne
+      </AlertDialogAction>
+    </AlertDialogFooter>
+    
+    {/* Décoration graphique dans le coin inférieur droit */}
+    <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] z-0">
+      <AlertTriangle className="w-full h-full" />
+    </div>
+  </AlertDialogContent>
+</AlertDialog>
 
-          {/* Décoration graphique dans le coin inférieur droit */}
-          <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] z-0">
-            <AlertTriangle className="w-full h-full" />
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }
