@@ -120,8 +120,8 @@ export const SavingsGoal = ({
   const progressPercentage = Math.min(totalMonthlyAmount / targetMonthlySavings * 100, 100);
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 h-full">
-      <Card className="flex-1 h-full">
+    <div className="h-full">
+      <Card className="h-full">
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
@@ -133,60 +133,56 @@ export const SavingsGoal = ({
             Définissez le pourcentage de vos revenus à épargner
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 pt-1">
-          <div className="flex flex-col md:flex-row items-stretch gap-4">
-            {/* Slider */}
-            <div className="flex-1 space-y-3">
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm text-muted-foreground">Pourcentage d'épargne</Label>
-                  <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{localPercentage}%</span>
-                </div>
-                <Slider
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={[localPercentage]}
-                  onValueChange={handleValueChange}
-                  onValueCommit={handleValueCommit}
-                  className="text-emerald-500 dark:text-emerald-400"
-                  aria-label="Pourcentage d'épargne"
+        <CardContent className="space-y-5 pt-1">
+          {/* Slider section */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm text-muted-foreground">Pourcentage d'épargne</Label>
+              <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{localPercentage}%</span>
+            </div>
+            <Slider
+              min={0}
+              max={100}
+              step={1}
+              value={[localPercentage]}
+              onValueChange={handleValueChange}
+              onValueCommit={handleValueCommit}
+              className="text-emerald-500 dark:text-emerald-400"
+              aria-label="Pourcentage d'épargne"
+            />
+          </div>
+  
+          {/* Card sur fond gris */}
+          <div className="space-y-3.5 rounded-lg bg-secondary/50 border border-border/50 p-4">
+            {/* Barre de progression */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Progression vers l'objectif</span>
+                <span className="text-xs font-medium">
+                  {Math.round(progressPercentage)}%
+                </span>
+              </div>
+              <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                <div 
+                  className={`h-full ${isTargetMet ? 'bg-emerald-500' : 'bg-emerald-400/80'} transition-all duration-300 ease-out`}
+                  style={{ width: `${progressPercentage}%` }}
                 />
               </div>
             </div>
-  
-            {/* Card sur fond gris */}
-            <div className="flex-1 space-y-3 rounded-lg bg-secondary/50 border border-border/50 p-4">
-              {/* Barre de progression */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Progression vers l'objectif</span>
-                  <span className="text-xs font-medium">
-                    {Math.round(progressPercentage)}%
-                  </span>
-                </div>
-                <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${isTargetMet ? 'bg-emerald-500' : 'bg-emerald-400/80'} transition-all duration-300 ease-out`}
-                    style={{ width: `${progressPercentage}%` }}
-                  />
-                </div>
-              </div>
 
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Objectif mensuel</span>
-                <span className="font-medium text-emerald-600 dark:text-emerald-400">{targetMonthlySavings.toFixed(0)}€</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Total épargné</span>
-                <span className="font-medium">{totalMonthlyAmount.toFixed(0)}€</span>
-              </div>
-              <div className="flex items-center justify-between text-sm border-t border-border/40 mt-1 pt-2">
-                <span className="text-muted-foreground">Reste à épargner</span>
-                <span className={`font-medium ${isTargetMet ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
-                  {Math.abs(remainingToTarget).toFixed(0)}€ {isTargetMet ? 'dépassé' : 'manquant'}
-                </span>
-              </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Objectif mensuel</span>
+              <span className="font-medium text-emerald-600 dark:text-emerald-400">{targetMonthlySavings.toFixed(0)}€</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Total épargné</span>
+              <span className="font-medium">{totalMonthlyAmount.toFixed(0)}€</span>
+            </div>
+            <div className="flex items-center justify-between text-sm border-t border-border/40 mt-1 pt-2">
+              <span className="text-muted-foreground">Reste à épargner</span>
+              <span className={`font-medium ${isTargetMet ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
+                {Math.abs(remainingToTarget).toFixed(0)}€ {isTargetMet ? 'dépassé' : 'manquant'}
+              </span>
             </div>
           </div>
         </CardContent>
