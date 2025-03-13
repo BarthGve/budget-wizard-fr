@@ -117,6 +117,7 @@ export const SavingsGoal = ({
   const targetMonthlySavings = (totalIncome * localPercentage) / 100;
   const remainingToTarget = targetMonthlySavings - totalMonthlyAmount;
   const isTargetMet = remainingToTarget <= 0;
+  const progressPercentage = Math.min(totalMonthlyAmount / targetMonthlySavings * 100, 100);
 
   return (
     <div className="flex flex-col md:flex-row gap-4 h-full">
@@ -152,33 +153,26 @@ export const SavingsGoal = ({
                   aria-label="Pourcentage d'épargne"
                 />
               </div>
-              
-              {/* Progression bar */}
-              <div className="space-y-1.5 mt-2">
+            </div>
+  
+            {/* Card sur fond gris */}
+            <div className="flex-1 space-y-3 rounded-lg bg-secondary/50 border border-border/50 p-4">
+              {/* Barre de progression */}
+              <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Progression</span>
+                  <span className="text-xs text-muted-foreground">Progression vers l'objectif</span>
                   <span className="text-xs font-medium">
-                    {totalMonthlyAmount.toFixed(0)}€ / {targetMonthlySavings.toFixed(0)}€
+                    {Math.round(progressPercentage)}%
                   </span>
                 </div>
                 <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
                   <div 
-                    className={`h-full ${isTargetMet ? 'bg-emerald-500' : 'bg-emerald-400/70'}`}
-                    style={{ 
-                      width: `${Math.min(totalMonthlyAmount / targetMonthlySavings * 100, 100)}%`,
-                      transition: 'width 0.3s ease'
-                    }}
+                    className={`h-full ${isTargetMet ? 'bg-emerald-500' : 'bg-emerald-400/80'} transition-all duration-300 ease-out`}
+                    style={{ width: `${progressPercentage}%` }}
                   />
                 </div>
               </div>
-            </div>
-  
-            {/* Card sur fond gris */}
-            <div className="flex-1 space-y-2 rounded-lg bg-secondary/50 border border-border/50 p-3.5">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Revenu total</span>
-                <span className="font-medium">{totalIncome.toFixed(0)}€</span>
-              </div>
+
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Objectif mensuel</span>
                 <span className="font-medium text-emerald-600 dark:text-emerald-400">{targetMonthlySavings.toFixed(0)}€</span>
@@ -187,7 +181,7 @@ export const SavingsGoal = ({
                 <span className="text-muted-foreground">Total épargné</span>
                 <span className="font-medium">{totalMonthlyAmount.toFixed(0)}€</span>
               </div>
-              <div className="flex items-center justify-between text-sm border-t border-border/40 mt-2 pt-2">
+              <div className="flex items-center justify-between text-sm border-t border-border/40 mt-1 pt-2">
                 <span className="text-muted-foreground">Reste à épargner</span>
                 <span className={`font-medium ${isTargetMet ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
                   {Math.abs(remainingToTarget).toFixed(0)}€ {isTargetMet ? 'dépassé' : 'manquant'}
