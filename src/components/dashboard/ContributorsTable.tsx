@@ -44,7 +44,7 @@ export const ContributorsTable = ({
         transition={{ duration: 0.4 }}
       >
         <Card className={cn(
-          "overflow-hidden shadow-md",
+          "overflow-hidden shadow-lg",
           // Light mode styling
           "bg-white border border-gray-100",
           // Dark mode styling
