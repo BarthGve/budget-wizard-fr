@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -52,25 +51,26 @@ export const CreateRetailerBanner = () => {
   }
 
   return (
-    <Alert className="relative w-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800 py-3">
+    <Alert className="relative w-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-200 dark:border-indigo-800 py-2.5 px-4">
       <Button
         variant="ghost"
-        className="absolute right-2 top-2 h-8 w-8 rounded-full p-0 hover:bg-indigo-500/20"
+        className="absolute right-1 top-1 h-7 w-7 rounded-full p-0 hover:bg-indigo-500/10"
         onClick={handleDismiss}
       >
-        <X className="h-4 w-4" />
+        <X className="h-3.5 w-3.5" />
       </Button>
-      <AlertTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-300">
+      <AlertTitle className="text-base font-medium text-indigo-700 dark:text-indigo-300">
         Suivez vos dépenses, magasin par magasin 🛍️
       </AlertTitle>
-      <AlertDescription className="mt-1 text-muted-foreground mb-2">
+      <AlertDescription className="mt-0.5 text-sm text-indigo-600/70 dark:text-indigo-400/70 mb-1.5">
         Ajoutez vos enseignes favorites et suivez vos achats en toute simplicité!
       </AlertDescription>
-      <div className="flex justify-end mt-2">
-      <Button
-      onClick={() => navigate("/user-settings?tab=settings")}
-      className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
-    >
+      <div className="flex justify-end mt-1">
+        <Button
+          onClick={() => navigate("/user-settings?tab=settings")}
+          size="sm"
+          className="bg-indigo-500/80 hover:bg-indigo-600/90 text-white text-sm px-3 py-1 h-auto"
+        >
           🚀 Let's go !
         </Button>
       </div>
