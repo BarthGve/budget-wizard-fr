@@ -1,13 +1,14 @@
 
-import { formatCurrency } from "@/utils/format";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { SavingsProject } from "@/types/savings-project";
-import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { differenceInDays } from "date-fns";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import { CardHeader } from "./components/CardHeader";
+import { ProgressSection } from "./components/ProgressSection";
+import { AmountsSection } from "./components/AmountsSection";
+import { CardFooter } from "./components/CardFooter";
+import { useProjectCardCalculations } from "./hooks/useProjectCardCalculations";
 
 interface SavingsProjectCardProps {
   project: SavingsProject;
@@ -24,31 +25,13 @@ export const SavingsProjectCard = ({
   index = 0, 
   isVisible = true 
 }: SavingsProjectCardProps) => {
-  const calculateSavedAmount = (project: SavingsProject) => {
-    if (!project.montant_mensuel || !project.created_at) return 0;
-    
-    const daysSinceCreation = differenceInDays(new Date(), new Date(project.created_at));
-    const monthsSinceCreation = Math.floor(daysSinceCreation / 30);
-    return project.montant_mensuel * monthsSinceCreation;
-  };
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
+  
+  // Calculs liés au projet d'épargne
+  const { savedAmount, progressPercentage, isComplete } = useProjectCardCalculations(project);
 
-  const calculateProgress = (project: SavingsProject) => {
-    const savedAmount = calculateSavedAmount(project);
-    return Math.min((savedAmount / project.montant_total) * 100, 100);
-  };
-
-  const getBadgeVariant = (project: SavingsProject) => {
-    if (project.statut === 'dépassé') return "destructive";
-    if (project.statut === 'actif') return "default";
-    return "outline";
-  };
-
-  const getBadgeText = (project: SavingsProject) => {
-    if (project.statut === 'dépassé') return "Dépassé";
-    if (project.statut === 'actif') return "Actif";
-    return "En attente";
-  };
-
+  // Animation pour l'apparition/disparition des cartes
   const cardVariants = {
     visible: {
       opacity: 1,
@@ -87,63 +70,58 @@ export const SavingsProjectCard = ({
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
       whileHover={{ 
-        scale: 1.03, 
-        rotateY: 5,
+        scale: 1.02, 
+        y: -3,
       }}
       whileTap={{ scale: 0.98 }}
     >
-      <Card className="flex flex-col backface-hidden transform-gpu shadow-md hover:shadow-lg transition-shadow duration-300 h-full">
-        <div 
-          className="h-48 relative cursor-pointer overflow-hidden rounded-t-lg"
-          onClick={() => onSelect(project)}
-        >
-          <motion.img
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
-            src={project.image_url || "/placeholder.svg"}
-            alt={project.nom_projet}
-            className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = "/placeholder.svg";
-            }}
-          />
-        </div>
-        <CardContent className="pt-4 flex-1 flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold truncate">{project.nom_projet}</h3>
-            <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.1 }}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                onClick={() => onDelete(project)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </motion.div>
-          </div>
+      <Card className={cn(
+        "flex flex-col backface-hidden transform-gpu h-full border overflow-hidden relative",
+        // Light mode
+        "bg-white border-emerald-100 hover:border-emerald-200",
+        // Dark mode
+        "dark:bg-gray-800 dark:border-emerald-900/40 dark:hover:border-emerald-800/50"
+      )}
+      style={{
+        boxShadow: isDarkMode
+          ? "0 4px 20px -4px rgba(0, 100, 70, 0.15), 0 1px 3px -1px rgba(0, 0, 0, 0.2)"
+          : "0 4px 20px -4px rgba(16, 185, 129, 0.15), 0 1px 3px -1px rgba(0, 0, 0, 0.05)"
+      }}>
+        {/* En-tête avec image et titre */}
+        <CardHeader 
+          project={project}
+          onDelete={onDelete}
+          onSelect={onSelect}
+          progressPercentage={progressPercentage}
+          isComplete={isComplete}
+        />
+
+        <CardContent className={cn(
+          "pt-4 flex-1 flex flex-col justify-between space-y-4",
+          // Light mode specific gradient background for content
+          "bg-gradient-to-b from-white to-emerald-50/30",
+          // Dark mode specific gradient
+          "dark:bg-gradient-to-b dark:from-gray-800 dark:to-emerald-900/10"
+        )}>
+          {/* Section de progression */}
+          {project.montant_mensuel && project.montant_mensuel > 0 && (
+            <ProgressSection 
+              progressPercentage={progressPercentage}
+              isComplete={isComplete}
+            />
+          )}
           
-          <div className="mt-auto space-y-4">
-            {project.montant_mensuel && project.montant_mensuel > 0 && project.statut === 'actif' && (
-              <div>
-                <p className="text-sm font-medium mb-2">Progression:</p>
-                <Progress value={calculateProgress(project)} className="h-2" />
-              </div>
-            )}
-            
-            <div className="flex items-center justify-between mt-4">
-              <div>
-                <p className="text-sm font-medium">Objectif:</p>
-                <p className="text-lg font-bold">
-                  {formatCurrency(project.montant_total)}
-                </p>
-              </div>
-              <Badge variant={getBadgeVariant(project)} className="flex-shrink-0">
-                {getBadgeText(project)}
-              </Badge>
-            </div>
-          </div>
+          {/* Section des montants */}
+          <AmountsSection 
+            savedAmount={savedAmount}
+            totalAmount={project.montant_total}
+          />
+          
+          {/* Pied de carte avec bouton d'action */}
+          <CardFooter 
+            onSelect={onSelect}
+            project={project}
+          />
         </CardContent>
       </Card>
     </motion.div>

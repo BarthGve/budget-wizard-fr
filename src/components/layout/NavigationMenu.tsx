@@ -59,7 +59,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
 
   return (
     <nav className="flex flex-col h-full justify-between p-4">
-      <ul className="space-y-2">
+      <ul className="space-y-1">
         {menuItems.map((item) => {
           // Use a proper matching logic for active state
           const isActive = item.matchPath
@@ -70,34 +70,49 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
           const showBadge = isAdmin && item.path === "/admin/feedbacks" && pendingCount > 0;
 
           return (
-            <li key={item.path}>
-              <NavLink
-                to={item.path}
-                className={({ isActive }) => cn(
-                  "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
-                  "hover:bg-primary/10",
-                  collapsed && "justify-center",
-                  isActive && "bg-primary text-primary-foreground hover:bg-primary-hover"
-                )}
-                end
-              >
-                <div className="relative">
-                  <item.icon className="h-5 w-5 flex-shrink-0" />
-                  {showBadge && (
-                    <Badge 
-                      variant="destructive" 
-                      className={cn(
-                        "absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center rounded-full",
-                        collapsed ? "-right-1" : "-right-1.5"
-                      )}
-                    >
-                      {pendingCount > 9 ? '9+' : pendingCount}
-                    </Badge>
-                  )}
-                </div>
-                {!collapsed && <span className="truncate">{item.title}</span>}
-              </NavLink>
-            </li>
+           <li key={item.path}>
+  <NavLink
+    to={item.path}
+    className={({ isActive }) => cn(
+      "flex items-center space-x-3 px-2 py-2 rounded-lg transition-colors",
+      // Hover avec un gris très léger
+      "hover:bg-gray-100 dark:hover:bg-gray-800/60",
+      collapsed && "justify-center",
+      // État actif avec un gris plus prononcé et élégant
+      isActive && "bg-gray-200 text-gray-900 hover:bg-gray-200/90 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-800/90"
+    )}
+    end
+  >
+    <div className="relative">
+      <item.icon className={cn(
+        "h-5 w-5 flex-shrink-0",
+        // Ajout d'une couleur légèrement plus foncée pour l'icône active
+        isActive ? "text-gray-700 dark:text-gray-200" : "text-gray-500 dark:text-gray-400"
+      )} />
+      {showBadge && (
+        <Badge 
+          variant="destructive" 
+          className={cn(
+            "absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center rounded-full",
+            collapsed ? "-right-1" : "-right-1.5"
+          )}
+        >
+          {pendingCount > 9 ? '9+' : pendingCount}
+        </Badge>
+      )}
+    </div>
+    {!collapsed && (
+      <span className={cn(
+        "truncate",
+        // Nuances de texte selon l'état actif
+        isActive ? "font-medium" : "text-gray-600 dark:text-gray-300"
+      )}>
+        {item.title}
+      </span>
+    )}
+  </NavLink>
+</li>
+
           );
         })}
       </ul>

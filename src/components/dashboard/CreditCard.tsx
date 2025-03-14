@@ -1,13 +1,15 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard as CreditCardIcon } from 'lucide-react';
+import { CreditCard as CreditCardIcon, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface CreditCardProps {
   totalMensualites: number;
@@ -26,40 +28,104 @@ export const CreditCard = ({
     if (taux < 40) return "secondary";
     return "destructive";
   };
- 
+  
+  const getStatusIcon = (taux: number) => {
+    if (taux < 30) return <CheckCircle className="h-4 w-4 text-white" />;
+    if (taux < 40) return <Info className="h-4 w-4 text-amber-500 dark:text-amber-400" />;
+    return <AlertCircle className="h-4 w-4 text-red-500 dark:text-red-400" />;
+  };
+  
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
-
+  
   return (
-    <Card 
-      className="bg-background cursor-pointer hover:shadow-md transition-shadow"
-      onClick={() => navigate("/credits")}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -3 }}
     >
-      <CardHeader className="py-[16px]">
-        <div className="flex flex-row items-center justify-between">
-          <CardTitle className="text-2xl">Crédits</CardTitle>
-          <CreditCardIcon className="h-6 w-6 text-muted-foreground" />
-        </div>
-        <CardDescription>Total dû en {currentMonthName}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col">
-              <p className="text-xl font-bold leading-none">{Math.round(totalMensualites)} €</p>
-            </div>
-            <Tooltip>
-              <TooltipTrigger>
-                <Badge variant={getBadgeVariant(tauxEndettement)} className="px-3 py-1">
-                  {Math.round(tauxEndettement)}%
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Taux d'endettement</p>
-              </TooltipContent>
-            </Tooltip>
+      <Card
+        className={cn(
+          "backdrop-blur-sm cursor-pointer transition-all duration-300",
+          // Light mode styles
+          "bg-gradient-to-br from-white to-purple-50 shadow-lg border border-purple-100 hover:shadow-xl",
+          // Dark mode styles - alignées avec les cards de graphiques
+          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-purple-950 dark:border-purple-900/30 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50"
+        )}
+        onClick={() => navigate("/credits")}
+      >
+        <CardHeader className="py-4">
+          <div className="flex flex-row items-center justify-between">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <div className={cn(
+                "p-2 rounded-full",
+                "bg-purple-100 text-purple-600", // Light mode
+                "dark:bg-purple-900/40 dark:text-purple-400" // Dark mode
+              )}>
+                <CreditCardIcon className="h-5 w-5" />
+              </div>
+              <span className="text-gray-800 dark:text-white">Crédits</span>
+            </CardTitle>
+            <Badge 
+              variant={getBadgeVariant(tauxEndettement)} 
+              className={cn(
+                "bg-purple-500 px-3 py-1 flex items-center gap-1",
+                // Améliorer la visibilité des badges en dark mode
+                "dark:bg-opacity-90 dark:font-medium"
+              )}
+            >
+              {getStatusIcon(tauxEndettement)}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center cursor-pointer">
+                    <span className="text-xs">{Math.round(tauxEndettement)}%</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="dark:bg-gray-800 dark:border-gray-700">
+                  <p className="flex items-center gap-1 dark:text-white">
+                    <Info className="h-4 w-4" />
+                    Taux d'endettement mensuel
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </Badge>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+          <CardDescription className={cn(
+            "text-gray-500",
+            "dark:text-gray-400"
+          )}>
+            Total dû en {currentMonthName}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pb-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.p 
+                  className={cn(
+                    "text-xl font-bold leading-none",
+                    "text-gray-800", // Light mode
+                    "dark:text-purple-100" // Dark mode - légèrement teinté de violet pour l'effet visuel
+                  )}
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+                >
+                  {Math.round(totalMensualites).toLocaleString('fr-FR')} €
+                </motion.p>
+                
+                {/* Effet de lueur subtil - visible uniquement en dark mode */}
+                <div className="absolute -inset-1 bg-purple-500/10 blur-md rounded-full opacity-0 dark:opacity-60" />
+              </motion.div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };

@@ -1,6 +1,7 @@
 
 import { TableHead } from "@/components/ui/table";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SortableTableHeaderProps {
   field: string;
@@ -9,6 +10,7 @@ interface SortableTableHeaderProps {
   sortDirection: "asc" | "desc";
   onSort: (field: string) => void;
   className?: string;
+  icon?: React.ReactNode;
 }
 
 export function SortableTableHeader({
@@ -17,7 +19,8 @@ export function SortableTableHeader({
   currentSortField,
   sortDirection,
   onSort,
-  className
+  className,
+  icon
 }: SortableTableHeaderProps) {
   const SortIcon = () => {
     if (field !== currentSortField) return null;
@@ -30,10 +33,13 @@ export function SortableTableHeader({
 
   return (
     <TableHead
-      className={`cursor-pointer hover:text-primary transition-colors ${className}`}
+      className={cn("cursor-pointer hover:text-primary transition-colors", className)}
       onClick={() => onSort(field)}
     >
-      {label} <SortIcon />
+      <div className="flex items-center gap-1">
+        {icon}
+        {label} <SortIcon />
+      </div>
     </TableHead>
   );
 }

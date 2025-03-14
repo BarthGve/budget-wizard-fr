@@ -13,14 +13,14 @@ export const useRealtimeListeners = () => {
     projects: any | null;
     recurringExpenses: any | null;
     profiles: any | null;
-    expenses: any | null; // Ajout d'une référence pour les dépenses
+    expenses: any | null;
   }>({
     contributors: null,
     monthlySavings: null,
     projects: null,
     recurringExpenses: null,
     profiles: null,
-    expenses: null // Initialisation de la référence des dépenses
+    expenses: null
   });
 
   // Fonction d'invalidation optimisée pour cibler uniquement les données nécessaires
@@ -34,7 +34,7 @@ export const useRealtimeListeners = () => {
       exact: false
     });
     
-    // Forcer le rafraîchissement immédiat
+    // Forcer le rafraîchissement immédiat pour la mise à jour globale
     setTimeout(() => {
       queryClient.refetchQueries({ 
         queryKey: ["dashboard-data"],
@@ -45,6 +45,13 @@ export const useRealtimeListeners = () => {
       // Invalider également d'autres requêtes potentiellement affectées
       queryClient.invalidateQueries({ 
         queryKey: ["contributors"],
+        exact: false, 
+        refetchType: 'all'
+      });
+      
+      // Ajouter l'invalidation pour les credits qui affectent le solde global
+      queryClient.invalidateQueries({ 
+        queryKey: ["credits"],
         exact: false, 
         refetchType: 'all'
       });
@@ -136,7 +143,8 @@ export const useRealtimeListeners = () => {
 
   // Configuration des écouteurs pour les dépenses récurrentes
   useEffect(() => {
-    setupChannel('recurring_expenses', 'recurringExpenses');
+    // Utiliser les invalidations de credits pour mettre à jour le solde global
+    setupChannel('recurring_expenses', 'recurringExpenses', ['credits', 'dashboard-data']);
     
     return () => {
       if (channelsRef.current.recurringExpenses) {
@@ -161,7 +169,7 @@ export const useRealtimeListeners = () => {
   // Écouteur spécifique pour les dépenses
   useEffect(() => {
     // Configuration de l'écouteur avec invalidation des requêtes liées aux dépenses
-    setupChannel('expenses', 'expenses', ['expenses', 'retailer-expenses']);
+    setupChannel('expenses', 'expenses', ['expenses', 'retailer-expenses', 'dashboard-data']);
     
     return () => {
       if (channelsRef.current.expenses) {

@@ -1,10 +1,9 @@
-
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { startOfYear, endOfYear, subYears, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
-import { MoveDownRight, MoveUpRight } from "lucide-react";
+import { PlusCircle, TrendingDown, TrendingUp, Store } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddExpenseDialog } from "./AddExpenseDialog";
 import { Link } from "react-router-dom";
@@ -37,7 +36,8 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
   const { 
     totalCurrentPeriod, 
     totalPreviousPeriod, 
-    percentageChange 
+    percentageChange,
+    periodLabel 
   } = useMemo(() => {
     // Calculs pour le mode mensuel
     if (viewMode === 'monthly') {
@@ -68,7 +68,8 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
       return { 
         totalCurrentPeriod: totalCurrentMonth, 
         totalPreviousPeriod: totalPreviousMonth, 
-        percentageChange: monthPercentageChange 
+        percentageChange: monthPercentageChange,
+        periodLabel: "Mois en cours"
       };
     } 
     // Calculs pour le mode annuel
@@ -100,7 +101,8 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
       return { 
         totalCurrentPeriod: totalCurrentYear, 
         totalPreviousPeriod: totalLastYear, 
-        percentageChange: yearPercentageChange 
+        percentageChange: yearPercentageChange,
+        periodLabel: "Année en cours"
       };
     }
   }, [expenses, now, viewMode]);
@@ -119,71 +121,156 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
   // Déterminer si le montant a augmenté ou diminué pour l'animation
   const hasIncreased = totalCurrentPeriod > prevTotal;
   const hasChanged = totalCurrentPeriod !== prevTotal && prevTotal !== 0;
+  const isIncrease = percentageChange > 0;
+  const comparisonLabel = viewMode === 'monthly' ? "vs mois précédent" : "vs année précédente";
 
   return (
     <>
-      <Card className="p-6 hover:shadow-md transition-all overflow-hidden">
-        <div className="flex items-center justify-between">
-          <Link 
-            to={`/expenses/retailer/${retailer.id}`} 
-            className="text-xl font-semibold hover:text-primary transition-colors"
-          >
-            {retailer.name}
-          </Link>
-          {retailer.logo_url && (
-            <div>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="w-10 h-10 p-0 rounded-full"
-                      onClick={() => setAddDialogOpen(true)}
-                    >
-                      <img 
-                        src={retailer.logo_url} 
-                        alt={retailer.name} 
-                        className="w-10 h-10 rounded-full object-contain"
-                      />
-                      <span className="sr-only">Ajouter une dépense pour {retailer.name}</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Ajouter une dépense</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          )}
-        </div>
-        <div className="mt-4 flex items-center gap-2">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={totalCurrentPeriod}
-              initial={hasChanged ? { opacity: 0, y: hasIncreased ? 20 : -20 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: hasIncreased ? -20 : 20 }}
-              transition={{ duration: 0.3 }}
-              className="text-2xl font-bold"
-            >
-              {formatCurrency(totalCurrentPeriod)}
-            </motion.div>
-          </AnimatePresence>
-          {totalPreviousPeriod > 0 && (
-            <div className="flex items-center gap-1 mt-1">
-              {percentageChange > 0 ? (
-                <MoveUpRight className="h-4 w-4 text-red-500" />
+      <Card 
+        className={cn(
+          "overflow-hidden transition-all duration-200 h-full relative",
+          "border shadow-sm hover:shadow-md hover:translate-y-[-5px]",
+          "bg-white border-gray-100",
+          "dark:bg-gray-800/90 dark:hover:bg-gray-800/70 dark:border-gray-700/50"
+        )}
+      >
+        {/* Fond radial gradient ultra-subtil */}
+        <div className={cn(
+          "absolute inset-0",
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
+          "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
+        )} />
+        
+        <div className="p-5 relative z-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              {retailer.logo_url ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className={cn(
+                        "rounded-full overflow-hidden border",
+                        "border-gray-100 dark:border-gray-700",
+                        "w-10 h-10 flex items-center justify-center"
+                      )}>
+                        <img 
+                          src={retailer.logo_url} 
+                          alt={retailer.name} 
+                          className="w-9 h-9 object-contain rounded-full"
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{retailer.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ) : (
-                <MoveDownRight className="h-4 w-4 text-green-500" />
+                <div className={cn(
+                  "p-2 rounded-full",
+                  "bg-gray-100 text-gray-700",
+                  "dark:bg-gray-800 dark:text-gray-300"
+                )}>
+                  <Store className="h-4 w-4" />
+                </div>
               )}
-              <span className={cn("text-sm", 
-                percentageChange > 0 ? "text-red-500" : "text-green-500"
-              )}>
-                {Math.abs(percentageChange).toFixed(1)}%
-              </span>
+              
+              <Link 
+                to={`/expenses/retailer/${retailer.id}`}
+                className={cn(
+                  "text-lg font-medium transition-colors",
+                  // Teinte bleue pour le nom de l'enseigne
+                  "text-blue-700 hover:text-blue-600",
+                  // Dark mode
+                  "dark:text-blue-300 dark:hover:text-blue-400"
+                )}
+              >
+                {retailer.name}
+              </Link>
             </div>
-          )}
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "rounded-full h-8 w-8 p-0",
+                // Nouvelles couleurs bleues pour le bouton
+                "bg-blue-100 text-blue-700 hover:bg-blue-200",
+                // Dark mode
+                "dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/50"
+              )}
+              onClick={() => setAddDialogOpen(true)}
+            >
+              <PlusCircle className="h-4 w-4" />
+              <span className="sr-only">Ajouter une dépense pour {retailer.name}</span>
+            </Button>
+          </div>
+          
+          <div className="space-y-3">
+            <div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                {periodLabel}
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={totalCurrentPeriod}
+                    initial={hasChanged ? { opacity: 0, y: hasIncreased ? 20 : -20 } : false}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: hasIncreased ? -20 : 20 }}
+                    transition={{ duration: 0.3 }}
+                    className={cn(
+                      "text-2xl font-bold",
+                      // Teinte bleue pour le montant
+                      "text-blue-800 dark:text-blue-200"
+                    )}
+                  >
+                    {formatCurrency(totalCurrentPeriod)}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+            
+            {totalPreviousPeriod > 0 && (
+              <div className={cn(
+                "flex items-center gap-1.5 text-sm",
+              )}>
+                <div className={cn(
+                  "p-1 rounded",
+                  // Light mode - background
+                  isIncrease ? "bg-red-100" : "bg-green-100",
+                  // Dark mode - background
+                  isIncrease ? "dark:bg-red-900/30" : "dark:bg-green-900/30",
+                )}>
+                  {isIncrease ? (
+                    <TrendingUp className={cn(
+                      "h-3 w-3",
+                      "text-red-600 dark:text-red-300"
+                    )} />
+                  ) : (
+                    <TrendingDown className={cn(
+                      "h-3 w-3",
+                      "text-green-600 dark:text-green-300"
+                    )} />
+                  )}
+                </div>
+                
+                <span className={cn(
+                  "font-medium", 
+                  // Light mode
+                  isIncrease ? "text-red-600" : "text-green-600",
+                  // Dark mode
+                  isIncrease ? "dark:text-red-300" : "dark:text-green-300"
+                )}>
+                  {Math.abs(percentageChange).toFixed(1)}%
+                </span>
+                
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {comparisonLabel}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </Card>
 

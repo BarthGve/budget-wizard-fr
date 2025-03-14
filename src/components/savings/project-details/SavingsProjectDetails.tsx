@@ -1,4 +1,3 @@
-
 import { formatCurrency } from "@/utils/format";
 import { SavingsProject } from "@/types/savings-project";
 import { Progress } from "@/components/ui/progress";
@@ -7,8 +6,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { differenceInDays } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Calendar, Wallet, Clock, Target, TrendingUp } from "lucide-react";
 
 interface SavingsProjectDetailsProps {
   project: SavingsProject | null;
@@ -38,76 +40,129 @@ export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetail
       day: 'numeric'
     });
   };
+  
+  const savedAmount = calculateSavedAmount(project);
+  const progressValue = calculateProgress(project);
 
   return (
     <Dialog open={!!project} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-md p-5">
         <DialogHeader>
-          <DialogTitle className="text-2xl">{project.nom_projet}</DialogTitle>
+          <DialogTitle className="text-xl font-semibold text-green-800 dark:text-green-300">
+            {project.nom_projet}
+          </DialogTitle>
+          {project.description && (
+            <DialogDescription className="text-sm text-green-700/80 dark:text-green-400/80 mt-1">
+              {project.description}
+            </DialogDescription>
+          )}
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="aspect-video relative">
+        
+        <div className="space-y-4 mt-2">
+          <div className="aspect-video relative rounded-md overflow-hidden">
             <img
               src={project.image_url || "/placeholder.svg"}
               alt={project.nom_projet}
-              className="absolute inset-0 w-full h-full object-cover rounded-lg"
+              className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
           
-          {project.description && (
-            <div>
-              <h3 className="font-semibold mb-2">Description</h3>
-              <p className="text-muted-foreground">{project.description}</p>
+          {/* Progress section */}
+          {project.montant_mensuel && project.montant_mensuel > 0 && (
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center mb-1 text-sm">
+                <span className="text-green-700 dark:text-green-400 font-medium">Progression</span>
+                <span className="text-green-800 dark:text-green-300">
+                  {Math.round(progressValue)}%
+                </span>
+              </div>
+              <Progress 
+                value={progressValue} 
+                className="h-1.5 bg-green-100 dark:bg-green-800/30"
+                // Green progress bar
+                style={{
+                  "--progress-foreground": "rgb(22 163 74)"
+                } as React.CSSProperties}
+              />
+              <div className="flex justify-between text-xs text-green-600/70 dark:text-green-500/70">
+                <span>{formatCurrency(savedAmount)}</span>
+                <span>{formatCurrency(project.montant_total)}</span>
+              </div>
             </div>
           )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-semibold mb-2">Objectif</h3>
-              <p className="text-2xl font-bold">{formatCurrency(project.montant_total)}</p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-2">Date de création</h3>
-              <p>{formatDate(project.created_at)}</p>
-            </div>
-
+          
+          {/* Key information grid */}
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <InfoItem 
+              icon={<Target className="h-4 w-4 text-green-600 dark:text-green-500" />}
+              label="Objectif"
+              value={formatCurrency(project.montant_total)}
+              highlight
+            />
+            
             {project.montant_mensuel && (
-              <>
-                <div>
-                  <h3 className="font-semibold mb-2">Déjà épargné</h3>
-                  <p className="text-2xl font-bold">{formatCurrency(calculateSavedAmount(project))}</p>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold mb-2">Versement mensuel</h3>
-                  <p>{formatCurrency(project.montant_mensuel)} / mois</p>
-                </div>
-              </>
+              <InfoItem 
+                icon={<Wallet className="h-4 w-4 text-green-600 dark:text-green-500" />}
+                label="Versement mensuel"
+                value={`${formatCurrency(project.montant_mensuel)}/mois`}
+              />
             )}
-
+            
+            {savedAmount > 0 && (
+              <InfoItem 
+                icon={<TrendingUp className="h-4 w-4 text-green-600 dark:text-green-500" />}
+                label="Déjà épargné"
+                value={formatCurrency(savedAmount)}
+              />
+            )}
+            
+            <InfoItem 
+              icon={<Calendar className="h-4 w-4 text-green-600 dark:text-green-500" />}
+              label="Date de création"
+              value={formatDate(project.created_at)}
+            />
+            
             {project.date_estimee && (
-              <div>
-                <h3 className="font-semibold mb-2">Date d'objectif estimée</h3>
-                <p>{new Date(project.date_estimee).toLocaleDateString('fr-FR', { 
+              <InfoItem 
+                icon={<Clock className="h-4 w-4 text-green-600 dark:text-green-500" />}
+                label="Date d'objectif"
+                value={new Date(project.date_estimee).toLocaleDateString('fr-FR', { 
                   year: 'numeric', 
                   month: 'long'
-                })}</p>
-              </div>
+                })}
+              />
             )}
           </div>
-
-          {project.montant_mensuel && project.montant_mensuel > 0 && (
-            <div>
-              <h3 className="font-semibold mb-2">Progression</h3>
-              <Progress value={calculateProgress(project)} className="h-2" />
-              <p className="text-sm text-muted-foreground mt-2">
-                {Math.round(calculateProgress(project))}% de l'objectif atteint
-              </p>
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>
   );
 };
+
+// Composant plus compact pour les informations
+const InfoItem = ({ 
+  icon, 
+  label, 
+  value, 
+  highlight = false 
+}: { 
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) => (
+  <div className="flex items-center gap-2">
+    <div className="shrink-0">{icon}</div>
+    <div className="min-w-0">
+      <p className="text-xs text-green-600 dark:text-green-400 font-medium mb-0.5">{label}</p>
+      <p className={cn(
+        "truncate",
+        highlight 
+          ? "text-sm font-semibold text-green-800 dark:text-green-300" 
+          : "text-xs text-gray-700 dark:text-gray-300"
+      )}>
+        {value}
+      </p>
+    </div>
+  </div>
+);

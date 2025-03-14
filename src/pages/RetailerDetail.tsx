@@ -116,17 +116,15 @@ const RetailerDetail = () => {
           <RetailerExpensesChart expenses={expenses} />
         )}
 
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Historique des achats de l'année {currentYear}</h2>
-          
-          <RetailerExpensesTable
-            expenses={currentYearExpenses}
-            isLoading={isLoadingExpenses}
-            onEditExpense={handleEditExpense}
-            onDeleteExpense={handleDeleteExpense}
-            onViewDetails={handleViewExpenseDetails}
-          />
-        </Card>
+        <RetailerExpensesTable
+          expenses={currentYearExpenses}
+          isLoading={isLoadingExpenses}
+          onEditExpense={handleEditExpense}
+          onDeleteExpense={handleDeleteExpense}
+          onViewDetails={handleViewExpenseDetails}
+          currentYear={currentYear}
+        />
+
         <Card className="p-6">
         {expenses && expenses.length > 0 && (
           <RetailerYearlyArchives
@@ -134,7 +132,8 @@ const RetailerDetail = () => {
             currentYear={currentYear}
           />
         )}
-</Card>
+        </Card>
+        
         <RetailerDialogs
           expenseToEdit={expenseToEdit}
           expenseToView={expenseToView}

@@ -1,55 +1,42 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Credit } from "./types";
+import { memo } from "react";
+import { motion } from "framer-motion";
+import { ActiveCreditsCard } from "./cards/ActiveCreditsCard";
+import { MonthlyRepaymentsCard } from "./cards/MonthlyRepaymentsCard";
 
 interface CreditSummaryCardsProps {
-  activeCredits: Credit[];
+  activeCredits: any[];
   repaidThisMonth: number;
   totalActiveMensualites: number;
   totalRepaidMensualitesThisMonth: number;
 }
 
-export const CreditSummaryCards = ({
+export const CreditSummaryCards = memo(({
   activeCredits,
   repaidThisMonth,
   totalActiveMensualites,
-  totalRepaidMensualitesThisMonth,
+  totalRepaidMensualitesThisMonth
 }: CreditSummaryCardsProps) => {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card className="overflow-hidden border-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
-        <CardHeader>
-          <CardTitle>Crédits actifs</CardTitle>
-          <CardDescription className="text-violet-100">
-            {activeCredits.length} crédit(s) en cours
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {totalActiveMensualites.toLocaleString('fr-FR')} €
-          </div>
-          <div className="text-violet-100 mt-2">
-            Mensualités totales
-          </div>
-        </CardContent>
-      </Card>
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="grid gap-4 md:grid-cols-2 mb-6"
+      >
+        <ActiveCreditsCard 
+          activeCredits={activeCredits}
+          totalActiveMensualites={totalActiveMensualites}
+        />
 
-      <Card className="overflow-hidden border-0 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 text-white">
-        <CardHeader>
-          <CardTitle>Crédits remboursés ce mois</CardTitle>
-          <CardDescription className="text-emerald-100">
-            {repaidThisMonth} crédit(s) à échéance
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {totalRepaidMensualitesThisMonth.toLocaleString('fr-FR')} €
-          </div>
-          <div className="text-emerald-100 mt-2">
-            Mensualités échues
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        <MonthlyRepaymentsCard 
+          repaidThisMonth={repaidThisMonth}
+          totalRepaidMensualitesThisMonth={totalRepaidMensualitesThisMonth}
+        />
+      </motion.div>
+    </>
   );
-};
+});
+
+CreditSummaryCards.displayName = "CreditSummaryCards";

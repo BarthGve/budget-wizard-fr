@@ -3,11 +3,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { MoreVertical, SquarePen, Trash2 } from "lucide-react";
+import { MoreVertical, SquarePen, Trash2, Info } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "./types";
 import { CreditDialog } from "./CreditDialog";
+import { CreditInfoDialog } from "./CreditInfoDialog";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface CreditActionsProps {
@@ -18,6 +19,7 @@ interface CreditActionsProps {
 export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const queryClient = useQueryClient();
 
@@ -52,6 +54,11 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
     setDropdownOpen(false);
   };
 
+  const handleInfoClick = () => {
+    setShowInfoDialog(true);
+    setDropdownOpen(false);
+  };
+
   return (
     <>
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
@@ -61,6 +68,10 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[180px]">
+          <DropdownMenuItem onClick={handleInfoClick} className="cursor-pointer">
+            <Info className="mr-2 h-4 w-4" />
+            Détail
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleEditClick} className="cursor-pointer">
             <SquarePen className="mr-2 h-4 w-4" />
             Modifier
@@ -79,6 +90,12 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
         credit={credit}
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
+      />
+
+      <CreditInfoDialog
+        credit={credit}
+        open={showInfoDialog}
+        onOpenChange={setShowInfoDialog}
       />
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

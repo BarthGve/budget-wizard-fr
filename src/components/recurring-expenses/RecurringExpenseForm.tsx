@@ -13,7 +13,7 @@ import { DebitDayField } from "./form-fields/DebitDayField";
 import { DebitMonthField } from "./form-fields/DebitMonthField";
 import { DomainField } from "./form-fields/DomainField";
 
-interface RecurringExpenseFormProps {
+export interface RecurringExpenseFormProps {
   expense?: {
     id: string;
     name: string;
@@ -23,9 +23,11 @@ interface RecurringExpenseFormProps {
     debit_day: number;
     debit_month: number | null;
     logo_url?: string;
+    notes?: string;
   };
   onSuccess: () => void;
   onCancel: () => void;
+  variant?: string;
 }
 
 const extractDomainFromLogoUrl = (logoUrl?: string) => {
@@ -42,6 +44,7 @@ export function RecurringExpenseForm({
   expense,
   onSuccess,
   onCancel,
+  variant,
 }: RecurringExpenseFormProps) {
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
@@ -96,7 +99,7 @@ export function RecurringExpenseForm({
           <Button type="button" variant="outline" onClick={onCancel}>
             Annuler
           </Button>
-          <Button type="submit" className="bg-violet-600 hover:bg-violet-500 rounded-lg px-[16px] py-0 my-0 text-white">
+          <Button type="submit" className="bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white">
             {expense ? "Mettre à jour" : "Ajouter"}
           </Button>
         </div>

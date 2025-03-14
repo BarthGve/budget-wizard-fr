@@ -2,11 +2,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SavingsList } from "@/components/savings/SavingsList";
-import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
-import { ChevronDown, ChevronUp, HandCoins } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTheme } from "next-themes";
 
 interface MonthlySavingsSectionProps {
   monthlySavings: Array<{
@@ -16,29 +15,19 @@ interface MonthlySavingsSectionProps {
     logo_url?: string;
   }> | null;
   onSavingDeleted: () => void;
-  onSavingAdded: () => void;
   showInitial?: boolean;
 }
 
 export const MonthlySavingsSection = ({ 
   monthlySavings, 
-  onSavingDeleted, 
-  onSavingAdded,
+  onSavingDeleted,
   showInitial = true
 }: MonthlySavingsSectionProps) => {
   const [showMonthlySavings, setShowMonthlySavings] = useState(showInitial);
-  const [newSavingDialogOpen, setNewSavingDialogOpen] = useState(false);
+  const { theme } = useTheme();
 
   const toggleMonthlySavingsVisibility = () => {
     setShowMonthlySavings(prev => !prev);
-  };
-  
-  const handleOpenNewSavingDialog = () => {
-    setNewSavingDialogOpen(true);
-  };
-
-  const handleDialogOpenChange = (open: boolean) => {
-    setNewSavingDialogOpen(open);
   };
 
   return (
@@ -50,7 +39,7 @@ export const MonthlySavingsSection = ({
     >
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
-          <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Versements mensuels</h2>
+          <h2 className="font-bold tracking-tight bg-gradient-to-r from-emerald-500 via-green-500 to-teal-400 bg-clip-text text-transparent dark:from-emerald-400 dark:via-green-400 dark:to-teal-300 animate-fade-in text-2xl">Versements mensuels</h2>
           <motion.div
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.1 }}
@@ -71,38 +60,6 @@ export const MonthlySavingsSection = ({
             </Button>
           </motion.div>
         </div>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
-                             shadow-md rounded-full flex items-center justify-center w-10 h-10 p-0"
-                  onClick={handleOpenNewSavingDialog}
-                >
-                  <HandCoins className="h-5 w-5 text-white" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent 
-                side="top" 
-                align="center" 
-                className="z-50 max-w-[200px]" 
-                sideOffset={5}
-              >
-                nouveau versement
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          
-          <NewSavingDialog 
-            onSavingAdded={onSavingAdded} 
-            open={newSavingDialogOpen}
-            onOpenChange={handleDialogOpenChange}
-          />
-        </motion.div>
       </div>
       <SavingsList 
         monthlySavings={monthlySavings || []} 

@@ -38,7 +38,7 @@ export const GlobalBalanceCard = ({
         const progress = elapsed / duration;
         // Calculer la valeur intermédiaire et arrondir par dizaine
         const rawValue = startValue + (endValue - startValue) * progress;
-        const currentValue = Math.round(rawValue / 10) * 10; // Arrondi à la dizaine
+        const currentValue = Math.round(rawValue / 100) * 100; // Arrondi à la dizaine
         setDisplayedBalance(currentValue);
         
         requestAnimationFrame(animateValue);

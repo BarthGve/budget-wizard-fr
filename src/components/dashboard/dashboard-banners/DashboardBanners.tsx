@@ -1,17 +1,16 @@
-
 import { CreateCategoryBanner } from "@/components/common/CreateCategoryBanner";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { motion } from "framer-motion";
 
 export const DashboardBanners = () => {
-  // Animation variants pour l'effet de stagger
+  // Animation variants pour l'entrée des bannières
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
+        staggerChildren: 0.2,
+        delayChildren: 0.1
       }
     }
   };
@@ -19,45 +18,38 @@ export const DashboardBanners = () => {
   const itemVariants = {
     hidden: { 
       opacity: 0, 
-      y: 20,
-      scale: 0.95
+      y: 10,
     },
     visible: { 
       opacity: 1, 
       y: 0,
-      scale: 1,
       transition: {
         type: "spring",
-        stiffness: 100,
-        damping: 15
+        stiffness: 80,
+        damping: 20
       }
     }
   };
 
   return (
-    <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full"
+    <motion.div
+      className="space-y-3 w-full mx-auto"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       <motion.div 
         variants={itemVariants}
-        whileHover={{ 
-          scale: 1.03, 
-          boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
-        }}
-        transition={{ duration: 0.2 }}
+        className="w-full overflow-hidden"
+        whileHover={{ y: -2, transition: { duration: 0.2 } }}
       >
         <CreateCategoryBanner />
       </motion.div>
+      
       <motion.div 
         variants={itemVariants}
-        whileHover={{ 
-          scale: 1.03, 
-          boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
-        }}
-        transition={{ duration: 0.2 }}
+        className="w-full overflow-hidden"
+        whileHover={{ y: -2, transition: { duration: 0.2 } }}
       >
         <CreateRetailerBanner />
       </motion.div>

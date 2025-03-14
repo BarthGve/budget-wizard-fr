@@ -2,26 +2,27 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
-import { ChevronDown, ChevronUp, Rocket } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { SavingsProject } from "@/types/savings-project";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { useTheme } from "next-themes";
 
 interface ProjectsSectionProps {
   projects: SavingsProject[];
   onProjectDeleted: () => void;
-  onNewProjectClick: () => void;
   showInitial?: boolean;
+  forceRefresh: number; // Nouveau prop pour forcer le rafraîchissement
 }
 
 export const ProjectsSection = ({ 
   projects, 
   onProjectDeleted,
-  onNewProjectClick,
-  showInitial = true
+  showInitial = true,
+  forceRefresh // Utilisation du nouveau prop
 }: ProjectsSectionProps) => {
   const [showProjects, setShowProjects] = useState(showInitial);
+  const { theme } = useTheme();
 
   const toggleProjectsVisibility = () => {
     setShowProjects(prev => !prev);
@@ -36,7 +37,7 @@ export const ProjectsSection = ({
     >
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
-          <h2 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-2xl">Projets</h2>
+          <h2 className="font-bold tracking-tight bg-gradient-to-r from-emerald-500 via-green-500 to-teal-400 bg-clip-text text-transparent dark:from-emerald-400 dark:via-green-400 dark:to-teal-300 animate-fade-in text-2xl">Projets</h2>
           <motion.div
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.1 }}
@@ -57,34 +58,14 @@ export const ProjectsSection = ({
             </Button>
           </motion.div>
         </div>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  onClick={onNewProjectClick}
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 
-                             shadow-md rounded-full flex items-center justify-center w-10 h-10 p-0"
-                >
-                  <Rocket className="h-5 w-5 text-white" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" align="center" className="z-50 max-w-[200px]">
-                Créer un nouveau projet
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </motion.div>
       </div>
       
       <div className="flex-1 overflow-hidden">
         <SavingsProjectList 
           projects={projects} 
           onProjectDeleted={onProjectDeleted} 
-          showProjects={showProjects} 
+          showProjects={showProjects}
+          forceRefresh={forceRefresh} 
         />
       </div>
     </motion.div>

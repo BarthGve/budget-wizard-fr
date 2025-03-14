@@ -1,18 +1,14 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { NewSavingDialog } from "@/components/savings/NewSavingDialog";
-import { SavingsProjectWizard } from "@/components/savings/ProjectWizard/SavingsProjectWizard";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { motion } from "framer-motion";
 import { SavingsHeader } from "@/components/savings/SavingsHeader";
 import { SavingsGoalSection } from "@/components/savings/SavingsGoalSection";
 import { ProjectsSection } from "@/components/savings/ProjectsSection";
 import { MonthlySavingsSection } from "@/components/savings/MonthlySavingsSection";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const Savings = () => {
   const {
@@ -21,8 +17,8 @@ const Savings = () => {
     refetch
   } = useDashboardData();
   const queryClient = useQueryClient();
-  const [showProjectWizard, setShowProjectWizard] = useState(false);
   const savingsChannelRef = useRef(null);
+  const [projectRefreshCounter, setProjectRefreshCounter] = useState(0); // Compteur pour forcer le rafraîchissement
 
   // Écouteurs en temps réel spécifiques à la page Savings
   useEffect(() => {
@@ -105,7 +101,8 @@ const Savings = () => {
     console.log('Project created, refreshing data...');
     refetch();
     refetchProjects();
-    setShowProjectWizard(false);
+    // Incrémenter le compteur pour forcer le rafraîchissement de la liste des projets
+    setProjectRefreshCounter(prev => prev + 1);
   };
 
   const handleProjectDeleted = () => {
@@ -134,8 +131,11 @@ const Savings = () => {
         animate="visible"
         variants={containerVariants}
       >
-        {/* Header Section */}
-        <SavingsHeader />
+        {/* Header Section with buttons */}
+        <SavingsHeader 
+          onSavingAdded={handleSavingAdded}
+          onProjectCreated={handleProjectCreated}
+        />
 
         {/* Savings Goal Section */}
         <SavingsGoalSection 
@@ -144,36 +144,22 @@ const Savings = () => {
           monthlySavings={monthlySavings} 
         />
         
-        {/* Main Content - Two Columns */}
-        <div className="flex flex-col md:flex-row gap-12 flex-1 overflow-hidden">
-          {/* Left Column - Monthly Savings - 1/2 */}
-          <div className="md:w-1/2 overflow-y-auto pb-6">
-            <MonthlySavingsSection 
-              monthlySavings={monthlySavings}
-              onSavingDeleted={handleSavingDeleted}
-              onSavingAdded={handleSavingAdded}
-            />
-          </div>
-          
-          {/* Right Column - Projects - 1/2 */}
-          <div className="md:w-1/2 overflow-y-auto pb-6">
-            <ProjectsSection 
-              projects={projects} 
-              onProjectDeleted={handleProjectDeleted}
-              onNewProjectClick={() => setShowProjectWizard(true)}
-            />
-          </div>
+        {/* Monthly Savings Section - Pleine largeur */}
+        <div className="w-full overflow-y-auto pb-6">
+          <MonthlySavingsSection 
+            monthlySavings={monthlySavings}
+            onSavingDeleted={handleSavingDeleted}
+          />
         </div>
         
-        {/* Project Wizard Dialog */}
-        <Dialog open={showProjectWizard} onOpenChange={setShowProjectWizard}>
-          <DialogContent className="max-w-4xl">
-            <SavingsProjectWizard 
-              onClose={() => setShowProjectWizard(false)} 
-              onProjectCreated={handleProjectCreated} 
-            />
-          </DialogContent>
-        </Dialog>
+        {/* Projects Section - Pleine largeur */}
+        <div className="w-full overflow-y-auto pb-6">
+          <ProjectsSection 
+            projects={projects} 
+            onProjectDeleted={handleProjectDeleted}
+            forceRefresh={projectRefreshCounter}
+          />
+        </div>
       </motion.div>
     </DashboardLayout>
   );

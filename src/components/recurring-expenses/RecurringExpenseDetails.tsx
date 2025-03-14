@@ -1,78 +1,116 @@
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { RecurringExpense, periodicityLabels } from "./types";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { formatDebitDate } from "./utils";
-import { RecurringExpense, periodicityLabels } from "./types";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import { Calendar, CreditCard, Tag, RefreshCcw } from "lucide-react";
+import { DetailItem } from "./details/DetailItem";
+import { ExpenseHeader } from "./details/ExpenseHeader";
+import { ExpenseNotes } from "./details/ExpenseNotes";
 
-interface RecurringExpenseDetailsProps {
+export interface RecurringExpenseDetailsProps {
   expense: RecurringExpense;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onClose?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const RecurringExpenseDetails = ({
-  expense,
-  open,
-  onOpenChange,
+export const RecurringExpenseDetails = ({ 
+  expense, 
+  onClose, 
+  open, 
+  onOpenChange 
 }: RecurringExpenseDetailsProps) => {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Détails de la charge</DialogTitle>
-        </DialogHeader>
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
+
+  const formattedDate = expense.created_at 
+    ? format(new Date(expense.created_at), "dd MMMM yyyy", { locale: fr })
+    : "Date inconnue";
+
+  const getDebitInfo = () => {
+    switch (expense.periodicity) {
+      case "monthly":
+        return `Le ${expense.debit_day} de chaque mois`;
+      case "quarterly":
+        return `Le ${expense.debit_day} du mois ${expense.debit_month || 1} chaque trimestre`;
+      case "yearly":
+        return `Le ${expense.debit_day} du mois ${expense.debit_month || 1} chaque année`;
+      default:
+        return "Information non disponible";
+    }
+  };
+
+  const content = (
+    <DialogContent 
+      className={cn(
+        "p-0 overflow-hidden border-0 shadow-2xl sm:max-w-[500px]",
+        // Light mode
+        "bg-white",
+        // Dark mode
+        "dark:bg-gray-800/95"
+      )}
+      style={{
+        boxShadow: isDarkMode
+          ? "0 25px 50px -12px rgba(2, 6, 23, 0.4), 0 0 0 1px rgba(37, 99, 235, 0.1)"
+          : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)"
+      }}
+    >
+      <ExpenseHeader expense={expense} />
+      
+      {/* Ligne séparatrice avec dégradé */}
+      <div className={cn(
+        "h-px w-full",
+        // Light mode
+        "bg-gradient-to-r from-transparent via-blue-100 to-transparent",
+        // Dark mode
+        "dark:from-transparent dark:via-blue-900/30 dark:to-transparent"
+      )} />
+
+      {/* Contenu détaillé */}
+      <div className="py-5 px-6">
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            {expense.logo_url && (
-              <img
-                src={expense.logo_url}
-                alt={expense.name}
-                className="w-12 h-12 rounded-full object-contain"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder.svg";
-                }}
-              />
-            )}
-            <div>
-              <h3 className="font-semibold text-lg">{expense.name}</h3>
-              <p className="text-sm text-muted-foreground">{expense.category}</p>
-            </div>
-          </div>
-
-          <div className="grid gap-2">
-            <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Montant</span>
-              <span className="font-medium">
-                {new Intl.NumberFormat('fr-FR', {
-                  style: 'currency',
-                  currency: 'EUR'
-                }).format(expense.amount)}
-              </span>
-            </div>
-
-            <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Périodicité</span>
-              <span className="font-medium">{periodicityLabels[expense.periodicity]}</span>
-            </div>
-
-            <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Prélèvement</span>
-              <span className="font-medium">
-                {formatDebitDate(expense.debit_day, expense.debit_month, expense.periodicity)}
-              </span>
-            </div>
-
-            <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Créée le</span>
-              <span className="font-medium">
-                {format(new Date(expense.created_at), 'dd MMMM yyyy', { locale: fr })}
-              </span>
-            </div>
-          </div>
+          <DetailItem 
+            icon={<RefreshCcw size={18} />} 
+            label="Périodicité" 
+            value={periodicityLabels[expense.periodicity]} 
+          />
+          
+          <DetailItem 
+            icon={<CreditCard size={18} />} 
+            label="Prélèvement" 
+            value={getDebitInfo()}
+          />
+          
+          <DetailItem 
+            icon={<Tag size={18} />} 
+            label="Catégorie" 
+            value={expense.category}
+          />
+          
+          <DetailItem 
+            icon={<Calendar size={18} />} 
+            label="Ajouté le" 
+            value={formattedDate}
+          />
         </div>
-      </DialogContent>
-    </Dialog>
+
+        <ExpenseNotes expense={expense} />
+      </div>
+    </DialogContent>
   );
+
+  // Si les props open et onOpenChange sont fournies, utiliser Dialog directement
+  if (open !== undefined && onOpenChange) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        {content}
+      </Dialog>
+    );
+  }
+
+  // Retourner uniquement le contenu si pas de props open/onOpenChange
+  return content;
 };

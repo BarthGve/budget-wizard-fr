@@ -9,6 +9,7 @@ export interface RecurringExpense {
   debit_month: number | null;
   created_at: string;
   logo_url?: string;
+  notes?: string; // Ajout de la propriété notes optionnelle
 }
 
 export interface RecurringExpenseTableProps {

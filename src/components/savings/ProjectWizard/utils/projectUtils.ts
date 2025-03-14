@@ -1,3 +1,4 @@
+
 import { SavingsMode, SavingsProject } from "@/types/savings-project";
 import { supabase } from "@/integrations/supabase/client";
 

@@ -1,8 +1,7 @@
-
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { cn } from "@/lib/utils";
-import { MoveUpRight, MoveDownRight } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 interface RetailerStatsCardProps {
   title: string;
@@ -10,7 +9,8 @@ interface RetailerStatsCardProps {
   count: number;
   label: string;
   className?: string;
-  previousAmount?: number;  // Montant précédent pour calculer la variation
+  previousAmount?: number;
+  icon?: React.ReactNode;
 }
 
 export function RetailerStatsCard({ 
@@ -19,7 +19,8 @@ export function RetailerStatsCard({
   count, 
   label, 
   className,
-  previousAmount 
+  previousAmount,
+  icon
 }: RetailerStatsCardProps) {
   const hasVariation = previousAmount !== undefined && previousAmount !== 0;
   const percentageChange = hasVariation
@@ -28,29 +29,45 @@ export function RetailerStatsCard({
   const isIncrease = percentageChange > 0;
 
   return (
-    <Card className={cn("p-6 text-white", className)}>
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <div className="mt-2 space-y-1">
-        <div className="flex items-center justify-between">
+    <Card className={cn(
+      "p-6 overflow-hidden border shadow-md transition-all duration-200",
+      className
+    )}>
+      {/* En-tête avec titre */}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium">{title}</h3>
+        {icon && (
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/20">
+            {icon}
+          </div>
+        )}
+      </div>
+      
+      {/* Montant principal et indicateur de variation sur la même ligne */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
           <p className="text-2xl font-bold">{formatCurrency(amount)}</p>
           
+          {/* Indicateur de variation */}
           {hasVariation && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/10 h-fit">
               {isIncrease ? (
-                <MoveUpRight className="h-4 w-4 text-red-400" />
+                <ArrowUpRight className="h-4 w-4" />
               ) : (
-                <MoveDownRight className="h-4 w-4 text-green-400" />
+                <ArrowDownRight className="h-4 w-4" />
               )}
-              <span className={cn("text-sm", 
-                isIncrease ? "text-red-400" : "text-green-400"
+              <span className={cn(
+                "text-sm font-medium",
+                isIncrease ? "text-red-200" : "text-green-200"
               )}>
                 {Math.abs(percentageChange).toFixed(1)}%
               </span>
             </div>
           )}
         </div>
+        
         <p className="text-sm opacity-90">
-          {count.toFixed(1)} {label}
+          {count.toLocaleString('fr-FR')} {label}
         </p>
       </div>
     </Card>

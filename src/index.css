@@ -109,6 +109,15 @@
   }
 }
 
+/* Empêcher le défilement horizontal sur les modales et composants de scroll */
+.radix-scroll-area-viewport {
+  overflow-x: hidden !important;
+}
+
+[data-radix-scroll-area-viewport] {
+  overflow-x: hidden !important;
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0);

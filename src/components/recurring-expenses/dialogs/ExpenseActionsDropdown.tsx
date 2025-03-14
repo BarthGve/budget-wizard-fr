@@ -20,7 +20,7 @@ export const ExpenseActionsDropdown = ({
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
+        <Button variant="outline" size="icon" className="relative h-8 w-8">
           <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
