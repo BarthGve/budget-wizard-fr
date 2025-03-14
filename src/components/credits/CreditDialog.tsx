@@ -1,10 +1,11 @@
 
-import { useState, memo } from "react";
+import { useState, memo, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { CreditForm } from "./CreditForm";
 import { Credit } from "./types";
 import { cn } from "@/lib/utils";
 import { CreditCardIcon, EditIcon, PlusCircleIcon } from "lucide-react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface CreditDialogProps {
   credit?: Credit;
@@ -22,6 +23,10 @@ export const CreditDialog = memo(({
   colorScheme = "purple"
 }: CreditDialogProps) => {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Détecter si nous sommes sur tablette
+  const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
 
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : uncontrolledOpen;
@@ -63,71 +68,82 @@ export const CreditDialog = memo(({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="sm:max-w-[650px] overflow-hidden">
-        {/* Background gradient subtil */}
-        <div className={cn(
-          "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br",
-          currentColors.gradientFrom,
-          currentColors.gradientTo,
-          currentColors.darkGradientFrom,
-          currentColors.darkGradientTo
-        )} />
-        
-        {/* Fond radial gradient ultra-subtil */}
-        <div className={cn(
-          "absolute inset-0 pointer-events-none",
-          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
-          "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
-        )} />
-        
-        <DialogHeader className="relative z-10 mb-4">
-          <div className="flex items-center gap-3">
-            <div className={cn(
-              "p-2.5 rounded-lg",
-              currentColors.iconBg
-            )}>
-              {credit ? <EditIcon className="w-5 h-5" /> : <PlusCircleIcon className="w-5 h-5" />}
+      <DialogContent 
+        className={cn(
+          "sm:max-w-[650px] overflow-hidden",
+          // Adaptations spécifiques pour les tablettes
+          isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto"
+        )}
+      >
+        <div 
+          ref={contentRef}
+          className="flex flex-col overflow-x-hidden max-w-full"
+        >
+          {/* Background gradient subtil */}
+          <div className={cn(
+            "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br",
+            currentColors.gradientFrom,
+            currentColors.gradientTo,
+            currentColors.darkGradientFrom,
+            currentColors.darkGradientTo
+          )} />
+          
+          {/* Fond radial gradient ultra-subtil */}
+          <div className={cn(
+            "absolute inset-0 pointer-events-none",
+            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
+            "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
+          )} />
+          
+          <DialogHeader className="relative z-10 mb-4">
+            <div className="flex items-center gap-3">
+              <div className={cn(
+                "p-2.5 rounded-lg",
+                currentColors.iconBg
+              )}>
+                {credit ? <EditIcon className="w-5 h-5" /> : <PlusCircleIcon className="w-5 h-5" />}
+              </div>
+              <DialogTitle className={cn(
+                "text-2xl font-bold",
+                currentColors.headingText
+              )}>
+                {credit ? "Modifier le crédit" : "Ajouter un crédit"}
+              </DialogTitle>
             </div>
-            <DialogTitle className={cn(
-              "text-2xl font-bold",
-              currentColors.headingText
-            )}>
-              {credit ? "Modifier le crédit" : "Ajouter un crédit"}
-            </DialogTitle>
+            
+            <div className="ml-[52px]"> {/* Aligné avec l'icône + le texte du titre */}
+              <DialogDescription className={cn(
+                "mt-1.5 text-base",
+                currentColors.descriptionText
+              )}>
+                {credit 
+                  ? "Modifiez les informations de votre crédit. Les modifications seront appliquées immédiatement."
+                  : "Ajoutez un nouveau crédit en remplissant les informations ci-dessous. Un logo sera automatiquement ajouté si disponible."}
+              </DialogDescription>
+            </div>
+          </DialogHeader>
+          
+          {/* Séparateur subtil */}
+          <div className={cn(
+            "w-full h-px mb-5 relative z-10",
+            "bg-gradient-to-r from-transparent via-gray-200 to-transparent",
+            "dark:via-gray-700"
+          )} />
+          
+          {/* Section du formulaire */}
+          <div className="relative z-10 max-w-full overflow-x-hidden">
+            <CreditForm
+              credit={credit}
+              onSuccess={() => onOpenChange?.(false)}
+              onCancel={() => onOpenChange?.(false)}
+              colorScheme={colorScheme}
+            />
           </div>
           
-          <div className="ml-[52px]"> {/* Aligné avec l'icône + le texte du titre */}
-            <DialogDescription className={cn(
-              "mt-1.5 text-base",
-              currentColors.descriptionText
-            )}>
-              {credit 
-                ? "Modifiez les informations de votre crédit. Les modifications seront appliquées immédiatement."
-                : "Ajoutez un nouveau crédit en remplissant les informations ci-dessous. Un logo sera automatiquement ajouté si disponible."}
-            </DialogDescription>
+          {/* Décoration graphique dans le coin inférieur droit */}
+          <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] z-0">
+            <CreditCardIcon className="w-full h-full" />
           </div>
-        </DialogHeader>
-        
-        {/* Séparateur subtil */}
-        <div className={cn(
-          "w-full h-px mb-5 relative z-10",
-          "bg-gradient-to-r from-transparent via-gray-200 to-transparent",
-          "dark:via-gray-700"
-        )} />
-        
-        {/* Section du formulaire */}
-        <div className="relative z-10">
-          <CreditForm
-            credit={credit}
-            onSuccess={() => onOpenChange?.(false)}
-            onCancel={() => onOpenChange?.(false)}
-            colorScheme={colorScheme}
-          />
-        </div>
-        
-        {/* Décoration graphique dans le coin inférieur droit */}
-        <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] z-0">
-          <CreditCardIcon className="w-full h-full" />
         </div>
       </DialogContent>
     </Dialog>
