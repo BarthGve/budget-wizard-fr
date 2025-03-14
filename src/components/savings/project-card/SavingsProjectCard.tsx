@@ -1,13 +1,14 @@
-
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SavingsProject } from "@/types/savings-project";
-import { Trash2 } from "lucide-react";
+import { Trash2, Piggy, ArrowRight, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { differenceInDays } from "date-fns";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface SavingsProjectCardProps {
   project: SavingsProject;
@@ -24,6 +25,9 @@ export const SavingsProjectCard = ({
   index = 0, 
   isVisible = true 
 }: SavingsProjectCardProps) => {
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
+  
   const calculateSavedAmount = (project: SavingsProject) => {
     if (!project.montant_mensuel || !project.created_at) return 0;
     
@@ -37,15 +41,20 @@ export const SavingsProjectCard = ({
     return Math.min((savedAmount / project.montant_total) * 100, 100);
   };
 
+  const savedAmount = calculateSavedAmount(project);
+  const progressPercentage = calculateProgress(project);
+  const remainingAmount = project.montant_total - savedAmount;
+  const isComplete = progressPercentage >= 100;
+
   const getBadgeVariant = (project: SavingsProject) => {
-    if (project.statut === 'dépassé') return "destructive";
+    if (project.statut === 'dépassé' || progressPercentage >= 100) return "success";
     if (project.statut === 'actif') return "default";
     return "outline";
   };
 
   const getBadgeText = (project: SavingsProject) => {
-    if (project.statut === 'dépassé') return "Dépassé";
-    if (project.statut === 'actif') return "Actif";
+    if (project.statut === 'dépassé' || progressPercentage >= 100) return "Objectif atteint";
+    if (project.statut === 'actif') return "En cours";
     return "En attente";
   };
 
@@ -87,63 +96,187 @@ export const SavingsProjectCard = ({
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
       whileHover={{ 
-        scale: 1.03, 
-        rotateY: 5,
+        scale: 1.02, 
+        y: -3,
       }}
       whileTap={{ scale: 0.98 }}
     >
-      <Card className="flex flex-col backface-hidden transform-gpu shadow-md hover:shadow-lg transition-shadow duration-300 h-full">
+      <Card className={cn(
+        "flex flex-col backface-hidden transform-gpu h-full border overflow-hidden relative",
+        // Light mode
+        "bg-white border-emerald-100 hover:border-emerald-200",
+        // Dark mode
+        "dark:bg-gray-800 dark:border-emerald-900/40 dark:hover:border-emerald-800/50"
+      )}
+      style={{
+        boxShadow: isDarkMode
+          ? "0 4px 20px -4px rgba(0, 100, 70, 0.15), 0 1px 3px -1px rgba(0, 0, 0, 0.2)"
+          : "0 4px 20px -4px rgba(16, 185, 129, 0.15), 0 1px 3px -1px rgba(0, 0, 0, 0.05)"
+      }}>
         <div 
-          className="h-48 relative cursor-pointer overflow-hidden rounded-t-lg"
+          className="h-48 relative cursor-pointer overflow-hidden"
           onClick={() => onSelect(project)}
         >
+          {/* Badge overlay for status */}
+          <div className="absolute top-3 left-3 z-10">
+            <Badge 
+              variant={getBadgeVariant(project)} 
+              className={cn(
+                "font-medium shadow-sm",
+                isComplete 
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-600 dark:to-teal-600 text-white border-none"
+                  : "border-emerald-200 dark:border-emerald-800/50"
+              )}
+            >
+              {isComplete && <TrendingUp className="h-3 w-3 mr-1" />}
+              {getBadgeText(project)}
+            </Badge>
+          </div>
+          
+          {/* Delete button overlay with improved positioning */}
+          <motion.div 
+            className="absolute top-3 right-3 z-10"
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button
+              variant="destructive"
+              size="icon"
+              className={cn(
+                "h-7 w-7 rounded-full shadow-md",
+                "bg-red-100/80 hover:bg-red-200 text-red-600 border-red-200",
+                "dark:bg-red-900/50 dark:hover:bg-red-900/80 dark:text-red-400 dark:border-red-800/50"
+              )}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(project);
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </motion.div>
+
+          {/* Project image with gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60 z-0"></div>
           <motion.img
             whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.5 }}
             src={project.image_url || "/placeholder.svg"}
             alt={project.nom_projet}
-            className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+            className="absolute inset-0 w-full h-full object-cover z-0"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = "/placeholder.svg";
             }}
           />
-        </div>
-        <CardContent className="pt-4 flex-1 flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold truncate">{project.nom_projet}</h3>
-            <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.1 }}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                onClick={() => onDelete(project)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </motion.div>
-          </div>
           
-          <div className="mt-auto space-y-4">
-            {project.montant_mensuel && project.montant_mensuel > 0 && project.statut === 'actif' && (
-              <div>
-                <p className="text-sm font-medium mb-2">Progression:</p>
-                <Progress value={calculateProgress(project)} className="h-2" />
+          {/* Project title overlay with gradient background */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+            <h3 className="font-bold text-white text-lg drop-shadow-sm line-clamp-2">
+              {project.nom_projet}
+            </h3>
+          </div>
+        </div>
+
+        <CardContent className={cn(
+          "pt-4 flex-1 flex flex-col justify-between space-y-4",
+          // Light mode specific gradient background for content
+          "bg-gradient-to-b from-white to-emerald-50/30",
+          // Dark mode specific gradient
+          "dark:bg-gradient-to-b dark:from-gray-800 dark:to-emerald-900/10"
+        )}>
+          {/* Progress section */}
+          {project.montant_mensuel && project.montant_mensuel > 0 && (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-sm">
+                <div className="flex items-center">
+                  <Piggy className={cn(
+                    "h-4 w-4 mr-1.5",
+                    "text-emerald-500 dark:text-emerald-400"
+                  )} />
+                  <span className={cn(
+                    "font-medium",
+                    "text-emerald-700 dark:text-emerald-300"
+                  )}>
+                    Épargne accumulée
+                  </span>
+                </div>
+                <span className="font-semibold">
+                  {Math.round(progressPercentage)}%
+                </span>
               </div>
-            )}
+              
+              {/* Progress bar with animated gradient for completed projects */}
+              <div className="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                <motion.div 
+                  className={cn(
+                    "h-full rounded-full",
+                    isComplete
+                      ? "bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-400 dark:to-teal-500"
+                      : "bg-emerald-500 dark:bg-emerald-400"
+                  )}
+                  style={{ width: `${progressPercentage}%` }}
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${progressPercentage}%` }}
+                  transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                />
+              </div>
+            </div>
+          )}
+          
+          {/* Amounts section */}
+          <div className="grid grid-cols-2 gap-3 pb-1">
+            <div className={cn(
+              "p-2.5 rounded-lg",
+              // Light mode
+              "bg-emerald-50 border border-emerald-100",
+              // Dark mode
+              "dark:bg-emerald-900/20 dark:border-emerald-800/30"
+            )}>
+              <p className="text-xs text-muted-foreground mb-1">Épargné</p>
+              <p className={cn(
+                "font-bold",
+                "text-emerald-700 dark:text-emerald-300"
+              )}>
+                {formatCurrency(savedAmount)}
+              </p>
+            </div>
             
-            <div className="flex items-center justify-between mt-4">
-              <div>
-                <p className="text-sm font-medium">Objectif:</p>
-                <p className="text-lg font-bold">
-                  {formatCurrency(project.montant_total)}
-                </p>
-              </div>
-              <Badge variant={getBadgeVariant(project)} className="flex-shrink-0">
-                {getBadgeText(project)}
-              </Badge>
+            <div className={cn(
+              "p-2.5 rounded-lg",
+              // Light mode
+              "bg-gray-50 border border-gray-200",
+              // Dark mode
+              "dark:bg-gray-800 dark:border-gray-700"
+            )}>
+              <p className="text-xs text-muted-foreground mb-1">Objectif</p>
+              <p className="font-bold">
+                {formatCurrency(project.montant_total)}
+              </p>
             </div>
           </div>
+          
+          {/* Call to action */}
+          <motion.div 
+            className="mt-auto"
+            whileHover={{ x: 5 }}
+            transition={{ duration: 0.2 }}
+          >
+            <button
+              onClick={() => onSelect(project)}
+              className={cn(
+                "w-full py-2 px-3 rounded-md flex items-center justify-between text-sm font-medium transition-colors",
+                // Light mode
+                "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200",
+                // Dark mode
+                "dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30"
+              )}
+            >
+              <span>Voir les détails</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </motion.div>
         </CardContent>
       </Card>
     </motion.div>
