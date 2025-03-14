@@ -119,22 +119,19 @@ export function RetailerStatsCard({
                     </span>
                   </div>
                 )}
+                
+                {/* Légende de comparaison à côté de l'indicateur de variation */}
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  ({title.includes("mois") ? "vs mois précédent" : "vs année précédente"})
+                </span>
               </div>
             )}
           </div>
           
-          <div className="flex items-center gap-1">
-            <p className={cn("text-sm", colors.secondaryText)}>
-              {count.toLocaleString('fr-FR')} {label}
-            </p>
-            
-            {/* Légende de comparaison (déplacée) */}
-            {hasVariation && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                ({title.includes("mois") ? "vs mois précédent" : "vs année précédente"})
-              </span>
-            )}
-          </div>
+          {/* Nombre et libellé sur sa propre ligne */}
+          <p className={cn("text-sm", colors.secondaryText)}>
+            {count.toLocaleString('fr-FR')} {label}
+          </p>
         </div>
       </div>
     </Card>
