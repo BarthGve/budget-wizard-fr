@@ -116,14 +116,19 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
           <div className="flex flex-col">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h1
-                  className={cn(   
-                    "font-bold text-foreground tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in transition-all duration-300",
-                    collapsed ? "text-sm" : "text-xl"
-                  )}
-                >
-                  {collapsed ? appConfig.initiales : appConfig.name}
-                </h1>
+               <h1
+  className={cn(   
+    "font-bold text-foreground tracking-tight bg-clip-text text-transparent animate-fade-in transition-all duration-300",
+    // Dégradé plus subtil avec des tons légèrement moins saturés
+    "bg-gradient-to-r from-indigo-400/90 via-purple-400/90 to-pink-400/85",
+    // Variante pour le mode sombre avec des tons plus lumineux mais toujours subtils
+    "dark:from-indigo-300 dark:via-purple-300 dark:to-pink-300",
+    collapsed ? "text-sm" : "text-xl"
+  )}
+>
+  {collapsed ? appConfig.initiales : appConfig.name}
+</h1>
+
               </div>
               <div className="flex items-center gap-2">
                 <ThemeToggle collapsed={collapsed} />
