@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Banknote } from 'lucide-react';
 import { useEffect, useState } from "react";
@@ -63,11 +64,11 @@ export const RevenueCard = ({
     >
       <Card 
         className={cn(
-          "backdrop-blur-sm cursor-pointer transition-all duration-300 hover:shadow-xl",
+          "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-gradient-to-br from-background to-amber-50 shadow-lg border border-amber-100",
-          // Dark mode styles
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-amber-950 dark:border-amber-900/50 dark:shadow-amber-900/10"
+          "bg-gradient-to-br from-background to-amber-50 shadow-lg border border-amber-100 hover:shadow-xl",
+          // Dark mode styles - alignées avec les cards de graphiques
+          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-amber-950 dark:border-amber-900/30 dark:shadow-amber-800/30 dark:hover:shadow-amber-800/50"
         )}
         onClick={() => navigate("/contributors")}
       >

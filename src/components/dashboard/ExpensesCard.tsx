@@ -58,11 +58,11 @@ export const ExpensesCard = ({
     >
       <Card
         className={cn(
-          "backdrop-blur-sm cursor-pointer transition-all duration-300 hover:shadow-xl",
+          "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-gradient-to-br from-background to-blue-50 shadow-lg border border-blue-100",
-          // Dark mode styles
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-blue-950 dark:border-blue-900/50 dark:shadow-blue-900/10"
+          "bg-gradient-to-br from-background to-blue-50 shadow-lg border border-blue-100 hover:shadow-xl",
+          // Dark mode styles - alignées avec les cards de graphiques
+          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-blue-950 dark:border-blue-900/30 dark:shadow-blue-800/30 dark:hover:shadow-blue-800/50"
         )}
         onClick={() => navigate("/recurring-expenses")}
       >

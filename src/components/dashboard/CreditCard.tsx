@@ -46,11 +46,11 @@ export const CreditCard = ({
     >
       <Card
         className={cn(
-          "backdrop-blur-sm cursor-pointer transition-all duration-300 hover:shadow-md",
+          "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-gradient-to-br from-white to-purple-50 shadow-lg border border-purple-100",
-          // Dark mode styles
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-purple-950 dark:border-purple-900/50 dark:shadow-purple-900/10"
+          "bg-gradient-to-br from-white to-purple-50 shadow-lg border border-purple-100 hover:shadow-xl",
+          // Dark mode styles - alignées avec les cards de graphiques
+          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-purple-950 dark:border-purple-900/30 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50"
         )}
         onClick={() => navigate("/credits")}
       >
