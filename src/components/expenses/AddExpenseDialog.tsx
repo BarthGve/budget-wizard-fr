@@ -77,21 +77,21 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
       )}
 
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent 
-          className={cn(
-            "w-[90vw] max-w-[650px] max-h-[95vh] overflow-y-auto",
+        <DialogContent className="w-[90vw] max-w-[650px] max-h-[95vh] overflow-y-auto">
+          {/* Fond bleu subtil appliqué à l'intérieur du DialogContent */}
+          <div className={cn(
+            "absolute inset-0",
             "bg-gradient-to-b from-blue-50/70 to-white",
-            "dark:from-blue-950/20 dark:to-gray-900",
-            "relative"
-          )}
-        >
-          {/* Fond subtil avec dégradé */}
-          <div className="absolute inset-0 pointer-events-none opacity-30 z-0">
+            "dark:from-blue-950/20 dark:to-gray-900/60",
+            "pointer-events-none"
+          )}>
+            {/* Effet radial supplémentaire */}
             <div className={cn(
               "absolute inset-0",
               "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
-              "from-blue-200/40 via-blue-100/20 to-transparent",
-              "dark:from-blue-800/15 dark:via-blue-700/10 dark:to-transparent"
+              "from-blue-100/40 via-blue-50/20 to-transparent",
+              "dark:from-blue-800/15 dark:via-blue-700/10 dark:to-transparent",
+              "opacity-60"
             )} />
           </div>
 
