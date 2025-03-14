@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -55,6 +56,9 @@ export const NewSavingDialog = ({
   // Déterminer si nous devons activer le défilement
   const [needsScrolling, setNeedsScrolling] = useState(false);
   
+  // Définir isOpen avant son utilisation
+  const isOpen = controlledOpen !== undefined ? controlledOpen : open;
+  
   useEffect(() => {
     if (isOpen && contentRef.current) {
       const checkOverflow = () => {
@@ -91,8 +95,6 @@ export const NewSavingDialog = ({
       setOpen(newOpen);
     }
   };
-
-  const isOpen = controlledOpen !== undefined ? controlledOpen : open;
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],

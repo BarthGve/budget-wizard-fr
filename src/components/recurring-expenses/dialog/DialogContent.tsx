@@ -80,13 +80,23 @@ export const DialogContent = ({
             className
           )}
         >
-          <div className="p-6 max-w-full"> {/* Ajout de max-w-full pour contraindre le contenu */}
+          <div 
+            className={cn(
+              "p-6 max-w-full", // Ajout de max-w-full pour contraindre le contenu
+              "bg-blue-50 dark:bg-blue-950" // Correction: suppression des ** autour de la chaîne
+            )}
+          >
             {formContent}
           </div>
         </ScrollArea>
       ) : (
         // Sans défilement si le contenu tient dans l'écran
-        <div className="p-6 overflow-x-hidden max-w-full"> {/* Ajout des mêmes classes pour cohérence */}
+        <div 
+          className={cn(
+            "p-6 overflow-x-hidden max-w-full", // Ajout des mêmes classes pour cohérence
+            "bg-blue-50 dark:bg-blue-950" // Correction: suppression des ** autour de la chaîne
+          )}
+        >
           {formContent}
         </div>
       )}
