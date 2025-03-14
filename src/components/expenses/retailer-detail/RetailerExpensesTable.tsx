@@ -391,7 +391,7 @@ export function RetailerExpensesTable({
                     currentColors.hover,
                     index % 2 === 0 ? "bg-white dark:bg-gray-950" : "bg-gray-50/50 dark:bg-gray-900/20"
                   )}
-                  onClick={() => onViewDetails && onViewDetails(expense)}
+                
                 >
                   <TableCell className="py-3">
                     <div className="flex items-center">
@@ -426,7 +426,7 @@ export function RetailerExpensesTable({
                         onEdit={() => onEditExpense(expense)} 
                         onDelete={() => onDeleteExpense(expense.id)} 
                       />
-                      {onViewDetails && <ChevronRight className="h-4 w-4 text-gray-400" />}
+                    
                     </div>
                   </TableCell>
                 </TableRow>
