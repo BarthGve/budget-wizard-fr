@@ -121,23 +121,23 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-[90vw] max-w-[650px] sm:max-w-[90vw] md:max-w-[650px] overflow-hidden p-0 bg-amber-50/60 dark:bg-gray-900">
-        <div className="p-5 sm:p-6 md:p-7">
-          {/* Background gradient subtil */}
+      <DialogContent className="w-[90vw] max-w-[650px] sm:max-w-[90vw] md:max-w-[650px] overflow-hidden p-0">
+        {/* Background subtil */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-white dark:bg-gray-800 opacity-95" />
           <div className={cn(
-            "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br",
-            "from-amber-500 to-amber-400",
-            "dark:from-amber-600 dark:to-amber-500"
+            "absolute inset-0 bg-gradient-to-br from-amber-50 to-white opacity-80",
+            "dark:from-gray-800 dark:to-gray-900"
           )} />
-          
-          {/* Fond radial gradient ultra-subtil */}
           <div className={cn(
-            "absolute inset-0 pointer-events-none",
-            "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
-            "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
+            "absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
+            "from-amber-100/40 via-amber-50/20 to-transparent",
+            "dark:from-amber-900/20 dark:via-amber-800/10 dark:to-transparent"
           )} />
-          
-          <DialogHeader className="relative z-10 space-y-1 mb-6 items-start">
+        </div>
+
+        <div className="relative z-10 p-5 sm:p-6 md:p-7">          
+          <DialogHeader className="space-y-1 mb-6 items-start">
             <div className="flex items-center gap-3">
               <div className={cn(
                 "p-2 sm:p-2.5 rounded-lg",
@@ -162,7 +162,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           </DialogHeader>
           
           {/* Section du formulaire */}
-          <div className="relative z-10 mt-4">
+          <div className="mt-4">
             <form onSubmit={handleFormSubmit} className="space-y-5 sm:space-y-6">
               {isSubmitting && (
                 <div className="space-y-3 my-4 sm:my-5">
@@ -252,7 +252,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                     setOpen(false);
                   }}
                   disabled={isSubmitting}
-                  className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 bg-white"
+                  className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 bg-white dark:bg-transparent"
                 >
                   Annuler
                 </Button>
@@ -270,6 +270,11 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                 </Button>
               </div>
             </form>
+          </div>
+          
+          {/* Décoration graphique dans le coin inférieur droit */}
+          <div className="absolute bottom-0 right-0 w-24 h-24 sm:w-32 sm:h-32 pointer-events-none opacity-[0.03] z-0">
+            <UserPlus className="w-full h-full" />
           </div>
         </div>
       </DialogContent>
