@@ -47,8 +47,9 @@ export const SavingsProjectCard = ({
   const remainingAmount = project.montant_total - savedAmount;
   const isComplete = progressPercentage >= 100;
 
-  const getBadgeVariant = (project: SavingsProject) => {
-    if (project.statut === 'dépassé' || progressPercentage >= 100) return "success";
+  // Modifié pour retourner uniquement des types valides pour le composant Badge
+  const getBadgeVariant = (project: SavingsProject): "default" | "destructive" | "secondary" | "outline" => {
+    if (project.statut === 'dépassé' || progressPercentage >= 100) return "secondary"; // Remplacé 'success' par 'secondary'
     if (project.statut === 'actif') return "default";
     return "outline";
   };
