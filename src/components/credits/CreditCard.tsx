@@ -42,8 +42,8 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
           "overflow-hidden transition-all duration-200",
           // Light mode
           "bg-white border border-purple-100 shadow-sm hover:shadow-md",
-          // Dark mode
-          "dark:bg-gray-800/90 dark:border-purple-800/40 dark:hover:border-purple-700/60"
+          // Dark mode - alignées avec les cards de graphiques
+          "dark:bg-gray-800/90 dark:border-purple-800/40 dark:hover:border-purple-700/60 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50"
         )}
       >
         <div className="flex flex-col md:flex-row md:items-center md:justify-between ">

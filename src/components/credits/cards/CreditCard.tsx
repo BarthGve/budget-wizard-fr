@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -78,8 +79,8 @@ export const CreditCard = ({
         // Light mode - garde le fond blanc
         "bg-white",
         "border-gray-100",
-        // Dark mode
-        "dark:bg-gray-800/90 dark:hover:bg-gray-800/70", 
+        // Dark mode - alignées avec les cards de graphiques
+        "dark:bg-gray-800/90 dark:hover:bg-gray-800/70 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50", 
         currentColors.darkBorder
       )}
     >
