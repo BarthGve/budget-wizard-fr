@@ -159,8 +159,9 @@ export const SavingsProjectCard = ({
             </Button>
           </motion.div>
 
-          {/* Project image with gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60 z-0"></div>
+          {/* Fond de dégradé amélioré pour une meilleure lisibilité du titre */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/10 opacity-80 z-0"></div>
+          
           <motion.img
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.5 }}
@@ -173,9 +174,9 @@ export const SavingsProjectCard = ({
             }}
           />
           
-          {/* Project title overlay with gradient background */}
+          {/* Conteneur du titre avec une meilleure lisibilité */}
           <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-            <h3 className="font-bold text-white text-lg drop-shadow-sm line-clamp-2">
+            <h3 className="font-bold text-white text-lg leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] line-clamp-2">
               {project.nom_projet}
             </h3>
           </div>
