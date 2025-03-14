@@ -46,6 +46,9 @@ export function RecurringExpenseDialog({
     contentRef 
   });
 
+  // Forcer le défilement sur tablette
+  const shouldEnableScroll = needsScrolling || isTablet;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
@@ -55,14 +58,15 @@ export function RecurringExpenseDialog({
           <DialogContent 
             forceMount
             className={cn(
-              "p-0 border-0 shadow-2xl overflow-hidden",
+              "p-0 border-0 shadow-2xl",
+              // Toujours activer overflow-auto sur tablette
+              isTablet ? "overflow-auto" : "overflow-hidden",
               // Ajustement pour les tablettes et mobiles
               isTablet 
                 ? "sm:max-w-[85%] w-[85%]" 
                 : "sm:max-w-[600px]",
-              needsScrolling ? "max-h-[calc(100vh-40px)]" : "",
-              // Assurer un affichage adéquat sur tablette en mode portrait
-              isTablet ? "max-h-[80vh]" : "",
+              // Hauteur maximum définie pour permettre le défilement
+              shouldEnableScroll ? "max-h-[calc(100vh-40px)]" : "",
               // Light mode
               "bg-white",
               // Dark mode
@@ -72,20 +76,15 @@ export function RecurringExpenseDialog({
               boxShadow: isDarkMode
                 ? "0 25px 50px -12px rgba(2, 6, 23, 0.4), 0 0 0 1px rgba(37, 99, 235, 0.1)"
                 : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)",
-              // Ajuster la position en mode tablette pour centrer correctement
-              ...(isTablet && {
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)"
-              })
             }}
           >
             <div 
               ref={contentRef} 
               className={cn(
                 "flex flex-col",
-                needsScrolling || isTablet ? "max-h-full" : ""
+                // S'assurer que le conteneur interne prend la hauteur disponible mais
+                // ne dépasse pas la hauteur maximale autorisée
+                shouldEnableScroll ? "h-full" : ""
               )}
             >
               {/* En-tête du dialogue */}
@@ -95,8 +94,14 @@ export function RecurringExpenseDialog({
               <ExpenseDialogContent
                 expense={expense}
                 isEditMode={isEditMode}
-                needsScrolling={needsScrolling || isTablet}
+                needsScrolling={shouldEnableScroll}
                 onOpenChange={onOpenChange}
+                className={cn(
+                  // Ajouter le défilement au niveau du contenu également
+                  isTablet ? "overflow-y-auto" : "",
+                  // Assurer que le contenu prend le maximum de l'espace disponible
+                  isTablet ? "flex-grow" : ""
+                )}
               />
             </div>
           </DialogContent>
