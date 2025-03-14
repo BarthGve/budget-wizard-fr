@@ -93,7 +93,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           onClick={() => setOpen(true)}
           variant="outline"
           className={cn(
-            "h-10 px-4 border transition-all duration-200 rounded-md",
+            "h-10 px-3 sm:px-4 border transition-all duration-200 rounded-md",
             "hover:scale-[1.02] active:scale-[0.98]",
             // Light mode
             "bg-white border-amber-200 text-amber-600",
@@ -121,7 +121,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[650px] overflow-hidden">
+      <DialogContent className="w-[90vw] max-w-[650px] sm:max-w-[90vw] md:max-w-[650px] overflow-hidden">
         {/* Background gradient subtil */}
         <div className={cn(
           "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br",
@@ -139,22 +139,22 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
         <DialogHeader className="relative z-10 mb-4">
           <div className="flex items-center gap-3">
             <div className={cn(
-              "p-2.5 rounded-lg",
+              "p-2 sm:p-2.5 rounded-lg",
               "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300"
             )}>
-              <UserPlus className="w-5 h-5" />
+              <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <DialogTitle className={cn(
-              "text-2xl font-bold",
+              "text-xl sm:text-2xl font-bold",
               "text-amber-900 dark:text-amber-200"
             )}>
               Ajouter un contributeur
             </DialogTitle>
           </div>
           
-          <div className="ml-[52px]"> {/* Aligné avec l'icône + le texte du titre */}
+          <div className="ml-[46px] sm:ml-[52px]"> {/* Aligné avec l'icône + le texte du titre */}
             <DialogDescription className={cn(
-              "mt-1.5 text-base",
+              "mt-1 sm:mt-1.5 text-sm sm:text-base",
               "text-amber-700/80 dark:text-amber-300/80"
             )}>
               Ajoutez un nouveau contributeur au budget. Les informations seront mises à jour immédiatement.
@@ -164,71 +164,73 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
         
         {/* Séparateur subtil */}
         <div className={cn(
-          "w-full h-px mb-5 relative z-10",
+          "w-full h-px mb-4 sm:mb-5 relative z-10",
           "bg-gradient-to-r from-transparent via-gray-200 to-transparent",
           "dark:via-gray-700"
         )} />
         
         {/* Section du formulaire */}
         <div className="relative z-10">
-          <form onSubmit={handleFormSubmit} className="space-y-5">
+          <form onSubmit={handleFormSubmit} className="space-y-4 sm:space-y-5">
             {isSubmitting && (
-              <div className="space-y-3 my-6">
+              <div className="space-y-3 my-4 sm:my-6">
                 <div className="flex items-center justify-center">
-                  <Loader2 className="h-10 w-10 animate-spin text-amber-500 dark:text-amber-400" />
+                  <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin text-amber-500 dark:text-amber-400" />
                 </div>
                 <div className="text-center text-sm font-medium text-amber-600 dark:text-amber-400">
                   Création du contributeur en cours...
                 </div>
                 <Progress 
                   value={progress} 
-                  className="h-2 w-full bg-amber-100 dark:bg-gray-700"
+                  className="h-1.5 sm:h-2 w-full bg-amber-100 dark:bg-gray-700"
                 >
                   <div className="h-full bg-amber-500 dark:bg-amber-400 rounded-full"></div>
                 </Progress>
               </div>
             )}
             
-            <div className={`space-y-5 ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}>
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">
-                  Nom
-                </Label>
-                <Input
-                  id="name"
-                  value={newContributor.name}
-                  onChange={(e) =>
-                    setNewContributor({
-                      ...newContributor,
-                      name: e.target.value,
-                    })
-                  }
-                  required
-                  disabled={isSubmitting}
-                  className="border-gray-200 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400"
-                />
+            <div className={`space-y-4 sm:space-y-5 ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">
+                    Nom
+                  </Label>
+                  <Input
+                    id="name"
+                    value={newContributor.name}
+                    onChange={(e) =>
+                      setNewContributor({
+                        ...newContributor,
+                        name: e.target.value,
+                      })
+                    }
+                    required
+                    disabled={isSubmitting}
+                    className="border-gray-200 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400"
+                  />
+                </div>
+                
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
+                    Email (optionnel)
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={newContributor.email}
+                    onChange={(e) =>
+                      setNewContributor({
+                        ...newContributor,
+                        email: e.target.value,
+                      })
+                    }
+                    disabled={isSubmitting}
+                    className="border-gray-200 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400"
+                  />
+                </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
-                  Email (optionnel)
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={newContributor.email}
-                  onChange={(e) =>
-                    setNewContributor({
-                      ...newContributor,
-                      email: e.target.value,
-                    })
-                  }
-                  disabled={isSubmitting}
-                  className="border-gray-200 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400"
-                />
-              </div>
-              
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <Label htmlFor="contribution" className="text-gray-700 dark:text-gray-300">
                   Contribution (€)
                 </Label>
@@ -249,7 +251,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
               </div>
             </div>
             
-            <div className="flex justify-end space-x-3 mt-6">
+            <div className="flex justify-end space-x-3 mt-4 sm:mt-6">
               <Button 
                 variant="outline" 
                 type="button"
@@ -279,7 +281,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
         </div>
         
         {/* Décoration graphique dans le coin inférieur droit */}
-        <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] z-0">
+        <div className="absolute bottom-0 right-0 w-24 h-24 sm:w-32 sm:h-32 pointer-events-none opacity-[0.03] z-0">
           <UserPlus className="w-full h-full" />
         </div>
       </DialogContent>
