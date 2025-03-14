@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Receipt, AlertTriangle } from "lucide-react";
+import { Plus, Receipt, AlertTriangle, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
 import { useTheme } from "next-themes";
@@ -77,12 +77,32 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
       )}
 
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[90vw] max-w-[650px] max-h-[95vh] overflow-y-auto">
-        <div className="relative z-10 pt-2 pb-5 px-1 sm:p-2">
+        <DialogContent 
+          className={cn(
+            "w-[90vw] max-w-[650px] max-h-[95vh] overflow-y-auto",
+            "bg-gradient-to-b from-blue-50/70 to-white",
+            "dark:from-blue-950/20 dark:to-gray-900",
+            "relative"
+          )}
+        >
+          {/* Fond subtil avec dégradé */}
+          <div className="absolute inset-0 pointer-events-none opacity-30 z-0">
+            <div className={cn(
+              "absolute inset-0",
+              "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
+              "from-blue-200/40 via-blue-100/20 to-transparent",
+              "dark:from-blue-800/15 dark:via-blue-700/10 dark:to-transparent"
+            )} />
+          </div>
 
+          {/* Bouton de fermeture (X) */}
+          <DialogClose className="absolute right-4 top-4 z-20 rounded-full p-1 opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            <X className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
 
-
-          <DialogHeader className="p-4 sm:p-6">
+          {/* Header */}
+          <DialogHeader className="relative z-10 pb-2">
             <div className="flex items-center gap-3">
               <div className={cn(
                 "p-2.5 rounded-lg",
@@ -105,10 +125,9 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
               Créez une nouvelle dépense en complétant le formulaire ci-dessous. Vous pourrez la modifier ultérieurement.
             </DialogDescription>
           </DialogHeader>
-        </div>
           
           {/* Section du formulaire */}
-          <div className="relative z-10">
+          <div className="relative z-10 mt-4">
             <ExpenseForm 
               onSubmit={onSubmit}
               preSelectedRetailer={preSelectedRetailer}
