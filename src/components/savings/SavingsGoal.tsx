@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -7,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface SavingsGoalProps {
   savingsPercentage: number;
@@ -121,7 +123,13 @@ export const SavingsGoal = ({
 
   return (
     <div className="h-full">
-      <Card className="h-full shadow-lg">
+      <Card className={cn(
+        "h-full transition-all duration-300",
+        // Light mode - fond blanc avec effet d'ombre élégant
+        "bg-white border border-gray-200/60 shadow-lg",
+        // Dark mode - fond adapté avec effet d'ombre verdâtre, identique à la carte graphique
+        "dark:bg-gray-900/90 dark:border-green-900/30 dark:shadow-green-900/20"
+      )}>
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
