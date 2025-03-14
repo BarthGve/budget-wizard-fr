@@ -7,11 +7,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserPlus, Loader2, Plus } from "lucide-react";
+import { UserPlus, Loader2, Plus, X } from "lucide-react";
 import { useQueryClient } from '@tanstack/react-query';
 import { Progress } from "@/components/ui/progress";
 import { useTheme } from "next-themes";
@@ -134,6 +135,27 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
             "from-amber-100/40 via-amber-50/20 to-transparent",
             "dark:from-amber-900/20 dark:via-amber-800/10 dark:to-transparent"
           )} />
+        </div>
+
+        {/* Bouton de fermeture */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20">
+          <DialogClose asChild>
+            <Button 
+              type="button" 
+              variant="ghost" 
+              className={cn(
+                "h-8 w-8 p-0 rounded-md",
+                "text-gray-500 hover:text-gray-700 hover:bg-gray-100/80",
+                "dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800/80",
+                "transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500",
+                "disabled:pointer-events-none"
+              )}
+              disabled={isSubmitting}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Fermer</span>
+            </Button>
+          </DialogClose>
         </div>
 
         <div className="relative z-10 p-5 sm:p-6 md:p-7">          
