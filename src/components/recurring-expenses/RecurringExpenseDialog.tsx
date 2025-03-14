@@ -55,29 +55,32 @@ export function RecurringExpenseDialog({
       
       <AnimatePresence>
         {open && (
-          <DialogContent 
-            forceMount
-            className={cn(
-              "relative p-0 border-0 shadow-2xl", // Note "relative" est ajouté pour gérer le fond
-              // Toujours activer overflow-auto sur tablette
-              isTablet ? "overflow-auto" : "overflow-hidden",
-              // Ajustement pour les tablettes et mobiles
-              isTablet 
-                ? "sm:max-w-[85%] w-[85%]" 
-                : "sm:max-w-[600px]",
-              // Hauteur maximum définie pour permettre le défilement
-              shouldEnableScroll ? "max-h-[calc(100vh-40px)]" : "",
-              // Light mode
-              "bg-white",
-              // Dark mode
-              "dark:bg-gray-800/95"
-            )}
-            style={{
-              boxShadow: isDarkMode
-                ? "0 25px 50px -12px rgba(2, 6, 23, 0.4), 0 0 0 1px rgba(37, 99, 235, 0.1)"
-                : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)",
-            }}
-          >
+    <DialogContent 
+  forceMount
+  className={cn(
+    "relative p-0 border-0 shadow-2xl",
+    // Assurer la position centrée
+    "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+    // Toujours activer overflow-auto sur tablette
+    isTablet ? "overflow-auto" : "overflow-hidden",
+    // Ajustement pour les tablettes et mobiles
+    isTablet 
+      ? "sm:max-w-[85%] w-[85%]" 
+      : "sm:max-w-[600px]",
+    // Hauteur maximum définie pour permettre le défilement
+    shouldEnableScroll ? "max-h-[calc(100vh-40px)]" : "",
+    // Light mode
+    "bg-white",
+    // Dark mode
+    "dark:bg-gray-800/95"
+  )}
+  style={{
+    boxShadow: isDarkMode
+      ? "0 25px 50px -12px rgba(2, 6, 23, 0.4), 0 0 0 1px rgba(37, 99, 235, 0.1)"
+      : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)",
+  }}
+>
+
             {/* Ajout d'un fond bleu subtil */}
             <div className={cn(
               "absolute inset-0", // Fond étendu au conteneur du dialogue complet
