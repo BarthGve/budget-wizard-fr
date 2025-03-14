@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { RetailerCard } from "@/components/expenses/RetailerCard";
@@ -166,7 +165,7 @@ const Expenses = memo(function Expenses() {
       >
         <motion.div variants={itemVariants} className="space-y-4">
           <motion.div 
-            className="pb-4 mb-2  flex justify-between items-center"
+            className="pb-4 mb-2 flex justify-between items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
@@ -213,8 +212,22 @@ const Expenses = memo(function Expenses() {
         
             <div className="flex items-center gap-8">
               <div className="flex items-center space-x-2">
-                <Switch id="view-mode" checked={viewMode === 'yearly'} onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')} />
-                <Label htmlFor="view-mode">
+                {/* Switch modifié avec des couleurs bleues cohérentes */}
+                <Switch 
+                  id="view-mode" 
+                  checked={viewMode === 'yearly'} 
+                  onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
+                  className="data-[state=checked]:bg-blue-500 dark:data-[state=checked]:bg-blue-600"
+                  // Vous pouvez ajouter ce style si vous voulez personnaliser davantage
+                  style={{
+                    '--switch-thumb-color': 'white',
+                    '--switch-active-color': isDarkMode ? 'rgb(37, 99, 235)' : 'rgb(59, 130, 246)'
+                  } as React.CSSProperties}
+                />
+                <Label 
+                  htmlFor="view-mode"
+                  className="text-blue-700 dark:text-blue-400 font-medium"
+                >
                   Vue annuelle
                 </Label>
               </div>
