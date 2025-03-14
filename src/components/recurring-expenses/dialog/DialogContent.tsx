@@ -72,7 +72,7 @@ export const DialogContent = ({
       {needsScrolling ? (
         <ScrollArea 
           className={cn(
-            "flex-grow", 
+            "flex-grow overflow-x-hidden", // Ajout de overflow-x-hidden pour empêcher le défilement horizontal
             // Light mode
             "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent",
             // Dark mode
@@ -80,13 +80,13 @@ export const DialogContent = ({
             className
           )}
         >
-          <div className="p-6">
+          <div className="p-6 max-w-full"> {/* Ajout de max-w-full pour contraindre le contenu */}
             {formContent}
           </div>
         </ScrollArea>
       ) : (
         // Sans défilement si le contenu tient dans l'écran
-        <div className="p-6">
+        <div className="p-6 overflow-x-hidden max-w-full"> {/* Ajout des mêmes classes pour cohérence */}
           {formContent}
         </div>
       )}
