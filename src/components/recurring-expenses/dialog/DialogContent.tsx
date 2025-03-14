@@ -4,20 +4,21 @@ import { motion } from "framer-motion";
 import { RecurringExpenseForm } from "../RecurringExpenseForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RecurringExpense } from "../types";
-import { useRef } from "react";
 
 interface DialogContentProps {
   expense?: RecurringExpense;
   isEditMode: boolean;
   needsScrolling: boolean;
   onOpenChange: (open: boolean) => void;
+  className?: string;
 }
 
 export const DialogContent = ({ 
   expense, 
   isEditMode, 
   needsScrolling,
-  onOpenChange 
+  onOpenChange,
+  className 
 }: DialogContentProps) => {
   
   // Gestionnaire du succès du formulaire
@@ -75,7 +76,8 @@ export const DialogContent = ({
             // Light mode
             "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent",
             // Dark mode
-            "dark:scrollbar-thumb-gray-700"
+            "dark:scrollbar-thumb-gray-700",
+            className
           )}
         >
           <div className="p-6">
