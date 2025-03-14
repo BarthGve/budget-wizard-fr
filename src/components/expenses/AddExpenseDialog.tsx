@@ -78,7 +78,11 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="w-[90vw] max-w-[650px] max-h-[95vh] overflow-y-auto">
-          <DialogHeader className="relative z-10 mb-4">
+        <div className="relative z-10 pt-2 pb-5 px-1 sm:p-2">
+
+
+
+          <DialogHeader className="p-4 sm:p-6">
             <div className="flex items-center gap-3">
               <div className={cn(
                 "p-2.5 rounded-lg",
@@ -101,6 +105,7 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
               Créez une nouvelle dépense en complétant le formulaire ci-dessous. Vous pourrez la modifier ultérieurement.
             </DialogDescription>
           </DialogHeader>
+        </div>
           
           {/* Section du formulaire */}
           <div className="relative z-10">
