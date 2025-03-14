@@ -59,7 +59,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
 
   return (
     <nav className="flex flex-col h-full justify-between p-4">
-      <ul className="space-y-2">
+      <ul className="space-y-1">
         {menuItems.map((item) => {
           // Use a proper matching logic for active state
           const isActive = item.matchPath
@@ -74,7 +74,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
   <NavLink
     to={item.path}
     className={({ isActive }) => cn(
-      "flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
+      "flex items-center space-x-3 px-2 py-2 rounded-lg transition-colors",
       // Hover avec un gris très léger
       "hover:bg-gray-100 dark:hover:bg-gray-800/60",
       collapsed && "justify-center",
