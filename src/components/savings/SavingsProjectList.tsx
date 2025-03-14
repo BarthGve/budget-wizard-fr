@@ -13,18 +13,29 @@ interface SavingsProjectListProps {
   projects: SavingsProject[];
   onProjectDeleted: () => void;
   showProjects: boolean;
+  forceRefresh: number;
 }
 
-export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }: SavingsProjectListProps) => {
+export const SavingsProjectList = ({ 
+  projects, 
+  onProjectDeleted, 
+  showProjects,
+  forceRefresh
+}: SavingsProjectListProps) => {
   const [projectToDelete, setProjectToDelete] = useState<SavingsProject | null>(null);
   const [selectedProject, setSelectedProject] = useState<SavingsProject | null>(null);
   const { toast } = useToast();
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   
-  // Set up real-time listener for monthly_savings changes affecting projects
   useEffect(() => {
-    // Génération d'un identifiant unique pour le canal
+    if (forceRefresh > 0) {
+      console.log("Forçage du rafraîchissement de la liste des projets", forceRefresh);
+      onProjectDeleted();
+    }
+  }, [forceRefresh, onProjectDeleted]);
+  
+  useEffect(() => {
     const channelId = `savings-project-changes-${Date.now()}`;
     console.log(`Creating real-time channel: ${channelId}`);
     
@@ -40,7 +51,6 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
         },
         (payload) => {
           console.log('Project-related monthly saving changed:', payload);
-          // Forcer la mise à jour de la liste des projets
           onProjectDeleted();
         }
       )
@@ -54,9 +64,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
     };
   }, [onProjectDeleted]);
 
-  // Also listen for direct projets_epargne changes
   useEffect(() => {
-    // Génération d'un identifiant unique pour le canal
     const channelId = `projects-changes-${Date.now()}`;
     console.log(`Creating projects table channel: ${channelId}`);
     
@@ -71,7 +79,6 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
         },
         (payload) => {
           console.log('Projects table changed:', payload);
-          // Forcer la mise à jour de la liste des projets
           onProjectDeleted();
         }
       )
@@ -89,7 +96,6 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
     if (!projectToDelete) return;
 
     try {
-      // Delete the project from the database
       const { error: projectError } = await supabase
         .from('projets_epargne')
         .delete()
@@ -117,7 +123,6 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
     }
   };
 
-  // Configuration des variants pour les animations des cartes
   const containerVariants = {
     visible: {
       height: "auto",
@@ -185,9 +190,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
           >
             <div className={cn(
               "rounded-lg py-10 px-6 text-center",
-              // Light mode
               "bg-gradient-to-b from-gray-50 to-gray-100/80 border border-gray-200/70",
-              // Dark mode
               "dark:bg-gradient-to-b dark:from-gray-800/50 dark:to-gray-900/50 dark:border-gray-700/50"
             )}
             style={{
@@ -199,9 +202,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
               <div className="flex flex-col items-center justify-center space-y-3">
                 <div className={cn(
                   "p-3 rounded-full",
-                  // Light mode
                   "bg-gradient-to-br from-teal-100 to-teal-50",
-                  // Dark mode
                   "dark:bg-gradient-to-br dark:from-teal-900/40 dark:to-teal-800/30"
                 )}>
                   <svg 
@@ -225,9 +226,7 @@ export const SavingsProjectList = ({ projects, onProjectDeleted, showProjects }:
                 </div>
                 <h3 className={cn(
                   "text-lg font-medium bg-clip-text text-transparent",
-                  // Light mode gradient
                   "bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500",
-                  // Dark mode gradient
                   "dark:bg-gradient-to-r dark:from-teal-400 dark:via-teal-300 dark:to-emerald-400"
                 )}>
                   Aucun projet d'épargne

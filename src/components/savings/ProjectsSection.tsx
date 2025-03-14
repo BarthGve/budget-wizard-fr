@@ -12,12 +12,14 @@ interface ProjectsSectionProps {
   projects: SavingsProject[];
   onProjectDeleted: () => void;
   showInitial?: boolean;
+  forceRefresh: number; // Nouveau prop pour forcer le rafraîchissement
 }
 
 export const ProjectsSection = ({ 
   projects, 
   onProjectDeleted,
-  showInitial = true
+  showInitial = true,
+  forceRefresh // Utilisation du nouveau prop
 }: ProjectsSectionProps) => {
   const [showProjects, setShowProjects] = useState(showInitial);
   const { theme } = useTheme();
@@ -62,7 +64,8 @@ export const ProjectsSection = ({
         <SavingsProjectList 
           projects={projects} 
           onProjectDeleted={onProjectDeleted} 
-          showProjects={showProjects} 
+          showProjects={showProjects}
+          forceRefresh={forceRefresh} 
         />
       </div>
     </motion.div>

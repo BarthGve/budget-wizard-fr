@@ -18,6 +18,7 @@ const Savings = () => {
   } = useDashboardData();
   const queryClient = useQueryClient();
   const savingsChannelRef = useRef(null);
+  const [projectRefreshCounter, setProjectRefreshCounter] = useState(0); // Compteur pour forcer le rafraîchissement
 
   // Écouteurs en temps réel spécifiques à la page Savings
   useEffect(() => {
@@ -100,6 +101,8 @@ const Savings = () => {
     console.log('Project created, refreshing data...');
     refetch();
     refetchProjects();
+    // Incrémenter le compteur pour forcer le rafraîchissement de la liste des projets
+    setProjectRefreshCounter(prev => prev + 1);
   };
 
   const handleProjectDeleted = () => {
@@ -154,6 +157,7 @@ const Savings = () => {
           <ProjectsSection 
             projects={projects} 
             onProjectDeleted={handleProjectDeleted}
+            forceRefresh={projectRefreshCounter}
           />
         </div>
       </motion.div>

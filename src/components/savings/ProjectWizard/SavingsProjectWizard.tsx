@@ -14,6 +14,7 @@ import { DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectWizard } from "./hooks/useProjectWizard";
 import { createProject, createMonthlySaving } from "./utils/projectUtils";
+import { useQueryClient } from "@tanstack/react-query"; // Ajout de useQueryClient
 
 interface SavingsProjectWizardProps {
   onClose: () => void;
@@ -38,6 +39,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   } = useProjectWizard({ onClose, onProjectCreated });
   
   const { toast } = useToast();
+  const queryClient = useQueryClient(); // Récupération du queryClient pour l'invalidation manuelle
 
   const steps: Step[] = [
     {
@@ -72,6 +74,15 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       if (formData.added_to_recurring && newProject) {
         await createMonthlySaving(formData, newProject.profile_id, newProject.id);
       }
+
+      // Invalider manuellement les queries après création réussie
+      await queryClient.invalidateQueries({ queryKey: ["savings-projects"] });
+      
+      // Forcer un rafraîchissement immédiat
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ["savings-projects"] });
+        queryClient.refetchQueries({ queryKey: ["dashboard-data"] });
+      }, 100);
 
       toast({
         title: "Projet créé avec succès",
