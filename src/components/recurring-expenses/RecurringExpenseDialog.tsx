@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DialogTrigger } from "@/components/ui/dialog";
@@ -59,7 +58,7 @@ export function RecurringExpenseDialog({
           <DialogContent 
             forceMount
             className={cn(
-              "p-0 border-0 shadow-2xl",
+              "relative p-0 border-0 shadow-2xl", // Note "relative" est ajouté pour gérer le fond
               // Toujours activer overflow-auto sur tablette
               isTablet ? "overflow-auto" : "overflow-hidden",
               // Ajustement pour les tablettes et mobiles
@@ -79,10 +78,18 @@ export function RecurringExpenseDialog({
                 : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)",
             }}
           >
+            {/* Ajout d'un fond bleu subtil */}
+            <div className={cn(
+              "absolute inset-0", // Fond étendu au conteneur du dialogue complet
+              "bg-gradient-to-b from-blue-50/70 via-white to-white", // Fond radial ou dégradé léger
+              "dark:from-blue-950/20 dark:via-gray-900/70 dark:to-gray-900",
+              "pointer-events-none z-0"
+            )} />
+            
             <div 
               ref={contentRef} 
               className={cn(
-                "flex flex-col",
+                "relative z-10 flex flex-col", // Contenant positionné devant le fond
                 // S'assurer que le conteneur interne prend la hauteur disponible mais
                 // ne dépasse pas la hauteur maximale autorisée
                 shouldEnableScroll ? "h-full" : ""
@@ -104,6 +111,17 @@ export function RecurringExpenseDialog({
                   isTablet ? "flex-grow" : ""
                 )}
               />
+            </div>
+
+            {/* Décoration subtile */}
+            <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.05] z-0">
+              <svg
+                viewBox="0 0 100 100"
+                className="w-full h-full fill-blue-400 dark:fill-blue-600"
+                style={{ mixBlendMode: isDarkMode ? "soft-light" : "overlay" }}
+              >
+                <circle cx={50} cy={50} r={50} />
+              </svg>
             </div>
           </DialogContent>
         )}
