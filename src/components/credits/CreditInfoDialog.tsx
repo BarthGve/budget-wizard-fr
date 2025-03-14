@@ -6,6 +6,7 @@ import { formatCurrency } from "@/utils/format";
 import { CreditProgressBar } from "./CreditProgressBar";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, CreditCardIcon, PiggyBankIcon } from "lucide-react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface CreditInfoDialogProps {
   credit: Credit;
@@ -20,6 +21,9 @@ export const CreditInfoDialog = ({
   onOpenChange, 
   colorScheme = "purple" 
 }: CreditInfoDialogProps) => {
+  // Détecter si nous sommes sur tablette
+  const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
+  
   // Calcul de la progression
   const startDate = new Date(credit.date_premiere_mensualite);
   const endDate = new Date(credit.date_derniere_mensualite);
@@ -100,7 +104,10 @@ export const CreditInfoDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px] overflow-hidden">
+      <DialogContent className={cn(
+        "sm:max-w-[550px] overflow-hidden",
+        isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto"
+      )}>
         {/* Background gradient subtil */}
         <div className={cn(
           "absolute inset-0 pointer-events-none opacity-10 bg-gradient-to-br",
