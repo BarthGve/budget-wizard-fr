@@ -102,7 +102,7 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
           </DialogClose>
 
           {/* Header */}
-          <DialogHeader className="relative z-10 pb-2">
+          <DialogHeader className="relative z-10 pb-2 pt-2">
             <div className="flex items-center gap-3">
               <div className={cn(
                 "p-2.5 rounded-lg",
