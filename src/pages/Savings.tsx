@@ -144,25 +144,23 @@ const Savings = () => {
           monthlySavings={monthlySavings} 
         />
         
-        {/* Main Content - Two Columns */}
-        <div className="flex flex-col md:flex-row gap-12 flex-1 overflow-hidden">
-          {/* Left Column - Monthly Savings - 1/2 */}
-          <div className="md:w-1/2 overflow-y-auto pb-6">
-            <MonthlySavingsSection 
-              monthlySavings={monthlySavings}
-              onSavingDeleted={handleSavingDeleted}
-              onSavingAdded={handleSavingAdded}
-            />
-          </div>
-          
-          {/* Right Column - Projects - 1/2 */}
-          <div className="md:w-1/2 overflow-y-auto pb-6">
-            <ProjectsSection 
-              projects={projects} 
-              onProjectDeleted={handleProjectDeleted}
-              onNewProjectClick={() => setShowProjectWizard(true)}
-            />
-          </div>
+        {/* Réorganisation: MonthlySavings en premier, puis Projects */}
+        {/* Monthly Savings Section - Pleine largeur */}
+        <div className="w-full overflow-y-auto pb-6">
+          <MonthlySavingsSection 
+            monthlySavings={monthlySavings}
+            onSavingDeleted={handleSavingDeleted}
+            onSavingAdded={handleSavingAdded}
+          />
+        </div>
+        
+        {/* Projects Section - Pleine largeur */}
+        <div className="w-full overflow-y-auto pb-6">
+          <ProjectsSection 
+            projects={projects} 
+            onProjectDeleted={handleProjectDeleted}
+            onNewProjectClick={() => setShowProjectWizard(true)}
+          />
         </div>
         
         {/* Project Wizard Dialog */}
