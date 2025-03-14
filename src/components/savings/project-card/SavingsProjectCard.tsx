@@ -1,8 +1,9 @@
+
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SavingsProject } from "@/types/savings-project";
-import { Trash2, Piggy, ArrowRight, TrendingUp } from "lucide-react";
+import { Trash2, PiggyBank, ArrowRight, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { differenceInDays } from "date-fns";
@@ -191,7 +192,7 @@ export const SavingsProjectCard = ({
             <div className="space-y-2">
               <div className="flex justify-between items-center text-sm">
                 <div className="flex items-center">
-                  <Piggy className={cn(
+                  <PiggyBank className={cn(
                     "h-4 w-4 mr-1.5",
                     "text-emerald-500 dark:text-emerald-400"
                   )} />
