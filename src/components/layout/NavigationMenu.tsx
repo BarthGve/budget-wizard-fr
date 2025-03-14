@@ -59,7 +59,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
 
   return (
     <nav className="flex flex-col h-full justify-between p-4">
-      <ul className="space-y-2">
+      <ul >
         {menuItems.map((item) => {
           // Use a proper matching logic for active state
           const isActive = item.matchPath
