@@ -43,29 +43,32 @@ export function RetailerStatsCard({
         )}
       </div>
       
-      {/* Montant principal */}
+      {/* Montant principal et indicateur de variation sur la même ligne */}
       <div className="space-y-2">
-        <p className="text-2xl font-bold">{formatCurrency(amount)}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-2xl font-bold">{formatCurrency(amount)}</p>
+          
+          {/* Indicateur de variation */}
+          {hasVariation && (
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/10 h-fit">
+              {isIncrease ? (
+                <ArrowUpRight className="h-4 w-4" />
+              ) : (
+                <ArrowDownRight className="h-4 w-4" />
+              )}
+              <span className={cn(
+                "text-sm font-medium",
+                isIncrease ? "text-red-200" : "text-green-200"
+              )}>
+                {Math.abs(percentageChange).toFixed(1)}%
+              </span>
+            </div>
+          )}
+        </div>
+        
         <p className="text-sm opacity-90">
           {count.toLocaleString('fr-FR')} {label}
         </p>
-        
-        {/* Indicateur de variation */}
-        {hasVariation && (
-          <div className="flex items-center gap-1 mt-3 px-2.5 py-1.5 rounded-md bg-white/10 w-fit">
-            {isIncrease ? (
-              <ArrowUpRight className="h-4 w-4" />
-            ) : (
-              <ArrowDownRight className="h-4 w-4" />
-            )}
-            <span className={cn(
-              "text-sm font-medium",
-              isIncrease ? "text-red-200" : "text-green-200"
-            )}>
-              {Math.abs(percentageChange).toFixed(1)}%
-            </span>
-          </div>
-        )}
       </div>
     </Card>
   );
