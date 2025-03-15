@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -25,9 +26,9 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#8B5CF6",
+          DEFAULT: "#10B981", // Remplacer la couleur violette par du vert
           foreground: "#FFFFFF",
-          hover: "#7C3AED",
+          hover: "#059669", // Vert plus foncé pour l'effet hover
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
