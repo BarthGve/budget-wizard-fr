@@ -1,112 +1,124 @@
 
-import { Label } from "@/components/ui/label";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { addMonths, format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { StepComponentProps } from "../types";
-import { SavingsMode } from "@/types/savings-project";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { FormData, SavingsMode } from "../types";
 
-export const StepFour = ({ data, onChange, mode = "par_date" }: StepComponentProps) => {
-  const currentDate = new Date();
-  const defaultDate = addMonths(currentDate, 6);
-  
-  // Si date_cible est définie et c'est une chaîne, la convertir en objet Date
-  const targetDate = data.date_cible ? new Date(data.date_cible) : defaultDate;
+interface StepFourProps {
+  data: FormData;
+  onChange: (field: keyof FormData, value: any) => void;
+  mode: SavingsMode;
+  onModeChange: (mode: SavingsMode) => void;
+}
+
+export const StepFour = ({ data, onChange, mode }: StepFourProps) => {
+  // Formater la date pour le calendrier
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    data.date_cible ? new Date(data.date_cible) : undefined
+  );
+
+  // Gérer le changement de date
+  const handleDateChange = (date: Date | undefined) => {
+    setSelectedDate(date);
+    onChange("date_cible", date ? date.toISOString() : null);
+  };
 
   return (
     <div className="space-y-6">
-      {mode === "par_date" && (
+      {/* Date cible pour les projets d'achat */}
+      {mode === "achat" && (
         <div className="space-y-2">
-          <Label htmlFor="target-date" className="text-gray-800 dark:text-gray-200">
-            Date cible
+          <Label htmlFor="date_cible" className="text-gray-700 dark:text-gray-300">
+            Date d'achat prévue
           </Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                id="target-date"
                 variant="outline"
-                className="w-full justify-start text-left font-normal border-gray-300 hover:border-green-400 focus:border-green-500"
+                id="date_cible"
+                className={cn(
+                  "w-full justify-start text-left font-normal border-gray-300",
+                  "focus:border-green-500 focus:ring-green-500",
+                  "dark:border-gray-600 dark:focus:border-green-400 dark:focus:ring-green-400",
+                  !selectedDate && "text-gray-500"
+                )}
               >
-                <CalendarIcon className="mr-2 h-4 w-4 text-green-600" />
-                {data.date_cible ? (
-                  format(targetDate, "d MMMM yyyy", { locale: fr })
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? (
+                  format(selectedDate, "d MMMM yyyy", { locale: fr })
                 ) : (
-                  "Sélectionnez une date"
+                  <span>Sélectionner une date</span>
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={targetDate}
-                onSelect={(date) => onChange({ ...data, date_cible: date?.toISOString() })}
+                selected={selectedDate}
+                onSelect={handleDateChange}
                 initialFocus
-                fromDate={currentDate}
-                className="border-green-200"
+                locale={fr}
+                className="border-green-300 shadow-sm rounded"
               />
             </PopoverContent>
           </Popover>
         </div>
       )}
 
-      {mode === "par_mensualite" && (
-        <>
-          <div className="space-y-2">
-            <Label className="text-gray-800 dark:text-gray-200">Fréquence d'épargne</Label>
-            <RadioGroup
-              value={data.frequence || "mensuel"}
-              onValueChange={(value) => onChange({ ...data, frequence: value })}
-              className="flex flex-col space-y-1"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem 
-                  value="mensuel" 
-                  id="mensuel" 
-                  className="border-green-400 text-green-600 focus:ring-green-200"
-                />
-                <Label htmlFor="mensuel" className={`${data.frequence === 'mensuel' ? 'text-green-700' : 'text-gray-700'} dark:text-gray-200`}>Mensuel</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem 
-                  value="trimestriel" 
-                  id="trimestriel" 
-                  className="border-green-400 text-green-600 focus:ring-green-200"
-                />
-                <Label htmlFor="trimestriel" className={`${data.frequence === 'trimestriel' ? 'text-green-700' : 'text-gray-700'} dark:text-gray-200`}>Trimestriel</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem 
-                  value="annuel" 
-                  id="annuel" 
-                  className="border-green-400 text-green-600 focus:ring-green-200"
-                />
-                <Label htmlFor="annuel" className={`${data.frequence === 'annuel' ? 'text-green-700' : 'text-gray-700'} dark:text-gray-200`}>Annuel</Label>
-              </div>
-            </RadioGroup>
-          </div>
+      {/* Fréquence de versement */}
+      <div className="space-y-2">
+        <Label htmlFor="frequence" className="text-gray-700 dark:text-gray-300">
+          Fréquence d'épargne
+        </Label>
+        <select
+          id="frequence"
+          value={data.frequence || "monthly"}
+          onChange={(e) => onChange("frequence", e.target.value)}
+          className={cn(
+            "w-full rounded-md border-gray-300 shadow-sm", 
+            "focus:border-green-500 focus:ring-green-500",
+            "dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100",
+            "dark:focus:border-green-400 dark:focus:ring-green-400"
+          )}
+        >
+          <option value="weekly">Hebdomadaire</option>
+          <option value="monthly">Mensuelle</option>
+          <option value="quarterly">Trimestrielle</option>
+          <option value="yearly">Annuelle</option>
+        </select>
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="periodic-amount" className="text-gray-800 dark:text-gray-200">
-              Montant périodique (€)
-            </Label>
-            <Input
-              id="periodic-amount"
-              type="number"
-              value={data.montant_periodique || ''}
-              onChange={(e) => onChange({ ...data, montant_periodique: Number(e.target.value) })}
-              placeholder="Montant à épargner régulièrement"
-              className="border-gray-300 focus:border-green-500 focus:ring-green-200"
-              min="0"
-              step="10"
-            />
-          </div>
-        </>
-      )}
+      {/* Montant de versement périodique */}
+      <div className="space-y-2">
+        <Label htmlFor="montant_periodique" className="text-gray-700 dark:text-gray-300">
+          Montant {data.frequence === "weekly" ? "hebdomadaire" : 
+                   data.frequence === "monthly" ? "mensuel" : 
+                   data.frequence === "quarterly" ? "trimestriel" : "annuel"}
+        </Label>
+        <div className="relative">
+          <Input
+            id="montant_periodique"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            value={data.montant_periodique || ""}
+            onChange={(e) => onChange("montant_periodique", parseFloat(e.target.value) || 0)}
+            className={cn(
+              "pl-8 border-gray-300 focus:border-green-500 focus:ring-green-500", 
+              "dark:border-gray-600 dark:focus:border-green-400 dark:focus:ring-green-400"
+            )}
+          />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+        </div>
+      </div>
     </div>
   );
 };

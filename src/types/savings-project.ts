@@ -15,10 +15,6 @@ export interface SavingsProject {
   date_estimee?: string;
   added_to_recurring?: boolean;
   statut: "actif" | "en_attente" | "dépassé";
-  // Propriétés ajoutées pour la gestion de la date et du montant périodique
-  date_cible?: string;
-  frequence?: string;
-  montant_periodique?: number;
 }
 
 export type SavingsMode = "par_date" | "par_mensualite";

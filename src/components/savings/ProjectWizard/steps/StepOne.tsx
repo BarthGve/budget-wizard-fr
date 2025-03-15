@@ -1,37 +1,49 @@
 
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { StepComponentProps } from "../types";
+import { cn } from "@/lib/utils";
+import { FormData, SavingsMode } from "../types";
 
-export const StepOne = ({ data, onChange }: StepComponentProps) => {
+interface StepOneProps {
+  data: FormData;
+  onChange: (field: keyof FormData, value: any) => void;
+  mode: SavingsMode;
+  onModeChange: (mode: SavingsMode) => void;
+}
+
+export const StepOne = ({ data, onChange }: StepOneProps) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="project-name" className="text-gray-800 dark:text-gray-200">
-          Nom du projet *
+        <Label htmlFor="nom" className="text-gray-700 dark:text-gray-300">
+          Nom du projet
         </Label>
         <Input
-          id="project-name"
-          value={data.nom_projet || ''}
-          onChange={(e) => onChange({ ...data, nom_projet: e.target.value })}
-          placeholder="Nommez votre projet d'épargne"
-          required
-          className="border-gray-300 focus:border-green-500 focus:ring-green-200"
+          id="nom"
+          placeholder="Ex: Achat voiture, Épargne retraite..."
+          value={data.nom || ""}
+          onChange={(e) => onChange("nom", e.target.value)}
+          className={cn(
+            "border-gray-300 focus:border-green-500 focus:ring-green-500", 
+            "dark:border-gray-600 dark:focus:border-green-400 dark:focus:ring-green-400"
+          )}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="project-description" className="text-gray-800 dark:text-gray-200">
+        <Label htmlFor="description" className="text-gray-700 dark:text-gray-300">
           Description
         </Label>
         <Textarea
-          id="project-description"
-          value={data.description || ''}
-          onChange={(e) => onChange({ ...data, description: e.target.value })}
-          placeholder="Décrivez votre projet d'épargne"
-          rows={3}
-          className="border-gray-300 focus:border-green-500 focus:ring-green-200"
+          id="description"
+          placeholder="Décrivez votre projet d'épargne..."
+          value={data.description || ""}
+          onChange={(e) => onChange("description", e.target.value)}
+          className={cn(
+            "min-h-[120px] border-gray-300 focus:border-green-500 focus:ring-green-500", 
+            "dark:border-gray-600 dark:focus:border-green-400 dark:focus:ring-green-400"
+          )}
         />
       </div>
     </div>

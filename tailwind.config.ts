@@ -26,9 +26,9 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#22C55E", // Changé du violet vers le vert
+          DEFAULT: "#8B5CF6",
           foreground: "#FFFFFF",
-          hover: "#16A34A", // Vert plus foncé pour le hover
+          hover: "#7C3AED",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
