@@ -32,7 +32,7 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
             <FormLabel>Date</FormLabel>
             <Input
               type="date"
-              className="w-full"
+              className="w-full border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
               value={field.value ? field.value.toISOString().split('T')[0] : ""}
               onChange={(e) => {
                 const date = e.target.value ? new Date(e.target.value) : new Date();
@@ -51,7 +51,7 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
             <FormLabel>Catégorie</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200">
                   <SelectValue placeholder="Sélectionner une catégorie" />
                 </SelectTrigger>
               </FormControl>
@@ -74,7 +74,7 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
           <FormItem>
             <FormLabel>Description</FormLabel>
             <FormControl>
-              <Input placeholder="Description de la dépense" {...field} />
+              <Input placeholder="Description de la dépense" {...field} className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200" />
             </FormControl>
           </FormItem>
         )}
@@ -87,7 +87,7 @@ export function ExpenseFormFields({ form }: ExpenseFormFieldsProps) {
           <FormItem>
             <FormLabel>Montant (€)</FormLabel>
             <FormControl>
-              <Input type="number" step="0.01" placeholder="0.00" {...field} />
+              <Input type="number" step="0.01" placeholder="0.00" {...field} className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200" />
             </FormControl>
           </FormItem>
         )}

@@ -37,6 +37,7 @@ export const SavingForm = ({
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="Ex: Assurance Vie, PEL..."
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
       <div className="space-y-2">
@@ -47,6 +48,7 @@ export const SavingForm = ({
             value={domain}
             onChange={(e) => onDomainChange(e.target.value)}
             placeholder="Ex: boursorama.com, fortuneo.fr..."
+            className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
           />
           <LogoPreview
             url={previewLogoUrl}
@@ -67,6 +69,7 @@ export const SavingForm = ({
           value={amount}
           onChange={(e) => onAmountChange(Number(e.target.value))}
           placeholder="Ex: 200"
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
       <div className="space-y-2">
@@ -76,6 +79,7 @@ export const SavingForm = ({
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           placeholder="Ex: Versement automatique le 5 du mois..."
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
     </div>

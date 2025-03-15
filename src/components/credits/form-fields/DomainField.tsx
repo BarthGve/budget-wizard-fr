@@ -28,6 +28,7 @@ export const DomainField = ({ form }: DomainFieldProps) => {
               <Input
                 {...field}
                 placeholder="Ex: paypal.com, fortuneo.fr..."
+                className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
               />
             </FormControl>
             <div className="object-contain">

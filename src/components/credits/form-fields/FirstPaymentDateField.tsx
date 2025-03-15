@@ -51,6 +51,7 @@ export function FirstPaymentDateField({ form }: FirstPaymentDateFieldProps) {
                 placeholder="JJ/MM/AAAA"
                 value={dateInput}
                 onChange={(e) => handleManualInput(e.target.value)}
+                className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
               />
             </FormControl>
             <FormMessage />

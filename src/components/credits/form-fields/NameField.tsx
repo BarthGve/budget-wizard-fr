@@ -17,7 +17,7 @@ export const NameField = ({ form }: NameFieldProps) => {
         <FormItem>
           <FormLabel>Nom du crédit</FormLabel>
           <FormControl>
-            <Input placeholder="Ex: Prêt immobilier" {...field} />
+            <Input placeholder="Ex: Prêt immobilier" {...field} className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200" />
           </FormControl>
           <FormMessage />
         </FormItem>

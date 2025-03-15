@@ -96,7 +96,7 @@ export function RecurringExpenseForm({
         )}
 
         <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">
             Annuler
           </Button>
           <Button type="submit" className="bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white">
