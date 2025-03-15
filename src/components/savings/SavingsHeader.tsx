@@ -22,10 +22,6 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
     setNewSavingDialogOpen(open);
   };
 
-  const handleSavingAdded = () => {
-    if (onSavingAdded) onSavingAdded();
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -104,9 +100,9 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
           </Button>
           
           <NewSavingDialog 
+            onSavingAdded={onSavingAdded} 
             open={newSavingDialogOpen}
             onOpenChange={handleDialogOpenChange}
-            onSaved={handleSavingAdded}
           />
         </motion.div>
         

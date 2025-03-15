@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
-import { SavingsMode, FormData } from '../types';
+import { SavingsMode, SavingsProject } from '@/types/savings-project';
 import { useToast } from '@/hooks/use-toast';
 
 interface UseProjectWizardProps {
@@ -10,7 +10,7 @@ interface UseProjectWizardProps {
 
 export const useProjectWizard = ({ onClose }: UseProjectWizardProps) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<FormData>({});
+  const [formData, setFormData] = useState<Partial<SavingsProject>>({});
   const [savingsMode, setSavingsMode] = useState<SavingsMode>("par_date");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,9 +24,8 @@ export const useProjectWizard = ({ onClose }: UseProjectWizardProps) => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   }, []);
 
-  // Méthode adaptée pour correspondre à l'interface StepComponentProps
-  const handleChange = useCallback((field: keyof FormData, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = useCallback((data: Partial<SavingsProject>) => {
+    setFormData((prev) => ({ ...prev, ...data }));
   }, []);
 
   const handleModeChange = useCallback((mode: SavingsMode) => {
