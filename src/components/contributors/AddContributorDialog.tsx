@@ -43,7 +43,6 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
     setIsSubmitting(true);
     setProgress(0);
     
-    // Animation de progression
     const progressInterval = setInterval(() => {
       setProgress(prev => {
         const nextProgress = prev + Math.random() * 10;
@@ -96,10 +95,8 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           className={cn(
             "h-10 px-3 sm:px-4 border transition-all duration-200 rounded-md",
             "hover:scale-[1.02] active:scale-[0.98]",
-            // Light mode
             "bg-white border-amber-200 text-amber-600",
             "hover:border-amber-300 hover:bg-amber-50/50 hover:text-amber-700",
-            // Dark mode
             "dark:bg-gray-800 dark:border-amber-800/60 dark:text-amber-400",
             "dark:hover:bg-amber-900/20 dark:hover:border-amber-700 dark:hover:text-amber-300"
           )}
@@ -123,7 +120,6 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
       </DialogTrigger>
 
       <DialogContent className="w-[90vw] max-w-[650px] sm:max-w-[90vw] md:max-w-[650px] overflow-hidden p-0">
-        {/* Background subtil */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-white dark:bg-gray-800 opacity-95" />
           <div className={cn(
@@ -137,7 +133,6 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
           )} />
         </div>
 
-        {/* Bouton de fermeture */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20">
           <DialogClose asChild>
             <Button 
@@ -183,7 +178,6 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
             </DialogDescription>
           </DialogHeader>
           
-          {/* Section du formulaire */}
           <div className="mt-4">
             <form onSubmit={handleFormSubmit} className="space-y-5 sm:space-y-6">
               {isSubmitting && (
@@ -220,7 +214,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                       }
                       required
                       disabled={isSubmitting}
-                      className="border-amber-200/70 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 bg-white dark:bg-gray-800"
+                      className="border-amber-200/70 dark:border-gray-700 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600 bg-white dark:bg-gray-800"
                     />
                   </div>
                   
@@ -239,7 +233,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                         })
                       }
                       disabled={isSubmitting}
-                      className="border-amber-200/70 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 bg-white dark:bg-gray-800"
+                      className="border-amber-200/70 dark:border-gray-700 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600 bg-white dark:bg-gray-800"
                     />
                   </div>
                 </div>
@@ -260,7 +254,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                     }
                     required
                     disabled={isSubmitting}
-                    className="border-amber-200/70 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 bg-white dark:bg-gray-800"
+                    className="border-amber-200/70 dark:border-gray-700 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600 bg-white dark:bg-gray-800"
                   />
                 </div>
               </div>
@@ -294,7 +288,6 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
             </form>
           </div>
           
-          {/* Décoration graphique dans le coin inférieur droit */}
           <div className="absolute bottom-0 right-0 w-24 h-24 sm:w-32 sm:h-32 pointer-events-none opacity-[0.03] z-0">
             <UserPlus className="w-full h-full" />
           </div>

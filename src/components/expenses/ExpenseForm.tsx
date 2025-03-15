@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -64,7 +65,7 @@ export function ExpenseForm({
               ) : (
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600">
                       <SelectValue placeholder="Sélectionnez une enseigne" />
                     </SelectTrigger>
                   </FormControl>
@@ -136,17 +137,17 @@ export function ExpenseForm({
           type="submit" 
           className={cn(
             "w-full mt-6",
-            "bg-blue-500 hover:bg-blue-600 text-white",
-            "dark:bg-blue-600 dark:hover:bg-blue-500",
+            "bg-primary hover:bg-primary-hover text-white",
+            "dark:bg-primary dark:hover:bg-primary-hover",
             "transition-colors duration-200 shadow-sm",
-            "focus-visible:ring-blue-500",
+            "focus-visible:ring-gray-300",
             isSubmitting && "opacity-80 cursor-not-allowed",
             buttonClassName // Applique les classes personnalisées si fournies
           )}
           style={{
             boxShadow: isDarkMode
-              ? "0 2px 8px -2px rgba(37, 99, 235, 0.3)"
-              : "0 2px 8px -2px rgba(37, 99, 235, 0.25)"
+              ? "0 2px 8px -2px rgba(16, 185, 129, 0.3)"
+              : "0 2px 8px -2px rgba(16, 185, 129, 0.25)"
           }}
           disabled={isSubmitting}
         >

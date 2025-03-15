@@ -33,7 +33,6 @@ export const EditContributorDialog = ({
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
-  // Reset edited contributor when the contributor prop changes or dialog opens
   useEffect(() => {
     if (isOpen) {
       setEditedContributor({...contributor});
@@ -48,7 +47,6 @@ export const EditContributorDialog = ({
     
     try {
       await onUpdate(editedContributor);
-      // Attendre un court instant pour donner une sensation de traitement
       setTimeout(() => {
         setIsSubmitting(false);
         onOpenChange(false);
@@ -60,7 +58,6 @@ export const EditContributorDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
-      // Ne pas permettre de fermer pendant la soumission
       if (isSubmitting && !open) return;
       onOpenChange(open);
     }}>
@@ -69,9 +66,7 @@ export const EditContributorDialog = ({
         className={cn(
           "p-0 overflow-hidden border-0 shadow-2xl",
           "sm:max-w-[550px]",
-          // Light mode
           "bg-white",
-          // Dark mode
           "dark:bg-gray-800/95"
         )}
         style={{
@@ -80,33 +75,24 @@ export const EditContributorDialog = ({
             : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(245, 158, 11, 0.1)"
         }}
       >
-        {/* En-tête avec dégradé subtil */}
         <div 
           className={cn(
             "relative overflow-hidden",
-            // Light mode
             "bg-gradient-to-br from-amber-50 to-white",
-            // Dark mode
             "dark:bg-gradient-to-br dark:from-amber-900/20 dark:to-gray-800/90"
           )}
         >
-          {/* Cercle décoratif en arrière-plan */}
           <div className={cn(
             "absolute -top-24 -right-24 w-64 h-64 rounded-full opacity-20",
-            // Light mode
             "bg-gradient-to-br from-amber-400 to-amber-600",
-            // Dark mode
             "dark:from-amber-500 dark:to-amber-700 dark:opacity-10"
           )} />
 
-          {/* Header avec contenu amélioré */}
           <div className="px-6 pt-6 pb-4 relative z-10">
             <div className="flex items-start gap-4 mb-2">
               <div className={cn(
                 "p-2.5 rounded-xl",
-                // Light mode
                 "bg-amber-100 text-amber-600",
-                // Dark mode
                 "dark:bg-amber-800/40 dark:text-amber-400"
               )}>
                 <UserCog size={22} />
@@ -116,9 +102,7 @@ export const EditContributorDialog = ({
                 <DialogTitle 
                   className={cn(
                     "text-xl font-bold",
-                    // Light mode
                     "text-amber-700",
-                    // Dark mode
                     "dark:text-amber-300"
                   )}
                 >
@@ -128,9 +112,7 @@ export const EditContributorDialog = ({
                 <DialogDescription 
                   className={cn(
                     "mt-1.5 text-sm",
-                    // Light mode
                     "text-amber-600/70",
-                    // Dark mode
                     "dark:text-amber-300/70"
                   )}
                 >
@@ -143,21 +125,15 @@ export const EditContributorDialog = ({
           </div>
         </div>
 
-        {/* Ligne séparatrice avec dégradé */}
         <div className={cn(
           "h-px w-full",
-          // Light mode
           "bg-gradient-to-r from-transparent via-amber-100 to-transparent",
-          // Dark mode
           "dark:from-transparent dark:via-amber-900/30 dark:to-transparent"
         )} />
 
-        {/* Conteneur pour le formulaire */}
         <div className={cn(
           "p-6",
-          // Light mode
           "bg-white",
-          // Dark mode
           "dark:bg-gray-800/95"
         )}>
           <div className={`grid gap-5 ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -181,8 +157,8 @@ export const EditContributorDialog = ({
                     }
                     className={cn(
                       "border rounded-md",
-                      "focus-visible:ring-amber-500",
-                      "dark:focus-visible:ring-amber-400",
+                      "focus-visible:ring-gray-300",
+                      "dark:focus-visible:ring-gray-600",
                       "border-gray-200 dark:border-gray-700",
                       "bg-white dark:bg-gray-800"
                     )}
@@ -208,8 +184,8 @@ export const EditContributorDialog = ({
                     }
                     className={cn(
                       "border rounded-md",
-                      "focus-visible:ring-amber-500",
-                      "dark:focus-visible:ring-amber-400",
+                      "focus-visible:ring-gray-300",
+                      "dark:focus-visible:ring-gray-600",
                       "border-gray-200 dark:border-gray-700",
                       "bg-white dark:bg-gray-800"
                     )}
@@ -237,8 +213,8 @@ export const EditContributorDialog = ({
                 }
                 className={cn(
                   "border rounded-md",
-                  "focus-visible:ring-amber-500",
-                  "dark:focus-visible:ring-amber-400",
+                  "focus-visible:ring-gray-300",
+                  "dark:focus-visible:ring-gray-600",
                   "border-gray-200 dark:border-gray-700",
                   "bg-white dark:bg-gray-800"
                 )}
