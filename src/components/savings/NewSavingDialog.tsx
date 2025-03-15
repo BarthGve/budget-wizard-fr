@@ -1,7 +1,10 @@
 <DialogContent 
   className={cn(
-    "sm:max-w-[650px] w-full p-0 shadow-lg bg-white rounded-lg", // Suppression globale de l'espacement
-    isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto"
+    "sm:max-w-[650px] w-full p-0 shadow-lg rounded-lg", // Suppression globale de l'espacement
+    isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto",
+     "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
+      "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]",
+    
   )}
 >
   <div 
