@@ -1,15 +1,17 @@
 
+import { cn } from '@/lib/utils';
 import { Step } from '../types';
 
 interface WizardStepperProps {
   steps: string[];
   currentStep: number;
   onStepClick?: (step: number) => void;
+  className?: string; // Ajout de la propriété className optionnelle
 }
 
-export const WizardStepper = ({ steps, currentStep, onStepClick }: WizardStepperProps) => {
+export const WizardStepper = ({ steps, currentStep, onStepClick, className }: WizardStepperProps) => {
   return (
-    <div className="mb-8 mt-8">
+    <div className={cn("mb-8 mt-8", className)}>
       <div className="flex justify-between">
         {steps.map((step, index) => (
           <div 

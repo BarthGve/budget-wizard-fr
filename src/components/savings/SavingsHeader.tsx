@@ -156,18 +156,16 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
         </motion.div>
       </div>
 
-      {/* Project Wizard Dialog - Maintenant directement dans le header, sans DialogContent */}
+      {/* Project Wizard Dialog - maintenant rendu conditionnellement */}
       {showProjectWizard && (
         <SavingsProjectWizard 
           onClose={() => setShowProjectWizard(false)} 
           onProjectCreated={() => {
-            setShowProjectWizard(false);
             if (onProjectCreated) onProjectCreated();
+            setShowProjectWizard(false);
           }} 
         />
       )}
-      
-      {/* NewSavingDialog est déjà bien configuré, pas besoin de le modifier */}
     </motion.div>
   );
 };
