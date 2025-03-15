@@ -14,11 +14,11 @@ export const DialogHeader = ({ isEditMode }: DialogHeaderProps) => {
         "relative px-6 py-6 flex-shrink-0",
         // Light mode
         isEditMode 
-          ? "bg-gradient-to-br from-amber-50 to-white" 
+          ? "bg-gradient-to-br from-blue-50 to-white" 
           : "bg-gradient-to-br from-blue-50 to-white",
         // Dark mode
         isEditMode
-          ? "dark:bg-gradient-to-br dark:from-amber-900/10 dark:to-gray-800/95"
+          ? "dark:bg-gradient-to-br dark:from-blue-900/10 dark:to-gray-800/95"
           : "dark:bg-gradient-to-br dark:from-blue-900/10 dark:to-gray-800/95"
       )}
     >
@@ -28,7 +28,7 @@ export const DialogHeader = ({ isEditMode }: DialogHeaderProps) => {
           "absolute -top-20 -right-20 w-56 h-56 rounded-full opacity-20",
           // Light mode
           isEditMode
-            ? "bg-gradient-to-br from-amber-300 to-amber-500"
+            ? "bg-gradient-to-br from-blue-400 to-blue-600"
             : "bg-gradient-to-br from-blue-400 to-blue-600",
           // Dark mode
           "dark:opacity-10"
@@ -43,11 +43,11 @@ export const DialogHeader = ({ isEditMode }: DialogHeaderProps) => {
               "w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0",
               // Light mode - édition ou création
               isEditMode
-                ? "bg-amber-100 text-amber-600" 
+                ? "bg-blue-100 text-blue-600" 
                 : "bg-blue-100 text-blue-600",
               // Dark mode - édition ou création
               isEditMode
-                ? "dark:bg-amber-900/20 dark:text-amber-400" 
+                ? "dark:bg-amber-900/20 dark:text-blue-400" 
                 : "dark:bg-blue-900/20 dark:text-blue-400"
             )}
           >
