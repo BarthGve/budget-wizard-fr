@@ -28,7 +28,6 @@ export const SavingsList = ({
   onSavingDeleted,
   showSavings = true,
 }: SavingsListProps) => {
-  // State variables
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedSaving, setSelectedSaving] = useState<{
     id: string;
@@ -48,7 +47,6 @@ export const SavingsList = ({
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
-  // Action handler
   const handleDelete = async (id: string) => {
     try {
       console.log("Deleting saving with ID:", id);
@@ -94,7 +92,6 @@ export const SavingsList = ({
     setShowDeleteDialog(true);
   };
 
-  // Container animation variants
   const containerVariants = {
     visible: {
       height: "auto",
@@ -139,7 +136,6 @@ export const SavingsList = ({
         className={cn("mb-2", showSavings ? "mb-4" : "mb-0")}
         animate={showSavings ? "visible" : "hidden"}
       >
-        {/* Render saving items */}
         <AnimatePresence mode="wait">
           {monthlySavings.map((saving) => (
             <SavingItem
@@ -151,7 +147,6 @@ export const SavingsList = ({
           ))}
         </AnimatePresence>
 
-        {/* Show empty state if no savings */}
         {showSavings && monthlySavings.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -179,7 +174,6 @@ export const SavingsList = ({
                     "dark:bg-gradient-to-br dark:from-teal-900/40 dark:to-teal-800/30"
                   )}
                 >
-                  {/* Empty icon */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -217,7 +211,6 @@ export const SavingsList = ({
         )}
       </motion.div>
 
-      {/* Modals */}
       <NewSavingDialog
         saving={editSaving || undefined}
         onSavingAdded={() => {

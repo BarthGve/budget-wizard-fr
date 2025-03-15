@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { PiggyBank, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,9 +36,7 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
-            // Light mode
             "bg-gradient-to-br from-emerald-100 to-green-50",
-            // Dark mode
             "dark:bg-gradient-to-br dark:from-emerald-900/40 dark:to-green-800/30 dark:shadow-emerald-900/10"
           )}
         >
@@ -53,9 +50,7 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
         <div>
           <h1 className={cn(
             "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
-            // Light mode gradient
             "bg-gradient-to-r from-emerald-500 via-green-500 to-teal-400",
-            // Dark mode gradient
             "dark:bg-gradient-to-r dark:from-emerald-400 dark:via-green-400 dark:to-teal-300"
           )}>
             Épargne
@@ -71,7 +66,6 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
       </div>
       
       <div className="flex gap-3">
-        {/* Bouton pour ajouter un versement mensuel */}
         <motion.div
           whileTap={{ scale: 0.98 }}
           whileHover={{ scale: 1.02 }}
@@ -81,10 +75,8 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
             className={cn(
               "h-10 px-4 border transition-all duration-200 rounded-md",
               "hover:scale-[1.02] active:scale-[0.98]",
-              // Light mode
               "bg-white border-emerald-200 text-emerald-600",
               "hover:border-emerald-300 hover:bg-emerald-50/50 hover:text-emerald-700",
-              // Dark mode
               "dark:bg-gray-800 dark:border-emerald-800/60 dark:text-emerald-400",
               "dark:hover:bg-emerald-900/20 dark:hover:border-emerald-700 dark:hover:text-emerald-300"
             )}
@@ -98,9 +90,7 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
             <div className="flex items-center gap-1.5">
               <span className={cn(
                 "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
-                // Light mode
                 "bg-emerald-100/80 text-emerald-600",
-                // Dark mode
                 "dark:bg-emerald-800/50 dark:text-emerald-300"
               )}>
                 <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -116,7 +106,6 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
           />
         </motion.div>
         
-        {/* Bouton pour ajouter un projet */}
         <motion.div
           whileTap={{ scale: 0.98 }}
           whileHover={{ scale: 1.02 }}
@@ -126,10 +115,8 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
             className={cn(
               "h-10 px-4 border transition-all duration-200 rounded-md",
               "hover:scale-[1.02] active:scale-[0.98]",
-              // Light mode
               "bg-white border-emerald-200 text-emerald-600",
               "hover:border-emerald-300 hover:bg-emerald-50/50 hover:text-emerald-700",
-              // Dark mode
               "dark:bg-gray-800 dark:border-emerald-800/60 dark:text-emerald-400",
               "dark:hover:bg-emerald-900/20 dark:hover:border-emerald-700 dark:hover:text-emerald-300"
             )}
@@ -143,9 +130,7 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
             <div className="flex items-center gap-1.5">
               <span className={cn(
                 "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
-                // Light mode
                 "bg-emerald-100/80 text-emerald-600",
-                // Dark mode
                 "dark:bg-emerald-800/50 dark:text-emerald-300"
               )}>
                 <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -156,7 +141,6 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
         </motion.div>
       </div>
 
-      {/* Project Wizard Dialog - maintenant rendu conditionnellement */}
       {showProjectWizard && (
         <SavingsProjectWizard 
           onClose={() => setShowProjectWizard(false)} 
