@@ -145,7 +145,7 @@ export const NewSavingDialog = memo(({
           isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto"
         )}
       >
-        <div ref={contentRef} className="relative flex flex-col pb-6">
+        <div ref={contentRef}  className="relative flex flex-col pb-6 bg-gradient-to-br from-white via-emerald-50 to-emerald-100 p-6 rounded-lg">
           {/* Background gradient */}
           <div className={cn(
             "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br",
