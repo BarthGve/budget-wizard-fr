@@ -20,7 +20,7 @@ export function CreditForm({
   credit,
   onSuccess,
   onCancel,
-  colorScheme = "green", // Modification de la valeur par défaut de purple à green
+  colorScheme = "purple", // Valeur par défaut
 }: CreditFormProps) {
   const { form, onSubmit } = useCreditForm({
     credit,

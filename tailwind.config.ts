@@ -26,7 +26,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#10B981", // Couleur verte (déjà modifiée)
+          DEFAULT: "#10B981", // Remplacer la couleur violette par du vert
           foreground: "#FFFFFF",
           hover: "#059669", // Vert plus foncé pour l'effet hover
         },

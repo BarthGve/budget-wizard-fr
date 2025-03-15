@@ -19,7 +19,7 @@ export const CategoryField = ({ form, categories }: CategoryFieldProps) => {
           <FormLabel>Catégorie</FormLabel>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
-              <SelectTrigger className="focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600">
+              <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez une catégorie" />
               </SelectTrigger>
             </FormControl>
