@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { StepOne } from "./steps/StepOne";
 import { StepTwo } from "./steps/StepTwo";
@@ -7,14 +6,15 @@ import { StepFour } from "./steps/StepFour";
 import { StepFive } from "./steps/StepFive";
 import { WizardStepper } from "./components/WizardStepper";
 import { Step } from "./types";
-import { SavingsProject } from "@/types/savings-project";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
 import { DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectWizard } from "./hooks/useProjectWizard";
 import { createProject, createMonthlySaving } from "./utils/projectUtils";
 import { useQueryClient } from "@tanstack/react-query"; // Ajout de useQueryClient
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface SavingsProjectWizardProps {
   onClose: () => void;
@@ -35,7 +35,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     handleModeChange,
     setFormData,
     setIsLoading,
-    setError
+    setError,
   } = useProjectWizard({ onClose, onProjectCreated });
   
   const { toast } = useToast();
@@ -77,7 +77,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
 
       // Invalider manuellement les queries après création réussie
       await queryClient.invalidateQueries({ queryKey: ["savings-projects"] });
-      
+
       // Forcer un rafraîchissement immédiat
       setTimeout(() => {
         queryClient.refetchQueries({ queryKey: ["savings-projects"] });
@@ -87,8 +87,8 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       toast({
         title: "Projet créé avec succès",
         description: formData.added_to_recurring 
-          ? "Votre projet et son versement mensuel ont été créés" 
-          : "Votre projet a été créé"
+          ? "Votre projet et son versement mensuel ont été créés." 
+          : "Votre projet a été créé.",
       });
       
       onProjectCreated();
@@ -98,8 +98,8 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       setError("Impossible de créer le projet");
       toast({
         title: "Erreur",
-        description: "Impossible de créer le projet",
-        variant: "destructive"
+        description: "Impossible de créer le projet.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -111,49 +111,77 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   const isSecondStep = currentStep === 1;
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className={cn(
+        "space-y-6 bg-gradient-to-t from-green-50 via-white to-green-100",
+        "dark:bg-gradient-to-t dark:from-green-900 dark:via-gray-800 dark:to-green-950",
+        "shadow-xl rounded-lg max-w-3xl mx-auto p-6"
+      )}
+    >
+      {/* En-tête avec titre et bouton de fermeture */}
       <div className="flex justify-between items-center">
         <div>
-          <DialogTitle className="text-2xl">Nouveau projet d'épargne</DialogTitle>
-          <DialogDescription>
-            Créez un nouveau projet d'épargne et suivez sa progression
+          <DialogTitle className="text-2xl font-bold text-green-800 dark:text-green-300">
+            Nouveau projet d'épargne
+          </DialogTitle>
+          <DialogDescription className="text-gray-600 dark:text-gray-400">
+            Créez un nouveau projet d'épargne et suivez sa progression.
           </DialogDescription>
         </div>
-    
+        <Button
+          variant="ghost"
+          onClick={onClose}
+          className="text-green-600 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/30 p-2"
+        >
+          <X className="w-5 h-5" />
+        </Button>
       </div>
 
+      {/* Étapes du wizard */}
       <WizardStepper 
-        steps={steps.map(step => step.title)} 
-        currentStep={currentStep} 
+        steps={steps.map((step) => step.title)}
+        currentStep={currentStep}
         onStepClick={setCurrentStep}
+        className="pt-4"
       />
 
+      {/* Contenu principal */}
       <div className="min-h-[300px] flex flex-col">
         <div className="flex-1">
           <CurrentStepComponent 
-            data={formData} 
+            data={formData}
             onChange={handleChange}
             mode={savingsMode}
             onModeChange={handleModeChange}
           />
         </div>
 
+        {/* Boutons de navigation */}
         <div className="flex justify-between mt-8">
           <Button 
-            variant="outline" 
+            variant="outline"
             onClick={currentStep === 0 ? onClose : handlePrevious}
+            className="border-green-300 text-green-700 dark:text-green-300 dark:border-green-600"
           >
-            {currentStep === 0 ? 'Annuler' : 'Précédent'}
+            {currentStep === 0 ? "Annuler" : "Précédent"}
           </Button>
 
-          <Button 
+          <Button
             onClick={isLastStep ? handleFinish : handleNext}
             disabled={isLoading || (isSecondStep && !formData.montant_total)}
+            className={cn(
+              "bg-green-600 text-white hover:bg-green-700 dark:bg-green-700",
+              "dark:hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
           >
-            {isLastStep ? 'Créer le projet' : 'Suivant'}
+            {isLastStep ? "Créer le projet" : "Suivant"}
           </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
