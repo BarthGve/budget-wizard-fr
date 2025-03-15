@@ -1,148 +1,124 @@
 
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { SavingsMode, SavingsProject } from "@/types/savings-project";
-import { addMonths, differenceInMonths, parseISO, format, parse, isValid } from "date-fns";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { FormData, SavingsMode } from "../types";
 
 interface StepFourProps {
-  data: Partial<SavingsProject>;
+  data: FormData;
+  onChange: (field: keyof FormData, value: any) => void;
   mode: SavingsMode;
-  onChange: (data: Partial<SavingsProject>) => void;
+  onModeChange: (mode: SavingsMode) => void;
 }
 
-export const StepFour = ({ data, mode, onChange }: StepFourProps) => {
-  const minDate = addMonths(new Date(), 1); // Date minimum = +1 mois
-  const formattedMinDate = minDate.toISOString().split("T")[0]; // Format YYYY-MM-DD
-
-  const [date, setDate] = useState<string>(
-    data.date_estimee ? new Date(data.date_estimee).toISOString().split("T")[0] : formattedMinDate
-  );
-  
-  const [dateInput, setDateInput] = useState(
-    data.date_estimee ? format(new Date(data.date_estimee), "dd/MM/yyyy") : format(minDate, "dd/MM/yyyy")
+export const StepFour = ({ data, onChange, mode }: StepFourProps) => {
+  // Formater la date pour le calendrier
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    data.date_cible ? new Date(data.date_cible) : undefined
   );
 
-  const { toast } = useToast();
-
-  const handleDateChange = (newDate: string) => {
-    if (newDate) {
-      const dateObj = parseISO(newDate);
-
-      // Vérifie si la date est inférieure à +1 mois
-      if (dateObj < minDate) {
-        toast({
-          title: "Date invalide",
-          description: "La date cible doit être au moins 1 mois après aujourd'hui",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      setDate(newDate);
-      const months = differenceInMonths(dateObj, new Date());
-      const monthlyAmount = data.montant_total ? data.montant_total / months : 0;
-
-      onChange({
-        ...data,
-        date_estimee: dateObj.toISOString(),
-        montant_mensuel: Math.ceil(monthlyAmount)
-      });
-    }
-  };
-  
-  const handleDateInputChange = (input: string) => {
-    setDateInput(input);
-    
-    // Essayer de parser la date entrée (format français: JJ/MM/AAAA)
-    if (input.length === 10) { // Longueur exacte d'une date au format JJ/MM/AAAA
-      const parsedDate = parse(input, "dd/MM/yyyy", new Date());
-      
-      if (isValid(parsedDate)) {
-        // Vérifier que la date est au moins 1 mois dans le futur
-        if (parsedDate >= minDate) {
-          const newDate = format(parsedDate, "yyyy-MM-dd");
-          setDate(newDate);
-          handleDateChange(newDate);
-        } else {
-          toast({
-            title: "Date invalide",
-            description: "La date cible doit être au moins 1 mois après aujourd'hui",
-            variant: "destructive"
-          });
-        }
-      }
-    }
-  };
-
-  const handleMonthlyAmountChange = (amount: string) => {
-    const monthlyAmount = parseFloat(amount);
-    
-    if (isNaN(monthlyAmount) || monthlyAmount <= 0) {
-      return;
-    }
-
-    // Calcul de la date estimée d'atteinte de l'objectif
-    if (data.montant_total && monthlyAmount > 0) {
-      const months = Math.ceil(data.montant_total / monthlyAmount);
-      const estimatedDate = addMonths(new Date(), months);
-      const formattedDate = estimatedDate.toISOString().split("T")[0];
-      
-      setDate(formattedDate);
-      setDateInput(format(estimatedDate, "dd/MM/yyyy"));
-      
-      onChange({
-        ...data,
-        montant_mensuel: monthlyAmount,
-        date_estimee: estimatedDate.toISOString()
-      });
-    }
+  // Gérer le changement de date
+  const handleDateChange = (date: Date | undefined) => {
+    setSelectedDate(date);
+    onChange("date_cible", date ? date.toISOString() : null);
   };
 
   return (
     <div className="space-y-6">
-      {mode === "par_date" ? (
+      {/* Date cible pour les projets d'achat */}
+      {mode === "achat" && (
         <div className="space-y-2">
-          <Label>Date cible *</Label>
-          <Input
-            placeholder="JJ/MM/AAAA"
-            value={dateInput}
-            onChange={(e) => handleDateInputChange(e.target.value)}
-            className="w-full"
-          />
-          {data.montant_mensuel && (
-            <div className="mt-4 p-4 bg-muted rounded-lg">
-              <p>Montant mensuel estimé :</p>
-              <p className="text-2xl font-bold">{Math.round(data.montant_mensuel)} €</p>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <Label htmlFor="monthly-amount">Montant mensuel (€) *</Label>
-          <Input
-            id="monthly-amount"
-            type="number"
-            value={data.montant_mensuel || ""}
-            onChange={(e) => handleMonthlyAmountChange(e.target.value)}
-            min="1"
-            placeholder="Montant mensuel souhaité"
-            required
-          />
-          {date && (
-            <div className="mt-4 p-4 bg-muted rounded-lg">
-              <p>Date estimée d'atteinte de l'objectif :</p>
-              <p className="text-2xl font-bold">
-                {new Date(date).toLocaleDateString("fr-FR", {
-                  month: "long",
-                  year: "numeric"
-                })}
-              </p>
-            </div>
-          )}
+          <Label htmlFor="date_cible" className="text-gray-700 dark:text-gray-300">
+            Date d'achat prévue
+          </Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                id="date_cible"
+                className={cn(
+                  "w-full justify-start text-left font-normal border-gray-300",
+                  "focus:border-green-500 focus:ring-green-500",
+                  "dark:border-gray-600 dark:focus:border-green-400 dark:focus:ring-green-400",
+                  !selectedDate && "text-gray-500"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? (
+                  format(selectedDate, "d MMMM yyyy", { locale: fr })
+                ) : (
+                  <span>Sélectionner une date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateChange}
+                initialFocus
+                locale={fr}
+                className="border-green-300 shadow-sm rounded"
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       )}
+
+      {/* Fréquence de versement */}
+      <div className="space-y-2">
+        <Label htmlFor="frequence" className="text-gray-700 dark:text-gray-300">
+          Fréquence d'épargne
+        </Label>
+        <select
+          id="frequence"
+          value={data.frequence || "monthly"}
+          onChange={(e) => onChange("frequence", e.target.value)}
+          className={cn(
+            "w-full rounded-md border-gray-300 shadow-sm", 
+            "focus:border-green-500 focus:ring-green-500",
+            "dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100",
+            "dark:focus:border-green-400 dark:focus:ring-green-400"
+          )}
+        >
+          <option value="weekly">Hebdomadaire</option>
+          <option value="monthly">Mensuelle</option>
+          <option value="quarterly">Trimestrielle</option>
+          <option value="yearly">Annuelle</option>
+        </select>
+      </div>
+
+      {/* Montant de versement périodique */}
+      <div className="space-y-2">
+        <Label htmlFor="montant_periodique" className="text-gray-700 dark:text-gray-300">
+          Montant {data.frequence === "weekly" ? "hebdomadaire" : 
+                   data.frequence === "monthly" ? "mensuel" : 
+                   data.frequence === "quarterly" ? "trimestriel" : "annuel"}
+        </Label>
+        <div className="relative">
+          <Input
+            id="montant_periodique"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            value={data.montant_periodique || ""}
+            onChange={(e) => onChange("montant_periodique", parseFloat(e.target.value) || 0)}
+            className={cn(
+              "pl-8 border-gray-300 focus:border-green-500 focus:ring-green-500", 
+              "dark:border-gray-600 dark:focus:border-green-400 dark:focus:ring-green-400"
+            )}
+          />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+        </div>
+      </div>
     </div>
   );
 };
