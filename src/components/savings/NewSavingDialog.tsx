@@ -141,7 +141,7 @@ export const NewSavingDialog = memo(({
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent 
         className={cn(
-          "sm:max-w-[650px] overflow-hidden px-6 py-4",
+          "sm:max-w-[650px] overflow-hidden ",
           isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto"
         )}
       >
