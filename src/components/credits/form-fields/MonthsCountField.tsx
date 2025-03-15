@@ -26,6 +26,7 @@ export const MonthsCountField = ({ form }: MonthsCountFieldProps) => {
                 const value = e.target.value;
                 field.onChange(value ? parseInt(value, 10) : "");
               }}
+              className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
             />
           </FormControl>
           <FormMessage />

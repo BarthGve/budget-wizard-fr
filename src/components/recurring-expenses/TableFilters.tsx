@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input";
 import { Search, Filter, SlidersHorizontal } from "lucide-react";
 import {
@@ -45,9 +46,9 @@ export const TableFilters = ({
           "relative w-full sm:w-[280px] group transition-all duration-200",
           "focus-within:ring-2 focus-within:ring-offset-2 rounded-md",
           // Light mode
-          "focus-within:ring-blue-200 focus-within:ring-offset-white",
+          "focus-within:ring-gray-200 focus-within:ring-offset-white",
           // Dark mode
-          "dark:focus-within:ring-blue-800/50 dark:focus-within:ring-offset-gray-900"
+          "dark:focus-within:ring-gray-700 dark:focus-within:ring-offset-gray-900"
         )}
       >
         <Search 
@@ -67,11 +68,11 @@ export const TableFilters = ({
             "pl-9 h-10 pr-4 transition-all duration-200 border w-full",
             // Light mode styles
             "bg-white border-gray-200 placeholder:text-gray-400",
-            "focus:border-blue-300 focus-visible:ring-0 focus-visible:ring-offset-0",
+            "focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0",
             "hover:border-gray-300",
             // Dark mode styles
             "dark:bg-gray-800 dark:border-gray-700 dark:placeholder:text-gray-500",
-            "dark:focus:border-blue-700 dark:hover:border-gray-600"
+            "dark:focus:border-gray-600 dark:hover:border-gray-600"
           )}
         />
         
@@ -96,10 +97,10 @@ export const TableFilters = ({
             "w-full sm:w-[250px] h-10 transition-all duration-200",
             // Light mode
             "bg-white border-gray-200 text-gray-800",
-            "hover:border-gray-300 data-[state=open]:border-blue-300",
+            "hover:border-gray-300 data-[state=open]:border-gray-300",
             // Dark mode
             "dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200",
-            "dark:hover:border-gray-600 dark:data-[state=open]:border-blue-700"
+            "dark:hover:border-gray-600 dark:data-[state=open]:border-gray-600"
           )}
         >
           <div className="flex items-center">

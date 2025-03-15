@@ -18,6 +18,7 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
           value={newProperty.name}
           onChange={(e) => onChange({ ...newProperty, name: e.target.value })}
           placeholder="Ex: Appartement Paris"
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
       <div className="grid gap-2">
@@ -27,6 +28,7 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
           value={newProperty.address}
           onChange={(e) => onChange({ ...newProperty, address: e.target.value })}
           placeholder="15 rue de la Paix, 75002 Paris"
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
       <div className="grid gap-2">
@@ -36,6 +38,7 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
           value={newProperty.investment_type}
           onChange={(e) => onChange({ ...newProperty, investment_type: e.target.value })}
           placeholder="Ex: Pinel, LMNP, Ancien"
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
       <div className="grid gap-2">
@@ -46,6 +49,7 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
           value={newProperty.area}
           onChange={(e) => onChange({ ...newProperty, area: e.target.value })}
           placeholder="Ex: 75"
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
       <div className="grid gap-2">
@@ -56,6 +60,7 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
           value={newProperty.purchase_value}
           onChange={(e) => onChange({ ...newProperty, purchase_value: e.target.value })}
           placeholder="Ex: 350000"
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
       <div className="grid gap-2">
@@ -66,6 +71,7 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
           value={newProperty.monthly_rent}
           onChange={(e) => onChange({ ...newProperty, monthly_rent: e.target.value })}
           placeholder="Ex: 1200"
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
       <div className="grid gap-2">
@@ -76,9 +82,9 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
           value={newProperty.loan_payment}
           onChange={(e) => onChange({ ...newProperty, loan_payment: e.target.value })}
           placeholder="Ex: 1500"
+          className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
       </div>
     </div>
   );
 };
-

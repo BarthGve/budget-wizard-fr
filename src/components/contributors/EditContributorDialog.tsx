@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Contributor } from "@/types/contributor";
 import {
@@ -181,9 +182,8 @@ export const EditContributorDialog = ({
                     }
                     className={cn(
                       "border rounded-md",
-                      "focus-visible:ring-amber-500",
-                      "dark:focus-visible:ring-amber-400",
-                      "border-gray-200 dark:border-gray-700",
+                      "focus-visible:ring-gray-200",
+                      "border-gray-300 dark:border-gray-700",
                       "bg-white dark:bg-gray-800"
                     )}
                     disabled={isSubmitting}
@@ -208,9 +208,8 @@ export const EditContributorDialog = ({
                     }
                     className={cn(
                       "border rounded-md",
-                      "focus-visible:ring-amber-500",
-                      "dark:focus-visible:ring-amber-400",
-                      "border-gray-200 dark:border-gray-700",
+                      "focus-visible:ring-gray-200",
+                      "border-gray-300 dark:border-gray-700",
                       "bg-white dark:bg-gray-800"
                     )}
                     disabled={isSubmitting}
@@ -237,9 +236,8 @@ export const EditContributorDialog = ({
                 }
                 className={cn(
                   "border rounded-md",
-                  "focus-visible:ring-amber-500",
-                  "dark:focus-visible:ring-amber-400",
-                  "border-gray-200 dark:border-gray-700",
+                  "focus-visible:ring-gray-200",
+                  "border-gray-300 dark:border-gray-700",
                   "bg-white dark:bg-gray-800"
                 )}
                 disabled={isSubmitting}

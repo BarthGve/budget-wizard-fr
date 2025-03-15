@@ -22,6 +22,7 @@ export const AmountField = ({ form }: AmountFieldProps) => {
               step="0.01"
               placeholder="Ex: 1200"
               {...field}
+              className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
             />
           </FormControl>
           <FormMessage />

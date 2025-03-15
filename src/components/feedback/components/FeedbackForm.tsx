@@ -47,7 +47,7 @@ export const FeedbackForm = ({ rating, title, setTitle, content, setContent }: F
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="Résumez votre expérience en quelques mots"
-            className="w-full border-primary/20 focus:border-primary focus:ring-primary/20"
+            className="w-full border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
             autoFocus
           />
         </div>
@@ -58,7 +58,7 @@ export const FeedbackForm = ({ rating, title, setTitle, content, setContent }: F
             value={content}
             onChange={e => setContent(e.target.value)}
             placeholder="Partagez vos suggestions, commentaires ou idées d'amélioration..."
-            className="min-h-[120px] border-primary/20 focus:border-primary focus:ring-primary/20"
+            className="min-h-[120px] border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
           />
         </div>
       </div>

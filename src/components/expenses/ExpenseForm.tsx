@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -64,7 +65,7 @@ export function ExpenseForm({
               ) : (
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200">
                       <SelectValue placeholder="Sélectionnez une enseigne" />
                     </SelectTrigger>
                   </FormControl>
@@ -95,7 +96,7 @@ export function ExpenseForm({
             <FormItem>
               <FormLabel>Montant</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                <Input type="number" step="0.01" placeholder="0.00" {...field} className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -113,6 +114,7 @@ export function ExpenseForm({
                   type="date"
                   {...field}
                   max={format(new Date(), "yyyy-MM-dd")}
+                  className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
                 />
               </FormControl>
               <FormMessage />
@@ -126,7 +128,7 @@ export function ExpenseForm({
             <FormItem>
               <FormLabel>Commentaire (facultatif)</FormLabel>
               <FormControl>
-                <Textarea placeholder="Ajouter un commentaire..." {...field} />
+                <Textarea placeholder="Ajouter un commentaire..." {...field} className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200" />
               </FormControl>
               <FormMessage />
             </FormItem>
