@@ -177,7 +177,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
                 onClick={isLastStep ? handleFinish : handleNext}
                 disabled={isLoading || (isSecondStep && !formData.montant_total)}
                 className={cn(
-                  "bg-green-600 text-white hover:bg-green-700 dark:bg-green-700",
+                  "bg-green-600 text-white hover:bg-green-500 dark:bg-green-700",
                   "dark:hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 )}
               >

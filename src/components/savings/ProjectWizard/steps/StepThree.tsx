@@ -17,7 +17,11 @@ export const StepThree = ({ mode = "par_date", onModeChange }: StepComponentProp
       <div className="grid grid-cols-2 gap-4">
         <Button
           variant={mode === 'par_date' ? 'default' : 'outline'}
-          className="h-32 space-y-2 border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
+          className={`h-32 space-y-2 focus-visible:ring-green-200 ${
+            mode === 'par_date' 
+              ? 'bg-green-600 hover:bg-green-500 text-white' 
+              : 'border-gray-300 focus:border-green-400 hover:border-green-400 hover:text-green-600'
+          }`}
           onClick={() => handleModeChange('par_date')}
         >
           <Calendar className="h-8 w-8" />
@@ -26,7 +30,11 @@ export const StepThree = ({ mode = "par_date", onModeChange }: StepComponentProp
 
         <Button
           variant={mode === 'par_mensualite' ? 'default' : 'outline'}
-          className="h-32 space-y-2 border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
+          className={`h-32 space-y-2 focus-visible:ring-green-200 ${
+            mode === 'par_mensualite' 
+              ? 'bg-green-600 hover:bg-green-500 text-white' 
+              : 'border-gray-300 focus:border-green-400 hover:border-green-400 hover:text-green-600'
+          }`}
           onClick={() => handleModeChange('par_mensualite')}
         >
           <PiggyBank className="h-8 w-8" />
