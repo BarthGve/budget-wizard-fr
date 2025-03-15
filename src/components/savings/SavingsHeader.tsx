@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { NewSavingDialog } from "./NewSavingDialog";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { SavingsProjectWizard } from "./ProjectWizard/SavingsProjectWizard";
 import { useState } from "react";
 
@@ -157,18 +156,18 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
         </motion.div>
       </div>
 
-      {/* Project Wizard Dialog */}
-      <Dialog open={showProjectWizard} onOpenChange={setShowProjectWizard}>
-        <DialogContent className="max-w-4xl">
-          <SavingsProjectWizard 
-            onClose={() => setShowProjectWizard(false)} 
-            onProjectCreated={() => {
-              setShowProjectWizard(false);
-              if (onProjectCreated) onProjectCreated();
-            }} 
-          />
-        </DialogContent>
-      </Dialog>
+      {/* Project Wizard Dialog - Maintenant directement dans le header, sans DialogContent */}
+      {showProjectWizard && (
+        <SavingsProjectWizard 
+          onClose={() => setShowProjectWizard(false)} 
+          onProjectCreated={() => {
+            setShowProjectWizard(false);
+            if (onProjectCreated) onProjectCreated();
+          }} 
+        />
+      )}
+      
+      {/* NewSavingDialog est déjà bien configuré, pas besoin de le modifier */}
     </motion.div>
   );
 };
