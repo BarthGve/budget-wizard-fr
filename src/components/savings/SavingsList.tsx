@@ -123,7 +123,8 @@ export const SavingsList = ({
     <motion.div
       className={cn(
         "space-y-6",
-        "grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr overflow-hidden"
+       
+        
       )}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
