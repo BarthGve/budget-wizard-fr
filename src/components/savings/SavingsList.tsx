@@ -213,7 +213,7 @@ export const SavingsList = ({
 
       <NewSavingDialog
         saving={editSaving || undefined}
-        onSaved={() => {
+        onSavingAdded={() => {
           onSavingDeleted();
           setEditSaving(null);
         }}
