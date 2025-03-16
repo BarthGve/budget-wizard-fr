@@ -82,7 +82,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       component: StepFour,
     },
     {
-      title: "Versement mensuel",
+      title: "Enregistrement",
       component: StepFive,
     },
   ];
