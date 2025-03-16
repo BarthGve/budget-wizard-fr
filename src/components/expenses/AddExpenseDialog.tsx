@@ -1,7 +1,7 @@
-import { useState, useRef, memo } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Receipt, AlertTriangle, X, EditIcon } from "lucide-react";
+import { Plus, Receipt, AlertTriangle, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
 import { useTheme } from "next-themes";
@@ -19,34 +19,14 @@ import {
 import { ExpenseForm } from "./ExpenseForm";
 import { useExpenseForm } from "./useExpenseForm";
 import { AddExpenseDialogProps } from "./types";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-export const AddExpenseDialog = memo(({ 
-  onExpenseAdded, 
-  preSelectedRetailer, 
-  open: controlledOpen, 
-  onOpenChange: controlledOnOpenChange,
-  expense
-}: AddExpenseDialogProps) => {
+export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, onOpenChange }: AddExpenseDialogProps) {
   const [showNoRetailerAlert, setShowNoRetailerAlert] = useState(false);
-  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const { retailers } = useRetailers();
   const navigate = useNavigate();
   const { handleSubmit } = useExpenseForm(onExpenseAdded);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
-  const contentRef = useRef<HTMLDivElement>(null);
-  
-  // Gestion de l'état contrôlé/non contrôlé
-  const isControlled = controlledOpen !== undefined;
-  const open = isControlled ? controlledOpen : uncontrolledOpen;
-  const onOpenChange = isControlled ? controlledOnOpenChange : setUncontrolledOpen;
-  
-  // Détecter si nous sommes sur tablette
-  const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
-  
-  // Déterminer si on est en mode édition
-  const isEditMode = !!expense;
   
   const onSubmit = async (values: any) => {
     const success = await handleSubmit(values);
@@ -61,23 +41,6 @@ export const AddExpenseDialog = memo(({
     } else if (onOpenChange) {
       onOpenChange(true);
     }
-  };
-
-  // Couleurs pour le thème bleu - inspiré de CreditDialog
-  const colors = {
-    gradientFrom: "from-blue-500",
-    gradientTo: "to-sky-400",
-    darkGradientFrom: "dark:from-blue-600",
-    darkGradientTo: "dark:to-sky-500",
-    iconBg: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-    headingText: "text-blue-900 dark:text-blue-200",
-    descriptionText: "text-blue-700/80 dark:text-blue-300/80",
-    buttonBg: "bg-blue-600 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600",
-    lightBg: "from-white via-blue-50/40 to-blue-100/70",
-    darkBg: "dark:from-gray-900 dark:via-blue-950/20 dark:to-blue-900/30", 
-    borderLight: "border-blue-100/70",
-    borderDark: "dark:border-blue-800/20",
-    separator: "via-blue-200/60 dark:via-blue-800/30"
   };
 
   return (
@@ -114,89 +77,66 @@ export const AddExpenseDialog = memo(({
       )}
 
       <Dialog open={open} onOpenChange={onOpenChange}>
-        {preSelectedRetailer && <DialogTrigger asChild>{preSelectedRetailer}</DialogTrigger>}
-        
-        <DialogContent 
-          className={cn(
-            "sm:max-w-[650px] w-full p-0 shadow-lg rounded-lg border",
-            isTablet ? "sm:max-w-[85%] w-[85%]" : "w-[90vw]",
-            "max-h-[95vh] overflow-y-auto",
-            colors.borderLight,
-            colors.borderDark,
-            "dark:bg-gray-900"
-          )}
-        >
-          <div 
-            ref={contentRef}
-            className={cn(
-              "relative flex flex-col pb-6 p-6 rounded-lg",
-              "bg-gradient-to-br",
-              colors.lightBg,
-              colors.darkBg
-            )}
-          >
-            {/* Background gradient */}
+        <DialogContent className="w-[90vw] max-w-[650px] max-h-[95vh] overflow-y-auto">
+          {/* Fond bleu subtil appliqué à l'intérieur du DialogContent */}
+          <div className={cn(
+            "absolute inset-0",
+            "bg-gradient-to-b from-blue-50/70 to-white",
+            "dark:from-blue-950/20 dark:to-gray-900/60",
+            "pointer-events-none"
+          )}>
+            {/* Effet radial supplémentaire */}
             <div className={cn(
-              "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg",
-              colors.gradientFrom,
-              colors.gradientTo,
-              colors.darkGradientFrom,
-              colors.darkGradientTo
+              "absolute inset-0",
+              "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
+              "from-blue-100/40 via-blue-50/20 to-transparent",
+              "dark:from-blue-800/15 dark:via-blue-700/10 dark:to-transparent",
+              "opacity-60"
             )} />
+          </div>
 
-            {/* Radial gradient */}
-            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-blue-50/20 to-transparent opacity-60 dark:from-blue-800/15 dark:via-blue-700/10 dark:to-transparent dark:opacity-30 rounded-lg" />
-            
-            {/* Bouton de fermeture (X) */}
-            <DialogClose 
-              className={cn(
-                "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 z-20",
-                "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
-              )}
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </DialogClose>
+          {/* Bouton de fermeture (X) */}
+          <DialogClose className="absolute right-4 top-4 z-20 rounded-full p-1 opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            <X className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
 
-            {/* Dialog header */}
-            <DialogHeader className="relative z-10 mb-4">
-              <div className="flex items-center gap-3">
-                <div className={cn("p-2.5 rounded-lg", colors.iconBg)}>
-                  {isEditMode ? <EditIcon className="w-5 h-5" /> : <Receipt className="w-5 h-5" />}
-                </div>
-                <DialogTitle className={cn("text-2xl font-bold", colors.headingText)}>
-                  {isEditMode ? "Modifier la dépense" : "Ajouter une dépense"}
-                </DialogTitle>
+          {/* Header */}
+          <DialogHeader className="relative z-10 pb-2 pt-2">
+            <div className="flex items-center gap-3">
+              <div className={cn(
+                "p-2.5 rounded-lg",
+                "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300"
+              )}>
+                <Receipt className="w-5 h-5" />
               </div>
-              <div className="ml-[52px] mt-2">
-                <DialogDescription className={cn("text-base", colors.descriptionText)}>
-                  {isEditMode 
-                    ? "Modifiez les informations de votre dépense. Les modifications seront appliquées immédiatement."
-                    : "Créez une nouvelle dépense en complétant le formulaire ci-dessous. Vous pourrez la modifier ultérieurement."}
-                </DialogDescription>
-              </div>
-            </DialogHeader>
-            
-            {/* Ligne séparatrice stylée */}
-            <div className={cn(
-              "h-px w-full mb-6",
-              "bg-gradient-to-r from-transparent to-transparent",
-              colors.separator
-            )} />
-            
-            {/* Section du formulaire */}
-            <div className="relative z-10">
-              <ExpenseForm 
-                onSubmit={onSubmit}
-                preSelectedRetailer={preSelectedRetailer}
-                expense={expense}
-              />
+              <DialogTitle className={cn(
+                "text-xl sm:text-2xl font-bold",
+                "text-blue-900 dark:text-blue-200"
+              )}>
+                Ajouter une dépense
+              </DialogTitle>
             </div>
             
-            {/* Décoration graphique dans le coin inférieur droit */}
-            <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
-              <Receipt className="w-full h-full" />
-            </div>
+            <DialogDescription className={cn(
+              "mt-1.5 text-base",
+              "text-blue-700/80 dark:text-blue-300/80"
+            )}>
+              Créez une nouvelle dépense en complétant le formulaire ci-dessous. Vous pourrez la modifier ultérieurement.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {/* Section du formulaire */}
+          <div className="relative z-10 mt-4">
+            <ExpenseForm 
+              onSubmit={onSubmit}
+              preSelectedRetailer={preSelectedRetailer}
+            />
+          </div>
+          
+          {/* Décoration graphique dans le coin inférieur droit - subtile */}
+          <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.025] z-0">
+            <Receipt className="w-full h-full" />
           </div>
         </DialogContent>
       </Dialog>
@@ -205,87 +145,54 @@ export const AddExpenseDialog = memo(({
         open={showNoRetailerAlert}
         onOpenChange={setShowNoRetailerAlert}
       >
-        <AlertDialogContent 
-          className={cn(
-            "sm:max-w-[500px]",
-            "p-0 border shadow-lg rounded-lg",
-            colors.borderLight,
-            colors.borderDark
-          )}
-        >
-          <div className={cn(
-            "relative flex flex-col p-6 rounded-lg",
-            "bg-gradient-to-br",
-            "from-white via-amber-50/40 to-amber-100/50",
-            "dark:from-gray-900 dark:via-amber-950/10 dark:to-amber-900/20"
-          )}>
-            {/* Background gradient pour l'alerte */}
-            <div className={cn(
-              "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg",
-              "from-amber-500 to-yellow-400",
-              "dark:from-amber-600 dark:to-yellow-500"
-            )} />
-            
-            <AlertDialogHeader>
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "p-2.5 rounded-lg",
-                  "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
-                )}>
-                  <AlertTriangle className="w-5 h-5" />
-                </div>
-                <AlertDialogTitle className={cn(
-                  "text-xl font-bold",
-                  "text-amber-900 dark:text-amber-200"
-                )}>
-                  Aucune enseigne disponible
-                </AlertDialogTitle>
+        <AlertDialogContent className="sm:max-w-[500px]">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3">
+              <div className={cn(
+                "p-2.5 rounded-lg",
+                "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300"
+              )}>
+                <AlertTriangle className="w-5 h-5" />
               </div>
-              
-              <div className="ml-[52px] mt-2">
-                <AlertDialogDescription className={cn(
-                  "text-base",
-                  "text-amber-700/80 dark:text-amber-300/80"
-                )}>
-                  Vous devez d'abord créer une enseigne avant de pouvoir ajouter une dépense.
-                  Souhaitez-vous créer une enseigne maintenant?
-                </AlertDialogDescription>
-              </div>
-            </AlertDialogHeader>
+              <AlertDialogTitle className={cn(
+                "text-xl font-bold",
+                "text-blue-900 dark:text-blue-200"
+              )}>
+                Aucune enseigne disponible
+              </AlertDialogTitle>
+            </div>
             
-            <AlertDialogFooter className="mt-6">
-              <AlertDialogCancel 
-                className={cn(
-                  "mt-0 bg-white dark:bg-gray-800",
-                  "border-amber-200 text-amber-700 hover:bg-amber-50/50", 
-                  "dark:border-amber-800/40 dark:text-amber-300 dark:hover:bg-amber-900/20"
-                )}
-              >
-                Non, plus tard
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => {
-                  setShowNoRetailerAlert(false);
-                  navigate("/user-settings?tab=settings", { state: { scrollTo: "retailers" } });
-                }}
-                className={cn(
-                  "bg-amber-500 hover:bg-amber-600",
-                  "dark:bg-amber-700 dark:hover:bg-amber-600",
-                  "text-white shadow-sm"
-                )}
-              >
-                Oui, créer une enseigne
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </div>
+            <AlertDialogDescription className={cn(
+              "mt-2",
+              "text-blue-700/80 dark:text-blue-300/80"
+            )}>
+              Vous devez d'abord créer une enseigne avant de pouvoir ajouter une dépense.
+              Souhaitez-vous créer une enseigne maintenant?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogCancel 
+              className="mt-0 border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+              Non, plus tard
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowNoRetailerAlert(false);
+                navigate("/user-settings?tab=settings", { state: { scrollTo: "retailers" } });
+              }}
+              className={cn(
+                "bg-blue-500 hover:bg-blue-600",
+                "dark:bg-blue-600 dark:hover:bg-blue-500",
+                "text-white shadow-sm"
+              )}
+            >
+              Oui, créer une enseigne
+            </AlertDialogAction>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
   );
-}, (prevProps, nextProps) => {
-  return prevProps.open === nextProps.open &&
-    prevProps.preSelectedRetailer === nextProps.preSelectedRetailer &&
-    ((prevProps.expense?.id === nextProps.expense?.id) || (!prevProps.expense && !nextProps.expense));
-});
-
-AddExpenseDialog.displayName = "AddExpenseDialog";
+}
