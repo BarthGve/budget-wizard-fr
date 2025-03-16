@@ -244,7 +244,9 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
           
           {/* Boutons de navigation - maintenant côte à côte à droite */}
           <div className="flex items-center justify-between px-6 mt-4">
-         
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {currentStep > 0 && `Étape ${currentStep + 1} sur ${steps.length}`}
+            </div>
             
             <div className="flex items-center space-x-3">
               {/* Bouton Annuler/Précédent */}
