@@ -70,11 +70,11 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       component: StepOne,
     },
     {
-      title: "Objectif financier",
+      title: "Objectif à atteindre",
       component: StepTwo,
     },
     {
-      title: "Image du projet",
+      title: "Choix du mode",
       component: StepThree,
     },
     {
