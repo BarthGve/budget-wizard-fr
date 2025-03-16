@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { RecurringExpenseForm } from "../RecurringExpenseForm";
@@ -38,6 +37,7 @@ export const DialogContent = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
       transition={{ duration: 0.2 }}
+      className="relative z-10"
     >
       <RecurringExpenseForm
         expense={expense}
@@ -53,16 +53,28 @@ export const DialogContent = ({
     <div 
       className={cn(
         "h-px w-full flex-shrink-0",
-        // Light mode - édition ou création
-        isEditMode
-          ? "bg-gradient-to-r from-transparent via-amber-100 to-transparent"
-          : "bg-gradient-to-r from-transparent via-blue-100 to-transparent",
-        // Dark mode - édition ou création
-        isEditMode
-          ? "dark:bg-gradient-to-r dark:from-transparent dark:via-amber-900/20 dark:to-transparent"
-          : "dark:bg-gradient-to-r dark:from-transparent dark:via-blue-900/20 dark:to-transparent"
+        // Séparateur bleu pour maintenir la cohérence
+        "bg-gradient-to-r from-transparent via-blue-100 to-transparent",
+        "dark:bg-gradient-to-r dark:from-transparent dark:via-blue-900/20 dark:to-transparent"
       )} 
     />
+  );
+
+  // Conteneur du contenu
+  const contentContainer = (innerContent: React.ReactNode) => (
+    <div 
+      className={cn(
+        "p-6 max-w-full relative",
+        // Fond subtil pour cohérence visuelle
+        "bg-gradient-to-b from-white to-blue-50/30",
+        "dark:bg-gradient-to-b dark:from-gray-800/80 dark:to-blue-950/10"
+      )}
+    >
+      {/* Fond de texture subtil (optionnel) */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-[0.015] dark:opacity-[0.03] pointer-events-none" />
+      
+      {innerContent}
+    </div>
   );
 
   return (
@@ -72,33 +84,16 @@ export const DialogContent = ({
       {needsScrolling ? (
         <ScrollArea 
           className={cn(
-            "flex-grow overflow-x-hidden", // Ajout de overflow-x-hidden pour empêcher le défilement horizontal
-            // Light mode
+            "flex-grow overflow-x-hidden",
             "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent",
-            // Dark mode
             "dark:scrollbar-thumb-gray-700",
             className
           )}
         >
-          <div 
-            className={cn(
-              "p-6 max-w-full", // Ajout de max-w-full pour contraindre le contenu
-              "bg-blue-50 dark:bg-blue-950" // Correction: suppression des ** autour de la chaîne
-            )}
-          >
-            {formContent}
-          </div>
+          {contentContainer(formContent)}
         </ScrollArea>
       ) : (
-        // Sans défilement si le contenu tient dans l'écran
-        <div 
-          className={cn(
-            "p-6 overflow-x-hidden max-w-full", // Ajout des mêmes classes pour cohérence
-            "bg-blue-50 dark:bg-blue-950" // Correction: suppression des ** autour de la chaîne
-          )}
-        >
-          {formContent}
-        </div>
+        contentContainer(formContent)
       )}
     </>
   );

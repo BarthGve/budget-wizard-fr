@@ -55,46 +55,43 @@ export function RecurringExpenseDialog({
       
       <AnimatePresence>
         {open && (
-    <DialogContent 
-  forceMount
-  className={cn(
-    "relative p-0 border-0 shadow-2xl",
-    // Assurer la position centrée
-    "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-    // Toujours activer overflow-auto sur tablette
-    isTablet ? "overflow-auto" : "overflow-hidden",
-    // Ajustement pour les tablettes et mobiles
-    isTablet 
-      ? "sm:max-w-[85%] w-[85%]" 
-      : "sm:max-w-[600px]",
-    // Hauteur maximum définie pour permettre le défilement
-    shouldEnableScroll ? "max-h-[calc(100vh-40px)]" : "",
-    // Light mode
-    "bg-white",
-    // Dark mode
-    "dark:bg-gray-800/95"
-  )}
-  style={{
-    boxShadow: isDarkMode
-      ? "0 25px 50px -12px rgba(2, 6, 23, 0.4), 0 0 0 1px rgba(37, 99, 235, 0.1)"
-      : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)",
-  }}
->
-
-            {/* Ajout d'un fond bleu subtil */}
+          <DialogContent 
+            forceMount
+            className={cn(
+              "relative p-0 border-0 shadow-2xl",
+              // Assurer la position centrée
+              "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+              // Toujours activer overflow-auto sur tablette
+              isTablet ? "overflow-auto" : "overflow-hidden",
+              // Ajustement pour les tablettes et mobiles
+              isTablet 
+                ? "sm:max-w-[85%] w-[85%]" 
+                : "sm:max-w-[600px]",
+              // Hauteur maximum définie pour permettre le défilement
+              shouldEnableScroll ? "max-h-[calc(100vh-40px)]" : "",
+              // Light mode
+              "bg-white",
+              // Dark mode
+              "dark:bg-gray-800/95"
+            )}
+            style={{
+              boxShadow: isDarkMode
+                ? "0 25px 50px -12px rgba(2, 6, 23, 0.4), 0 0 0 1px rgba(37, 99, 235, 0.1)"
+                : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)",
+            }}
+          >
+            {/* Fond subtil dégradé qui s'étend sur toute la modale */}
             <div className={cn(
-              "absolute inset-0", // Fond étendu au conteneur du dialogue complet
-              "bg-gradient-to-b from-blue-50/70 via-white to-white", // Fond radial ou dégradé léger
-              "dark:from-blue-950/20 dark:via-gray-900/70 dark:to-gray-900",
+              "absolute inset-0",
+              "bg-gradient-to-br from-blue-50/80 via-blue-50/40 to-white",
+              "dark:from-blue-950/20 dark:via-blue-950/10 dark:to-gray-900",
               "pointer-events-none z-0"
             )} />
             
             <div 
               ref={contentRef} 
               className={cn(
-                "relative z-10 flex flex-col", // Contenant positionné devant le fond
-                // S'assurer que le conteneur interne prend la hauteur disponible mais
-                // ne dépasse pas la hauteur maximale autorisée
+                "relative z-10 flex flex-col", 
                 shouldEnableScroll ? "h-full" : ""
               )}
             >
@@ -108,19 +105,17 @@ export function RecurringExpenseDialog({
                 needsScrolling={shouldEnableScroll}
                 onOpenChange={onOpenChange}
                 className={cn(
-                  // Ajouter le défilement au niveau du contenu également
                   isTablet ? "overflow-y-auto" : "",
-                  // Assurer que le contenu prend le maximum de l'espace disponible
                   isTablet ? "flex-grow" : ""
                 )}
               />
             </div>
 
-            {/* Décoration subtile */}
+            {/* Élément décoratif subtil */}
             <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.05] z-0">
               <svg
                 viewBox="0 0 100 100"
-                className="w-full h-full fill-blue-400 dark:fill-blue-600"
+                className="w-full h-full fill-blue-500 dark:fill-blue-600"
                 style={{ mixBlendMode: isDarkMode ? "soft-light" : "overlay" }}
               >
                 <circle cx={50} cy={50} r={50} />
