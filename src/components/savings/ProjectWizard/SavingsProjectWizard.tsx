@@ -8,7 +8,7 @@ import { WizardStepper } from "./components/WizardStepper";
 import { Step } from "./types";
 import { Button } from "@/components/ui/button";
 import { DialogTitle, DialogDescription, Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
-import { X, PiggyBank, Leaf } from "lucide-react";
+import { X, PiggyBank, Leaf, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectWizard } from "./hooks/useProjectWizard";
 import { createProject, createMonthlySaving } from "./utils/projectUtils";
@@ -242,44 +242,56 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             </motion.div>
           </div>
           
-          {/* Boutons de navigation */}
-          <div className="relative z-10 flex justify-between px-6 mt-auto pt-4">
-            <Button 
-              variant="outline"
-              onClick={currentStep === 0 ? onClose : handlePrevious}
-              className={cn(
-                "border-gray-200 text-gray-700 dark:text-gray-300 dark:border-gray-700",
-                "hover:bg-gray-50 dark:hover:bg-gray-800"
-              )}
-            >
-              {currentStep === 0 ? "Annuler" : "Précédent"}
-            </Button>
+          {/* Boutons de navigation - maintenant côte à côte à droite */}
+          <div className="flex items-center justify-between px-6 mt-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {currentStep > 0 && `Étape ${currentStep + 1} sur ${steps.length}`}
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              {/* Bouton Annuler/Précédent */}
+              <Button 
+                variant="outline"
+                onClick={currentStep === 0 ? onClose : handlePrevious}
+                className={cn(
+                  "border-gray-200 text-gray-700 dark:text-gray-300 dark:border-gray-700",
+                  "hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                )}
+              >
+                {currentStep === 0 ? "Annuler" : "Précédent"}
+              </Button>
 
-            <Button
-              onClick={isLastStep ? handleFinish : handleNext}
-              disabled={isLoading || (isSecondStep && !formData.montant_total)}
-              className={cn(
-                "text-white px-6 py-2 rounded-lg relative overflow-hidden",
-                colors.buttonBg,
-                isLoading && "opacity-80 pointer-events-none"
-              )}
-            >
-              <span className={cn(
-                "flex items-center gap-2",
-                isLoading && "opacity-0"
-              )}>
-                {isLastStep ? "Créer le projet" : "Suivant"}
-                {isLastStep && <Leaf className="h-4 w-4" />}
-              </span>
-              {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                </div>
-              )}
-            </Button>
+              {/* Bouton Suivant/Créer */}
+              <Button
+                onClick={isLastStep ? handleFinish : handleNext}
+                disabled={isLoading || (isSecondStep && !formData.montant_total)}
+                className={cn(
+                  "text-white rounded-lg transition-all relative",
+                  "min-w-[140px] flex items-center justify-center",
+                  colors.buttonBg,
+                  isLoading && "opacity-90 pointer-events-none"
+                )}
+              >
+                {/* Text du bouton avec transition */}
+                <span className={cn(
+                  "flex items-center gap-1.5 px-1",
+                  isLoading && "opacity-0"
+                )}>
+                  {isLastStep ? "Créer le projet" : "Suivant"}
+                  {isLastStep ? <Leaf className="h-4 w-4 ml-1" /> : <ArrowRight className="h-4 w-4 ml-1" />}
+                </span>
+                
+                {/* Indicateur de chargement */}
+                {isLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </div>
+                )}
+              </Button>
+            </div>
           </div>
           
           {/* Élément décoratif */}
