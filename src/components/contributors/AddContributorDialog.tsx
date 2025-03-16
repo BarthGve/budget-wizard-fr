@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { NewContributor } from "@/types/contributor";
 import {
   Dialog,
@@ -12,11 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserPlus, Loader2, Plus, X } from "lucide-react";
+import { UserPlus, Loader2, Plus, X, Users } from "lucide-react";
 import { useQueryClient } from '@tanstack/react-query';
 import { Progress } from "@/components/ui/progress";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface AddContributorDialogProps {
   onAdd: (contributor: NewContributor) => void;
@@ -31,9 +32,32 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
     email: "",
     total_contribution: "",
   });
+  const contentRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  
+  // Responsive détection pour les tablettes
+  const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
+
+  // Couleurs du thème amber
+  const colors = {
+    gradientFrom: "from-amber-500",
+    gradientTo: "to-yellow-400",
+    darkGradientFrom: "dark:from-amber-600",
+    darkGradientTo: "dark:to-yellow-700",
+    iconBg: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+    headingText: "text-amber-900 dark:text-amber-200",
+    descriptionText: "text-amber-700/80 dark:text-amber-300/80",
+    buttonBg: "bg-amber-600 hover:bg-amber-500 dark:bg-amber-700 dark:hover:bg-amber-600",
+    lightBg: "from-white via-amber-50/40 to-amber-100/70",
+    darkBg: "dark:from-gray-900 dark:via-amber-950/20 dark:to-amber-900/30",
+    borderLight: "border-amber-100/70",
+    borderDark: "dark:border-amber-800/20",
+    ringFocus: "focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400",
+    inputBorder: "border-amber-200/70 dark:border-gray-700",
+    inputBg: "bg-white dark:bg-gray-800"
+  };
 
   const handleAdd = async () => {
     if (!newContributor.name || !newContributor.total_contribution) {
@@ -122,150 +146,170 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-[90vw] max-w-[650px] sm:max-w-[90vw] md:max-w-[650px] overflow-hidden p-0">
-        {/* Background subtil */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-white dark:bg-gray-800 opacity-95" />
+      <DialogContent 
+        className={cn(
+          "sm:max-w-[650px] w-full p-0 shadow-lg rounded-lg border",
+          isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto",
+          colors.borderLight,
+          colors.borderDark,
+          "dark:bg-gray-900"
+        )}
+      >
+        <div 
+          ref={contentRef}
+          className={cn(
+            "relative flex flex-col pb-6 p-6 rounded-lg",
+            "bg-gradient-to-br",
+            colors.lightBg,
+            colors.darkBg
+          )}
+        >
+          {/* Background gradient */}
           <div className={cn(
-            "absolute inset-0 bg-gradient-to-br from-amber-50 to-white opacity-80",
-            "dark:from-gray-800 dark:to-gray-900"
+            "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg",
+            colors.gradientFrom,
+            colors.gradientTo,
+            colors.darkGradientFrom,
+            colors.darkGradientTo
           )} />
-          <div className={cn(
-            "absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
-            "from-amber-100/40 via-amber-50/20 to-transparent",
-            "dark:from-amber-900/20 dark:via-amber-800/10 dark:to-transparent"
-          )} />
-        </div>
 
-        {/* Bouton de fermeture */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20">
-          <DialogClose asChild>
-            <Button 
-              type="button" 
-              variant="ghost" 
-              className={cn(
-                "h-8 w-8 p-0 rounded-md",
-                "text-gray-500 hover:text-gray-700 hover:bg-gray-100/80",
-                "dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800/80",
-                "transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500",
-                "disabled:pointer-events-none"
-              )}
-              disabled={isSubmitting}
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Fermer</span>
-            </Button>
+          {/* Radial gradient */}
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
+          
+          {/* Bouton de fermeture */}
+          <DialogClose 
+            className={cn(
+              "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none z-20",
+              "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+            )}
+            disabled={isSubmitting}
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
           </DialogClose>
-        </div>
-
-        <div className="relative z-10 p-5 sm:p-6 md:p-7">          
-          <DialogHeader className="space-y-1 mb-6 items-start">
+          
+          {/* Dialog header */}
+          <DialogHeader className="relative z-10 mb-4">
             <div className="flex items-center gap-3">
-              <div className={cn(
-                "p-2 sm:p-2.5 rounded-lg",
-                "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300"
-              )}>
-                <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className={cn("p-2.5 rounded-lg", colors.iconBg)}>
+                <UserPlus className="w-5 h-5" />
               </div>
-              <DialogTitle className={cn(
-                "text-xl sm:text-2xl font-bold",
-                "text-amber-900 dark:text-amber-200"
-              )}>
+              <DialogTitle className={cn("text-2xl font-bold", colors.headingText)}>
                 Ajouter un contributeur
               </DialogTitle>
             </div>
-            
-            <DialogDescription className={cn(
-              "!mt-3 text-sm sm:text-base",
-              "text-amber-700/80 dark:text-amber-300/80"
-            )}>
-              Ajoutez un nouveau contributeur au budget. Les informations seront mises à jour immédiatement.
-            </DialogDescription>
+            <div className="ml-[52px] mt-2">
+              <DialogDescription className={cn("text-base", colors.descriptionText)}>
+                Ajoutez un nouveau contributeur au budget. Les informations seront mises à jour immédiatement.
+              </DialogDescription>
+            </div>
           </DialogHeader>
           
           {/* Section du formulaire */}
-          <div className="mt-4">
-            <form onSubmit={handleFormSubmit} className="space-y-5 sm:space-y-6">
-              {isSubmitting && (
-                <div className="space-y-3 my-4 sm:my-5">
-                  <div className="flex items-center justify-center">
-                    <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin text-amber-500 dark:text-amber-400" />
-                  </div>
-                  <div className="text-center text-sm font-medium text-amber-600 dark:text-amber-400">
-                    Création du contributeur en cours...
+          <div className="relative z-10 px-1">
+            <form onSubmit={handleFormSubmit} className="space-y-5">
+              {isSubmitting ? (
+                <div className="space-y-4 py-5">
+                  <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="h-10 w-10 animate-spin text-amber-500 dark:text-amber-400" />
+                    <div className="text-center text-sm font-medium text-amber-600 dark:text-amber-400">
+                      Création du contributeur en cours...
+                    </div>
                   </div>
                   <Progress 
                     value={progress} 
-                    className="h-1.5 sm:h-2 w-full bg-amber-100 dark:bg-gray-700"
-                  >
-                    <div className="h-full bg-amber-500 dark:bg-amber-400 rounded-full"></div>
-                  </Progress>
+                    className="h-2 w-full bg-amber-100 dark:bg-gray-700"
+                    style={{
+                      "--progress-foreground": isDarkMode ? "#F59E0B" : "#F59E0B"
+                    } as React.CSSProperties}
+                  />
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <Label 
+                        htmlFor="name" 
+                        className="text-gray-700 dark:text-gray-300 font-medium"
+                      >
+                        Nom
+                      </Label>
+                      <Input
+                        id="name"
+                        value={newContributor.name}
+                        onChange={(e) =>
+                          setNewContributor({
+                            ...newContributor,
+                            name: e.target.value,
+                          })
+                        }
+                        required
+                        placeholder="Nom du contributeur"
+                        className={cn(
+                          colors.inputBorder, 
+                          colors.ringFocus,
+                          colors.inputBg
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label 
+                        htmlFor="email" 
+                        className="text-gray-700 dark:text-gray-300 font-medium"
+                      >
+                        Email (optionnel)
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={newContributor.email}
+                        onChange={(e) =>
+                          setNewContributor({
+                            ...newContributor,
+                            email: e.target.value,
+                          })
+                        }
+                        placeholder="adresse@email.com"
+                        className={cn(
+                          colors.inputBorder, 
+                          colors.ringFocus,
+                          colors.inputBg
+                        )}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label 
+                      htmlFor="contribution" 
+                      className="text-gray-700 dark:text-gray-300 font-medium"
+                    >
+                      Contribution (€)
+                    </Label>
+                    <Input
+                      id="contribution"
+                      type="number"
+                      value={newContributor.total_contribution}
+                      onChange={(e) =>
+                        setNewContributor({
+                          ...newContributor,
+                          total_contribution: e.target.value,
+                        })
+                      }
+                      placeholder="Montant en euros"
+                      required
+                      className={cn(
+                        colors.inputBorder, 
+                        colors.ringFocus,
+                        colors.inputBg
+                      )}
+                    />
+                  </div>
                 </div>
               )}
               
-              <div className={`space-y-4 sm:space-y-5 ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">
-                      Nom
-                    </Label>
-                    <Input
-                      id="name"
-                      value={newContributor.name}
-                      onChange={(e) =>
-                        setNewContributor({
-                          ...newContributor,
-                          name: e.target.value,
-                        })
-                      }
-                      required
-                      disabled={isSubmitting}
-                      className="border-amber-200/70 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 bg-white dark:bg-gray-800"
-                    />
-                  </div>
-                  
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
-                      Email (optionnel)
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={newContributor.email}
-                      onChange={(e) =>
-                        setNewContributor({
-                          ...newContributor,
-                          email: e.target.value,
-                        })
-                      }
-                      disabled={isSubmitting}
-                      className="border-amber-200/70 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 bg-white dark:bg-gray-800"
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-1.5">
-                  <Label htmlFor="contribution" className="text-gray-700 dark:text-gray-300">
-                    Contribution (€)
-                  </Label>
-                  <Input
-                    id="contribution"
-                    type="number"
-                    value={newContributor.total_contribution}
-                    onChange={(e) =>
-                      setNewContributor({
-                        ...newContributor,
-                        total_contribution: e.target.value,
-                      })
-                    }
-                    required
-                    disabled={isSubmitting}
-                    className="border-amber-200/70 dark:border-gray-700 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 bg-white dark:bg-gray-800"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex justify-end space-x-3 mt-6 sm:mt-8">
+              <div className="flex justify-end gap-3 mt-6">
                 <Button 
                   variant="outline" 
                   type="button"
@@ -274,7 +318,7 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                     setOpen(false);
                   }}
                   disabled={isSubmitting}
-                  className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 bg-white dark:bg-transparent"
+                  className="border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                 >
                   Annuler
                 </Button>
@@ -283,9 +327,8 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
                   type="submit"
                   disabled={isSubmitting}
                   className={cn(
-                    "bg-amber-500 hover:bg-amber-600",
-                    "dark:bg-amber-600 dark:hover:bg-amber-500",
-                    "text-white shadow-sm"
+                    "text-white px-6 py-2 rounded-lg",
+                    colors.buttonBg
                   )}
                 >
                   {isSubmitting ? "En cours..." : "Ajouter"}
@@ -293,10 +336,10 @@ export const AddContributorDialog = ({ onAdd }: AddContributorDialogProps) => {
               </div>
             </form>
           </div>
-          
-          {/* Décoration graphique dans le coin inférieur droit */}
-          <div className="absolute bottom-0 right-0 w-24 h-24 sm:w-32 sm:h-32 pointer-events-none opacity-[0.03] z-0">
-            <UserPlus className="w-full h-full" />
+
+          {/* Decorative icon */}
+          <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
+            <Users className="w-full h-full" />
           </div>
         </div>
       </DialogContent>
