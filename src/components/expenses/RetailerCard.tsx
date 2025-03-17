@@ -145,9 +145,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               {retailer.logo_url ? (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
+              
                       <div className={cn(
                         "rounded-full overflow-hidden border",
                         "border-gray-100 dark:border-gray-700",
@@ -159,12 +157,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
                           className="w-9 h-9 object-contain rounded-full"
                         />
                       </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{retailer.name}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                
               ) : (
                 <div className={cn(
                   "p-2 rounded-full",
