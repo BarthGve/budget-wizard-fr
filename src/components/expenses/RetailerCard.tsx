@@ -74,7 +74,7 @@ export function RetailerCard({
         totalCurrentPeriod: totalCurrentMonth,
         totalPreviousPeriod: totalPreviousMonth,
         percentageChange: monthPercentageChange,
-        periodLabel: "Mois en cours",
+        periodLabel: "Mois en cours"
       };
     } else {
       const currentYearStart = startOfYear(now);
