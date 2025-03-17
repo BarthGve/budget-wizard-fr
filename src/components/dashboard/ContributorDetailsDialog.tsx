@@ -2,13 +2,14 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Contributor } from "@/types/contributor";
 import { ContributorStatsChart } from "./contributor-details/ContributorStatsChart";
 import { ContributorMonthlyDetails } from "./contributor-details/ContributorMonthlyDetails";
 import { ContributorDetailsHeader } from "./contributor-details/ContributorDetailsHeader";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface ContributorDetailsDialogProps {
   contributor: Contributor;
@@ -28,6 +29,12 @@ export function ContributorDetailsDialog({
   const [currentExpensePage, setCurrentExpensePage] = useState(1);
   const [currentCreditPage, setCurrentCreditPage] = useState(1);
   const [isAnimating, setIsAnimating] = useState(true);
+  const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Détection des appareils
+  const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
+  const isMobile = useMediaQuery("(max-width: 639px)");
+  const isSmallHeight = useMediaQuery("(max-height: 700px)");
 
   // Réinitialiser l'animation et les pages quand la modale s'ouvre
   useEffect(() => {
@@ -67,6 +74,114 @@ export function ContributorDetailsDialog({
 
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
+      
+      // ... reste de la fonction (supposé continuer après cette partie)
+    },
+  });
+  
+  // Détermine si le défilement doit être activé
+  const needsScrolling = isSmallHeight || isMobile || isTablet;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent 
+        className={cn(
+          "p-0 sm:max-w-[700px] w-[95vw]",
+          "border-0 rounded-lg overflow-hidden",
+          isDarkTheme 
+            ? "bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900" 
+            : "bg-gradient-to-br from-white via-gray-50 to-white",
+          // Définir une hauteur max pour les écrans plus petits
+          needsScrolling ? "max-h-[95vh]" : ""
+        )}
+        style={{
+          boxShadow: isDarkTheme 
+            ? "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4)"
+            : "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04)"
+        }}
+      >
+        {/* Conteneur principal avec défilement activé si nécessaire */}
+        <div 
+          ref={contentRef}
+          className={cn(
+            "relative",
+            needsScrolling ? "max-h-[95vh] overflow-y-auto" : "",
+            // Style pour la barre de défilement
+            "scrollbar-thin scrollbar-track-transparent",
+            isDarkTheme 
+              ? "scrollbar-thumb-gray-600" 
+              : "scrollbar-thumb-gray-300"
+          )}
+        >
+          {/* Header - fixe en haut */}
+          <div className={cn(
+            "sticky top-0 z-10",
+            isDarkTheme ? "bg-gray-900/95" : "bg-white/95",
+            "backdrop-blur-sm"
+          )}>
+            <ContributorDetailsHeader
+              contributor={contributor}
+              avatarUrl={contributor.is_owner && profile ? profile.avatar_url : null}
+              onClose={() => onOpenChange(false)}
+            />
+          </div>
+          
+          {/* Contenu qui sera défilable */}
+          <div className="px-6 pb-6">
+            {/* Loader */}
+            {(profileLoading || dataLoading) && (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className={cn(
+                  "animate-spin h-8 w-8", 
+                  isDarkTheme ? "text-indigo-400" : "text-indigo-600"
+                )} />
+              </div>
+            )}
+            
+            {!profileLoading && !dataLoading && (
+              <>
+                {/* Section graphique */}
+                <div 
+                  className={cn(
+                    "mt-4",
+                    isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0",
+                    "transition-all duration-500 ease-in-out"
+                  )}
+                >
+                  <ContributorStatsChart
+                    contributor={contributor}
+                    monthlyData={monthlyData}
+                    isDarkTheme={isDarkTheme}
+                  />
+                </div>
+                
+                {/* Section détails mensuels */}
+                <div 
+                  className={cn(
+                    "mt-6",
+                    isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0",
+                    "transition-all duration-500 ease-in-out delay-200"
+                  )}
+                >
+                  <ContributorMonthlyDetails
+                    contributor={contributor}
+                    monthlyData={monthlyData}
+                    currentExpensePage={currentExpensePage}
+                    setCurrentExpensePage={setCurrentExpensePage}
+                    currentCreditPage={currentCreditPage}
+                    setCurrentCreditPage={setCurrentCreditPage}
+                    itemsPerPage={ITEMS_PER_PAGE}
+                    isDarkTheme={isDarkTheme}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
       startOfMonth.setHours(0, 0, 0, 0);
 
       const [{ data: expenses }, { data: credits }] = await Promise.all([
