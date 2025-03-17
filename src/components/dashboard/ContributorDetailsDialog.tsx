@@ -163,9 +163,10 @@ export function ContributorDetailsDialog({
             "backdrop-blur-sm"
           )}>
             <ContributorDetailsHeader
-              contributor={contributor}
+              name={contributor.name}
+              isOwner={contributor.is_owner}
               avatarUrl={contributor.is_owner && profile ? profile.avatar_url : null}
-              onClose={() => onOpenChange(false)}
+              isDarkTheme={isDarkTheme}
             />
           </div>
           
@@ -192,13 +193,11 @@ export function ContributorDetailsDialog({
                   )}
                 >
                   <ContributorStatsChart
-                    contributor={contributor}
-                    monthlyData={monthlyData}
-                    isDarkTheme={isDarkTheme}
                     expenseShare={expenseShare}
                     creditShare={creditShare}
                     expenseAmount={totalExpenseAmount}
                     creditAmount={totalCreditAmount}
+                    isDarkTheme={isDarkTheme}
                   />
                 </div>
                 
@@ -212,19 +211,12 @@ export function ContributorDetailsDialog({
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <ContributorMonthlyDetails
-                      contributor={contributor}
-                      monthlyData={monthlyData}
-                      currentExpensePage={currentExpensePage}
-                      setCurrentExpensePage={setCurrentExpensePage}
-                      currentCreditPage={currentCreditPage}
-                      setCurrentCreditPage={setCurrentCreditPage}
-                      itemsPerPage={ITEMS_PER_PAGE}
-                      isDarkTheme={isDarkTheme}
-                      expenses={paginatedData?.expenses}
+                      expenses={paginatedData?.expenses || []}
                       currentPage={currentExpensePage}
                       totalPages={totalPages.expenses}
                       contributorPercentage={contributor.percentage_contribution}
                       onPageChange={setCurrentExpensePage}
+                      isDarkTheme={isDarkTheme}
                     />
                     {paginatedData && (
                       <ContributorMonthlyDetails
