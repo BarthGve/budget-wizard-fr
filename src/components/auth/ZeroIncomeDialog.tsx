@@ -24,14 +24,26 @@ export const ZeroIncomeDialog = ({ open, onOpenChange }: ZeroIncomeDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* Centrage de la modale */}
       <DialogContent
-        className="relative sm:max-w-md bg-gradient-to-b from-indigo-100/40 via-white to-purple-50/40 border border-indigo-200 dark:border-gray-700 py-4 px-6 rounded-lg shadow-lg"
+        className={`
+          relative z-50 p-6 sm:max-w-md w-full
+          bg-gradient-to-b from-indigo-100/40 via-white to-purple-50/40
+          border border-indigo-200 dark:border-gray-700 shadow-lg rounded-lg
+          `}
+        /* Fixe et centre la modale dans l'écran */
         style={{
-          boxShadow: "0px 8px 30px rgba(37, 99, 235, 0.2)"
+          position: "fixed", // Assurance d'être positionné de façon fixe
+          top: "50%",        // Position centrale verticalement
+          left: "50%",       // Position centrale horizontalement
+          transform: "translate(-50%, -50%)", // Translation pour centrer en tenant compte de la taille
         }}
       >
-        {/* Décoration subtile en arrière-plan */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-indigo-200/10 to-indigo-50/5 dark:from-indigo-900/10 dark:via-gray-800 to-gray-800 pointer-events-none rounded-lg" />
+        {/* Décoration subtile */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b 
+          from-indigo-200/10 to-indigo-50/5 dark:from-indigo-900/10 
+          dark:via-gray-800 to-gray-800 rounded-lg pointer-events-none"
+        />
 
         <DialogHeader className="relative z-10 text-center">
           <DialogTitle className="text-xl font-semibold text-indigo-700 dark:text-indigo-300">
@@ -54,9 +66,7 @@ export const ZeroIncomeDialog = ({ open, onOpenChange }: ZeroIncomeDialogProps) 
           </ul>
         </div>
 
-        <DialogFooter
-          className="flex flex-col sm:flex-row justify-end items-center gap-2 mt-4 relative z-10"
-        >
+        <DialogFooter className="flex flex-col sm:flex-row justify-end items-center gap-2 mt-4 relative z-10">
           <Button 
             variant="secondary" 
             onClick={() => onOpenChange(false)}
