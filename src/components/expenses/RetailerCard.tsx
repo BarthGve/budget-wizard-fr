@@ -215,7 +215,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
                     className={cn(
                       "text-2xl font-bold",
                       // Teinte bleue pour le montant
-                      "text-blue-800 dark:text-blue-200"
+                      "text-blue-700 dark:text-blue-200"
                     )}
                   >
                     {formatCurrency(totalCurrentPeriod)}
