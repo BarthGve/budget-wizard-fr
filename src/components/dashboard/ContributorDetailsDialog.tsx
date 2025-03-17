@@ -118,7 +118,7 @@ export function ContributorDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
         className={cn(
-          "max-w-4xl w-[95vw] md:w-[950px]",
+          "max-w-4xl w-[95vw] md:w-[950px] overflow-y-auto",
           "p-0 overflow-hidden",
           "bg-gradient-to-b from-amber-50/20 to-white dark:from-gray-900/30 dark:to-gray-800",
           "border border-amber-100/70 dark:border-amber-800/30"
