@@ -4,7 +4,6 @@ import { startOfYear, endOfYear, subYears, startOfMonth, endOfMonth, subMonths }
 import { useState, useMemo } from "react";
 import { PlusCircle, TrendingDown, TrendingUp, Store } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 interface RetailerCardProps {
@@ -36,7 +35,7 @@ export function RetailerCard({
   const [prevTotal, setPrevTotal] = useState(0);
   const now = new Date();
 
-  // Calculs des périodes (inchangés, comme demandé)
+  // Calculs des périodes
   const { totalCurrentPeriod, totalPreviousPeriod, percentageChange, periodLabel } = useMemo(() => {
     if (viewMode === "monthly") {
       const currentMonthStart = startOfMonth(now);
@@ -67,6 +66,127 @@ export function RetailerCard({
 
       const monthPercentageChange =
         totalPreviousMonth === 0
+          ? 100
+          : ((totalCurrentMonth - totalPreviousMonth) / totalPreviousMonth) * 100;
+
+      return {
+        totalCurrentPeriod: totalCurrentMonth,
+        totalPreviousPeriod: totalPreviousMonth,
+        percentageChange: monthPercentageChange,
+        periodLabel: "Mois en cours",
+      };
+    } else {
+      const currentYearStart = startOfYear(now);
+      const currentYearEnd = endOfYear(now);
+
+      const currentYearExpenses = expenses.filter((expense) => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate >= currentYearStart && expenseDate <= currentYearEnd;
+      });
+
+      const totalCurrentYear = currentYearExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
+
+      const lastYearStart = startOfYear(subYears(now, 1));
+      const lastYearEnd = endOfYear(subYears(now, 1));
+
+      const lastYearExpenses = expenses.filter((expense) => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate >= lastYearStart && expenseDate <= lastYearEnd;
+      });
+
+      const totalLastYear = lastYearExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
+
+      const yearPercentageChange =
+        totalLastYear === 0
+          ? 100
+          : ((totalCurrentYear - totalLastYear) / totalLastYear) * 100;
+
+      return {
+        totalCurrentPeriod: totalCurrentYear,
+        totalPreviousPeriod: totalLastYear,
+        percentageChange: yearPercentageChange,
+        periodLabel: "Année en cours",
+      };
+    }
+  }, [viewMode, expenses, now]);
+
+  // Styles du survol et couleurs basés sur colorScheme
+  const getColorStyles = () => {
+    switch (colorScheme) {
+      case "purple":
+        return {
+          cardBg: "bg-purple-100 dark:bg-purple-900/30",
+          textColor: "text-purple-600 dark:text-purple-300",
+          hoverBg: "hover:bg-purple-200 dark:hover:bg-purple-800",
+        };
+      case "amber":
+        return {
+          cardBg: "bg-amber-100 dark:bg-amber-900/30",
+          textColor: "text-amber-600 dark:text-amber-300",
+          hoverBg: "hover:bg-amber-200 dark:hover:bg-amber-800",
+        };
+      default: // blue
+        return {
+          cardBg: "bg-blue-100 dark:bg-blue-900/30",
+          textColor: "text-blue-600 dark:text-blue-300",
+          hoverBg: "hover:bg-blue-200 dark:hover:bg-blue-800",
+        };
+    }
+  };
+
+  const colors = getColorStyles();
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05 }} // Animation à l'intérieur de la carte
+      whileTap={{ scale: 0.95 }}
+      className={cn(
+        `group relative rounded-lg shadow-md transition-transform duration-200`,
+        colors.cardBg,
+        colors.hoverBg
+      )}
+    >
+      <Card className="p-4">
+        {/* Logo ou icône */}
+        <div
+          className={cn(
+            `flex items-center justify-center w-12 h-12 rounded-full`,
+            colors.textColor
+          )}
+        >
+          {retailer.logo_url ? (
+            <img src={retailer.logo_url} alt={retailer.name} className="rounded-full" />
+          ) : (
+            <Store size={24} />
+          )}
+        </div>
+
+        {/* Nom et montant */}
+        <h3 className={cn("mt-4 text-lg font-semibold", colors.textColor)}>
+          {retailer.name}
+        </h3>
+        <p className={cn("mt-1 text-2xl font-bold", colors.textColor)}>
+          {formatCurrency(totalCurrentPeriod)}
+        </p>
+        <p
+          className={cn(
+            "mt-1 text-sm font-medium",
+            percentageChange > 0 ? "text-green-500" : "text-red-500"
+          )}
+        >
+          {percentageChange.toFixed(1)}%
+          {percentageChange > 0 ? " ↑" : " ↓"} par rapport à la période précédente
+        </p>
+      </Card>
+    </motion.div>
+  );
+}
           ? 100
           : ((totalCurrentMonth - totalPreviousMonth) / totalPreviousMonth) * 100;
 
