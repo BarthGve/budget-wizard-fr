@@ -1,6 +1,6 @@
 
 import { memo, useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { NewSavingDialogContent } from "./NewSavingDialogContent";
@@ -74,7 +74,7 @@ export const NewSavingDialog = memo(({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {trigger && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent 
         className={cn(
           "sm:max-w-[650px] w-full p-0 shadow-lg rounded-lg border",
