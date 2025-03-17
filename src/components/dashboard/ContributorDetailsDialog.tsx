@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
@@ -74,13 +75,55 @@ export function ContributorDetailsDialog({
 
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
-      
-      // ... reste de la fonction (supposé continuer après cette partie)
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const [{ data: expenses }, { data: credits }] = await Promise.all([
+        supabase
+          .from("recurring_expenses")
+          .select("*")
+          .eq("profile_id", user.id),
+        supabase
+          .from("credits")
+          .select("*")
+          .eq("profile_id", user.id)
+          .eq("statut", "actif")
+      ]);
+
+      return {
+        expenses: expenses || [],
+        credits: credits || []
+      };
     },
   });
   
   // Détermine si le défilement doit être activé
   const needsScrolling = isSmallHeight || isMobile || isTablet;
+
+  const isLoading = profileLoading || dataLoading || isAnimating;
+
+  const paginatedData = monthlyData ? {
+    expenses: monthlyData.expenses.slice(
+      (currentExpensePage - 1) * ITEMS_PER_PAGE,
+      currentExpensePage * ITEMS_PER_PAGE
+    ),
+    credits: monthlyData.credits.slice(
+      (currentCreditPage - 1) * ITEMS_PER_PAGE,
+      currentCreditPage * ITEMS_PER_PAGE
+    )
+  } : null;
+
+  const totalPages = {
+    expenses: monthlyData ? Math.max(1, Math.ceil(monthlyData.expenses.length / ITEMS_PER_PAGE)) : 1,
+    credits: monthlyData ? Math.max(1, Math.ceil(monthlyData.credits.length / ITEMS_PER_PAGE)) : 1
+  };
+
+  // Calculer les montants totaux pour afficher dans le graphique
+  const totalExpenseAmount = monthlyData?.expenses.reduce((sum, item) => sum + (item.amount || 0), 0) || 0;
+  const totalCreditAmount = monthlyData?.credits.reduce((sum, item) => sum + (item.montant_mensualite || 0), 0) || 0;
+  
+  // Calculer les parts du contributeur
+  const expenseShare = totalExpenseAmount * (contributor.percentage_contribution / 100);
+  const creditShare = totalCreditAmount * (contributor.percentage_contribution / 100);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -152,6 +195,10 @@ export function ContributorDetailsDialog({
                     contributor={contributor}
                     monthlyData={monthlyData}
                     isDarkTheme={isDarkTheme}
+                    expenseShare={expenseShare}
+                    creditShare={creditShare}
+                    expenseAmount={totalExpenseAmount}
+                    creditAmount={totalCreditAmount}
                   />
                 </div>
                 
@@ -163,147 +210,38 @@ export function ContributorDetailsDialog({
                     "transition-all duration-500 ease-in-out delay-200"
                   )}
                 >
-                  <ContributorMonthlyDetails
-                    contributor={contributor}
-                    monthlyData={monthlyData}
-                    currentExpensePage={currentExpensePage}
-                    setCurrentExpensePage={setCurrentExpensePage}
-                    currentCreditPage={currentCreditPage}
-                    setCurrentCreditPage={setCurrentCreditPage}
-                    itemsPerPage={ITEMS_PER_PAGE}
-                    isDarkTheme={isDarkTheme}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ContributorMonthlyDetails
+                      contributor={contributor}
+                      monthlyData={monthlyData}
+                      currentExpensePage={currentExpensePage}
+                      setCurrentExpensePage={setCurrentExpensePage}
+                      currentCreditPage={currentCreditPage}
+                      setCurrentCreditPage={setCurrentCreditPage}
+                      itemsPerPage={ITEMS_PER_PAGE}
+                      isDarkTheme={isDarkTheme}
+                      expenses={paginatedData?.expenses}
+                      currentPage={currentExpensePage}
+                      totalPages={totalPages.expenses}
+                      contributorPercentage={contributor.percentage_contribution}
+                      onPageChange={setCurrentExpensePage}
+                    />
+                    {paginatedData && (
+                      <ContributorMonthlyDetails
+                        expenses={paginatedData.credits}
+                        currentPage={currentCreditPage}
+                        totalPages={totalPages.credits}
+                        contributorPercentage={contributor.percentage_contribution}
+                        onPageChange={setCurrentCreditPage}
+                        type="credit"
+                      />
+                    )}
+                  </div>
                 </div>
               </>
             )}
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-      startOfMonth.setHours(0, 0, 0, 0);
-
-      const [{ data: expenses }, { data: credits }] = await Promise.all([
-        supabase
-          .from("recurring_expenses")
-          .select("*")
-          .eq("profile_id", user.id),
-        supabase
-          .from("credits")
-          .select("*")
-          .eq("profile_id", user.id)
-          .eq("statut", "actif")
-      ]);
-
-      return {
-        expenses: expenses || [],
-        credits: credits || []
-      };
-    },
-  });
-
-  const isLoading = profileLoading || dataLoading || isAnimating;
-
-  const paginatedData = monthlyData ? {
-    expenses: monthlyData.expenses.slice(
-      (currentExpensePage - 1) * ITEMS_PER_PAGE,
-      currentExpensePage * ITEMS_PER_PAGE
-    ),
-    credits: monthlyData.credits.slice(
-      (currentCreditPage - 1) * ITEMS_PER_PAGE,
-      currentCreditPage * ITEMS_PER_PAGE
-    )
-  } : null;
-
-  const totalPages = {
-    expenses: monthlyData ? Math.max(1, Math.ceil(monthlyData.expenses.length / ITEMS_PER_PAGE)) : 1,
-    credits: monthlyData ? Math.max(1, Math.ceil(monthlyData.credits.length / ITEMS_PER_PAGE)) : 1
-  };
-
-  // Calculer les montants totaux pour afficher dans le graphique
-  const totalExpenseAmount = monthlyData?.expenses.reduce((sum, item) => sum + (item.amount || 0), 0) || 0;
-  const totalCreditAmount = monthlyData?.credits.reduce((sum, item) => sum + (item.montant_mensualite || 0), 0) || 0;
-  
-  // Calculer les parts du contributeur
-  const expenseShare = totalExpenseAmount * (contributor.percentage_contribution / 100);
-  const creditShare = totalCreditAmount * (contributor.percentage_contribution / 100);
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
-        className={cn(
-          "max-w-4xl w-[95vw] md:w-[950px] overflow-y-auto",
-          "p-0 overflow-hidden",
-          "bg-gradient-to-b from-amber-50/20 to-white dark:from-gray-900/30 dark:to-gray-800",
-          "border border-amber-100/70 dark:border-amber-800/30"
-        )}
-      >
-        <div className="pb-0 px-6 pt-6">
-          <ContributorDetailsHeader
-            name={contributor.name}
-            isOwner={contributor.is_owner}
-            avatarUrl={profile?.avatar_url}
-            isDarkTheme={isDarkTheme}
-          />
-        </div>
-
-        {isLoading ? (
-          <div className="flex justify-center items-center h-[400px] animate-pulse">
-            <Loader2 className="h-12 w-12 animate-spin text-amber-500/50 dark:text-amber-400/50" />
-          </div>
-        ) : (
-          <div className={cn(
-            "p-6 pt-2 space-y-4",
-            "animate-in fade-in duration-500"
-          )}>
-            {/* Première rangée: Chart */}
-            <div className={cn(
-              "p-4 rounded-xl",
-              "bg-white/70 dark:bg-gray-800/50",
-              "border border-amber-100/50 dark:border-amber-800/20",
-              "shadow-sm"
-            )}>
-              <h3 className={cn(
-                "text-base font-semibold mb-2",
-                "text-amber-700 dark:text-amber-300",
-                "border-b border-amber-100/70 dark:border-amber-800/30",
-                "pb-2"
-              )}>
-                Répartition des contributions
-              </h3>
-              <div className="h-[180px] flex justify-center items-center">
-                <ContributorStatsChart
-                  expenseShare={expenseShare}
-                  creditShare={creditShare}
-                  expenseAmount={totalExpenseAmount}
-                  creditAmount={totalCreditAmount}
-                />
-              </div>
-            </div>
-            
-            {/* Deuxième rangée: Détails */}
-            {paginatedData && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ContributorMonthlyDetails
-                  expenses={paginatedData.expenses}
-                  currentPage={currentExpensePage}
-                  totalPages={totalPages.expenses}
-                  contributorPercentage={contributor.percentage_contribution}
-                  onPageChange={setCurrentExpensePage}
-                />
-                <ContributorMonthlyDetails
-                  expenses={paginatedData.credits}
-                  currentPage={currentCreditPage}
-                  totalPages={totalPages.credits}
-                  contributorPercentage={contributor.percentage_contribution}
-                  onPageChange={setCurrentCreditPage}
-                  type="credit"
-                />
-              </div>
-            )}
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );
