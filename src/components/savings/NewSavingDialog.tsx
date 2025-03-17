@@ -20,6 +20,7 @@ interface NewSavingDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   colorScheme?: "green" | "blue" | "purple";
+  onSavingAdded?: () => void;
 }
 
 export const NewSavingDialog = memo(({
@@ -28,6 +29,7 @@ export const NewSavingDialog = memo(({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
   colorScheme = "green",
+  onSavingAdded,
 }: NewSavingDialogProps) => {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -143,6 +145,11 @@ export const NewSavingDialog = memo(({
       }
 
       toast.success(saving?.id ? "Épargne mise à jour" : "Épargne ajoutée");
+      
+      if (onSavingAdded) {
+        onSavingAdded();
+      }
+      
       if (onOpenChange) onOpenChange(false);
       setName("");
       setDomain("");
@@ -175,7 +182,6 @@ export const NewSavingDialog = memo(({
             currentColors.darkBg
           )}
         >
-          {/* Background gradient */}
           <div className={cn(
             "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg",
             currentColors.gradientFrom,
@@ -184,10 +190,8 @@ export const NewSavingDialog = memo(({
             currentColors.darkGradientTo
           )} />
 
-          {/* Radial gradient */}
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
           
-          {/* Dialog header */}
           <DialogHeader className="relative z-10 mb-4">
             <div className="flex items-center gap-3">
               <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
@@ -206,7 +210,6 @@ export const NewSavingDialog = memo(({
             </div>
           </DialogHeader>
 
-          {/* Saving form */}
           <div className="relative z-10 px-1">
             <SavingForm
               name={name}
@@ -219,7 +222,6 @@ export const NewSavingDialog = memo(({
               onDescriptionChange={setDescription}
             />
 
-            {/* Buttons */}
             <div className="flex justify-end mt-5 gap-3">
               <Button 
                 variant="outline" 
@@ -240,7 +242,6 @@ export const NewSavingDialog = memo(({
             </div>
           </div>
 
-          {/* Decorative icon */}
           <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
             <PiggyBank className="w-full h-full" />
           </div>
@@ -249,11 +250,11 @@ export const NewSavingDialog = memo(({
     </Dialog>
   );
 }, (prevProps, nextProps) => {
-  // Comparaison des props pour réduire les re-renders inutiles
   return prevProps.open === nextProps.open &&
     prevProps.saving?.id === nextProps.saving?.id &&
     prevProps.colorScheme === nextProps.colorScheme &&
-    prevProps.trigger === nextProps.trigger;
+    prevProps.trigger === nextProps.trigger &&
+    prevProps.onSavingAdded === nextProps.onSavingAdded;
 });
 
 NewSavingDialog.displayName = "NewSavingDialog";

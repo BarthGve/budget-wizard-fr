@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useState, useEffect, useRef } from "react";
@@ -43,6 +42,7 @@ const Savings = () => {
         (payload) => {
           console.log('Monthly savings changed in Savings page:', payload);
           queryClient.invalidateQueries({ queryKey: ["savings-projects"] });
+          refetch(); // Ajout d'un refetch ici pour s'assurer que monthlySavings est mis à jour
         }
       )
       .subscribe((status) => {
@@ -58,7 +58,7 @@ const Savings = () => {
         savingsChannelRef.current = null;
       }
     };
-  }, [queryClient]);
+  }, [queryClient, refetch]); // Ajout de refetch comme dépendance
 
   const {
     data: projects = [],
