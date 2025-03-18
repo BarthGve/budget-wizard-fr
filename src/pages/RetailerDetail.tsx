@@ -125,15 +125,14 @@ const RetailerDetail = () => {
           currentYear={currentYear}
         />
 
-   
+        <Card className="p-6">
         {expenses && expenses.length > 0 && (
           <RetailerYearlyArchives
-            className='p-6'
             expenses={expenses}
             currentYear={currentYear}
           />
         )}
-      
+        </Card>
         
         <RetailerDialogs
           expenseToEdit={expenseToEdit}
