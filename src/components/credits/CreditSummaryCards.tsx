@@ -3,19 +3,22 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { ActiveCreditsCard } from "./cards/ActiveCreditsCard";
 import { MonthlyRepaymentsCard } from "./cards/MonthlyRepaymentsCard";
+import { TotalDebtCard } from "./cards/TotalDebtCard";
 
 interface CreditSummaryCardsProps {
   activeCredits: any[];
   repaidThisMonth: number;
   totalActiveMensualites: number;
   totalRepaidMensualitesThisMonth: number;
+  totalDebt?: number;
 }
 
 export const CreditSummaryCards = memo(({
   activeCredits,
   repaidThisMonth,
   totalActiveMensualites,
-  totalRepaidMensualitesThisMonth
+  totalRepaidMensualitesThisMonth,
+  totalDebt = 0
 }: CreditSummaryCardsProps) => {
   return (
     <>
@@ -23,7 +26,7 @@ export const CreditSummaryCards = memo(({
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="grid gap-4 md:grid-cols-2 mb-6"
+        className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6"
       >
         <ActiveCreditsCard 
           activeCredits={activeCredits}
@@ -33,6 +36,11 @@ export const CreditSummaryCards = memo(({
         <MonthlyRepaymentsCard 
           repaidThisMonth={repaidThisMonth}
           totalRepaidMensualitesThisMonth={totalRepaidMensualitesThisMonth}
+        />
+
+        <TotalDebtCard 
+          totalDebt={totalDebt}
+          activeCreditsCount={activeCredits.length}
         />
       </motion.div>
     </>

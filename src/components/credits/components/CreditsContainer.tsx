@@ -23,6 +23,29 @@ export const CreditsContainer = memo(({
   // Calculer les valeurs dérivées de manière optimisée
   const activeCredits = credits?.filter(credit => credit.statut === 'actif') || [];
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
+  
+  // Calcul du montant total de la dette (estimation basée sur les mensualités)
+  // Pour chaque crédit actif, nous estimons le montant restant à payer en multipliant 
+  // la mensualité par le nombre de mois restants jusqu'à la date de dernière mensualité
+  const calculateTotalDebt = () => {
+    return activeCredits.reduce((total, credit) => {
+      const lastPaymentDate = new Date(credit.date_derniere_mensualite);
+      const today = new Date();
+      
+      // Calcul du nombre de mois restants
+      const monthsRemaining = 
+        (lastPaymentDate.getFullYear() - today.getFullYear()) * 12 + 
+        (lastPaymentDate.getMonth() - today.getMonth());
+      
+      // Ne compter que les mois futurs (positifs)
+      const remainingPayments = Math.max(0, monthsRemaining);
+      
+      // Ajouter au total
+      return total + (credit.montant_mensualite * remainingPayments);
+    }, 0);
+  };
+
+  const totalDebt = calculateTotalDebt();
 
   return (
     <motion.div 
@@ -42,7 +65,8 @@ export const CreditsContainer = memo(({
           activeCredits={activeCredits} 
           repaidThisMonth={monthlyStats.credits_rembourses_count} 
           totalActiveMensualites={totalActiveMensualites} 
-          totalRepaidMensualitesThisMonth={monthlyStats.total_mensualites_remboursees} 
+          totalRepaidMensualitesThisMonth={monthlyStats.total_mensualites_remboursees}
+          totalDebt={totalDebt}
         />
       </motion.div>
 
