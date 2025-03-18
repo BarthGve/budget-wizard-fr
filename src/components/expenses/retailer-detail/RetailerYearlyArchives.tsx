@@ -134,7 +134,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
 </CardTitle>
 
       
-      <Tabs defaultValue={yearlyData[0]?.year.toString()} className="w-full">
+      <Tabs defaultValue={yearlyData[0]?.year.toString()} className="w-full mt-2">
         <TabsList className={cn(
           "mb-4 w-full justify-start overflow-x-auto pb-1",
           isDarkTheme 
