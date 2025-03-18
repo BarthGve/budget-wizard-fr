@@ -267,7 +267,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-3xl font-bold text-purple-700 dark:text-purple-100">
+                        <p className="text-xl font-bold text-purple-700 dark:text-purple-100">
                           {formatCurrency(selectedYearData.total / 12)}
                         </p>
                         <p className="text-sm text-purple-500 dark:text-purple-300 mt-1">
