@@ -101,28 +101,14 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
         ? "bg-gray-800/50 border border-gray-700/50" 
         : "bg-white border border-gray-100 shadow-sm"
     )}>
-    <h2
-  className={cn(
-    "text-xl font-semibold mb-4 flex items-center gap-2",
-    isDarkTheme ? "text-gray-100" : "text-gray-800"
-  )}
->
-  <div
-    className={cn(
-      "p-1.5 rounded",
-      isDarkTheme ? "bg-blue-800/40" : "bg-blue-100"
-    )}
-  >
-    <Calendar
-      className={cn(
-        "w-5 h-5",
-        isDarkTheme ? "text-blue-300" : "text-blue-500"
-      )}
-    />
-  </div>
-  Archives des années précédentes
-</h2>
-
+      <CardTitle className={cn(
+        "text-xl font-semibold mb-4 flex items-center gap-2",
+        isDarkTheme ? "text-gray-100" : "text-gray-800"
+      )}>
+        <Calendar className="w-5 h-5 text-blue-500" />
+        Archives des années précédentes
+      </CardTitle>
+      
       <Tabs defaultValue={yearlyData[0]?.year.toString()} className="w-full">
         <TabsList className={cn(
           "mb-4 w-full justify-start overflow-x-auto pb-1",
