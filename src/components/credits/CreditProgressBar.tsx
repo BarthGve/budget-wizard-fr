@@ -1,4 +1,3 @@
-
 import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
@@ -6,12 +5,22 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { formatCurrency } from "@/utils/format";
 import { cn } from "@/lib/utils";
 
+// Couleurs pour la barre de progression en fonction du colorScheme
+const progressColors = {
+  purple: "bg-violet-600",
+  green: "bg-green-600",
+  blue: "bg-blue-600"
+};
+
 interface CreditProgressBarProps {
   dateDebut: string;
   dateFin: string;
   montantMensuel: number;
   withTooltip?: boolean;
-  colorScheme?: "purple" | "green" | "blue"; // Ajout de cette propriété
+  colorScheme?: "purple" | "green" | "blue";
+  value?: number; // Pourcentage direct (0-100)
+  amountPaid?: number; // Montant payé pour l'affichage du tooltip
+  totalAmount?: number; // Montant total pour l'affichage du tooltip
 }
 
 export const CreditProgressBar = ({ 
@@ -19,8 +28,54 @@ export const CreditProgressBar = ({
   dateFin, 
   montantMensuel, 
   withTooltip = true,
-  colorScheme = "purple" // Valeur par défaut
+  colorScheme = "purple",
+  value, // Si fourni, utilisera cette valeur directement
+  amountPaid,
+  totalAmount
 }: CreditProgressBarProps) => {
+  
+  // Si une valeur est fournie directement, l'utiliser
+  if (value !== undefined) {
+    const progressValue = Math.min(100, Math.max(0, value));
+    
+    // Si on ne veut pas de tooltip, on retourne juste la barre de progression
+    if (!withTooltip) {
+      return (
+        <Progress 
+          value={progressValue} 
+          className="h-3" 
+          indicatorClassName={progressColors[colorScheme]} 
+        />
+      );
+    }
+
+    // Avec tooltip mais utilisant les valeurs fournies directement
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger className="w-full">
+            <Progress 
+              value={progressValue} 
+              className="h-3" 
+              indicatorClassName={progressColors[colorScheme]} 
+            />
+          </TooltipTrigger>
+          <TooltipContent className="space-y-2">
+            <p>Progression : {progressValue.toFixed(1)}%</p>
+            {amountPaid !== undefined && totalAmount !== undefined && (
+              <>
+                <p>Montant remboursé : {formatCurrency(amountPaid)}</p>
+                <p>Montant restant : {formatCurrency(totalAmount - amountPaid)}</p>
+                <p>Montant total emprunté : {formatCurrency(totalAmount)}</p>
+              </>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  // Code original pour le calcul basé sur les dates
   const startDate = new Date(dateDebut);
   const endDate = new Date(dateFin);
   const currentDate = new Date();
@@ -63,13 +118,6 @@ export const CreditProgressBar = ({
   const montantRembourse = completedMonths * montantMensuel;
   const montantRestant = montantTotal - montantRembourse;
 
-  // Couleurs pour la barre de progression en fonction du colorScheme
-  const progressColors = {
-    purple: "bg-violet-600",
-    green: "bg-green-600",
-    blue: "bg-blue-600"
-  };
-
   // Si on ne veut pas de tooltip, on retourne juste la barre de progression
   if (!withTooltip) {
     return (
@@ -83,24 +131,22 @@ export const CreditProgressBar = ({
 
   return (
     <TooltipProvider>
-      <div className="space-y-2">
-        <Tooltip>
-          <TooltipTrigger className="w-full">
-            <Progress 
-              value={progressPercentage} 
-              className="h-3" 
-              indicatorClassName={progressColors[colorScheme]} 
-            />
-          </TooltipTrigger>
-          <TooltipContent className="space-y-2">
-            <p>Mensualités payées : {completedMonths} sur {totalMonths}</p>
-            <p>Progression : {progressPercentage.toFixed(1)}%</p>
-            <p>Montant remboursé : {formatCurrency(montantRembourse)}</p>
-            <p>Montant restant : {formatCurrency(montantRestant)}</p>
-            <p>Montant total : {formatCurrency(montantTotal)}</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
+      <Tooltip>
+        <TooltipTrigger className="w-full">
+          <Progress 
+            value={progressPercentage} 
+            className="h-3" 
+            indicatorClassName={progressColors[colorScheme]} 
+          />
+        </TooltipTrigger>
+        <TooltipContent className="space-y-2">
+          <p>Mensualités payées : {completedMonths} sur {totalMonths}</p>
+          <p>Progression : {progressPercentage.toFixed(1)}%</p>
+          <p>Montant remboursé : {formatCurrency(montantRembourse)}</p>
+          <p>Montant restant : {formatCurrency(montantRestant)}</p>
+          <p>Montant total : {formatCurrency(montantTotal)}</p>
+        </TooltipContent>
+      </Tooltip>
     </TooltipProvider>
   );
 };

@@ -1,14 +1,16 @@
+
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Contributor } from "@/types/contributor";
 import { ContributorStatsChart } from "./contributor-details/ContributorStatsChart";
 import { ContributorMonthlyDetails } from "./contributor-details/ContributorMonthlyDetails";
 import { ContributorDetailsHeader } from "./contributor-details/ContributorDetailsHeader";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface ContributorDetailsDialogProps {
   contributor: Contributor;
@@ -28,6 +30,12 @@ export function ContributorDetailsDialog({
   const [currentExpensePage, setCurrentExpensePage] = useState(1);
   const [currentCreditPage, setCurrentCreditPage] = useState(1);
   const [isAnimating, setIsAnimating] = useState(true);
+  const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Détection des appareils
+  const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
+  const isMobile = useMediaQuery("(max-width: 639px)");
+  const isSmallHeight = useMediaQuery("(max-height: 700px)");
 
   // Réinitialiser l'animation et les pages quand la modale s'ouvre
   useEffect(() => {
@@ -87,6 +95,9 @@ export function ContributorDetailsDialog({
       };
     },
   });
+  
+  // Détermine si le défilement doit être activé
+  const needsScrolling = isSmallHeight || isMobile || isTablet;
 
   const isLoading = profileLoading || dataLoading || isAnimating;
 
@@ -118,77 +129,111 @@ export function ContributorDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
         className={cn(
-          "max-w-4xl w-[95vw] md:w-[950px]",
-          "p-0 overflow-hidden",
-          "bg-gradient-to-b from-amber-50/20 to-white dark:from-gray-900/30 dark:to-gray-800",
-          "border border-amber-100/70 dark:border-amber-800/30"
+          "p-0 sm:max-w-[700px] w-[95vw]",
+          "border-0 rounded-lg overflow-hidden",
+          isDarkTheme 
+            ? "bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900" 
+            : "bg-gradient-to-br from-white via-gray-50 to-white",
+          // Définir une hauteur max pour les écrans plus petits
+          needsScrolling ? "max-h-[95vh]" : ""
         )}
+        style={{
+          boxShadow: isDarkTheme 
+            ? "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4)"
+            : "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04)"
+        }}
       >
-        <div className="pb-0 px-6 pt-6">
-          <ContributorDetailsHeader
-            name={contributor.name}
-            isOwner={contributor.is_owner}
-            avatarUrl={profile?.avatar_url}
-            isDarkTheme={isDarkTheme}
-          />
-        </div>
-
-        {isLoading ? (
-          <div className="flex justify-center items-center h-[400px] animate-pulse">
-            <Loader2 className="h-12 w-12 animate-spin text-amber-500/50 dark:text-amber-400/50" />
-          </div>
-        ) : (
+        {/* Conteneur principal avec défilement activé si nécessaire */}
+        <div 
+          ref={contentRef}
+          className={cn(
+            "relative",
+            needsScrolling ? "max-h-[95vh] overflow-y-auto" : "",
+            // Style pour la barre de défilement
+            "scrollbar-thin scrollbar-track-transparent",
+            isDarkTheme 
+              ? "scrollbar-thumb-gray-600" 
+              : "scrollbar-thumb-gray-300"
+          )}
+        >
+          {/* Header - fixe en haut */}
           <div className={cn(
-            "p-6 pt-2 space-y-4",
-            "animate-in fade-in duration-500"
+            "sticky top-0 z-10",
+            isDarkTheme ? "bg-gray-900/95" : "bg-white/95",
+            "backdrop-blur-sm"
           )}>
-            {/* Première rangée: Chart */}
-            <div className={cn(
-              "p-4 rounded-xl",
-              "bg-white/70 dark:bg-gray-800/50",
-              "border border-amber-100/50 dark:border-amber-800/20",
-              "shadow-sm"
-            )}>
-              <h3 className={cn(
-                "text-base font-semibold mb-2",
-                "text-amber-700 dark:text-amber-300",
-                "border-b border-amber-100/70 dark:border-amber-800/30",
-                "pb-2"
-              )}>
-                Répartition des contributions
-              </h3>
-              <div className="h-[180px] flex justify-center items-center">
-                <ContributorStatsChart
-                  expenseShare={expenseShare}
-                  creditShare={creditShare}
-                  expenseAmount={totalExpenseAmount}
-                  creditAmount={totalCreditAmount}
-                />
-              </div>
-            </div>
-            
-            {/* Deuxième rangée: Détails */}
-            {paginatedData && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ContributorMonthlyDetails
-                  expenses={paginatedData.expenses}
-                  currentPage={currentExpensePage}
-                  totalPages={totalPages.expenses}
-                  contributorPercentage={contributor.percentage_contribution}
-                  onPageChange={setCurrentExpensePage}
-                />
-                <ContributorMonthlyDetails
-                  expenses={paginatedData.credits}
-                  currentPage={currentCreditPage}
-                  totalPages={totalPages.credits}
-                  contributorPercentage={contributor.percentage_contribution}
-                  onPageChange={setCurrentCreditPage}
-                  type="credit"
-                />
+            <ContributorDetailsHeader
+              name={contributor.name}
+              isOwner={contributor.is_owner}
+              avatarUrl={contributor.is_owner && profile ? profile.avatar_url : null}
+              isDarkTheme={isDarkTheme}
+            />
+          </div>
+          
+          {/* Contenu qui sera défilable */}
+          <div className="px-6 pb-6">
+            {/* Loader */}
+            {(profileLoading || dataLoading) && (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className={cn(
+                  "animate-spin h-8 w-8", 
+                  isDarkTheme ? "text-indigo-400" : "text-indigo-600"
+                )} />
               </div>
             )}
+            
+            {!profileLoading && !dataLoading && (
+              <>
+                {/* Section graphique */}
+                <div 
+                  className={cn(
+                    "mt-4",
+                    isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0",
+                    "transition-all duration-500 ease-in-out"
+                  )}
+                >
+                  <ContributorStatsChart
+                    expenseShare={expenseShare}
+                    creditShare={creditShare}
+                    expenseAmount={totalExpenseAmount}
+                    creditAmount={totalCreditAmount}
+                    isDarkTheme={isDarkTheme}
+                  />
+                </div>
+                
+                {/* Section détails mensuels */}
+                <div 
+                  className={cn(
+                    "mt-6",
+                    isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0",
+                    "transition-all duration-500 ease-in-out delay-200"
+                  )}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ContributorMonthlyDetails
+                      expenses={paginatedData?.expenses || []}
+                      currentPage={currentExpensePage}
+                      totalPages={totalPages.expenses}
+                      contributorPercentage={contributor.percentage_contribution}
+                      onPageChange={setCurrentExpensePage}
+                      isDarkTheme={isDarkTheme}
+                    />
+                    {paginatedData && (
+                      <ContributorMonthlyDetails
+                        expenses={paginatedData.credits}
+                        currentPage={currentCreditPage}
+                        totalPages={totalPages.credits}
+                        contributorPercentage={contributor.percentage_contribution}
+                        onPageChange={setCurrentCreditPage}
+                        type="credit"
+                      />
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-        )}
+        </div>
       </DialogContent>
     </Dialog>
   );

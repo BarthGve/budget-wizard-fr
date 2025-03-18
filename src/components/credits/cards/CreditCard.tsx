@@ -15,9 +15,10 @@ interface CreditCardProps {
   title: string;
   description: string;
   amount: number;
-  subtitle: string;
+  subtitle: ReactNode;
   badgeText: string;
-  colorScheme: "purple" | "green" | "blue";  // Ajout du schéma bleu
+  colorScheme: "purple" | "green" | "blue";
+  children?: ReactNode;
 }
 
 export const CreditCard = ({
@@ -27,9 +28,10 @@ export const CreditCard = ({
   amount,
   subtitle,
   badgeText,
-  colorScheme = "blue"  // Par défaut bleu maintenant
+  colorScheme = "blue",
+  children
 }: CreditCardProps) => {
-  // Choix des couleurs en fonction du schéma
+  // Couleurs pour la barre de progression en fonction du schéma
   const colors = {
     purple: {
       // Light mode
@@ -127,18 +129,47 @@ export const CreditCard = ({
         )}>
           {amount.toLocaleString('fr-FR')} €
         </p>
-        <p className={cn(
-          "text-sm mt-1",
-          currentColors.description
-        )}>
-          {subtitle}
-          <span className={cn(
-            "ml-2 inline-block text-xs py-0.5 px-2 rounded-full",
-            currentColors.badge
+        
+        {/* Le subtitle peut être un string ou un ReactNode */}
+        {typeof subtitle === 'string' ? (
+          <p className={cn(
+            "text-sm mt-1",
+            currentColors.description
           )}>
-            {badgeText}
-          </span>
-        </p>
+            {subtitle}
+            <span className={cn(
+              "ml-2 inline-block text-xs py-0.5 px-2 rounded-full",
+              currentColors.badge
+            )}>
+              {badgeText}
+            </span>
+          </p>
+        ) : (
+          <div className={cn(
+            "text-sm mt-1",
+            currentColors.description
+          )}>
+            {/* Rendu du ReactNode avec le badge à l'intérieur */}
+            {
+              typeof subtitle === 'object' && subtitle !== null 
+                ? subtitle 
+                : (
+                  <>
+                    {subtitle}
+                    <span className={cn(
+                      "ml-2 inline-block text-xs py-0.5 px-2 rounded-full badge",
+                      currentColors.badge
+                    )}>
+                      {badgeText}
+                    </span>
+                  </>
+                )
+            }
+          </div>
+        )}
+        
+        {/* Affichage du contenu enfant s'il existe */}
+        {children}
       </CardContent>
     </Card>
   );

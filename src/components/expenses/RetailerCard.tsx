@@ -1,15 +1,15 @@
+
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { startOfYear, endOfYear, subYears, startOfMonth, endOfMonth, subMonths } from "date-fns";
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
-import { PlusCircle, TrendingDown, TrendingUp, Store } from "lucide-react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { Store, PlusCircle, TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AddExpenseDialog } from "./AddExpenseDialog";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { AddExpenseDialog } from "./AddExpenseDialog";
+import { RetailerExpensesDialog } from "./RetailerExpensesDialog";
 
 interface RetailerCardProps {
   retailer: {
@@ -24,88 +24,101 @@ interface RetailerCardProps {
     comment?: string;
   }>;
   onExpenseUpdated: () => void;
-  viewMode: 'monthly' | 'yearly';
+  viewMode: "monthly" | "yearly";
+  colorScheme?: "blue" | "purple" | "amber";
 }
 
-export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }: RetailerCardProps) {
+export function RetailerCard({
+  retailer,
+  expenses,
+  onExpenseUpdated,
+  viewMode,
+  colorScheme = "blue",
+}: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [prevTotal, setPrevTotal] = useState(0);
   const now = new Date();
-  
-  const { 
-    totalCurrentPeriod, 
-    totalPreviousPeriod, 
-    percentageChange,
-    periodLabel 
-  } = useMemo(() => {
-    // Calculs pour le mode mensuel
-    if (viewMode === 'monthly') {
+
+  const { totalCurrentPeriod, totalPreviousPeriod, percentageChange, periodLabel } = useMemo(() => {
+    if (viewMode === "monthly") {
       const currentMonthStart = startOfMonth(now);
       const currentMonthEnd = endOfMonth(now);
-      
-      const currentMonthExpenses = expenses.filter(expense => {
+
+      const currentMonthExpenses = expenses.filter((expense) => {
         const expenseDate = new Date(expense.date);
         return expenseDate >= currentMonthStart && expenseDate <= currentMonthEnd;
       });
-      
-      const totalCurrentMonth = currentMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+      const totalCurrentMonth = currentMonthExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
 
       const previousMonthStart = startOfMonth(subMonths(now, 1));
       const previousMonthEnd = endOfMonth(subMonths(now, 1));
-      
-      const previousMonthExpenses = expenses.filter(expense => {
+
+      const previousMonthExpenses = expenses.filter((expense) => {
         const expenseDate = new Date(expense.date);
         return expenseDate >= previousMonthStart && expenseDate <= previousMonthEnd;
       });
-      
-      const totalPreviousMonth = previousMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-      const monthPercentageChange = totalPreviousMonth === 0 
-        ? 100 
-        : ((totalCurrentMonth - totalPreviousMonth) / totalPreviousMonth) * 100;
-        
-      return { 
-        totalCurrentPeriod: totalCurrentMonth, 
-        totalPreviousPeriod: totalPreviousMonth, 
+      const totalPreviousMonth = previousMonthExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
+
+      const monthPercentageChange =
+        totalPreviousMonth === 0
+          ? 100
+          : ((totalCurrentMonth - totalPreviousMonth) / totalPreviousMonth) * 100;
+
+      return {
+        totalCurrentPeriod: totalCurrentMonth,
+        totalPreviousPeriod: totalPreviousMonth,
         percentageChange: monthPercentageChange,
-        periodLabel: "Mois en cours"
+        periodLabel: "Mois en cours",
       };
-    } 
-    // Calculs pour le mode annuel
-    else {
+    } else {
       const currentYearStart = startOfYear(now);
       const currentYearEnd = endOfYear(now);
-      
-      const currentYearExpenses = expenses.filter(expense => {
+
+      const currentYearExpenses = expenses.filter((expense) => {
         const expenseDate = new Date(expense.date);
         return expenseDate >= currentYearStart && expenseDate <= currentYearEnd;
       });
-      
-      const totalCurrentYear = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+      const totalCurrentYear = currentYearExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
 
       const lastYearStart = startOfYear(subYears(now, 1));
       const lastYearEnd = endOfYear(subYears(now, 1));
-      
-      const lastYearExpenses = expenses.filter(expense => {
+
+      const lastYearExpenses = expenses.filter((expense) => {
         const expenseDate = new Date(expense.date);
         return expenseDate >= lastYearStart && expenseDate <= lastYearEnd;
       });
-      
-      const totalLastYear = lastYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-      const yearPercentageChange = totalLastYear === 0 
-        ? 100 
-        : ((totalCurrentYear - totalLastYear) / totalLastYear) * 100;
-        
-      return { 
-        totalCurrentPeriod: totalCurrentYear, 
-        totalPreviousPeriod: totalLastYear, 
+      const totalLastYear = lastYearExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
+
+      const yearPercentageChange =
+        totalLastYear === 0
+          ? 100
+          : ((totalCurrentYear - totalLastYear) / totalLastYear) * 100;
+
+      return {
+        totalCurrentPeriod: totalCurrentYear,
+        totalPreviousPeriod: totalLastYear,
         percentageChange: yearPercentageChange,
-        periodLabel: "Année en cours"
+        periodLabel: "Année en cours",
       };
     }
-  }, [expenses, now, viewMode]);
+  }, [viewMode, expenses, now]);
 
   // Effet pour détecter les changements de montant total
   useEffect(() => {
@@ -117,6 +130,32 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
     setAddDialogOpen(false);
     onExpenseUpdated();
   }, [onExpenseUpdated]);
+
+  // Détermine les couleurs du composant selon le colorScheme fourni
+  const getColorStyles = () => {
+    switch (colorScheme) {
+      case "purple":
+        return {
+          cardBg: "bg-purple-100 dark:bg-purple-900/30",
+          textColor: "text-purple-600 dark:text-purple-300",
+          hoverBg: "hover:bg-purple-200 dark:hover:bg-purple-800",
+        };
+      case "amber":
+        return {
+          cardBg: "bg-amber-100 dark:bg-amber-900/30",
+          textColor: "text-amber-600 dark:text-amber-300",
+          hoverBg: "hover:bg-amber-200 dark:hover:bg-amber-800",
+        };
+      default:
+        return {
+          cardBg: "bg-blue-100 dark:bg-blue-900/30",
+          textColor: "text-blue-600 dark:text-blue-300",
+          hoverBg: "hover:bg-blue-200 dark:hover:bg-blue-800",
+        };
+    }
+  };
+
+  const colors = getColorStyles();
 
   // Déterminer si le montant a augmenté ou diminué pour l'animation
   const hasIncreased = totalCurrentPeriod > prevTotal;
@@ -145,26 +184,17 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               {retailer.logo_url ? (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className={cn(
-                        "rounded-full overflow-hidden border",
-                        "border-gray-100 dark:border-gray-700",
-                        "w-10 h-10 flex items-center justify-center"
-                      )}>
-                        <img 
-                          src={retailer.logo_url} 
-                          alt={retailer.name} 
-                          className="w-9 h-9 object-contain rounded-full"
-                        />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{retailer.name}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <div className={cn(
+                  "rounded-full overflow-hidden border",
+                  "border-gray-100 dark:border-gray-700",
+                  "w-10 h-10 flex items-center justify-center"
+                )}>
+                  <img 
+                    src={retailer.logo_url} 
+                    alt={retailer.name} 
+                    className="w-9 h-9 object-contain rounded-full"
+                  />
+                </div>
               ) : (
                 <div className={cn(
                   "p-2 rounded-full",
@@ -222,7 +252,7 @@ export function RetailerCard({ retailer, expenses, onExpenseUpdated, viewMode }:
                     className={cn(
                       "text-2xl font-bold",
                       // Teinte bleue pour le montant
-                      "text-blue-800 dark:text-blue-200"
+                      "text-blue-700 dark:text-blue-200"
                     )}
                   >
                     {formatCurrency(totalCurrentPeriod)}

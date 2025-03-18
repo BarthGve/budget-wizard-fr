@@ -96,10 +96,7 @@ export function AddExpenseDialog({ onExpenseAdded, preSelectedRetailer, open, on
           </div>
 
           {/* Bouton de fermeture (X) */}
-          <DialogClose className="absolute right-4 top-4 z-20 rounded-full p-1 opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-            <X className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-            <span className="sr-only">Close</span>
-          </DialogClose>
+      
 
           {/* Header */}
           <DialogHeader className="relative z-10 pb-2 pt-2">
