@@ -17,7 +17,8 @@ interface CreditCardProps {
   amount: number;
   subtitle: string;
   badgeText: string;
-  colorScheme: "purple" | "green" | "blue";  // Ajout du schéma bleu
+  colorScheme: "purple" | "green" | "blue";
+  children?: ReactNode; // Ajout de children pour pouvoir passer des éléments JSX
 }
 
 export const CreditCard = ({
@@ -27,7 +28,8 @@ export const CreditCard = ({
   amount,
   subtitle,
   badgeText,
-  colorScheme = "blue"  // Par défaut bleu maintenant
+  colorScheme = "blue",
+  children
 }: CreditCardProps) => {
   // Choix des couleurs en fonction du schéma
   const colors = {
@@ -139,6 +141,9 @@ export const CreditCard = ({
             {badgeText}
           </span>
         </p>
+        
+        {/* Affichage du contenu enfant s'il existe */}
+        {children}
       </CardContent>
     </Card>
   );

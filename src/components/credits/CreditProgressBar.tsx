@@ -27,6 +27,13 @@ export const CreditProgressBar = ({
   amountPaid,
   totalAmount
 }: CreditProgressBarProps) => {
+  // Couleurs pour la barre de progression en fonction du colorScheme
+  const progressColors = {
+    purple: "bg-violet-600",
+    green: "bg-green-600",
+    blue: "bg-blue-600"
+  };
+  
   // Si une valeur est fournie directement, l'utiliser
   if (value !== undefined) {
     const progressValue = Math.min(100, Math.max(0, value));
@@ -112,13 +119,6 @@ export const CreditProgressBar = ({
   const montantTotal = totalMonths * montantMensuel;
   const montantRembourse = completedMonths * montantMensuel;
   const montantRestant = montantTotal - montantRembourse;
-
-  // Couleurs pour la barre de progression en fonction du colorScheme
-  const progressColors = {
-    purple: "bg-violet-600",
-    green: "bg-green-600",
-    blue: "bg-blue-600"
-  };
 
   // Si on ne veut pas de tooltip, on retourne juste la barre de progression
   if (!withTooltip) {
