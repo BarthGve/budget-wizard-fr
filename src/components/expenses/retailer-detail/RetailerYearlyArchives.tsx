@@ -104,7 +104,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
     )}>
       <CardTitle
         className={cn(
-          "text-xl font-semibold flex items-center gap-2",
+          "text-xl font-semibold flex items-center gap-2 mb-2",
           // Light mode
           "text-blue-700",
           // Dark mode
