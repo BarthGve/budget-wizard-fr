@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -212,7 +213,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                     <CardContent>
                       <p className="text-3xl font-bold text-white">{formatCurrency(selectedYearData.total)}</p>
                       <p className="text-sm text-blue-100 opacity-90 mt-1">
-                        Sur {selectedYearData.count} dépense{selectedYearData.count > 1 ? 's' : ''}
+                        Répartis sur {selectedYearData.count} achat{selectedYearData.count > 1 ? 's' : ''}
                       </p>
                     </CardContent>
                   </Card>
@@ -309,24 +310,14 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                     })}
                   </div>
                 </div>
+                
+                {/* Ajout de la section pour la moyenne par achat */}
+                <p className="text-center text-sm text-muted-foreground">
+                  Moyenne par achat: {formatCurrency(selectedYearData.total / selectedYearData.count)}
+                </p>
               </div>
             )}
           </div>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
-                    Répartis sur {selectedYearData.count} achats
-                  </p>
-                </CardContent>
-              </Card>
-              
-              <p className="text-center text-sm text-muted-foreground">
-                Moyenne par achat: {formatCurrency(selectedYearData.total / selectedYearData.count)}
-              </p>
-            </div>
-          )}
         </DialogContent>
       </Dialog>
     </div>
