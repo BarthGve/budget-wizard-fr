@@ -5,6 +5,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { formatCurrency } from "@/utils/format";
 import { cn } from "@/lib/utils";
 
+// Couleurs pour la barre de progression en fonction du colorScheme
+const progressColors = {
+  purple: "bg-violet-600",
+  green: "bg-green-600",
+  blue: "bg-blue-600"
+};
+
 interface CreditProgressBarProps {
   dateDebut: string;
   dateFin: string;
@@ -26,12 +33,6 @@ export const CreditProgressBar = ({
   amountPaid,
   totalAmount
 }: CreditProgressBarProps) => {
-  // Couleurs pour la barre de progression en fonction du colorScheme
-  const progressColors = {
-    purple: "bg-violet-600",
-    green: "bg-green-600",
-    blue: "bg-blue-600"
-  };
   
   // Si une valeur est fournie directement, l'utiliser
   if (value !== undefined) {
@@ -65,7 +66,7 @@ export const CreditProgressBar = ({
               <>
                 <p>Montant remboursé : {formatCurrency(amountPaid)}</p>
                 <p>Montant restant : {formatCurrency(totalAmount - amountPaid)}</p>
-                <p>Montant total : {formatCurrency(totalAmount)}</p>
+                <p>Montant total emprunté : {formatCurrency(totalAmount)}</p>
               </>
             )}
           </TooltipContent>
