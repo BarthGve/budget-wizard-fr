@@ -19,6 +19,7 @@ interface ContributorMonthlyDetailsProps {
   contributorPercentage: number;
   onPageChange: (page: number) => void;
   type?: "expense" | "credit";
+  isDarkTheme?: boolean;
 }
 
 export function ContributorMonthlyDetails({ 
@@ -27,7 +28,8 @@ export function ContributorMonthlyDetails({
   totalPages,
   contributorPercentage,
   onPageChange,
-  type = "expense"
+  type = "expense",
+  isDarkTheme
 }: ContributorMonthlyDetailsProps) {
   const isCredit = type === "credit";
   

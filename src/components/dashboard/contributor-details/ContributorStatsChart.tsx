@@ -1,3 +1,4 @@
+
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -7,16 +8,19 @@ interface ContributorStatsChartProps {
   creditShare: number;
   expenseAmount?: number;
   creditAmount?: number;
+  isDarkTheme?: boolean;
 }
 
 export function ContributorStatsChart({ 
   expenseShare, 
   creditShare,
   expenseAmount = 0,
-  creditAmount = 0
+  creditAmount = 0,
+  isDarkTheme
 }: ContributorStatsChartProps) {
   const { theme } = useTheme();
-  const isDarkTheme = theme === "dark";
+  // Si isDarkTheme n'est pas fourni, utiliser le thème du contexte
+  const isDark = isDarkTheme !== undefined ? isDarkTheme : theme === "dark";
   
   // Formater les valeurs pour avoir 2 décimales et ajouter le symbole €
   const formatValue = (value: number) => `${value.toFixed(2)} €`;
@@ -85,7 +89,7 @@ export function ContributorStatsChart({
               outerRadius={70}
               paddingAngle={3}
               dataKey="value"
-              stroke={isDarkTheme ? "#1A1E2A" : "#FFFFFF"} // Bordure plus contrastée
+              stroke={isDark ? "#1A1E2A" : "#FFFFFF"} // Bordure plus contrastée
               strokeWidth={4} // Bordure plus épaisse pour meilleure séparation
               cornerRadius={6} // Ajout de radius aux segments comme demandé
             >
