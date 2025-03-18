@@ -261,7 +261,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                       )}
                     >
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-purple-600 dark:text-purple-300 flex items-center gap-2">
+                        <CardTitle className="text-xl text-purple-600 dark:text-purple-300 flex items-center gap-2">
                           <Wallet className="w-4 h-4 opacity-80 text-purple-500 dark:text-purple-300" />
                           Achats mensuels moyens
                         </CardTitle>
