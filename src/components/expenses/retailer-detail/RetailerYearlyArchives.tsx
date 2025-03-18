@@ -135,7 +135,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
       
       <Tabs defaultValue={yearlyData[0]?.year.toString()} className="w-full mt-2">
         <TabsList className={cn(
-          "mb-4 w-full justify-start overflow-x-auto pb-1",
+          "mt-4 mb-4 w-full justify-start overflow-x-auto pb-1",
           isDarkTheme 
             ? "bg-gray-800/70 border-b border-gray-700" 
             : "bg-gray-50/70 border-b border-gray-200"
