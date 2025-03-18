@@ -1,4 +1,3 @@
-
 import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
@@ -52,27 +51,25 @@ export const CreditProgressBar = ({
     // Avec tooltip mais utilisant les valeurs fournies directement
     return (
       <TooltipProvider>
-        <div className="space-y-2">
-          <Tooltip>
-            <TooltipTrigger className="w-full">
-              <Progress 
-                value={progressValue} 
-                className="h-3" 
-                indicatorClassName={progressColors[colorScheme]} 
-              />
-            </TooltipTrigger>
-            <TooltipContent className="space-y-2">
-              <p>Progression : {progressValue.toFixed(1)}%</p>
-              {amountPaid !== undefined && totalAmount !== undefined && (
-                <>
-                  <p>Montant remboursé : {formatCurrency(amountPaid)}</p>
-                  <p>Montant restant : {formatCurrency(totalAmount - amountPaid)}</p>
-                  <p>Montant total : {formatCurrency(totalAmount)}</p>
-                </>
-              )}
-            </TooltipContent>
-          </Tooltip>
-        </div>
+        <Tooltip>
+          <TooltipTrigger className="w-full">
+            <Progress 
+              value={progressValue} 
+              className="h-3" 
+              indicatorClassName={progressColors[colorScheme]} 
+            />
+          </TooltipTrigger>
+          <TooltipContent className="space-y-2">
+            <p>Progression : {progressValue.toFixed(1)}%</p>
+            {amountPaid !== undefined && totalAmount !== undefined && (
+              <>
+                <p>Montant remboursé : {formatCurrency(amountPaid)}</p>
+                <p>Montant restant : {formatCurrency(totalAmount - amountPaid)}</p>
+                <p>Montant total : {formatCurrency(totalAmount)}</p>
+              </>
+            )}
+          </TooltipContent>
+        </Tooltip>
       </TooltipProvider>
     );
   }
@@ -133,24 +130,22 @@ export const CreditProgressBar = ({
 
   return (
     <TooltipProvider>
-      <div className="space-y-2">
-        <Tooltip>
-          <TooltipTrigger className="w-full">
-            <Progress 
-              value={progressPercentage} 
-              className="h-3" 
-              indicatorClassName={progressColors[colorScheme]} 
-            />
-          </TooltipTrigger>
-          <TooltipContent className="space-y-2">
-            <p>Mensualités payées : {completedMonths} sur {totalMonths}</p>
-            <p>Progression : {progressPercentage.toFixed(1)}%</p>
-            <p>Montant remboursé : {formatCurrency(montantRembourse)}</p>
-            <p>Montant restant : {formatCurrency(montantRestant)}</p>
-            <p>Montant total : {formatCurrency(montantTotal)}</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
+      <Tooltip>
+        <TooltipTrigger className="w-full">
+          <Progress 
+            value={progressPercentage} 
+            className="h-3" 
+            indicatorClassName={progressColors[colorScheme]} 
+          />
+        </TooltipTrigger>
+        <TooltipContent className="space-y-2">
+          <p>Mensualités payées : {completedMonths} sur {totalMonths}</p>
+          <p>Progression : {progressPercentage.toFixed(1)}%</p>
+          <p>Montant remboursé : {formatCurrency(montantRembourse)}</p>
+          <p>Montant restant : {formatCurrency(montantRestant)}</p>
+          <p>Montant total : {formatCurrency(montantTotal)}</p>
+        </TooltipContent>
+      </Tooltip>
     </TooltipProvider>
   );
 };

@@ -26,26 +26,23 @@ export const TotalDebtCard = ({
       title="Endettement total"
       description={`${activeCreditsCount} crédit(s) en cours`}
       amount={totalDebt}
-      subtitle={`Montant total emprunté`}
+      subtitle="Montant total emprunté"
       badgeText="cumul"
       colorScheme="blue"
     >
-      <div className="flex justify-between mb-1 mt-2">
-        <span>Montant total emprunté</span>
-        <span className="text-blue-600 dark:text-blue-400 font-medium">
-          {formatCurrency(amountPaid)} remboursé
-        </span>
+      {/* Afficher la barre de progression avec tooltip intégré */}
+      <div className="mt-2">
+        <CreditProgressBar 
+          dateDebut={new Date().toISOString()} 
+          dateFin={new Date().toISOString()} 
+          montantMensuel={0}
+          withTooltip={true} // Activer le tooltip
+          colorScheme="blue"
+          value={progressPercentage}
+          amountPaid={amountPaid}
+          totalAmount={totalDebt}
+        />
       </div>
-      <CreditProgressBar 
-        dateDebut={new Date().toISOString()} 
-        dateFin={new Date().toISOString()} 
-        montantMensuel={0}
-        withTooltip={false}
-        colorScheme="blue"
-        value={progressPercentage}
-        amountPaid={amountPaid}
-        totalAmount={totalDebt}
-      />
     </CardComponent>
   );
 };
