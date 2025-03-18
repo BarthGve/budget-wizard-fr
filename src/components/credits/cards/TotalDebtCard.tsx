@@ -1,5 +1,5 @@
 
-import { CreditCard } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { CreditCard as CardComponent } from "./CreditCard";
 import { formatCurrency } from "@/utils/format";
 
@@ -14,11 +14,11 @@ export const TotalDebtCard = ({
 }: TotalDebtCardProps) => {
   return (
     <CardComponent
-      icon={<CreditCard className="h-4 w-4" />}
+      icon={<Wallet className="h-4 w-4" />}
       title="Endettement total"
       description={`${activeCreditsCount} crédit(s) en cours`}
       amount={totalDebt}
-      subtitle="Montant total restant dû"
+      subtitle="Montant total emprunté"
       badgeText="cumul"
       colorScheme="blue"
     />

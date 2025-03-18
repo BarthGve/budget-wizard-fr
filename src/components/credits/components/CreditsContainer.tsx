@@ -24,24 +24,25 @@ export const CreditsContainer = memo(({
   const activeCredits = credits?.filter(credit => credit.statut === 'actif') || [];
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   
-  // Calcul du montant total de la dette (estimation basée sur les mensualités)
-  // Pour chaque crédit actif, nous estimons le montant restant à payer en multipliant 
-  // la mensualité par le nombre de mois restants jusqu'à la date de dernière mensualité
+  // Calcul du montant total emprunté (la somme totale des crédits)
+  // Pour chaque crédit actif, nous calculons le montant total emprunté en multipliant 
+  // la mensualité par le nombre total de mensualités
   const calculateTotalDebt = () => {
     return activeCredits.reduce((total, credit) => {
+      // Calcul du nombre total de mensualités pour ce crédit
+      const firstPaymentDate = new Date(credit.date_premiere_mensualite);
       const lastPaymentDate = new Date(credit.date_derniere_mensualite);
-      const today = new Date();
       
-      // Calcul du nombre de mois restants
-      const monthsRemaining = 
-        (lastPaymentDate.getFullYear() - today.getFullYear()) * 12 + 
-        (lastPaymentDate.getMonth() - today.getMonth());
+      // Calcul du nombre total de mois entre la première et la dernière mensualité
+      const totalMonths = 
+        (lastPaymentDate.getFullYear() - firstPaymentDate.getFullYear()) * 12 + 
+        (lastPaymentDate.getMonth() - firstPaymentDate.getMonth()) + 1; // +1 pour inclure le mois de début
       
-      // Ne compter que les mois futurs (positifs)
-      const remainingPayments = Math.max(0, monthsRemaining);
+      // Calculer le montant total emprunté pour ce crédit
+      const totalLoanAmount = credit.montant_mensualite * totalMonths;
       
-      // Ajouter au total
-      return total + (credit.montant_mensualite * remainingPayments);
+      // Ajouter au total global
+      return total + totalLoanAmount;
     }, 0);
   };
 
