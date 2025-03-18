@@ -219,122 +219,70 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
               </div>
             </DialogHeader>
             
-            {selectedYearData && (
-              <div className="space-y-5 p-5">
-                {/* En-tête des statistiques */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className={cn(
-                    "overflow-hidden",
-                    isDarkTheme 
-                      ? "bg-gradient-to-br from-blue-900 to-indigo-800 border-blue-700/50"
-                      : "bg-gradient-to-br from-blue-500 to-indigo-600 border-blue-400/20"
-                  )}>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <Receipt className="w-4 h-4 opacity-80" />
-                        Total des dépenses
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-3xl font-bold text-white">{formatCurrency(selectedYearData.total)}</p>
-                      <p className="text-sm text-blue-100 opacity-90 mt-1">
-                        Répartis sur {selectedYearData.count} achat{selectedYearData.count > 1 ? 's' : ''}
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className={cn(
-                    "overflow-hidden",
-                    isDarkTheme 
-                      ? "bg-gradient-to-br from-purple-900 to-pink-800 border-purple-700/50"
-                      : "bg-gradient-to-br from-purple-500 to-pink-600 border-purple-400/20"
-                  )}>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 opacity-80" />
-                        Moyenne mensuelle
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {/* Calculer la moyenne mensuelle */}
-                      <p className="text-3xl font-bold text-white">
-                        {formatCurrency(selectedYearData.total / Object.keys(monthlyData).length)}
-                      </p>
-                      <p className="text-sm text-purple-100 opacity-90 mt-1">
-                        Sur {Object.keys(monthlyData).length} mois d'activité
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-                
-                {/* Répartition par mois */}
-                <div className="bg-gray-50/10 rounded-lg p-4 border border-gray-700/20 mt-6">
-                  <h3 className={cn(
-                    "text-lg font-semibold mb-4",
-                    isDarkTheme ? "text-gray-200" : "text-gray-800"
-                  )}>
-                    Répartition mensuelle
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {Array.from(Array(12).keys()).map(month => {
-                      const data = monthlyData[month];
-                      const hasData = !!data;
-                      
-                      return (
-                        <div 
-                          key={month} 
-                          className={cn(
-                            "p-3 rounded-lg flex items-center justify-between",
-                            isDarkTheme 
-                              ? hasData ? "bg-gray-800/70 border border-gray-700/70" : "bg-gray-800/20 border border-gray-700/30"
-                              : hasData ? "bg-white border border-gray-200" : "bg-gray-100/40 border border-gray-200/40",
-                            hasData ? "" : "opacity-60"
-                          )}
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className={cn(
-                              "w-2 h-10 rounded-full",
-                              hasData 
-                                ? isDarkTheme ? "bg-blue-500" : "bg-blue-500" 
-                                : isDarkTheme ? "bg-gray-700" : "bg-gray-300"
-                            )} />
-                            <span className={cn(
-                              isDarkTheme ? "text-gray-300" : "text-gray-700",
-                              "font-medium"
-                            )}>
-                              {monthNames[month]}
-                            </span>
-                          </div>
-                          
-                          {hasData ? (
-                            <div className="text-right">
-                              <p className={cn(
-                                "font-semibold",
-                                isDarkTheme ? "text-blue-300" : "text-blue-600"
-                              )}>
-                                {formatCurrency(data.total)}
-                              </p>
-                              <p className={cn(
-                                "text-xs",
-                                isDarkTheme ? "text-gray-400" : "text-gray-500"
-                              )}>
-                                {data.count} dépense{data.count > 1 ? 's' : ''}
-                              </p>
-                            </div>
-                          ) : (
-                            <span className={cn(
-                              "text-sm italic",
-                              isDarkTheme ? "text-gray-500" : "text-gray-400"
-                            )}>
-                              Aucune
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+        {selectedYearData && (
+  <div className="space-y-5 p-5">
+    {/* En-tête des statistiques */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      
+      {/* Total des dépenses */}
+      <motion.div
+        whileHover={{ y: -5, transition: { duration: 0.2 } }} // Animation similaire à RetailerStatsCard
+      >
+        <Card 
+          className={cn(
+            "border shadow-sm overflow-hidden",
+            "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10"
+          )}
+        >
+          <CardHeader className="pb-2">
+            <CardTitle className="text-blue-600 dark:text-blue-300 flex items-center gap-2">
+              <Receipt className="w-4 h-4 opacity-80 text-blue-500 dark:text-blue-300" />
+              Total des dépenses
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-blue-700 dark:text-blue-100">
+              {formatCurrency(selectedYearData.total)}
+            </p>
+            <p className="text-sm text-blue-500 dark:text-blue-300 mt-1">
+              {selectedYearData.count} dépenses enregistrées
+            </p>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Statistique des achats (mensuels par exemple) */}
+      <motion.div
+        whileHover={{ y: -5, transition: { duration: 0.2 } }} // Animation similaire à RetailerStatsCard
+      >
+        <Card 
+          className={cn(
+            "border shadow-sm overflow-hidden",
+            "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10"
+          )}
+        >
+          <CardHeader className="pb-2">
+            <CardTitle className="text-purple-600 dark:text-purple-300 flex items-center gap-2">
+              <Wallet className="w-4 h-4 opacity-80 text-purple-500 dark:text-purple-300" />
+              Achats mensuels moyens
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-purple-700 dark:text-purple-100">
+              {/* Ajoute ici une métrique calculée, si nécessaire */}
+              {formatCurrency(selectedYearData.total / 12)} {/* Exemple de moyenne */}
+            </p>
+            <p className="text-sm text-purple-500 dark:text-purple-300 mt-1">
+              Moyenne par mois
+            </p>
+          </CardContent>
+        </Card>
+      </motion.div>
+      
+    </div>
+  </div>
+)}
+
                 
                 {/* Ajout de la section pour la moyenne par achat */}
                 <p className="text-center text-sm text-muted-foreground">
