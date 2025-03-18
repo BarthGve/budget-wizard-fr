@@ -11,6 +11,7 @@ interface CreditSummaryCardsProps {
   totalActiveMensualites: number;
   totalRepaidMensualitesThisMonth: number;
   totalDebt?: number;
+  amountPaid?: number;
 }
 
 export const CreditSummaryCards = memo(({
@@ -18,7 +19,8 @@ export const CreditSummaryCards = memo(({
   repaidThisMonth,
   totalActiveMensualites,
   totalRepaidMensualitesThisMonth,
-  totalDebt = 0
+  totalDebt = 0,
+  amountPaid = 0
 }: CreditSummaryCardsProps) => {
   return (
     <>
@@ -41,6 +43,7 @@ export const CreditSummaryCards = memo(({
         <TotalDebtCard 
           totalDebt={totalDebt}
           activeCreditsCount={activeCredits.length}
+          amountPaid={amountPaid}
         />
       </motion.div>
     </>

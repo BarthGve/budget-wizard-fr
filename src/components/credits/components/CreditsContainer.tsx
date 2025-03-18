@@ -46,7 +46,39 @@ export const CreditsContainer = memo(({
     }, 0);
   };
 
+  // Calculer le montant déjà remboursé pour tous les crédits actifs
+  const calculateAmountPaid = () => {
+    return activeCredits.reduce((total, credit) => {
+      const firstPaymentDate = new Date(credit.date_premiere_mensualite);
+      const today = new Date();
+      
+      // Si le crédit n'a pas encore commencé, rien n'a été remboursé
+      if (firstPaymentDate > today) return total;
+      
+      // Calculer combien de mensualités ont été payées
+      const monthsPaid = 
+        (today.getFullYear() - firstPaymentDate.getFullYear()) * 12 + 
+        (today.getMonth() - firstPaymentDate.getMonth()) + 
+        (today.getDate() >= firstPaymentDate.getDate() ? 1 : 0); // Ajouter 1 si nous sommes à ou après le jour du mois de paiement
+      
+      // S'assurer que le nombre de mensualités payées ne dépasse pas le total
+      const lastPaymentDate = new Date(credit.date_derniere_mensualite);
+      const totalMonths = 
+        (lastPaymentDate.getFullYear() - firstPaymentDate.getFullYear()) * 12 + 
+        (lastPaymentDate.getMonth() - firstPaymentDate.getMonth()) + 1;
+      
+      const validMonthsPaid = Math.max(0, Math.min(monthsPaid, totalMonths));
+      
+      // Calculer le montant remboursé pour ce crédit
+      const amountPaid = validMonthsPaid * credit.montant_mensualite;
+      
+      // Ajouter au total
+      return total + amountPaid;
+    }, 0);
+  };
+
   const totalDebt = calculateTotalDebt();
+  const amountPaid = calculateAmountPaid();
 
   return (
     <motion.div 
@@ -68,6 +100,7 @@ export const CreditsContainer = memo(({
           totalActiveMensualites={totalActiveMensualites} 
           totalRepaidMensualitesThisMonth={monthlyStats.total_mensualites_remboursees}
           totalDebt={totalDebt}
+          amountPaid={amountPaid}
         />
       </motion.div>
 
