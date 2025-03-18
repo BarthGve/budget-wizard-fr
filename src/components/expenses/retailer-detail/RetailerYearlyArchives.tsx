@@ -234,7 +234,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                       )}
                     >
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-blue-600 dark:text-blue-300 flex items-center gap-2">
+                        <CardTitle className="text-xl text-blue-600 dark:text-blue-300 flex items-center gap-2">
                           <Receipt className="w-4 h-4 opacity-80 text-blue-500 dark:text-blue-300" />
                           Total des dépenses
                         </CardTitle>
