@@ -15,11 +15,9 @@ import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
 
 export const VehiclesList = () => {
   const { vehicles, isLoading, updateVehicle, isUpdating, deleteVehicle, isDeleting } = useVehicles();
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
-  
-  // Utiliser le store global pour la sélection de véhicule
-  const { selectedVehicleId, setSelectedVehicleId } = useVehiclesContainer();
 
   const handleEdit = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
@@ -42,9 +40,7 @@ export const VehiclesList = () => {
     }
   };
 
-  // Gestionnaire de sélection de véhicule qui utilise le store global
   const handleVehicleSelect = (vehicleId: string) => {
-    console.log("Sélection du véhicule:", vehicleId);
     if (selectedVehicleId === vehicleId) {
       setSelectedVehicleId(null);
     } else {

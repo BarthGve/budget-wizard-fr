@@ -1,13 +1,12 @@
 
 import { AddVehicleDialog } from "./AddVehicleDialog";
 import { VehiclesList } from "./VehiclesList";
+import { useState } from "react";
 import { VehicleExpenseContainer } from "./expenses/VehicleExpenseContainer";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
 
 export const VehiclesContainer = () => {
-  // Utiliser le store global pour la sélection du véhicule
-  const { selectedVehicleId } = useVehiclesContainer();
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const { canAccessFeature } = usePagePermissions();
   
   // Vérifier si l'utilisateur a accès aux dépenses des véhicules

@@ -27,13 +27,12 @@ const expenseTypes = [
   { value: "autre", label: "Autre" }
 ];
 
-// Schéma de validation mis à jour pour s'assurer que les nombres sont correctement convertis
 const formSchema = z.object({
   expense_type: z.string().min(1, "Le type de dépense est requis"),
   date: z.string().min(1, "La date est requise"),
-  amount: z.coerce.number().min(0.01, "Le montant doit être supérieur à 0"),
-  fuel_volume: z.coerce.number().optional(),
-  mileage: z.coerce.number().optional(),
+  amount: z.string().min(1, "Le montant est requis").transform(val => Number(val)),
+  fuel_volume: z.string().optional().transform(val => val ? Number(val) : undefined),
+  mileage: z.string().optional().transform(val => val ? Number(val) : undefined),
   comment: z.string().optional()
 });
 
@@ -47,9 +46,9 @@ export const AddVehicleExpenseDialog = ({ vehicleId, open, onOpenChange }: AddVe
     defaultValues: {
       expense_type: '',
       date: new Date().toISOString().split('T')[0],
-      amount: 0,
-      fuel_volume: undefined,
-      mileage: undefined,
+      amount: '',
+      fuel_volume: '',
+      mileage: '',
       comment: ''
     }
   });
@@ -60,8 +59,8 @@ export const AddVehicleExpenseDialog = ({ vehicleId, open, onOpenChange }: AddVe
       expense_type: data.expense_type,
       date: data.date,
       amount: data.amount,
-      fuel_volume: data.fuel_volume,
-      mileage: data.mileage,
+      fuel_volume: data.fuel_volume ? data.fuel_volume : undefined,
+      mileage: data.mileage ? data.mileage : undefined,
       comment: data.comment || null
     };
 
