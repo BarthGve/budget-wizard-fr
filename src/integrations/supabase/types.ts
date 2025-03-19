@@ -287,6 +287,30 @@ export type Database = {
           },
         ]
       }
+      fuel_companies: {
+        Row: {
+          created_at: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       monthly_savings: {
         Row: {
           amount: number
@@ -887,6 +911,140 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vehicle_expense_types: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      vehicle_expenses: {
+        Row: {
+          amount: number
+          comment: string | null
+          created_at: string | null
+          date: string
+          expense_type: string
+          fuel_company_id: string | null
+          fuel_volume: number | null
+          id: string
+          maintenance_type: string | null
+          mileage: number | null
+          repair_type: string | null
+          updated_at: string | null
+          vehicle_id: string
+        }
+        Insert: {
+          amount: number
+          comment?: string | null
+          created_at?: string | null
+          date: string
+          expense_type: string
+          fuel_company_id?: string | null
+          fuel_volume?: number | null
+          id?: string
+          maintenance_type?: string | null
+          mileage?: number | null
+          repair_type?: string | null
+          updated_at?: string | null
+          vehicle_id: string
+        }
+        Update: {
+          amount?: number
+          comment?: string | null
+          created_at?: string | null
+          date?: string
+          expense_type?: string
+          fuel_company_id?: string | null
+          fuel_volume?: number | null
+          id?: string
+          maintenance_type?: string | null
+          mileage?: number | null
+          repair_type?: string | null
+          updated_at?: string | null
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_expenses_fuel_company_id_fkey"
+            columns: ["fuel_company_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehicle_expenses_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicles: {
+        Row: {
+          acquisition_date: string
+          brand: string
+          created_at: string | null
+          fuel_type: string
+          id: string
+          model: string | null
+          photo_url: string | null
+          profile_id: string
+          registration_number: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          acquisition_date: string
+          brand: string
+          created_at?: string | null
+          fuel_type: string
+          id?: string
+          model?: string | null
+          photo_url?: string | null
+          profile_id: string
+          registration_number: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          acquisition_date?: string
+          brand?: string
+          created_at?: string | null
+          fuel_type?: string
+          id?: string
+          model?: string | null
+          photo_url?: string | null
+          profile_id?: string
+          registration_number?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
