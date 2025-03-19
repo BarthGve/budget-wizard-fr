@@ -6,16 +6,28 @@ import { useState } from "react";
 import { useVehicles } from "@/hooks/useVehicles";
 import { PlusIcon } from "lucide-react";
 import { type VehicleFormValues } from "@/hooks/useVehicleForm";
+import { toast } from "sonner";
 
 export const AddVehicleDialog = () => {
   const [open, setOpen] = useState(false);
   const { addVehicle, isAdding } = useVehicles();
 
   const handleSubmit = (data: VehicleFormValues) => {
+    // Vérifier que tous les champs requis sont présents
+    if (!data.registration_number || !data.brand || !data.acquisition_date || !data.fuel_type) {
+      toast.error("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+    
     // S'assurer que toutes les propriétés requises sont présentes
     const vehicleData = {
-      ...data,
-      status: data.status || "actif", // Définir une valeur par défaut si non fournie
+      registration_number: data.registration_number,
+      brand: data.brand,
+      model: data.model || "",
+      acquisition_date: data.acquisition_date,
+      fuel_type: data.fuel_type,
+      status: data.status || "actif",
+      photo_url: data.photo_url || undefined
     };
     
     addVehicle(vehicleData, {
