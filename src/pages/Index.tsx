@@ -53,7 +53,7 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <motion.div 
-        className="grid gap-6 mt-4"
+        className="grid mt-4"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
