@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,9 +29,9 @@ const expenseTypes = [
 const formSchema = z.object({
   expense_type: z.string().min(1, "Le type de dépense est requis"),
   date: z.string().min(1, "La date est requise"),
-  amount: z.string().min(1, "Le montant est requis").transform(val => Number(val)),
-  fuel_volume: z.string().optional().transform(val => val ? Number(val) : undefined),
-  mileage: z.string().optional().transform(val => val ? Number(val) : undefined),
+  amount: z.coerce.number().min(0.01, "Le montant doit être supérieur à 0"),
+  fuel_volume: z.coerce.number().optional(),
+  mileage: z.coerce.number().optional(),
   comment: z.string().optional()
 });
 
@@ -46,9 +45,9 @@ export const AddVehicleExpenseDialog = ({ vehicleId, open, onOpenChange }: AddVe
     defaultValues: {
       expense_type: '',
       date: new Date().toISOString().split('T')[0],
-      amount: '',
-      fuel_volume: '',
-      mileage: '',
+      amount: 0,
+      fuel_volume: undefined,
+      mileage: undefined,
       comment: ''
     }
   });
@@ -59,8 +58,8 @@ export const AddVehicleExpenseDialog = ({ vehicleId, open, onOpenChange }: AddVe
       expense_type: data.expense_type,
       date: data.date,
       amount: data.amount,
-      fuel_volume: data.fuel_volume ? data.fuel_volume : undefined,
-      mileage: data.mileage ? data.mileage : undefined,
+      fuel_volume: data.fuel_volume,
+      mileage: data.mileage,
       comment: data.comment || null
     };
 
@@ -131,6 +130,7 @@ export const AddVehicleExpenseDialog = ({ vehicleId, open, onOpenChange }: AddVe
                         step="0.01"
                         placeholder="0.00" 
                         {...field} 
+                        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -152,6 +152,8 @@ export const AddVehicleExpenseDialog = ({ vehicleId, open, onOpenChange }: AddVe
                         step="0.01"
                         placeholder="Optionnel" 
                         {...field} 
+                        value={field.value === undefined ? '' : field.value}
+                        onChange={(e) => field.onChange(e.target.value === '' ? undefined : e.target.valueAsNumber)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -170,6 +172,8 @@ export const AddVehicleExpenseDialog = ({ vehicleId, open, onOpenChange }: AddVe
                         type="number" 
                         placeholder="Optionnel" 
                         {...field} 
+                        value={field.value === undefined ? '' : field.value}
+                        onChange={(e) => field.onChange(e.target.value === '' ? undefined : e.target.valueAsNumber)}
                       />
                     </FormControl>
                     <FormMessage />
