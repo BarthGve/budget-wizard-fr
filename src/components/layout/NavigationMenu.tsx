@@ -12,6 +12,7 @@ import {
   CreditCard,
   ShoppingBasket,
   List,
+  Car,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
@@ -47,6 +48,7 @@ const userMenu: MenuItem[] = [
   { title: "Épargne", icon: PiggyBank, path: "/savings" },
   { title: "Bourse", icon: TrendingUp, path: "/stocks" },
   { title: "Immobilier", icon: Home, path: "/properties" },
+  { title: "Véhicules", icon: Car, path: "/vehicles" },
 ];
 
 export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
