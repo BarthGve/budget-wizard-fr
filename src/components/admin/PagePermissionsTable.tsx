@@ -112,6 +112,7 @@ export const PagePermissionsTable = () => {
     const descriptions: { [key: string]: string } = {
       '/savings': "Permet aux utilisateurs de gérer leurs projets d'épargne et leurs versements mensuels.",
       '/dashboard': "Page d'accueil avec le résumé des finances.",
+      '/vehicles': "Permet aux utilisateurs de gérer leurs véhicules et suivre les dépenses associées.",
       // Ajoutez d'autres descriptions au besoin
     };
     return descriptions[pagePath] || "Page de l'application";
