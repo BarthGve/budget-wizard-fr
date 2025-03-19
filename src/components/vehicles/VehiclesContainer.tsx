@@ -7,10 +7,10 @@ import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 export const VehiclesContainer = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
-  const { hasFeaturePermission } = usePagePermissions();
+  const { canAccessFeature } = usePagePermissions();
   
   // Vérifier si l'utilisateur a accès aux dépenses des véhicules
-  const canAccessExpenses = hasFeaturePermission('/vehicles', 'vehicles_expenses');
+  const canAccessExpenses = canAccessFeature('/vehicles', 'vehicles_expenses');
 
   return (
     <div className="space-y-8">
@@ -24,10 +24,7 @@ export const VehiclesContainer = () => {
         <AddVehicleDialog />
       </div>
 
-      <VehiclesList 
-        onVehicleSelect={setSelectedVehicleId}
-        selectedVehicleId={selectedVehicleId}
-      />
+      <VehiclesList />
 
       {canAccessExpenses && selectedVehicleId && (
         <VehicleExpenseContainer vehicleId={selectedVehicleId} />

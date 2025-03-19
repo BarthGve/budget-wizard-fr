@@ -11,11 +11,13 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FUEL_TYPES } from "@/types/vehicle";
+import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
 
 export const VehiclesList = () => {
   const { vehicles, isLoading, updateVehicle, isUpdating, deleteVehicle, isDeleting } = useVehicles();
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
 
   const handleEdit = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
@@ -35,6 +37,14 @@ export const VehiclesList = () => {
   const handleDelete = (id: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce véhicule ?")) {
       deleteVehicle(id);
+    }
+  };
+
+  const handleVehicleSelect = (vehicleId: string) => {
+    if (selectedVehicleId === vehicleId) {
+      setSelectedVehicleId(null);
+    } else {
+      setSelectedVehicleId(vehicleId);
     }
   };
 
@@ -80,7 +90,11 @@ export const VehiclesList = () => {
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {vehicles?.map((vehicle) => (
-          <Card key={vehicle.id} className="shadow-sm">
+          <Card 
+            key={vehicle.id} 
+            className={`shadow-sm cursor-pointer transition-all ${selectedVehicleId === vehicle.id ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => handleVehicleSelect(vehicle.id)}
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex justify-between">
                 <span>
@@ -120,7 +134,10 @@ export const VehiclesList = () => {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => handleEdit(vehicle)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEdit(vehicle);
+                }}
               >
                 <PencilIcon className="h-4 w-4 mr-1" />
                 Modifier
@@ -128,7 +145,10 @@ export const VehiclesList = () => {
               <Button
                 size="sm"
                 variant="destructive"
-                onClick={() => handleDelete(vehicle.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(vehicle.id);
+                }}
                 disabled={isDeleting}
               >
                 <TrashIcon className="h-4 w-4 mr-1" />

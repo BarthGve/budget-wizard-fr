@@ -59,8 +59,8 @@ export const AddVehicleExpenseDialog = ({ vehicleId, open, onOpenChange }: AddVe
       expense_type: data.expense_type,
       date: data.date,
       amount: data.amount,
-      fuel_volume: data.fuel_volume,
-      mileage: data.mileage,
+      fuel_volume: data.fuel_volume ? data.fuel_volume : undefined,
+      mileage: data.mileage ? data.mileage : undefined,
       comment: data.comment || null
     };
 
