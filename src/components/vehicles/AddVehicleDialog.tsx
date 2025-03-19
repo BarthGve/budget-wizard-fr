@@ -8,7 +8,11 @@ import { PlusIcon } from "lucide-react";
 import { type VehicleFormValues } from "@/hooks/useVehicleForm";
 import { toast } from "sonner";
 
-export const AddVehicleDialog = () => {
+type AddVehicleDialogProps = {
+  trigger?: React.ReactNode;
+};
+
+export const AddVehicleDialog = ({ trigger }: AddVehicleDialogProps = {}) => {
   const [open, setOpen] = useState(false);
   const { addVehicle, isAdding } = useVehicles();
 
@@ -40,10 +44,12 @@ export const AddVehicleDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <PlusIcon className="mr-2 h-4 w-4" />
-          Ajouter un véhicule
-        </Button>
+        {trigger || (
+          <Button>
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Ajouter un véhicule
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
