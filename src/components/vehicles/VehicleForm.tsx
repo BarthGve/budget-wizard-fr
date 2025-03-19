@@ -1,4 +1,3 @@
-
 import { useVehicleForm, VehicleFormValues } from "@/hooks/useVehicleForm";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -10,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useVehicleBrandLogo } from "@/hooks/useVehicleBrandLogo";
+import { BrandLogoPreview } from "./BrandLogoPreview";
 
 interface VehicleFormProps {
   onSubmit: (data: VehicleFormValues) => void;
@@ -25,6 +26,10 @@ export const VehicleForm = ({ onSubmit, onCancel, vehicle, isPending }: VehicleF
   const { form } = useVehicleForm(vehicle);
   const [isUploading, setIsUploading] = useState(false);
   const { currentUser } = useCurrentUser();
+  
+  // Observer la valeur du champ brand pour la prévisualisation du logo
+  const brand = form.watch("brand") || "";
+  const { previewLogoUrl, isLogoValid, isCheckingLogo } = useVehicleBrandLogo(brand);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -119,12 +124,20 @@ export const VehicleForm = ({ onSubmit, onCancel, vehicle, isPending }: VehicleF
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Marque</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Ex: Renault, Peugeot..." 
-                    {...field} 
+                <div className="flex items-center gap-4">
+                  <FormControl>
+                    <Input 
+                      placeholder="Ex: Renault, Peugeot..." 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <BrandLogoPreview
+                    url={previewLogoUrl}
+                    isValid={isLogoValid}
+                    isChecking={isCheckingLogo}
+                    brand={brand}
                   />
-                </FormControl>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
