@@ -7,9 +7,6 @@ import { motion } from "framer-motion";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header/DashboardHeader";
 import { DashboardBanners } from "@/components/dashboard/dashboard-banners/DashboardBanners";
 import { useDashboardViewCalculations } from "@/hooks/useDashboardViewCalculations";
-import { Button } from "@/components/ui/button";
-import { Car } from "lucide-react";
-import { Link } from "react-router-dom";
 
 // Composants memoizés pour éviter les re-rendus inutiles
 const MemoizedDashboardHeader = memo(DashboardHeader);
@@ -70,28 +67,6 @@ const Dashboard = () => {
 
         {/* Bandeaux de création */}
         <MemoizedDashboardBanners />
-        
-        {/* Nouvelle section pour les véhicules */}
-        <motion.div 
-          className="mx-4 my-4 p-4 bg-white rounded-lg shadow-sm border"
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 }
-          }}
-        >
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-lg font-medium">Gérez vos véhicules</h3>
-              <p className="text-sm text-gray-500">Suivez les dépenses et l'entretien de vos véhicules</p>
-            </div>
-            <Button asChild>
-              <Link to="/vehicles">
-                <Car className="mr-2 h-4 w-4" />
-                Voir mes véhicules
-              </Link>
-            </Button>
-          </div>
-        </motion.div>
         
         {/* Contenu principal du tableau de bord */}
         <MemoizedDashboardTabContent
