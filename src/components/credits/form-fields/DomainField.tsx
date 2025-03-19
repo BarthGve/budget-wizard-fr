@@ -22,7 +22,7 @@ export const DomainField = ({ form }: DomainFieldProps) => {
       name="nom_domaine"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Domaine de l'organisme (optionnel)</FormLabel>
+          <FormLabel>Domaine de l'organisme </FormLabel>
           <div className="flex items-center gap-4">
             <FormControl>
               <Input
