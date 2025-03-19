@@ -1,49 +1,37 @@
 
-import { useState } from "react";
-import { VehiclesList } from "./VehiclesList";
 import { AddVehicleDialog } from "./AddVehicleDialog";
-import { motion } from "framer-motion";
+import { VehiclesList } from "./VehiclesList";
+import { useState } from "react";
+import { VehicleExpenseContainer } from "./expenses/VehicleExpenseContainer";
+import { usePagePermissions } from "@/hooks/usePagePermissions";
 
 export const VehiclesContainer = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0
-    }
-  };
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+  const { hasFeaturePermission } = usePagePermissions();
+  
+  // Vérifier si l'utilisateur a accès aux dépenses des véhicules
+  const canAccessExpenses = hasFeaturePermission('/vehicles', 'vehicles_expenses');
 
   return (
-    <motion.div
-      className="container mx-auto py-6"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <motion.div 
-        className="flex justify-between items-center mb-6"
-        variants={itemVariants}
-      >
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Mes véhicules</h1>
-          <p className="text-gray-500">Gérez vos véhicules et leurs dépenses</p>
+          <h1 className="text-2xl font-bold tracking-tight">Mes véhicules</h1>
+          <p className="text-muted-foreground">
+            Gérez vos véhicules et suivez leurs dépenses.
+          </p>
         </div>
         <AddVehicleDialog />
-      </motion.div>
+      </div>
 
-      <motion.div variants={itemVariants}>
-        <VehiclesList />
-      </motion.div>
-    </motion.div>
+      <VehiclesList 
+        onVehicleSelect={setSelectedVehicleId}
+        selectedVehicleId={selectedVehicleId}
+      />
+
+      {canAccessExpenses && selectedVehicleId && (
+        <VehicleExpenseContainer vehicleId={selectedVehicleId} />
+      )}
+    </div>
   );
 };

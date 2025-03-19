@@ -9,6 +9,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface VehicleFormProps {
   onSubmit: (data: VehicleFormValues) => void;
@@ -23,10 +24,15 @@ export type { VehicleFormValues };
 export const VehicleForm = ({ onSubmit, onCancel, vehicle, isPending }: VehicleFormProps) => {
   const { form } = useVehicleForm(vehicle);
   const [isUploading, setIsUploading] = useState(false);
+  const { currentUser } = useCurrentUser();
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
+    if (!currentUser) {
+      toast.error("Vous devez être connecté pour télécharger une photo");
+      return;
+    }
 
     const file = files[0];
     setIsUploading(true);
@@ -35,26 +41,47 @@ export const VehicleForm = ({ onSubmit, onCancel, vehicle, isPending }: VehicleF
       // Création d'un nom de fichier unique
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const filePath = `${currentUser.id}/${fileName}`; // Ajout de l'ID de l'utilisateur dans le chemin
+
+      // Vérification du type de fichier (uniquement images)
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Seules les images sont autorisées');
+      }
+
+      // Vérification de la taille du fichier (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error('La taille du fichier ne doit pas dépasser 5MB');
+      }
+
+      console.log("Téléchargement de l'image...", filePath);
 
       // Upload de l'image
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from('vehicle_photos')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) {
+        console.error("Erreur d'upload:", uploadError);
         throw uploadError;
       }
 
+      console.log("Image téléchargée avec succès:", data);
+
       // Récupération de l'URL publique de l'image
-      const { data } = supabase.storage
+      const { data: urlData } = supabase.storage
         .from('vehicle_photos')
         .getPublicUrl(filePath);
 
+      console.log("URL publique générée:", urlData.publicUrl);
+
       // Mise à jour du formulaire
-      form.setValue('photo_url', data.publicUrl);
+      form.setValue('photo_url', urlData.publicUrl);
       toast.success("Photo téléchargée avec succès");
     } catch (error: any) {
+      console.error("Erreur complète:", error);
       toast.error(`Erreur lors du téléchargement de la photo: ${error.message}`);
     } finally {
       setIsUploading(false);
