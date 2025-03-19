@@ -18,7 +18,7 @@ interface VehicleFormProps {
 }
 
 // Exportons VehicleFormValues depuis ce fichier également
-export { VehicleFormValues };
+export type { VehicleFormValues };
 
 export const VehicleForm = ({ onSubmit, onCancel, vehicle, isPending }: VehicleFormProps) => {
   const { form } = useVehicleForm(vehicle);

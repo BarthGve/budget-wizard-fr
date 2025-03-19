@@ -7,18 +7,18 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const useVehicles = () => {
   const queryClient = useQueryClient();
-  const { user } = useCurrentUser();
+  const { currentUser } = useCurrentUser();
 
   // Récupérer la liste des véhicules
   const { data: vehicles, isLoading, error } = useQuery({
     queryKey: ["vehicles"],
     queryFn: async () => {
-      if (!user) throw new Error("User not authenticated");
+      if (!currentUser) throw new Error("User not authenticated");
 
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
-        .eq("profile_id", user.id)
+        .eq("profile_id", currentUser.id)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -27,17 +27,17 @@ export const useVehicles = () => {
 
       return data as Vehicle[];
     },
-    enabled: !!user
+    enabled: !!currentUser
   });
 
   // Ajouter un véhicule
   const { mutate: addVehicle, isPending: isAdding } = useMutation({
     mutationFn: async (vehicle: Omit<Vehicle, "id" | "created_at" | "updated_at">) => {
-      if (!user) throw new Error("User not authenticated");
+      if (!currentUser) throw new Error("User not authenticated");
 
       const vehicleWithProfileId = {
         ...vehicle,
-        profile_id: user.id
+        profile_id: currentUser.id
       };
 
       const { data, error } = await supabase

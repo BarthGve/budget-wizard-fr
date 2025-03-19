@@ -5,14 +5,20 @@ import { VehicleForm } from "@/components/vehicles/VehicleForm";
 import { useState } from "react";
 import { useVehicles } from "@/hooks/useVehicles";
 import { PlusIcon } from "lucide-react";
-import { VehicleFormValues } from "@/hooks/useVehicleForm";
+import { type VehicleFormValues } from "@/hooks/useVehicleForm";
 
 export const AddVehicleDialog = () => {
   const [open, setOpen] = useState(false);
   const { addVehicle, isAdding } = useVehicles();
 
   const handleSubmit = (data: VehicleFormValues) => {
-    addVehicle(data, {
+    // S'assurer que toutes les propriétés requises sont présentes
+    const vehicleData = {
+      ...data,
+      status: data.status || "actif", // Définir une valeur par défaut si non fournie
+    };
+    
+    addVehicle(vehicleData, {
       onSuccess: () => {
         setOpen(false);
       },
