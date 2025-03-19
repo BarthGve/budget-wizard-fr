@@ -15,6 +15,7 @@ const vehicleSchema = z.object({
   photo_url: z.string().optional()
 });
 
+// Exporter le type des valeurs du formulaire
 export type VehicleFormValues = z.infer<typeof vehicleSchema>;
 
 export const useVehicleForm = (defaultValues?: Partial<Vehicle>) => {

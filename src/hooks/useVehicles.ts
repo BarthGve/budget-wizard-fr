@@ -3,17 +3,22 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Vehicle } from "@/types/vehicle";
 import { toast } from "sonner";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const useVehicles = () => {
   const queryClient = useQueryClient();
+  const { user } = useCurrentUser();
 
   // Récupérer la liste des véhicules
   const { data: vehicles, isLoading, error } = useQuery({
     queryKey: ["vehicles"],
     queryFn: async () => {
+      if (!user) throw new Error("User not authenticated");
+
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
+        .eq("profile_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -21,15 +26,23 @@ export const useVehicles = () => {
       }
 
       return data as Vehicle[];
-    }
+    },
+    enabled: !!user
   });
 
   // Ajouter un véhicule
   const { mutate: addVehicle, isPending: isAdding } = useMutation({
     mutationFn: async (vehicle: Omit<Vehicle, "id" | "created_at" | "updated_at">) => {
+      if (!user) throw new Error("User not authenticated");
+
+      const vehicleWithProfileId = {
+        ...vehicle,
+        profile_id: user.id
+      };
+
       const { data, error } = await supabase
         .from("vehicles")
-        .insert(vehicle)
+        .insert(vehicleWithProfileId)
         .select()
         .single();
 

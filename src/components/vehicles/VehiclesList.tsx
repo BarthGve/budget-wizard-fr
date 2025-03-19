@@ -2,7 +2,7 @@
 import { Vehicle } from "@/types/vehicle";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PencilIcon, TrashIcon, CarIcon, CalendarIcon, TagIcon, GasPumpIcon } from "lucide-react";
+import { PencilIcon, TrashIcon, CarIcon, CalendarIcon, TagIcon, Fuel } from "lucide-react";
 import { useState } from "react";
 import { useVehicles } from "@/hooks/useVehicles";
 import { VehicleForm, VehicleFormValues } from "@/components/vehicles/VehicleForm";
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FUEL_TYPES } from "@/types/vehicle";
 
 export const VehiclesList = () => {
   const { vehicles, isLoading, updateVehicle, isUpdating, deleteVehicle, isDeleting } = useVehicles();
@@ -78,7 +79,7 @@ export const VehiclesList = () => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {vehicles.map((vehicle) => (
+        {vehicles?.map((vehicle) => (
           <Card key={vehicle.id} className="shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex justify-between">
@@ -111,7 +112,7 @@ export const VehiclesList = () => {
                 <span>Acquisition: {format(new Date(vehicle.acquisition_date), 'dd MMMM yyyy', { locale: fr })}</span>
               </div>
               <div className="flex items-center text-sm">
-                <GasPumpIcon className="mr-2 h-4 w-4 text-gray-500" />
+                <Fuel className="mr-2 h-4 w-4 text-gray-500" />
                 <span>Carburant: {getFuelTypeLabel(vehicle.fuel_type)}</span>
               </div>
             </CardContent>

@@ -17,6 +17,9 @@ interface VehicleFormProps {
   isPending: boolean;
 }
 
+// Exportons VehicleFormValues depuis ce fichier également
+export { VehicleFormValues };
+
 export const VehicleForm = ({ onSubmit, onCancel, vehicle, isPending }: VehicleFormProps) => {
   const { form } = useVehicleForm(vehicle);
   const [isUploading, setIsUploading] = useState(false);

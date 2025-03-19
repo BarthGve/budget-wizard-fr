@@ -1,10 +1,11 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { VehicleForm, VehicleFormValues } from "@/components/vehicles/VehicleForm";
+import { VehicleForm } from "@/components/vehicles/VehicleForm";
 import { useState } from "react";
 import { useVehicles } from "@/hooks/useVehicles";
 import { PlusIcon } from "lucide-react";
+import { VehicleFormValues } from "@/hooks/useVehicleForm";
 
 export const AddVehicleDialog = () => {
   const [open, setOpen] = useState(false);
