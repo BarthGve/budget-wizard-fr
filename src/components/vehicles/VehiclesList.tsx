@@ -11,13 +11,13 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FUEL_TYPES } from "@/types/vehicle";
-import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
+import { useNavigate } from "react-router-dom";
 
 export const VehiclesList = () => {
   const { vehicles, isLoading, updateVehicle, isUpdating, deleteVehicle, isDeleting } = useVehicles();
-  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const navigate = useNavigate();
 
   const handleEdit = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
@@ -40,12 +40,8 @@ export const VehiclesList = () => {
     }
   };
 
-  const handleVehicleSelect = (vehicleId: string) => {
-    if (selectedVehicleId === vehicleId) {
-      setSelectedVehicleId(null);
-    } else {
-      setSelectedVehicleId(vehicleId);
-    }
+  const handleVehicleClick = (vehicleId: string) => {
+    navigate(`/vehicles/${vehicleId}`);
   };
 
   const getFuelTypeLabel = (value: string) => {
@@ -92,8 +88,8 @@ export const VehiclesList = () => {
         {vehicles?.map((vehicle) => (
           <Card 
             key={vehicle.id} 
-            className={`shadow-sm cursor-pointer transition-all ${selectedVehicleId === vehicle.id ? 'ring-2 ring-primary' : ''}`}
-            onClick={() => handleVehicleSelect(vehicle.id)}
+            className="shadow-sm cursor-pointer transition-all hover:scale-105"
+            onClick={() => handleVehicleClick(vehicle.id)}
           >
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex justify-between">
