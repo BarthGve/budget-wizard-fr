@@ -1,9 +1,19 @@
 
 import { Vehicle } from "@/types/vehicle";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Tag } from "lucide-react";
+import { Tag, MoreVertical, Car, Trash, ArrowRight } from "lucide-react";
 import { useVehicleBrandLogo } from "@/hooks/useVehicleBrandLogo";
 import { BrandLogoPreview } from "./BrandLogoPreview";
+import { useNavigate } from "react-router-dom";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { useVehicles } from "@/hooks/useVehicles";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 type SoldVehiclesListProps = {
   vehicles: Vehicle[];
@@ -12,6 +22,30 @@ type SoldVehiclesListProps = {
 // Composant pour afficher une ligne de véhicule vendu
 const SoldVehicleRow = ({ vehicle }: { vehicle: Vehicle }) => {
   const { previewLogoUrl, isLogoValid } = useVehicleBrandLogo(vehicle.brand || "");
+  const navigate = useNavigate();
+  const { updateVehicle, deleteVehicle } = useVehicles();
+  
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm("Êtes-vous sûr de vouloir supprimer définitivement ce véhicule ?")) {
+      deleteVehicle(vehicle.id);
+      toast.success("Véhicule supprimé avec succès");
+    }
+  };
+  
+  const handleReactivate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    updateVehicle({
+      id: vehicle.id,
+      status: "actif"
+    });
+    toast.success("Véhicule remis en statut actif");
+  };
+  
+  const handleNavigateToDetail = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/vehicles/${vehicle.id}`);
+  };
   
   return (
     <div className="flex items-center justify-between py-2 px-4 border-b last:border-0 hover:bg-gray-50">
@@ -31,6 +65,29 @@ const SoldVehicleRow = ({ vehicle }: { vehicle: Vehicle }) => {
           </div>
         </div>
       </div>
+      
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <MoreVertical className="h-4 w-4" />
+            <span className="sr-only">Actions</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={handleNavigateToDetail}>
+            <Car className="mr-2 h-4 w-4" />
+            Voir le véhicule
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleReactivate}>
+            <ArrowRight className="mr-2 h-4 w-4" />
+            Remettre actif
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleDelete} className="text-destructive">
+            <Trash className="mr-2 h-4 w-4" />
+            Supprimer
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };
