@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { DashboardCards } from "./dashboard-content/DashboardCards";
 import { DashboardCharts } from "./dashboard-content/DashboardCharts";
 import { DashboardContributors } from "./dashboard-content/DashboardContributors";
-import { DashboardExtraCards } from "./dashboard-content/DashboardExtraCards";
 import { Credit } from "@/components/credits/types";
 import { useMemo, memo } from "react";
 
@@ -158,9 +157,6 @@ export const DashboardTabContent = ({
           periodicity: expense.periodicity
         }))}
       />
-      
-      {/* Nouvelle section avec les cards supplémentaires */}
-      <DashboardExtraCards />
       
       <MemoizedDashboardCharts 
         expenses={expenses}
