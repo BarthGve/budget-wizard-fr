@@ -12,7 +12,6 @@ import { fr } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FUEL_TYPES } from "@/types/vehicle";
 import { useNavigate } from "react-router-dom";
-import { useVehicleBrandLogo } from "@/hooks/useVehicleBrandLogo";
 import { BrandLogoPreview } from "./BrandLogoPreview";
 
 export const VehiclesList = () => {
@@ -87,86 +86,16 @@ export const VehiclesList = () => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {vehicles?.map((vehicle) => {
-          // Récupération du logo pour chaque véhicule
-          const { previewLogoUrl, isLogoValid } = useVehicleBrandLogo(vehicle.brand);
-          
-          return (
-            <Card 
-              key={vehicle.id} 
-              className="shadow-sm cursor-pointer transition-all hover:scale-105"
-              onClick={() => handleVehicleClick(vehicle.id)}
-            >
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    {/* Logo de la marque à côté du nom du modèle */}
-                    <BrandLogoPreview 
-                      url={previewLogoUrl}
-                      isValid={isLogoValid}
-                      isChecking={false}
-                      brand={vehicle.brand}
-                    />
-                    <span>{vehicle.model || vehicle.brand}</span>
-                  </span>
-                  <span className="text-sm text-gray-500 font-normal">
-                    {vehicle.status === 'actif' && <span className="text-green-500">Actif</span>}
-                    {vehicle.status === 'inactif' && <span className="text-yellow-500">Inactif</span>}
-                    {vehicle.status === 'vendu' && <span className="text-gray-500">Vendu</span>}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {vehicle.photo_url && (
-                  <div className="mb-3">
-                    <img
-                      src={vehicle.photo_url}
-                      alt={`${vehicle.brand} ${vehicle.model}`}
-                      className="w-full h-32 object-cover rounded-md"
-                    />
-                  </div>
-                )}
-                <div className="flex items-center text-sm">
-                  <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
-                  <span>{vehicle.registration_number}</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
-                  <span>Acquisition: {format(new Date(vehicle.acquisition_date), 'dd MMMM yyyy', { locale: fr })}</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <Fuel className="mr-2 h-4 w-4 text-gray-500" />
-                  <span>Carburant: {getFuelTypeLabel(vehicle.fuel_type)}</span>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end space-x-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEdit(vehicle);
-                  }}
-                >
-                  <PencilIcon className="h-4 w-4 mr-1" />
-                  Modifier
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(vehicle.id);
-                  }}
-                  disabled={isDeleting}
-                >
-                  <TrashIcon className="h-4 w-4 mr-1" />
-                  Supprimer
-                </Button>
-              </CardFooter>
-            </Card>
-          );
-        })}
+        {vehicles?.map((vehicle) => (
+          <VehicleCard 
+            key={vehicle.id} 
+            vehicle={vehicle} 
+            onEdit={handleEdit} 
+            onDelete={handleDelete} 
+            onClick={handleVehicleClick}
+            isDeleting={isDeleting}
+          />
+        ))}
       </div>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -186,4 +115,106 @@ export const VehiclesList = () => {
       </Dialog>
     </>
   );
+};
+
+// Composant carte de véhicule extrait pour éviter d'utiliser le hook dans la boucle map
+const VehicleCard = ({ 
+  vehicle, 
+  onEdit, 
+  onDelete,
+  onClick,
+  isDeleting 
+}: { 
+  vehicle: Vehicle; 
+  onEdit: (vehicle: Vehicle) => void; 
+  onDelete: (id: string) => void;
+  onClick: (id: string) => void;
+  isDeleting: boolean;
+}) => {
+  // On place le hook ici, à l'extérieur de la boucle map
+  const { previewLogoUrl, isLogoValid } = useVehicleBrandLogo(vehicle.brand);
+  
+  return (
+    <Card 
+      className="shadow-sm cursor-pointer transition-all hover:scale-105"
+      onClick={() => onClick(vehicle.id)}
+    >
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            {/* Logo de la marque à côté du nom du modèle */}
+            <BrandLogoPreview 
+              url={previewLogoUrl}
+              isValid={isLogoValid}
+              isChecking={false}
+              brand={vehicle.brand}
+            />
+            <span>{vehicle.model || vehicle.brand}</span>
+          </span>
+          <span className="text-sm text-gray-500 font-normal">
+            {vehicle.status === 'actif' && <span className="text-green-500">Actif</span>}
+            {vehicle.status === 'inactif' && <span className="text-yellow-500">Inactif</span>}
+            {vehicle.status === 'vendu' && <span className="text-gray-500">Vendu</span>}
+          </span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {vehicle.photo_url && (
+          <div className="mb-3">
+            <img
+              src={vehicle.photo_url}
+              alt={`${vehicle.brand} ${vehicle.model}`}
+              className="w-full h-32 object-cover rounded-md"
+            />
+          </div>
+        )}
+        <div className="flex items-center text-sm">
+          <TagIcon className="mr-2 h-4 w-4 text-gray-500" />
+          <span>{vehicle.registration_number}</span>
+        </div>
+        <div className="flex items-center text-sm">
+          <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+          <span>Acquisition: {format(new Date(vehicle.acquisition_date), 'dd MMMM yyyy', { locale: fr })}</span>
+        </div>
+        <div className="flex items-center text-sm">
+          <Fuel className="mr-2 h-4 w-4 text-gray-500" />
+          <span>Carburant: {getFuelTypeLabel(vehicle.fuel_type)}</span>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-end space-x-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(vehicle);
+          }}
+        >
+          <PencilIcon className="h-4 w-4 mr-1" />
+          Modifier
+        </Button>
+        <Button
+          size="sm"
+          variant="destructive"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(vehicle.id);
+          }}
+          disabled={isDeleting}
+        >
+          <TrashIcon className="h-4 w-4 mr-1" />
+          Supprimer
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};
+
+// Import externe pour le hook, maintenant utilisé dans le composant VehicleCard
+import { useVehicleBrandLogo } from "@/hooks/useVehicleBrandLogo";
+
+// Fonction helper extraite du contexte du composant VehicleCard
+const getFuelTypeLabel = (value: string) => {
+  const fuelType = FUEL_TYPES.find(type => type.value === value);
+  return fuelType ? fuelType.label : value;
 };
