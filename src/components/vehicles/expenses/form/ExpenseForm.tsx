@@ -28,7 +28,15 @@ export const ExpenseForm = ({
     isEditMode,
     expenseId,
     initialValues,
-    onSuccess
+    onSuccess: () => {
+      if (onSuccess) {
+        // Utiliser un timeout pour permettre à React de mettre à jour le DOM
+        // avant que nous ne tentions de rafraîchir les données
+        setTimeout(() => {
+          onSuccess();
+        }, 100);
+      }
+    }
   });
 
   return (

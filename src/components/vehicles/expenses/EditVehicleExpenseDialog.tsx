@@ -8,13 +8,15 @@ interface EditVehicleExpenseDialogProps {
   onOpenChange: (open: boolean) => void;
   expense: VehicleExpense;
   vehicleId: string;
+  onSuccess?: () => void;
 }
 
 export function EditVehicleExpenseDialog({ 
   open, 
   onOpenChange, 
   expense,
-  vehicleId
+  vehicleId,
+  onSuccess
 }: EditVehicleExpenseDialogProps) {
   // L'état initial pour le formulaire sera basé sur la dépense existante
   const initialExpenseData = {
@@ -30,8 +32,12 @@ export function EditVehicleExpenseDialog({
     comment: expense.comment || ""
   };
   
-  // On utilise le même composant d'ajout de dépense pour l'édition
-  // avec les données initiales de la dépense existante
+  // Fonction de gestion du succès de l'édition
+  const handleSuccess = () => {
+    if (onSuccess) onSuccess();
+    onOpenChange(false);
+  };
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -44,7 +50,7 @@ export function EditVehicleExpenseDialog({
             vehicleId={vehicleId}
             expenseId={expense.id}
             initialValues={initialExpenseData}
-            onSuccess={() => onOpenChange(false)}
+            onSuccess={handleSuccess}
             hideDialogWrapper={true}
           />
         )}

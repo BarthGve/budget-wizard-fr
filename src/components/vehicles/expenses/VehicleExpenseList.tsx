@@ -4,16 +4,22 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Card, CardContent } from "@/components/ui/card";
 import { VehicleExpenseActions } from "./VehicleExpenseActions";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { EditVehicleExpenseDialog } from "./EditVehicleExpenseDialog";
 
 interface VehicleExpenseListProps {
   expenses: VehicleExpense[];
   onDeleteExpense: (id: string) => void;
   vehicleId: string;
+  onSuccess?: () => void;
 }
 
-export const VehicleExpenseList = ({ expenses, onDeleteExpense, vehicleId }: VehicleExpenseListProps) => {
+export const VehicleExpenseList = ({ 
+  expenses, 
+  onDeleteExpense, 
+  vehicleId,
+  onSuccess 
+}: VehicleExpenseListProps) => {
   // État pour le dialogue d'édition
   const [editExpense, setEditExpense] = useState<VehicleExpense | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -46,11 +52,29 @@ export const VehicleExpenseList = ({ expenses, onDeleteExpense, vehicleId }: Veh
     }
   };
 
+  // Gérer la fermeture du dialogue d'édition et mise à jour
+  const handleEditDialogClose = useCallback((updated: boolean = false) => {
+    setIsEditDialogOpen(false);
+    setEditExpense(null);
+    
+    if (updated && onSuccess) {
+      onSuccess();
+    }
+  }, [onSuccess]);
+  
+  // Gérer la suppression avec mise à jour
+  const handleDelete = useCallback((id: string) => {
+    onDeleteExpense(id);
+    if (onSuccess) {
+      onSuccess();
+    }
+  }, [onDeleteExpense, onSuccess]);
+
   // Ouvrir le dialogue d'édition avec la dépense sélectionnée
-  const handleEditClick = (expense: VehicleExpense) => {
+  const handleEditClick = useCallback((expense: VehicleExpense) => {
     setEditExpense(expense);
     setIsEditDialogOpen(true);
-  };
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -83,7 +107,7 @@ export const VehicleExpenseList = ({ expenses, onDeleteExpense, vehicleId }: Veh
                 </div>
                 <VehicleExpenseActions
                   onEdit={() => handleEditClick(expense)}
-                  onDelete={() => onDeleteExpense(expense.id)}
+                  onDelete={() => handleDelete(expense.id)}
                 />
               </div>
             </div>
@@ -95,9 +119,13 @@ export const VehicleExpenseList = ({ expenses, onDeleteExpense, vehicleId }: Veh
       {editExpense && (
         <EditVehicleExpenseDialog
           open={isEditDialogOpen}
-          onOpenChange={setIsEditDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) handleEditDialogClose();
+            else setIsEditDialogOpen(open);
+          }}
           expense={editExpense}
           vehicleId={vehicleId}
+          onSuccess={() => handleEditDialogClose(true)}
         />
       )}
     </div>

@@ -1,4 +1,3 @@
-
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef } from "react";
@@ -14,13 +13,15 @@ export const useRealtimeListeners = () => {
     recurringExpenses: any | null;
     profiles: any | null;
     expenses: any | null;
+    vehicleExpenses: any | null;
   }>({
     contributors: null,
     monthlySavings: null,
     projects: null,
     recurringExpenses: null,
     profiles: null,
-    expenses: null
+    expenses: null,
+    vehicleExpenses: null
   });
 
   // Fonction d'invalidation optimisée pour cibler uniquement les données nécessaires
@@ -175,6 +176,19 @@ export const useRealtimeListeners = () => {
       if (channelsRef.current.expenses) {
         supabase.removeChannel(channelsRef.current.expenses);
         channelsRef.current.expenses = null;
+      }
+    };
+  }, [queryClient]);
+
+  // Configuration des écouteurs pour les dépenses de véhicules
+  useEffect(() => {
+    // Configuration de l'écouteur avec invalidation des requêtes liées aux dépenses de véhicules
+    setupChannel('vehicle_expenses', 'vehicleExpenses', ['vehicle-expenses']);
+    
+    return () => {
+      if (channelsRef.current.vehicleExpenses) {
+        supabase.removeChannel(channelsRef.current.vehicleExpenses);
+        channelsRef.current.vehicleExpenses = null;
       }
     };
   }, [queryClient]);

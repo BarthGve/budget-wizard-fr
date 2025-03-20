@@ -5,6 +5,7 @@ import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { AddVehicleExpenseDialog } from "./AddVehicleExpenseDialog";
 import { VehicleExpenseList } from "./VehicleExpenseList";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface VehicleExpenseContainerProps {
   vehicleId: string;
@@ -13,9 +14,15 @@ interface VehicleExpenseContainerProps {
 export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerProps) => {
   const { expenses, isLoading, deleteExpense } = useVehicleExpenses(vehicleId);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleDeleteExpense = (id: string) => {
     deleteExpense(id);
+  };
+
+  const handleExpenseSuccess = () => {
+    // Invalider la requête pour rafraîchir les données
+    queryClient.invalidateQueries({ queryKey: ["vehicle-expenses", vehicleId] });
   };
 
   return (
@@ -37,6 +44,7 @@ export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerPr
           expenses={expenses} 
           onDeleteExpense={handleDeleteExpense}
           vehicleId={vehicleId}
+          onSuccess={handleExpenseSuccess}
         />
       ) : (
         <div className="text-center p-8 border rounded-lg bg-muted/50">
@@ -48,6 +56,7 @@ export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerPr
         open={isAddDialogOpen}
         onOpenChange={setIsAddDialogOpen}
         vehicleId={vehicleId}
+        onSuccess={handleExpenseSuccess}
       />
     </div>
   );
