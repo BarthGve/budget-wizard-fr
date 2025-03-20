@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useState, useCallback } from "react";
 import { AddVehicleExpenseDialog } from "./AddVehicleExpenseDialog";
-import { VehicleExpenseList } from "./VehicleExpenseList";
+import { VehicleExpenseTable } from "./table/VehicleExpenseTable";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface VehicleExpenseContainerProps {
@@ -50,7 +50,7 @@ export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerPr
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Dépenses du véhicule</h2>
         <Button onClick={() => setIsAddDialogOpen(true)}>
           <PlusCircle className="mr-2 h-4 w-4" />
@@ -63,7 +63,7 @@ export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerPr
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       ) : expenses && expenses.length > 0 ? (
-        <VehicleExpenseList 
+        <VehicleExpenseTable 
           expenses={expenses} 
           onDeleteExpense={handleDeleteExpense}
           vehicleId={vehicleId}
