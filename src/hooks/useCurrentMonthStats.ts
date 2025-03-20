@@ -47,7 +47,7 @@ export const useCurrentMonthStats = () => {
       
       const { data, error } = await supabase
         .from("vehicle_expenses")
-        .select("vehicle_expenses.amount, vehicles!inner(profile_id, status)")
+        .select("amount, vehicles!inner(profile_id, status)")
         .eq("vehicles.profile_id", currentUser.id)
         .eq("vehicles.status", "actif")
         .eq("expense_type", "carburant")
