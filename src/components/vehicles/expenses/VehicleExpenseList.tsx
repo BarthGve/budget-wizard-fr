@@ -3,12 +3,21 @@ import { VehicleExpense } from "@/types/vehicle";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Card, CardContent } from "@/components/ui/card";
+import { VehicleExpenseActions } from "./VehicleExpenseActions";
+import { useState } from "react";
+import { EditVehicleExpenseDialog } from "./EditVehicleExpenseDialog";
 
 interface VehicleExpenseListProps {
   expenses: VehicleExpense[];
+  onDeleteExpense: (id: string) => void;
+  vehicleId: string;
 }
 
-export const VehicleExpenseList = ({ expenses }: VehicleExpenseListProps) => {
+export const VehicleExpenseList = ({ expenses, onDeleteExpense, vehicleId }: VehicleExpenseListProps) => {
+  // État pour le dialogue d'édition
+  const [editExpense, setEditExpense] = useState<VehicleExpense | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  
   // Fonction pour formater le montant
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -37,6 +46,12 @@ export const VehicleExpenseList = ({ expenses }: VehicleExpenseListProps) => {
     }
   };
 
+  // Ouvrir le dialogue d'édition avec la dépense sélectionnée
+  const handleEditClick = (expense: VehicleExpense) => {
+    setEditExpense(expense);
+    setIsEditDialogOpen(true);
+  };
+
   return (
     <div className="space-y-4">
       {expenses.map((expense) => (
@@ -57,18 +72,34 @@ export const VehicleExpenseList = ({ expenses }: VehicleExpenseListProps) => {
                   )}
                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-bold">{formatAmount(expense.amount)}</p>
-                {expense.fuel_volume && (
-                  <p className="text-xs text-muted-foreground">
-                    {expense.fuel_volume} L {expense.fuel_volume > 0 ? `(${(expense.amount / expense.fuel_volume).toFixed(2)} €/L)` : ''}
-                  </p>
-                )}
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="font-bold">{formatAmount(expense.amount)}</p>
+                  {expense.fuel_volume && (
+                    <p className="text-xs text-muted-foreground">
+                      {expense.fuel_volume} L {expense.fuel_volume > 0 ? `(${(expense.amount / expense.fuel_volume).toFixed(2)} €/L)` : ''}
+                    </p>
+                  )}
+                </div>
+                <VehicleExpenseActions
+                  onEdit={() => handleEditClick(expense)}
+                  onDelete={() => onDeleteExpense(expense.id)}
+                />
               </div>
             </div>
           </CardContent>
         </Card>
       ))}
+
+      {/* Dialogue d'édition de dépense */}
+      {editExpense && (
+        <EditVehicleExpenseDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          expense={editExpense}
+          vehicleId={vehicleId}
+        />
+      )}
     </div>
   );
 };

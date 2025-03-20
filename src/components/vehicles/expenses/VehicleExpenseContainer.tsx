@@ -1,57 +1,54 @@
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
 import { useVehicleExpenses } from "@/hooks/useVehicleExpenses";
-import { VehicleExpenseList } from "./VehicleExpenseList";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import { useState } from "react";
 import { AddVehicleExpenseDialog } from "./AddVehicleExpenseDialog";
+import { VehicleExpenseList } from "./VehicleExpenseList";
 
 interface VehicleExpenseContainerProps {
   vehicleId: string;
 }
 
 export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerProps) => {
-  const [showAddExpenseDialog, setShowAddExpenseDialog] = useState(false);
-  const { expenses, isLoading } = useVehicleExpenses(vehicleId);
-  
+  const { expenses, isLoading, deleteExpense } = useVehicleExpenses(vehicleId);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  const handleDeleteExpense = (id: string) => {
+    deleteExpense(id);
+  };
+
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xl font-bold">Dépenses du véhicule</CardTitle>
-        <Button onClick={() => setShowAddExpenseDialog(true)} size="sm">
-          <PlusIcon className="h-4 w-4 mr-2" />
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Dépenses du véhicule</h2>
+        <Button onClick={() => setIsAddDialogOpen(true)}>
+          <PlusCircle className="mr-2 h-4 w-4" />
           Ajouter une dépense
         </Button>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="flex justify-center p-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        ) : expenses && expenses.length > 0 ? (
-          <VehicleExpenseList expenses={expenses} />
-        ) : (
-          <div className="text-center py-10">
-            <p className="text-muted-foreground">Aucune dépense enregistrée pour ce véhicule.</p>
-            <Button 
-              variant="outline" 
-              className="mt-4"
-              onClick={() => setShowAddExpenseDialog(true)}
-            >
-              Ajouter votre première dépense
-            </Button>
-          </div>
-        )}
-      </CardContent>
+      </div>
 
-      {showAddExpenseDialog && (
-        <AddVehicleExpenseDialog 
+      {isLoading ? (
+        <div className="flex justify-center items-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      ) : expenses && expenses.length > 0 ? (
+        <VehicleExpenseList 
+          expenses={expenses} 
+          onDeleteExpense={handleDeleteExpense}
           vehicleId={vehicleId}
-          open={showAddExpenseDialog}
-          onOpenChange={setShowAddExpenseDialog}
         />
+      ) : (
+        <div className="text-center p-8 border rounded-lg bg-muted/50">
+          <p className="text-muted-foreground">Aucune dépense enregistrée pour ce véhicule.</p>
+        </div>
       )}
-    </Card>
+
+      <AddVehicleExpenseDialog
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        vehicleId={vehicleId}
+      />
+    </div>
   );
 };

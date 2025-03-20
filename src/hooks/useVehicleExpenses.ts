@@ -57,6 +57,34 @@ export const useVehicleExpenses = (vehicleId: string) => {
     }
   });
 
+  // Mettre à jour une dépense
+  const { mutate: updateExpense, isPending: isUpdating } = useMutation({
+    mutationFn: async ({ id, ...expense }: VehicleExpense) => {
+      if (!currentUser) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("vehicle_expenses")
+        .update(expense)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return data as VehicleExpense;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vehicle-expenses", vehicleId] });
+      toast.success("Dépense mise à jour avec succès");
+    },
+    onError: (error: any) => {
+      console.error("Error updating expense:", error);
+      toast.error(`Erreur lors de la mise à jour de la dépense: ${error.message}`);
+    }
+  });
+
   // Supprimer une dépense
   const { mutate: deleteExpense, isPending: isDeleting } = useMutation({
     mutationFn: async (id: string) => {
@@ -87,6 +115,8 @@ export const useVehicleExpenses = (vehicleId: string) => {
     error,
     addExpense,
     isAdding,
+    updateExpense,
+    isUpdating,
     deleteExpense,
     isDeleting
   };
