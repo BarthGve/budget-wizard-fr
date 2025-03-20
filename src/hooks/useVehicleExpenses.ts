@@ -4,14 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { VehicleExpense } from "@/types/vehicle";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCallback } from "react";
 
 export const useVehicleExpenses = (vehicleId: string) => {
   const queryClient = useQueryClient();
   const { currentUser } = useCurrentUser();
+  
+  const queryKey = ["vehicle-expenses", vehicleId];
 
   // Récupérer la liste des dépenses d'un véhicule
   const { data: expenses, isLoading, error, refetch } = useQuery({
-    queryKey: ["vehicle-expenses", vehicleId],
+    queryKey,
     queryFn: async () => {
       if (!currentUser) throw new Error("User not authenticated");
 
@@ -28,9 +31,22 @@ export const useVehicleExpenses = (vehicleId: string) => {
       return data as VehicleExpense[];
     },
     enabled: !!currentUser && !!vehicleId,
-    staleTime: 1000 * 10, // Réduire le temps de cache à 10 secondes
-    refetchOnWindowFocus: true // Activer le refetch automatique au focus
+    staleTime: 1000 * 10, // 10 secondes 
+    refetchOnWindowFocus: true
   });
+
+  // Fonction pour forcer le rafraîchissement des données
+  const invalidateAndRefetch = useCallback(() => {
+    // Invalidation du cache
+    queryClient.invalidateQueries({
+      queryKey,
+      exact: true, // Important: n'invalider que la requête exacte
+      refetchType: 'all'
+    });
+    
+    // Refetch immédiat pour s'assurer que les données sont à jour
+    setTimeout(() => refetch(), 100); // Petit délai pour éviter les problèmes de timing
+  }, [queryClient, queryKey, refetch]);
 
   // Ajouter une dépense
   const { mutate: addExpense, isPending: isAdding } = useMutation({
@@ -50,15 +66,7 @@ export const useVehicleExpenses = (vehicleId: string) => {
       return data as VehicleExpense;
     },
     onSuccess: () => {
-      // Forcer l'invalidation complète de la requête
-      queryClient.invalidateQueries({ 
-        queryKey: ["vehicle-expenses", vehicleId],
-        refetchType: 'all'
-      });
-      
-      // Refetch immédiat pour s'assurer que les données sont à jour
-      refetch();
-      
+      invalidateAndRefetch();
       toast.success("Dépense ajoutée avec succès");
     },
     onError: (error: any) => {
@@ -86,15 +94,7 @@ export const useVehicleExpenses = (vehicleId: string) => {
       return data as VehicleExpense;
     },
     onSuccess: () => {
-      // Forcer l'invalidation complète de la requête
-      queryClient.invalidateQueries({ 
-        queryKey: ["vehicle-expenses", vehicleId],
-        refetchType: 'all'
-      });
-      
-      // Refetch immédiat pour s'assurer que les données sont à jour
-      refetch();
-      
+      invalidateAndRefetch();
       toast.success("Dépense mise à jour avec succès");
     },
     onError: (error: any) => {
@@ -118,15 +118,7 @@ export const useVehicleExpenses = (vehicleId: string) => {
       return id;
     },
     onSuccess: () => {
-      // Forcer l'invalidation complète de la requête
-      queryClient.invalidateQueries({ 
-        queryKey: ["vehicle-expenses", vehicleId],
-        refetchType: 'all'
-      });
-      
-      // Refetch immédiat pour s'assurer que les données sont à jour
-      refetch();
-      
+      invalidateAndRefetch();
       toast.success("Dépense supprimée avec succès");
     },
     onError: (error: any) => {
@@ -145,6 +137,7 @@ export const useVehicleExpenses = (vehicleId: string) => {
     isUpdating,
     deleteExpense,
     isDeleting,
-    refetch
+    refetch,
+    invalidateAndRefetch
   };
 };

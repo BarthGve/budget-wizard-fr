@@ -1,6 +1,6 @@
 
 import { VehicleExpense } from "@/types/vehicle";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { EditVehicleExpenseDialog } from "../EditVehicleExpenseDialog";
 import { useVehicleExpenseTable } from "./useVehicleExpenseTable";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -30,10 +30,22 @@ export const VehicleExpenseTable = ({
   // Utilisation du hook personnalisé pour gérer le tableau
   const expenseTable = useVehicleExpenseTable(expenses, onDeleteExpense);
   
-  // Gérer la fermeture du dialogue d'édition
+  // Fonction memoïsée pour gérer la suppression en toute sécurité
+  const handleDeleteExpense = useCallback((id: string) => {
+    // Appeler la fonction de suppression fournie par les props
+    onDeleteExpense(id);
+    
+    // Appeler le callback de succès si fourni
+    if (onSuccess) {
+      setTimeout(() => onSuccess(), 300); // Petit délai pour laisser le temps à la requête de se terminer
+    }
+  }, [onDeleteExpense, onSuccess]);
+  
+  // Gérer la fermeture du dialogue d'édition et nettoyer l'état
   const handleEditDialogClose = useCallback(() => {
     setIsEditDialogOpen(false);
-    setEditExpense(null);
+    // Petit délai avant de nettoyer l'état pour éviter des problèmes de rendu
+    setTimeout(() => setEditExpense(null), 300);
   }, []);
   
   // Ouvrir le dialogue d'édition avec la dépense sélectionnée
@@ -44,16 +56,16 @@ export const VehicleExpenseTable = ({
   
   // Callback de succès pour l'édition
   const handleEditSuccess = useCallback(() => {
-    // Appel du callback de succès parent
-    if (onSuccess) {
-      onSuccess();
-    }
-    
     // Fermeture du dialogue
     handleEditDialogClose();
+    
+    // Appel du callback de succès parent après un délai
+    if (onSuccess) {
+      setTimeout(() => onSuccess(), 300);
+    }
   }, [onSuccess, handleEditDialogClose]);
   
-  // Gestion de la fermeture du dialogue
+  // Gestion de la fermeture du dialogue avec nettoyage sécurisé
   const handleDialogOpenChange = useCallback((open: boolean) => {
     if (!open) {
       handleEditDialogClose();
@@ -61,6 +73,19 @@ export const VehicleExpenseTable = ({
       setIsEditDialogOpen(open);
     }
   }, [handleEditDialogClose]);
+  
+  // Nettoyage des états lors du démontage du composant
+  useEffect(() => {
+    return () => {
+      setEditExpense(null);
+      setIsEditDialogOpen(false);
+    };
+  }, []);
+  
+  // Mise à jour du handler de suppression dans expenseTable
+  useEffect(() => {
+    expenseTable.onDeleteExpense = handleDeleteExpense;
+  }, [expenseTable, handleDeleteExpense]);
 
   return (
     <Card className={cn(
@@ -159,9 +184,10 @@ export const VehicleExpenseTable = ({
         </CardFooter>
       )}
 
-      {/* Dialogue d'édition de dépense */}
+      {/* Dialogue d'édition de dépense avec gestion sécurisée de l'état */}
       {editExpense && (
         <EditVehicleExpenseDialog
+          key={`edit-dialog-${editExpense.id}`} // Clé unique pour forcer un nouveau montage
           open={isEditDialogOpen}
           onOpenChange={handleDialogOpenChange}
           expense={editExpense}

@@ -2,7 +2,7 @@
 import { useVehicleExpenses } from "@/hooks/useVehicleExpenses";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AddVehicleExpenseDialog } from "./AddVehicleExpenseDialog";
 import { VehicleExpenseTable } from "./table/VehicleExpenseTable";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,31 +12,20 @@ interface VehicleExpenseContainerProps {
 }
 
 export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerProps) => {
-  const { expenses, isLoading, deleteExpense, refetch } = useVehicleExpenses(vehicleId);
+  const { expenses, isLoading, deleteExpense, refetch, invalidateAndRefetch } = useVehicleExpenses(vehicleId);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Fonction optimisée pour supprimer une dépense
   const handleDeleteExpense = useCallback((id: string) => {
-    deleteExpense(id, {
-      onSuccess: () => {
-        // Plutôt que d'attendre, forcer un refresh immédiat
-        refetch();
-      }
-    });
-  }, [deleteExpense, refetch]);
+    deleteExpense(id);
+  }, [deleteExpense]);
 
   // Fonction optimisée pour gérer le succès des opérations
   const handleExpenseSuccess = useCallback(() => {
-    // Invalider la requête pour rafraîchir les données complètement
-    queryClient.invalidateQueries({ 
-      queryKey: ["vehicle-expenses", vehicleId],
-      refetchType: 'all'
-    });
-    
-    // Assurer un rafraîchissement immédiat des données
-    refetch();
-  }, [queryClient, vehicleId, refetch]);
+    // Utiliser la fonction invalidateAndRefetch du hook
+    invalidateAndRefetch();
+  }, [invalidateAndRefetch]);
 
   // Gestion de l'ouverture/fermeture de la boîte de dialogue
   const handleDialogOpenChange = useCallback((open: boolean) => {
@@ -44,9 +33,18 @@ export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerPr
     
     // Si on ferme le dialogue, rafraîchir les données
     if (!open) {
-      handleExpenseSuccess();
+      setTimeout(() => {
+        handleExpenseSuccess();
+      }, 300); // Petit délai pour laisser le temps à la requête de se terminer
     }
   }, [handleExpenseSuccess]);
+
+  // Effet pour nettoyer l'état lors du démontage
+  useEffect(() => {
+    return () => {
+      setIsAddDialogOpen(false);
+    };
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -76,6 +74,7 @@ export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerPr
       )}
 
       <AddVehicleExpenseDialog
+        key={`add-dialog-${isAddDialogOpen}`} // Forcer le remontage du composant
         open={isAddDialogOpen}
         onOpenChange={handleDialogOpenChange}
         vehicleId={vehicleId}
