@@ -31,10 +31,8 @@ const VehicleDetail = () => {
   // Vérifier si l'utilisateur a accès aux dépenses des véhicules
   const canAccessExpenses = canAccessFeature('/vehicles', 'vehicles_expenses');
 
-  // Récupération du logo de la marque
-  const { previewLogoUrl, isLogoValid, isCheckingLogo } = vehicle 
-    ? useVehicleBrandLogo(vehicle.brand) 
-    : { previewLogoUrl: null, isLogoValid: false, isCheckingLogo: false };
+  // Important: Nous initialisons le hook avec une chaîne vide par défaut, plutôt que de le mettre dans une condition
+  const { previewLogoUrl, isLogoValid, isCheckingLogo } = useVehicleBrandLogo(vehicle?.brand || "");
   
   if (isLoading) {
     return (
@@ -134,13 +132,15 @@ const VehicleDetail = () => {
         >
           <h1 className="flex items-center gap-3 text-3xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
             {/* Logo de la marque à côté du nom du modèle */}
-            <BrandLogoPreview
-              url={previewLogoUrl}
-              isValid={isLogoValid}
-              isChecking={isCheckingLogo}
-              brand={vehicle.brand}
-            />
-            <span>{vehicle.model || vehicle.brand}</span>
+            {vehicle && (
+              <BrandLogoPreview
+                url={previewLogoUrl}
+                isValid={isLogoValid}
+                isChecking={isCheckingLogo}
+                brand={vehicle.brand}
+              />
+            )}
+            <span>{vehicle?.model || vehicle?.brand}</span>
           </h1>
           <Button onClick={() => setIsEditDialogOpen(true)}>
             <PencilIcon className="mr-2 h-4 w-4" />
