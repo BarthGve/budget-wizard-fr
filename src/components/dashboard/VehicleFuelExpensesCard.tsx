@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatCurrency } from "@/utils/format";
 import { cn } from "@/lib/utils";
-import { Profile, ProfileType } from "@/types/profile";
+import { Profile } from "@/types/profile";
 
 interface VehicleFuelExpensesCardProps {
   totalFuelExpenses: number;

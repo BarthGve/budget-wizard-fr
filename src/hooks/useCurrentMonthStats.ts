@@ -9,12 +9,12 @@ export const useCurrentMonthStats = () => {
   // Obtenir les dates de début et fin du mois courant
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
   
   const firstDayStr = firstDay.toISOString().split('T')[0];
   const lastDayStr = lastDay.toISOString().split('T')[0];
 
-  // Récupérer les dépenses du mois en cours
+  // Récupérer les dépenses du mois en cours avec la même logique que la page Expenses
   const { data: monthlyExpenses, isLoading: isExpensesLoading } = useQuery({
     queryKey: ["monthly-expenses", firstDayStr, lastDayStr],
     queryFn: async () => {
@@ -32,14 +32,18 @@ export const useCurrentMonthStats = () => {
         return { total: 0 };
       }
 
+      // Utilisation de la même méthode de calcul que la page Expenses
       const total = data.reduce((sum, expense) => sum + Number(expense.amount), 0);
-      return { total };
+      
+      console.log(`Total dépenses mois en cours: ${total}€ (${data.length} dépenses)`);
+      
+      return { total, count: data.length };
     },
     enabled: !!currentUser?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Récupérer les dépenses carburant du mois en cours pour tous les véhicules
+  // Récupérer les dépenses carburant du mois en cours pour tous les véhicules actifs
   const { data: fuelExpenses, isLoading: isFuelLoading } = useQuery({
     queryKey: ["monthly-fuel-expenses", firstDayStr, lastDayStr],
     queryFn: async () => {
@@ -60,7 +64,10 @@ export const useCurrentMonthStats = () => {
       }
 
       const total = data.reduce((sum, expense) => sum + Number(expense.amount), 0);
-      return { total };
+      
+      console.log(`Total dépenses carburant mois en cours: ${total}€ (${data.length} dépenses)`);
+      
+      return { total, count: data.length };
     },
     enabled: !!currentUser?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes
