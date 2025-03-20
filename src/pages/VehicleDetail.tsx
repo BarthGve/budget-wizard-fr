@@ -18,6 +18,8 @@ import { FUEL_TYPES } from "@/types/vehicle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { motion } from "framer-motion";
+import { useVehicleBrandLogo } from "@/hooks/useVehicleBrandLogo";
+import { BrandLogoPreview } from "@/components/vehicles/BrandLogoPreview";
 
 const VehicleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +30,11 @@ const VehicleDetail = () => {
   
   // Vérifier si l'utilisateur a accès aux dépenses des véhicules
   const canAccessExpenses = canAccessFeature('/vehicles', 'vehicles_expenses');
+
+  // Récupération du logo de la marque
+  const { previewLogoUrl, isLogoValid, isCheckingLogo } = vehicle 
+    ? useVehicleBrandLogo(vehicle.brand) 
+    : { previewLogoUrl: null, isLogoValid: false, isCheckingLogo: false };
   
   if (isLoading) {
     return (
@@ -125,8 +132,15 @@ const VehicleDetail = () => {
           className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
           variants={itemVariants}
         >
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            {vehicle.brand} {vehicle.model}
+          <h1 className="flex items-center gap-3 text-3xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            {/* Logo de la marque à côté du nom du modèle */}
+            <BrandLogoPreview
+              url={previewLogoUrl}
+              isValid={isLogoValid}
+              isChecking={isCheckingLogo}
+              brand={vehicle.brand}
+            />
+            <span>{vehicle.model || vehicle.brand}</span>
           </h1>
           <Button onClick={() => setIsEditDialogOpen(true)}>
             <PencilIcon className="mr-2 h-4 w-4" />
