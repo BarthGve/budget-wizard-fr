@@ -30,10 +30,10 @@ export const VehicleFuelExpensesCard = ({
       <Card
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300 h-full relative overflow-hidden",
-          // Light mode styles
-          "bg-gradient-to-br from-background to-green-50 shadow-lg border border-green-100 hover:shadow-xl",
-          // Dark mode styles - alignées avec les cards de graphiques
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-green-950 dark:border-green-900/30 dark:shadow-green-800/30 dark:hover:shadow-green-800/50"
+          // Light mode styles - Gris au lieu de vert
+          "bg-gradient-to-br from-background to-gray-100 shadow-lg border border-gray-200 hover:shadow-xl",
+          // Dark mode styles - Gris au lieu de vert
+          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 dark:border-gray-700/30 dark:shadow-gray-800/30 dark:hover:shadow-gray-800/50"
         )}
         onClick={() => navigate("/vehicles")}
       >
@@ -55,8 +55,8 @@ export const VehicleFuelExpensesCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-green-100 text-green-600", // Light mode
-                "dark:bg-green-900/40 dark:text-green-400" // Dark mode
+                "bg-gray-200 text-gray-600", // Light mode - Gris au lieu de vert
+                "dark:bg-gray-700/40 dark:text-gray-300" // Dark mode - Gris au lieu de vert
               )}>
                 <Fuel className="h-5 w-5" />
               </div>
@@ -76,7 +76,7 @@ export const VehicleFuelExpensesCard = ({
               className={cn(
                 "text-xl font-bold leading-none",
                 "text-gray-800", // Light mode
-                "dark:text-green-100" // Dark mode
+                "dark:text-gray-100" // Dark mode - Gris au lieu de vert
               )}
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}

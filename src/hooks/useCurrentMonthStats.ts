@@ -14,12 +14,13 @@ export const useCurrentMonthStats = () => {
   const firstDayStr = firstDay.toISOString().split('T')[0];
   const lastDayStr = lastDay.toISOString().split('T')[0];
 
-  // Récupérer les dépenses du mois en cours avec la même logique que la page Expenses
+  // Récupérer les dépenses du mois en cours avec exactement la même logique que la page Expenses
   const { data: monthlyExpenses, isLoading: isExpensesLoading } = useQuery({
     queryKey: ["monthly-expenses", firstDayStr, lastDayStr],
     queryFn: async () => {
       if (!currentUser?.id) return { total: 0 };
       
+      // Utiliser la même requête et filtres que dans la page Expenses
       const { data, error } = await supabase
         .from("expenses")
         .select("amount")
@@ -32,10 +33,10 @@ export const useCurrentMonthStats = () => {
         return { total: 0 };
       }
 
-      // Utilisation de la même méthode de calcul que la page Expenses
+      // Utiliser exactement la même méthode de calcul que la page Expenses
       const total = data.reduce((sum, expense) => sum + Number(expense.amount), 0);
       
-      console.log(`Total dépenses mois en cours: ${total}€ (${data.length} dépenses)`);
+      console.log(`Total dépenses mois en cours (useCurrentMonthStats): ${total}€ (${data.length} dépenses)`);
       
       return { total, count: data.length };
     },
@@ -65,7 +66,7 @@ export const useCurrentMonthStats = () => {
 
       const total = data.reduce((sum, expense) => sum + Number(expense.amount), 0);
       
-      console.log(`Total dépenses carburant mois en cours: ${total}€ (${data.length} dépenses)`);
+      console.log(`Total dépenses carburant mois en cours (useCurrentMonthStats): ${total}€ (${data.length} dépenses)`);
       
       return { total, count: data.length };
     },
