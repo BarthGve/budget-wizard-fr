@@ -89,6 +89,32 @@ export const useVehicles = () => {
     }
   });
 
+  // Marquer un véhicule comme vendu
+  const { mutate: markVehicleAsSold, isPending: isMarking } = useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase
+        .from("vehicles")
+        .update({ status: "vendu" })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return data as Vehicle;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+      toast.success("Véhicule marqué comme vendu avec succès");
+    },
+    onError: (error: any) => {
+      console.error("Error marking vehicle as sold:", error);
+      toast.error(`Erreur lors du marquage du véhicule comme vendu: ${error.message}`);
+    }
+  });
+
   // Supprimer un véhicule
   const { mutate: deleteVehicle, isPending: isDeleting } = useMutation({
     mutationFn: async (id: string) => {
@@ -122,6 +148,8 @@ export const useVehicles = () => {
     updateVehicle,
     isUpdating,
     deleteVehicle,
-    isDeleting
+    isDeleting,
+    markVehicleAsSold,
+    isMarking
   };
 };

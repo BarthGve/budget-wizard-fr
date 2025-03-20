@@ -13,12 +13,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FUEL_TYPES } from "@/types/vehicle";
 import { useNavigate } from "react-router-dom";
 import { BrandLogoPreview } from "./BrandLogoPreview";
+import { VehicleDeleteDialog } from "./VehicleDeleteDialog";
+import { SoldVehiclesList } from "./SoldVehiclesList";
 
 export const VehiclesList = () => {
-  const { vehicles, isLoading, updateVehicle, isUpdating, deleteVehicle, isDeleting } = useVehicles();
+  const { 
+    vehicles, 
+    isLoading, 
+    updateVehicle, 
+    isUpdating, 
+    deleteVehicle, 
+    isDeleting,
+    markVehicleAsSold,
+    isMarking
+  } = useVehicles();
+  
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const navigate = useNavigate();
+
+  // Filtre pour obtenir seulement les véhicules actifs ou inactifs (non vendus)
+  const activeVehicles = vehicles?.filter(v => v.status !== "vendu") || [];
 
   const handleEdit = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
@@ -35,19 +51,25 @@ export const VehiclesList = () => {
     }
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce véhicule ?")) {
-      deleteVehicle(id);
+  const handleDeleteClick = (vehicle: Vehicle) => {
+    setSelectedVehicle(vehicle);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedVehicle) {
+      deleteVehicle(selectedVehicle.id);
+    }
+  };
+
+  const handleMarkAsSold = () => {
+    if (selectedVehicle) {
+      markVehicleAsSold(selectedVehicle.id);
     }
   };
 
   const handleVehicleClick = (vehicleId: string) => {
     navigate(`/vehicles/${vehicleId}`);
-  };
-
-  const getFuelTypeLabel = (value: string) => {
-    const fuelType = FUEL_TYPES.find(type => type.value === value);
-    return fuelType ? fuelType.label : value;
   };
 
   if (isLoading) {
@@ -86,18 +108,22 @@ export const VehiclesList = () => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {vehicles?.map((vehicle) => (
+        {activeVehicles.map((vehicle) => (
           <VehicleCard 
             key={vehicle.id} 
             vehicle={vehicle} 
             onEdit={handleEdit} 
-            onDelete={handleDelete} 
+            onDelete={handleDeleteClick} 
             onClick={handleVehicleClick}
-            isDeleting={isDeleting}
+            isDeleting={isDeleting || isMarking}
           />
         ))}
       </div>
+      
+      {/* Section des véhicules vendus */}
+      <SoldVehiclesList vehicles={vehicles} />
 
+      {/* Dialog de modification */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
@@ -113,6 +139,14 @@ export const VehiclesList = () => {
           )}
         </DialogContent>
       </Dialog>
+      
+      {/* Dialog de suppression/vente */}
+      <VehicleDeleteDialog 
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onDelete={handleConfirmDelete}
+        onMarkAsSold={handleMarkAsSold}
+      />
     </>
   );
 };
@@ -127,7 +161,7 @@ const VehicleCard = ({
 }: { 
   vehicle: Vehicle; 
   onEdit: (vehicle: Vehicle) => void; 
-  onDelete: (id: string) => void;
+  onDelete: (vehicle: Vehicle) => void;
   onClick: (id: string) => void;
   isDeleting: boolean;
 }) => {
@@ -198,7 +232,7 @@ const VehicleCard = ({
           variant="destructive"
           onClick={(e) => {
             e.stopPropagation();
-            onDelete(vehicle.id);
+            onDelete(vehicle);
           }}
           disabled={isDeleting}
         >
