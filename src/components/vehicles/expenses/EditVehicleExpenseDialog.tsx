@@ -1,8 +1,6 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { VehicleExpense } from "@/types/vehicle";
-import { useState } from "react";
-import { useVehicleExpenses } from "@/hooks/useVehicleExpenses";
 import { AddVehicleExpenseDialog } from "./AddVehicleExpenseDialog";
 
 interface EditVehicleExpenseDialogProps {
