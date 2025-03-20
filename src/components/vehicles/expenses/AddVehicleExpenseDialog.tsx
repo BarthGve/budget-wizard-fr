@@ -11,6 +11,7 @@ interface AddVehicleExpenseDialogProps {
   expenseId?: string;
   initialValues?: ExpenseInitialValues;
   onSuccess?: () => void;
+  onCancel?: () => void;
   hideDialogWrapper?: boolean;
 }
 
@@ -22,8 +23,18 @@ export const AddVehicleExpenseDialog = ({
   expenseId,
   initialValues,
   onSuccess,
+  onCancel,
   hideDialogWrapper = false
 }: AddVehicleExpenseDialogProps) => {
+  
+  // Gestionnaire d'annulation par défaut
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else if (onOpenChange) {
+      onOpenChange(false);
+    }
+  };
   
   // Contenu du formulaire
   const formContent = (
@@ -33,7 +44,7 @@ export const AddVehicleExpenseDialog = ({
       expenseId={expenseId}
       initialValues={initialValues}
       onSuccess={onSuccess}
-      onCancel={() => onOpenChange && onOpenChange(false)}
+      onCancel={handleCancel}
     />
   );
 

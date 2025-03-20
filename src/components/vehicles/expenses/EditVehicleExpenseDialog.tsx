@@ -39,15 +39,22 @@ export function EditVehicleExpenseDialog({
   // Fonction de gestion du succès de l'édition
   const handleSuccess = () => {
     // Forcer l'invalidation du cache pour rafraîchir les données
-    queryClient.invalidateQueries({ queryKey: ["vehicle-expenses", vehicleId] });
+    queryClient.invalidateQueries({ 
+      queryKey: ["vehicle-expenses", vehicleId],
+      refetchType: 'all'
+    });
     
+    // Appeler le callback de succès si fourni
     if (onSuccess) {
-      // Ajouter un léger délai pour permettre au changement d'état de se propager
-      setTimeout(() => {
-        onSuccess();
-      }, 150);
+      onSuccess();
     }
     
+    // Fermer le dialogue
+    onOpenChange(false);
+  };
+  
+  // Gestion explicite de l'annulation
+  const handleCancel = () => {
     onOpenChange(false);
   };
   
@@ -57,12 +64,14 @@ export function EditVehicleExpenseDialog({
       // Effet de nettoyage lorsque le dialogue se ferme
       return () => {
         // Rafraîchir les données après la fermeture
-        setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ["vehicle-expenses", vehicleId] });
-        }, 150);
+        queryClient.invalidateQueries({ 
+          queryKey: ["vehicle-expenses", vehicleId],
+          refetchType: 'all'
+        });
       };
     }
-  }, [open, queryClient, vehicleId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -77,6 +86,7 @@ export function EditVehicleExpenseDialog({
             expenseId={expense.id}
             initialValues={initialExpenseData}
             onSuccess={handleSuccess}
+            onCancel={handleCancel}
             hideDialogWrapper={true}
           />
         )}

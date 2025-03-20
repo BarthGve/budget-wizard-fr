@@ -30,14 +30,19 @@ export const ExpenseForm = ({
     initialValues,
     onSuccess: () => {
       if (onSuccess) {
-        // Utiliser un timeout pour permettre à React de mettre à jour le DOM
-        // avant que nous ne tentions de rafraîchir les données
-        setTimeout(() => {
-          onSuccess();
-        }, 100);
+        onSuccess();
       }
     }
   });
+
+  // Fonction explicite pour gérer l'annulation
+  const handleCancel = () => {
+    // Réinitialiser le formulaire
+    form.reset();
+    
+    // Appeler le callback d'annulation
+    onCancel();
+  };
 
   return (
     <Form {...form}>
@@ -48,7 +53,7 @@ export const ExpenseForm = ({
         <ExpenseFormActions 
           isLoading={isLoading} 
           isEditMode={isEditMode} 
-          onCancel={onCancel}
+          onCancel={handleCancel}
         />
       </form>
     </Form>

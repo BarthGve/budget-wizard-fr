@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useVehicleExpenses } from "@/hooks/useVehicleExpenses";
+import { useEffect } from "react";
 
 // Schéma de validation pour le formulaire
 export const expenseFormSchema = z.object({
@@ -65,8 +66,23 @@ export const useExpenseForm = ({
 
   const form = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseFormSchema),
-    defaultValues
+    defaultValues,
+    mode: "onChange" // Validation plus réactive
   });
+
+  // Reset le formulaire quand les valeurs initiales changent
+  useEffect(() => {
+    if (initialValues) {
+      form.reset({
+        expense_type: initialValues.expenseType,
+        date: initialValues.date,
+        amount: parseFloat(initialValues.amount),
+        fuel_volume: initialValues.fuelVolume ? parseFloat(initialValues.fuelVolume) : undefined,
+        mileage: initialValues.mileage ? parseFloat(initialValues.mileage) : undefined,
+        comment: initialValues.comment
+      });
+    }
+  }, [initialValues, form]);
 
   const onSubmit = (data: ExpenseFormValues) => {
     const expenseData = {
@@ -83,7 +99,10 @@ export const useExpenseForm = ({
       // Mise à jour d'une dépense existante
       updateExpense({ id: expenseId, ...expenseData }, {
         onSuccess: () => {
-          if (onSuccess) onSuccess();
+          if (onSuccess) {
+            // Appel direct du callback de succès
+            onSuccess();
+          }
           form.reset();
         }
       });
@@ -91,7 +110,10 @@ export const useExpenseForm = ({
       // Ajout d'une nouvelle dépense
       addExpense(expenseData, {
         onSuccess: () => {
-          if (onSuccess) onSuccess();
+          if (onSuccess) {
+            // Appel direct du callback de succès
+            onSuccess();
+          }
           form.reset();
         }
       });

@@ -55,31 +55,41 @@ export const VehicleExpenseList = ({
   };
 
   // Gérer la fermeture du dialogue d'édition et mise à jour
-  const handleEditDialogClose = useCallback((updated: boolean = false) => {
+  const handleEditDialogClose = useCallback(() => {
     setIsEditDialogOpen(false);
     setEditExpense(null);
-    
-    if (updated && onSuccess) {
-      // Ajouter un délai pour s'assurer que l'état est mis à jour correctement
-      setTimeout(() => {
-        // Forcer l'invalidation du cache pour rafraîchir les données
-        queryClient.invalidateQueries({ queryKey: ["vehicle-expenses", vehicleId] });
-        onSuccess();
-      }, 150);
+  }, []);
+  
+  // Callback de succès pour l'édition
+  const handleEditSuccess = useCallback(() => {
+    // Appel du callback de succès parent
+    if (onSuccess) {
+      onSuccess();
     }
-  }, [onSuccess, queryClient, vehicleId]);
+    
+    // Fermeture du dialogue
+    handleEditDialogClose();
+    
+    // Force refresh des données
+    queryClient.invalidateQueries({ 
+      queryKey: ["vehicle-expenses", vehicleId],
+      refetchType: 'all'
+    });
+  }, [onSuccess, handleEditDialogClose, queryClient, vehicleId]);
   
   // Gérer la suppression avec mise à jour
   const handleDelete = useCallback((id: string) => {
     onDeleteExpense(id);
-    // Ajouter un délai pour s'assurer que la suppression est terminée
-    setTimeout(() => {
-      // Forcer l'invalidation du cache pour rafraîchir les données
-      queryClient.invalidateQueries({ queryKey: ["vehicle-expenses", vehicleId] });
-      if (onSuccess) {
-        onSuccess();
-      }
-    }, 150);
+    
+    // Force refresh des données après suppression
+    queryClient.invalidateQueries({ 
+      queryKey: ["vehicle-expenses", vehicleId],
+      refetchType: 'all'
+    });
+    
+    if (onSuccess) {
+      onSuccess();
+    }
   }, [onDeleteExpense, onSuccess, queryClient, vehicleId]);
 
   // Ouvrir le dialogue d'édition avec la dépense sélectionnée
@@ -87,6 +97,15 @@ export const VehicleExpenseList = ({
     setEditExpense(expense);
     setIsEditDialogOpen(true);
   }, []);
+  
+  // Gestion de la fermeture du dialogue
+  const handleDialogOpenChange = useCallback((open: boolean) => {
+    if (!open) {
+      handleEditDialogClose();
+    } else {
+      setIsEditDialogOpen(open);
+    }
+  }, [handleEditDialogClose]);
   
   // Effet pour nettoyer l'état lors du démontage
   useEffect(() => {
@@ -139,13 +158,10 @@ export const VehicleExpenseList = ({
       {editExpense && (
         <EditVehicleExpenseDialog
           open={isEditDialogOpen}
-          onOpenChange={(open) => {
-            if (!open) handleEditDialogClose();
-            else setIsEditDialogOpen(open);
-          }}
+          onOpenChange={handleDialogOpenChange}
           expense={editExpense}
           vehicleId={vehicleId}
-          onSuccess={() => handleEditDialogClose(true)}
+          onSuccess={handleEditSuccess}
         />
       )}
     </div>

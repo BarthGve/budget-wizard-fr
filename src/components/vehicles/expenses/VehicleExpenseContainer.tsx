@@ -18,8 +18,13 @@ export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerPr
 
   // Fonction optimisée pour supprimer une dépense
   const handleDeleteExpense = useCallback((id: string) => {
-    deleteExpense(id);
-  }, [deleteExpense]);
+    deleteExpense(id, {
+      onSuccess: () => {
+        // Plutôt que d'attendre, forcer un refresh immédiat
+        refetch();
+      }
+    });
+  }, [deleteExpense, refetch]);
 
   // Fonction optimisée pour gérer le succès des opérations
   const handleExpenseSuccess = useCallback(() => {
@@ -30,19 +35,16 @@ export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerPr
     });
     
     // Assurer un rafraîchissement immédiat des données
-    setTimeout(() => {
-      refetch();
-    }, 150);
+    refetch();
   }, [queryClient, vehicleId, refetch]);
 
   // Gestion de l'ouverture/fermeture de la boîte de dialogue
   const handleDialogOpenChange = useCallback((open: boolean) => {
     setIsAddDialogOpen(open);
+    
+    // Si on ferme le dialogue, rafraîchir les données
     if (!open) {
-      // Rafraîchir les données après la fermeture du dialogue
-      setTimeout(() => {
-        handleExpenseSuccess();
-      }, 100);
+      handleExpenseSuccess();
     }
   }, [handleExpenseSuccess]);
 

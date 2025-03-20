@@ -28,8 +28,8 @@ export const useVehicleExpenses = (vehicleId: string) => {
       return data as VehicleExpense[];
     },
     enabled: !!currentUser && !!vehicleId,
-    staleTime: 1000 * 60, // Conserver les données en cache pendant 1 minute
-    refetchOnWindowFocus: false // Désactiver le refetch automatique au focus
+    staleTime: 1000 * 10, // Réduire le temps de cache à 10 secondes
+    refetchOnWindowFocus: true // Activer le refetch automatique au focus
   });
 
   // Ajouter une dépense
@@ -57,7 +57,7 @@ export const useVehicleExpenses = (vehicleId: string) => {
       });
       
       // Refetch immédiat pour s'assurer que les données sont à jour
-      setTimeout(() => refetch(), 100);
+      refetch();
       
       toast.success("Dépense ajoutée avec succès");
     },
@@ -93,7 +93,7 @@ export const useVehicleExpenses = (vehicleId: string) => {
       });
       
       // Refetch immédiat pour s'assurer que les données sont à jour
-      setTimeout(() => refetch(), 100);
+      refetch();
       
       toast.success("Dépense mise à jour avec succès");
     },
@@ -125,7 +125,7 @@ export const useVehicleExpenses = (vehicleId: string) => {
       });
       
       // Refetch immédiat pour s'assurer que les données sont à jour
-      setTimeout(() => refetch(), 100);
+      refetch();
       
       toast.success("Dépense supprimée avec succès");
     },
@@ -145,6 +145,6 @@ export const useVehicleExpenses = (vehicleId: string) => {
     isUpdating,
     deleteExpense,
     isDeleting,
-    refetch // Exposer la fonction refetch
+    refetch
   };
 };
