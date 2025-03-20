@@ -30,7 +30,7 @@ export const useExpenseStats = () => {
       const { data, error } = await supabase
         .from("expenses")
         .select("amount")
-        .eq("profile_id", currentUser.id)
+        .eq("profile_id", currentUser.id.toString()) // Conversion de l'ID en chaîne de caractères
         .gte("date", firstDayFormatted)
         .lte("date", lastDayFormatted);
 
@@ -57,7 +57,7 @@ export const useExpenseStats = () => {
       const { data: vehicles, error: vehiclesError } = await supabase
         .from("vehicles")
         .select("id")
-        .eq("profile_id", currentUser.id)
+        .eq("profile_id", currentUser.id.toString()) // Conversion de l'ID en chaîne de caractères
         .eq("status", "actif");
 
       if (vehiclesError) throw vehiclesError;
