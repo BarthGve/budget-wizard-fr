@@ -7,3 +7,13 @@ export const formatCurrency = (amount: number): string => {
     minimumFractionDigits: 2
   }).format(amount);
 };
+
+// Fonction pour formater un volume en litres avec 2 décimales
+export const formatVolume = (volume: number): string => {
+  return `${volume.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L`;
+};
+
+// Fonction pour formater un prix au litre
+export const formatPricePerLiter = (price: number): string => {
+  return `${price.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} €/L`;
+};

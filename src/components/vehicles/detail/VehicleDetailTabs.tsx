@@ -4,6 +4,7 @@ import { Vehicle } from "@/types/vehicle";
 import { VehicleGeneralInfo } from "./VehicleGeneralInfo";
 import { VehiclePhotoCard } from "./photo-card";
 import { VehicleExpenseContainer } from "@/components/vehicles/expenses/VehicleExpenseContainer";
+import { VehicleExpenseStats } from "@/components/vehicles/expenses/VehicleExpenseStats";
 import { motion } from "framer-motion";
 
 interface VehicleDetailTabsProps {
@@ -54,11 +55,21 @@ export const VehicleDetailTabs = ({
 
       <TabsContent value="details">
         <motion.div 
-          className="grid md:grid-cols-2 gap-6"
+          className="space-y-6"
           variants={containerVariants}
+          initial="hidden"
+          animate="visible"
         >
-          <VehicleGeneralInfo vehicle={vehicle} />
-          <VehiclePhotoCard vehicle={vehicle} />
+          <motion.div className="grid md:grid-cols-2 gap-6" variants={itemVariants}>
+            <VehicleGeneralInfo vehicle={vehicle} />
+            <VehiclePhotoCard vehicle={vehicle} />
+          </motion.div>
+          
+          {canAccessExpenses && (
+            <motion.div variants={itemVariants}>
+              <VehicleExpenseStats vehicleId={vehicle.id} />
+            </motion.div>
+          )}
         </motion.div>
       </TabsContent>
 
