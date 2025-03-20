@@ -1,11 +1,13 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { DashboardCards } from "./dashboard-content/DashboardCards";
 import { DashboardCharts } from "./dashboard-content/DashboardCharts";
 import { DashboardContributors } from "./dashboard-content/DashboardContributors";
+import { MonthlyExpensesCard } from "./MonthlyExpensesCard";
+import { VehicleFuelExpensesCard } from "./VehicleFuelExpensesCard";
 import { Credit } from "@/components/credits/types";
+import { useCurrentMonthStats } from "@/hooks/useCurrentMonthStats";
 import { useMemo, memo } from "react";
 
 interface DashboardTabContentProps {
@@ -54,12 +56,26 @@ interface DashboardTabContentProps {
 const MemoizedDashboardCards = memo(DashboardCards);
 const MemoizedDashboardCharts = memo(DashboardCharts);
 const MemoizedDashboardContributors = memo(DashboardContributors);
+const MemoizedMonthlyExpensesCard = memo(MonthlyExpensesCard);
+const MemoizedVehicleFuelExpensesCard = memo(VehicleFuelExpensesCard);
 
 // Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const rowVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
     transition: {
       staggerChildren: 0.1,
       delayChildren: 0.1
@@ -101,6 +117,9 @@ export const DashboardTabContent = ({
     refetchOnReconnect: true, // Activer le rechargement lors de la reconnexion
   });
 
+  // Obtenir les statistiques du mois en cours
+  const { monthlyExpensesTotal, fuelExpensesTotal } = useCurrentMonthStats();
+
   // Memoize credit calculations to prevent recalculation on each render
   const { activeCredits, repaidThisMonth, totalMensualites } = useMemo(() => {
     const active = credits.filter(credit => credit.statut === 'actif') || [];
@@ -136,6 +155,29 @@ export const DashboardTabContent = ({
     return mappedContributors.length > 0;
   }, [mappedContributors.length]);
 
+  // Récupérer le profil utilisateur pour déterminer s'il est PRO
+  const { data: profile } = useQuery({
+    queryKey: ["current-profile"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        return null;
+      }
+
+      return data;
+    },
+    staleTime: 1000 * 60 * 30, // 30 minutes
+  });
+
   return (
     <motion.div 
       className="space-y-8"
@@ -157,6 +199,18 @@ export const DashboardTabContent = ({
           periodicity: expense.periodicity
         }))}
       />
+      
+      {/* Nouvelle ligne de cards pour les statistiques du mois */}
+      <motion.div 
+        className="grid gap-6 md:grid-cols-2"
+        variants={rowVariants}
+      >
+        <MemoizedMonthlyExpensesCard totalExpenses={monthlyExpensesTotal} />
+        <MemoizedVehicleFuelExpensesCard 
+          totalFuelExpenses={fuelExpensesTotal}
+          profile={profile}
+        />
+      </motion.div>
       
       <MemoizedDashboardCharts 
         expenses={expenses}
