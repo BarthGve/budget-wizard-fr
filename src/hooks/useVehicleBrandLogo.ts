@@ -10,7 +10,7 @@ export const useVehicleBrandLogo = (brand: string) => {
   const getBrandLogoUrl = (brand: string) => {
     if (!brand) return null;
     const cleanBrand = brand.trim().toLowerCase();
-    return `https://logo.clearbit.com/${cleanBrand}.com`;
+    return `https://logo.clearbit.com/${cleanBrand}`;
   };
 
   useEffect(() => {
