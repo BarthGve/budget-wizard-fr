@@ -33,7 +33,8 @@ export const useCurrentMonthStats = () => {
       return data;
     },
     enabled: !!currentUser?.id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 10, // 10 secondes pour une réactivité accrue
+    refetchOnWindowFocus: true,
   });
 
   // Filtrer les dépenses du mois en cours côté client, exactement comme dans Expenses.tsx
@@ -74,7 +75,8 @@ export const useCurrentMonthStats = () => {
       return { total, count: data.length };
     },
     enabled: !!currentUser?.id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 10, // 10 secondes pour une réactivité accrue
+    refetchOnWindowFocus: true,
   });
 
   return {

@@ -44,6 +44,20 @@ export const useRealtimeListeners = () => {
         type: 'all'
       });
       
+      // Invalider également les statistiques mensuelles actuelles
+      queryClient.invalidateQueries({ 
+        queryKey: ["all-expenses-for-stats"],
+        exact: false, 
+        refetchType: 'all'
+      });
+      
+      // Invalider également les requêtes de dépenses mensuelles de carburant
+      queryClient.invalidateQueries({ 
+        queryKey: ["monthly-fuel-expenses"],
+        exact: false, 
+        refetchType: 'all'
+      });
+      
       // Invalider également d'autres requêtes potentiellement affectées
       queryClient.invalidateQueries({ 
         queryKey: ["contributors"],
@@ -173,7 +187,7 @@ export const useRealtimeListeners = () => {
   // Écouteur spécifique pour les dépenses
   useEffect(() => {
     // Configuration de l'écouteur avec invalidation des requêtes liées aux dépenses
-    setupChannel('expenses', 'expenses', ['expenses', 'retailer-expenses', 'dashboard-data']);
+    setupChannel('expenses', 'expenses', ['expenses', 'retailer-expenses', 'dashboard-data', 'all-expenses-for-stats']);
     
     return () => {
       if (channelsRef.current.expenses) {
@@ -213,6 +227,16 @@ export const useRealtimeListeners = () => {
             exact: false,
             refetchType: 'all' // Forcer le rechargement complet
           });
+          
+          // Invalider également les statistiques mensuelles des dépenses de carburant
+          queryClient.invalidateQueries({ 
+            queryKey: ["monthly-fuel-expenses"],
+            exact: false,
+            refetchType: 'all' 
+          });
+          
+          // Invalider les données du dashboard pour mettre à jour les cards
+          invalidateDashboardData();
           
           // Si un vehicleId est disponible dans la charge utile, invalider spécifiquement ce véhicule
           // Correction des erreurs TypeScript en vérifiant que payload.new existe et a la propriété vehicle_id

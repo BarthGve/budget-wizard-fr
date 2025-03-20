@@ -44,6 +44,20 @@ export const useVehicleExpenses = (vehicleId: string) => {
       refetchType: 'all'
     });
     
+    // Invalider les statistiques mensuelles pour le dashboard
+    queryClient.invalidateQueries({ 
+      queryKey: ["monthly-fuel-expenses"],
+      exact: false,
+      refetchType: 'all'
+    });
+    
+    // Invalider les données du dashboard
+    queryClient.invalidateQueries({ 
+      queryKey: ["dashboard-data"],
+      exact: false,
+      refetchType: 'all'
+    });
+    
     // Refetch immédiat pour s'assurer que les données sont à jour
     setTimeout(() => refetch(), 100); // Petit délai pour éviter les problèmes de timing
   }, [queryClient, queryKey, refetch]);

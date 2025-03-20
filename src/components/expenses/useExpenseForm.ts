@@ -47,6 +47,20 @@ export function useExpenseForm(onExpenseAdded: () => void) {
         exact: false
       });
       
+      // Invalidation des statistiques mensuelles pour le dashboard
+      queryClient.invalidateQueries({ 
+        queryKey: ["all-expenses-for-stats"],
+        exact: false,
+        refetchType: 'all'
+      });
+      
+      // Invalidation des données du dashboard
+      queryClient.invalidateQueries({ 
+        queryKey: ["dashboard-data"],
+        exact: false,
+        refetchType: 'all'
+      });
+      
       onExpenseAdded();
       return true;
     } catch (error) {
