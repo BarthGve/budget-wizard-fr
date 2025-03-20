@@ -4,8 +4,9 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Card, CardContent } from "@/components/ui/card";
 import { VehicleExpenseActions } from "./VehicleExpenseActions";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { EditVehicleExpenseDialog } from "./EditVehicleExpenseDialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface VehicleExpenseListProps {
   expenses: VehicleExpense[];
@@ -23,6 +24,7 @@ export const VehicleExpenseList = ({
   // État pour le dialogue d'édition
   const [editExpense, setEditExpense] = useState<VehicleExpense | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
   
   // Fonction pour formater le montant
   const formatAmount = (amount: number) => {
@@ -58,22 +60,40 @@ export const VehicleExpenseList = ({
     setEditExpense(null);
     
     if (updated && onSuccess) {
-      onSuccess();
+      // Ajouter un délai pour s'assurer que l'état est mis à jour correctement
+      setTimeout(() => {
+        // Forcer l'invalidation du cache pour rafraîchir les données
+        queryClient.invalidateQueries({ queryKey: ["vehicle-expenses", vehicleId] });
+        onSuccess();
+      }, 150);
     }
-  }, [onSuccess]);
+  }, [onSuccess, queryClient, vehicleId]);
   
   // Gérer la suppression avec mise à jour
   const handleDelete = useCallback((id: string) => {
     onDeleteExpense(id);
-    if (onSuccess) {
-      onSuccess();
-    }
-  }, [onDeleteExpense, onSuccess]);
+    // Ajouter un délai pour s'assurer que la suppression est terminée
+    setTimeout(() => {
+      // Forcer l'invalidation du cache pour rafraîchir les données
+      queryClient.invalidateQueries({ queryKey: ["vehicle-expenses", vehicleId] });
+      if (onSuccess) {
+        onSuccess();
+      }
+    }, 150);
+  }, [onDeleteExpense, onSuccess, queryClient, vehicleId]);
 
   // Ouvrir le dialogue d'édition avec la dépense sélectionnée
   const handleEditClick = useCallback((expense: VehicleExpense) => {
     setEditExpense(expense);
     setIsEditDialogOpen(true);
+  }, []);
+  
+  // Effet pour nettoyer l'état lors du démontage
+  useEffect(() => {
+    return () => {
+      setEditExpense(null);
+      setIsEditDialogOpen(false);
+    };
   }, []);
 
   return (

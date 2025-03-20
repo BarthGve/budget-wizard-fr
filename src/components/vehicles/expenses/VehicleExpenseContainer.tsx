@@ -2,7 +2,7 @@
 import { useVehicleExpenses } from "@/hooks/useVehicleExpenses";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { AddVehicleExpenseDialog } from "./AddVehicleExpenseDialog";
 import { VehicleExpenseList } from "./VehicleExpenseList";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,18 +12,39 @@ interface VehicleExpenseContainerProps {
 }
 
 export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerProps) => {
-  const { expenses, isLoading, deleteExpense } = useVehicleExpenses(vehicleId);
+  const { expenses, isLoading, deleteExpense, refetch } = useVehicleExpenses(vehicleId);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const handleDeleteExpense = (id: string) => {
+  // Fonction optimisée pour supprimer une dépense
+  const handleDeleteExpense = useCallback((id: string) => {
     deleteExpense(id);
-  };
+  }, [deleteExpense]);
 
-  const handleExpenseSuccess = () => {
-    // Invalider la requête pour rafraîchir les données
-    queryClient.invalidateQueries({ queryKey: ["vehicle-expenses", vehicleId] });
-  };
+  // Fonction optimisée pour gérer le succès des opérations
+  const handleExpenseSuccess = useCallback(() => {
+    // Invalider la requête pour rafraîchir les données complètement
+    queryClient.invalidateQueries({ 
+      queryKey: ["vehicle-expenses", vehicleId],
+      refetchType: 'all'
+    });
+    
+    // Assurer un rafraîchissement immédiat des données
+    setTimeout(() => {
+      refetch();
+    }, 150);
+  }, [queryClient, vehicleId, refetch]);
+
+  // Gestion de l'ouverture/fermeture de la boîte de dialogue
+  const handleDialogOpenChange = useCallback((open: boolean) => {
+    setIsAddDialogOpen(open);
+    if (!open) {
+      // Rafraîchir les données après la fermeture du dialogue
+      setTimeout(() => {
+        handleExpenseSuccess();
+      }, 100);
+    }
+  }, [handleExpenseSuccess]);
 
   return (
     <div className="space-y-4">
@@ -54,7 +75,7 @@ export const VehicleExpenseContainer = ({ vehicleId }: VehicleExpenseContainerPr
 
       <AddVehicleExpenseDialog
         open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
+        onOpenChange={handleDialogOpenChange}
         vehicleId={vehicleId}
         onSuccess={handleExpenseSuccess}
       />

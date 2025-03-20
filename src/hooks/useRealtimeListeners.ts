@@ -1,3 +1,4 @@
+
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useRef } from "react";
@@ -84,7 +85,9 @@ export const useRealtimeListeners = () => {
           console.log(`${tableName} changed:`, payload.eventType);
           
           // Invalidation forcée des données pour tous les événements
-          invalidateDashboardData();
+          if (tableName !== 'vehicle_expenses') {
+            invalidateDashboardData();
+          }
           
           // Invalidations supplémentaires si spécifiées
           if (additionalInvalidations) {
@@ -180,10 +183,62 @@ export const useRealtimeListeners = () => {
     };
   }, [queryClient]);
 
-  // Configuration des écouteurs pour les dépenses de véhicules
+  // Configuration spécifique et optimisée des écouteurs pour les dépenses de véhicules
   useEffect(() => {
-    // Configuration de l'écouteur avec invalidation des requêtes liées aux dépenses de véhicules
-    setupChannel('vehicle_expenses', 'vehicleExpenses', ['vehicle-expenses']);
+    // Nettoyer le canal existant si nécessaire
+    if (channelsRef.current.vehicleExpenses) {
+      supabase.removeChannel(channelsRef.current.vehicleExpenses);
+      channelsRef.current.vehicleExpenses = null;
+    }
+
+    // Créer un ID de canal unique
+    const vehicleExpenseChannelId = `vehicle-expenses-channel-${Date.now()}`;
+    
+    // Configurer un canal spécifique pour les dépenses de véhicules
+    const channel = supabase
+      .channel(vehicleExpenseChannelId)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'vehicle_expenses'
+        },
+        (payload) => {
+          console.log(`vehicle_expenses changed:`, payload.eventType, payload);
+          
+          // Invalidation immédiate ciblée des dépenses de véhicules
+          queryClient.invalidateQueries({ 
+            queryKey: ["vehicle-expenses"],
+            exact: false,
+            refetchType: 'all' // Forcer le rechargement complet
+          });
+          
+          // Si un vehicleId est disponible dans la charge utile, invalider spécifiquement ce véhicule
+          if (payload.new && payload.new.vehicle_id) {
+            queryClient.invalidateQueries({ 
+              queryKey: ["vehicle-expenses", payload.new.vehicle_id],
+              exact: true,
+              refetchType: 'all'
+            });
+          }
+          
+          // Si un ancien vehicleId est disponible (lors d'une suppression), invalider également
+          if (payload.old && payload.old.vehicle_id) {
+            queryClient.invalidateQueries({ 
+              queryKey: ["vehicle-expenses", payload.old.vehicle_id],
+              exact: true,
+              refetchType: 'all'
+            });
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Statut du canal vehicle_expenses:`, status);
+      });
+    
+    // Stocker la référence du canal
+    channelsRef.current.vehicleExpenses = channel;
     
     return () => {
       if (channelsRef.current.vehicleExpenses) {
