@@ -2,7 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Vehicle } from "@/types/vehicle";
 import { VehicleGeneralInfo } from "./VehicleGeneralInfo";
-import { VehiclePhotoCard } from "./VehiclePhotoCard";
+import { VehiclePhotoCard } from "./photo-card";
 import { VehicleExpenseContainer } from "@/components/vehicles/expenses/VehicleExpenseContainer";
 import { motion } from "framer-motion";
 
