@@ -123,11 +123,11 @@ export const VehicleForm = ({ onSubmit, onCancel, vehicle, isPending }: VehicleF
             name="brand"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Marque</FormLabel>
+                <FormLabel>Marque (nom de domaine)</FormLabel>
                 <div className="flex items-center gap-4">
                   <FormControl>
                     <Input 
-                      placeholder="Ex: Renault, Peugeot..." 
+                      placeholder="Ex: mercedes.com, peugeot.fr ..." 
                       {...field} 
                     />
                   </FormControl>
