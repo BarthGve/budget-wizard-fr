@@ -61,7 +61,7 @@ export const VehicleExpenseStats = ({ vehicleId }: VehicleExpenseStatsProps) => 
             ? `${formatVolume(yearToDateStats.totalFuelVolume)} • ${formatPricePerLiter(yearToDateStats.averageFuelPrice)}`
             : undefined}
           icon={<Droplets className="h-5 w-5" />}
-          colorScheme="green"
+          colorScheme="gray"
         />
       </motion.div>
       
@@ -71,7 +71,7 @@ export const VehicleExpenseStats = ({ vehicleId }: VehicleExpenseStatsProps) => 
           amount={yearToDateStats.totalExpense}
           description={`${yearToDateStats.expenseCount} dépense(s) cette année`}
           icon={<DollarSign className="h-5 w-5" />}
-          colorScheme="purple"
+          colorScheme="gray"
         />
       </motion.div>
     </motion.div>

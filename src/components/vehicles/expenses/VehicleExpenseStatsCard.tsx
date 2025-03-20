@@ -17,7 +17,7 @@ interface VehicleExpenseStatsCardProps {
   icon: React.ReactNode;
   className?: string;
   secondaryValue?: string;
-  colorScheme?: "blue" | "purple" | "amber" | "green";
+  colorScheme?: "blue" | "purple" | "amber" | "green" | "gray";
   previousAmount?: number;
 }
 
@@ -28,7 +28,7 @@ export const VehicleExpenseStatsCard = ({
   icon,
   className,
   secondaryValue,
-  colorScheme = "blue",
+  colorScheme = "gray", // Changé la valeur par défaut à "gray"
   previousAmount
 }: VehicleExpenseStatsCardProps) => {
   const hasVariation = previousAmount !== undefined && previousAmount !== 0;
@@ -67,7 +67,7 @@ export const VehicleExpenseStatsCard = ({
           amount: "text-green-800 dark:text-green-200",
           description: "text-green-600/80 dark:text-green-400/90"
         };
-      default: // blue
+      case "blue":
         return {
           card: "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10",
           iconBg: "bg-blue-100 dark:bg-blue-800/40",
@@ -75,6 +75,15 @@ export const VehicleExpenseStatsCard = ({
           title: "text-blue-900 dark:text-blue-300",
           amount: "text-blue-800 dark:text-blue-200",
           description: "text-blue-600/80 dark:text-blue-400/90"
+        };
+      default: // gray
+        return {
+          card: "bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/30 dark:to-gray-700/20",
+          iconBg: "bg-gray-100 dark:bg-gray-700/40",
+          iconText: "text-gray-600 dark:text-gray-300",
+          title: "text-gray-900 dark:text-gray-300",
+          amount: "text-gray-800 dark:text-gray-200",
+          description: "text-gray-600/80 dark:text-gray-400/90"
         };
     }
   };
