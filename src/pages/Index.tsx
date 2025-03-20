@@ -80,6 +80,7 @@ const Dashboard = () => {
           recurringExpenses={dashboardData.recurringExpensesForChart}
           monthlySavings={dashboardData.monthlySavingsForChart}
           contributors={contributors || []}
+          currentView={currentView}
         />
       </motion.div>
     </DashboardLayout>

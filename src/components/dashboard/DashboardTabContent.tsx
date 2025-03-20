@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -7,7 +8,7 @@ import { DashboardContributors } from "./dashboard-content/DashboardContributors
 import { MonthlyExpensesCard } from "./MonthlyExpensesCard";
 import { VehicleFuelExpensesCard } from "./VehicleFuelExpensesCard";
 import { Credit } from "@/components/credits/types";
-import { useCurrentMonthStats } from "@/hooks/useCurrentMonthStats";
+import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useMemo, memo } from "react";
 
 interface DashboardTabContentProps {
@@ -50,6 +51,7 @@ interface DashboardTabContentProps {
     name: string;
     amount: number;
   }>;
+  currentView: "monthly" | "yearly";
 }
 
 // Composants memoizés pour éviter les re-rendus inutiles
@@ -94,6 +96,7 @@ export const DashboardTabContent = ({
   expenseShares,
   recurringExpenses,
   monthlySavings,
+  currentView,
 }: DashboardTabContentProps) => {
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -117,8 +120,8 @@ export const DashboardTabContent = ({
     refetchOnReconnect: true, // Activer le rechargement lors de la reconnexion
   });
 
-  // Obtenir les statistiques du mois en cours
-  const { monthlyExpensesTotal, fuelExpensesTotal } = useCurrentMonthStats();
+  // Obtenir les statistiques selon la période sélectionnée
+  const { expensesTotal, fuelExpensesTotal } = useExpenseStats(currentView);
 
   // Memoize credit calculations to prevent recalculation on each render
   const { activeCredits, repaidThisMonth, totalMensualites } = useMemo(() => {
@@ -200,15 +203,19 @@ export const DashboardTabContent = ({
         }))}
       />
       
-      {/* Nouvelle ligne de cards pour les statistiques du mois */}
+      {/* Cartes pour les statistiques selon la période */}
       <motion.div 
         className="grid gap-6 md:grid-cols-2"
         variants={rowVariants}
       >
-        <MemoizedMonthlyExpensesCard totalExpenses={monthlyExpensesTotal} />
+        <MemoizedMonthlyExpensesCard 
+          totalExpenses={expensesTotal} 
+          viewMode={currentView}
+        />
         <MemoizedVehicleFuelExpensesCard 
           totalFuelExpenses={fuelExpensesTotal}
           profile={profile}
+          viewMode={currentView}
         />
       </motion.div>
       

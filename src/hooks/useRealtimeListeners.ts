@@ -1,282 +1,126 @@
-
-import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const useRealtimeListeners = () => {
   const queryClient = useQueryClient();
-  
-  // Utiliser des refs pour stocker les références des canaux
-  const channelsRef = useRef<{
-    contributors: any | null;
-    monthlySavings: any | null;
-    projects: any | null;
-    recurringExpenses: any | null;
-    profiles: any | null;
-    expenses: any | null;
-    vehicleExpenses: any | null;
-  }>({
-    contributors: null,
-    monthlySavings: null,
-    projects: null,
-    recurringExpenses: null,
-    profiles: null,
-    expenses: null,
-    vehicleExpenses: null
-  });
 
-  // Fonction d'invalidation optimisée pour cibler uniquement les données nécessaires
-  const invalidateDashboardData = () => {
-    console.log("Invalidation forcée des données du dashboard");
-    
-    // Invalider toutes les données du dashboard avec une priorité élevée
-    queryClient.invalidateQueries({ 
-      queryKey: ["dashboard-data"],
-      refetchType: 'all', // Forcer un rechargement complet
-      exact: false
-    });
-    
-    // Forcer le rafraîchissement immédiat pour la mise à jour globale
-    setTimeout(() => {
-      queryClient.refetchQueries({ 
-        queryKey: ["dashboard-data"],
-        exact: false,
-        type: 'all'
-      });
-      
-      // Invalider également les statistiques mensuelles actuelles
-      queryClient.invalidateQueries({ 
-        queryKey: ["all-expenses-for-stats"],
-        exact: false, 
-        refetchType: 'all'
-      });
-      
-      // Invalider également les requêtes de dépenses mensuelles de carburant
-      queryClient.invalidateQueries({ 
-        queryKey: ["monthly-fuel-expenses"],
-        exact: false, 
-        refetchType: 'all'
-      });
-      
-      // Invalider également d'autres requêtes potentiellement affectées
-      queryClient.invalidateQueries({ 
-        queryKey: ["contributors"],
-        exact: false, 
-        refetchType: 'all'
-      });
-      
-      // Ajouter l'invalidation pour les credits qui affectent le solde global
-      queryClient.invalidateQueries({ 
-        queryKey: ["credits"],
-        exact: false, 
-        refetchType: 'all'
-      });
-    }, 100);
-  };
-
-  // Fonction réutilisable pour configurer un canal avec gestion optimisée
-  const setupChannel = (tableName: string, channelKey: keyof typeof channelsRef.current, additionalInvalidations?: string[]) => {
-    // Nettoyer le canal existant si nécessaire
-    if (channelsRef.current[channelKey]) {
-      supabase.removeChannel(channelsRef.current[channelKey]);
-      channelsRef.current[channelKey] = null;
-    }
-
-    // Créer un nouvel ID de canal unique
-    const channelId = `${tableName}-channel-${Date.now()}`;
-    
-    // Configurer le nouveau canal
-    const channel = supabase
-      .channel(channelId)
+  useEffect(() => {
+    // Listen for changes in the contributors table
+    const contributorsChannel = supabase
+      .channel('contributors')
       .on(
         'postgres_changes',
         {
-          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          event: '*',
           schema: 'public',
-          table: tableName
+          table: 'contributors'
         },
         (payload) => {
-          console.log(`${tableName} changed:`, payload.eventType);
-          
-          // Invalidation forcée des données pour tous les événements
-          if (tableName !== 'vehicle_expenses') {
-            invalidateDashboardData();
-          }
-          
-          // Invalidations supplémentaires si spécifiées
-          if (additionalInvalidations) {
-            additionalInvalidations.forEach(key => {
-              queryClient.invalidateQueries({ 
-                queryKey: [key],
-                exact: false, 
-                refetchType: 'all' // Forcer le rechargement
-              });
-            });
-          }
+          console.log('Contributeurs modifiés, invalidation des requêtes');
+          queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+          queryClient.invalidateQueries({ queryKey: ['contributors'] });
+          toast.success("Les contributeurs ont été mis à jour en temps réel !");
         }
       )
-      .subscribe((status) => {
-        console.log(`Statut du canal ${tableName}:`, status);
-      });
-    
-    // Stocker la référence du canal
-    channelsRef.current[channelKey] = channel;
-  };
+      .subscribe();
 
-  // Configuration des écouteurs pour les contributeurs avec priorité maximale
-  useEffect(() => {
-    setupChannel('contributors', 'contributors');
-    
-    return () => {
-      if (channelsRef.current.contributors) {
-        supabase.removeChannel(channelsRef.current.contributors);
-        channelsRef.current.contributors = null;
-      }
-    };
-  }, [queryClient]); // queryClient est stable
-
-  // Configuration des écouteurs pour les épargnes mensuelles
-  useEffect(() => {
-    setupChannel('monthly_savings', 'monthlySavings', ['savings-projects']);
-    
-    return () => {
-      if (channelsRef.current.monthlySavings) {
-        supabase.removeChannel(channelsRef.current.monthlySavings);
-        channelsRef.current.monthlySavings = null;
-      }
-    };
-  }, [queryClient]);
-
-  // Configuration des écouteurs pour les projets d'épargne
-  useEffect(() => {
-    setupChannel('projets_epargne', 'projects', ['savings-projects']);
-    
-    return () => {
-      if (channelsRef.current.projects) {
-        supabase.removeChannel(channelsRef.current.projects);
-        channelsRef.current.projects = null;
-      }
-    };
-  }, [queryClient]);
-
-  // Configuration des écouteurs pour les dépenses récurrentes
-  useEffect(() => {
-    // Utiliser les invalidations de credits pour mettre à jour le solde global
-    setupChannel('recurring_expenses', 'recurringExpenses', ['credits', 'dashboard-data']);
-    
-    return () => {
-      if (channelsRef.current.recurringExpenses) {
-        supabase.removeChannel(channelsRef.current.recurringExpenses);
-        channelsRef.current.recurringExpenses = null;
-      }
-    };
-  }, [queryClient]);
-
-  // Écouteur pour les mises à jour des profils
-  useEffect(() => {
-    setupChannel('profiles', 'profiles', ['profile']);
-    
-    return () => {
-      if (channelsRef.current.profiles) {
-        supabase.removeChannel(channelsRef.current.profiles);
-        channelsRef.current.profiles = null;
-      }
-    };
-  }, [queryClient]);
-
-  // Écouteur spécifique pour les dépenses
-  useEffect(() => {
-    // Configuration de l'écouteur avec invalidation des requêtes liées aux dépenses
-    setupChannel('expenses', 'expenses', ['expenses', 'retailer-expenses', 'dashboard-data', 'all-expenses-for-stats']);
-    
-    return () => {
-      if (channelsRef.current.expenses) {
-        supabase.removeChannel(channelsRef.current.expenses);
-        channelsRef.current.expenses = null;
-      }
-    };
-  }, [queryClient]);
-
-  // Configuration spécifique et optimisée des écouteurs pour les dépenses de véhicules
-  useEffect(() => {
-    // Nettoyer le canal existant si nécessaire
-    if (channelsRef.current.vehicleExpenses) {
-      supabase.removeChannel(channelsRef.current.vehicleExpenses);
-      channelsRef.current.vehicleExpenses = null;
-    }
-
-    // Créer un ID de canal unique
-    const vehicleExpenseChannelId = `vehicle-expenses-channel-${Date.now()}`;
-    
-    // Configurer un canal spécifique pour les dépenses de véhicules
-    const channel = supabase
-      .channel(vehicleExpenseChannelId)
+    // Listen for changes in the monthly_savings table
+    const savingsChannel = supabase
+      .channel('monthly_savings')
       .on(
         'postgres_changes',
         {
-          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          event: '*',
+          schema: 'public',
+          table: 'monthly_savings'
+        },
+        (payload) => {
+          console.log('Épargnes mensuelles modifiées, invalidation des requêtes');
+          queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+          queryClient.invalidateQueries({ queryKey: ['monthly_savings'] });
+          toast.success("L'épargne mensuelle a été mise à jour en temps réel !");
+        }
+      )
+      .subscribe();
+
+    // Listen for changes in the recurring_expenses table
+    const expensesChannel = supabase
+      .channel('recurring_expenses')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'recurring_expenses'
+        },
+        (payload) => {
+          console.log('Dépenses récurrentes modifiées, invalidation des requêtes');
+          queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+          queryClient.invalidateQueries({ queryKey: ['recurring_expenses'] });
+          toast.success("Les dépenses récurrentes ont été mises à jour en temps réel !");
+        }
+      )
+      .subscribe();
+      
+    // Listen for changes in the expenses table
+    const expensesTableChannel = supabase
+      .channel('expenses')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'expenses'
+        },
+        (payload) => {
+          console.log('Dépenses modifiées, invalidation des requêtes');
+          queryClient.invalidateQueries({ queryKey: ['expenses'] });
+          
+          // Dans l'event handler des dépenses
+          queryClient.invalidateQueries({ 
+            queryKey: ["all-expenses-for-stats"],
+            exact: false, 
+            refetchType: 'all'
+          });
+          
+          // Pour les dépenses de véhicules, mettre à jour pour inclure les périodes
+          queryClient.invalidateQueries({ 
+            queryKey: ["period-fuel-expenses"],
+            exact: false, 
+            refetchType: 'all'
+          });
+          
+          toast.success("Les dépenses ont été mises à jour en temps réel !");
+        }
+      )
+      .subscribe();
+
+    // Listen for changes in the vehicle_expenses table
+    const vehicleExpensesChannel = supabase
+      .channel('vehicle_expenses')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
           schema: 'public',
           table: 'vehicle_expenses'
         },
         (payload) => {
-          console.log(`vehicle_expenses changed:`, payload.eventType, payload);
-          
-          // Invalidation immédiate ciblée des dépenses de véhicules
-          queryClient.invalidateQueries({ 
-            queryKey: ["vehicle-expenses"],
-            exact: false,
-            refetchType: 'all' // Forcer le rechargement complet
-          });
-          
-          // Invalider également les statistiques mensuelles des dépenses de carburant
-          queryClient.invalidateQueries({ 
-            queryKey: ["monthly-fuel-expenses"],
-            exact: false,
-            refetchType: 'all' 
-          });
-          
-          // Invalider les données du dashboard pour mettre à jour les cards
-          invalidateDashboardData();
-          
-          // Si un vehicleId est disponible dans la charge utile, invalider spécifiquement ce véhicule
-          // Correction des erreurs TypeScript en vérifiant que payload.new existe et a la propriété vehicle_id
-          if (payload.new && typeof payload.new === 'object' && 'vehicle_id' in payload.new) {
-            const vehicleId = payload.new.vehicle_id;
-            if (vehicleId) {
-              queryClient.invalidateQueries({ 
-                queryKey: ["vehicle-expenses", vehicleId],
-                exact: true,
-                refetchType: 'all'
-              });
-            }
-          }
-          
-          // Si un ancien vehicleId est disponible (lors d'une suppression), invalider également
-          // Correction des erreurs TypeScript en vérifiant que payload.old existe et a la propriété vehicle_id
-          if (payload.old && typeof payload.old === 'object' && 'vehicle_id' in payload.old) {
-            const vehicleId = payload.old.vehicle_id;
-            if (vehicleId) {
-              queryClient.invalidateQueries({ 
-                queryKey: ["vehicle-expenses", vehicleId],
-                exact: true,
-                refetchType: 'all'
-              });
-            }
-          }
+          console.log('Dépenses de véhicules modifiées, invalidation des requêtes');
+          queryClient.invalidateQueries({ queryKey: ['vehicle_expenses'] });
+          toast.success("Les dépenses de véhicules ont été mises à jour en temps réel !");
         }
       )
-      .subscribe((status) => {
-        console.log(`Statut du canal vehicle_expenses:`, status);
-      });
-    
-    // Stocker la référence du canal
-    channelsRef.current.vehicleExpenses = channel;
-    
+      .subscribe();
+
     return () => {
-      if (channelsRef.current.vehicleExpenses) {
-        supabase.removeChannel(channelsRef.current.vehicleExpenses);
-        channelsRef.current.vehicleExpenses = null;
-      }
+      supabase.removeChannel(contributorsChannel);
+      supabase.removeChannel(savingsChannel);
+      supabase.removeChannel(expensesChannel);
+      supabase.removeChannel(expensesTableChannel);
+      supabase.removeChannel(vehicleExpensesChannel);
     };
   }, [queryClient]);
 };

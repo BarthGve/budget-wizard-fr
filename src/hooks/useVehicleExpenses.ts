@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { VehicleExpense } from "@/types/vehicle";
@@ -54,6 +53,13 @@ export const useVehicleExpenses = (vehicleId: string) => {
     // Invalider les données du dashboard
     queryClient.invalidateQueries({ 
       queryKey: ["dashboard-data"],
+      exact: false,
+      refetchType: 'all'
+    });
+    
+    // Invalider les dépenses par période pour le dashboard
+    queryClient.invalidateQueries({ 
+      queryKey: ["period-fuel-expenses"],
       exact: false,
       refetchType: 'all'
     });
