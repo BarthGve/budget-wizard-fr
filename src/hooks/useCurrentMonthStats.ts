@@ -14,35 +14,38 @@ export const useCurrentMonthStats = () => {
   const firstDayStr = firstDay.toISOString().split('T')[0];
   const lastDayStr = lastDay.toISOString().split('T')[0];
 
-  // Récupérer les dépenses du mois en cours avec exactement la même logique que la page Expenses
-  const { data: monthlyExpenses, isLoading: isExpensesLoading } = useQuery({
-    queryKey: ["monthly-expenses", firstDayStr, lastDayStr],
+  // Récupérer TOUTES les dépenses, exactement comme dans la page Expenses
+  const { data: allExpenses, isLoading: isExpensesLoading } = useQuery({
+    queryKey: ["all-expenses-for-stats"],
     queryFn: async () => {
-      if (!currentUser?.id) return { total: 0 };
+      if (!currentUser?.id) return [];
       
-      // Utiliser la même requête et filtres que dans la page Expenses
       const { data, error } = await supabase
         .from("expenses")
-        .select("amount")
-        .eq("profile_id", currentUser.id)
-        .gte("date", firstDayStr)
-        .lte("date", lastDayStr);
+        .select("*")
+        .eq("profile_id", currentUser.id);
 
       if (error) {
-        console.error("Error fetching monthly expenses:", error);
-        return { total: 0 };
+        console.error("Error fetching all expenses:", error);
+        return [];
       }
 
-      // Utiliser exactement la même méthode de calcul que la page Expenses
-      const total = data.reduce((sum, expense) => sum + Number(expense.amount), 0);
-      
-      console.log(`Total dépenses mois en cours (useCurrentMonthStats): ${total}€ (${data.length} dépenses)`);
-      
-      return { total, count: data.length };
+      return data;
     },
     enabled: !!currentUser?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // Filtrer les dépenses du mois en cours côté client, exactement comme dans Expenses.tsx
+  const monthlyExpenses = allExpenses?.filter(expense => {
+    const expenseDate = new Date(expense.date);
+    return expenseDate >= firstDay && expenseDate <= lastDay;
+  }) || [];
+  
+  // Calculer le total exactement comme dans la page Expenses
+  const monthlyExpensesTotal = monthlyExpenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
+  
+  console.log(`Total dépenses mois en cours (méthode identique à Expenses): ${monthlyExpensesTotal}€ (${monthlyExpenses.length} dépenses)`);
 
   // Récupérer les dépenses carburant du mois en cours pour tous les véhicules actifs
   const { data: fuelExpenses, isLoading: isFuelLoading } = useQuery({
@@ -66,7 +69,7 @@ export const useCurrentMonthStats = () => {
 
       const total = data.reduce((sum, expense) => sum + Number(expense.amount), 0);
       
-      console.log(`Total dépenses carburant mois en cours (useCurrentMonthStats): ${total}€ (${data.length} dépenses)`);
+      console.log(`Total dépenses carburant mois en cours: ${total}€ (${data.length} dépenses)`);
       
       return { total, count: data.length };
     },
@@ -75,7 +78,7 @@ export const useCurrentMonthStats = () => {
   });
 
   return {
-    monthlyExpensesTotal: monthlyExpenses?.total || 0,
+    monthlyExpensesTotal,
     fuelExpensesTotal: fuelExpenses?.total || 0,
     isLoading: isExpensesLoading || isFuelLoading
   };
