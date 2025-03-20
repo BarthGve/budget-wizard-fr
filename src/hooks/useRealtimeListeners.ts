@@ -215,21 +215,29 @@ export const useRealtimeListeners = () => {
           });
           
           // Si un vehicleId est disponible dans la charge utile, invalider spécifiquement ce véhicule
-          if (payload.new && payload.new.vehicle_id) {
-            queryClient.invalidateQueries({ 
-              queryKey: ["vehicle-expenses", payload.new.vehicle_id],
-              exact: true,
-              refetchType: 'all'
-            });
+          // Correction des erreurs TypeScript en vérifiant que payload.new existe et a la propriété vehicle_id
+          if (payload.new && typeof payload.new === 'object' && 'vehicle_id' in payload.new) {
+            const vehicleId = payload.new.vehicle_id;
+            if (vehicleId) {
+              queryClient.invalidateQueries({ 
+                queryKey: ["vehicle-expenses", vehicleId],
+                exact: true,
+                refetchType: 'all'
+              });
+            }
           }
           
           // Si un ancien vehicleId est disponible (lors d'une suppression), invalider également
-          if (payload.old && payload.old.vehicle_id) {
-            queryClient.invalidateQueries({ 
-              queryKey: ["vehicle-expenses", payload.old.vehicle_id],
-              exact: true,
-              refetchType: 'all'
-            });
+          // Correction des erreurs TypeScript en vérifiant que payload.old existe et a la propriété vehicle_id
+          if (payload.old && typeof payload.old === 'object' && 'vehicle_id' in payload.old) {
+            const vehicleId = payload.old.vehicle_id;
+            if (vehicleId) {
+              queryClient.invalidateQueries({ 
+                queryKey: ["vehicle-expenses", vehicleId],
+                exact: true,
+                refetchType: 'all'
+              });
+            }
           }
         }
       )
