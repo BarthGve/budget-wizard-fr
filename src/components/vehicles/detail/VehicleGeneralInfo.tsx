@@ -4,6 +4,7 @@ import { Vehicle, FUEL_TYPES } from "@/types/vehicle";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface VehicleGeneralInfoProps {
   vehicle: Vehicle;
@@ -13,6 +14,12 @@ export const VehicleGeneralInfo = ({ vehicle }: VehicleGeneralInfoProps) => {
   const getFuelTypeLabel = (value: string) => {
     const fuelType = FUEL_TYPES.find(type => type.value === value);
     return fuelType ? fuelType.label : value;
+  };
+  
+  // Fonction pour extraire le nom de domaine (sans l'extension)
+  const getBrandName = (brand: string) => {
+    // Retirer l'extension de domaine (.com, .fr, etc.)
+    return brand.split('.')[0];
   };
   
   const itemVariants = {
@@ -35,26 +42,30 @@ export const VehicleGeneralInfo = ({ vehicle }: VehicleGeneralInfoProps) => {
 
   return (
     <motion.div variants={itemVariants}>
-      <Card>
-        <CardHeader>
+      <Card className={cn(
+        "overflow-hidden border shadow-md hover:shadow-lg transition-all duration-200",
+        "bg-gradient-to-br from-blue-50 to-blue-100",
+        "dark:from-blue-900/20 dark:to-blue-800/10"
+      )}>
+        <CardHeader className="pb-2">
           <CardTitle>Informations générales</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-y-4">
             <div>
-              <p className="text-sm text-muted-foreground">Marque</p>
-              <p className="font-medium">{vehicle.brand}</p>
+              <p className="text-sm font-medium text-muted-foreground">Marque</p>
+              <p className="font-medium capitalize">{getBrandName(vehicle.brand)}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Modèle</p>
+              <p className="text-sm font-medium text-muted-foreground">Modèle</p>
               <p className="font-medium">{vehicle.model || "-"}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Immatriculation</p>
+              <p className="text-sm font-medium text-muted-foreground">Immatriculation</p>
               <p className="font-medium">{vehicle.registration_number}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Statut</p>
+              <p className="text-sm font-medium text-muted-foreground">Statut</p>
               <p className="font-medium">
                 {vehicle.status === 'actif' && <span className="text-green-500">Actif</span>}
                 {vehicle.status === 'inactif' && <span className="text-yellow-500">Inactif</span>}
@@ -62,13 +73,13 @@ export const VehicleGeneralInfo = ({ vehicle }: VehicleGeneralInfoProps) => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Date d'acquisition</p>
+              <p className="text-sm font-medium text-muted-foreground">Date d'acquisition</p>
               <p className="font-medium">
                 {format(new Date(vehicle.acquisition_date), 'dd MMMM yyyy', { locale: fr })}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Type de carburant</p>
+              <p className="text-sm font-medium text-muted-foreground">Type de carburant</p>
               <p className="font-medium">{getFuelTypeLabel(vehicle.fuel_type)}</p>
             </div>
           </div>
