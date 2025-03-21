@@ -24,9 +24,9 @@ export const VehicleMonthlyExpensesChart = ({
       "w-full relative overflow-hidden",
       "border shadow-sm",
       // Light mode
-      "bg-white border-blue-100",
+      "bg-white border-gray-200",
       // Dark mode
-      "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10"
+      "dark:bg-gray-800/90 dark:border-gray-700/50 dark:shadow-gray-900/10"
     )}
     style={{
       boxShadow: isDarkMode
@@ -36,9 +36,9 @@ export const VehicleMonthlyExpensesChart = ({
       <div className={cn(
         "absolute inset-0 opacity-5",
         // Light mode
-        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-400 via-gray-300 to-transparent",
         // Dark mode
-        "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+        "dark:opacity-10 dark:from-gray-500 dark:via-gray-600 dark:to-transparent"
       )} />
       
       <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
@@ -46,23 +46,23 @@ export const VehicleMonthlyExpensesChart = ({
           <CardTitle className={cn(
             "text-xl font-semibold flex items-center gap-2",
             // Light mode
-            "text-blue-700",
+            "text-gray-700",
             // Dark mode
-            "dark:text-blue-300"
+            "dark:text-gray-300"
           )}>
             <div className={cn(
               "p-1.5 rounded",
               // Light mode
-              "bg-blue-100",
+              "bg-gray-100",
               // Dark mode
-              "dark:bg-blue-800/40"
+              "dark:bg-gray-800/40"
             )}>
               <TrendingUp className={cn(
                 "h-5 w-5",
                 // Light mode
-                "text-blue-600",
+                "text-gray-600",
                 // Dark mode
-                "dark:text-blue-400"
+                "dark:text-gray-400"
               )} />
             </div>
             Évolution des dépenses mensuelles
