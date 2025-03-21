@@ -230,21 +230,7 @@ export const VehicleCard = ({
           "border-t border-gray-200 dark:border-gray-800",
           "bg-gray-50 dark:bg-gray-800/30"
         )}>
-          <Button
-            size="sm"
-            variant="ghost"
-            className={cn(
-              "gap-1 text-gray-700 dark:text-gray-300",
-              "hover:bg-gray-100 dark:hover:bg-gray-800"
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick(vehicle.id);
-            }}
-          >
-            <span>Détails</span>
-            <ArrowRightIcon className="h-4 w-4" />
-          </Button>
+      
           
           <div className="flex gap-2">
             <Button
@@ -257,7 +243,7 @@ export const VehicleCard = ({
               }}
             >
               <PencilIcon className="h-4 w-4 mr-1" />
-              Modifier
+            
             </Button>
             <Button
               size="sm"
@@ -270,7 +256,7 @@ export const VehicleCard = ({
               disabled={isDeleting}
             >
               <TrashIcon className="h-4 w-4 mr-1" />
-              Supprimer
+          
             </Button>
           </div>
         </CardFooter>
