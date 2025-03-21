@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import {Info} from 'lucide-react';
 
 interface VehicleGeneralInfoProps {
   vehicle: Vehicle;
@@ -49,7 +50,7 @@ export const VehicleGeneralInfo = ({ vehicle }: VehicleGeneralInfoProps) => {
         <CardHeader className="pb-2">
           <CardTitle className="text-xl flex items-center gap-2">
             <div className="p-1.5 rounded bg-gray-100 dark:bg-gray-800/70">
-              <span className="text-gray-600 dark:text-gray-400">i</span>
+              <Info className="text-gray-600 dark:text-gray-400" />
             </div>
             Informations générales
           </CardTitle>
