@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Receipt } from 'lucide-react';
+import { ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatCurrency } from "@/utils/format";
@@ -52,7 +52,7 @@ export const MonthlyExpensesCard = ({
                 // Light mode
                 "dark:bg-blue-900/40 dark:text-blue-400" // Dark mode
               )}>
-                <Receipt className="h-5 w-5" />
+                <ShoppingBasket className="h-5 w-5" />
               </div>
               <span className="dark:text-white">{titleText}</span>
             </CardTitle>
