@@ -10,9 +10,9 @@ export interface RecurringExpense {
   created_at: string;
   logo_url?: string;
   notes?: string;
-  vehicle_id?: string | null;
-  vehicle_expense_type?: string | null;
-  auto_generate_vehicle_expense?: boolean;
+  vehicle_id: string | null;
+  vehicle_expense_type: string | null;
+  auto_generate_vehicle_expense: boolean;
 }
 
 export interface RecurringExpenseTableProps {

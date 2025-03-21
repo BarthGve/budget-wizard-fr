@@ -10,6 +10,9 @@ interface ExpenseTypeFieldProps {
 }
 
 export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) => {
+  // Obtenir vehicle_id pour la validation
+  const vehicleId = form.watch("vehicle_id");
+  
   return (
     <FormField
       control={form.control}
@@ -18,8 +21,9 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
         <FormItem>
           <FormLabel>Type de dépense véhicule</FormLabel>
           <Select 
-            onValueChange={field.onChange} 
-            value={field.value || undefined}
+            onValueChange={(value) => field.onChange(value || null)}
+            value={field.value || ""}
+            disabled={!vehicleId}
           >
             <FormControl>
               <SelectTrigger>

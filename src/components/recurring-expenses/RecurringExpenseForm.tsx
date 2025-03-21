@@ -27,8 +27,8 @@ export interface RecurringExpenseFormProps {
     debit_month: number | null;
     logo_url?: string;
     notes?: string;
-    vehicle_id?: string;
-    vehicle_expense_type?: string;
+    vehicle_id?: string | null;
+    vehicle_expense_type?: string | null;
     auto_generate_vehicle_expense?: boolean;
   };
   onSuccess: () => void;
@@ -90,6 +90,7 @@ export function RecurringExpenseForm({
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
+      // Gestion de la périodicité
       if (name === "periodicity") {
         const periodicity = value.periodicity;
         if (periodicity === "monthly") {
@@ -99,22 +100,32 @@ export function RecurringExpenseForm({
         }
       }
 
-      // Réinitialiser les champs liés au véhicule si le véhicule est désélectionné
-      if (name === "vehicle_id" && !value.vehicle_id) {
-        form.setValue("vehicle_expense_type", "");
-        form.setValue("auto_generate_vehicle_expense", false);
+      // Gestion des champs liés au véhicule
+      if (name === "vehicle_id") {
+        if (!value.vehicle_id) {
+          // Réinitialiser les champs liés au véhicule
+          form.setValue("vehicle_expense_type", null);
+          form.setValue("auto_generate_vehicle_expense", false);
+        }
+      }
+      
+      // Désactiver l'option auto-generate si le type n'est pas spécifié
+      if (name === "vehicle_expense_type") {
+        if (!value.vehicle_expense_type) {
+          form.setValue("auto_generate_vehicle_expense", false);
+        }
       }
     });
 
     return () => subscription.unsubscribe();
   }, [form]);
 
-  // Détermine si le véhicule est sélectionné pour afficher les champs supplémentaires
+  // Vérifie si un véhicule est sélectionné
   const vehicleSelected = !!form.watch("vehicle_id");
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <NameField form={form} />
         <DomainField form={form} />
         <AmountField form={form} />

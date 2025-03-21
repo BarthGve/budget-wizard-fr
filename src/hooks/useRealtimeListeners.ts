@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -58,7 +59,21 @@ export const useRealtimeListeners = () => {
         (payload) => {
           console.log('Dépenses récurrentes modifiées, invalidation des requêtes');
           queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
-          queryClient.invalidateQueries({ queryKey: ['recurring_expenses'] });
+          queryClient.invalidateQueries({ queryKey: ['recurring-expenses'] });
+          
+          // Invalider également les dépenses de véhicules si une charge récurrente est associée à un véhicule
+          if (payload.new && payload.new.vehicle_id) {
+            queryClient.invalidateQueries({ 
+              queryKey: ["vehicle-expenses", payload.new.vehicle_id],
+              exact: true 
+            });
+            
+            queryClient.invalidateQueries({ 
+              queryKey: ["vehicle-detail", payload.new.vehicle_id],
+              exact: false 
+            });
+          }
+          
           toast.success("Les dépenses récurrentes ont été mises à jour en temps réel !");
         }
       )
@@ -109,7 +124,26 @@ export const useRealtimeListeners = () => {
         },
         (payload) => {
           console.log('Dépenses de véhicules modifiées, invalidation des requêtes');
-          queryClient.invalidateQueries({ queryKey: ['vehicle_expenses'] });
+          
+          // Invalider toutes les requêtes liées aux véhicules
+          if (payload.new && payload.new.vehicle_id) {
+            queryClient.invalidateQueries({ 
+              queryKey: ["vehicle-expenses", payload.new.vehicle_id],
+              exact: true 
+            });
+            
+            queryClient.invalidateQueries({ 
+              queryKey: ["vehicle-detail", payload.new.vehicle_id],
+              exact: false 
+            });
+          }
+          
+          // Invalider les statistiques globales
+          queryClient.invalidateQueries({ 
+            queryKey: ["dashboard-data"],
+            exact: false 
+          });
+          
           toast.success("Les dépenses de véhicules ont été mises à jour en temps réel !");
         }
       )

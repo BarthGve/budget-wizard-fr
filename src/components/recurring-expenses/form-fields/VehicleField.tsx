@@ -34,7 +34,17 @@ export function VehicleField({ form }: VehicleFieldProps) {
           <FormLabel>Véhicule (optionnel)</FormLabel>
           <Select
             value={field.value || ""}
-            onValueChange={field.onChange}
+            onValueChange={(value) => {
+              // Si "Aucun véhicule" est sélectionné, définir comme null
+              const newValue = value === "" ? null : value;
+              field.onChange(newValue);
+              
+              // Réinitialiser les champs liés au véhicule
+              if (!newValue) {
+                form.setValue("vehicle_expense_type", null);
+                form.setValue("auto_generate_vehicle_expense", false);
+              }
+            }}
             disabled={isLoading}
           >
             <FormControl>

@@ -27,9 +27,9 @@ export const formSchema = z.object({
     },
     "Le mois doit être entre 1 et 12"
   ),
-  // Nouveaux champs pour l'association avec un véhicule
-  vehicle_id: z.string().optional(),
-  vehicle_expense_type: z.string().optional(),
+  // Champs pour l'association avec un véhicule
+  vehicle_id: z.string().nullable().optional().default(null),
+  vehicle_expense_type: z.string().nullable().optional().default(null),
   auto_generate_vehicle_expense: z.boolean().optional().default(false)
 });
 
@@ -45,8 +45,8 @@ interface UseRecurringExpenseFormProps {
     debit_day: number;
     debit_month: number | null;
     logo_url?: string;
-    vehicle_id?: string;
-    vehicle_expense_type?: string;
+    vehicle_id?: string | null;
+    vehicle_expense_type?: string | null;
     auto_generate_vehicle_expense?: boolean;
   };
   initialDomain?: string;
@@ -73,8 +73,8 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
       debit_month: expense?.debit_month?.toString() || null,
-      vehicle_id: expense?.vehicle_id || initialVehicleId || "",
-      vehicle_expense_type: expense?.vehicle_expense_type || "",
+      vehicle_id: expense?.vehicle_id || initialVehicleId || null,
+      vehicle_expense_type: expense?.vehicle_expense_type || null,
       auto_generate_vehicle_expense: expense?.auto_generate_vehicle_expense || false
     },
   });
@@ -97,6 +97,7 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
       // Générer l'URL du logo à partir du domaine
       const logo_url = getFaviconUrl(values.domain || "");
 
+      // S'assurer que les valeurs sont correctement typées pour la BD
       const expenseData = {
         name: values.name,
         amount: Number(values.amount),
@@ -105,11 +106,13 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
         debit_day: parseInt(values.debit_day),
         debit_month: debit_month,
         logo_url,
-        // Nouveaux champs pour l'association avec un véhicule
+        // Gestion explicite des valeurs nulles pour les champs liés au véhicule
         vehicle_id: values.vehicle_id || null,
         vehicle_expense_type: values.vehicle_expense_type || null,
         auto_generate_vehicle_expense: values.auto_generate_vehicle_expense || false
       };
+
+      console.log("Données à enregistrer:", expenseData);
 
       if (expense) {
         const { error } = await supabase

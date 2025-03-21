@@ -8,7 +8,11 @@ interface AutoGenerateFieldProps {
 }
 
 export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
+  const vehicleId = form.watch("vehicle_id");
   const vehicleExpenseType = form.watch("vehicle_expense_type");
+  
+  // Désactiver si aucun véhicule ou type d'expense n'est sélectionné
+  const isDisabled = !vehicleId || !vehicleExpenseType;
   
   return (
     <FormField
@@ -25,8 +29,16 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
           <FormControl>
             <Switch
               checked={field.value || false}
-              onCheckedChange={field.onChange}
-              disabled={!vehicleExpenseType}
+              onCheckedChange={(checked) => {
+                // Utiliser null quand désactivé pour éviter les problèmes de types
+                field.onChange(checked);
+                
+                // Désactiver automatiquement si les conditions ne sont pas remplies
+                if (isDisabled && checked) {
+                  field.onChange(false);
+                }
+              }}
+              disabled={isDisabled}
             />
           </FormControl>
           <FormMessage />

@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { DialogTrigger } from "@/components/ui/dialog";
@@ -9,7 +10,6 @@ import { DialogHeader } from "./dialog/DialogHeader";
 import { DialogContent as ExpenseDialogContent } from "./dialog/DialogContent";
 import { useDialogMeasurements } from "./dialog/useDialogMeasurements";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { X } from "lucide-react";
 
 interface RecurringExpenseDialogProps {
   expense?: RecurringExpense;
@@ -41,11 +41,8 @@ export function RecurringExpenseDialog({
   // Déterminer si nous sommes en mode édition
   const isEditMode = !!expense;
   
-  // Hook pour mesurer et déterminer si le défilement est nécessaire
-  const { needsScrolling } = useDialogMeasurements({ 
-    open, 
-    contentRef 
-  });
+  // Forcer le défilement pour le formulaire avec les champs véhicule
+  const needsScrolling = true;
 
   // Forcer le défilement sur tablette
   const shouldEnableScroll = needsScrolling || isTablet;
@@ -92,8 +89,6 @@ export function RecurringExpenseDialog({
               )} />
             </div>
 
-   
-            
             <div 
               ref={contentRef} 
               className={cn(
