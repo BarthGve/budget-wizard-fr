@@ -43,6 +43,16 @@ export const ExpensesBarChartRenderer = ({
     return isDarkMode ? "#A1A5AA" : "#8E9196"; // Couleur par défaut
   };
 
+  // Fonction pour formater la valeur monétaire avec le nom de la catégorie
+  const tooltipFormatter = (value: any, name: string) => {
+    const categoryConfig = chartConfig[name as keyof typeof chartConfig];
+    const label = categoryConfig ? categoryConfig.label : name;
+    return {
+      value: formatCurrency(value),
+      name: label
+    };
+  };
+
   return (
     <motion.div
       key={dataVersion}
@@ -87,18 +97,34 @@ export const ExpensesBarChartRenderer = ({
               tickFormatter={(value) => formatCurrency(value, 0)}
             />
             <ChartTooltip
-              content={
-                <ChartTooltipContent 
-                  formatter={(value: any) => formatCurrency(value)}
-                  labelFormatter={(label) => {
-                    if (showMultiYear) {
-                      return `Année ${label}`;
-                    } else {
-                      return `${label} ${currentYear}`;
-                    }
-                  }}
-                />
-              }
+              wrapperStyle={{ 
+                borderRadius: "8px", 
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                border: isDarkMode ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(0, 0, 0, 0.05)"
+              }}
+              contentStyle={{ 
+                backgroundColor: isDarkMode ? "#1A1F2C" : "#FFFFFF",
+                color: isDarkMode ? "#E5DEFF" : "#333333",
+                border: "none",
+                padding: "10px 14px",
+                borderRadius: "6px"
+              }}
+              cursor={{ 
+                fill: isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)" 
+              }}
+              formatter={tooltipFormatter}
+              labelStyle={{ 
+                fontWeight: "bold", 
+                marginBottom: "8px",
+                color: isDarkMode ? "#9b87f5" : "#7E69AB"
+              }}
+              labelFormatter={(label) => {
+                if (showMultiYear) {
+                  return `Année ${label}`;
+                } else {
+                  return `${label} ${currentYear}`;
+                }
+              }}
             />
             <Legend 
               verticalAlign="bottom" 
@@ -150,4 +176,3 @@ export const ExpensesBarChartRenderer = ({
     </motion.div>
   );
 };
-
