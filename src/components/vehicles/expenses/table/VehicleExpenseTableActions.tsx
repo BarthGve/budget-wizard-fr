@@ -33,13 +33,28 @@ export const VehicleExpenseTableActions = ({
   // État pour contrôler l'ouverture du menu déroulant
   const [isOpen, setIsOpen] = useState(false);
   
+  // Nouvel état pour contrôler l'ouverture de la boîte de dialogue de confirmation
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  
   // Fonction pour fermer proprement le menu après une action
   const handleEditClick = () => {
     setIsOpen(false); // Fermer le menu après clic
     onEdit();
   };
   
-  // La suppression sera gérée par le AlertDialog
+  // Fonction pour gérer le clic sur "Supprimer"
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Empêcher la propagation de l'événement
+    e.stopPropagation(); // Arrêter la propagation
+    setIsOpen(false); // Fermer le menu dropdown
+    setIsAlertOpen(true); // Ouvrir la boîte de dialogue de confirmation
+  };
+  
+  // Fonction pour gérer la confirmation de suppression
+  const handleConfirmDelete = () => {
+    onDelete(); // Appeler la fonction de suppression
+    setIsAlertOpen(false); // Fermer la boîte de dialogue
+  };
 
   return (
     <>
@@ -68,41 +83,36 @@ export const VehicleExpenseTableActions = ({
             <span>Modifier</span>
           </DropdownMenuItem>
           
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <DropdownMenuItem
-                onSelect={(e) => {
-                  // Empêcher que l'événement onSelect ferme le menu avant que l'utilisateur puisse voir la boîte de dialogue
-                  e.preventDefault();
-                  // Fermer le menu dropdown pour éviter les problèmes d'interface
-                  setIsOpen(false);
-                }}
-                className="cursor-pointer text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                <span>Supprimer</span>
-              </DropdownMenuItem>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action ne peut pas être annulée.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={onDelete}
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                >
-                  Supprimer
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DropdownMenuItem
+            onClick={handleDeleteClick}
+            className="cursor-pointer text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            <span>Supprimer</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      
+      {/* Boîte de dialogue de confirmation séparée du menu déroulant */}
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action ne peut pas être annulée.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsAlertOpen(false)}>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
