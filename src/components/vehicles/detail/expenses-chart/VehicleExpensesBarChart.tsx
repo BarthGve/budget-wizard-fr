@@ -9,6 +9,7 @@ import { useTheme } from "next-themes";
 import { useState, useEffect, useMemo } from "react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { formatCurrency } from "@/utils/format";
+import { BarChart as BarChartIcon } from "lucide-react";
 
 interface VehicleExpensesBarChartProps {
   vehicleId: string;
@@ -149,7 +150,7 @@ export const VehicleExpensesBarChart = ({ vehicleId }: VehicleExpensesBarChartPr
   if (!expenses || expenses.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground space-y-2 h-[250px]">
-        <BarChart3 className="h-12 w-12 text-gray-200 dark:text-gray-700" />
+        <BarChartIcon className="h-12 w-12 text-gray-200 dark:text-gray-700" />
         <p className="text-center text-gray-500 dark:text-gray-400">
           Aucune dépense enregistrée pour cette année
         </p>
@@ -202,7 +203,7 @@ export const VehicleExpensesBarChart = ({ vehicleId }: VehicleExpensesBarChartPr
             <Legend 
               verticalAlign="bottom" 
               height={36} 
-              formatter={(value, entry) => {
+              formatter={(value) => {
                 const categoryConfig = chartConfig[value as keyof typeof chartConfig];
                 return categoryConfig ? categoryConfig.label : value;
               }} 
