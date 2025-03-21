@@ -22,7 +22,7 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
           <FormLabel>Type de dépense véhicule</FormLabel>
           <Select 
             onValueChange={(value) => field.onChange(value || null)}
-            value={field.value || ""}
+            value={field.value || undefined}
             disabled={!vehicleId}
           >
             <FormControl>

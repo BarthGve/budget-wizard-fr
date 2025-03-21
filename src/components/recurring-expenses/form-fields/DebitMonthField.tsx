@@ -23,7 +23,7 @@ export const DebitMonthField = ({ form }: DebitMonthFieldProps) => {
           <FormLabel>Mois du prélèvement</FormLabel>
           <Select 
             onValueChange={field.onChange} 
-            value={field.value || undefined} // Utilisation de undefined au lieu d'une chaîne vide
+            value={field.value || undefined}
           >
             <FormControl>
               <SelectTrigger>

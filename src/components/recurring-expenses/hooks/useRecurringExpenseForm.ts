@@ -20,7 +20,7 @@ export const formSchema = z.object({
     },
     "Le jour doit être entre 1 et 31"
   ),
-  debit_month: z.string().nullable().optional().refine(
+  debit_month: z.string().nullish().refine(
     (val) => {
       if (val === null || val === "" || val === undefined) return true;
       const month = parseInt(val);
@@ -29,8 +29,8 @@ export const formSchema = z.object({
     "Le mois doit être entre 1 et 12"
   ),
   // Champs pour l'association avec un véhicule
-  vehicle_id: z.string().nullable().optional().default(null),
-  vehicle_expense_type: z.string().nullable().optional().default(null),
+  vehicle_id: z.string().nullish(),
+  vehicle_expense_type: z.string().nullish(),
   auto_generate_vehicle_expense: z.boolean().optional().default(false)
 });
 
