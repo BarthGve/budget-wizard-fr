@@ -35,32 +35,28 @@ export const VehicleCard = ({
   const { previewLogoUrl, isLogoValid } = useVehicleBrandLogo(vehicle.brand);
   
   // Détermine les classes CSS pour le statut du véhicule
-  const getStatusStyles = (status: string) => {
+  const getStatusBadgeStyles = (status: string) => {
     switch (status) {
       case 'actif':
         return {
-          container: "bg-transparent",
-          text: "text-green-500",
+          badge: "bg-green-500/20 hover:bg-green-500/30 text-green-500 dark:bg-green-700/30 dark:text-green-400 border-green-500/30 dark:border-green-700/50",
         };
       case 'inactif':
         return {
-          container: "bg-transparent",
-          text: "text-amber-500",
+          badge: "bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 dark:bg-amber-700/30 dark:text-amber-400 border-amber-500/30 dark:border-amber-700/50",
         };
       case 'vendu':
         return {
-          container: "bg-transparent",
-          text: "text-gray-400",
+          badge: "bg-gray-500/20 hover:bg-gray-500/30 text-gray-500 dark:bg-gray-700/30 dark:text-gray-400 border-gray-500/30 dark:border-gray-700/50",
         };
       default:
         return {
-          container: "bg-transparent",
-          text: "text-gray-400",
+          badge: "bg-gray-500/20 hover:bg-gray-500/30 text-gray-500 dark:bg-gray-700/30 dark:text-gray-400 border-gray-500/30 dark:border-gray-700/50",
         };
     }
   };
 
-  const statusStyles = getStatusStyles(vehicle.status);
+  const statusStyles = getStatusBadgeStyles(vehicle.status);
   
   return (
     <Card 
@@ -79,16 +75,18 @@ export const VehicleCard = ({
             alt={`${vehicle.brand} ${vehicle.model}`}
             className="w-full h-48 object-cover"
           />
-          <div className="absolute top-2 right-2">
-            <span className={cn(
-              "px-3 py-1 text-sm font-medium rounded",
-              statusStyles.container,
-              statusStyles.text
-            )}>
+          <div className="absolute top-3 right-3">
+            <Badge 
+              className={cn(
+                "px-3 py-1 rounded-md font-medium",
+                statusStyles.badge
+              )}
+              variant="outline"
+            >
               {vehicle.status === 'actif' && "Actif"}
               {vehicle.status === 'inactif' && "Inactif"}
               {vehicle.status === 'vendu' && "Vendu"}
-            </span>
+            </Badge>
           </div>
         </div>
       )}
@@ -96,15 +94,17 @@ export const VehicleCard = ({
       <CardHeader className="pb-2 pt-4">
         {!vehicle.photo_url && (
           <div className="absolute top-3 right-3">
-            <span className={cn(
-              "px-3 py-1 text-sm font-medium rounded",
-              statusStyles.container,
-              statusStyles.text
-            )}>
+            <Badge 
+              className={cn(
+                "px-3 py-1 rounded-md font-medium",
+                statusStyles.badge
+              )}
+              variant="outline"
+            >
               {vehicle.status === 'actif' && "Actif"}
               {vehicle.status === 'inactif' && "Inactif"}
               {vehicle.status === 'vendu' && "Vendu"}
-            </span>
+            </Badge>
           </div>
         )}
         
