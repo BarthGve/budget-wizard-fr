@@ -242,7 +242,7 @@ export const VehicleCard = ({
                 onEdit(vehicle);
               }}
             >
-              <PencilIcon className="h-4 w-4 mr-1" />
+              <PencilIcon className="h-4 w-4 " />
             
             </Button>
             <Button
@@ -255,7 +255,7 @@ export const VehicleCard = ({
               }}
               disabled={isDeleting}
             >
-              <TrashIcon className="h-4 w-4 mr-1" />
+              <TrashIcon className="h-4 w-4 " />
           
             </Button>
           </div>
