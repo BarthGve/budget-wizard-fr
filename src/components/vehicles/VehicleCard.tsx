@@ -115,7 +115,7 @@ export const VehicleCard = ({
     >
       <Card 
         className={cn(
-          "flex flex-col backface-hidden transform-gpu h-full overflow-hidden relative",
+          "flex flex-col backface-hidden transform-gpu h-full overflow-hidden relative cursor-pointer",
           "bg-white border-gray-200 hover:border-gray-300",
           "dark:bg-slate-900 dark:border-gray-800 dark:hover:border-gray-700"
         )}
