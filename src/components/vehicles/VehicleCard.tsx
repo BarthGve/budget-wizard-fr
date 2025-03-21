@@ -39,23 +39,23 @@ export const VehicleCard = ({
     switch (status) {
       case 'actif':
         return {
-          container: "bg-green-100 dark:bg-green-900/30",
-          text: "text-green-600 dark:text-green-400",
+          container: "bg-transparent",
+          text: "text-green-500",
         };
       case 'inactif':
         return {
-          container: "bg-amber-100 dark:bg-amber-900/30",
-          text: "text-amber-600 dark:text-amber-400",
+          container: "bg-transparent",
+          text: "text-amber-500",
         };
       case 'vendu':
         return {
-          container: "bg-gray-100 dark:bg-gray-800",
-          text: "text-gray-600 dark:text-gray-400",
+          container: "bg-transparent",
+          text: "text-gray-400",
         };
       default:
         return {
-          container: "bg-gray-100 dark:bg-gray-800",
-          text: "text-gray-600 dark:text-gray-400",
+          container: "bg-transparent",
+          text: "text-gray-400",
         };
     }
   };
@@ -65,96 +65,89 @@ export const VehicleCard = ({
   return (
     <Card 
       className={cn(
-        "overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-pointer border-0 shadow-md",
-        "bg-white dark:bg-gray-850",
-        "hover:shadow-lg dark:shadow-gray-900/40"
+        "overflow-hidden transition-all duration-200 hover:scale-[1.02] cursor-pointer",
+        "bg-white dark:bg-slate-900",
+        "border border-gray-200 dark:border-slate-800",
+        "hover:shadow-lg dark:hover:shadow-slate-800/50"
       )}
       onClick={() => onClick(vehicle.id)}
-      style={{ 
-        // Utilisons le style pour ajouter des ombres avancées
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1)"
-      }}
     >
       {vehicle.photo_url && (
-        <div className="relative h-36 overflow-hidden">
+        <div className="relative">
           <img
             src={vehicle.photo_url}
             alt={`${vehicle.brand} ${vehicle.model}`}
-            className="w-full h-full object-cover"
+            className="w-full h-48 object-cover"
           />
-          <div className="absolute top-0 right-0 p-2">
-            <Badge 
-              variant="outline" 
-              className={cn(
-                "px-2.5 py-0.5 text-xs font-medium capitalize", 
-                statusStyles.container,
-                statusStyles.text
-              )}
-            >
-              {vehicle.status}
-            </Badge>
+          <div className="absolute top-2 right-2">
+            <span className={cn(
+              "px-3 py-1 text-sm font-medium rounded",
+              statusStyles.container,
+              statusStyles.text
+            )}>
+              {vehicle.status === 'actif' && "Actif"}
+              {vehicle.status === 'inactif' && "Inactif"}
+              {vehicle.status === 'vendu' && "Vendu"}
+            </span>
           </div>
         </div>
       )}
       
-      <CardHeader className={cn(
-        "pb-1 pt-4",
-        !vehicle.photo_url && "relative"
-      )}>
+      <CardHeader className="pb-2 pt-4">
         {!vehicle.photo_url && (
           <div className="absolute top-3 right-3">
-            <Badge 
-              variant="outline" 
-              className={cn(
-                "px-2.5 py-0.5 text-xs font-medium capitalize", 
-                statusStyles.container,
-                statusStyles.text
-              )}
-            >
-              {vehicle.status}
-            </Badge>
+            <span className={cn(
+              "px-3 py-1 text-sm font-medium rounded",
+              statusStyles.container,
+              statusStyles.text
+            )}>
+              {vehicle.status === 'actif' && "Actif"}
+              {vehicle.status === 'inactif' && "Inactif"}
+              {vehicle.status === 'vendu' && "Vendu"}
+            </span>
           </div>
         )}
         
-        <div className="flex items-center gap-2">
-          {/* Logo de la marque à côté du nom du modèle */}
-          <BrandLogoPreview 
-            url={previewLogoUrl}
-            isValid={isLogoValid}
-            isChecking={false}
-            brand={vehicle.brand}
-          />
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0 w-12 h-12">
+            <BrandLogoPreview 
+              url={previewLogoUrl}
+              isValid={isLogoValid}
+              isChecking={false}
+              brand={vehicle.brand}
+            />
+          </div>
           <CardTitle className={cn(
-            "text-lg font-medium leading-none",
-            "text-gray-800 dark:text-gray-100"
+            "text-xl font-bold",
+            "text-gray-800 dark:text-white"
           )}>
             {vehicle.model || vehicle.brand}
           </CardTitle>
         </div>
       </CardHeader>
       
-      <CardContent className="px-4 pb-3 space-y-2.5">
+      <CardContent className="px-4 pb-3">
         <div className={cn(
-          "p-3 rounded-lg",
-          "bg-gray-50 dark:bg-gray-800/60",
-          "border border-gray-100 dark:border-gray-700/50"
+          "p-4 rounded-md",
+          "bg-gray-200/80 dark:bg-slate-700/30",
+          "border border-gray-300/30 dark:border-slate-700/80"
         )}>
-          <div className="grid grid-cols-1 gap-2">
-            <div className="flex items-center text-sm">
-              <TagIcon className="mr-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <span className="text-gray-700 dark:text-gray-300">
+          <div className="grid grid-cols-1 gap-4">
+            <div className="flex items-center">
+              <TagIcon className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400" />
+              <span className="text-gray-700 dark:text-gray-200">
                 {vehicle.registration_number}
               </span>
             </div>
-            <div className="flex items-center text-sm">
-              <CalendarIcon className="mr-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <span className="text-gray-700 dark:text-gray-300">
+            <div className="flex items-center">
+              <CalendarIcon className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400" />
+              <span className="text-gray-700 dark:text-gray-200">
                 {format(new Date(vehicle.acquisition_date), 'dd MMMM yyyy', { locale: fr })}
               </span>
             </div>
-            <div className="flex items-center text-sm">
-              <Fuel className="mr-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <span className="text-gray-700 dark:text-gray-300">
+            <div className="flex items-center">
+              <Fuel className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400" />
+              <span className="text-gray-700 dark:text-gray-200">
                 {getFuelTypeLabel(vehicle.fuel_type)}
               </span>
             </div>
@@ -164,59 +157,48 @@ export const VehicleCard = ({
       
       <CardFooter className={cn(
         "flex justify-between items-center px-4 py-3 border-t",
-        "border-gray-100 dark:border-gray-700/50"
+        "border-gray-200 dark:border-slate-800"
       )}>
-        <div>
-          <Button
-            size="sm"
-            variant="ghost"
-            className={cn(
-              "px-2.5 h-8 text-xs",
-              "text-gray-600 hover:text-gray-800 hover:bg-gray-100",
-              "dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800"
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick(vehicle.id);
-            }}
-          >
-            <span>Détails</span>
-            <ArrowRightIcon className="h-3.5 w-3.5 ml-1" />
-          </Button>
-        </div>
+        <Button
+          size="sm"
+          variant="ghost"
+          className={cn(
+            "gap-1 text-gray-600 dark:text-gray-300",
+            "hover:bg-gray-100 dark:hover:bg-slate-800"
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick(vehicle.id);
+          }}
+        >
+          <span>Détails</span>
+          <ArrowRightIcon className="h-4 w-4" />
+        </Button>
         
-        <div className="flex space-x-2">
+        <div className="flex gap-2">
           <Button
             size="sm"
             variant="outline"
-            className={cn(
-              "px-2.5 h-8 text-xs",
-              "border-gray-200 hover:bg-gray-100 text-gray-700",
-              "dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-            )}
+            className="bg-black/10 dark:bg-white/5 border-slate-800/10 dark:border-white/10"
             onClick={(e) => {
               e.stopPropagation();
               onEdit(vehicle);
             }}
           >
-            <PencilIcon className="h-3.5 w-3.5 mr-1" />
+            <PencilIcon className="h-4 w-4 mr-1" />
             Modifier
           </Button>
           <Button
             size="sm"
             variant="destructive"
-            className={cn(
-              "px-2.5 h-8 text-xs",
-              "bg-red-50 border-red-200 text-red-600 hover:bg-red-100 hover:text-red-700", 
-              "dark:bg-red-900/20 dark:border-red-700/50 dark:text-red-300 dark:hover:bg-red-800/40"
-            )}
+            className="bg-red-500/10 text-red-500 hover:bg-red-500/20 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
             onClick={(e) => {
               e.stopPropagation();
               onDelete(vehicle);
             }}
             disabled={isDeleting}
           >
-            <TrashIcon className="h-3.5 w-3.5 mr-1" />
+            <TrashIcon className="h-4 w-4 mr-1" />
             Supprimer
           </Button>
         </div>
