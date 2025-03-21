@@ -93,7 +93,7 @@ export function RecurringExpenseForm({
       if (name === "periodicity") {
         const periodicity = value.periodicity;
         if (periodicity === "monthly") {
-          form.setValue("debit_month", "");
+          form.setValue("debit_month", null);
         } else if (!value.debit_month) {
           form.setValue("debit_month", "1");
         }

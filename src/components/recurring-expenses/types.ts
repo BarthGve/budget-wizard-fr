@@ -1,3 +1,4 @@
+
 export interface RecurringExpense {
   id: string;
   name: string;
@@ -9,8 +10,8 @@ export interface RecurringExpense {
   created_at: string;
   logo_url?: string;
   notes?: string;
-  vehicle_id?: string;
-  vehicle_expense_type?: string;
+  vehicle_id?: string | null;
+  vehicle_expense_type?: string | null;
   auto_generate_vehicle_expense?: boolean;
 }
 

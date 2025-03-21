@@ -19,9 +19,9 @@ export const formSchema = z.object({
     },
     "Le jour doit être entre 1 et 31"
   ),
-  debit_month: z.string().nullable().refine(
+  debit_month: z.string().nullable().optional().refine(
     (val) => {
-      if (val === null || val === "") return true;
+      if (val === null || val === "" || val === undefined) return true;
       const month = parseInt(val);
       return !isNaN(month) && month >= 1 && month <= 12;
     },
@@ -30,7 +30,7 @@ export const formSchema = z.object({
   // Nouveaux champs pour l'association avec un véhicule
   vehicle_id: z.string().optional(),
   vehicle_expense_type: z.string().optional(),
-  auto_generate_vehicle_expense: z.boolean().optional()
+  auto_generate_vehicle_expense: z.boolean().optional().default(false)
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -72,7 +72,7 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
       category: expense?.category || "",
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
-      debit_month: expense?.debit_month?.toString() || "",
+      debit_month: expense?.debit_month?.toString() || null,
       vehicle_id: expense?.vehicle_id || initialVehicleId || "",
       vehicle_expense_type: expense?.vehicle_expense_type || "",
       auto_generate_vehicle_expense: expense?.auto_generate_vehicle_expense || false

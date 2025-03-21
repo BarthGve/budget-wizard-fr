@@ -1,21 +1,15 @@
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
+import { FormValues } from "../hooks/useRecurringExpenseForm";
 
 interface ExpenseTypeFieldProps {
-  form: UseFormReturn<any>;
-  expenseTypes: {
-    id: string;
-    name: string;
-    category: string;
-  }[];
+  form: UseFormReturn<FormValues>;
+  expenseTypes: { id: string; name: string; }[];
 }
 
-export function ExpenseTypeField({ form, expenseTypes }: ExpenseTypeFieldProps) {
-  // Pour afficher les types de dépenses par catégories
-  const categories = [...new Set(expenseTypes.map(type => type.category))];
-
+export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) => {
   return (
     <FormField
       control={form.control}
@@ -23,37 +17,21 @@ export function ExpenseTypeField({ form, expenseTypes }: ExpenseTypeFieldProps) 
       render={({ field }) => (
         <FormItem>
           <FormLabel>Type de dépense véhicule</FormLabel>
-          <Select
-            value={field.value || ""}
-            onValueChange={field.onChange}
-            disabled={!form.watch("vehicle_id")}
+          <Select 
+            onValueChange={field.onChange} 
+            value={field.value || undefined}
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un type de dépense" />
+                <SelectValue placeholder="Sélectionnez un type de dépense" />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {expenseTypes.length === 0 ? (
-                <SelectItem value="" disabled>
-                  Aucun type de dépense disponible
+              {expenseTypes?.map(type => (
+                <SelectItem key={type.id} value={type.name}>
+                  {type.name}
                 </SelectItem>
-              ) : (
-                categories.map(category => (
-                  <div key={category}>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                      {category}
-                    </div>
-                    {expenseTypes
-                      .filter(type => type.category === category)
-                      .map(type => (
-                        <SelectItem key={type.id} value={type.name}>
-                          {type.name}
-                        </SelectItem>
-                      ))}
-                  </div>
-                ))
-              )}
+              ))}
             </SelectContent>
           </Select>
           <FormMessage />
@@ -61,4 +39,4 @@ export function ExpenseTypeField({ form, expenseTypes }: ExpenseTypeFieldProps) 
       )}
     />
   );
-}
+};
