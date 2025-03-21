@@ -2,6 +2,8 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { UseFormReturn } from "react-hook-form";
+import { InfoCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AutoGenerateFieldProps {
   form: UseFormReturn<any>;
@@ -22,7 +24,20 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
       render={({ field }) => (
         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
           <div className="space-y-0.5">
-            <FormLabel>Générer automatiquement</FormLabel>
+            <div className="flex items-center gap-2">
+              <FormLabel>Générer automatiquement</FormLabel>
+              <TooltipProvider>
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <InfoCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p>Cette option permettra la génération automatique d'une dépense véhicule au jour d'échéance chaque mois/trimestre/année.</p>
+                    <p className="mt-2 text-xs">La génération est effectuée automatiquement par le système.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <div className="text-sm text-muted-foreground">
               Créer automatiquement une dépense véhicule à la date d'échéance
             </div>

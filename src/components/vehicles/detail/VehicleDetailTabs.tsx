@@ -7,6 +7,11 @@ import { VehicleExpenseContainer } from "@/components/vehicles/expenses/VehicleE
 import { VehicleExpenseStats } from "@/components/vehicles/expenses/VehicleExpenseStats";
 import { motion } from "framer-motion";
 import { VehicleMonthlyExpensesChart } from "./expenses-chart/VehicleMonthlyExpensesChart";
+import { Button } from "@/components/ui/button";
+import { CalendarClock } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 interface VehicleDetailTabsProps {
   vehicle: Vehicle;
@@ -17,6 +22,9 @@ export const VehicleDetailTabs = ({
   vehicle,
   canAccessExpenses
 }: VehicleDetailTabsProps) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -47,6 +55,41 @@ export const VehicleDetailTabs = ({
     }
   };
 
+  // Fonction pour générer manuellement les dépenses depuis les charges récurrentes
+  const handleGenerateExpensesFromRecurring = async () => {
+    try {
+      setIsGenerating(true);
+      
+      // Appeler la fonction Supabase pour générer les dépenses
+      const { data, error } = await supabase
+        .rpc('generate_vehicle_expenses_from_recurring');
+      
+      if (error) throw error;
+      
+      // Succès
+      toast({
+        title: "Génération effectuée",
+        description: "Les dépenses liées aux charges récurrentes ont été générées",
+        variant: "default"
+      });
+      
+      // Attendre un peu puis actualiser la page pour voir les nouvelles dépenses
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+      
+    } catch (error) {
+      console.error("Erreur lors de la génération des dépenses:", error);
+      toast({
+        title: "Erreur",
+        description: "Un problème est survenu lors de la génération des dépenses",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <Tabs defaultValue="details" className="space-y-6">
       <TabsList>
@@ -73,6 +116,17 @@ export const VehicleDetailTabs = ({
               </motion.div>
               <motion.div variants={itemVariants}>
                 <VehicleExpenseStats vehicleId={vehicle.id} />
+              </motion.div>
+              <motion.div variants={itemVariants} className="flex justify-end">
+                <Button 
+                  onClick={handleGenerateExpensesFromRecurring}
+                  className="gap-2"
+                  variant="outline"
+                  disabled={isGenerating}
+                >
+                  <CalendarClock className="h-4 w-4" />
+                  {isGenerating ? "Génération en cours..." : "Générer les dépenses des charges récurrentes"}
+                </Button>
               </motion.div>
             </>
           )}
