@@ -71,7 +71,7 @@ export const ExpensesBarChartRenderer = ({
               verticalAlign="bottom" 
               height={36} 
               formatter={(value) => {
-                // Correction ici: ne prendre que le premier argument
+                // Correction ici: ne prendre que le premier argument et retourner la bonne valeur
                 const categoryConfig = chartConfig[value as keyof typeof chartConfig];
                 return categoryConfig ? categoryConfig.label : value;
               }} 
