@@ -6,6 +6,7 @@ import { VehiclePhotoCard } from "./photo-card";
 import { VehicleExpenseContainer } from "@/components/vehicles/expenses/VehicleExpenseContainer";
 import { VehicleExpenseStats } from "@/components/vehicles/expenses/VehicleExpenseStats";
 import { motion } from "framer-motion";
+import { VehicleMonthlyExpensesChart } from "./expenses-chart/VehicleMonthlyExpensesChart";
 
 interface VehicleDetailTabsProps {
   vehicle: Vehicle;
@@ -66,9 +67,14 @@ export const VehicleDetailTabs = ({
           </motion.div>
           
           {canAccessExpenses && (
-            <motion.div variants={itemVariants}>
-              <VehicleExpenseStats vehicleId={vehicle.id} />
-            </motion.div>
+            <>
+              <motion.div variants={itemVariants}>
+                <VehicleMonthlyExpensesChart vehicleId={vehicle.id} />
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <VehicleExpenseStats vehicleId={vehicle.id} />
+              </motion.div>
+            </>
           )}
         </motion.div>
       </TabsContent>
