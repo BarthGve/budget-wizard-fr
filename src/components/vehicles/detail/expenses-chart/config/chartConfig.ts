@@ -29,6 +29,20 @@ export const chartConfig = {
       dark: "#E879F9"   // Lighter Pink
     }
   },
+  amende: {
+    label: "Amende",
+    theme: {
+      light: "#EF4444", // Rouge
+      dark: "#F87171"   // Rouge clair
+    }
+  },
+  peage: {
+    label: "Péage",
+    theme: {
+      light: "#10B981", // Vert émeraude
+      dark: "#34D399"   // Vert clair
+    }
+  },
   autre: {
     label: "Autre",
     theme: {

@@ -63,6 +63,8 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
             entretien: 0,
             assurance: 0,
             reparation: 0,
+            amende: 0,
+            peage: 0,
             autre: 0
           };
         }
@@ -77,6 +79,10 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
           acc[year].assurance += expense.amount;
         } else if (expenseType === "reparation") {
           acc[year].reparation += expense.amount;
+        } else if (expenseType === "amende") {
+          acc[year].amende += expense.amount;
+        } else if (expenseType === "peage") {
+          acc[year].peage += expense.amount;
         } else {
           acc[year].autre += expense.amount;
         }
@@ -97,6 +103,8 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
           entretien: 0,
           assurance: 0,
           reparation: 0,
+          amende: 0,
+          peage: 0,
           autre: 0
         };
       });
@@ -120,6 +128,10 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
             monthsData[monthIndex].assurance += expense.amount;
           } else if (expenseType === "reparation") {
             monthsData[monthIndex].reparation += expense.amount;
+          } else if (expenseType === "amende") {
+            monthsData[monthIndex].amende += expense.amount;
+          } else if (expenseType === "peage") {
+            monthsData[monthIndex].peage += expense.amount;
           } else {
             monthsData[monthIndex].autre += expense.amount;
           }

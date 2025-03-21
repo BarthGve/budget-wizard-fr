@@ -163,6 +163,20 @@ export const ExpensesBarChartRenderer = ({
               fill={getCategoryColor("reparation")}
             />
             <Bar 
+              dataKey="amende" 
+              stackId="a" 
+              radius={[0, 0, 0, 0]}
+              maxBarSize={60}
+              fill={getCategoryColor("amende")}
+            />
+            <Bar 
+              dataKey="peage" 
+              stackId="a" 
+              radius={[0, 0, 0, 0]}
+              maxBarSize={60}
+              fill={getCategoryColor("peage")}
+            />
+            <Bar 
               dataKey="autre" 
               stackId="a" 
               radius={[4, 4, 0, 0]}
