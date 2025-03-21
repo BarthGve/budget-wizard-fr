@@ -43,14 +43,13 @@ export const ExpensesBarChartRenderer = ({
     return isDarkMode ? "#A1A5AA" : "#8E9196"; // Couleur par défaut
   };
 
-  // Fonction pour formater la valeur monétaire avec le nom de la catégorie
+  // Fonction pour formater la valeur monétaire dans le tooltip
+  // La signature doit correspondre à ce que Recharts attend: (value, name, props) => ReactNode
   const tooltipFormatter = (value: any, name: string) => {
     const categoryConfig = chartConfig[name as keyof typeof chartConfig];
     const label = categoryConfig ? categoryConfig.label : name;
-    return {
-      value: formatCurrency(value),
-      name: label
-    };
+    // Recharts attend un ReactNode ou un tableau [valeur, nom] comme retour
+    return [formatCurrency(value), label as string];
   };
 
   return (
@@ -96,7 +95,7 @@ export const ExpensesBarChartRenderer = ({
               fontSize={12}
               tickFormatter={(value) => formatCurrency(value, 0)}
             />
-            <ChartTooltip
+            <Tooltip 
               wrapperStyle={{ 
                 borderRadius: "8px", 
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",

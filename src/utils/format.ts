@@ -1,10 +1,11 @@
 
 // Fonction pour formater un montant en devise
-export const formatCurrency = (amount: number): string => {
+export const formatCurrency = (amount: number, decimals: number = 2): string => {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
-    minimumFractionDigits: 2
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
   }).format(amount);
 };
 
