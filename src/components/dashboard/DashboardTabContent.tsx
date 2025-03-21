@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -52,6 +51,9 @@ interface DashboardTabContentProps {
     amount: number;
   }>;
   currentView: "monthly" | "yearly";
+  fuelExpensesTotal?: number;
+  fuelExpensesCount?: number;
+  fuelVolume?: number;
 }
 
 // Composants memoizés pour éviter les re-rendus inutiles
@@ -97,6 +99,9 @@ export const DashboardTabContent = ({
   recurringExpenses,
   monthlySavings,
   currentView,
+  fuelExpensesTotal = 0,
+  fuelExpensesCount = 0,
+  fuelVolume = 0,
 }: DashboardTabContentProps) => {
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -121,7 +126,7 @@ export const DashboardTabContent = ({
   });
 
   // Obtenir les statistiques selon la période sélectionnée
-  const { expensesTotal, fuelExpensesTotal } = useExpenseStats(currentView);
+  const { expensesTotal } = useExpenseStats(currentView);
 
   // Memoize credit calculations to prevent recalculation on each render
   const { activeCredits, repaidThisMonth, totalMensualites } = useMemo(() => {
@@ -214,6 +219,8 @@ export const DashboardTabContent = ({
         />
         <MemoizedVehicleFuelExpensesCard 
           totalFuelExpenses={fuelExpensesTotal}
+          fuelVolume={fuelVolume}
+          fuelExpensesCount={fuelExpensesCount}
           profile={profile}
           viewMode={currentView}
         />
