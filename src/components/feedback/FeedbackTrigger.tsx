@@ -1,4 +1,5 @@
 
+import React, { forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -8,25 +9,32 @@ interface FeedbackTriggerProps {
   onClick: () => void;
 }
 
-export const FeedbackTrigger = ({ collapsed, onClick }: FeedbackTriggerProps) => {
-  return (
-    <Button 
-      variant="ghost" 
-      onClick={onClick}
-      className={cn(
-        "group relative w-full flex items-center px-4 py-2 rounded-lg transition-colors",
-        "hover:bg-primary/10",
-        collapsed && "justify-center px-0",
-        !collapsed && "justify-start"
-      )}
-    >
-      <MessageSquare className={cn(
-        "h-5 w-5 flex-shrink-0 transition-transform group-hover:scale-110",
-        !collapsed && "mr-2"
-      )} />
-      {!collapsed && (
-        <span className="truncate">Laissez nous un avis</span>
-      )}
-    </Button>
-  );
-};
+// Utilisation de forwardRef pour permettre de passer la référence au bouton
+export const FeedbackTrigger = forwardRef<HTMLButtonElement, FeedbackTriggerProps>(
+  ({ collapsed, onClick }, ref) => {
+    return (
+      <Button 
+        variant="ghost" 
+        onClick={onClick}
+        ref={ref}
+        className={cn(
+          "group relative w-full flex items-center px-4 py-2 rounded-lg transition-colors",
+          "hover:bg-primary/10",
+          collapsed && "justify-center px-0",
+          !collapsed && "justify-start"
+        )}
+      >
+        <MessageSquare className={cn(
+          "h-5 w-5 flex-shrink-0 transition-transform group-hover:scale-110",
+          !collapsed && "mr-2"
+        )} />
+        {!collapsed && (
+          <span className="truncate">Laissez nous un avis</span>
+        )}
+      </Button>
+    );
+  }
+);
+
+// Ajout d'un displayName pour faciliter le débogage
+FeedbackTrigger.displayName = "FeedbackTrigger";
