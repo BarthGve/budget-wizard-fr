@@ -2,7 +2,6 @@
 import { motion } from "framer-motion";
 import { Card, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ExpensesChartHeader } from "./components/ExpensesChartHeader";
 import { GradientBackground } from "./components/GradientBackground";
 import { ExpensesChartContent } from "./components/ExpensesChartContent";
 
@@ -27,10 +26,8 @@ export const VehicleMonthlyExpensesChart = ({ vehicleId }: VehicleMonthlyExpense
       )}>
         <GradientBackground />
         
-        <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
-          <div>
-            <ExpensesChartHeader />
-          </div>
+        <CardHeader className="pb-2 relative z-10">
+          {/* En-tête maintenant intégré directement dans le renderer */}
         </CardHeader>
         
         <ExpensesChartContent vehicleId={vehicleId} />

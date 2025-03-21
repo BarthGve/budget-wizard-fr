@@ -9,7 +9,7 @@ interface ExpensesChartContentProps {
 
 export const ExpensesChartContent = ({ vehicleId }: ExpensesChartContentProps) => {
   return (
-    <CardContent className="pt-4 relative z-10">
+    <CardContent className="pt-4 pb-2 relative z-10">
       <AnimatePresence mode="wait">
         <motion.div
           key={`vehicle-expenses-chart`}

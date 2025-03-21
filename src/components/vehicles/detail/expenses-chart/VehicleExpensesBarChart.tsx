@@ -11,14 +11,17 @@ interface VehicleExpensesBarChartProps {
 
 export const VehicleExpensesBarChart = ({ vehicleId }: VehicleExpensesBarChartProps) => {
   const [dataVersion, setDataVersion] = useState(0);
-  const { expenses, isLoading, chartData, currentYear } = useExpensesChartData(vehicleId);
+  const [showMultiYear, setShowMultiYear] = useState(false);
+  
+  // Utilisez le hook avec le paramètre showMultiYear
+  const { expenses, isLoading, chartData, currentYear, chartTitle, chartDescription } = useExpensesChartData(vehicleId, showMultiYear);
 
-  // Mettre à jour la version des données quand les dépenses changent
+  // Mettre à jour la version des données quand les dépenses changent ou quand le mode change
   useEffect(() => {
     if (expenses) {
       setDataVersion(prev => prev + 1);
     }
-  }, [expenses]);
+  }, [expenses, showMultiYear]);
 
   if (isLoading) {
     return <ExpensesChartLoading />;
@@ -32,7 +35,11 @@ export const VehicleExpensesBarChart = ({ vehicleId }: VehicleExpensesBarChartPr
     <ExpensesBarChartRenderer 
       chartData={chartData} 
       currentYear={currentYear} 
-      dataVersion={dataVersion} 
+      dataVersion={dataVersion}
+      showMultiYear={showMultiYear}
+      onToggleView={() => setShowMultiYear(prev => !prev)}
+      chartTitle={chartTitle}
+      chartDescription={chartDescription}
     />
   );
 };

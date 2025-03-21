@@ -5,17 +5,26 @@ import { useTheme } from "next-themes";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { formatCurrency } from "@/utils/format";
 import { chartConfig } from "../config/chartConfig";
+import { ExpensesChartHeader } from "./ExpensesChartHeader";
 
 interface ExpensesBarChartRendererProps {
   chartData: any[];
   currentYear: number;
   dataVersion: number;
+  showMultiYear: boolean;
+  onToggleView: () => void;
+  chartTitle: string;
+  chartDescription: string;
 }
 
 export const ExpensesBarChartRenderer = ({ 
   chartData, 
   currentYear, 
-  dataVersion 
+  dataVersion,
+  showMultiYear,
+  onToggleView,
+  chartTitle,
+  chartDescription
 }: ExpensesBarChartRendererProps) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -42,6 +51,15 @@ export const ExpensesBarChartRenderer = ({
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.3 }}
     >
+      <div className="mb-3">
+        <ExpensesChartHeader 
+          title={chartTitle}
+          description={chartDescription}
+          showMultiYear={showMultiYear}
+          onToggleView={onToggleView}
+        />
+      </div>
+      
       <ChartContainer 
         className="h-[350px] w-full p-0"
         config={chartConfig}
@@ -72,7 +90,13 @@ export const ExpensesBarChartRenderer = ({
               content={
                 <ChartTooltipContent 
                   formatter={(value: number) => formatCurrency(value)}
-                  labelFormatter={(label) => `${label} ${currentYear}`}
+                  labelFormatter={(label) => {
+                    if (showMultiYear) {
+                      return `Année ${label}`;
+                    } else {
+                      return `${label} ${currentYear}`;
+                    }
+                  }}
                 />
               }
             />
