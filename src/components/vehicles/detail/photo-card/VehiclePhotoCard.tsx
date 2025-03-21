@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { VehiclePhotoDisplay } from "./VehiclePhotoDisplay";
 import { VehiclePhotoPlaceholder } from "./VehiclePhotoPlaceholder";
 import { cn } from "@/lib/utils";
+import {Camera} from "lucide-react"
+
 
 // Animation variants communs utilisés par ce composant
 const itemVariants = {
@@ -41,7 +43,7 @@ export const VehiclePhotoCard = ({
         <CardHeader className="pb-2">
           <CardTitle className="text-xl flex items-center gap-2">
             <div className="p-1.5 rounded bg-gray-100 dark:bg-gray-800/70">
-              <span className="text-gray-600 dark:text-gray-400">📷</span>
+              <Camera className="text-gray-600 dark:text-gray-400"/>
             </div>
             Photo du véhicule
           </CardTitle>
