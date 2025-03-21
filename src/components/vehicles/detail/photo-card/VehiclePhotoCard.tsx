@@ -35,12 +35,16 @@ export const VehiclePhotoCard = ({
   return (
     <motion.div variants={itemVariants}>
       <Card className={cn(
-        "overflow-hidden border shadow-md hover:shadow-lg transition-all duration-200",
-        "bg-gradient-to-br from-purple-50 to-purple-100",
-        "dark:from-purple-900/20 dark:to-purple-800/10"
+        "border shadow-sm overflow-hidden",
+        "bg-white border-gray-100 dark:bg-gray-800 dark:border-gray-700"
       )}>
         <CardHeader className="pb-2">
-          <CardTitle>Photo du véhicule</CardTitle>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <div className="p-1.5 rounded bg-gray-100 dark:bg-gray-800/70">
+              <span className="text-gray-600 dark:text-gray-400">📷</span>
+            </div>
+            Photo du véhicule
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {vehicle.photo_url ? (

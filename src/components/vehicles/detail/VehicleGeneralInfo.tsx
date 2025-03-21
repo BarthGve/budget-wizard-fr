@@ -43,12 +43,16 @@ export const VehicleGeneralInfo = ({ vehicle }: VehicleGeneralInfoProps) => {
   return (
     <motion.div variants={itemVariants}>
       <Card className={cn(
-        "overflow-hidden border shadow-md hover:shadow-lg transition-all duration-200",
-        "bg-gradient-to-br from-blue-50 to-blue-100",
-        "dark:from-blue-900/20 dark:to-blue-800/10"
+        "border shadow-sm overflow-hidden",
+        "bg-white border-gray-100 dark:bg-gray-800 dark:border-gray-700"
       )}>
         <CardHeader className="pb-2">
-          <CardTitle>Informations générales</CardTitle>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <div className="p-1.5 rounded bg-gray-100 dark:bg-gray-800/70">
+              <span className="text-gray-600 dark:text-gray-400">i</span>
+            </div>
+            Informations générales
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-y-4">
