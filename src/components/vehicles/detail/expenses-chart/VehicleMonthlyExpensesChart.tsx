@@ -1,22 +1,18 @@
-
 import { VehicleExpensesBarChart } from "./VehicleExpensesBarChart";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { AddRecurringExpenseDialog } from "../AddRecurringExpenseDialog";
-
 interface VehicleMonthlyExpensesChartProps {
   vehicleId: string;
 }
-
-export const VehicleMonthlyExpensesChart = ({ vehicleId }: VehicleMonthlyExpensesChartProps) => {
-  return (
-    <div className="space-y-4">
+export const VehicleMonthlyExpensesChart = ({
+  vehicleId
+}: VehicleMonthlyExpensesChartProps) => {
+  return <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight">Dépenses du véhicule</h2>
-          <p className="text-sm text-muted-foreground">
-            Analyse des dépenses par catégorie
-          </p>
+          
+          
         </div>
         <div className="flex gap-2">
           <AddRecurringExpenseDialog vehicleId={vehicleId} />
@@ -25,6 +21,5 @@ export const VehicleMonthlyExpensesChart = ({ vehicleId }: VehicleMonthlyExpense
       
       {/* Nous passons uniquement l'ID du véhicule comme requis par le composant */}
       <VehicleExpensesBarChart vehicleId={vehicleId} />
-    </div>
-  );
+    </div>;
 };
