@@ -6,6 +6,12 @@ import { motion } from "framer-motion";
 import { formatCurrency } from "@/utils/format";
 import { cn } from "@/lib/utils";
 import { Profile } from "@/types/profile";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface VehicleFuelExpensesCardProps {
   totalFuelExpenses: number;
@@ -35,6 +41,24 @@ export const VehicleFuelExpensesCard = ({
     : `Dépenses de l'année ${new Date().getFullYear()}`;
 
   const averagePrice = fuelVolume > 0 ? totalFuelExpenses / fuelVolume : 0;
+
+  // Contenu du tooltip avec les informations détaillées
+  const tooltipContent = isPro && fuelVolume > 0 ? (
+    <div className="space-y-2 py-1">
+      <div className="flex justify-between items-center gap-4">
+        <span>Volume total:</span>
+        <span className="font-medium">{fuelVolume.toFixed(2)} L</span>
+      </div>
+      <div className="flex justify-between items-center gap-4">
+        <span>Prix moyen:</span>
+        <span className="font-medium">{averagePrice.toFixed(3)} €/L</span>
+      </div>
+      <div className="flex justify-between items-center gap-4">
+        <span>Pleins:</span>
+        <span className="font-medium">{fuelExpensesCount}</span>
+      </div>
+    </div>
+  ) : null;
 
   return (
     <motion.div 
@@ -95,30 +119,31 @@ export const VehicleFuelExpensesCard = ({
               transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
               className="space-y-1"
             >
-              <p className={cn(
-                "text-xl font-bold leading-none", 
-                "text-gray-800",
-                // Light mode
-                "dark:text-gray-100" // Dark mode - Gris au lieu de vert
-              )}>
-                {formatCurrency(totalFuelExpenses)}
-              </p>
-              
-              {isPro && fuelVolume > 0 && (
-                <div className="flex flex-col mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  <div className="flex justify-between items-center">
-                    <span>Volume total:</span>
-                    <span className="font-medium">{fuelVolume.toFixed(2)} L</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Prix moyen:</span>
-                    <span className="font-medium">{averagePrice.toFixed(3)} €/L</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Pleins:</span>
-                    <span className="font-medium">{fuelExpensesCount}</span>
-                  </div>
-                </div>
+              {isPro && tooltipContent ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <p className={cn(
+                        "text-xl font-bold leading-none cursor-help", 
+                        "text-gray-800",
+                        "dark:text-gray-100"
+                      )}>
+                        {formatCurrency(totalFuelExpenses)}
+                      </p>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="w-56">
+                      {tooltipContent}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <p className={cn(
+                  "text-xl font-bold leading-none", 
+                  "text-gray-800",
+                  "dark:text-gray-100"
+                )}>
+                  {formatCurrency(totalFuelExpenses)}
+                </p>
               )}
             </motion.div>
           </div>
