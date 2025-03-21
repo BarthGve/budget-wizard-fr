@@ -12,7 +12,6 @@ import { CalendarClock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface VehicleDetailTabsProps {
   vehicle: Vehicle;
@@ -111,48 +110,33 @@ export const VehicleDetailTabs = ({
           </motion.div>
           
           {canAccessExpenses && (
-            <motion.div variants={itemVariants}>
-              <Card>
-                <CardContent className="pt-6">
-                  <VehicleMonthlyExpensesChart vehicleId={vehicle.id} />
-                </CardContent>
-              </Card>
-            </motion.div>
+            <>
+              <motion.div variants={itemVariants}>
+                <VehicleMonthlyExpensesChart vehicleId={vehicle.id} />
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <VehicleExpenseStats vehicleId={vehicle.id} />
+              </motion.div>
+              <motion.div variants={itemVariants} className="flex justify-end">
+                <Button 
+                  onClick={handleGenerateExpensesFromRecurring}
+                  className="gap-2"
+                  variant="outline"
+                  disabled={isGenerating}
+                >
+                  <CalendarClock className="h-4 w-4" />
+                  {isGenerating ? "Génération en cours..." : "Générer les dépenses des charges récurrentes"}
+                </Button>
+              </motion.div>
+            </>
           )}
         </motion.div>
       </TabsContent>
 
       {canAccessExpenses && (
         <TabsContent value="expenses">
-          <motion.div 
-            className="space-y-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.div variants={itemVariants}>
-              <Card className="mb-6">
-                <CardContent className="pt-6">
-                  <VehicleExpenseStats vehicleId={vehicle.id} />
-                </CardContent>
-              </Card>
-            </motion.div>
-            
-            <motion.div variants={itemVariants} className="flex justify-end mb-4">
-              <Button 
-                onClick={handleGenerateExpensesFromRecurring}
-                className="gap-2"
-                variant="outline"
-                disabled={isGenerating}
-              >
-                <CalendarClock className="h-4 w-4" />
-                {isGenerating ? "Génération en cours..." : "Générer les dépenses des charges récurrentes"}
-              </Button>
-            </motion.div>
-            
-            <motion.div variants={itemVariants}>
-              <VehicleExpenseContainer vehicleId={vehicle.id} />
-            </motion.div>
+          <motion.div variants={itemVariants}>
+            <VehicleExpenseContainer vehicleId={vehicle.id} />
           </motion.div>
         </TabsContent>
       )}
