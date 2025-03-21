@@ -12,7 +12,8 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
   const vehicleExpenseType = form.watch("vehicle_expense_type");
   
   // Désactiver si aucun véhicule ou type d'expense n'est sélectionné
-  const isDisabled = !vehicleId || !vehicleExpenseType;
+  // ou si le type est "no-type"
+  const isDisabled = !vehicleId || !vehicleExpenseType || vehicleExpenseType === "no-type";
   
   return (
     <FormField

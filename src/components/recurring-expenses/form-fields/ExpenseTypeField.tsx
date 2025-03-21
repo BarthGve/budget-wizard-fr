@@ -3,6 +3,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "../hooks/useRecurringExpenseForm";
+import { expenseTypes } from "@/components/vehicles/expenses/form/ExpenseTypeField";
 
 interface ExpenseTypeFieldProps {
   form: UseFormReturn<FormValues>;
@@ -21,8 +22,8 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
         <FormItem>
           <FormLabel>Type de dépense véhicule</FormLabel>
           <Select 
-            onValueChange={(value) => field.onChange(value || null)}
-            value={field.value || undefined}
+            onValueChange={(value) => field.onChange(value === "no-type" ? null : value)}
+            value={field.value || "no-type"}
             disabled={!vehicleId}
           >
             <FormControl>
@@ -31,12 +32,12 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {/* Utiliser null comme valeur au lieu d'une chaîne vide */}
               <SelectItem key="no-type" value="no-type">
                 Aucun type de dépense
               </SelectItem>
-              {expenseTypes?.map(type => (
-                <SelectItem key={type.id} value={type.name}>
+              {/* Utiliser les types de dépenses provenant des options du véhicule */}
+              {expenseTypes.map(type => (
+                <SelectItem key={type.id || type.name} value={type.name}>
                   {type.name}
                 </SelectItem>
               ))}

@@ -15,6 +15,7 @@ import { DomainField } from "./form-fields/DomainField";
 import { VehicleField } from "./form-fields/VehicleField";
 import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
 import { AutoGenerateField } from "./form-fields/AutoGenerateField";
+import { expenseTypes } from "@/components/vehicles/expenses/form/ExpenseTypeField";
 
 export interface RecurringExpenseFormProps {
   expense?: {
@@ -75,18 +76,37 @@ export function RecurringExpenseForm({
     }
   });
 
-  const { data: expenseTypes } = useQuery({
-    queryKey: ["vehicle-expense-types"],
+  // Récupérer les types de dépenses uniquement pour le véhicule sélectionné
+  // Nous récupérons directement les types de dépenses déjà utilisés pour ce véhicule
+  const vehicleId = form.watch("vehicle_id");
+  const { data: vehicleExpenseTypes, isLoading: typesLoading } = useQuery({
+    queryKey: ["vehicle-specific-expense-types", vehicleId],
     queryFn: async () => {
+      if (!vehicleId) return [];
+      
+      // Récupérer les types de dépenses déjà utilisés pour ce véhicule
       const { data, error } = await supabase
-        .from("vehicle_expense_types")
-        .select("*")
-        .order("name");
+        .from("vehicle_expenses")
+        .select("expense_type")
+        .eq("vehicle_id", vehicleId)
+        .order("expense_type");
+        
       if (error) throw error;
-      return data;
+      
+      // Convertir en tableau d'objets uniques
+      const uniqueTypes = [...new Set(data.map(item => item.expense_type))];
+      return uniqueTypes.map((name) => ({ 
+        id: name, // Utiliser le nom comme id pour avoir un identifiant unique
+        name 
+      }));
     },
-    enabled: !!form.watch("vehicle_id"),
+    enabled: !!vehicleId,
   });
+
+  // Fusionner avec les types génériques au cas où il n'y a pas encore de dépenses
+  const mergedExpenseTypes = (vehicleExpenseTypes && vehicleExpenseTypes.length > 0) 
+    ? vehicleExpenseTypes 
+    : expenseTypes.map(type => ({ id: type.value, name: type.label }));
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
@@ -111,7 +131,7 @@ export function RecurringExpenseForm({
       
       // Désactiver l'option auto-generate si le type n'est pas spécifié
       if (name === "vehicle_expense_type") {
-        if (!value.vehicle_expense_type) {
+        if (!value.vehicle_expense_type || value.vehicle_expense_type === "no-type") {
           form.setValue("auto_generate_vehicle_expense", false);
         }
       }
@@ -137,7 +157,7 @@ export function RecurringExpenseForm({
         {/* Champs conditionnels qui s'affichent uniquement si un véhicule est sélectionné */}
         {vehicleSelected && (
           <>
-            <ExpenseTypeField form={form} expenseTypes={expenseTypes || []} />
+            <ExpenseTypeField form={form} expenseTypes={mergedExpenseTypes || []} />
             <AutoGenerateField form={form} />
           </>
         )}
