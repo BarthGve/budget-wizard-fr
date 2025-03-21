@@ -78,10 +78,8 @@ export const VehicleExpenseStats = ({ vehicleId }: VehicleExpenseStatsProps) => 
         }}
       >
         <CardHeader className={cn(
-          "pb-2 border-b",
-          "bg-gradient-to-r from-gray-50 to-gray-100/50",
-          "dark:bg-gradient-to-r dark:from-slate-900 dark:to-gray-800/40",
-          "border-gray-200 dark:border-gray-800"
+          "pb-2 ",
+     
         )}>
           <CardTitle className="text-xl flex items-center gap-2 text-gray-800 dark:text-gray-100">
             <div className="p-1.5 rounded-md bg-gray-200/80 dark:bg-gray-700/50">
