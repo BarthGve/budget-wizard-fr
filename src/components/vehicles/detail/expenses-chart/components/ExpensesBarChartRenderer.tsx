@@ -89,7 +89,7 @@ export const ExpensesBarChartRenderer = ({
             <ChartTooltip
               content={
                 <ChartTooltipContent 
-                  formatter={(value: number) => formatCurrency(value)}
+                  formatter={(value: any) => formatCurrency(value)}
                   labelFormatter={(label) => {
                     if (showMultiYear) {
                       return `Année ${label}`;
@@ -150,3 +150,4 @@ export const ExpensesBarChartRenderer = ({
     </motion.div>
   );
 };
+
