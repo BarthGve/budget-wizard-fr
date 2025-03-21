@@ -4,36 +4,36 @@ export const chartConfig = {
   carburant: {
     label: "Carburant",
     theme: {
-      light: "#6B7280", // Gray-500
-      dark: "#9CA3AF"   // Gray-400
+      light: "#9b87f5", // Primary Purple
+      dark: "#b19df7"   // Lighter Purple
     }
   },
   entretien: {
     label: "Entretien",
     theme: {
-      light: "#4B5563", // Gray-600
-      dark: "#D1D5DB"   // Gray-300
+      light: "#0EA5E9", // Ocean Blue
+      dark: "#38BDF8"   // Lighter Blue
     }
   },
   assurance: {
     label: "Assurance",
     theme: {
-      light: "#374151", // Gray-700
-      dark: "#F3F4F6"   // Gray-100
+      light: "#F97316", // Bright Orange
+      dark: "#FB923C"   // Lighter Orange
     }
   },
   reparation: {
     label: "Réparation",
     theme: {
-      light: "#1F2937", // Gray-800
-      dark: "#E5E7EB"   // Gray-200
+      light: "#D946EF", // Magenta Pink
+      dark: "#E879F9"   // Lighter Pink
     }
   },
   autre: {
     label: "Autre",
     theme: {
-      light: "#111827", // Gray-900
-      dark: "#F9FAFB"   // Gray-50
+      light: "#8E9196", // Neutral Gray
+      dark: "#A1A5AA"   // Lighter Gray
     }
   }
 };

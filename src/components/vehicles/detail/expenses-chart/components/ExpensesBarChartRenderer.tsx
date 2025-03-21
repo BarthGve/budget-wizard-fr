@@ -25,6 +25,15 @@ export const ExpensesBarChartRenderer = ({
   const axisColor = isDarkMode ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground))";
   const backgroundColor = "transparent";
 
+  // Fonction pour récupérer la couleur selon la catégorie et le thème
+  const getCategoryColor = (category: string) => {
+    const categoryData = chartConfig[category as keyof typeof chartConfig];
+    if (categoryData) {
+      return isDarkMode ? categoryData.theme.dark : categoryData.theme.light;
+    }
+    return isDarkMode ? "#A1A5AA" : "#8E9196"; // Couleur par défaut
+  };
+
   return (
     <motion.div
       key={dataVersion}
@@ -81,30 +90,35 @@ export const ExpensesBarChartRenderer = ({
               stackId="a" 
               radius={[0, 0, 0, 0]}
               maxBarSize={60}
+              fill={getCategoryColor("carburant")}
             />
             <Bar 
               dataKey="entretien" 
               stackId="a" 
               radius={[0, 0, 0, 0]}
               maxBarSize={60}
+              fill={getCategoryColor("entretien")}
             />
             <Bar 
               dataKey="assurance" 
               stackId="a" 
               radius={[0, 0, 0, 0]}
               maxBarSize={60}
+              fill={getCategoryColor("assurance")}
             />
             <Bar 
               dataKey="reparation" 
               stackId="a" 
               radius={[0, 0, 0, 0]}
               maxBarSize={60}
+              fill={getCategoryColor("reparation")}
             />
             <Bar 
               dataKey="autre" 
               stackId="a" 
               radius={[4, 4, 0, 0]}
               maxBarSize={60}
+              fill={getCategoryColor("autre")}
             />
           </BarChart>
         </ResponsiveContainer>
