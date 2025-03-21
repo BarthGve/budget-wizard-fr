@@ -26,7 +26,11 @@ export const formSchema = z.object({
       return !isNaN(month) && month >= 1 && month <= 12;
     },
     "Le mois doit être entre 1 et 12"
-  )
+  ),
+  // Nouveaux champs pour l'association avec un véhicule
+  vehicle_id: z.string().optional(),
+  vehicle_expense_type: z.string().optional(),
+  auto_generate_vehicle_expense: z.boolean().optional()
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -41,8 +45,12 @@ interface UseRecurringExpenseFormProps {
     debit_day: number;
     debit_month: number | null;
     logo_url?: string;
+    vehicle_id?: string;
+    vehicle_expense_type?: string;
+    auto_generate_vehicle_expense?: boolean;
   };
   initialDomain?: string;
+  initialVehicleId?: string;
   onSuccess: () => void;
 }
 
@@ -52,7 +60,7 @@ const getFaviconUrl = (domain: string) => {
   return `https://logo.clearbit.com/${cleanDomain}`;
 };
 
-export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess }: UseRecurringExpenseFormProps) => {
+export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVehicleId = "", onSuccess }: UseRecurringExpenseFormProps) => {
   const queryClient = useQueryClient();
 
   const form = useForm<FormValues>({
@@ -64,7 +72,10 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
       category: expense?.category || "",
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
-      debit_month: expense?.debit_month?.toString() || ""
+      debit_month: expense?.debit_month?.toString() || "",
+      vehicle_id: expense?.vehicle_id || initialVehicleId || "",
+      vehicle_expense_type: expense?.vehicle_expense_type || "",
+      auto_generate_vehicle_expense: expense?.auto_generate_vehicle_expense || false
     },
   });
 
@@ -94,6 +105,10 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
         debit_day: parseInt(values.debit_day),
         debit_month: debit_month,
         logo_url,
+        // Nouveaux champs pour l'association avec un véhicule
+        vehicle_id: values.vehicle_id || null,
+        vehicle_expense_type: values.vehicle_expense_type || null,
+        auto_generate_vehicle_expense: values.auto_generate_vehicle_expense || false
       };
 
       if (expense) {
@@ -124,16 +139,23 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
         refetchType: 'all'
       });
       
+      // Invalider les données des véhicules si une charge récurrente est associée à un véhicule
+      if (values.vehicle_id) {
+        queryClient.invalidateQueries({ 
+          queryKey: ["vehicle-expenses", values.vehicle_id],
+          exact: true
+        });
+        
+        queryClient.invalidateQueries({ 
+          queryKey: ["vehicle-detail", values.vehicle_id],
+          exact: false
+        });
+      }
+      
       // Force refresh immédiat
       setTimeout(() => {
         queryClient.refetchQueries({ 
           queryKey: ["dashboard-data"],
-          exact: false
-        });
-        
-        // Rafraîchir les crédits qui affectent le solde global
-        queryClient.refetchQueries({
-          queryKey: ["credits"],
           exact: false
         });
       }, 100);

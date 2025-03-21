@@ -1,4 +1,3 @@
-
 export interface RecurringExpense {
   id: string;
   name: string;
@@ -9,7 +8,10 @@ export interface RecurringExpense {
   debit_month: number | null;
   created_at: string;
   logo_url?: string;
-  notes?: string; // Ajout de la propriété notes optionnelle
+  notes?: string;
+  vehicle_id?: string;
+  vehicle_expense_type?: string;
+  auto_generate_vehicle_expense?: boolean;
 }
 
 export interface RecurringExpenseTableProps {

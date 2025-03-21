@@ -12,6 +12,9 @@ import { PeriodicityField } from "./form-fields/PeriodicityField";
 import { DebitDayField } from "./form-fields/DebitDayField";
 import { DebitMonthField } from "./form-fields/DebitMonthField";
 import { DomainField } from "./form-fields/DomainField";
+import { VehicleField } from "./form-fields/VehicleField";
+import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
+import { AutoGenerateField } from "./form-fields/AutoGenerateField";
 
 export interface RecurringExpenseFormProps {
   expense?: {
@@ -24,10 +27,14 @@ export interface RecurringExpenseFormProps {
     debit_month: number | null;
     logo_url?: string;
     notes?: string;
+    vehicle_id?: string;
+    vehicle_expense_type?: string;
+    auto_generate_vehicle_expense?: boolean;
   };
   onSuccess: () => void;
   onCancel: () => void;
   variant?: string;
+  initialVehicleId?: string;
 }
 
 const extractDomainFromLogoUrl = (logoUrl?: string) => {
@@ -45,12 +52,14 @@ export function RecurringExpenseForm({
   onSuccess,
   onCancel,
   variant,
+  initialVehicleId,
 }: RecurringExpenseFormProps) {
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
   const { form, onSubmit } = useRecurringExpenseForm({
     expense,
     initialDomain,
+    initialVehicleId,
     onSuccess
   });
 
@@ -66,6 +75,19 @@ export function RecurringExpenseForm({
     }
   });
 
+  const { data: expenseTypes } = useQuery({
+    queryKey: ["vehicle-expense-types"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicle_expense_types")
+        .select("*")
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!form.watch("vehicle_id"),
+  });
+
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === "periodicity") {
@@ -76,10 +98,19 @@ export function RecurringExpenseForm({
           form.setValue("debit_month", "1");
         }
       }
+
+      // Réinitialiser les champs liés au véhicule si le véhicule est désélectionné
+      if (name === "vehicle_id" && !value.vehicle_id) {
+        form.setValue("vehicle_expense_type", "");
+        form.setValue("auto_generate_vehicle_expense", false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, [form]);
+
+  // Détermine si le véhicule est sélectionné pour afficher les champs supplémentaires
+  const vehicleSelected = !!form.watch("vehicle_id");
 
   return (
     <Form {...form}>
@@ -88,6 +119,18 @@ export function RecurringExpenseForm({
         <DomainField form={form} />
         <AmountField form={form} />
         <CategoryField form={form} categories={categories || []} />
+        
+        {/* Champ pour sélectionner un véhicule */}
+        <VehicleField form={form} />
+        
+        {/* Champs conditionnels qui s'affichent uniquement si un véhicule est sélectionné */}
+        {vehicleSelected && (
+          <>
+            <ExpenseTypeField form={form} expenseTypes={expenseTypes || []} />
+            <AutoGenerateField form={form} />
+          </>
+        )}
+        
         <PeriodicityField form={form} />
         <DebitDayField form={form} />
         

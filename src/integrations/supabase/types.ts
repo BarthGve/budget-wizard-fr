@@ -733,9 +733,52 @@ export type Database = {
           },
         ]
       }
+      recurring_expense_logs: {
+        Row: {
+          generation_date: string
+          id: string
+          notes: string | null
+          recurring_expense_id: string
+          status: string
+          vehicle_expense_id: string | null
+        }
+        Insert: {
+          generation_date?: string
+          id?: string
+          notes?: string | null
+          recurring_expense_id: string
+          status?: string
+          vehicle_expense_id?: string | null
+        }
+        Update: {
+          generation_date?: string
+          id?: string
+          notes?: string | null
+          recurring_expense_id?: string
+          status?: string
+          vehicle_expense_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_expense_logs_recurring_expense_id_fkey"
+            columns: ["recurring_expense_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_expenses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_expense_logs_vehicle_expense_id_fkey"
+            columns: ["vehicle_expense_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_expenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recurring_expenses: {
         Row: {
           amount: number
+          auto_generate_vehicle_expense: boolean | null
           category: string
           created_at: string
           debit_day: number
@@ -746,9 +789,12 @@ export type Database = {
           periodicity: string
           profile_id: string
           updated_at: string
+          vehicle_expense_type: string | null
+          vehicle_id: string | null
         }
         Insert: {
           amount?: number
+          auto_generate_vehicle_expense?: boolean | null
           category: string
           created_at?: string
           debit_day?: number
@@ -759,9 +805,12 @@ export type Database = {
           periodicity?: string
           profile_id: string
           updated_at?: string
+          vehicle_expense_type?: string | null
+          vehicle_id?: string | null
         }
         Update: {
           amount?: number
+          auto_generate_vehicle_expense?: boolean | null
           category?: string
           created_at?: string
           debit_day?: number
@@ -772,6 +821,8 @@ export type Database = {
           periodicity?: string
           profile_id?: string
           updated_at?: string
+          vehicle_expense_type?: string | null
+          vehicle_id?: string | null
         }
         Relationships: [
           {
@@ -779,6 +830,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_expenses_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
         ]
@@ -1106,6 +1164,10 @@ export type Database = {
         Args: {
           target_user_id: string
         }
+        Returns: undefined
+      }
+      generate_vehicle_expenses_from_recurring: {
+        Args: Record<PropertyKey, never>
         Returns: undefined
       }
       get_credits_stats_current_month: {
