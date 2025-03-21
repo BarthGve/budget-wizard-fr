@@ -33,10 +33,10 @@ export function VehicleField({ form }: VehicleFieldProps) {
         <FormItem>
           <FormLabel>Véhicule (optionnel)</FormLabel>
           <Select
-            value={field.value || ""}
+            value={field.value || undefined}
             onValueChange={(value) => {
-              // Si "Aucun véhicule" est sélectionné, définir comme null
-              const newValue = value === "" ? null : value;
+              // Si "no-vehicle" est sélectionné, définir comme null
+              const newValue = value === "no-vehicle" ? null : value;
               field.onChange(newValue);
               
               // Réinitialiser les champs liés au véhicule
@@ -53,7 +53,8 @@ export function VehicleField({ form }: VehicleFieldProps) {
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectItem value="">Aucun véhicule</SelectItem>
+              {/* Utiliser une valeur spécifique au lieu d'une chaîne vide */}
+              <SelectItem value="no-vehicle">Aucun véhicule</SelectItem>
               {vehicles?.map((vehicle) => (
                 <SelectItem key={vehicle.id} value={vehicle.id}>
                   {vehicle.brand} {vehicle.model} ({vehicle.registration_number})

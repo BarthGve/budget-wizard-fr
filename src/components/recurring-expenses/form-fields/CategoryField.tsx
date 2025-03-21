@@ -17,7 +17,10 @@ export const CategoryField = ({ form, categories }: CategoryFieldProps) => {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Catégorie</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select 
+            onValueChange={field.onChange} 
+            value={field.value || undefined}
+          >
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez une catégorie" />

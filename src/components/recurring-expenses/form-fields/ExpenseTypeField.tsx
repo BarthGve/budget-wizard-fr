@@ -31,6 +31,10 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
               </SelectTrigger>
             </FormControl>
             <SelectContent>
+              {/* Utiliser null comme valeur au lieu d'une chaîne vide */}
+              <SelectItem key="no-type" value="no-type">
+                Aucun type de dépense
+              </SelectItem>
               {expenseTypes?.map(type => (
                 <SelectItem key={type.id} value={type.name}>
                   {type.name}

@@ -22,7 +22,7 @@ export const PeriodicityField = ({ form }: PeriodicityFieldProps) => {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Périodicité</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} value={field.value || undefined}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez la périodicité" />
