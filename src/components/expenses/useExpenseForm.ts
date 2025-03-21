@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ExpenseFormData } from "./types";
@@ -49,6 +50,13 @@ export function useExpenseForm(onExpenseAdded: () => void) {
       // Invalidation des statistiques mensuelles pour le dashboard
       queryClient.invalidateQueries({ 
         queryKey: ["all-expenses-for-stats"],
+        exact: false,
+        refetchType: 'all'
+      });
+      
+      // Invalidation des statistiques des dépenses carburant
+      queryClient.invalidateQueries({ 
+        queryKey: ["period-fuel-expenses"],
         exact: false,
         refetchType: 'all'
       });

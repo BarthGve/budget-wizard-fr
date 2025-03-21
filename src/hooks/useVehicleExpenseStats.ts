@@ -17,7 +17,9 @@ export const useVehicleExpenseStats = (expenses: VehicleExpense[] | undefined) =
           averageFuelPrice: 0,
           totalExpense: 0,
           expenseCount: 0
-        }
+        },
+        monthlyExpenseAverage: 0,
+        expensesByCategory: {}
       };
     }
 
@@ -39,6 +41,27 @@ export const useVehicleExpenseStats = (expenses: VehicleExpense[] | undefined) =
     const ytdTotalFuelVolume = currentYearFuelExpenses.reduce((sum, expense) => sum + (expense.fuel_volume || 0), 0);
     const ytdTotalExpense = currentYearExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
+    // Calculer la moyenne mensuelle des dépenses
+    const oldestExpenseDate = new Date(Math.min(...expenses.map(e => new Date(e.date).getTime())));
+    const now = new Date();
+    const monthsActive = (now.getFullYear() - oldestExpenseDate.getFullYear()) * 12 + 
+                         (now.getMonth() - oldestExpenseDate.getMonth()) + 1;
+    const monthlyExpenseAverage = monthsActive > 0 ? totalExpense / monthsActive : 0;
+
+    // Calculer les dépenses par catégorie
+    const expensesByCategory = expenses.reduce((acc, expense) => {
+      const category = expense.expense_type;
+      if (!acc[category]) {
+        acc[category] = {
+          total: 0,
+          count: 0
+        };
+      }
+      acc[category].total += expense.amount;
+      acc[category].count += 1;
+      return acc;
+    }, {} as Record<string, { total: number, count: number }>);
+
     return {
       totalFuelExpense,
       totalFuelVolume,
@@ -51,7 +74,9 @@ export const useVehicleExpenseStats = (expenses: VehicleExpense[] | undefined) =
         averageFuelPrice: ytdTotalFuelVolume > 0 ? ytdTotalFuelExpense / ytdTotalFuelVolume : 0,
         totalExpense: ytdTotalExpense,
         expenseCount: currentYearExpenses.length
-      }
+      },
+      monthlyExpenseAverage,
+      expensesByCategory
     };
   }, [expenses]);
 };

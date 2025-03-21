@@ -63,11 +63,11 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
   const { data: fuelExpenses, isLoading: isFuelLoading } = useQuery({
     queryKey: ["period-fuel-expenses", viewMode, firstDayStr, lastDayStr],
     queryFn: async () => {
-      if (!currentUser?.id) return { total: 0 };
+      if (!currentUser?.id) return { total: 0, count: 0, volume: 0 };
       
       const { data, error } = await supabase
         .from("vehicle_expenses")
-        .select("amount, vehicles!inner(profile_id, status)")
+        .select("amount, fuel_volume, vehicles!inner(profile_id, status)")
         .eq("vehicles.profile_id", currentUser.id)
         .eq("vehicles.status", "actif")
         .eq("expense_type", "carburant")
@@ -76,14 +76,19 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
 
       if (error) {
         console.error("Error fetching fuel expenses:", error);
-        return { total: 0 };
+        return { total: 0, count: 0, volume: 0 };
       }
 
       const total = data.reduce((sum, expense) => sum + Number(expense.amount), 0);
+      const volume = data.reduce((sum, expense) => sum + Number(expense.fuel_volume || 0), 0);
       
       console.log(`Total dépenses carburant ${periodLabel}: ${total}€ (${data.length} dépenses)`);
       
-      return { total, count: data.length };
+      return { 
+        total, 
+        count: data.length,
+        volume
+      };
     },
     enabled: !!currentUser?.id,
     staleTime: 1000 * 10, // 10 secondes pour une réactivité accrue
@@ -93,6 +98,8 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
   return {
     expensesTotal,
     fuelExpensesTotal: fuelExpenses?.total || 0,
+    fuelExpensesCount: fuelExpenses?.count || 0,
+    fuelVolume: fuelExpenses?.volume || 0,
     isLoading: isExpensesLoading || isFuelLoading,
     periodLabel: viewMode === "monthly" ? "mensuel" : "annuel"
   };

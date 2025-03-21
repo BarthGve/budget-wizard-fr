@@ -9,12 +9,16 @@ import { Profile } from "@/types/profile";
 
 interface VehicleFuelExpensesCardProps {
   totalFuelExpenses: number;
+  fuelVolume?: number;
+  fuelExpensesCount?: number;
   profile: Profile | null | undefined;
   viewMode: "monthly" | "yearly";
 }
 
 export const VehicleFuelExpensesCard = ({
   totalFuelExpenses,
+  fuelVolume = 0,
+  fuelExpensesCount = 0,
   profile,
   viewMode
 }: VehicleFuelExpensesCardProps) => {
@@ -29,6 +33,8 @@ export const VehicleFuelExpensesCard = ({
   const descriptionText = viewMode === "monthly" 
     ? `Dépenses du mois de ${currentMonthName}` 
     : `Dépenses de l'année ${new Date().getFullYear()}`;
+
+  const averagePrice = fuelVolume > 0 ? totalFuelExpenses / fuelVolume : 0;
 
   return (
     <motion.div 
@@ -83,19 +89,38 @@ export const VehicleFuelExpensesCard = ({
         </CardHeader>
         <CardContent className="pb-4">
           <div className="space-y-4">
-            <motion.p 
-              className={cn(
+            <motion.div
+              initial={{ scale: 0.9 }} 
+              animate={{ scale: 1 }} 
+              transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+              className="space-y-1"
+            >
+              <p className={cn(
                 "text-xl font-bold leading-none", 
                 "text-gray-800",
                 // Light mode
                 "dark:text-gray-100" // Dark mode - Gris au lieu de vert
-              )} 
-              initial={{ scale: 0.9 }} 
-              animate={{ scale: 1 }} 
-              transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-            >
-              {formatCurrency(totalFuelExpenses)}
-            </motion.p>
+              )}>
+                {formatCurrency(totalFuelExpenses)}
+              </p>
+              
+              {isPro && fuelVolume > 0 && (
+                <div className="flex flex-col mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex justify-between items-center">
+                    <span>Volume total:</span>
+                    <span className="font-medium">{fuelVolume.toFixed(2)} L</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span>Prix moyen:</span>
+                    <span className="font-medium">{averagePrice.toFixed(3)} €/L</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span>Pleins:</span>
+                    <span className="font-medium">{fuelExpensesCount}</span>
+                  </div>
+                </div>
+              )}
+            </motion.div>
           </div>
         </CardContent>
       </Card>
