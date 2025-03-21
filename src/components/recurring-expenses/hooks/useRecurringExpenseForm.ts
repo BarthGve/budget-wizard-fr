@@ -5,6 +5,7 @@ import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { SubmitHandler } from "react-hook-form";
 
 export const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
@@ -79,7 +80,7 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
     },
   });
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit: SubmitHandler<FormValues> = async (values) => {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -177,6 +178,6 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
 
   return {
     form,
-    onSubmit: form.handleSubmit(onSubmit),
+    handleSubmit: form.handleSubmit(onSubmit),
   };
 };

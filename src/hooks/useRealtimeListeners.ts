@@ -4,6 +4,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+// Définir un type pour le payload de Supabase
+interface RealtimePayload {
+  new: Record<string, any> | null;
+  old: Record<string, any> | null;
+  eventType: string;
+  schema: string;
+  table: string;
+}
+
 export const useRealtimeListeners = () => {
   const queryClient = useQueryClient();
 
@@ -56,7 +65,7 @@ export const useRealtimeListeners = () => {
           schema: 'public',
           table: 'recurring_expenses'
         },
-        (payload) => {
+        (payload: RealtimePayload) => {
           console.log('Dépenses récurrentes modifiées, invalidation des requêtes');
           queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
           queryClient.invalidateQueries({ queryKey: ['recurring-expenses'] });
@@ -122,7 +131,7 @@ export const useRealtimeListeners = () => {
           schema: 'public',
           table: 'vehicle_expenses'
         },
-        (payload) => {
+        (payload: RealtimePayload) => {
           console.log('Dépenses de véhicules modifiées, invalidation des requêtes');
           
           // Invalider toutes les requêtes liées aux véhicules

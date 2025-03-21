@@ -56,7 +56,7 @@ export function RecurringExpenseForm({
 }: RecurringExpenseFormProps) {
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
-  const { form, onSubmit } = useRecurringExpenseForm({
+  const { form, handleSubmit } = useRecurringExpenseForm({
     expense,
     initialDomain,
     initialVehicleId,
@@ -125,7 +125,7 @@ export function RecurringExpenseForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <NameField form={form} />
         <DomainField form={form} />
         <AmountField form={form} />
