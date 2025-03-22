@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
@@ -11,28 +10,25 @@ import { ExpensesHeader } from "@/components/expenses/ExpensesHeader";
 import { RetailersGrid } from "@/components/expenses/RetailersGrid";
 import { useExpensesData } from "@/hooks/useExpensesData";
 import { useYearlyTotals } from "@/hooks/useYearlyTotals";
+import { RetailersExpensesChart } from "@/components/expenses/RetailersExpensesChart";
+import { ExpensesChart } from "@/components/expenses/ExpensesChart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// Utilisation de memo pour éviter les re-renders inutiles
 const Expenses = memo(function Expenses() {
   const { retailers } = useRetailers();
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   
-  // Utiliser notre nouveau hook pour les données
   const { expenses, isLoading, handleExpenseUpdated } = useExpensesData();
   
-  // Activer les écouteurs en temps réel
   useRealtimeListeners();
   
-  // Utiliser notre hook pour calculer les totaux
   const { currentYearTotal, lastYearTotal } = useYearlyTotals(expenses);
 
-  // Organiser les dépenses par détaillant
   const expensesByRetailer = retailers?.map(retailer => ({
     retailer,
     expenses: expenses?.filter(expense => expense.retailer_id === retailer.id) || []
   }));
   
-  // Définition des variants pour les animations
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -77,19 +73,14 @@ const Expenses = memo(function Expenses() {
         variants={containerVariants}
       >
         <motion.div variants={itemVariants} className="space-y-4">
-          {/* En-tête de la page avec le titre et le switch pour changer de vue */}
           <ExpensesHeader 
             viewMode={viewMode} 
             setViewMode={setViewMode} 
             onExpenseAdded={handleExpenseUpdated} 
           />
-
-          {/* Bannière pour créer un nouveau détaillant si nécessaire */}
           <motion.div variants={itemVariants}>
             <CreateRetailerBanner />
           </motion.div>
-
-          {/* Carte de total annuel */}
           <motion.div variants={itemVariants} className="mt-8 mb-8">
             <YearlyTotalCard 
               key={`total-card-${currentYearTotal}`}
@@ -99,8 +90,22 @@ const Expenses = memo(function Expenses() {
               viewMode={viewMode}
             />
           </motion.div>
-          
-          {/* Grille des cartes de détaillants */}
+          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Card className="bg-card">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">
+                  Évolution des dépenses ({viewMode === 'monthly' ? 'mensuelles' : 'annuelles'})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ExpensesChart expenses={expenses || []} viewMode={viewMode} />
+              </CardContent>
+            </Card>
+            <RetailersExpensesChart 
+              expenses={expenses || []} 
+              retailers={retailers || []} 
+            />
+          </motion.div>
           <RetailersGrid 
             expensesByRetailer={expensesByRetailer || []} 
             onExpenseUpdated={handleExpenseUpdated}
