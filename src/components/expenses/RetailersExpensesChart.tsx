@@ -149,7 +149,8 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
             if (!totalByRetailer[key]) {
               totalByRetailer[key] = 0;
             }
-            totalByRetailer[key] += value as number;
+            // Conversion explicite en nombre avant l'addition
+            totalByRetailer[key] += Number(value);
           }
         });
       });
