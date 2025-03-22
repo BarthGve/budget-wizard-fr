@@ -75,11 +75,12 @@ export const VehicleGeneralInfo = ({ vehicle }: VehicleGeneralInfoProps) => {
           : "0 4px 20px -4px rgba(100, 100, 100, 0.15), 0 1px 3px -1px rgba(0, 0, 0, 0.05)"
       }}>
         <CardHeader className={cn(
-          "pb-2 ",
-         
+          "pb-2 border-b",
+          "bg-gradient-to-r from-gray-50 to-gray-100/50",
+          "dark:bg-gradient-to-r dark:from-slate-900 dark:to-gray-800/40",
           "border-gray-200 dark:border-gray-800"
         )}>
-          <CardTitle className="text-xl flex items-center gap-2 ">
+          <CardTitle className="text-xl flex items-center gap-2 text-gray-800 dark:text-gray-100">
             <div className="p-1.5 rounded-md bg-gray-200/80 dark:bg-gray-700/50">
               <Info className="h-5 w-5 text-gray-600 dark:text-gray-300" />
             </div>
