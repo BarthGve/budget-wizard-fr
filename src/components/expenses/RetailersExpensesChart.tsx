@@ -128,7 +128,9 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
         }))
         .sort((a, b) => {
           // Conversion explicite des chaînes en nombres pour la comparaison
-          return parseInt(a.year, 10) - parseInt(b.year, 10);
+          const yearA = parseInt(a.year, 10);
+          const yearB = parseInt(b.year, 10);
+          return yearA - yearB;
         });
     }
     
@@ -195,7 +197,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
   if ((viewMode === 'monthly' && retailerExpenses.length === 0) || 
       (viewMode === 'yearly' && yearlyData.length === 0)) {
     return (
-      <Card className="col-span-full bg-card">
+      <Card className="col-span-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium">
             {viewMode === 'monthly' 
@@ -217,15 +219,18 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
   }
 
   return (
-    <Card className="col-span-full bg-card">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium">
+    <Card className="overflow-hidden transition-all duration-200 relative border shadow-sm h-full col-span-full">
+      {/* Fond radial gradient */}
+      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent" />
+      
+      <CardHeader className="pb-2 pt-6 relative z-10">
+        <CardTitle className="text-lg font-semibold text-blue-700 dark:text-blue-300">
           {viewMode === 'monthly' 
             ? "Dépenses par enseigne (mois en cours)" 
             : "Dépenses annuelles par enseigne"}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={dataVersion}
