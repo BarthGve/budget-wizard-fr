@@ -29,7 +29,7 @@ export const useVehicleExpenseStats = (expenses: VehicleExpense[] | undefined) =
       return expenseYear === currentYear;
     });
 
-    // Calculer les statistiques pour toutes les dépenses
+    // Calculer les statistiques pour toutes les dépenses (incluant les véhicules vendus)
     const fuelExpenses = expenses.filter(expense => expense.expense_type === 'carburant');
     const totalFuelExpense = fuelExpenses.reduce((sum, expense) => sum + expense.amount, 0);
     const totalFuelVolume = fuelExpenses.reduce((sum, expense) => sum + (expense.fuel_volume || 0), 0);

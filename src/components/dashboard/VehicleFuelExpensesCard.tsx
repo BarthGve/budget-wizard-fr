@@ -57,6 +57,9 @@ export const VehicleFuelExpensesCard = ({
         <span>Pleins:</span>
         <span className="font-medium">{fuelExpensesCount}</span>
       </div>
+      <div className="text-xs text-muted-foreground mt-1">
+        Inclut les véhicules actifs et vendus
+      </div>
     </div>
   ) : null;
 

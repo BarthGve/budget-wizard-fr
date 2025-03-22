@@ -65,11 +65,12 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
     queryFn: async () => {
       if (!currentUser?.id) return { total: 0, count: 0, volume: 0 };
       
+      // Modification pour inclure les véhicules vendus (status: 'vendu')
       const { data, error } = await supabase
         .from("vehicle_expenses")
         .select("amount, fuel_volume, vehicles!inner(profile_id, status)")
         .eq("vehicles.profile_id", currentUser.id)
-        .eq("vehicles.status", "actif")
+        .in("vehicles.status", ["actif", "vendu"]) // Inclure les véhicules vendus
         .eq("expense_type", "carburant")
         .gte("date", firstDayStr)
         .lte("date", lastDayStr);
@@ -82,7 +83,7 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
       const total = data.reduce((sum, expense) => sum + Number(expense.amount), 0);
       const volume = data.reduce((sum, expense) => sum + Number(expense.fuel_volume || 0), 0);
       
-      console.log(`Total dépenses carburant ${periodLabel}: ${total}€ (${data.length} dépenses)`);
+      console.log(`Total dépenses carburant ${periodLabel} (véhicules actifs et vendus): ${total}€ (${data.length} dépenses)`);
       
       return { 
         total, 
