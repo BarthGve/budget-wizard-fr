@@ -126,7 +126,10 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
           year,
           ...retailers
         }))
-        .sort((a, b) => a.year.localeCompare(b.year));
+        .sort((a, b) => {
+          // Conversion explicite des chaînes en nombres pour la comparaison
+          return parseInt(a.year, 10) - parseInt(b.year, 10);
+        });
     }
     
     return [];
