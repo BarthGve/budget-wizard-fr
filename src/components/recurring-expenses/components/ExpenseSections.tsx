@@ -52,6 +52,7 @@ export const ExpenseSections = ({
           yearlyTotal={yearlyTotal}
           onPeriodSelect={setSelectedPeriod}
           selectedPeriod={selectedPeriod}
+          recurringExpenses={recurringExpenses} // Passer toutes les charges récurrentes
         />
       </div>
 
