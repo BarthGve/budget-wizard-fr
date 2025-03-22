@@ -5,7 +5,6 @@ import { useTheme } from "next-themes";
 import { ChartContainer } from "@/components/ui/chart";
 import { formatCurrency } from "@/utils/format";
 import { chartConfig } from "../config/chartConfig";
-import { ExpensesChartHeader } from "./ExpensesChartHeader";
 
 interface ExpensesBarChartRendererProps {
   chartData: any[];
@@ -60,15 +59,6 @@ export const ExpensesBarChartRenderer = ({
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="mb-3">
-        <ExpensesChartHeader 
-          title={chartTitle}
-          description={chartDescription}
-          showMultiYear={showMultiYear}
-          onToggleView={onToggleView}
-        />
-      </div>
-      
       <ChartContainer 
         className="h-[350px] w-full p-0"
         config={chartConfig}
@@ -98,7 +88,7 @@ export const ExpensesBarChartRenderer = ({
             <Tooltip 
               wrapperStyle={{ 
                 borderRadius: "8px", 
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
                 border: isDarkMode ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(0, 0, 0, 0.05)"
               }}
               contentStyle={{ 
