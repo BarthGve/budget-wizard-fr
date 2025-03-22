@@ -1,5 +1,5 @@
 
-import { RecurringExpenseTableProps, RecurringExpense } from "../types";
+import { RecurringExpenseTableProps } from "../types";
 import { motion } from "framer-motion";
 import { useExpenseTable } from "../hooks/useExpenseTable";
 import { EmptyExpenseState } from "./EmptyExpenseState";
