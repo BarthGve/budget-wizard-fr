@@ -8,6 +8,7 @@ import { fr } from "date-fns/locale";
 import { formatCurrency } from "@/utils/format";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 interface RetailerExpense {
   retailerId: string;
@@ -220,12 +221,31 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
   }
 
   return (
-    <Card className="overflow-hidden transition-all duration-200 relative border shadow-sm h-full col-span-full">
+    <Card className={cn(
+      "overflow-hidden transition-all duration-200 relative h-full",
+      "border shadow-sm hover:shadow-md",
+      // Light mode
+      "bg-white border-blue-100",
+      // Dark mode
+      "dark:bg-gray-800/90 dark:hover:bg-blue-900/20 dark:border-blue-800/50"
+    )}>
       {/* Fond radial gradient */}
-      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent" />
+      <div className={cn(
+        "absolute inset-0 opacity-5",
+        // Light mode
+        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+        // Dark mode
+        "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+      )} />
       
       <CardHeader className="pb-2 pt-6 relative z-10">
-        <CardTitle className="text-lg font-semibold text-blue-700 dark:text-blue-300">
+        <CardTitle className={cn(
+          "text-lg font-semibold",
+          // Light mode
+          "text-blue-700",
+          // Dark mode
+          "dark:text-blue-300"
+        )}>
           {viewMode === 'monthly' 
             ? "Dépenses par enseigne (mois en cours)" 
             : "Dépenses annuelles par enseigne"}
