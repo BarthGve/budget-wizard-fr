@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
@@ -11,8 +12,6 @@ import { RetailersGrid } from "@/components/expenses/RetailersGrid";
 import { useExpensesData } from "@/hooks/useExpensesData";
 import { useYearlyTotals } from "@/hooks/useYearlyTotals";
 import { RetailersExpensesChart } from "@/components/expenses/RetailersExpensesChart";
-import { ExpensesChart } from "@/components/expenses/ExpensesChart";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Expenses = memo(function Expenses() {
   const { retailers } = useRetailers();
@@ -90,20 +89,11 @@ const Expenses = memo(function Expenses() {
               viewMode={viewMode}
             />
           </motion.div>
-          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <Card className="bg-card">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">
-                  Évolution des dépenses ({viewMode === 'monthly' ? 'mensuelles' : 'annuelles'})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ExpensesChart expenses={expenses || []} viewMode={viewMode} />
-              </CardContent>
-            </Card>
+          <motion.div variants={itemVariants} className="mb-8">
             <RetailersExpensesChart 
               expenses={expenses || []} 
               retailers={retailers || []} 
+              viewMode={viewMode}
             />
           </motion.div>
           <RetailersGrid 
