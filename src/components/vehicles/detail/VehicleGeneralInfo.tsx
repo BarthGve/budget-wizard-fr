@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Vehicle, FUEL_TYPES } from "@/types/vehicle";
 import { format } from "date-fns";
@@ -67,13 +68,22 @@ export const VehicleGeneralInfo = ({ vehicle }: VehicleGeneralInfoProps) => {
       <Card className={cn(
         "border overflow-hidden transform-gpu backface-hidden",
         "bg-white border-gray-200 hover:border-gray-300",
-        "dark:bg-slate-900 dark:border-gray-800 dark:hover:border-gray-700"
+        "dark:bg-slate-900 dark:border-gray-800 dark:hover:border-gray-700",
+        // Ajouter une classe conditionnelle pour les véhicules vendus
+        vehicle.status === 'vendu' && "border-gray-300 dark:border-gray-700 relative"
       )}
       style={{
         boxShadow: isDarkMode
           ? "0 4px 20px -4px rgba(0, 0, 0, 0.2), 0 1px 3px -1px rgba(0, 0, 0, 0.2)"
           : "0 4px 20px -4px rgba(100, 100, 100, 0.15), 0 1px 3px -1px rgba(0, 0, 0, 0.05)"
       }}>
+        {/* Overlay pour les véhicules vendus */}
+        {vehicle.status === 'vendu' && (
+          <div className="absolute top-0 right-0 z-10 bg-gray-500/10 dark:bg-gray-700/20 text-gray-600 dark:text-gray-400 px-3 py-1 text-xs font-medium rounded-bl-md">
+            Véhicule vendu
+          </div>
+        )}
+        
         <CardHeader className={cn(
           "pb-2 border-b",
           "bg-gradient-to-r from-gray-50 to-gray-100/50",

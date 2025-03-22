@@ -8,10 +8,12 @@ import { VehicleExpenseStats } from "@/components/vehicles/expenses/VehicleExpen
 import { motion } from "framer-motion";
 import { VehicleMonthlyExpensesChart } from "./expenses-chart/VehicleMonthlyExpensesChart";
 import { Button } from "@/components/ui/button";
-import { CalendarClock } from "lucide-react";
+import { AlertCircle, CalendarClock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 interface VehicleDetailTabsProps {
   vehicle: Vehicle;
@@ -24,6 +26,9 @@ export const VehicleDetailTabs = ({
 }: VehicleDetailTabsProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  
+  // Vérifier si le véhicule est vendu
+  const isVehicleSold = vehicle.status === 'vendu';
 
   // Animation variants
   const containerVariants = {
@@ -109,6 +114,18 @@ export const VehicleDetailTabs = ({
             <VehiclePhotoCard vehicle={vehicle} />
           </motion.div>
           
+          {isVehicleSold && canAccessExpenses && (
+            <motion.div variants={itemVariants}>
+              <Alert variant="default" className="bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700">
+                <AlertCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                <AlertTitle className="text-gray-800 dark:text-gray-200">Véhicule vendu</AlertTitle>
+                <AlertDescription className="text-gray-600 dark:text-gray-400">
+                  Ce véhicule est marqué comme vendu. Les données sont disponibles en lecture seule et aucune nouvelle dépense ne peut être ajoutée.
+                </AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+          
           {canAccessExpenses && (
             <>
               <motion.div variants={itemVariants}>
@@ -117,17 +134,19 @@ export const VehicleDetailTabs = ({
               <motion.div variants={itemVariants}>
                 <VehicleExpenseStats vehicleId={vehicle.id} />
               </motion.div>
-              <motion.div variants={itemVariants} className="flex justify-end">
-                <Button 
-                  onClick={handleGenerateExpensesFromRecurring}
-                  className="gap-2"
-                  variant="outline"
-                  disabled={isGenerating}
-                >
-                  <CalendarClock className="h-4 w-4" />
-                  {isGenerating ? "Génération en cours..." : "Générer les dépenses des charges récurrentes"}
-                </Button>
-              </motion.div>
+              {!isVehicleSold && (
+                <motion.div variants={itemVariants} className="flex justify-end">
+                  <Button 
+                    onClick={handleGenerateExpensesFromRecurring}
+                    className="gap-2"
+                    variant="outline"
+                    disabled={isGenerating}
+                  >
+                    <CalendarClock className="h-4 w-4" />
+                    {isGenerating ? "Génération en cours..." : "Générer les dépenses des charges récurrentes"}
+                  </Button>
+                </motion.div>
+              )}
             </>
           )}
         </motion.div>

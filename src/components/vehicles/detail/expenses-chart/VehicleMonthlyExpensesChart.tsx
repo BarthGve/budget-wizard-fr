@@ -8,6 +8,7 @@ import { BarChart3, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { ExpensesChartContent } from "./components/ExpensesChartContent";
+import { useVehicleDetail } from "@/hooks/useVehicleDetail";
 
 interface VehicleMonthlyExpensesChartProps {
   vehicleId: string;
@@ -18,6 +19,10 @@ export const VehicleMonthlyExpensesChart = ({
 }: VehicleMonthlyExpensesChartProps) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  const { vehicle } = useVehicleDetail(vehicleId);
+  
+  // Vérifier si le véhicule est vendu
+  const isVehicleSold = vehicle?.status === 'vendu';
 
   return (
     <Card className={cn(
@@ -26,7 +31,9 @@ export const VehicleMonthlyExpensesChart = ({
       // Light mode
       "bg-white border-gray-200",
       // Dark mode
-      "dark:bg-gray-800/90 dark:border-gray-700/50 dark:shadow-gray-900/10"
+      "dark:bg-gray-800/90 dark:border-gray-700/50 dark:shadow-gray-900/10",
+      // Style spécifique pour les véhicules vendus
+      isVehicleSold && "border-gray-300 dark:border-gray-700"
     )}
     style={{
       boxShadow: isDarkMode
@@ -69,12 +76,12 @@ export const VehicleMonthlyExpensesChart = ({
           </CardTitle>
         </div>
         <div className="flex gap-2">
-          <AddRecurringExpenseDialog vehicleId={vehicleId} />
+          {!isVehicleSold && <AddRecurringExpenseDialog vehicleId={vehicleId} />}
         </div>
       </CardHeader>
       
       {/* Nous utilisons le composant ExpensesChartContent qui contient VehicleExpensesBarChart */}
-      <ExpensesChartContent vehicleId={vehicleId} />
+      <ExpensesChartContent vehicleId={vehicleId} isVehicleSold={isVehicleSold} />
     </Card>
   );
 };
