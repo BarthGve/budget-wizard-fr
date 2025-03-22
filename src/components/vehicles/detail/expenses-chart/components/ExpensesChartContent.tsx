@@ -15,7 +15,7 @@ interface ExpensesChartContentProps {
 
 export const ExpensesChartContent = ({ vehicleId, isVehicleSold = false }: ExpensesChartContentProps) => {
   const [showMultiYear, setShowMultiYear] = useState<boolean>(false);
-  const { expenses, chartData, isLoading, error } = useExpensesChartData(vehicleId, showMultiYear);
+  const { expenses, chartData, isLoading, currentYear, chartTitle, chartDescription } = useExpensesChartData(vehicleId, showMultiYear);
 
   // Fonction pour basculer entre les vues (5 ans ou année en cours)
   const handleToggleView = () => {
@@ -49,7 +49,15 @@ export const ExpensesChartContent = ({ vehicleId, isVehicleSold = false }: Expen
           ) : !chartData || chartData.length === 0 ? (
             <ExpensesChartEmpty />
           ) : (
-            <ExpensesBarChartRenderer data={chartData} showMultiYear={showMultiYear} />
+            <ExpensesBarChartRenderer 
+              chartData={chartData}
+              currentYear={currentYear}
+              dataVersion={1}
+              showMultiYear={showMultiYear}
+              onToggleView={handleToggleView}
+              chartTitle={chartTitle}
+              chartDescription={chartDescription}
+            />
           )}
         </div>
       </CardContent>

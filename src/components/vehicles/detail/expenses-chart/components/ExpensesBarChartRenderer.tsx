@@ -2,7 +2,7 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 import { formatCurrency } from "@/utils/format";
 import { chartConfig } from "../config/chartConfig";
 import { ExpensesChartHeader } from "./ExpensesChartHeader";
