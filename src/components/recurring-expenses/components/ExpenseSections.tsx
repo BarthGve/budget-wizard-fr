@@ -67,7 +67,8 @@ export const ExpenseSections = ({
       >
         <RecurringExpenseTable 
           expenses={filteredExpenses} 
-          onDeleteExpense={onDeleteExpense} 
+          onDeleteExpense={onDeleteExpense}
+          allExpenses={recurringExpenses} // Transmettre toutes les charges non filtrées
         />
       </motion.div>
     </>

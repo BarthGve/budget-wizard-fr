@@ -11,6 +11,7 @@ export interface TableDialogProps {
   selectedExpense: RecurringExpense | null;
   showEditDialog: boolean;
   showDetailsDialog: boolean;
+  allExpenses?: RecurringExpense[]; // Ajout de la liste complète des charges
   setExpenseToDelete: (expense: RecurringExpense | null) => void;
   setShowEditDialog: (show: boolean) => void;
   setShowDetailsDialog: (show: boolean) => void;
@@ -22,17 +23,38 @@ export const TableDialogs = ({
   selectedExpense,
   showEditDialog,
   showDetailsDialog,
+  allExpenses = [],
   setExpenseToDelete,
   setShowEditDialog,
   setShowDetailsDialog,
   onDeleteExpense
 }: TableDialogProps) => {
+  // Fonction pour obtenir les détails complets d'une charge
+  // en utilisant la liste complète des charges si disponible
+  const getCompleteExpenseDetails = (expense: RecurringExpense | null) => {
+    if (!expense) return null;
+    
+    // Si nous avons la liste complète, essayons de trouver une version plus complète de la charge
+    if (allExpenses && allExpenses.length > 0) {
+      const completeExpense = allExpenses.find(e => e.id === expense.id);
+      if (completeExpense) {
+        return completeExpense;
+      }
+    }
+    
+    // Sinon retourner la charge telle quelle
+    return expense;
+  };
+
   const handleConfirmDelete = () => {
     if (expenseToDelete) {
       onDeleteExpense(expenseToDelete.id);
       setExpenseToDelete(null);
     }
   };
+
+  // Obtenir les détails complets pour la charge sélectionnée
+  const expenseWithFullDetails = getCompleteExpenseDetails(selectedExpense);
 
   return (
     <>
@@ -47,14 +69,14 @@ export const TableDialogs = ({
 
       {/* Dialog pour éditer une charge récurrente */}
       <RecurringExpenseDialog
-        expense={selectedExpense || undefined}
+        expense={expenseWithFullDetails || undefined}
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
       />
 
       {/* Dialog pour afficher les détails */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        {selectedExpense && <RecurringExpenseDetails expense={selectedExpense} />}
+        {expenseWithFullDetails && <RecurringExpenseDetails expense={expenseWithFullDetails} />}
       </Dialog>
     </>
   );

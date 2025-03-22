@@ -79,6 +79,7 @@ export const useExpenseTable = (expenses: RecurringExpense[], onDeleteExpense: (
     filteredExpenses,
     paginatedExpenses,
     totalPages,
+    allExpenses: expenses, // Exposer toutes les charges d'origine
     
     // Setters
     setSearchTerm,

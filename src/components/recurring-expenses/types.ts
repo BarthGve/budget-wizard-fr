@@ -18,6 +18,7 @@ export interface RecurringExpense {
 export interface RecurringExpenseTableProps {
   expenses: RecurringExpense[];
   onDeleteExpense: (id: string) => Promise<void>;
+  allExpenses?: RecurringExpense[]; // Ajout de cette propriété
 }
 
 export const periodicityLabels = {

@@ -1,4 +1,3 @@
-
 import { TableHeader } from "./TableHeader";
 import { ExpenseTableRows } from "./ExpenseTableRows";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -34,6 +33,7 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
     uniqueCategories,
     filteredExpenses,
     paginatedExpenses,
+    allExpenses,
     setSearchTerm,
     setCategoryFilter,
     setCurrentPage,
@@ -185,6 +185,7 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
         setShowEditDialog={setShowEditDialog}
         setShowDetailsDialog={setShowDetailsDialog}
         onDeleteExpense={onDeleteExpense}
+        allExpenses={allExpenses}
       />
     </Card>
   );
