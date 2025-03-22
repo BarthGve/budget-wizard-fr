@@ -8,17 +8,11 @@ import { ExpensesBarChartRenderer } from "./components/ExpensesBarChartRenderer"
 interface VehicleExpensesBarChartProps {
   vehicleId: string;
   isVehicleSold?: boolean;
-  showMultiYear?: boolean;
-  onToggleView?: () => void;
 }
 
-export const VehicleExpensesBarChart = ({ 
-  vehicleId, 
-  isVehicleSold = false,
-  showMultiYear = false,
-  onToggleView
-}: VehicleExpensesBarChartProps) => {
+export const VehicleExpensesBarChart = ({ vehicleId, isVehicleSold = false }: VehicleExpensesBarChartProps) => {
   const [dataVersion, setDataVersion] = useState(0);
+  const [showMultiYear, setShowMultiYear] = useState(false);
   
   // Utilisez le hook avec le paramètre showMultiYear
   const { expenses, isLoading, chartData, currentYear, chartTitle, chartDescription } = useExpensesChartData(vehicleId, showMultiYear);
@@ -38,13 +32,20 @@ export const VehicleExpensesBarChart = ({
     return <ExpensesChartEmpty />;
   }
 
+  // Fonction pour basculer entre les vues (5 ans ou année en cours)
+  const handleToggleView = () => {
+    if (!isVehicleSold) {
+      setShowMultiYear(prev => !prev);
+    }
+  };
+
   return (
     <ExpensesBarChartRenderer 
       chartData={chartData} 
       currentYear={currentYear} 
       dataVersion={dataVersion}
       showMultiYear={showMultiYear}
-      onToggleView={onToggleView || (() => {})}
+      onToggleView={handleToggleView}
       chartTitle={chartTitle}
       chartDescription={chartDescription}
     />
