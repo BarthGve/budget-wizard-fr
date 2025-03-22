@@ -80,22 +80,30 @@ const Expenses = memo(function Expenses() {
           <motion.div variants={itemVariants}>
             <CreateRetailerBanner />
           </motion.div>
-          <motion.div variants={itemVariants} className="mt-8 mb-8">
-            <YearlyTotalCard 
-              key={`total-card-${currentYearTotal}`}
-              currentYearTotal={currentYearTotal} 
-              previousYearTotal={lastYearTotal} 
-              expenses={expenses || []} 
-              viewMode={viewMode}
-            />
+          
+          {/* Disposition avec flex pour mettre les cartes côte à côte */}
+          <motion.div variants={itemVariants} className="flex flex-col lg:flex-row gap-6 mt-8 mb-8">
+            {/* Carte de total des dépenses (1/3) */}
+            <motion.div variants={itemVariants} className="w-full lg:w-1/3">
+              <YearlyTotalCard 
+                key={`total-card-${currentYearTotal}`}
+                currentYearTotal={currentYearTotal} 
+                previousYearTotal={lastYearTotal} 
+                expenses={expenses || []} 
+                viewMode={viewMode}
+              />
+            </motion.div>
+            
+            {/* Graphique des dépenses par enseigne (2/3) */}
+            <motion.div variants={itemVariants} className="w-full lg:w-2/3">
+              <RetailersExpensesChart 
+                expenses={expenses || []} 
+                retailers={retailers || []} 
+                viewMode={viewMode}
+              />
+            </motion.div>
           </motion.div>
-          <motion.div variants={itemVariants} className="mb-8">
-            <RetailersExpensesChart 
-              expenses={expenses || []} 
-              retailers={retailers || []} 
-              viewMode={viewMode}
-            />
-          </motion.div>
+          
           <RetailersGrid 
             expensesByRetailer={expensesByRetailer || []} 
             onExpenseUpdated={handleExpenseUpdated}
