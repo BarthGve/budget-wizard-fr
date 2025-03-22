@@ -1,11 +1,10 @@
-
 import { motion } from "framer-motion";
-import { RetailerCard } from "@/components/expenses/RetailerCard";
-import { MiniRetailerCard } from "@/components/expenses/MiniRetailerCard";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LayoutGrid, LayoutList } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RetailerCard } from "@/components/expenses/retailer-card/RetailerCard";
+import { MiniRetailerCard } from "@/components/expenses/MiniRetailerCard";
 
 interface RetailersGridProps {
   expensesByRetailer: Array<{
@@ -28,7 +27,6 @@ interface RetailersGridProps {
 export const RetailersGrid = ({ expensesByRetailer, onExpenseUpdated, viewMode }: RetailersGridProps) => {
   const [displayMode, setDisplayMode] = useState<'standard' | 'mini'>('standard');
   
-  // Définition des variants pour les animations
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
