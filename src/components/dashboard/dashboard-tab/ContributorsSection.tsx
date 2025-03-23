@@ -2,6 +2,8 @@
 import { memo, useMemo } from "react";
 import { motion } from "framer-motion";
 import { DashboardContributors } from "../dashboard-content/DashboardContributors";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ContributorsMobileCard } from "../contributors-mobile/ContributorsMobileCard";
 
 const MemoizedDashboardContributors = memo(DashboardContributors);
 
@@ -42,6 +44,8 @@ export const ContributorsSection = ({
   expenses,
   totalMensualites,
 }: ContributorsSectionProps) => {
+  const isMobile = useIsMobile();
+  
   // Afficher la section des contributeurs même s'il n'y en a qu'un
   // Permet de voir immédiatement l'ajout d'un nouveau contributeur
   const showContributorsSection = useMemo(() => {
@@ -52,11 +56,15 @@ export const ContributorsSection = ({
 
   return (
     <motion.div variants={itemVariants}>
-      <MemoizedDashboardContributors 
-        contributors={contributors}
-        expenses={expenses}
-        totalMensualites={totalMensualites}
-      />
+      {isMobile ? (
+        <ContributorsMobileCard contributors={contributors} />
+      ) : (
+        <MemoizedDashboardContributors 
+          contributors={contributors}
+          expenses={expenses}
+          totalMensualites={totalMensualites}
+        />
+      )}
     </motion.div>
   );
 };
