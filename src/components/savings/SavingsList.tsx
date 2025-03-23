@@ -8,6 +8,8 @@ import { DeleteSavingDialog } from "./DeleteSavingDialog";
 import { EmptySavings } from "./EmptySavings";
 import { deleteSavingAndProject } from "./ProjectWizard/utils/projectUtils";
 import { cn } from "@/lib/utils";
+import {PiggyBank} from "lucide-react"
+
 import { useTheme } from "next-themes";
 
 interface SavingsListProps {
@@ -173,24 +175,7 @@ export const SavingsList = ({
                     "dark:bg-gradient-to-br dark:from-teal-900/40 dark:to-teal-800/30"
                   )}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={cn(
-                      "h-6 w-6",
-                      "text-teal-600",
-                      "dark:text-teal-400"
-                    )}
-                  >
-                    <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
-                  </svg>
+                 <PiggyBank/>
                 </div>
                 <h3
                   className={cn(
