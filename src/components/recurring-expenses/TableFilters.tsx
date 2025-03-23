@@ -60,7 +60,7 @@ export const TableFilters = ({
           <SelectValue placeholder="Toutes les catégories" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Toutes les catégories</SelectItem>
+          <SelectItem value="all-categories">Toutes les catégories</SelectItem>
           {uniqueCategories.map(category => (
             <SelectItem key={category} value={category}>
               {category}
