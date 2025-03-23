@@ -12,6 +12,7 @@ interface ProfileAvatarUploadProps {
   previewUrl: string | null;
   setPreviewUrl: (url: string | null) => void;
   setAvatarFile: (file: File | null) => void;
+  isMobile?: boolean;
 }
 
 export const ProfileAvatarUpload = ({
@@ -19,6 +20,7 @@ export const ProfileAvatarUpload = ({
   previewUrl,
   setPreviewUrl,
   setAvatarFile,
+  isMobile = false
 }: ProfileAvatarUploadProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -41,16 +43,16 @@ export const ProfileAvatarUpload = ({
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <Avatar className="h-24 w-24">
+      <Avatar className={isMobile ? "h-32 w-32" : "h-24 w-24"}>
         <AvatarImage
           src={previewUrl || profile?.avatar_url || undefined}
           alt={profile?.full_name || "Avatar"}
         />
-        <AvatarFallback>
+        <AvatarFallback className={isMobile ? "text-2xl" : ""}>
           {(profile?.full_name || "?")[0]?.toUpperCase()}
         </AvatarFallback>
       </Avatar>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center">
         <Input
           type="file"
           accept="image/*"
@@ -62,8 +64,9 @@ export const ProfileAvatarUpload = ({
           type="button"
           variant="outline"
           onClick={() => document.getElementById("avatar-upload")?.click()}
+          className={isMobile ? "h-12 text-base" : ""}
         >
-          <Upload className="h-4 w-4 mr-2" />
+          <Upload className={isMobile ? "h-5 w-5 mr-2" : "h-4 w-4 mr-2"} />
           Changer l'avatar
         </Button>
       </div>
