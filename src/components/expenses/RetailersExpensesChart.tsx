@@ -1,5 +1,5 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Expense } from "@/types/expense";
 import { useState, useMemo, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Cell } from "recharts";
@@ -30,6 +30,8 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
   const [dataVersion, setDataVersion] = useState(0);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  // État pour suivre l'index de la barre active (survolée)
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   // Mettre à jour la version des données quand les dépenses ou le mode de visualisation changent
   useEffect(() => {
@@ -39,23 +41,22 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
   // Configurer les couleurs en fonction du thème
   const gridColor = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
   const axisColor = isDarkMode ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground))";
-  const barColor = "#3B82F6"; // Couleur principale bleue
-
-  // Générer une palette de couleurs pour les barres empilées
+  
+  // Générer une palette de couleurs pour les barres
   const getBarColor = (index: number) => {
-    const colors = [
-      "#3B82F6", // Bleu principal
-      "#60A5FA", // Bleu clair
-      "#93C5FD", // Bleu très clair
-      "#1D4ED8", // Bleu foncé
-      "#2563EB", // Bleu moyen
-      "#DBEAFE", // Bleu pâle
-      "#06B6D4", // Cyan
-      "#0284C7", // Bleu-cyan foncé
-      "#0EA5E9", // Bleu-cyan clair
-      "#38BDF8", // Bleu ciel
-    ];
-    return colors[index % colors.length];
+    const baseColors = {
+      light: {
+        active: '#2563EB', // blue-600
+        inactive: '#60A5FA' // blue-400
+      },
+      dark: {
+        active: '#3B82F6', // blue-500
+        inactive: '#93C5FD' // blue-300
+      }
+    };
+    
+    const colors = isDarkMode ? baseColors.dark : baseColors.light;
+    return index === activeIndex ? colors.active : colors.inactive;
   };
 
   // ---- MODE MENSUEL : DÉPENSES PAR ENSEIGNE DU MOIS COURANT ----
@@ -302,7 +303,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-1 pb-6 relative z-10">
+      <CardContent className="pt-1 pb-6 relative z-10 flex items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={dataVersion}
@@ -310,7 +311,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="w-full h-[250px]"
+            className="w-full h-[280px]"
           >
             <ResponsiveContainer width="100%" height="100%">
               {viewMode === 'monthly' ? (
@@ -321,29 +322,61 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                     total: item.totalAmount
                   }))}
                   layout="vertical"
-                  margin={{ top: 20, right: 30, left: 100, bottom: 5 }}
+                  margin={{ top: 15, right: 40, left: 20, bottom: 5 }}
+                  onMouseMove={(e) => {
+                    if (e.activeTooltipIndex !== undefined) {
+                      setActiveIndex(e.activeTooltipIndex);
+                    }
+                  }}
+                  onMouseLeave={() => setActiveIndex(null)}
                 >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke={gridColor} />
                   <XAxis 
                     type="number" 
-                    tickFormatter={(value) => formatCurrency(value)}
-                    stroke={axisColor}
-                    fontSize={12}
+                    tickFormatter={(value) => formatCurrency(value)} 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
                   />
                   <YAxis 
                     type="category" 
                     dataKey="name" 
-                    width={100} 
-                    stroke={axisColor}
-                    fontSize={12}
+                    width={120}
+                    tickFormatter={(value) => 
+                      value.length > 15 ? `${value.substring(0, 15)}...` : value
+                    }
+                    axisLine={false}
                     tickLine={false}
+                    tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
                   />
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip 
+                    formatter={(value) => [
+                      `${formatCurrency(Number(value))}`, 
+                      "Montant"
+                    ]}
+                    labelFormatter={(label) => `Enseigne: ${label}`}
+                    contentStyle={{
+                      backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                      border: isDarkMode ? '1px solid #1e40af' : '1px solid #bfdbfe',
+                      color: isDarkMode ? '#bfdbfe' : '#1e40af'
+                    }}
+                  />
                   <Bar 
                     dataKey="total" 
-                    fill={barColor} 
-                    radius={[0, 4, 4, 0]}
-                  />
+                    radius={[4, 4, 4, 4]}
+                    maxBarSize={30}
+                    animationDuration={1000}
+                    animationEasing="ease-out"
+                  >
+                    {retailerExpenses.map((_, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={getBarColor(index)}
+                        className="transition-all duration-200"
+                      />
+                    ))}
+                  </Bar>
                 </BarChart>
               ) : (
                 // Graphique à barres empilées pour les dépenses annuelles par enseigne
