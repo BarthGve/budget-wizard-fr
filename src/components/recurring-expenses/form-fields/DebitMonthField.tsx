@@ -21,7 +21,10 @@ export const DebitMonthField = ({ form }: DebitMonthFieldProps) => {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Mois du prélèvement</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value || ""}>
+          <Select 
+            onValueChange={field.onChange} 
+            value={field.value || undefined}
+          >
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le mois" />

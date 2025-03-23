@@ -82,6 +82,13 @@ export const usePagePermissions = () => {
       return canAccessPage('/expenses');
     }
 
+    // Special case for vehicle detail pages
+    if (pagePath.startsWith('/vehicles/')) {
+      console.log("Vehicle detail page detected, checking vehicles permissions");
+      // If user can access /vehicles, they can access all vehicle detail pages
+      return canAccessPage('/vehicles');
+    }
+
     const pagePermission = permissions.find(p => p.page_path === pagePath);
     if (!pagePermission) {
       console.log("No permission found for path:", pagePath);
@@ -109,8 +116,8 @@ export const usePagePermissions = () => {
     if (!pagePermission) return false; // Si aucune permission n'est définie, on refuse l'accès
 
     const featurePermission = pagePermission.feature_permissions?.[featureKey];
-    if (!featurePermission) return false; // Si aucune permission spécifique n'est définie, on refuse l'accès
-
+    if (!featurePermission) return true; // Si aucune permission spécifique n'est définie, on autorise par défaut
+ 
     return featurePermission.required_profile === 'basic' ||
            (featurePermission.required_profile === 'pro' && profile.profile_type === 'pro');
   };

@@ -11,10 +11,14 @@ import { ExpenseCategoriesSettings } from "@/components/settings/expense-categor
 import { User, Settings2, Bell } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { useLocation } from "react-router-dom"; 
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useWindowSize } from "@/hooks/use-window-size";
 
 const UserSettings = () => {
   const { profile, isAdmin } = usePagePermissions();
   const canAccessRetailers = !!profile;
+  const isMobile = useIsMobile();
+  const { width } = useWindowSize();
   
   // Utiliser useLocation pour obtenir les paramètres de l'URL
   const location = useLocation();
@@ -29,38 +33,66 @@ const UserSettings = () => {
     activeTab = 'notifications';
   }
 
-  console.log('Debug permissions:', {
-    profileType: profile?.profile_type,
-    finalAccess: canAccessRetailers,
-    isAdmin,
-    activeTab
-  });
-
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div>
-          <h2 className="font-bold tracking-tight text-3xl">Paramètres Du Compte</h2>
-          <p className="text-muted-foreground">
+      <div className="space-y-4 md:space-y-6">
+        <div className={isMobile ? "px-2" : ""}>
+          <h2 className={`font-bold tracking-tight ${isMobile ? "text-2xl" : "text-3xl"}`}>
+            Paramètres Du Compte
+          </h2>
+          <p className={`text-muted-foreground ${isMobile ? "text-sm" : ""}`}>
             Gérez vos paramètres de compte et préférences
           </p>
         </div>
-        <Tabs defaultValue={activeTab} className="space-y-6">
-          <TabsList className="bg-background border">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Profil
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
-              <Bell className="h-4 w-4" />
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings2 className="h-4 w-4" />
-              Paramétrage
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="profile" className="space-y-6">
+        <Tabs defaultValue={activeTab} className="space-y-4 md:space-y-6">
+          <div className="relative w-full">
+            <TabsList 
+              className={`bg-background border w-full ${
+                isMobile 
+                  ? "flex justify-between overflow-x-auto scrollbar-none p-0.5" 
+                  : ""
+              }`}
+              style={isMobile ? { scrollbarWidth: 'none' } : {}}
+            >
+              <TabsTrigger 
+                value="profile" 
+                className={`flex items-center gap-2 ${
+                  isMobile 
+                    ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                    : ""
+                }`}
+              >
+                <User className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+                {!isMobile ? "Profil" : ""}
+                <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Profil</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications" 
+                className={`flex items-center gap-2 ${
+                  isMobile 
+                    ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                    : ""
+                }`}
+              >
+                <Bell className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+                {!isMobile ? "Notifications" : ""}
+                <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Notif.</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="settings" 
+                className={`flex items-center gap-2 ${
+                  isMobile 
+                    ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                    : ""
+                }`}
+              >
+                <Settings2 className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+                {!isMobile ? "Paramétrage" : ""}
+                <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Param.</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value="profile" className={`space-y-4 md:space-y-6 ${isMobile ? "px-0" : ""}`}>
             <ProfileSettings />
             <SecuritySettings />
            {/*<PaymentSettings /> */} 

@@ -39,9 +39,9 @@ export const SavingsCard = memo(({
       <Card 
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
-          // Light mode styles
-          "bg-gradient-to-br from-background to-green-50 border border-green-100 shadow-md hover:shadow-xl",
-          // Dark mode styles - alignées avec les cards de graphiques
+          // Light mode styles - alignés avec les styles de ExpensesCard
+          "bg-gradient-to-br from-background to-green-50 border border-green-100 shadow-lg hover:shadow-xl",
+          // Dark mode styles - alignés exactement avec ExpensesCard
           "dark:bg-gradient-to-br dark:from-gray-900 dark:to-green-950 dark:border-green-900/30 dark:shadow-green-800/30 dark:hover:shadow-green-800/50"
         )}
         onClick={() => navigate("/savings")}

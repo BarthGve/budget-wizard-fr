@@ -5,14 +5,20 @@ import { Plus, CreditCard } from "lucide-react";
 import { CreditDialog } from "../CreditDialog";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const CreditsHeader = () => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  const isMobile = useIsMobile();
   
   return (
     <motion.div 
-      className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
+      className={cn(
+        "flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6",
+        // Sur mobile, ajout de marge en haut pour éviter les chevauchements
+        isMobile && "mt-14"
+      )}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ 

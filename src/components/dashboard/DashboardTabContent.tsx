@@ -1,12 +1,15 @@
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { DashboardCards } from "./dashboard-content/DashboardCards";
-import { DashboardCharts } from "./dashboard-content/DashboardCharts";
-import { DashboardContributors } from "./dashboard-content/DashboardContributors";
-import { Credit } from "@/components/credits/types";
-import { useMemo, memo } from "react";
+import { useExpenseStats } from "@/hooks/useExpenseStats";
+import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
+import { useCreditStats } from "./dashboard-tab/CreditStats";
+import { useContributorMapper } from "./dashboard-tab/ContributorMapper";
+import { useProfileFetcher } from "./dashboard-tab/ProfileFetcher";
+import { DashboardCardsSection } from "./dashboard-tab/DashboardCards";
+import { ExpenseStatsSection } from "./dashboard-tab/ExpenseStats";
+import { DashboardChartsSection } from "./dashboard-tab/DashboardChartsSection";
+import { ContributorsSection } from "./dashboard-tab/ContributorsSection";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -48,12 +51,11 @@ interface DashboardTabContentProps {
     name: string;
     amount: number;
   }>;
+  currentView: "monthly" | "yearly";
+  fuelExpensesTotal?: number;
+  fuelExpensesCount?: number;
+  fuelVolume?: number;
 }
-
-// Composants memoizés pour éviter les re-rendus inutiles
-const MemoizedDashboardCards = memo(DashboardCards);
-const MemoizedDashboardCharts = memo(DashboardCharts);
-const MemoizedDashboardContributors = memo(DashboardContributors);
 
 // Animation variants
 const containerVariants = {
@@ -78,72 +80,33 @@ export const DashboardTabContent = ({
   expenseShares,
   recurringExpenses,
   monthlySavings,
+  currentView,
+  fuelExpensesTotal = 0,
+  fuelExpensesCount = 0,
+  fuelVolume = 0,
 }: DashboardTabContentProps) => {
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  
+  // Utiliser useMediaQuery pour détecter les petits écrans (smartphones)
+  const isMobileScreen = useMediaQuery("(max-width: 768px)");
 
-  const { data: credits = [] } = useQuery({
-    queryKey: ["credits"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("credits")
-        .select("*");
-
-      if (error) {
-        console.error("Error fetching credits:", error);
-        return [];
-      }
-
-      return data as Credit[];
-    },
-    staleTime: 1000 * 30, // Réduit à 30 secondes pour plus de réactivité
-    refetchOnWindowFocus: true, // Activer le rechargement lors du focus
-    refetchOnReconnect: true, // Activer le rechargement lors de la reconnexion
-  });
-
-  // Memoize credit calculations to prevent recalculation on each render
-  const { activeCredits, repaidThisMonth, totalMensualites } = useMemo(() => {
-    const active = credits.filter(credit => credit.statut === 'actif') || [];
-    const repaid = credits.filter(credit => {
-      const repaymentDate = new Date(credit.date_derniere_mensualite);
-      return credit.statut === 'remboursé' && repaymentDate >= firstDayOfMonth;
-    }) || [];
-
-    const activeMensualites = active.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
-    const repaidThisMonthSum = repaid.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
-
-    return {
-      activeCredits: active,
-      repaidThisMonth: repaid, 
-      totalMensualites: activeMensualites + repaidThisMonthSum
-    };
-  }, [credits, firstDayOfMonth]);
-
-  // Memoize mapped contributors to avoid unnecessary recalculations
-  const mappedContributors = useMemo(() => {
-    return contributors.map(contributor => ({
-      ...contributor,
-      is_owner: contributor.is_owner ?? false, 
-      percentage_contribution: contributor.percentage_contribution ?? 0,
-      expenseShare: 0,
-      creditShare: 0
-    }));
-  }, [contributors]);
-
-  // Afficher la section des contributeurs même s'il n'y en a qu'un
-  // Permet de voir immédiatement l'ajout d'un nouveau contributeur
-  const showContributorsSection = useMemo(() => {
-    return mappedContributors.length > 0;
-  }, [mappedContributors.length]);
+  // Utiliser les hooks extraits
+  const { data: credits = [] } = useCreditsFetcher();
+  const { expensesTotal } = useExpenseStats(currentView);
+  const { totalMensualites } = useCreditStats({ credits, firstDayOfMonth });
+  const mappedContributors = useContributorMapper({ contributors });
+  const { data: profile } = useProfileFetcher();
 
   return (
     <motion.div 
-      className="space-y-8"
+      className="space-y-8 max-w-full"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      <MemoizedDashboardCards 
+      {/* Section des cartes principales */}
+      <DashboardCardsSection 
         revenue={revenue}
         expenses={expenses}
         totalMensualites={totalMensualites}
@@ -158,22 +121,34 @@ export const DashboardTabContent = ({
         }))}
       />
       
-      <MemoizedDashboardCharts 
-        expenses={expenses}
-        savings={savings}
-        totalMensualites={totalMensualites}
-        credits={credits}
-        recurringExpenses={recurringExpenses}
-        monthlySavings={monthlySavings}
+      {/* Section des statistiques de dépenses */}
+      <ExpenseStatsSection 
+        totalExpenses={expensesTotal}
+        viewMode={currentView}
+        totalFuelExpenses={fuelExpensesTotal}
+        fuelVolume={fuelVolume}
+        fuelExpensesCount={fuelExpensesCount}
+        profile={profile}
       />
       
-      {showContributorsSection && (
-        <MemoizedDashboardContributors 
-          contributors={mappedContributors}
+      {/* Section des graphiques - masquée sur mobile */}
+      {!isMobileScreen && (
+        <DashboardChartsSection 
           expenses={expenses}
+          savings={savings}
           totalMensualites={totalMensualites}
+          credits={credits}
+          recurringExpenses={recurringExpenses}
+          monthlySavings={monthlySavings}
         />
       )}
+      
+      {/* Section des contributeurs */}
+      <ContributorsSection 
+        contributors={mappedContributors}
+        expenses={expenses}
+        totalMensualites={totalMensualites}
+      />
     </motion.div>
   );
 };

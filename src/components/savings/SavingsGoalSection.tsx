@@ -1,6 +1,8 @@
+
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Définition des types des props
 interface SavingsGoalSectionProps {
@@ -21,32 +23,35 @@ export const SavingsGoalSection = ({
   totalMonthlyAmount,
   monthlySavings,
 }: SavingsGoalSectionProps) => {
+  const isMobile = useIsMobile();
+
   return (
     <motion.div
-      className="grid gap-4 mt-6 
+      className="grid gap-4 mt-6 w-full
                  grid-cols-1  // Mobile : une seule colonne (empilé verticalement)
-                 sm:grid-cols-2  // Sm (640px ou plus) : deux colonnes
                  lg:grid-cols-12" // LG (1024px ou plus) : disposition spécifique
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
-      whileHover={{ scale: 1.01 }}
+      whileHover={{ scale: isMobile ? 1 : 1.01 }} // Désactiver l'effet hover sur mobile
     >
-      {/* Section principale Goal (Responsive : prend plus d'espace sur lg) */}
-      <div className="col-span-12 sm:col-span-1 lg:col-span-8">
+      {/* Section principale Goal (prend toute la largeur sur mobile) */}
+      <div className="col-span-12 lg:col-span-8 w-full">
         <SavingsGoal
           savingsPercentage={profile?.savings_goal_percentage || 0}
           totalMonthlyAmount={totalMonthlyAmount}
         />
       </div>
 
-      {/* Section Pie Chart (Responsive : prend moins d'espace sur lg) */}
-      <div className="col-span-12 sm:col-span-1 lg:col-span-4">
-        <SavingsPieChart
-          monthlySavings={monthlySavings || []}
-          totalSavings={totalMonthlyAmount}
-        />
-      </div>
+      {/* Section Pie Chart (masquée sur mobile) */}
+      {!isMobile && (
+        <div className="col-span-12 lg:col-span-4 w-full">
+          <SavingsPieChart
+            monthlySavings={monthlySavings || []}
+            totalSavings={totalMonthlyAmount}
+          />
+        </div>
+      )}
     </motion.div>
   );
 };

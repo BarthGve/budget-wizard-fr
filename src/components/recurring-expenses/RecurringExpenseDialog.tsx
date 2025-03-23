@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { DialogTrigger } from "@/components/ui/dialog";
@@ -7,9 +8,7 @@ import { useTheme } from "next-themes";
 import { RecurringExpense } from "./types";
 import { DialogHeader } from "./dialog/DialogHeader";
 import { DialogContent as ExpenseDialogContent } from "./dialog/DialogContent";
-import { useDialogMeasurements } from "./dialog/useDialogMeasurements";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { X } from "lucide-react";
 
 interface RecurringExpenseDialogProps {
   expense?: RecurringExpense;
@@ -41,14 +40,8 @@ export function RecurringExpenseDialog({
   // Déterminer si nous sommes en mode édition
   const isEditMode = !!expense;
   
-  // Hook pour mesurer et déterminer si le défilement est nécessaire
-  const { needsScrolling } = useDialogMeasurements({ 
-    open, 
-    contentRef 
-  });
-
-  // Forcer le défilement sur tablette
-  const shouldEnableScroll = needsScrolling || isTablet;
+  // Forcer le défilement pour le formulaire avec les champs véhicule
+  const needsScrolling = true;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -67,7 +60,7 @@ export function RecurringExpenseDialog({
                 ? "sm:max-w-[85%] w-[85%]" 
                 : "w-[90vw]",
               // Hauteur maximum définie pour permettre le défilement
-              shouldEnableScroll ? "max-h-[95vh]" : ""
+              needsScrolling ? "max-h-[90vh]" : ""
             )}
             style={{
               boxShadow: isDarkMode
@@ -92,13 +85,11 @@ export function RecurringExpenseDialog({
               )} />
             </div>
 
-   
-            
             <div 
               ref={contentRef} 
               className={cn(
                 "relative z-10 flex flex-col",
-                shouldEnableScroll ? "max-h-[95vh] overflow-y-auto" : "",
+                needsScrolling ? "max-h-[90vh] overflow-y-auto" : "",
                 "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent",
                 "dark:scrollbar-thumb-gray-700"
               )}
@@ -116,7 +107,7 @@ export function RecurringExpenseDialog({
               <ExpenseDialogContent
                 expense={expense}
                 isEditMode={isEditMode}
-                needsScrolling={shouldEnableScroll}
+                needsScrolling={needsScrolling}
                 onOpenChange={onOpenChange}
                 className={cn(
                   isTablet ? "overflow-y-auto" : "",

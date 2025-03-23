@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,12 +42,10 @@ export function RetailerExpensesTable({
   const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  // Réinitialiser la page actuelle lorsque les dépenses changent
   useEffect(() => {
     setCurrentPage(1);
   }, [expenses?.length]);
 
-  // Couleurs selon le schéma choisi
   const colors = {
     blue: {
       highlight: "bg-blue-50 dark:bg-blue-950/30",
@@ -143,11 +140,10 @@ export function RetailerExpensesTable({
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(column);
-      setSortOrder('desc'); // Default to descending when changing columns
+      setSortOrder('desc');
     }
   };
 
-  // Tri des dépenses
   const sortedExpenses = [...expenses].sort((a, b) => {
     if (sortBy === 'date') {
       return sortOrder === 'asc' ? new Date(a.date).getTime() - new Date(b.date).getTime() : new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -260,7 +256,6 @@ export function RetailerExpensesTable({
     );
   }
 
-  // Calculate pagination
   const totalPages = itemsPerPage === -1 ? 1 : Math.ceil(sortedExpenses.length / itemsPerPage);
   const paginatedExpenses = itemsPerPage === -1 ? sortedExpenses : sortedExpenses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   
@@ -278,64 +273,64 @@ export function RetailerExpensesTable({
       )} />
       
       <CardHeader className="relative z-10">
-  <div className="flex justify-between items-start ">
-    <div>
-      <CardTitle className={cn(
-        "text-xl font-semibold flex items-center gap-2",
-        currentColors.cardHeaderText,
-        currentColors.cardHeaderTextDark
-      )}>
-        <div className={cn(
-          "p-1.5 rounded",
-          currentColors.iconBgLight,
-          currentColors.iconBgDark
-        )}>
-          <TableIcon className={cn(
-            "h-5 w-5",
-            currentColors.iconLight,
-            currentColors.iconDark
-          )} />
+        <div className="flex justify-between items-start ">
+          <div>
+            <CardTitle className={cn(
+              "text-xl font-semibold flex items-center gap-2",
+              currentColors.cardHeaderText,
+              currentColors.cardHeaderTextDark
+            )}>
+              <div className={cn(
+                "p-1.5 rounded",
+                currentColors.iconBgLight,
+                currentColors.iconBgDark
+              )}>
+                <TableIcon className={cn(
+                  "h-5 w-5",
+                  currentColors.iconLight,
+                  currentColors.iconDark
+                )} />
+              </div>
+              Historique des achats de l'année {currentYear}
+            </CardTitle>
+            <CardDescription className={cn(
+              "mt-1 text-sm",
+              currentColors.cardDescText,
+              currentColors.cardDescTextDark
+            )}>
+              Consultez l'historique de vos dépenses pour ce commerçant
+            </CardDescription>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className={cn(
+              "text-sm px-2.5 py-1.5 rounded-md whitespace-nowrap",
+              currentColors.counterBgLight, currentColors.accentText,
+              currentColors.counterBgDark
+            )}>
+              {sortedExpenses.length} dépense{sortedExpenses.length !== 1 ? 's' : ''} au total
+            </div>
+            
+            <Select value={String(itemsPerPage)} onValueChange={value => {
+              setItemsPerPage(Number(value));
+              setCurrentPage(1);
+            }}>
+              <SelectTrigger className={cn(
+                "w-[180px] h-8 text-xs", 
+                `border-${colorScheme}-200 bg-${colorScheme}-50/50 text-${colorScheme}-700`,
+                `dark:border-${colorScheme}-800/70 dark:bg-${colorScheme}-900/20 dark:text-${colorScheme}-300`
+              )}>
+                <SelectValue placeholder="Lignes par page" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10 par page</SelectItem>
+                <SelectItem value="25">25 par page</SelectItem>
+                <SelectItem value="-1">Tout afficher</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        Historique des achats de l'année {currentYear}
-      </CardTitle>
-      <CardDescription className={cn(
-        "mt-1 text-sm",
-        currentColors.cardDescText,
-        currentColors.cardDescTextDark
-      )}>
-        Consultez l'historique de vos dépenses pour ce commerçant
-      </CardDescription>
-    </div>
-    
-    <div className="flex items-center gap-3">
-      <div className={cn(
-        "text-sm px-2.5 py-1.5 rounded-md whitespace-nowrap",
-        currentColors.counterBgLight, currentColors.accentText,
-        currentColors.counterBgDark
-      )}>
-        {sortedExpenses.length} dépense{sortedExpenses.length !== 1 ? 's' : ''} au total
-      </div>
-      
-      <Select value={String(itemsPerPage)} onValueChange={value => {
-        setItemsPerPage(Number(value));
-        setCurrentPage(1);
-      }}>
-        <SelectTrigger className={cn(
-          "w-[180px] h-8 text-xs", 
-          `border-${colorScheme}-200 bg-${colorScheme}-50/50 text-${colorScheme}-700`,
-          `dark:border-${colorScheme}-800/70 dark:bg-${colorScheme}-900/20 dark:text-${colorScheme}-300`
-        )}>
-          <SelectValue placeholder="Lignes par page" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="10">10 par page</SelectItem>
-          <SelectItem value="25">25 par page</SelectItem>
-          <SelectItem value="-1">Tout afficher</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-  </div>
-</CardHeader>
+      </CardHeader>
       
       <CardContent className="relative z-10 p-0 overflow-x-auto">
         <div className={cn(

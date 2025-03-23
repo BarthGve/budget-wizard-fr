@@ -74,10 +74,12 @@ const RecurringExpenses = memo(function RecurringExpenses() {
 
   return (
     <DashboardLayout>
-      <RecurringExpensesContainer 
-        recurringExpenses={recurringExpenses || []} 
-        onDeleteExpense={handleDeleteExpense} 
-      />
+      <div className="w-full max-w-full px-0 sm:px-2">
+        <RecurringExpensesContainer 
+          recurringExpenses={recurringExpenses || []} 
+          onDeleteExpense={handleDeleteExpense} 
+        />
+      </div>
     </DashboardLayout>
   );
 });

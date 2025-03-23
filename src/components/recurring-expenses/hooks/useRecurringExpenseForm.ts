@@ -5,6 +5,7 @@ import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { SubmitHandler } from "react-hook-form";
 
 export const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
@@ -19,14 +20,18 @@ export const formSchema = z.object({
     },
     "Le jour doit être entre 1 et 31"
   ),
-  debit_month: z.string().nullable().refine(
+  debit_month: z.string().nullish().refine(
     (val) => {
-      if (val === null || val === "") return true;
+      if (val === null || val === "" || val === undefined) return true;
       const month = parseInt(val);
       return !isNaN(month) && month >= 1 && month <= 12;
     },
     "Le mois doit être entre 1 et 12"
-  )
+  ),
+  // Champs pour l'association avec un véhicule
+  vehicle_id: z.string().nullish(),
+  vehicle_expense_type: z.string().nullish(),
+  auto_generate_vehicle_expense: z.boolean().optional().default(false)
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -41,8 +46,12 @@ interface UseRecurringExpenseFormProps {
     debit_day: number;
     debit_month: number | null;
     logo_url?: string;
+    vehicle_id?: string | null;
+    vehicle_expense_type?: string | null;
+    auto_generate_vehicle_expense?: boolean;
   };
   initialDomain?: string;
+  initialVehicleId?: string;
   onSuccess: () => void;
 }
 
@@ -52,7 +61,7 @@ const getFaviconUrl = (domain: string) => {
   return `https://logo.clearbit.com/${cleanDomain}`;
 };
 
-export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess }: UseRecurringExpenseFormProps) => {
+export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVehicleId = "", onSuccess }: UseRecurringExpenseFormProps) => {
   const queryClient = useQueryClient();
 
   const form = useForm<FormValues>({
@@ -64,11 +73,14 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
       category: expense?.category || "",
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
-      debit_month: expense?.debit_month?.toString() || ""
+      debit_month: expense?.debit_month?.toString() || null,
+      vehicle_id: expense?.vehicle_id || initialVehicleId || null,
+      vehicle_expense_type: expense?.vehicle_expense_type || null,
+      auto_generate_vehicle_expense: expense?.auto_generate_vehicle_expense || false
     },
   });
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit: SubmitHandler<FormValues> = async (values) => {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -86,6 +98,7 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
       // Générer l'URL du logo à partir du domaine
       const logo_url = getFaviconUrl(values.domain || "");
 
+      // S'assurer que les valeurs sont correctement typées pour la BD
       const expenseData = {
         name: values.name,
         amount: Number(values.amount),
@@ -94,7 +107,13 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
         debit_day: parseInt(values.debit_day),
         debit_month: debit_month,
         logo_url,
+        // Gestion explicite des valeurs nulles pour les champs liés au véhicule
+        vehicle_id: values.vehicle_id || null,
+        vehicle_expense_type: values.vehicle_expense_type || null,
+        auto_generate_vehicle_expense: values.auto_generate_vehicle_expense || false
       };
+
+      console.log("Données à enregistrer:", expenseData);
 
       if (expense) {
         const { error } = await supabase
@@ -124,16 +143,23 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
         refetchType: 'all'
       });
       
+      // Invalider les données des véhicules si une charge récurrente est associée à un véhicule
+      if (values.vehicle_id) {
+        queryClient.invalidateQueries({ 
+          queryKey: ["vehicle-expenses", values.vehicle_id],
+          exact: true
+        });
+        
+        queryClient.invalidateQueries({ 
+          queryKey: ["vehicle-detail", values.vehicle_id],
+          exact: false
+        });
+      }
+      
       // Force refresh immédiat
       setTimeout(() => {
         queryClient.refetchQueries({ 
           queryKey: ["dashboard-data"],
-          exact: false
-        });
-        
-        // Rafraîchir les crédits qui affectent le solde global
-        queryClient.refetchQueries({
-          queryKey: ["credits"],
           exact: false
         });
       }, 100);
@@ -152,6 +178,6 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
 
   return {
     form,
-    onSubmit: form.handleSubmit(onSubmit),
+    handleSubmit: form.handleSubmit(onSubmit),
   };
 };

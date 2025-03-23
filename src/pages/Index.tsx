@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header/DashboardHeader";
 import { DashboardBanners } from "@/components/dashboard/dashboard-banners/DashboardBanners";
 import { useDashboardViewCalculations } from "@/hooks/useDashboardViewCalculations";
+import { useExpenseStats } from "@/hooks/useExpenseStats";
 
 // Composants memoizés pour éviter les re-rendus inutiles
 const MemoizedDashboardHeader = memo(DashboardHeader);
@@ -28,6 +29,7 @@ const containerVariants = {
 const Dashboard = () => {
   const [currentView, setCurrentView] = useState<"monthly" | "yearly">("monthly");
   const { contributors, monthlySavings, profile, recurringExpenses } = useDashboardData();
+  const { fuelExpensesTotal, fuelExpensesCount, fuelVolume } = useExpenseStats(currentView);
 
   // Obtenir le nom du mois courant (memoizé)
   const currentMonthName = useMemo(() => {
@@ -80,6 +82,10 @@ const Dashboard = () => {
           recurringExpenses={dashboardData.recurringExpensesForChart}
           monthlySavings={dashboardData.monthlySavingsForChart}
           contributors={contributors || []}
+          currentView={currentView}
+          fuelExpensesTotal={fuelExpensesTotal}
+          fuelExpensesCount={fuelExpensesCount}
+          fuelVolume={fuelVolume}
         />
       </motion.div>
     </DashboardLayout>

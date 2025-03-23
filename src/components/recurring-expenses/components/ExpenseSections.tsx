@@ -8,6 +8,7 @@ import { itemVariants } from "../animations/AnimationVariants";
 import { RecurringExpensesHeader } from "../RecurringExpensesHeader";
 import { MutableRefObject } from "react";
 import { RecurringExpensesCategoryChart } from "../RecurringExpensesCategoryChart";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface ExpenseSectionsProps {
   recurringExpenses: RecurringExpense[];
@@ -36,6 +37,9 @@ export const ExpenseSections = ({
   const filteredExpenses = selectedPeriod 
     ? recurringExpenses.filter(expense => expense.periodicity === selectedPeriod)
     : recurringExpenses;
+    
+  // Détection des écrans mobiles
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
     <>
@@ -61,15 +65,19 @@ export const ExpenseSections = ({
         selectedPeriod={selectedPeriod} 
       />
 
-      <motion.div 
-        className="w-full overflow-hidden"
-        variants={itemVariants}
-      >
-        <RecurringExpenseTable 
-          expenses={filteredExpenses} 
-          onDeleteExpense={onDeleteExpense} 
-        />
-      </motion.div>
+      {/* Masquer le tableau sur mobile */}
+      {!isMobile && (
+        <motion.div 
+          className="w-full overflow-hidden"
+          variants={itemVariants}
+        >
+          <RecurringExpenseTable 
+            expenses={filteredExpenses} 
+            onDeleteExpense={onDeleteExpense}
+            allExpenses={recurringExpenses} // Transmettre toutes les charges non filtrées
+          />
+        </motion.div>
+      )}
     </>
   );
 };

@@ -8,6 +8,7 @@ import { Calendar, BarChart3, TrendingUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface Expense {
   id: string;
@@ -25,6 +26,7 @@ export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) 
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  const isMobileScreen = useMediaQuery("(max-width: 768px)");
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -42,6 +44,11 @@ export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) 
       transition: { duration: 0.4, ease: "easeOut" }
     }
   };
+  
+  // Si on est sur mobile, ne pas afficher le composant du tout
+  if (isMobileScreen) {
+    return null;
+  }
   
   return (
     <motion.div

@@ -8,7 +8,7 @@ export interface Profile {
   color_palette: string | null;
   savings_goal_percentage: number | null;
   updated_at: string | null;
-  email: string | null;
+  email?: string | null; // Rendu optionnel avec '?'
   profile_type: ProfileType;
   encryption_enabled: boolean | null;
   notif_inscriptions?: boolean;

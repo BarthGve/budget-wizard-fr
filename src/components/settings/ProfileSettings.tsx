@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
@@ -7,8 +8,11 @@ import { Profile } from "@/types/profile";
 import { ProfileForm } from "./profile/ProfileForm";
 import { EmailChangeDialog } from "./profile/EmailChangeDialog";
 import { useProfileUpdate } from "./profile/useProfileUpdate";
+import { useIsMobile } from "@/hooks/use-mobile";
+
 export const ProfileSettings = () => {
   const [fullName, setFullName] = useState("");
+  const isMobile = useIsMobile();
 
   // Récupérer les données du profil
   const {
@@ -76,19 +80,38 @@ export const ProfileSettings = () => {
   const onSubmit = async (e: React.FormEvent) => {
     await handleProfileUpdate(e, fullName || profile?.full_name || "");
   };
-  return <Card>
-      <CardHeader>
+
+  return (
+    <Card className={isMobile ? "shadow-sm border-0" : ""}>
+      <CardHeader className={isMobile ? "px-3 py-4" : ""}>
         <div className="flex items-center space-x-2">
           <User className="h-5 w-5" />
-          <CardTitle>Informations personnelles</CardTitle>
+          <CardTitle className={isMobile ? "text-xl" : ""}>Informations personnelles</CardTitle>
         </div>
-        
       </CardHeader>
-      <CardContent>
-        <ProfileForm profile={profile} userData={userData} avatarFile={avatarFile} setAvatarFile={setAvatarFile} previewUrl={previewUrl} setPreviewUrl={setPreviewUrl} isUpdating={isUpdating} onSubmit={onSubmit} onEmailChangeClick={() => setShowEmailDialog(true)} onResendVerification={handleResendVerification} />
+      <CardContent className={isMobile ? "px-3 pb-5" : ""}>
+        <ProfileForm 
+          profile={profile} 
+          userData={userData} 
+          avatarFile={avatarFile} 
+          setAvatarFile={setAvatarFile} 
+          previewUrl={previewUrl} 
+          setPreviewUrl={setPreviewUrl} 
+          isUpdating={isUpdating} 
+          onSubmit={onSubmit} 
+          onEmailChangeClick={() => setShowEmailDialog(true)} 
+          onResendVerification={handleResendVerification}
+          isMobile={isMobile}
+        />
 
         {/* Modal pour modifier l'email */}
-        <EmailChangeDialog open={showEmailDialog} onOpenChange={setShowEmailDialog} onSubmit={handleUpdateEmail} isUpdating={isUpdatingEmail} />
+        <EmailChangeDialog 
+          open={showEmailDialog} 
+          onOpenChange={setShowEmailDialog} 
+          onSubmit={handleUpdateEmail} 
+          isUpdating={isUpdatingEmail} 
+        />
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };

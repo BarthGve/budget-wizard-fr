@@ -5,10 +5,12 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
-import { Calendar, CreditCard, Tag, RefreshCcw } from "lucide-react";
+import { Calendar, CreditCard, Tag, RefreshCcw, Car } from "lucide-react";
 import { DetailItem } from "./details/DetailItem";
 import { ExpenseHeader } from "./details/ExpenseHeader";
 import { ExpenseNotes } from "./details/ExpenseNotes";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface RecurringExpenseDetailsProps {
   expense: RecurringExpense;
@@ -26,6 +28,24 @@ export const RecurringExpenseDetails = ({
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
+  // Récupérer les informations du véhicule si une association existe
+  const { data: vehicleInfo } = useQuery({
+    queryKey: ["vehicle-info", expense.vehicle_id],
+    queryFn: async () => {
+      if (!expense.vehicle_id) return null;
+      
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("brand, model, registration_number")
+        .eq("id", expense.vehicle_id)
+        .single();
+        
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!expense.vehicle_id,
+  });
+
   const formattedDate = expense.created_at 
     ? format(new Date(expense.created_at), "dd MMMM yyyy", { locale: fr })
     : "Date inconnue";
@@ -41,6 +61,28 @@ export const RecurringExpenseDetails = ({
       default:
         return "Information non disponible";
     }
+  };
+
+  // Information sur le véhicule pour l'affichage
+  const getVehicleInfo = () => {
+    if (!expense.vehicle_id || !vehicleInfo) {
+      return "Aucun véhicule associé";
+    }
+    
+    return `${vehicleInfo.brand} ${vehicleInfo.model} (${vehicleInfo.registration_number})`;
+  };
+
+  // Information sur le type de dépense pour l'affichage
+  const getVehicleExpenseType = () => {
+    if (!expense.vehicle_id || !expense.vehicle_expense_type) {
+      return null;
+    }
+    
+    const autoGenerate = expense.auto_generate_vehicle_expense 
+      ? " - Génération automatique activée" 
+      : " - Génération manuelle";
+    
+    return `Type: ${expense.vehicle_expense_type}${autoGenerate}`;
   };
 
   const content = (
@@ -89,6 +131,27 @@ export const RecurringExpenseDetails = ({
             label="Catégorie" 
             value={expense.category}
           />
+          
+          {/* Nouvelle section pour le véhicule associé */}
+          {expense.vehicle_id && (
+            <div className="py-2">
+              <DetailItem 
+                icon={<Car size={18} />} 
+                label="Véhicule associé" 
+                value={getVehicleInfo()}
+              />
+              {getVehicleExpenseType() && (
+                <div className="ml-9 mt-1">
+                  <div className={cn(
+                    "text-sm font-medium",
+                    "text-gray-600 dark:text-gray-300"
+                  )}>
+                    {getVehicleExpenseType()}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           
           <DetailItem 
             icon={<Calendar size={18} />} 

@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { PiggyBank, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { useTheme } from "next-themes";
 import { NewSavingDialog } from "./NewSavingDialog";
 import { SavingsProjectWizard } from "./ProjectWizard/SavingsProjectWizard";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SavingsHeaderProps {
   onSavingAdded?: () => void;
@@ -17,6 +19,7 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
   const isDarkMode = theme === "dark";
   const [newSavingDialogOpen, setNewSavingDialogOpen] = useState(false);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleDialogOpenChange = (open: boolean) => {
     setNewSavingDialogOpen(open);
@@ -27,7 +30,7 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="pb-4 pr-4 mb-2 flex items-center justify-between"
+      className="pb-4 pr-0 mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
     >
       <div className="flex items-start gap-3">
         <motion.div
@@ -65,15 +68,19 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
         </div>
       </div>
       
-      <div className="flex gap-3">
+      <div className={cn(
+        "flex gap-3",
+        isMobile ? "w-full justify-between" : ""
+      )}>
         <motion.div
           whileTap={{ scale: 0.98 }}
           whileHover={{ scale: 1.02 }}
+          className={isMobile ? "flex-1" : ""}
         >
           <Button 
             variant="outline"
             className={cn(
-              "h-10 px-4 border transition-all duration-200 rounded-md",
+              "h-10 px-3 md:px-4 border transition-all duration-200 rounded-md w-full md:w-auto",
               "hover:scale-[1.02] active:scale-[0.98]",
               "bg-white border-emerald-200 text-emerald-600",
               "hover:border-emerald-300 hover:bg-emerald-50/50 hover:text-emerald-700",
@@ -109,11 +116,12 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
         <motion.div
           whileTap={{ scale: 0.98 }}
           whileHover={{ scale: 1.02 }}
+          className={isMobile ? "flex-1" : ""}
         >
           <Button 
             variant="outline"
             className={cn(
-              "h-10 px-4 border transition-all duration-200 rounded-md",
+              "h-10 px-3 md:px-4 border transition-all duration-200 rounded-md w-full md:w-auto",
               "hover:scale-[1.02] active:scale-[0.98]",
               "bg-white border-emerald-200 text-emerald-600",
               "hover:border-emerald-300 hover:bg-emerald-50/50 hover:text-emerald-700",

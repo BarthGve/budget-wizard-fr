@@ -9,6 +9,7 @@ import { Features } from "@/components/landing/Features";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { TechStack } from "@/components/landing/TechStack";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const Landing = () => {
   const { landing } = appConfig;
@@ -17,12 +18,15 @@ const Landing = () => {
   const logoRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { latestVersion } = useLatestVersion();
+  const isMobile = useMediaQuery("(max-width: 640px)");
 
   useEffect(() => {
     setIsLoaded(true);
     fetchTestimonials();
-    initLogo3D();
-  }, []);
+    if (!isMobile) {
+      initLogo3D();
+    }
+  }, [isMobile]);
 
   const initLogo3D = () => {
     if (!logoRef.current || !containerRef.current) return;

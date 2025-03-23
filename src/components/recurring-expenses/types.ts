@@ -9,12 +9,16 @@ export interface RecurringExpense {
   debit_month: number | null;
   created_at: string;
   logo_url?: string;
-  notes?: string; // Ajout de la propriété notes optionnelle
+  notes?: string;
+  vehicle_id: string | null;
+  vehicle_expense_type: string | null;
+  auto_generate_vehicle_expense: boolean;
 }
 
 export interface RecurringExpenseTableProps {
   expenses: RecurringExpense[];
   onDeleteExpense: (id: string) => Promise<void>;
+  allExpenses?: RecurringExpense[]; // Ajout de cette propriété
 }
 
 export const periodicityLabels = {

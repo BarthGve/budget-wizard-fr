@@ -10,6 +10,7 @@ import { ItemsPerPageSelect } from "./ItemsPerPageSelect";
 import { TablePagination } from "./TablePagination";
 import { TableDialogs } from "./TableDialogs";
 import { useTheme } from "next-themes";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 // Type pour les props du composant
 interface ExpenseTableContentProps {
@@ -19,6 +20,7 @@ interface ExpenseTableContentProps {
 export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  const isMobile = useMediaQuery("(max-width: 768px)");
   
   const {
     searchTerm,
@@ -34,6 +36,7 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
     uniqueCategories,
     filteredExpenses,
     paginatedExpenses,
+    allExpenses,
     setSearchTerm,
     setCategoryFilter,
     setCurrentPage,
@@ -51,7 +54,7 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
 
   return (
     <Card className={cn(
-      "border shadow-sm overflow-hidden relative",
+      "border shadow-sm overflow-hidden relative w-full max-w-full",
       // Light mode
       "bg-white border-blue-100",
       // Dark mode
@@ -66,7 +69,10 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
       )} />
 
       <CardHeader className="relative z-10">
-        <div className="flex justify-between items-start mb-4">
+        <div className={cn(
+          "flex justify-between items-start mb-4",
+          isMobile && "flex-col gap-3"
+        )}>
           <div>
             <CardTitle className={cn(
               "text-xl font-semibold flex items-center gap-2",
@@ -115,7 +121,10 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
           />
         </div>
         
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className={cn(
+          "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4",
+          isMobile && "w-full"
+        )}>
           <TableFilters
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
@@ -129,7 +138,9 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
             // Light mode
             "bg-blue-100/70 text-blue-700",
             // Dark mode
-            "dark:bg-blue-900/30 dark:text-blue-300"
+            "dark:bg-blue-900/30 dark:text-blue-300",
+            // Mobile
+            isMobile && "self-end"
           )}>
             {filteredExpenses.length} charge{filteredExpenses.length !== 1 ? 's' : ''} au total
           </div>
@@ -185,6 +196,7 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
         setShowEditDialog={setShowEditDialog}
         setShowDetailsDialog={setShowDetailsDialog}
         onDeleteExpense={onDeleteExpense}
+        allExpenses={allExpenses}
       />
     </Card>
   );

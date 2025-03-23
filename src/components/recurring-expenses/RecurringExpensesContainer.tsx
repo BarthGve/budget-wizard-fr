@@ -17,13 +17,15 @@ export const RecurringExpensesContainer = ({
 
   return (
     <AnimatedContainer>
-      <ExpenseSections
-        recurringExpenses={recurringExpenses}
-        onDeleteExpense={onDeleteExpense}
-        selectedPeriod={selectedPeriod}
-        setSelectedPeriod={setSelectedPeriod}
-        cardsRef={cardsRef}
-      />
+      <div className="w-full max-w-full">
+        <ExpenseSections
+          recurringExpenses={recurringExpenses}
+          onDeleteExpense={onDeleteExpense}
+          selectedPeriod={selectedPeriod}
+          setSelectedPeriod={setSelectedPeriod}
+          cardsRef={cardsRef}
+        />
+      </div>
     </AnimatedContainer>
   );
 };

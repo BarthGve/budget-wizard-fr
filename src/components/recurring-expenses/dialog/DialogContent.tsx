@@ -1,7 +1,7 @@
+
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { RecurringExpenseForm } from "../RecurringExpenseForm";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { RecurringExpense } from "../types";
 
 interface DialogContentProps {
@@ -52,7 +52,6 @@ export const DialogContent = ({
       <div 
         className={cn(
           "p-6 max-w-full", // Ajout de max-w-full pour contraindre le contenu
-          needsScrolling ? "overflow-y-auto" : "",
           className
         )}
       >
