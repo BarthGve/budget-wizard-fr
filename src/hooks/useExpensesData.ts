@@ -9,7 +9,8 @@ export const useExpensesData = () => {
   // Configuration optimisée de la requête
   const {
     data: expenses,
-    isLoading
+    isLoading,
+    refetch
   } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
@@ -60,9 +61,35 @@ export const useExpensesData = () => {
         console.log(`Statut du canal expenses-realtime:`, status);
       });
     
+    // Configurer également l'écoute pour les enseignes qui affectent les dépenses
+    const retailersChannel = supabase
+      .channel(`retailers-expenses-${Date.now()}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'retailers'
+        },
+        (payload) => {
+          console.log(`Changement détecté dans les enseignes:`, payload);
+          
+          // Forcer le rechargement des données des dépenses quand une enseigne change
+          queryClient.invalidateQueries({ 
+            queryKey: ["expenses"],
+            exact: false,
+            refetchType: 'all' // Forcer le rechargement
+          });
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Statut du canal retailers-expenses:`, status);
+      });
+    
     return () => {
-      console.log("Nettoyage de l'écouteur expenses-realtime");
+      console.log("Nettoyage des écouteurs expenses-realtime et retailers-expenses");
       supabase.removeChannel(channel);
+      supabase.removeChannel(retailersChannel);
     };
   }, [queryClient]);
 
@@ -77,6 +104,7 @@ export const useExpensesData = () => {
   return {
     expenses,
     isLoading,
-    handleExpenseUpdated
+    handleExpenseUpdated,
+    refetchExpenses: refetch
   };
 };

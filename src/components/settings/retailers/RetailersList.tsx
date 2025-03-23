@@ -15,7 +15,7 @@ import { useState } from "react";
 import { DeleteRetailerConfirmDialog } from "./DeleteRetailerConfirmDialog";
 
 export function RetailersList() {
-  const { retailers, isLoading } = useRetailers();
+  const { retailers, isLoading, refetchRetailers } = useRetailers();
   const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer();
   const [retailerToDelete, setRetailerToDelete] = useState<{ id: string; name: string } | null>(null);
 
@@ -30,8 +30,13 @@ export function RetailersList() {
   const handleConfirmDelete = () => {
     if (retailerToDelete) {
       console.log("🎯 Deleting retailer:", retailerToDelete.id);
-      deleteRetailer(retailerToDelete.id);
-      setRetailerToDelete(null);
+      deleteRetailer(retailerToDelete.id, {
+        onSuccess: () => {
+          // Rafraîchir la liste des enseignes après suppression réussie
+          refetchRetailers();
+          setRetailerToDelete(null);
+        }
+      });
     }
   };
 

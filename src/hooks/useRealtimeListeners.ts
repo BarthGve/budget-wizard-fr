@@ -121,6 +121,36 @@ export const useRealtimeListeners = () => {
       )
       .subscribe();
 
+    // Listen for changes in the retailers table
+    const retailersChannel = supabase
+      .channel('retailers-global')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'retailers'
+        },
+        (payload) => {
+          console.log('Enseignes modifiées, invalidation des requêtes');
+          queryClient.invalidateQueries({ queryKey: ['retailers'] });
+          
+          // Invalider également les dépenses qui pourraient être affectées
+          queryClient.invalidateQueries({ queryKey: ['expenses'] });
+          queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+          
+          // Pour les statistiques
+          queryClient.invalidateQueries({ 
+            queryKey: ["all-expenses-for-stats"],
+            exact: false, 
+            refetchType: 'all'
+          });
+          
+          toast.success("Les enseignes ont été mises à jour en temps réel !");
+        }
+      )
+      .subscribe();
+
     // Listen for changes in the vehicle_expenses table
     const vehicleExpensesChannel = supabase
       .channel('vehicle_expenses')
@@ -163,6 +193,7 @@ export const useRealtimeListeners = () => {
       supabase.removeChannel(savingsChannel);
       supabase.removeChannel(expensesChannel);
       supabase.removeChannel(expensesTableChannel);
+      supabase.removeChannel(retailersChannel);
       supabase.removeChannel(vehicleExpensesChannel);
     };
   }, [queryClient]);

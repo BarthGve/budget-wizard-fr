@@ -48,9 +48,13 @@ export const useDeleteRetailer = () => {
       console.log("✅ Retailer deleted successfully");
       return retailerId;
     },
-    onSuccess: () => {
-      console.log("✅ Mutation completed successfully");
+    onSuccess: (_, retailerId) => {
+      console.log("✅ Mutation completed successfully for retailer:", retailerId);
+      
+      // Invalider les requêtes pertinentes pour forcer leur rafraîchissement
       queryClient.invalidateQueries({ queryKey: ["retailers"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      
       toast.success("Enseigne supprimée avec succès");
     },
     onError: (error) => {
