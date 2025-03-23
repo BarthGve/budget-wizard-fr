@@ -141,9 +141,12 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
                   {collapsed ? appConfig.initiales : appConfig.name}
                 </h1>
               </div>
-              <div className="flex items-center gap-2">
-                <ThemeToggle collapsed={collapsed} />
-              </div>
+              {/* ThemeToggle seulement visible sur desktop en en-tête */}
+              {!isMobile && (
+                <div className="flex items-center gap-2">
+                  <ThemeToggle collapsed={collapsed} />
+                </div>
+              )}
             </div>
             {!collapsed && (
              <div className="flex items-baseline gap-2">
@@ -169,6 +172,13 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
             </div>
           )}
         </div>
+        
+        {/* ThemeToggle pour mobile, placé au-dessus du UserDropdown */}
+        {isMobile && (
+          <div className="px-4 py-2 border-t border-border">
+            <ThemeToggle collapsed={collapsed} />
+          </div>
+        )}
         
         {/* User dropdown toujours visible, fixé en bas */}
         <div className="sticky bottom-0 bg-background border-t border-border">

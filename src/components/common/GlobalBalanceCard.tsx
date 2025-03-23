@@ -52,28 +52,18 @@ export const GlobalBalanceCard = ({
 
   return(
     <Card className={cn(
-      "bg-background/60 hover:bg-background/80 backdrop-blur-md transition-all w-fit", 
-      // Adapté pour mobile - taille plus compacte et meilleure lisibilité
-      isMobile ? "scale-90 origin-top-right" : "",
+      "bg-background/60 hover:bg-background/80 backdrop-blur-md transition-all", 
+      isMobile ? "w-full" : "w-fit",
       className
     )}>
-      <CardContent className={cn(
-        "p-4",
-        // Rendre plus compact sur mobile
-        isMobile && "p-3"
-      )}>
-        <div className="flex items-center gap-6">
+      <CardContent className="p-4">
+        <div className={cn("flex items-center", isMobile ? "justify-between" : "gap-6")}>
           <div className="flex items-center gap-2">
             <BadgeEuro className="h-5 w-5 text-muted-foreground" />
-            <span className={cn(
-              "font-medium",
-              // Texte plus petit sur mobile
-              isMobile ? "text-base" : "text-lg"
-            )}>Disponible</span>
+            <span className="font-medium">Disponible</span>
           </div>
           <p className={cn(
-            "font-bold", 
-            isMobile ? "text-base" : "text-lg",
+            "font-bold text-lg",
             displayedBalance >= 0 ? "text-green-600" : "text-red-600"
           )}>
             {displayedBalance.toLocaleString('fr-FR')} €
