@@ -149,26 +149,26 @@ const Expenses = memo(function Expenses() {
                 viewMode={viewMode}
               />
               
-              {/* Carte de moyenne mensuelle avec couleurs bleues */}
-              <Card className="border shadow-sm overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10">
+              {/* Nouvelle carte de moyenne mensuelle */}
+              <Card className="border shadow-sm overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10">
                 <div className="p-5">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-blue-700 dark:text-blue-300">
+                    <h3 className="text-lg font-medium text-amber-700 dark:text-amber-300">
                       Moyenne mensuelle
                     </h3>
-                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                      <Calculator className="h-5 w-5 text-blue-500 dark:text-blue-300" />
+                    <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                      <Calculator className="h-5 w-5 text-amber-500 dark:text-amber-300" />
                     </div>
                   </div>
                   
                   <div className="mt-4 space-y-1.5">
                     <div className="flex items-center gap-2">
-                      <p className={cn("text-2xl font-bold text-blue-700 dark:text-blue-200")}>
+                      <p className={cn("text-2xl font-bold text-amber-700 dark:text-amber-200")}>
                         {formatCurrency(monthlyAverage)}
                       </p>
                     </div>
                     
-                    <p className={cn("text-sm text-blue-600/80 dark:text-blue-300/80")}>
+                    <p className={cn("text-sm text-amber-600/80 dark:text-amber-300/80")}>
                       {Math.round(averageMonthlyTransactions)} achats par mois
                     </p>
                   </div>
