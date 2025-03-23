@@ -4,12 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Retailer } from "./types";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 
 export const useRetailers = () => {
   const { profile } = usePagePermissions();
   const queryClient = useQueryClient();
   const realtimeChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const [lastRefetchTimestamp, setLastRefetchTimestamp] = useState(0);
   
   // Vérifier si l'utilisateur est authentifié
   const canAccessRetailers = !!profile;
@@ -41,22 +42,19 @@ export const useRetailers = () => {
     return data as Retailer[];
   }, [canAccessRetailers]);
 
-  // Configuration optimisée de la requête
-  const { 
-    data, 
-    isLoading, 
-    isError, 
-    error, 
-    refetch 
-  } = useQuery({
+  // Configuration optimisée de la requête avec des données stables
+  const queryResult = useQuery({
     queryKey: ["retailers"],
     queryFn: fetchRetailers,
     enabled: canAccessRetailers,
-    staleTime: 1000 * 10, // Réduit à 10 secondes pour des mises à jour plus fréquentes
+    staleTime: 5000, // 5 secondes
+    gcTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     refetchOnReconnect: true,
   });
+  
+  const { data, isLoading, isError, error } = queryResult;
 
   // Configuration d'un écouteur spécifique pour les modifications en temps réel
   useEffect(() => {
@@ -64,9 +62,10 @@ export const useRetailers = () => {
 
     console.log("⚡ Setting up realtime listener for retailers table");
     
-    // Nettoyage des écouteurs précédents si nécessaire
+    // Nettoyage des écouteurs précédents si nécessaires
     if (realtimeChannelRef.current) {
       supabase.removeChannel(realtimeChannelRef.current);
+      realtimeChannelRef.current = null;
     }
     
     // Nouvel écouteur avec un identifiant unique basé sur le timestamp
@@ -81,24 +80,32 @@ export const useRetailers = () => {
           table: 'retailers'
         },
         (payload) => {
-          console.log("🔔 Retailer change detected:", payload);
+          console.log("🔔 Retailer change detected:", payload.eventType, payload.new?.id || payload.old?.id);
           
-          // Forcer l'invalidation et le rechargement immédiat
-          // Temporiser légèrement pour laisser la transaction se terminer complètement
+          // Temporiser pour laisser la transaction se terminer complètement
           setTimeout(() => {
+            // Actualiser les données des retailers
             queryClient.invalidateQueries({ 
               queryKey: ["retailers"],
               exact: false,
-              refetchType: 'active'
+              refetchType: 'all'
             });
             
-            // Invalider également les requêtes expenses qui peuvent dépendre des retailers
-            queryClient.invalidateQueries({ 
-              queryKey: ["expenses"],
-              exact: false,
-              refetchType: 'active'
-            });
-          }, 200);
+            // Puis actualiser les données qui en dépendent
+            setTimeout(() => {
+              queryClient.invalidateQueries({ 
+                queryKey: ["expenses"],
+                exact: false,
+                refetchType: 'all'
+              });
+              
+              queryClient.invalidateQueries({ 
+                queryKey: ["dashboard-data"],
+                exact: false,
+                refetchType: 'all'
+              });
+            }, 100);
+          }, 100);
         }
       )
       .subscribe((status) => {
@@ -117,26 +124,38 @@ export const useRetailers = () => {
     };
   }, [canAccessRetailers, queryClient]);
 
-  // Fonction de rafraîchissement explicite pour forcer un rechargement complet
+  // Fonction de rafraîchissement avec anti-rebond pour éviter les appels multiples trop rapides
   const refetchRetailers = useCallback(async () => {
+    const now = Date.now();
+    // Éviter les rafraîchissements multiples dans un court laps de temps (300ms)
+    if (now - lastRefetchTimestamp < 300) {
+      console.log("⏱️ Skipping refetch, too soon after last refetch");
+      return;
+    }
+    
+    setLastRefetchTimestamp(now);
     console.log("🔄 Manually refreshing retailers data");
     
     try {
-      // Forcer un rechargement complet avec refetchType: 'all'
+      // Forcer une invalidation avec refetchType: 'all' pour garantir un rechargement complet
       await queryClient.invalidateQueries({ 
         queryKey: ["retailers"],
         exact: false,
         refetchType: 'all'
       });
       
-      // Puis forcer un nouveau fetch explicite
-      await refetch();
+      // Forcer un refetch explicite après l'invalidation
+      await queryClient.refetchQueries({
+        queryKey: ["retailers"],
+        exact: false,
+        type: 'all'
+      });
       
       console.log("✅ Retailers data refreshed successfully");
     } catch (error) {
       console.error("❌ Error refreshing retailers data:", error);
     }
-  }, [refetch, queryClient]);
+  }, [queryClient, lastRefetchTimestamp]);
 
   return {
     retailers: data || [],

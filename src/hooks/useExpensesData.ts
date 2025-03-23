@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef } from "react";
 export const useExpensesData = () => {
   const queryClient = useQueryClient();
   const channelsRef = useRef<{ [key: string]: any }>({});
+  const pendingRefreshRef = useRef<any>(null);
 
   // Configuration optimisée de la requête
   const {
@@ -37,11 +38,31 @@ export const useExpensesData = () => {
       console.log(`Fetched ${data?.length} expenses successfully`);
       return data;
     },
-    staleTime: 1000 * 10, // Réduire à 10 secondes pour des mises à jour plus réactives
+    staleTime: 5000, // 5 secondes au lieu de 10
+    gcTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     refetchOnReconnect: true,
   });
+
+  // Fonction utilitaire pour éviter les actualisations multiples rapprochées
+  const debouncedInvalidation = useCallback((queryKey: string) => {
+    // Annuler tout rafraîchissement en attente
+    if (pendingRefreshRef.current) {
+      clearTimeout(pendingRefreshRef.current);
+    }
+    
+    // Programmer un nouveau rafraîchissement
+    pendingRefreshRef.current = setTimeout(() => {
+      console.log(`Invalidating ${queryKey} after debounce`);
+      queryClient.invalidateQueries({ 
+        queryKey: [queryKey],
+        exact: false,
+        refetchType: 'all'
+      });
+      pendingRefreshRef.current = null;
+    }, 200);
+  }, [queryClient]);
 
   // Configuration d'écouteurs spécifiques pour les changements dans les tables importantes
   useEffect(() => {
@@ -73,16 +94,8 @@ export const useExpensesData = () => {
           table: 'expenses'
         },
         (payload) => {
-          console.log(`Change detected in expenses:`, payload);
-          
-          // Temporiser légèrement pour éviter les courses de conditions
-          setTimeout(() => {
-            queryClient.invalidateQueries({ 
-              queryKey: ["expenses"],
-              exact: false,
-              refetchType: 'active'
-            });
-          }, 100);
+          console.log(`Change detected in expenses:`, payload.eventType);
+          debouncedInvalidation("expenses");
         }
       )
       .subscribe((status) => {
@@ -100,17 +113,12 @@ export const useExpensesData = () => {
           table: 'retailers'
         },
         (payload) => {
-          console.log(`Change detected in retailers:`, payload);
+          console.log(`Change detected in retailers:`, payload.eventType);
           
-          // Une modification d'enseigne (surtout une suppression) peut affecter les dépenses
-          // Temporiser légèrement pour éviter les courses de conditions
+          // Délai pour s'assurer que les dépendances sont mises à jour correctement
           setTimeout(() => {
-            queryClient.invalidateQueries({ 
-              queryKey: ["expenses"],
-              exact: false,
-              refetchType: 'active'
-            });
-          }, 200);
+            debouncedInvalidation("expenses");
+          }, 300);
         }
       )
       .subscribe((status) => {
@@ -126,12 +134,23 @@ export const useExpensesData = () => {
     return () => {
       console.log("Cleaning up expense data listeners");
       cleanupChannels();
+      
+      // Nettoyer également tout rafraîchissement en attente
+      if (pendingRefreshRef.current) {
+        clearTimeout(pendingRefreshRef.current);
+        pendingRefreshRef.current = null;
+      }
     };
-  }, [queryClient]);
+  }, [queryClient, debouncedInvalidation]);
 
   // Fonction de rafraîchissement explicite avec force refetch
   const handleExpenseUpdated = useCallback(() => {
     console.log("Manual expense refresh requested");
+    // Annuler tout rafraîchissement en attente
+    if (pendingRefreshRef.current) {
+      clearTimeout(pendingRefreshRef.current);
+    }
+    
     // Forcer un rafraîchissement complet
     queryClient.invalidateQueries({
       queryKey: ["expenses"],
