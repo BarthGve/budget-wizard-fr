@@ -4,11 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Retailer } from "./types";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 
 export const useRetailers = () => {
   const { profile } = usePagePermissions();
   const queryClient = useQueryClient();
+  const realtimeChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   
   // Vérifier si l'utilisateur est authentifié
   const canAccessRetailers = !!profile;
@@ -50,9 +51,11 @@ export const useRetailers = () => {
   } = useQuery({
     queryKey: ["retailers"],
     queryFn: fetchRetailers,
-    enabled: canAccessRetailers, 
-    staleTime: 1000 * 30, // Réduit à 30 secondes pour des mises à jour plus fréquentes
-    refetchOnWindowFocus: true, // Activer le refetch automatique au focus
+    enabled: canAccessRetailers,
+    staleTime: 1000 * 10, // Réduit à 10 secondes pour des mises à jour plus fréquentes
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   // Configuration d'un écouteur spécifique pour les modifications en temps réel
@@ -61,8 +64,15 @@ export const useRetailers = () => {
 
     console.log("⚡ Setting up realtime listener for retailers table");
     
+    // Nettoyage des écouteurs précédents si nécessaire
+    if (realtimeChannelRef.current) {
+      supabase.removeChannel(realtimeChannelRef.current);
+    }
+    
+    // Nouvel écouteur avec un identifiant unique basé sur le timestamp
+    const channelId = `retailers-changes-${Date.now()}`;
     const retailersChannel = supabase
-      .channel(`retailers-changes-${Date.now()}`)
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -73,36 +83,55 @@ export const useRetailers = () => {
         (payload) => {
           console.log("🔔 Retailer change detected:", payload);
           
-          // Force invalidation et rechargement immédiat des requêtes pertinentes
-          queryClient.invalidateQueries({ 
-            queryKey: ["retailers"],
-            refetchType: 'all'
-          });
-          
-          // Invalider également les requêtes expenses qui peuvent dépendre des retailers
-          queryClient.invalidateQueries({ 
-            queryKey: ["expenses"],
-            refetchType: 'all'
-          });
+          // Forcer l'invalidation et le rechargement immédiat
+          // Temporiser légèrement pour laisser la transaction se terminer complètement
+          setTimeout(() => {
+            queryClient.invalidateQueries({ 
+              queryKey: ["retailers"],
+              exact: false,
+              refetchType: 'active'
+            });
+            
+            // Invalider également les requêtes expenses qui peuvent dépendre des retailers
+            queryClient.invalidateQueries({ 
+              queryKey: ["expenses"],
+              exact: false,
+              refetchType: 'active'
+            });
+          }, 200);
         }
       )
       .subscribe((status) => {
         console.log(`Retailers channel status: ${status}`);
       });
     
+    // Stocker la référence pour le nettoyage
+    realtimeChannelRef.current = retailersChannel;
+    
     return () => {
       console.log("🛑 Removing retailers realtime listener");
-      supabase.removeChannel(retailersChannel);
+      if (realtimeChannelRef.current) {
+        supabase.removeChannel(realtimeChannelRef.current);
+        realtimeChannelRef.current = null;
+      }
     };
   }, [canAccessRetailers, queryClient]);
 
-  // Fonction de rafraîchissement explicite à exposer au composant
+  // Fonction de rafraîchissement explicite pour forcer un rechargement complet
   const refetchRetailers = useCallback(async () => {
     console.log("🔄 Manually refreshing retailers data");
     
     try {
+      // Forcer un rechargement complet avec refetchType: 'all'
+      await queryClient.invalidateQueries({ 
+        queryKey: ["retailers"],
+        exact: false,
+        refetchType: 'all'
+      });
+      
+      // Puis forcer un nouveau fetch explicite
       await refetch();
-      await queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      
       console.log("✅ Retailers data refreshed successfully");
     } catch (error) {
       console.error("❌ Error refreshing retailers data:", error);

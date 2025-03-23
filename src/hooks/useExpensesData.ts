@@ -37,10 +37,10 @@ export const useExpensesData = () => {
       console.log(`Fetched ${data?.length} expenses successfully`);
       return data;
     },
-    staleTime: 1000 * 30, // Réduire à 30 secondes pour des mises à jour plus fréquentes
-    refetchOnWindowFocus: true, // Activer le refetch au focus
+    staleTime: 1000 * 10, // Réduire à 10 secondes pour des mises à jour plus réactives
+    refetchOnWindowFocus: true,
     refetchOnMount: true,
-    refetchOnReconnect: true, // Activer le refetch à la reconnexion
+    refetchOnReconnect: true,
   });
 
   // Configuration d'écouteurs spécifiques pour les changements dans les tables importantes
@@ -58,9 +58,13 @@ export const useExpensesData = () => {
       channelsRef.current = {};
     };
 
+    // Création d'identifiants uniques basés sur le timestamp
+    const expensesChannelId = `expenses-realtime-${Date.now()}`;
+    const retailersChannelId = `retailers-expenses-${Date.now()}`;
+
     // Créer un canal pour les dépenses
     const expensesChannel = supabase
-      .channel(`expenses-realtime-${Date.now()}`)
+      .channel(expensesChannelId)
       .on(
         'postgres_changes',
         {
@@ -71,11 +75,14 @@ export const useExpensesData = () => {
         (payload) => {
           console.log(`Change detected in expenses:`, payload);
           
-          // Forcer le rechargement des données des dépenses
-          queryClient.invalidateQueries({ 
-            queryKey: ["expenses"],
-            refetchType: 'all'
-          });
+          // Temporiser légèrement pour éviter les courses de conditions
+          setTimeout(() => {
+            queryClient.invalidateQueries({ 
+              queryKey: ["expenses"],
+              exact: false,
+              refetchType: 'active'
+            });
+          }, 100);
         }
       )
       .subscribe((status) => {
@@ -84,7 +91,7 @@ export const useExpensesData = () => {
     
     // Créer un canal pour les enseignes
     const retailersChannel = supabase
-      .channel(`retailers-expenses-${Date.now()}`)
+      .channel(retailersChannelId)
       .on(
         'postgres_changes',
         {
@@ -95,11 +102,15 @@ export const useExpensesData = () => {
         (payload) => {
           console.log(`Change detected in retailers:`, payload);
           
-          // Forcer le rechargement des données des dépenses quand une enseigne change
-          queryClient.invalidateQueries({ 
-            queryKey: ["expenses"],
-            refetchType: 'all'
-          });
+          // Une modification d'enseigne (surtout une suppression) peut affecter les dépenses
+          // Temporiser légèrement pour éviter les courses de conditions
+          setTimeout(() => {
+            queryClient.invalidateQueries({ 
+              queryKey: ["expenses"],
+              exact: false,
+              refetchType: 'active'
+            });
+          }, 200);
         }
       )
       .subscribe((status) => {
@@ -118,19 +129,32 @@ export const useExpensesData = () => {
     };
   }, [queryClient]);
 
-  // Fonction de rafraîchissement explicite optimisée avec debounce simple
+  // Fonction de rafraîchissement explicite avec force refetch
   const handleExpenseUpdated = useCallback(() => {
     console.log("Manual expense refresh requested");
+    // Forcer un rafraîchissement complet
     queryClient.invalidateQueries({
       queryKey: ["expenses"],
-      exact: true
+      exact: false,
+      refetchType: 'all'
     });
   }, [queryClient]);
+
+  // Fonction de rafraîchissement plus directive
+  const forceRefetchExpenses = useCallback(async () => {
+    console.log("Force refetching expenses data");
+    try {
+      await refetch();
+      console.log("Expenses refetched successfully");
+    } catch (error) {
+      console.error("Error during forced expenses refetch:", error);
+    }
+  }, [refetch]);
 
   return {
     expenses,
     isLoading,
     handleExpenseUpdated,
-    refetchExpenses: refetch
+    refetchExpenses: forceRefetchExpenses
   };
 };

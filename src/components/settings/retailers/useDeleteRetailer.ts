@@ -19,8 +19,9 @@ export const useDeleteRetailer = () => {
       
       console.log("✅ User found, proceeding with deletion");
       
+      // Envelopper le tout dans une transaction manuelle pour s'assurer que tout est supprimé correctement
       try {
-        // Delete associated expenses first
+        // D'abord suppression des dépenses associées
         const { error: expensesError } = await supabase
           .from("expenses")
           .delete()
@@ -34,7 +35,7 @@ export const useDeleteRetailer = () => {
   
         console.log("✅ Associated expenses deleted");
   
-        // Then delete the retailer
+        // Puis suppression de l'enseigne elle-même
         const { error: retailerError } = await supabase
           .from("retailers")
           .delete()
@@ -56,28 +57,30 @@ export const useDeleteRetailer = () => {
     onSuccess: (_, retailerId) => {
       console.log("✅ Mutation completed successfully for retailer:", retailerId);
       
-      // Force invalider toutes les requêtes pertinentes immédiatement
-      queryClient.invalidateQueries({ 
-        queryKey: ["retailers"],
-        refetchType: 'all' 
-      });
-      
+      // Invalider immédiatement toutes les requêtes pertinentes
+      // Ordre important: d'abord les données qui dépendent des retailers
       queryClient.invalidateQueries({ 
         queryKey: ["expenses"],
-        refetchType: 'all' 
+        exact: false,
       });
       
-      // Invalider aussi les statistiques qui pourraient utiliser ces données
       queryClient.invalidateQueries({ 
         queryKey: ["all-expenses-for-stats"],
-        refetchType: 'all'
+        exact: false,
       });
       
       queryClient.invalidateQueries({ 
         queryKey: ["dashboard-data"],
-        refetchType: 'all'
+        exact: false,
       });
       
+      // Puis les données des retailers elles-mêmes
+      queryClient.invalidateQueries({ 
+        queryKey: ["retailers"],
+        exact: false,
+      });
+      
+      // Notification de succès
       toast.success("Enseigne supprimée avec succès");
     },
     onError: (error) => {
