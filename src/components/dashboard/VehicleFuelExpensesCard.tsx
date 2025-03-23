@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface VehicleFuelExpensesCardProps {
   totalFuelExpenses: number;
@@ -29,6 +30,7 @@ export const VehicleFuelExpensesCard = ({
   viewMode
 }: VehicleFuelExpensesCardProps) => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const currentMonthName = new Date().toLocaleString('fr-FR', {
     month: 'long'
   });
@@ -82,12 +84,22 @@ export const VehicleFuelExpensesCard = ({
       >
         {/* Flou pour les utilisateurs non-pro */}
         {!isPro && (
-          <div className="absolute inset-0 backdrop-blur-sm bg-white/50 dark:bg-black/60 z-10 flex flex-col items-center justify-center p-4 text-center">
-            <div className="bg-primary/90 dark:bg-primary/80 text-white p-3 rounded-full mb-3">
-              <Fuel className="h-6 w-6" />
+          <div className="absolute inset-0 backdrop-blur-sm bg-white/50 dark:bg-black/60 z-10 flex flex-col items-center justify-center p-6 text-center">
+            <div className={cn(
+              "bg-primary/90 dark:bg-primary/80 text-white rounded-full mb-4",
+              // Ajustement de taille pour éviter la troncature
+              isMobile ? "p-4" : "p-3"
+            )}>
+              <Fuel className={cn(
+                isMobile ? "h-7 w-7" : "h-6 w-6"
+              )} />
             </div>
-            <h3 className="font-semibold text-lg mb-1 dark:text-white">Fonctionnalité PRO</h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
+            <h3 className="font-semibold text-lg mb-2 dark:text-white">Fonctionnalité PRO</h3>
+            <p className={cn(
+              "text-sm text-gray-700 dark:text-gray-300",
+              // Augmentation de l'espacement pour mobile
+              isMobile && "mb-2 mx-2"
+            )}>
               Passez au compte PRO pour accéder au suivi des dépenses carburant
             </p>
           </div>
