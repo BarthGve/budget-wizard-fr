@@ -1,8 +1,6 @@
-
 import { SavingsGoal } from "@/components/savings/SavingsGoal";
 import { SavingsPieChart } from "@/components/dashboard/SavingsPieChart";
 import { motion } from "framer-motion";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 // Définition des types des props
 interface SavingsGoalSectionProps {
@@ -23,9 +21,6 @@ export const SavingsGoalSection = ({
   totalMonthlyAmount,
   monthlySavings,
 }: SavingsGoalSectionProps) => {
-  // Détection des écrans mobiles pour adapter la disposition
-  const isMobile = useMediaQuery("(max-width: 639px)");
-
   return (
     <motion.div
       className="grid gap-4 mt-6 
@@ -35,10 +30,10 @@ export const SavingsGoalSection = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
-      whileHover={{ scale: isMobile ? 1 : 1.01 }} // Désactiver l'animation hover sur mobile
+      whileHover={{ scale: 1.01 }}
     >
       {/* Section principale Goal (Responsive : prend plus d'espace sur lg) */}
-      <div className="col-span-12 sm:col-span-1 lg:col-span-8 w-full">
+      <div className="col-span-12 sm:col-span-1 lg:col-span-8">
         <SavingsGoal
           savingsPercentage={profile?.savings_goal_percentage || 0}
           totalMonthlyAmount={totalMonthlyAmount}
@@ -46,7 +41,7 @@ export const SavingsGoalSection = ({
       </div>
 
       {/* Section Pie Chart (Responsive : prend moins d'espace sur lg) */}
-      <div className="col-span-12 sm:col-span-1 lg:col-span-4 w-full">
+      <div className="col-span-12 sm:col-span-1 lg:col-span-4">
         <SavingsPieChart
           monthlySavings={monthlySavings || []}
           totalSavings={totalMonthlyAmount}

@@ -30,9 +30,8 @@ export const NewSavingDialog = memo(({
 }: NewSavingDialogProps) => {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   
-  // Responsive détection pour divers types d'écrans
+  // Responsive détection pour les tablettes
   const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
-  const isMobile = useMediaQuery("(max-width: 639px)");
 
   // Gestion de l'état contrôlé/non contrôlé
   const isControlled = controlledOpen !== undefined;
@@ -78,10 +77,8 @@ export const NewSavingDialog = memo(({
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent 
         className={cn(
-          "p-0 shadow-lg rounded-lg border",
-          isMobile && "w-[95%] max-w-[95%]", // Mobile
-          isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto", // Tablette
-          !isMobile && !isTablet && "sm:max-w-[650px] w-full", // Desktop
+          "sm:max-w-[650px] w-full p-0 shadow-lg rounded-lg border",
+          isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto",
           currentColors.borderLight,
           currentColors.borderDark,
           "dark:bg-gray-900"
