@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -111,24 +112,23 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
         className
       )}
     >
-      <div className="flex flex-col flex-1 ios-top-safe">
+      <div className="flex flex-col h-full overflow-y-auto scrollbar-none ios-top-safe">
         <div className="p-4 border-b rounded-r-xl border-border">
           <div className="flex flex-col">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                <h1
-  className={cn(   
-    "font-bold text-foreground tracking-tight bg-clip-text text-transparent animate-fade-in transition-all duration-300",
-    // Dégradé plus subtil avec des tons légèrement moins saturés
-    "bg-gradient-to-r from-indigo-400/90 via-purple-400/90 to-pink-400/85",
-    // Variante pour le mode sombre avec des tons plus lumineux mais toujours subtils
-    "dark:from-indigo-300 dark:via-purple-300 dark:to-pink-300",
-    collapsed ? "text-sm" : "text-xl"
-  )}
->
-  {collapsed ? appConfig.initiales : appConfig.name}
-</h1>
-
+                  className={cn(   
+                    "font-bold text-foreground tracking-tight bg-clip-text text-transparent animate-fade-in transition-all duration-300",
+                    // Dégradé plus subtil avec des tons légèrement moins saturés
+                    "bg-gradient-to-r from-indigo-400/90 via-purple-400/90 to-pink-400/85",
+                    // Variante pour le mode sombre avec des tons plus lumineux mais toujours subtils
+                    "dark:from-indigo-300 dark:via-purple-300 dark:to-pink-300",
+                    collapsed ? "text-sm" : "text-xl"
+                  )}
+                >
+                  {collapsed ? appConfig.initiales : appConfig.name}
+                </h1>
               </div>
               <div className="flex items-center gap-2">
                 <ThemeToggle collapsed={collapsed} />
@@ -144,9 +144,9 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
           </div>
         </div>
   
-        <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
-        
-        <div className="mt-auto">
+        <div className="flex-1 overflow-y-auto scrollbar-none">
+          <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
+          
           {/* Project announcement card */}
           <ProjectAnnouncementCard collapsed={collapsed} userId={currentUser?.id} />
           
@@ -156,7 +156,10 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
               <FeedbackDialog collapsed={collapsed} />
             </div>
           )}
-          
+        </div>
+        
+        {/* User dropdown toujours visible, fixé en bas */}
+        <div className="mt-auto sticky bottom-0 bg-background border-t border-border">
           <UserDropdown collapsed={collapsed} profile={profile} />
         </div>
       </div>
