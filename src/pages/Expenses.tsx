@@ -12,7 +12,7 @@ import { RetailersGrid } from "@/components/expenses/RetailersGrid";
 import { useExpensesData } from "@/hooks/useExpensesData";
 import { useYearlyTotals } from "@/hooks/useYearlyTotals";
 import { RetailersExpensesChart } from "@/components/expenses/RetailersExpensesChart";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -28,9 +28,14 @@ const Expenses = memo(function Expenses() {
   
   const { currentYearTotal, lastYearTotal } = useYearlyTotals(expenses);
 
-  // Calcul de la moyenne mensuelle des dépenses
-  const monthlyAverage = useMemo(() => {
-    if (!expenses || expenses.length === 0) return 0;
+  // Calcul de la moyenne mensuelle et annuelle des dépenses
+  const { monthlyAverage, yearlyAverage, averageMonthlyTransactions, averageYearlyTransactions } = useMemo(() => {
+    if (!expenses || expenses.length === 0) return { 
+      monthlyAverage: 0, 
+      yearlyAverage: 0, 
+      averageMonthlyTransactions: 0, 
+      averageYearlyTransactions: 0 
+    };
     
     // Trouver la date de la plus ancienne dépense
     const oldestExpenseDate = expenses.reduce((oldest, expense) => {
@@ -51,32 +56,23 @@ const Expenses = memo(function Expenses() {
     // Calculer la somme totale des dépenses
     const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
     
-    // Calculer la moyenne mensuelle
-    return totalAmount / monthsDiff;
-  }, [expenses]);
-
-  // Nombre de dépenses mensuelles en moyenne
-  const averageMonthlyTransactions = useMemo(() => {
-    if (!expenses || expenses.length === 0) return 0;
+    // Calculer le nombre d'années
+    const yearsDiff = Math.max(1, monthsDiff / 12);
     
-    // Trouver la date de la plus ancienne dépense
-    const oldestExpenseDate = expenses.reduce((oldest, expense) => {
-      const expenseDate = new Date(expense.date);
-      return expenseDate < oldest ? expenseDate : oldest;
-    }, new Date());
+    // Calculer les moyennes
+    const monthlyAvg = totalAmount / monthsDiff;
+    const yearlyAvg = totalAmount / yearsDiff;
     
-    // Date actuelle
-    const currentDate = new Date();
+    // Calculer le nombre moyen de transactions par mois et par an
+    const avgMonthlyTx = expenses.length / monthsDiff;
+    const avgYearlyTx = expenses.length / yearsDiff;
     
-    // Calculer le nombre de mois entre la plus ancienne dépense et aujourd'hui
-    let monthsDiff = (currentDate.getFullYear() - oldestExpenseDate.getFullYear()) * 12 +
-                    (currentDate.getMonth() - oldestExpenseDate.getMonth()) + 1;
-    
-    // S'assurer que le nombre de mois est au moins 1
-    monthsDiff = Math.max(1, monthsDiff);
-    
-    // Calculer la moyenne de transactions mensuelles
-    return expenses.length / monthsDiff;
+    return { 
+      monthlyAverage: monthlyAvg, 
+      yearlyAverage: yearlyAvg,
+      averageMonthlyTransactions: avgMonthlyTx,
+      averageYearlyTransactions: avgYearlyTx
+    };
   }, [expenses]);
 
   const expensesByRetailer = retailers?.map(retailer => ({
@@ -149,30 +145,81 @@ const Expenses = memo(function Expenses() {
                 viewMode={viewMode}
               />
               
-              {/* Nouvelle carte de moyenne mensuelle */}
-              <Card className="border shadow-sm overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10">
-                <div className="p-5">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-amber-700 dark:text-amber-300">
-                      Moyenne mensuelle
-                    </h3>
-                    <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                      <Calculator className="h-5 w-5 text-amber-500 dark:text-amber-300" />
+              {/* Carte de moyenne mensuelle/annuelle avec le même design */}
+              <Card className={cn(
+                "overflow-hidden transition-all duration-200 h-full relative",
+                "border shadow-sm hover:shadow-md",
+                // Light mode
+                "bg-white border-blue-100",
+                // Dark mode
+                "dark:bg-gray-800/90 dark:hover:bg-blue-900/20 dark:border-blue-800/50"
+              )}>
+                {/* Fond radial gradient */}
+                <div className={cn(
+                  "absolute inset-0 opacity-5",
+                  // Light mode
+                  "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+                  // Dark mode
+                  "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+                )} />
+                
+                <CardHeader className="pb-2 pt-6 relative z-10">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center space-x-2">
+                      <div className={cn(
+                        // Light mode
+                        "bg-blue-100 text-blue-700",
+                        // Dark mode
+                        "dark:bg-blue-800/40 dark:text-blue-300",
+                        // Common
+                        "p-2 rounded-lg"
+                      )}>
+                        <Calculator className="h-4 w-4" />
+                      </div>
+                      <CardTitle className={cn(
+                        "text-lg font-semibold",
+                        // Light mode
+                        "text-blue-700",
+                        // Dark mode
+                        "dark:text-blue-300"
+                      )}>
+                        Moyenne des dépenses
+                      </CardTitle>
                     </div>
                   </div>
                   
-                  <div className="mt-4 space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <p className={cn("text-2xl font-bold text-amber-700 dark:text-amber-200")}>
-                        {formatCurrency(monthlyAverage)}
-                      </p>
-                    </div>
-                    
-                    <p className={cn("text-sm text-amber-600/80 dark:text-amber-300/80")}>
-                      {Math.round(averageMonthlyTransactions)} achats par mois
+                  <CardDescription className={cn(
+                    "mt-2 text-sm",
+                    // Light mode
+                    "text-blue-600/80",
+                    // Dark mode
+                    "dark:text-blue-400/90"
+                  )}>
+                    {viewMode === 'monthly' ? "Moyenne mensuelle" : "Moyenne annuelle"}
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent className="pt-1 pb-6 relative z-10">
+                  <p className={cn(
+                    "text-2xl font-bold",
+                    // Light mode
+                    "text-blue-700",
+                    // Dark mode
+                    "dark:text-blue-300"
+                  )}>
+                    {formatCurrency(viewMode === 'monthly' ? monthlyAverage : yearlyAverage)}
+                  </p>
+                  
+                  <div className="mt-3">
+                    <p className={cn(
+                      "text-sm",
+                      "text-blue-600/80 dark:text-blue-400/90"
+                    )}>
+                      {Math.round(viewMode === 'monthly' ? averageMonthlyTransactions : averageYearlyTransactions)} 
+                      {viewMode === 'monthly' ? " achats par mois" : " achats par an"}
                     </p>
                   </div>
-                </div>
+                </CardContent>
               </Card>
             </motion.div>
             
