@@ -80,7 +80,11 @@ export const useRetailers = () => {
           table: 'retailers'
         },
         (payload) => {
-          console.log("🔔 Retailer change detected:", payload.eventType, payload.new?.id || payload.old?.id);
+          // Correction ici: Vérification de type appropriée pour les objets new et old
+          const newId = payload.new && typeof payload.new === 'object' && 'id' in payload.new ? payload.new.id : undefined;
+          const oldId = payload.old && typeof payload.old === 'object' && 'id' in payload.old ? payload.old.id : undefined;
+          
+          console.log("🔔 Retailer change detected:", payload.eventType, newId || oldId || 'unknown');
           
           // Temporiser pour laisser la transaction se terminer complètement
           setTimeout(() => {
