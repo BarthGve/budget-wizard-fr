@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { NewSavingDialogContent } from "./NewSavingDialogContent";
 import { useSavingDialog } from "./hooks/useSavingDialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface NewSavingDialogProps {
   saving?: {
@@ -30,8 +31,9 @@ export const NewSavingDialog = memo(({
 }: NewSavingDialogProps) => {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   
-  // Responsive détection pour les tablettes
+  // Utilisons les deux approches pour une meilleure détection des appareils
   const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
+  const isMobile = useIsMobile();
 
   // Gestion de l'état contrôlé/non contrôlé
   const isControlled = controlledOpen !== undefined;
@@ -72,13 +74,20 @@ export const NewSavingDialog = memo(({
   };
   const currentColors = colors[colorScheme];
 
+  // Ajuster la largeur de la boîte de dialogue en fonction du type d'appareil
+  const getDialogWidth = () => {
+    if (isMobile) return "w-[95%] max-w-[95%]";
+    if (isTablet) return "w-[85%] max-w-[85%]";
+    return "sm:max-w-[650px] w-full";
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent 
         className={cn(
-          "sm:max-w-[650px] w-full p-0 shadow-lg rounded-lg border",
-          isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto",
+          getDialogWidth(),
+          "p-0 shadow-lg rounded-lg border overflow-y-auto",
           currentColors.borderLight,
           currentColors.borderDark,
           "dark:bg-gray-900"

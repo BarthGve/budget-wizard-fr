@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useState, useEffect, useRef } from "react";
@@ -8,6 +9,7 @@ import { SavingsHeader } from "@/components/savings/SavingsHeader";
 import { SavingsGoalSection } from "@/components/savings/SavingsGoalSection";
 import { ProjectsSection } from "@/components/savings/ProjectsSection";
 import { MonthlySavingsSection } from "@/components/savings/MonthlySavingsSection";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Savings = () => {
   const {
@@ -18,6 +20,7 @@ const Savings = () => {
   const queryClient = useQueryClient();
   const savingsChannelRef = useRef(null);
   const [projectRefreshCounter, setProjectRefreshCounter] = useState(0); // Compteur pour forcer le rafraîchissement
+  const isMobile = useIsMobile();
 
   // Écouteurs en temps réel spécifiques à la page Savings
   useEffect(() => {
@@ -126,7 +129,7 @@ const Savings = () => {
   return (
     <DashboardLayout>
       <motion.div 
-        className="space-y-4 mt-4 overflow-hidden flex flex-col"
+        className="space-y-4 mt-2 md:mt-4 overflow-hidden flex flex-col w-full max-w-full px-2 md:px-4"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -145,15 +148,16 @@ const Savings = () => {
         />
         
         {/* Monthly Savings Section - Pleine largeur */}
-        <div className="w-full overflow-y-auto pb-6">
+        <div className="w-full overflow-y-auto pb-4">
           <MonthlySavingsSection 
             monthlySavings={monthlySavings}
             onSavingDeleted={handleSavingDeleted}
+            showInitial={!isMobile}
           />
         </div>
         
         {/* Projects Section - Pleine largeur */}
-        <div className="w-full overflow-y-auto pb-6">
+        <div className="w-full overflow-y-auto pb-4">
           <ProjectsSection 
             projects={projects} 
             onProjectDeleted={handleProjectDeleted}
