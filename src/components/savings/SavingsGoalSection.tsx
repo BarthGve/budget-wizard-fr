@@ -43,13 +43,15 @@ export const SavingsGoalSection = ({
         />
       </div>
 
-      {/* Section Pie Chart (prend toute la largeur sur mobile) */}
-      <div className="col-span-12 lg:col-span-4 w-full">
-        <SavingsPieChart
-          monthlySavings={monthlySavings || []}
-          totalSavings={totalMonthlyAmount}
-        />
-      </div>
+      {/* Section Pie Chart (masquée sur mobile) */}
+      {!isMobile && (
+        <div className="col-span-12 lg:col-span-4 w-full">
+          <SavingsPieChart
+            monthlySavings={monthlySavings || []}
+            totalSavings={totalMonthlyAmount}
+          />
+        </div>
+      )}
     </motion.div>
   );
 };
