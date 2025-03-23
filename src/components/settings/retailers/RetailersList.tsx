@@ -11,34 +11,70 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import StyledLoader from "@/components/ui/StyledLoader";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DeleteRetailerConfirmDialog } from "./DeleteRetailerConfirmDialog";
 
 export function RetailersList() {
   const { retailers, isLoading, refetchRetailers } = useRetailers();
   const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer();
   const [retailerToDelete, setRetailerToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
-  if (isLoading) {
-    return <div><StyledLoader/></div>;
-  }
-
+  // Gestionnaire pour l'ouverture du dialogue de confirmation
   const handleDeleteClick = (retailerId: string, retailerName: string) => {
     setRetailerToDelete({ id: retailerId, name: retailerName });
+    setIsConfirmDialogOpen(true);
   };
 
+  // Gestionnaire pour la suppression effective de l'enseigne
   const handleConfirmDelete = () => {
     if (retailerToDelete) {
       console.log("🎯 Deleting retailer:", retailerToDelete.id);
+      
       deleteRetailer(retailerToDelete.id, {
         onSuccess: () => {
-          // Rafraîchir la liste des enseignes après suppression réussie
-          refetchRetailers();
+          // Forcer un rafraîchissement explicite des données
+          setTimeout(() => {
+            refetchRetailers();
+          }, 100);
+          
+          // Réinitialiser l'état du dialogue
+          setIsConfirmDialogOpen(false);
+          setRetailerToDelete(null);
+        },
+        onError: () => {
+          // En cas d'erreur, réinitialiser également
+          setIsConfirmDialogOpen(false);
           setRetailerToDelete(null);
         }
       });
     }
   };
+
+  // Gestionnaire pour la fermeture du dialogue sans suppression
+  const handleDialogClose = (open: boolean) => {
+    if (!open) {
+      setIsConfirmDialogOpen(false);
+      if (!isDeleting) {
+        setRetailerToDelete(null);
+      }
+    }
+  };
+
+  // Effet pour forcer un rafraîchissement périodique si en cours de suppression
+  useEffect(() => {
+    if (isDeleting) {
+      const interval = setInterval(() => {
+        refetchRetailers();
+      }, 1000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [isDeleting, refetchRetailers]);
+
+  if (isLoading) {
+    return <div><StyledLoader/></div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -81,8 +117,8 @@ export function RetailersList() {
       </Table>
 
       <DeleteRetailerConfirmDialog
-        open={!!retailerToDelete}
-        onOpenChange={(open) => !open && setRetailerToDelete(null)}
+        open={isConfirmDialogOpen}
+        onOpenChange={handleDialogClose}
         onConfirm={handleConfirmDelete}
         retailerName={retailerToDelete?.name || ""}
       />

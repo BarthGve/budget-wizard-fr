@@ -1,10 +1,11 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 export const useExpensesData = () => {
   const queryClient = useQueryClient();
+  const channelsRef = useRef<{ [key: string]: any }>({});
 
   // Configuration optimisée de la requête
   const {
@@ -20,84 +21,109 @@ export const useExpensesData = () => {
         }
       } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
+      
+      console.log("Fetching expenses data...");
+      
       const {
         data,
         error
       } = await supabase.from("expenses").select("*").eq("profile_id", user.id);
-      if (error) throw error;
+      
+      if (error) {
+        console.error("Error fetching expenses:", error);
+        throw error;
+      }
+      
+      console.log(`Fetched ${data?.length} expenses successfully`);
       return data;
     },
-    staleTime: 1000 * 60 * 5, // Garder les données fraîches pendant 5 minutes
-    refetchOnWindowFocus: false, // Désactiver le refetch au focus de la fenêtre
+    staleTime: 1000 * 30, // Réduire à 30 secondes pour des mises à jour plus fréquentes
+    refetchOnWindowFocus: true, // Activer le refetch au focus
     refetchOnMount: true,
-    refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
+    refetchOnReconnect: true, // Activer le refetch à la reconnexion
   });
 
-  // Configuration d'un écouteur spécifique pour les changements dans la table des dépenses
+  // Configuration d'écouteurs spécifiques pour les changements dans les tables importantes
   useEffect(() => {
-    console.log("Mise en place de l'écouteur pour les dépenses sur la page expenses");
+    console.log("Setting up realtime listeners for expenses data");
     
-    const channel = supabase
+    // Nettoyage des canaux existants
+    const cleanupChannels = () => {
+      Object.values(channelsRef.current).forEach((channel: any) => {
+        if (channel) {
+          console.log(`Removing channel: ${channel.topic}`);
+          supabase.removeChannel(channel);
+        }
+      });
+      channelsRef.current = {};
+    };
+
+    // Créer un canal pour les dépenses
+    const expensesChannel = supabase
       .channel(`expenses-realtime-${Date.now()}`)
       .on(
         'postgres_changes',
         {
-          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          event: '*',
           schema: 'public',
           table: 'expenses'
         },
         (payload) => {
-          console.log(`Changement détecté dans les dépenses:`, payload);
+          console.log(`Change detected in expenses:`, payload);
           
           // Forcer le rechargement des données des dépenses
           queryClient.invalidateQueries({ 
             queryKey: ["expenses"],
-            exact: false,
-            refetchType: 'all' // Forcer le rechargement
+            refetchType: 'all'
           });
         }
       )
       .subscribe((status) => {
-        console.log(`Statut du canal expenses-realtime:`, status);
+        console.log(`Expenses channel status: ${status}`);
       });
     
-    // Configurer également l'écoute pour les enseignes qui affectent les dépenses
+    // Créer un canal pour les enseignes
     const retailersChannel = supabase
       .channel(`retailers-expenses-${Date.now()}`)
       .on(
         'postgres_changes',
         {
-          event: '*', // Écouter tous les événements (INSERT, UPDATE, DELETE)
+          event: '*',
           schema: 'public',
           table: 'retailers'
         },
         (payload) => {
-          console.log(`Changement détecté dans les enseignes:`, payload);
+          console.log(`Change detected in retailers:`, payload);
           
           // Forcer le rechargement des données des dépenses quand une enseigne change
           queryClient.invalidateQueries({ 
             queryKey: ["expenses"],
-            exact: false,
-            refetchType: 'all' // Forcer le rechargement
+            refetchType: 'all'
           });
         }
       )
       .subscribe((status) => {
-        console.log(`Statut du canal retailers-expenses:`, status);
+        console.log(`Retailers-expenses channel status: ${status}`);
       });
     
+    // Stocker les références des canaux pour le nettoyage
+    channelsRef.current = {
+      expenses: expensesChannel,
+      retailers: retailersChannel
+    };
+    
     return () => {
-      console.log("Nettoyage des écouteurs expenses-realtime et retailers-expenses");
-      supabase.removeChannel(channel);
-      supabase.removeChannel(retailersChannel);
+      console.log("Cleaning up expense data listeners");
+      cleanupChannels();
     };
   }, [queryClient]);
 
-  // Optimiser avec useCallback pour éviter les recréations de fonctions
+  // Fonction de rafraîchissement explicite optimisée avec debounce simple
   const handleExpenseUpdated = useCallback(() => {
+    console.log("Manual expense refresh requested");
     queryClient.invalidateQueries({
       queryKey: ["expenses"],
-      exact: true // Invalidation ciblée uniquement
+      exact: true
     });
   }, [queryClient]);
 
