@@ -1,4 +1,3 @@
-
 import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { GlobalBalanceCard } from "../common/GlobalBalanceCard";
@@ -11,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
 import { useState, useMemo, memo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const MemoizedSidebar = memo(Sidebar);
 
@@ -25,9 +25,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const queryClient = useQueryClient();
   const channelRef = useRef(null);
 
-  // Forcer un rafraîchissement des données lors du montage du composant
   useEffect(() => {
-    // Rafraîchir les données dès le chargement
     const timeoutId = setTimeout(() => {
       refetch();
     }, 300);
@@ -35,7 +33,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return () => clearTimeout(timeoutId);
   }, [refetch]);
 
-  // Configurer un canal dédié pour les contributeurs dans le layout
   useEffect(() => {
     if (channelRef.current) {
       console.log('Suppression du canal existant dans DashboardLayout');
@@ -63,7 +60,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             refetchType: 'all'
           });
 
-          // Forcer un rafraîchissement immédiat
           setTimeout(() => {
             refetch();
           }, 300);
@@ -98,9 +94,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       return data as Credit[];
     },
-    staleTime: 1000 * 30, // Réduire à 30 secondes pour plus de réactivité
-    refetchOnWindowFocus: true, // Activer le rechargement lors du focus
-    refetchOnReconnect: true // Activer le rechargement lors de la reconnexion
+    staleTime: 1000 * 30,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true
   });
 
   const { data: userProfile } = useQuery({
@@ -125,9 +121,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         isAdmin
       };
     },
-    staleTime: 1000 * 30, // Réduire à 30 secondes pour plus de réactivité
-    refetchOnWindowFocus: true, // Activer le rechargement lors du focus
-    refetchOnReconnect: true // Activer le rechargement lors de la reconnexion
+    staleTime: 1000 * 30,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true
   });
 
   const totalRevenue = useMemo(() => 
@@ -144,18 +140,19 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  // Fermer la sidebar quand on clique sur le fond
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (isMobile && showMobileSidebar) {
       setShowMobileSidebar(false);
     }
   };
 
-  // Memoized content to prevent unnecessary re-renders
   const MemoizedContent = useMemo(() => (
     <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!userProfile?.isAdmin && (
-        <div className={`fixed right-6 top-4 z-40 ${isMobile ? 'ios-top-safe pt-4' : ''}`}>
+        <div className={cn(
+          "fixed z-40",
+          isMobile ? "right-4 top-16 ios-top-safe" : "right-6 top-4"
+        )}>
           <GlobalBalanceCard 
             balance={globalBalance} 
             className="shadow-lg"
@@ -163,7 +160,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
       )}
 
-      <div className={`flex-1 container mx-auto p-6 overflow-auto relative ${isMobile ? 'ios-top-safe pt-20' : 'pt-20'}`}>
+      <div className={cn(
+        "flex-1 container mx-auto p-6 overflow-auto relative",
+        isMobile ? "ios-top-safe pt-24" : "pt-20"
+      )}>
         <div className="page-transition">
           {children}
         </div>
@@ -175,7 +175,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
-      {/* Overlay pour fermer la sidebar sur mobile */}
       {isMobile && showMobileSidebar && (
         <div 
           className="fixed inset-0 bg-black/50 z-40"

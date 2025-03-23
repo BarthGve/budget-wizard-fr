@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BadgeEuro } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface GlobalBalanceCardProps {
   balance: number;
@@ -14,6 +15,7 @@ export const GlobalBalanceCard = ({
   className
 }: GlobalBalanceCardProps) => {
   const [displayedBalance, setDisplayedBalance] = useState(balance);
+  const isMobile = useIsMobile();
   
   // Mettre à jour le solde affiché avec animation lors des changements
   useEffect(() => {
@@ -51,15 +53,29 @@ export const GlobalBalanceCard = ({
   return(
     <Card className={cn(
       "bg-background/60 hover:bg-background/80 backdrop-blur-md transition-all w-fit", 
+      // Adapté pour mobile - taille plus compacte et meilleure lisibilité
+      isMobile ? "scale-90 origin-top-right" : "",
       className
     )}>
-      <CardContent className="p-4">
+      <CardContent className={cn(
+        "p-4",
+        // Rendre plus compact sur mobile
+        isMobile && "p-3"
+      )}>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <BadgeEuro className="h-5 w-5 text-muted-foreground" />
-            <span className="text-lg font-medium">Disponible</span>
+            <span className={cn(
+              "font-medium",
+              // Texte plus petit sur mobile
+              isMobile ? "text-base" : "text-lg"
+            )}>Disponible</span>
           </div>
-          <p className={cn("text-lg font-bold", displayedBalance >= 0 ? "text-green-600" : "text-red-600")}>
+          <p className={cn(
+            "font-bold", 
+            isMobile ? "text-base" : "text-lg",
+            displayedBalance >= 0 ? "text-green-600" : "text-red-600"
+          )}>
             {displayedBalance.toLocaleString('fr-FR')} €
           </p>
         </div>
