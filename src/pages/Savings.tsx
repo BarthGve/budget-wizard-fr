@@ -148,7 +148,7 @@ const Savings = () => {
         />
         
         {/* Monthly Savings Section - Pleine largeur */}
-        <div className="w-full overflow-y-auto pb-4">
+        <div className="w-full overflow-y-auto">
           <MonthlySavingsSection 
             monthlySavings={monthlySavings}
             onSavingDeleted={handleSavingDeleted}
@@ -157,7 +157,7 @@ const Savings = () => {
         </div>
         
         {/* Projects Section - Pleine largeur */}
-        <div className="w-full overflow-y-auto pb-4">
+        <div className="w-full overflow-y-auto">
           <ProjectsSection 
             projects={projects} 
             onProjectDeleted={handleProjectDeleted}
