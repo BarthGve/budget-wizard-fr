@@ -84,29 +84,21 @@ export const VehicleFuelExpensesCard = ({
       >
         {/* Flou pour les utilisateurs non-pro */}
         {!isPro && (
-          <div className="absolute inset-0 backdrop-blur-sm bg-white/50 dark:bg-black/60 z-10 flex flex-col items-center justify-center p-5 text-center">
-            {/* Container pour l'icône - taille ajustée pour éviter la troncature */}
+          <div className="absolute inset-0 backdrop-blur-sm bg-white/50 dark:bg-black/60 z-10 flex flex-col items-center justify-center p-6 text-center">
             <div className={cn(
-              "flex items-center justify-center rounded-full",
-              "bg-primary/90 dark:bg-primary/80 text-white",
+              "bg-primary/90 dark:bg-primary/80 text-white rounded-full mb-4",
               // Ajustement de taille pour éviter la troncature
-              isMobile ? "h-14 w-14" : "h-12 w-12"
+              isMobile ? "p-4" : "p-3"
             )}>
               <Fuel className={cn(
-                // Icône plus petite pour s'adapter correctement au cercle
-                isMobile ? "h-6 w-6" : "h-5 w-5"
+                isMobile ? "h-7 w-7" : "h-6 w-6"
               )} />
             </div>
-            
-            {/* Meilleur espacement du titre */}
-            <h3 className="font-semibold text-xl mt-4 mb-2 dark:text-white">
-              Fonctionnalité PRO
-            </h3>
-            
-            {/* Paragraphe avec meilleur espacement et marges */}
+            <h3 className="font-semibold text-lg mb-2 dark:text-white">Fonctionnalité PRO</h3>
             <p className={cn(
-              "text-sm text-gray-700 dark:text-gray-300 max-w-[80%] mx-auto",
-              isMobile && "mb-3"
+              "text-sm text-gray-700 dark:text-gray-300",
+              // Augmentation de l'espacement pour mobile
+              isMobile && "mb-2 mx-2"
             )}>
               Passez au compte PRO pour accéder au suivi des dépenses carburant
             </p>
