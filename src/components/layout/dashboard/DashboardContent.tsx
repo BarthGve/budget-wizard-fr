@@ -4,12 +4,8 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { GlobalBalanceCard } from "../../common/GlobalBalanceCard";
 import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { BadgeEuro } from "lucide-react";
-import { 
-  DrawerTop, 
-  DrawerTopContent, 
-  DrawerTopTrigger 
-} from "@/components/ui/drawer-top";
 
 interface DashboardContentProps {
   children: ReactNode;
@@ -41,8 +37,8 @@ export const DashboardContent = ({
       )}
 
       {!isAdmin && isMobile && (
-        <DrawerTop open={openDrawer} onOpenChange={setOpenDrawer}>
-          <DrawerTopTrigger asChild>
+        <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
+          <DrawerTrigger asChild>
             <Button 
               size="sm" 
               variant="outline" 
@@ -50,16 +46,16 @@ export const DashboardContent = ({
             >
               <BadgeEuro className="h-5 w-5" />
             </Button>
-          </DrawerTopTrigger>
-          <DrawerTopContent className="p-4">
+          </DrawerTrigger>
+          <DrawerContent className="p-4">
             <div className="mx-auto w-full max-w-sm">
               <GlobalBalanceCard 
                 balance={globalBalance} 
                 className="w-full" 
               />
             </div>
-          </DrawerTopContent>
-        </DrawerTop>
+          </DrawerContent>
+        </Drawer>
       )}
 
       <div className={cn(
