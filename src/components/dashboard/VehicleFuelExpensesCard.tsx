@@ -108,14 +108,17 @@ export const VehicleFuelExpensesCard = ({
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
-              <div className={cn(
-                "p-2 rounded-full", 
-                "bg-gray-200 text-gray-600",
-                // Light mode - Gris au lieu de vert
-                "dark:bg-gray-700/40 dark:text-gray-300" // Dark mode - Gris au lieu de vert
-              )}>
-                <Fuel className="h-5 w-5" />
-              </div>
+              {/* Masquer l'icône sur mobile */}
+              {!isMobile && (
+                <div className={cn(
+                  "p-2 rounded-full", 
+                  "bg-gray-200 text-gray-600",
+                  // Light mode - Gris au lieu de vert
+                  "dark:bg-gray-700/40 dark:text-gray-300" // Dark mode - Gris au lieu de vert
+                )}>
+                  <Fuel className="h-5 w-5" />
+                </div>
+              )}
               <span className="dark:text-white">{titleText}</span>
             </CardTitle>
           </div>
