@@ -45,7 +45,7 @@ export const UserDropdown = ({
 
   return (
     <div className={cn(
-      "border-t border-gray-200 p-3 sm:p-4", 
+      "p-3 sm:p-4", 
       isMobile && "shadow-inner bg-background/95"
     )}>
       <DropdownMenu>
@@ -97,7 +97,7 @@ export const UserDropdown = ({
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" side={isMobile ? "top" : "right"} sideOffset={20} className="w-[240px]">
+        <DropdownMenuContent align="end" side={isMobile ? "top" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px]">
           <div className="flex items-center gap-3 p-2 border-b">
             <div className="relative">
               <Avatar className="h-12 w-12">

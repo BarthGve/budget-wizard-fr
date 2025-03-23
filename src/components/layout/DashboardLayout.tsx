@@ -144,6 +144,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
+  // Fermer la sidebar quand on clique sur le fond
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (isMobile && showMobileSidebar) {
+      setShowMobileSidebar(false);
+    }
+  };
+
   // Memoized content to prevent unnecessary re-renders
   const MemoizedContent = useMemo(() => (
     <main className="flex-1 flex flex-col h-screen touch-scroll">
@@ -168,7 +175,15 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
-      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'}`}>
+      {/* Overlay pour fermer la sidebar sur mobile */}
+      {isMobile && showMobileSidebar && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={handleOverlayClick}
+        />
+      )}
+      
+      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}>
         <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
       </div>
 

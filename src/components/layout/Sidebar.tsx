@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +9,6 @@ import { NavigationMenu } from "./NavigationMenu";
 import { UserDropdown } from "./UserDropdown";
 import { ThemeToggle } from "../theme/ThemeToggle";
 import { appConfig } from "@/config/app.config";
-import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
 import { FeedbackDialog } from "../feedback/FeedbackDialog";
@@ -27,6 +26,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     return saved ? JSON.parse(saved) : (isMobile ? true : false);
   });
   const { latestVersion } = useLatestVersion();
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
@@ -88,23 +88,33 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     staleTime: 1000 * 60, // 1 minute
   });
 
-  const handleClickOutside = (e: MouseEvent) => {
-    if (isMobile && onClose && (e.target as HTMLElement).closest('.sidebar-content') === null) {
+  // Gérer les liens dans la sidebar pour fermer automatiquement la sidebar sur mobile
+  const handleLinkClick = () => {
+    if (isMobile && onClose) {
       onClose();
     }
   };
 
+  // Attacher cet événement de clic à tout le contenu de la sidebar pour mobile
   useEffect(() => {
-    if (isMobile) {
-      document.addEventListener('mousedown', handleClickOutside);
+    if (isMobile && sidebarRef.current) {
+      const links = sidebarRef.current.querySelectorAll('a');
+      
+      links.forEach(link => {
+        link.addEventListener('click', handleLinkClick);
+      });
+      
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
+        links.forEach(link => {
+          link.removeEventListener('click', handleLinkClick);
+        });
       };
     }
-  }, [isMobile, onClose]);
+  }, [isMobile, onClose, sidebarRef.current]);
 
   return (
     <aside
+      ref={sidebarRef}
       className={cn(
         "relative h-screen bg-background border-r rounded-r-xl border-border transition-all duration-300 flex flex-col touch-scroll sidebar-content",
         collapsed ? "w-16" : "w-64",
@@ -112,8 +122,9 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
         className
       )}
     >
-      <div className="flex flex-col h-full overflow-y-auto scrollbar-none ios-top-safe">
-        <div className="p-4 border-b rounded-r-xl border-border">
+      <div className="flex flex-col h-full ios-top-safe">
+        {/* En-tête fixe en haut */}
+        <div className="sticky top-0 z-10 bg-background p-4 border-b rounded-r-xl border-border">
           <div className="flex flex-col">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -144,6 +155,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
           </div>
         </div>
   
+        {/* Contenu déroulant au milieu */}
         <div className="flex-1 overflow-y-auto scrollbar-none">
           <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
           
@@ -159,7 +171,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
         </div>
         
         {/* User dropdown toujours visible, fixé en bas */}
-        <div className="mt-auto sticky bottom-0 bg-background border-t border-border">
+        <div className="sticky bottom-0 bg-background border-t border-border">
           <UserDropdown collapsed={collapsed} profile={profile} />
         </div>
       </div>
