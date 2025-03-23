@@ -158,14 +158,19 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
           </div>
         </div>
   
-        {/* Contenu déroulant au milieu */}
-        <div className="flex-1 overflow-y-auto scrollbar-none">
-          <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
+        {/* Contenu principal avec navigation qui s'ajuste automatiquement */}
+        <div className="flex flex-col flex-1 overflow-hidden">
+          {/* Le NavigationMenu avec flex-1 pour qu'il prenne tout l'espace disponible */}
+          <div className="flex-1 overflow-y-auto">
+            <NavigationMenu collapsed={collapsed} isAdmin={isAdmin || false} />
+          </div>
           
-          {/* Project announcement card */}
-          <ProjectAnnouncementCard collapsed={collapsed} userId={currentUser?.id} />
+          {/* Project announcement card - reste visible en bas */}
+          <div className="px-4 py-2">
+            <ProjectAnnouncementCard collapsed={collapsed} userId={currentUser?.id} />
+          </div>
           
-          {/* Feedback dialog */}
+          {/* Feedback dialog - reste visible en bas */}
           {!isAdmin && (
             <div className="px-4 py-2">
               <FeedbackDialog collapsed={collapsed} />

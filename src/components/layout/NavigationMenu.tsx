@@ -60,7 +60,7 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
 
   return (
     <nav className="flex flex-col h-full justify-between p-4">
-      <ul className="space-y-1">
+      <ul className="space-y-1 flex-grow overflow-y-auto scrollbar-none">
         {menuItems.map((item) => {
           const isActive = item.matchPath
             ? new RegExp(item.matchPath).test(location.pathname)
