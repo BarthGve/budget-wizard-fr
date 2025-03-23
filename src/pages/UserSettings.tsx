@@ -45,29 +45,53 @@ const UserSettings = () => {
           </p>
         </div>
         <Tabs defaultValue={activeTab} className="space-y-4 md:space-y-6">
-          <TabsList className={`bg-background border w-full ${isMobile ? "overflow-x-auto p-0.5" : ""}`}>
-            <TabsTrigger 
-              value="profile" 
-              className={`flex items-center gap-2 ${isMobile ? "flex-1 text-sm" : ""}`}
+          <div className="relative w-full">
+            <TabsList 
+              className={`bg-background border w-full ${
+                isMobile 
+                  ? "flex justify-between overflow-x-auto scrollbar-none p-0.5" 
+                  : ""
+              }`}
+              style={isMobile ? { scrollbarWidth: 'none' } : {}}
             >
-              <User className={isMobile ? "h-4 w-4" : "h-4 w-4"} />
-              Profil
-            </TabsTrigger>
-            <TabsTrigger 
-              value="notifications" 
-              className={`flex items-center gap-2 ${isMobile ? "flex-1 text-sm" : ""}`}
-            >
-              <Bell className={isMobile ? "h-4 w-4" : "h-4 w-4"} />
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger 
-              value="settings" 
-              className={`flex items-center gap-2 ${isMobile ? "flex-1 text-sm" : ""}`}
-            >
-              <Settings2 className={isMobile ? "h-4 w-4" : "h-4 w-4"} />
-              Paramétrage
-            </TabsTrigger>
-          </TabsList>
+              <TabsTrigger 
+                value="profile" 
+                className={`flex items-center gap-2 ${
+                  isMobile 
+                    ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                    : ""
+                }`}
+              >
+                <User className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+                {!isMobile ? "Profil" : ""}
+                <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Profil</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications" 
+                className={`flex items-center gap-2 ${
+                  isMobile 
+                    ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                    : ""
+                }`}
+              >
+                <Bell className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+                {!isMobile ? "Notifications" : ""}
+                <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Notif.</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="settings" 
+                className={`flex items-center gap-2 ${
+                  isMobile 
+                    ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                    : ""
+                }`}
+              >
+                <Settings2 className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+                {!isMobile ? "Paramétrage" : ""}
+                <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Param.</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
           <TabsContent value="profile" className={`space-y-4 md:space-y-6 ${isMobile ? "px-0" : ""}`}>
             <ProfileSettings />
             <SecuritySettings />
