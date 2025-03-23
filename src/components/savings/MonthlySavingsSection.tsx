@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface MonthlySavingsSectionProps {
   monthlySavings: Array<{
@@ -25,6 +26,8 @@ export const MonthlySavingsSection = ({
 }: MonthlySavingsSectionProps) => {
   const [showMonthlySavings, setShowMonthlySavings] = useState(showInitial);
   const { theme } = useTheme();
+  // Détection des écrans mobiles
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const toggleMonthlySavingsVisibility = () => {
     setShowMonthlySavings(prev => !prev);
@@ -32,14 +35,22 @@ export const MonthlySavingsSection = ({
 
   return (
     <motion.div 
-      className="flex-none mt-6"
+      className="flex-none mt-6 w-full"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
     >
-      <div className="flex items-center justify-between p-4">
+      <div className={cn(
+        "flex items-center justify-between p-4",
+        isMobile && "px-2" // Réduire le padding horizontal sur mobile
+      )}>
         <div className="flex items-center gap-2">
-          <h2 className="font-bold tracking-tight bg-gradient-to-r from-emerald-500 via-green-500 to-teal-400 bg-clip-text text-transparent dark:from-emerald-400 dark:via-green-400 dark:to-teal-300 animate-fade-in text-2xl">Versements mensuels</h2>
+          <h2 className={cn(
+            "font-bold tracking-tight bg-gradient-to-r from-emerald-500 via-green-500 to-teal-400 bg-clip-text text-transparent dark:from-emerald-400 dark:via-green-400 dark:to-teal-300 animate-fade-in",
+            isMobile ? "text-xl" : "text-2xl" // Texte plus petit sur mobile
+          )}>
+            Versements mensuels
+          </h2>
           <motion.div
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.1 }}

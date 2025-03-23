@@ -11,6 +11,7 @@ import {
 import { differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar, Wallet, Clock, Target, TrendingUp } from "lucide-react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface SavingsProjectDetailsProps {
   project: SavingsProject | null;
@@ -19,6 +20,8 @@ interface SavingsProjectDetailsProps {
 
 export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetailsProps) => {
   if (!project) return null;
+  
+  const isMobile = useMediaQuery("(max-width: 640px)");
 
   const calculateSavedAmount = (project: SavingsProject) => {
     if (!project.montant_mensuel || !project.created_at) return 0;
@@ -46,7 +49,10 @@ export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetail
 
   return (
     <Dialog open={!!project} onOpenChange={onClose}>
-      <DialogContent className="max-w-md p-5">
+      <DialogContent className={cn(
+        "p-5", 
+        isMobile ? "max-w-[95%] w-[95%]" : "max-w-md"
+      )}>
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-green-800 dark:text-green-300">
             {project.nom_projet}
@@ -79,7 +85,6 @@ export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetail
               <Progress 
                 value={progressValue} 
                 className="h-1.5 bg-green-100 dark:bg-green-800/30"
-                // Green progress bar
                 style={{
                   "--progress-foreground": "rgb(22 163 74)"
                 } as React.CSSProperties}
@@ -91,8 +96,11 @@ export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetail
             </div>
           )}
           
-          {/* Key information grid */}
-          <div className="grid grid-cols-2 gap-3 text-sm">
+          {/* Key information grid - adapté pour mobile */}
+          <div className={cn(
+            "grid gap-3 text-sm",
+            isMobile ? "grid-cols-1" : "grid-cols-2"
+          )}>
             <InfoItem 
               icon={<Target className="h-4 w-4 text-green-600 dark:text-green-500" />}
               label="Objectif"

@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { formatCurrency } from "@/utils/format";
@@ -7,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PiggyBank } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface MonthlySaving {
   id: string;
@@ -45,6 +47,7 @@ export const SavingsPieChart = ({
   const navigate = useNavigate();
   const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   const chartColors = isDarkMode ? DARK_COLORS : COLORS;
+  const isMobile = useMediaQuery("(max-width: 768px)");
   
   const chartData = monthlySavings.map((saving, index) => ({
     name: saving.name,
@@ -62,24 +65,25 @@ export const SavingsPieChart = ({
     }]))
   };
 
-  // Format custom pour afficher la structure de l'épargne
-  const formatSavingSummary = () => {
-    if (monthlySavings.length === 0) return "Aucune épargne programmée";
-    if (monthlySavings.length === 1) return `1 compte: ${monthlySavings[0].name}`;
-    return `${monthlySavings.length} comptes d'épargne actifs`;
-  };
+  // Dimensions adaptatives pour le graphique
+  const chartWidth = isMobile ? 200 : 250;
+  const chartHeight = isMobile ? 200 : 230;
+  const innerRadius = isMobile ? 55 : 65;
+  const outerRadius = isMobile ? 80 : 90;
+  const fontSize = isMobile ? "text-lg" : "text-xl";
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      whileHover={{ y: -3 }}
+      whileHover={{ y: isMobile ? 0 : -3 }} // Désactiver l'animation sur mobile
       className="w-full"
     >
       <Card 
         className={cn(
-          "cursor-pointer h-[320px] flex flex-col transition-all duration-300",
+          "cursor-pointer flex flex-col transition-all duration-300 w-full",
+          isMobile ? "h-[280px]" : "h-[320px]", // Hauteur adaptée sur mobile
           // Light mode - fond blanc avec effet d'ombre élégant
           "bg-white border border-gray-200/60 shadow-lg hover:shadow-xl",
           // Dark mode - fond adapté avec effet d'ombre verdâtre
@@ -104,9 +108,12 @@ export const SavingsPieChart = ({
         </CardHeader>
         
         <CardContent className="flex-1 flex items-center justify-center p-0 w-full">
-          <div className="w-full max-w-[250px] mx-auto h-[230px] flex items-center justify-center">
+          <div className={cn(
+            "mx-auto h-full flex items-center justify-center",
+            isMobile ? "max-w-[200px]" : "max-w-[250px]"
+          )}>
             <ChartContainer className="h-full w-full" config={chartConfig}>
-              <PieChart width={250} height={230}>
+              <PieChart width={chartWidth} height={chartHeight}>
                 <Tooltip content={<CustomTooltip />} />
                 
                 <Pie 
@@ -115,13 +122,12 @@ export const SavingsPieChart = ({
                   nameKey="name" 
                   cx="50%" /* Centrage exact horizontal */
                   cy="50%" /* Centrage exact vertical */
-                  innerRadius={65} 
-                  outerRadius={90}
+                  innerRadius={innerRadius} 
+                  outerRadius={outerRadius}
                   paddingAngle={4}
                   isAnimationActive={true}
                   animationBegin={200}
                   animationDuration={800}
-                      
                   cornerRadius={6}
                 >
                   <Label
@@ -133,7 +139,7 @@ export const SavingsPieChart = ({
                               <tspan 
                                 x={viewBox.cx} 
                                 y={viewBox.cy - 5} 
-                                className="fill-current text-gray-900 dark:text-gray-100 text-xl font-bold"
+                                className={`fill-current text-gray-900 dark:text-gray-100 font-bold ${fontSize}`}
                               >
                                 {formatCurrency(totalSavings)}
                               </tspan>
