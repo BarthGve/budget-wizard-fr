@@ -1,3 +1,4 @@
+
 export const calculateTotalRevenue = (contributors: any[] | null) => {
   return contributors?.reduce((sum, contributor) => sum + contributor.total_contribution, 0) || 0;
 };
