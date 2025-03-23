@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { LayoutGrid, LayoutList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RetailerCard } from "@/components/expenses/retailer-card/RetailerCard";
 import { MiniRetailerCard } from "@/components/expenses/MiniRetailerCard";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface RetailersGridProps {
   expensesByRetailer: Array<{
@@ -26,6 +28,7 @@ interface RetailersGridProps {
 
 export const RetailersGrid = ({ expensesByRetailer, onExpenseUpdated, viewMode }: RetailersGridProps) => {
   const [displayMode, setDisplayMode] = useState<'standard' | 'mini'>('standard');
+  const isMobile = useMediaQuery("(max-width: 768px)");
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -59,7 +62,7 @@ export const RetailersGrid = ({ expensesByRetailer, onExpenseUpdated, viewMode }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full">
       <div className="flex justify-end">
         <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-lg inline-flex">
           <Button
@@ -91,10 +94,17 @@ export const RetailersGrid = ({ expensesByRetailer, onExpenseUpdated, viewMode }
       </div>
       
       <motion.div 
-        className={displayMode === 'standard' 
-          ? "grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4"
-          : "grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-        }
+        className={cn(
+          displayMode === 'standard' 
+            ? "grid gap-4" 
+            : "grid gap-3",
+          // Responsive grid pour mobile et desktop
+          isMobile
+            ? "grid-cols-1"
+            : (displayMode === 'standard' 
+                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5")
+        )}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -111,6 +121,7 @@ export const RetailersGrid = ({ expensesByRetailer, onExpenseUpdated, viewMode }
               z: 20,
               transition: { duration: 0.2 }
             }}
+            className="w-full"
             style={{
               transformStyle: "preserve-3d",
               perspective: "1000px"

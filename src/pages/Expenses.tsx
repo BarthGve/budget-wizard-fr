@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
@@ -16,7 +15,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { formatCurrency } from "@/utils/format";
 import { Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { subMonths, isAfter } from "date-fns";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const Expenses = memo(function Expenses() {

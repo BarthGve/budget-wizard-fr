@@ -47,7 +47,7 @@ export function RetailerCard({
     <>
       <Card 
         className={cn(
-          "overflow-hidden transition-all duration-200 h-full relative",
+          "overflow-hidden transition-all duration-200 h-full relative w-full",
           "border shadow-sm hover:shadow-md hover:translate-y-[-5px]",
           "bg-white border-gray-100",
           "dark:bg-gray-800/90 dark:hover:bg-gray-800/70 dark:border-gray-700/50"
