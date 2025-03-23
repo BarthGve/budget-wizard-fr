@@ -100,7 +100,7 @@ export const DashboardTabContent = ({
 
   return (
     <motion.div 
-      className="space-y-8"
+      className="space-y-8 max-w-full"
       initial="hidden"
       animate="visible"
       variants={containerVariants}

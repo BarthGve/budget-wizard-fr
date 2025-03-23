@@ -2,6 +2,7 @@
 import { memo } from "react";
 import { motion } from "framer-motion";
 import { DashboardCards as OriginalDashboardCards } from "../dashboard-content/DashboardCards";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const MemoizedDashboardCards = memo(OriginalDashboardCards);
 
@@ -50,8 +51,14 @@ export const DashboardCardsSection = ({
   contributorShares,
   recurringExpenses,
 }: DashboardCardsProps) => {
+  // Vérifier si on est sur mobile
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   return (
-    <motion.div variants={rowVariants}>
+    <motion.div 
+      variants={rowVariants}
+      className={isMobile ? "max-w-full overflow-hidden" : ""}
+    >
       <MemoizedDashboardCards
         revenue={revenue}
         expenses={expenses}

@@ -1,8 +1,10 @@
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { memo, useState, useEffect } from "react";
 import { LayoutDashboard } from "lucide-react"; // Ajout d'une icône de tableau de bord
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface DashboardHeaderProps {
   currentView: "monthly" | "yearly";
@@ -58,6 +60,9 @@ export const DashboardHeader = memo(({
   const [isDarkMode, setIsDarkMode] = useState(
     window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
   );
+  
+  // Détection des écrans mobiles
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Observer les changements de mode
   useEffect(() => {
@@ -83,10 +88,12 @@ export const DashboardHeader = memo(({
       transition={{ duration: 0.4 }}
       className={cn(
         "pb-4 mb-2",
-    
       )}
     >
-      <div className="flex items-center justify-between">
+      <div className={cn(
+        "flex flex-col gap-4",
+        isMobile ? "" : "items-center justify-between flex-row"
+      )}>
         <div className="flex items-start gap-3">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -129,11 +136,12 @@ export const DashboardHeader = memo(({
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.3 }}
+          className={isMobile ? "w-full" : ""}
         >
           <Tabs
             defaultValue={currentView}
             onValueChange={handleViewChange}
-            className="w-[250px]"
+            className={isMobile ? "w-full" : "w-[250px]"}
           >
             <TabsList className={cn(
               "grid w-full grid-cols-2 shadow-inner",

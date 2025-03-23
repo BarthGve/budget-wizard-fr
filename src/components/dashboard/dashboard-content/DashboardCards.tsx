@@ -4,6 +4,7 @@ import { ExpensesCard } from "../ExpensesCard";
 import { CreditCard } from "../CreditCard";
 import { SavingsCard } from "../SavingsCard";
 import { motion } from "framer-motion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface DashboardCardsProps {
   revenue: number;
@@ -34,6 +35,9 @@ export const DashboardCards = ({
   contributorShares,
   recurringExpenses,
 }: DashboardCardsProps) => {
+  // Vérifier si on est sur mobile
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   // Animation variants for staggered children
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -66,29 +70,29 @@ export const DashboardCards = ({
 
   return (
     <motion.div 
-      className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
+      className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-4'}`}
       variants={containerVariants}
     >
-      <motion.div variants={itemVariants}>
+      <motion.div variants={itemVariants} className="w-full">
         <RevenueCard
           totalRevenue={revenue}
           contributorShares={contributorShares}
         />
       </motion.div>
-      <motion.div variants={itemVariants}>
+      <motion.div variants={itemVariants} className="w-full">
         <CreditCard
           totalMensualites={totalMensualites}
           totalRevenue={revenue}
         />
       </motion.div>
-      <motion.div variants={itemVariants}>
+      <motion.div variants={itemVariants} className="w-full">
         <ExpensesCard
           totalExpenses={expenses}
           recurringExpenses={recurringExpenses}
         />
       </motion.div>
       
-      <motion.div variants={itemVariants}>
+      <motion.div variants={itemVariants} className="w-full">
         <SavingsCard
           totalMonthlySavings={savings}
           savingsGoal={savingsGoal}
