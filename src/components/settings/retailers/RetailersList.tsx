@@ -11,18 +11,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import StyledLoader from "@/components/ui/StyledLoader";
+import { useState } from "react";
+import { DeleteRetailerConfirmDialog } from "./DeleteRetailerConfirmDialog";
 
 export function RetailersList() {
   const { retailers, isLoading } = useRetailers();
   const { mutate: deleteRetailer, isPending: isDeleting } = useDeleteRetailer();
+  const [retailerToDelete, setRetailerToDelete] = useState<{ id: string; name: string } | null>(null);
 
   if (isLoading) {
     return <div><StyledLoader/></div>;
   }
 
-  const handleDelete = (retailerId: string) => {
-    console.log("🎯 Deleting retailer:", retailerId);
-    deleteRetailer(retailerId);
+  const handleDeleteClick = (retailerId: string, retailerName: string) => {
+    setRetailerToDelete({ id: retailerId, name: retailerName });
+  };
+
+  const handleConfirmDelete = () => {
+    if (retailerToDelete) {
+      console.log("🎯 Deleting retailer:", retailerToDelete.id);
+      deleteRetailer(retailerToDelete.id);
+      setRetailerToDelete(null);
+    }
   };
 
   return (
@@ -42,28 +52,35 @@ export function RetailersList() {
                 )}
               </TableCell>
               <TableCell className="text-right">
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button variant="ghost" className="h-8 w-8 p-0 ml-auto">
-        <MoreVertical className="h-4 w-4" />
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      <DropdownMenuItem 
-        className="text-destructive focus:text-destructive" 
-        onClick={() => handleDelete(retailer.id)} 
-        disabled={isDeleting}
-      >
-        <Trash2 className="mr-2 h-4 w-4" />
-        {isDeleting ? "Suppression..." : "Supprimer"}
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-</TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0 ml-auto">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem 
+                      className="text-destructive focus:text-destructive" 
+                      onClick={() => handleDeleteClick(retailer.id, retailer.name)} 
+                      disabled={isDeleting}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {isDeleting ? "Suppression..." : "Supprimer"}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      <DeleteRetailerConfirmDialog
+        open={!!retailerToDelete}
+        onOpenChange={(open) => !open && setRetailerToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        retailerName={retailerToDelete?.name || ""}
+      />
     </div>
   );
 }
