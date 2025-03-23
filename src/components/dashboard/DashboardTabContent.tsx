@@ -9,6 +9,7 @@ import { DashboardCardsSection } from "./dashboard-tab/DashboardCards";
 import { ExpenseStatsSection } from "./dashboard-tab/ExpenseStats";
 import { DashboardChartsSection } from "./dashboard-tab/DashboardChartsSection";
 import { ContributorsSection } from "./dashboard-tab/ContributorsSection";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -86,6 +87,9 @@ export const DashboardTabContent = ({
 }: DashboardTabContentProps) => {
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  
+  // Utiliser useMediaQuery pour détecter les petits écrans (smartphones)
+  const isMobileScreen = useMediaQuery("(max-width: 768px)");
 
   // Utiliser les hooks extraits
   const { data: credits = [] } = useCreditsFetcher();
@@ -127,15 +131,17 @@ export const DashboardTabContent = ({
         profile={profile}
       />
       
-      {/* Section des graphiques */}
-      <DashboardChartsSection 
-        expenses={expenses}
-        savings={savings}
-        totalMensualites={totalMensualites}
-        credits={credits}
-        recurringExpenses={recurringExpenses}
-        monthlySavings={monthlySavings}
-      />
+      {/* Section des graphiques - masquée sur mobile */}
+      {!isMobileScreen && (
+        <DashboardChartsSection 
+          expenses={expenses}
+          savings={savings}
+          totalMensualites={totalMensualites}
+          credits={credits}
+          recurringExpenses={recurringExpenses}
+          monthlySavings={monthlySavings}
+        />
+      )}
       
       {/* Section des contributeurs */}
       <ContributorsSection 

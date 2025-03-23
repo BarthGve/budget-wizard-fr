@@ -17,6 +17,7 @@ import { formatCurrency } from "@/utils/format";
 import { Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { subMonths, isAfter } from "date-fns";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const Expenses = memo(function Expenses() {
   const { retailers } = useRetailers();
@@ -27,6 +28,9 @@ const Expenses = memo(function Expenses() {
   useRealtimeListeners();
   
   const { currentYearTotal, lastYearTotal } = useYearlyTotals(expenses);
+  
+  // Utiliser useMediaQuery pour détecter les petits écrans (smartphones)
+  const isMobileScreen = useMediaQuery("(max-width: 768px)");
 
   // Calcul de la moyenne mensuelle et annuelle des dépenses
   const { monthlyAverage, yearlyAverage, averageMonthlyTransactions, averageYearlyTransactions } = useMemo(() => {
@@ -133,9 +137,9 @@ const Expenses = memo(function Expenses() {
             <CreateRetailerBanner />
           </motion.div>
           
-          {/* Disposition avec flex pour mettre les cartes côte à côte */}
+          {/* Disposition avec flex pour les écrans larges, colonne pour mobile */}
           <motion.div variants={itemVariants} className="flex flex-col lg:flex-row gap-6 mt-8 mb-8">
-            {/* Carte de total des dépenses (1/3) */}
+            {/* Carte de total des dépenses (1/3 sur grands écrans, pleine largeur sur mobile) */}
             <motion.div variants={itemVariants} className="w-full lg:w-1/3 grid grid-cols-1 gap-4">
               <YearlyTotalCard 
                 key={`total-card-${currentYearTotal}`}
@@ -223,14 +227,16 @@ const Expenses = memo(function Expenses() {
               </Card>
             </motion.div>
             
-            {/* Graphique des dépenses par enseigne (2/3) */}
-            <motion.div variants={itemVariants} className="w-full lg:w-2/3">
-              <RetailersExpensesChart 
-                expenses={expenses || []} 
-                retailers={retailers || []} 
-                viewMode={viewMode}
-              />
-            </motion.div>
+            {/* Graphique des dépenses par enseigne (2/3) - masqué sur mobile */}
+            {!isMobileScreen && (
+              <motion.div variants={itemVariants} className="w-full lg:w-2/3">
+                <RetailersExpensesChart 
+                  expenses={expenses || []} 
+                  retailers={retailers || []} 
+                  viewMode={viewMode}
+                />
+              </motion.div>
+            )}
           </motion.div>
           
           <RetailersGrid 
