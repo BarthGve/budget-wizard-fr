@@ -15,7 +15,7 @@ export const MobileSidebarToggle = ({ toggleSidebar }: MobileSidebarToggleProps)
       onClick={toggleSidebar}
       className="fixed left-4 top-4 z-50 rounded-full shadow-lg bg-background hover:bg-accent ios-top-safe"
     >
-      <Menu className="h-8 w-8" />
+      <Menu className="h-12 w-12" />
     </Button>
   );
 };
