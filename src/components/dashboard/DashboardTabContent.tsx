@@ -119,6 +119,7 @@ export const DashboardTabContent = ({
           debit_month: expense.debit_month,
           periodicity: expense.periodicity
         }))}
+        currentView={currentView}
       />
       
       {/* Section des statistiques de dépenses */}
