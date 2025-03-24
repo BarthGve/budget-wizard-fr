@@ -1,13 +1,14 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo, memo, useEffect } from "react";
 import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent";
 import { motion } from "framer-motion";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header/DashboardHeader";
 import { DashboardBanners } from "@/components/dashboard/dashboard-banners/DashboardBanners";
 import { useDashboardViewCalculations } from "@/hooks/useDashboardViewCalculations";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
+import { useIncomeVerification } from "@/hooks/useIncomeVerification";
+import { OnboardingDialog } from "@/components/auth/OnboardingDialog";
 
 // Composants memoizés pour éviter les re-rendus inutiles
 const MemoizedDashboardHeader = memo(DashboardHeader);
@@ -30,12 +31,13 @@ const Dashboard = () => {
   const [currentView, setCurrentView] = useState<"monthly" | "yearly">("monthly");
   const { contributors, monthlySavings, profile, recurringExpenses } = useDashboardData();
   const { fuelExpensesTotal, fuelExpensesCount, fuelVolume } = useExpenseStats(currentView);
+  const { showOnboardingDialog, setShowOnboardingDialog } = useIncomeVerification();
 
   // Obtenir le nom du mois courant (memoizé)
   const currentMonthName = useMemo(() => {
     return new Date().toLocaleString('fr-FR', { month: 'long' });
   }, []);
-  
+
   // Utiliser le hook personnalisé pour les calculs
   const dashboardData = useDashboardViewCalculations(
     currentView,
@@ -86,6 +88,12 @@ const Dashboard = () => {
           fuelExpensesTotal={fuelExpensesTotal}
           fuelExpensesCount={fuelExpensesCount}
           fuelVolume={fuelVolume}
+        />
+
+        {/* Onboarding Dialog */}
+        <OnboardingDialog
+          open={showOnboardingDialog}
+          onOpenChange={setShowOnboardingDialog}
         />
       </motion.div>
     </DashboardLayout>

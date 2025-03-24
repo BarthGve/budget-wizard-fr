@@ -5,14 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Hook qui vérifie si un contributeur propriétaire a un revenu nul
- * et gère l'affichage d'une modale en conséquence
+ * et gère l'affichage d'une modale d'onboarding en conséquence
  */
 export const useIncomeVerification = () => {
   const location = useLocation();
-  const [showIncomeDialog, setShowIncomeDialog] = useState(false);
+  const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
   const hasCheckedIncome = useRef(false);
 
-  // Vérifier si le contributeur principal a un revenu nul
+  // Vérifier si le contributeur principal a un revenu nul et si l'onboarding a déjà été complété
   const checkOwnerContributorIncome = async () => {
     // Ne vérifier que si l'utilisateur est sur la page dashboard
     if (location.pathname !== "/dashboard" || hasCheckedIncome.current) return;
@@ -37,6 +37,24 @@ export const useIncomeVerification = () => {
         return;
       }
 
+      // Vérifier si l'onboarding a déjà été complété
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error("Erreur lors de la vérification du profil:", profileError);
+      }
+
+      // Si l'utilisateur a déjà complété l'onboarding, ne pas afficher la modale
+      if (profileData?.onboarding_completed) {
+        hasCheckedIncome.current = true;
+        return;
+      }
+
+      // Vérifier si l'utilisateur a des revenus configurés
       const { data: ownerContributor, error } = await supabase
         .from("contributors")
         .select("total_contribution")
@@ -44,13 +62,14 @@ export const useIncomeVerification = () => {
         .eq("is_owner", true)
         .single();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error("Erreur lors de la vérification des revenus:", error);
         return;
       }
 
-      if (ownerContributor && ownerContributor.total_contribution === 0) {
-        setShowIncomeDialog(true);
+      // Afficher l'onboarding si l'utilisateur n'a pas de revenus configurés ou si le revenu est à 0
+      if (!ownerContributor || ownerContributor.total_contribution === 0) {
+        setShowOnboardingDialog(true);
       }
       
       hasCheckedIncome.current = true;
@@ -67,13 +86,13 @@ export const useIncomeVerification = () => {
       checkOwnerContributorIncome();
     } else {
       // Si l'utilisateur n'est pas sur le dashboard, on masque la modale
-      setShowIncomeDialog(false);
+      setShowOnboardingDialog(false);
     }
   }, [location.pathname]);
 
   return {
-    showIncomeDialog,
-    setShowIncomeDialog,
+    showOnboardingDialog,
+    setShowOnboardingDialog,
     checkOwnerContributorIncome,
     hasCheckedIncome
   };
