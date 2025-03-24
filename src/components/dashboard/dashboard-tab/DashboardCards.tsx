@@ -37,6 +37,7 @@ interface DashboardCardsProps {
     debit_month: number | null;
     periodicity: "monthly" | "quarterly" | "yearly";
   }>;
+  currentView: "monthly" | "yearly";
 }
 
 /**
@@ -50,6 +51,7 @@ export const DashboardCardsSection = ({
   savingsGoal,
   contributorShares,
   recurringExpenses,
+  currentView,
 }: DashboardCardsProps) => {
   // Vérifier si on est sur mobile
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -67,6 +69,7 @@ export const DashboardCardsSection = ({
         savingsGoal={savingsGoal}
         contributorShares={contributorShares}
         recurringExpenses={recurringExpenses}
+        currentView={currentView}
       />
     </motion.div>
   );
