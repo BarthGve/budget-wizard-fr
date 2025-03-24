@@ -8,10 +8,11 @@ export interface Profile {
   color_palette: string | null;
   savings_goal_percentage: number | null;
   updated_at: string | null;
-  email?: string | null; // Rendu optionnel avec '?'
+  email?: string | null;
   profile_type: ProfileType;
   encryption_enabled: boolean | null;
   notif_inscriptions?: boolean;
   notif_changelog?: boolean;
   notif_feedbacks?: boolean;
+  onboarding_completed?: boolean;
 }

@@ -44,7 +44,7 @@ export const DashboardContent = ({
               variant="outline" 
               className="fixed z-40 right-4 top-4 ios-top-safe rounded-full shadow-md"
             >
-              <BadgeEuro className="h-5 w-5" />
+              <BadgeEuro className="h-12 w-12" />
             </Button>
           </DrawerTrigger>
           <DrawerContent className="p-4">

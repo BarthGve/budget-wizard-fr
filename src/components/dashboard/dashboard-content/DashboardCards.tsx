@@ -24,6 +24,7 @@ interface DashboardCardsProps {
     debit_month: number | null;
     periodicity: "monthly" | "quarterly" | "yearly";
   }>;
+  currentView?: "monthly" | "yearly";
 }
 
 export const DashboardCards = ({
@@ -34,6 +35,7 @@ export const DashboardCards = ({
   savingsGoal,
   contributorShares,
   recurringExpenses,
+  currentView = "monthly",
 }: DashboardCardsProps) => {
   // Vérifier si on est sur mobile
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -83,6 +85,7 @@ export const DashboardCards = ({
         <CreditCard
           totalMensualites={totalMensualites}
           totalRevenue={revenue}
+          currentView={currentView}
         />
       </motion.div>
       <motion.div variants={itemVariants} className="w-full">

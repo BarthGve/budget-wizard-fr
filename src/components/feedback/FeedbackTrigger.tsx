@@ -18,18 +18,18 @@ export const FeedbackTrigger = forwardRef<HTMLButtonElement, FeedbackTriggerProp
         onClick={onClick}
         ref={ref}
         className={cn(
-          "group relative w-full flex items-center px-4 py-2 rounded-lg transition-colors",
-          "hover:bg-primary/10",
-          collapsed && "justify-center px-0",
-          !collapsed && "justify-start"
+          "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-colors",
+          "hover:bg-gray-100 dark:hover:bg-gray-800/60",
+          collapsed && "justify-center py-3",
         )}
       >
-        <MessageSquare className={cn(
-          "h-5 w-5 flex-shrink-0 transition-transform group-hover:scale-110",
-          !collapsed && "mr-2"
-        )} />
+        <div className="relative">
+          <MessageSquare className="h-5 w-5 flex-shrink-0 text-gray-500 dark:text-gray-400" />
+        </div>
         {!collapsed && (
-          <span className="truncate">Laissez nous un avis</span>
+          <span className="truncate text-gray-600 dark:text-gray-300">
+            Laisser un commentaire
+          </span>
         )}
       </Button>
     );

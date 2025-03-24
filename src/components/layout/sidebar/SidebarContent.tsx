@@ -2,7 +2,6 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { NavigationMenu } from "@/components/layout/NavigationMenu";
-import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
 import { ProjectAnnouncementCard } from "@/components/layout/ProjectAnnouncementCard";
 
 interface SidebarContentProps {
@@ -14,22 +13,21 @@ interface SidebarContentProps {
 export const SidebarContent = ({ collapsed, isAdmin, userId }: SidebarContentProps) => {
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      {/* Le NavigationMenu avec flex-1 pour qu'il prenne tout l'espace disponible */}
-      <div className="flex-1 overflow-y-auto">
-        <NavigationMenu collapsed={collapsed} isAdmin={isAdmin} />
+      {/* Menu de navigation avec flex-1 pour qu'il prenne tout l'espace disponible */}
+      <div className="flex-1 overflow-y-auto mb-4">
+        <NavigationMenu collapsed={collapsed} isAdmin={isAdmin} userId={userId} />
       </div>
       
-      {/* Project announcement card - reste visible en bas */}
-      <div className="px-4 py-2">
+      {/* Zone de séparation visuelle */}
+      <div className="px-2 mb-2">
+        <div className="h-[1px] bg-border/40 w-full"></div>
+      </div>
+      
+      {/* Les éléments du bas avec espacement amélioré */}
+      <div className="px-4 mb-4">
+        {/* Project announcement card */}
         <ProjectAnnouncementCard collapsed={collapsed} userId={userId} />
       </div>
-      
-      {/* Feedback dialog - reste visible en bas */}
-      {!isAdmin && (
-        <div className="px-4 py-2">
-          <FeedbackDialog collapsed={collapsed} />
-        </div>
-      )}
     </div>
   );
 };

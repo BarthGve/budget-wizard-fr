@@ -1,6 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
-import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag } from "lucide-react";
+import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag, Sun, Moon, Monitor } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTheme } from "next-themes";
 
 interface UserDropdownProps {
   collapsed: boolean;
@@ -26,6 +27,7 @@ export const UserDropdown = ({
   const queryClient = useQueryClient();
   const { isAdmin } = usePagePermissions();
   const isMobile = useIsMobile();
+  const { setTheme, theme } = useTheme();
 
   const handleLogout = async () => {
     try {
@@ -128,6 +130,24 @@ export const UserDropdown = ({
               <Bell className="mr-2 h-4 w-4" />
               <span>Notifications</span>
             </DropdownMenuItem>
+          )}
+
+          {/* Option de thème uniquement visible sur mobile */}
+          {isMobile && (
+            <>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("light")}>
+                <Sun className="mr-2 h-4 w-4" />
+                <span>Thème clair</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("dark")}>
+                <Moon className="mr-2 h-4 w-4" />
+                <span>Thème sombre</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("system")}>
+                <Monitor className="mr-2 h-4 w-4" />
+                <span>Thème système</span>
+              </DropdownMenuItem>
+            </>
           )}
 
           <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>

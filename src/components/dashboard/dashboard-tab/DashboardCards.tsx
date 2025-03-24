@@ -1,23 +1,11 @@
 
 import { memo } from "react";
-import { motion } from "framer-motion";
-import { DashboardCards as OriginalDashboardCards } from "../dashboard-content/DashboardCards";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
-
-const MemoizedDashboardCards = memo(OriginalDashboardCards);
-
-// Animation variants
-const rowVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1
-    }
-  }
-};
+import { RevenueCard } from "../RevenueCard";
+import { ExpensesCard } from "../ExpensesCard";
+import { CreditCard } from "../CreditCard";
+import { SavingsCard } from "../SavingsCard";
+import { CardsGrid } from "./CardsGrid";
+import { AnimatedCardWrapper } from "./AnimatedCardWrapper";
 
 interface DashboardCardsProps {
   revenue: number;
@@ -37,12 +25,13 @@ interface DashboardCardsProps {
     debit_month: number | null;
     periodicity: "monthly" | "quarterly" | "yearly";
   }>;
+  currentView: "monthly" | "yearly";
 }
 
 /**
- * Composant qui affiche les cartes principales du dashboard
+ * Composant qui affiche les différentes cartes du tableau de bord
  */
-export const DashboardCardsSection = ({
+export const DashboardCards = memo(({
   revenue,
   expenses,
   totalMensualites,
@@ -50,24 +39,40 @@ export const DashboardCardsSection = ({
   savingsGoal,
   contributorShares,
   recurringExpenses,
+  currentView = "monthly",
 }: DashboardCardsProps) => {
-  // Vérifier si on est sur mobile
-  const isMobile = useMediaQuery("(max-width: 768px)");
-
   return (
-    <motion.div 
-      variants={rowVariants}
-      className={isMobile ? "max-w-full overflow-hidden" : ""}
-    >
-      <MemoizedDashboardCards
-        revenue={revenue}
-        expenses={expenses}
-        totalMensualites={totalMensualites}
-        savings={savings}
-        savingsGoal={savingsGoal}
-        contributorShares={contributorShares}
-        recurringExpenses={recurringExpenses}
-      />
-    </motion.div>
+    <CardsGrid>
+      <AnimatedCardWrapper>
+        <RevenueCard
+          totalRevenue={revenue}
+          contributorShares={contributorShares}
+        />
+      </AnimatedCardWrapper>
+      
+      <AnimatedCardWrapper>
+        <CreditCard
+          totalMensualites={totalMensualites}
+          totalRevenue={revenue}
+          currentView={currentView}
+        />
+      </AnimatedCardWrapper>
+      
+      <AnimatedCardWrapper>
+        <ExpensesCard
+          totalExpenses={expenses}
+          recurringExpenses={recurringExpenses}
+        />
+      </AnimatedCardWrapper>
+      
+      <AnimatedCardWrapper>
+        <SavingsCard
+          totalMonthlySavings={savings}
+          savingsGoal={savingsGoal}
+        />
+      </AnimatedCardWrapper>
+    </CardsGrid>
   );
-};
+});
+
+DashboardCards.displayName = "DashboardCards";

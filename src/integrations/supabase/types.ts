@@ -500,6 +500,7 @@ export type Database = {
           notif_changelog: boolean | null
           notif_feedbacks: boolean | null
           notif_inscriptions: boolean | null
+          onboarding_completed: boolean | null
           profile_type: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage: number | null
           updated_at: string | null
@@ -513,6 +514,7 @@ export type Database = {
           notif_changelog?: boolean | null
           notif_feedbacks?: boolean | null
           notif_inscriptions?: boolean | null
+          onboarding_completed?: boolean | null
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
           updated_at?: string | null
@@ -526,6 +528,7 @@ export type Database = {
           notif_changelog?: boolean | null
           notif_feedbacks?: boolean | null
           notif_inscriptions?: boolean | null
+          onboarding_completed?: boolean | null
           profile_type?: Database["public"]["Enums"]["user_profile_type"]
           savings_goal_percentage?: number | null
           updated_at?: string | null
