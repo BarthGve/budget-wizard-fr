@@ -1,11 +1,23 @@
 
 import { memo } from "react";
-import { RevenueCard } from "../RevenueCard";
-import { ExpensesCard } from "../ExpensesCard";
-import { CreditCard } from "../CreditCard";
-import { SavingsCard } from "../SavingsCard";
-import { CardsGrid } from "./CardsGrid";
-import { AnimatedCardWrapper } from "./AnimatedCardWrapper";
+import { motion } from "framer-motion";
+import { DashboardCards as OriginalDashboardCards } from "../dashboard-content/DashboardCards";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+
+const MemoizedDashboardCards = memo(OriginalDashboardCards);
+
+// Animation variants
+const rowVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
+};
 
 interface DashboardCardsProps {
   revenue: number;
@@ -29,9 +41,9 @@ interface DashboardCardsProps {
 }
 
 /**
- * Composant qui affiche les différentes cartes du tableau de bord
+ * Composant qui affiche les cartes principales du dashboard
  */
-export const DashboardCards = memo(({
+export const DashboardCardsSection = ({
   revenue,
   expenses,
   totalMensualites,
@@ -39,40 +51,26 @@ export const DashboardCards = memo(({
   savingsGoal,
   contributorShares,
   recurringExpenses,
-  currentView = "monthly",
+  currentView,
 }: DashboardCardsProps) => {
-  return (
-    <CardsGrid>
-      <AnimatedCardWrapper>
-        <RevenueCard
-          totalRevenue={revenue}
-          contributorShares={contributorShares}
-        />
-      </AnimatedCardWrapper>
-      
-      <AnimatedCardWrapper>
-        <CreditCard
-          totalMensualites={totalMensualites}
-          totalRevenue={revenue}
-          currentView={currentView}
-        />
-      </AnimatedCardWrapper>
-      
-      <AnimatedCardWrapper>
-        <ExpensesCard
-          totalExpenses={expenses}
-          recurringExpenses={recurringExpenses}
-        />
-      </AnimatedCardWrapper>
-      
-      <AnimatedCardWrapper>
-        <SavingsCard
-          totalMonthlySavings={savings}
-          savingsGoal={savingsGoal}
-        />
-      </AnimatedCardWrapper>
-    </CardsGrid>
-  );
-});
+  // Vérifier si on est sur mobile
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
-DashboardCards.displayName = "DashboardCards";
+  return (
+    <motion.div 
+      variants={rowVariants}
+      className={isMobile ? "max-w-full overflow-hidden" : ""}
+    >
+      <MemoizedDashboardCards
+        revenue={revenue}
+        expenses={expenses}
+        totalMensualites={totalMensualites}
+        savings={savings}
+        savingsGoal={savingsGoal}
+        contributorShares={contributorShares}
+        recurringExpenses={recurringExpenses}
+        currentView={currentView}
+      />
+    </motion.div>
+  );
+};
