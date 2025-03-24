@@ -38,7 +38,10 @@ export const DashboardCards = ({
 }: DashboardCardsProps) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <RevenueCard revenue={revenue} currentView={currentView} />
+      <RevenueCard 
+        totalRevenue={revenue} 
+        contributorShares={contributorShares} 
+      />
       <CreditCard 
         totalMensualites={totalMensualites} 
         totalRevenue={revenue} 
@@ -50,11 +53,13 @@ export const DashboardCards = ({
         currentView={currentView}
       />
       <SavingsCard 
-        savings={savings} 
+        totalMonthlySavings={savings} 
         savingsGoal={savingsGoal} 
-        currentView={currentView}
       />
-      <BalanceCard currentView={currentView} />
+      <BalanceCard 
+        balance={revenue - expenses - totalMensualites}
+        isMonthly={currentView === "monthly"}
+      />
     </div>
   );
 };
