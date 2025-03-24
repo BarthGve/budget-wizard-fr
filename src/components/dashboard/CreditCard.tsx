@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard as CreditCardIcon, AlertCircle, CheckCircle, Info } from 'lucide-react';
@@ -60,6 +59,7 @@ export const CreditCard = ({
       // Pour la vue annuelle, calculer le montant en tenant compte des crédits qui se terminent pendant l'année
       const currentYear = new Date().getFullYear();
       const lastDayOfYear = new Date(currentYear, 11, 31); // 31 décembre de l'année en cours
+      const today = new Date();
       
       return credits.reduce((total, credit) => {
         const derniereMensualite = new Date(credit.date_derniere_mensualite);
@@ -67,12 +67,13 @@ export const CreditCard = ({
         // Si le crédit se termine cette année
         if (derniereMensualite.getFullYear() === currentYear) {
           // Calculer combien de mois restants dans l'année pour ce crédit
-          const moisRestants = (derniereMensualite.getMonth() - new Date().getMonth()) + 1;
+          // Nombre de mois entre aujourd'hui et dernière mensualité (inclus le mois courant)
+          const moisRestants = (derniereMensualite.getMonth() - today.getMonth()) + 1;
           // Ajouter le montant des mensualités restantes
           return total + (credit.montant_mensualite * Math.max(0, moisRestants));
         } else if (derniereMensualite > lastDayOfYear) {
           // Si le crédit continue après cette année, ajouter le montant pour tous les mois restants de l'année
-          const moisRestants = 12 - new Date().getMonth();
+          const moisRestants = 12 - today.getMonth();
           return total + (credit.montant_mensualite * moisRestants);
         }
         
