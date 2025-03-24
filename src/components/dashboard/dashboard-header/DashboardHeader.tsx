@@ -2,7 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { memo, useState, useEffect } from "react";
-import { LayoutDashboard } from "lucide-react"; // Ajout d'une icône de tableau de bord
+import { LayoutDashboard } from "lucide-react"; 
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
@@ -40,16 +40,6 @@ const tabVariants = {
   }
 };
 
-// Options de gradients violet pour le titre
-const TITLE_GRADIENTS = {
-  // Option 1: Violet profond vers violet électrique
-  deepViolet: "from-purple-800 via-violet-600 to-purple-500",
-  // Option 2: Violet royal vers rose aube
-  royalViolet: "from-violet-700 via-purple-600 to-fuchsia-500",
-  // Option 3: Violet cosmique
-  cosmicViolet: "from-indigo-800 via-violet-600 to-purple-500"
-};
-
 // Composant d'en-tête optimisé avec mémoisation
 export const DashboardHeader = memo(({ 
   currentView, 
@@ -77,9 +67,6 @@ export const DashboardHeader = memo(({
   const handleViewChange = (value: string) => {
     setCurrentView(value as "monthly" | "yearly");
   };
-
-  // Choix du gradient à utiliser (vous pouvez changer l'option ici)
-  const currentGradient = TITLE_GRADIENTS.cosmicViolet;
 
   return (
     <motion.div 
@@ -143,25 +130,28 @@ export const DashboardHeader = memo(({
             onValueChange={handleViewChange}
             className={isMobile ? "w-full" : "w-[250px]"}
           >
-            <TabsList className={cn(
-              "grid w-full grid-cols-2 shadow-inner",
-              "bg-gray-100/80", // Light mode
-              "dark:bg-gray-800/90 dark:border dark:border-gray-700" // Dark mode
-            )}>
+            <TabsList 
+              className={cn(
+                "grid w-full grid-cols-2 p-1 rounded-full",
+                "bg-gray-100/80 shadow-inner", // Light mode
+                "dark:bg-gray-800/80 dark:border dark:border-gray-700/50" // Dark mode
+              )}
+            >
               <motion.div
                 initial="inactive"
                 animate={currentView === "monthly" ? "active" : "inactive"}
                 whileHover="hover"
                 variants={tabVariants}
+                className="w-full"
               >
                 <TabsTrigger 
                   value="monthly" 
                   className={cn(
-                    "font-medium z-10", 
+                    "w-full rounded-full font-medium z-10 py-2", 
                     // Light mode - selected state
                     "data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-md",
                     // Dark mode - selected state
-                    "dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-purple-300 dark:data-[state=active]:shadow-purple-900/20 dark:data-[state=active]:border dark:data-[state=active]:border-purple-800/30",
+                    "dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-purple-300 dark:data-[state=active]:shadow-purple-900/20 dark:data-[state=active]:border dark:data-[state=active]:border-purple-800/30",
                     // Dark mode - normal state
                     "dark:text-gray-300"
                   )}
@@ -174,15 +164,16 @@ export const DashboardHeader = memo(({
                 animate={currentView === "yearly" ? "active" : "inactive"}
                 whileHover="hover"
                 variants={tabVariants}
+                className="w-full"
               >
                 <TabsTrigger 
                   value="yearly" 
                   className={cn(
-                    "font-medium z-10", 
+                    "w-full rounded-full font-medium z-10 py-2", 
                     // Light mode - selected state
                     "data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-md",
                     // Dark mode - selected state
-                    "dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-purple-300 dark:data-[state=active]:shadow-purple-900/20 dark:data-[state=active]:border dark:data-[state=active]:border-purple-800/30",
+                    "dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-purple-300 dark:data-[state=active]:shadow-purple-900/20 dark:data-[state=active]:border dark:data-[state=active]:border-purple-800/30",
                     // Dark mode - normal state
                     "dark:text-gray-300"
                   )}

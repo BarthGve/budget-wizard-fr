@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -41,9 +40,7 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
             transition={{ delay: 0.2, duration: 0.3 }}
             className={cn(
               "p-2.5 rounded-lg shadow-sm mt-0.5",
-              // Light mode
               "bg-gradient-to-br from-blue-100 to-cyan-50",
-              // Dark mode
               "dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-cyan-800/30 dark:shadow-blue-900/10"
             )}
           >
@@ -57,9 +54,7 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
           <div>
             <h1 className={cn(
               "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
-              // Light mode gradient
               "bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500",
-              // Dark mode gradient
               "dark:bg-gradient-to-r dark:from-blue-400 dark:via-blue-300 dark:to-cyan-400"
             )}>
               Dépenses
@@ -78,24 +73,30 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
           "flex items-center",
           isMobile ? "justify-between w-full" : "gap-8"
         )}>
-          <div className="flex items-center space-x-2">
-            <Switch 
-              id="view-mode" 
-              checked={viewMode === 'yearly'} 
-              onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
-              className="data-[state=checked]:bg-blue-500 dark:data-[state=checked]:bg-blue-600"
-              style={{
-                '--switch-thumb-color': 'white',
-                '--switch-active-color': isDarkMode ? 'rgb(37, 99, 235)' : 'rgb(59, 130, 246)'
-              } as React.CSSProperties}
-            />
-            <Label 
-              htmlFor="view-mode"
-              className="text-blue-700 dark:text-blue-400 font-medium"
-            >
-              Vue annuelle
-            </Label>
-          </div>
+          <motion.div 
+            className="flex items-center p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-inner"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="flex items-center space-x-2 px-3">
+              <Switch 
+                id="view-mode" 
+                checked={viewMode === 'yearly'} 
+                onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
+                className={cn(
+                  "data-[state=checked]:bg-purple-500",
+                  "dark:data-[state=checked]:bg-purple-600"
+                )}
+              />
+              <Label 
+                htmlFor="view-mode"
+                className="text-gray-700 dark:text-gray-300 font-medium"
+              >
+                Vue annuelle
+              </Label>
+            </div>
+          </motion.div>
           <AddExpenseDialog 
             onExpenseAdded={onExpenseAdded} 
             open={addExpenseDialogOpen} 
