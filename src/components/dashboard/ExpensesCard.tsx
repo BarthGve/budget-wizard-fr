@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ClipboardList, Info } from 'lucide-react';
@@ -19,15 +18,18 @@ interface ExpensesCardProps {
     debit_month: number | null;
     periodicity: "monthly" | "quarterly" | "yearly";
   }>;
+  currentView: "monthly" | "yearly";
 }
 
 export const ExpensesCard = ({
   totalExpenses,
   recurringExpenses,
+  currentView,
 }: ExpensesCardProps) => {
   const navigate = useNavigate();
   const currentDay = new Date().getDate();
   const currentMonth = new Date().getMonth() + 1; // Les mois commencent à 0
+  const currentYear = new Date().getFullYear();
 
   const paidExpenses = recurringExpenses.reduce((sum, expense) => {
     const shouldIncludeExpense = () => {
@@ -83,7 +85,9 @@ export const ExpensesCard = ({
             "text-gray-500",
             "dark:text-gray-400"
           )}>
-            Du mois de {currentMonthName}
+            {currentView === "monthly" 
+              ? `Du mois de ${currentMonthName}` 
+              : `De l'année ${currentYear}`}
           </CardDescription>
         </CardHeader>
         <CardContent className="pb-4">
