@@ -43,7 +43,7 @@ interface DashboardCardsProps {
 /**
  * Composant qui affiche les cartes principales du dashboard
  */
-export const DashboardCardsSection = ({
+export const DashboardCards = ({
   revenue,
   expenses,
   totalMensualites,
