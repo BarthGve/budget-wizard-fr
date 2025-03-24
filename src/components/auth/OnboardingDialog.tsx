@@ -31,8 +31,6 @@ export const OnboardingDialog = ({ open, onOpenChange }: OnboardingDialogProps) 
       title: "Bienvenue sur Budget Wizard !",
       icon: <UserRound className="h-10 w-10 text-indigo-500" />,
       description: "Suivez ce guide rapide pour configurer votre application et tirer le meilleur parti de votre gestion financière.",
-      action: () => navigate("/contributors"),
-      actionText: "C'est parti !",
       skipText: "Plus tard",
     },
     {
@@ -141,12 +139,15 @@ export const OnboardingDialog = ({ open, onOpenChange }: OnboardingDialogProps) 
             </div>
 
             <DialogFooter className="flex-col gap-3 mt-6">
-              <Button
-                onClick={currentStep.action}
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
-              >
-                {currentStep.actionText}
-              </Button>
+              {/* Afficher le bouton d'action seulement pour les étapes qui en ont un */}
+              {step > 0 && currentStep.action && (
+                <Button
+                  onClick={currentStep.action}
+                  className="w-full mx-auto bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+                >
+                  {currentStep.actionText}
+                </Button>
+              )}
               
               <div className="flex w-full justify-between">
                 <Button
