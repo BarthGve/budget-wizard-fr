@@ -22,7 +22,7 @@ export const AuthListener = () => {
           !location.pathname.includes("/register") && 
           !location.pathname.includes("/reset-password") && 
           !location.pathname.includes("/email-verification") && 
-          !location.pathname === "/") {
+          location.pathname !== "/") {
         navigate("/login");
       }
     };
