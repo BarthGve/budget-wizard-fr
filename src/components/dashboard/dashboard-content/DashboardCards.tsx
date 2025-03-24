@@ -58,7 +58,6 @@ export const DashboardCards = ({
       />
       <BalanceCard 
         balance={revenue - expenses - totalMensualites}
-        isMonthly={currentView === "monthly"}
       />
     </div>
   );
