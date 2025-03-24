@@ -2,7 +2,6 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { NavigationMenu } from "@/components/layout/NavigationMenu";
-import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
 import { ProjectAnnouncementCard } from "@/components/layout/ProjectAnnouncementCard";
 
 interface SidebarContentProps {
@@ -16,7 +15,7 @@ export const SidebarContent = ({ collapsed, isAdmin, userId }: SidebarContentPro
     <div className="flex flex-col flex-1 overflow-hidden">
       {/* Menu de navigation avec flex-1 pour qu'il prenne tout l'espace disponible */}
       <div className="flex-1 overflow-y-auto mb-4">
-        <NavigationMenu collapsed={collapsed} isAdmin={isAdmin} />
+        <NavigationMenu collapsed={collapsed} isAdmin={isAdmin} userId={userId} />
       </div>
       
       {/* Zone de séparation visuelle */}
@@ -25,18 +24,9 @@ export const SidebarContent = ({ collapsed, isAdmin, userId }: SidebarContentPro
       </div>
       
       {/* Les éléments du bas avec espacement amélioré */}
-      <div className="space-y-3 mb-4">
+      <div className="px-4 mb-4">
         {/* Project announcement card */}
-        <div className="px-4">
-          <ProjectAnnouncementCard collapsed={collapsed} userId={userId} />
-        </div>
-        
-        {/* Feedback dialog - uniquement pour utilisateurs non-admin */}
-        {!isAdmin && (
-          <div className="px-4">
-            <FeedbackDialog collapsed={collapsed} />
-          </div>
-        )}
+        <ProjectAnnouncementCard collapsed={collapsed} userId={userId} />
       </div>
     </div>
   );

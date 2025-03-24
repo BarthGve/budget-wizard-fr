@@ -19,6 +19,7 @@ import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { LucideIcon } from "lucide-react";
 import { usePendingFeedbacks } from "@/hooks/usePendingFeedbacks";
 import { Badge } from "@/components/ui/badge";
+import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
 
 interface MenuItem {
   title: string;
@@ -30,6 +31,7 @@ interface MenuItem {
 interface NavigationMenuProps {
   collapsed: boolean;
   isAdmin: boolean;
+  userId?: string;
 }
 
 // Définir les menus en dehors du composant
@@ -51,7 +53,7 @@ const userMenu: MenuItem[] = [
   { title: "Véhicules", icon: Car, path: "/vehicles" },
 ];
 
-export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
+export const NavigationMenu = ({ collapsed, isAdmin, userId }: NavigationMenuProps) => {
   const location = useLocation();
   const { canAccessPage } = usePagePermissions();
   const { pendingCount } = usePendingFeedbacks(isAdmin);
@@ -109,6 +111,13 @@ export const NavigationMenu = ({ collapsed, isAdmin }: NavigationMenuProps) => {
             </li>
           );
         })}
+        
+        {/* Ajout du composant FeedbackDialog juste après les liens de navigation */}
+        {!isAdmin && (
+          <li className="mt-2">
+            <FeedbackDialog collapsed={collapsed} />
+          </li>
+        )}
       </ul>
     </nav>
   );
