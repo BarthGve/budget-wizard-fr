@@ -29,13 +29,13 @@ export const OnboardingDialog = ({ open, onOpenChange }: OnboardingDialogProps) 
   const steps = [
     {
       title: "Bienvenue sur Budget Wizard !",
-      icon: <UserRound className="h-10 w-10 text-indigo-500" />,
+      icon: <UserRound className="h-12 w-12 text-indigo-500" />,
       description: "Suivez ce guide rapide pour configurer votre application et tirer le meilleur parti de votre gestion financière.",
-      skipText: "Plus tard",
+      skipText: "Commencer",
     },
     {
       title: "Ajoutez vos revenus",
-      icon: <CreditCard className="h-10 w-10 text-emerald-500" />,
+      icon: <CreditCard className="h-12 w-12 text-emerald-500" />,
       description: "Commencez par renseigner vos sources de revenus. C'est essentiel pour analyser vos finances et définir des objectifs d'épargne réalistes.",
       action: () => navigate("/contributors"),
       actionText: "Ajouter mes revenus",
@@ -43,7 +43,7 @@ export const OnboardingDialog = ({ open, onOpenChange }: OnboardingDialogProps) 
     },
     {
       title: "Personnalisez vos catégories",
-      icon: <Settings2 className="h-10 w-10 text-amber-500" />,
+      icon: <Settings2 className="h-12 w-12 text-amber-500" />,
       description: "Créez des catégories personnalisées pour mieux organiser vos dépenses et obtenir des analyses détaillées de votre budget.",
       action: () => navigate("/user-settings?tab=expense-categories"),
       actionText: "Configurer les catégories",
@@ -51,7 +51,7 @@ export const OnboardingDialog = ({ open, onOpenChange }: OnboardingDialogProps) 
     },
     {
       title: "Ajoutez vos enseignes préférées",
-      icon: <Store className="h-10 w-10 text-violet-500" />,
+      icon: <Store className="h-12 w-12 text-violet-500" />,
       description: "Configurez les enseignes où vous effectuez régulièrement des achats pour un suivi plus précis de vos habitudes de consommation.",
       action: () => navigate("/user-settings?tab=retailers"),
       actionText: "Gérer les enseignes",
@@ -104,7 +104,7 @@ export const OnboardingDialog = ({ open, onOpenChange }: OnboardingDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md w-full max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md w-full max-h-[85vh] overflow-y-auto px-6 py-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
@@ -112,65 +112,70 @@ export const OnboardingDialog = ({ open, onOpenChange }: OnboardingDialogProps) 
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.2 }}
+            className="flex flex-col items-center"
           >
-            <DialogHeader className="text-center">
-              <div className="mx-auto mb-4">{currentStep.icon}</div>
-              <DialogTitle className="text-xl font-semibold text-indigo-700 dark:text-indigo-300">
+            <DialogHeader className="text-center w-full">
+              <div className="mx-auto mb-6 flex items-center justify-center bg-indigo-50 dark:bg-indigo-950/30 p-4 rounded-full">
+                {currentStep.icon}
+              </div>
+              <DialogTitle className="text-2xl font-bold text-indigo-700 dark:text-indigo-300 mb-2">
                 {currentStep.title}
               </DialogTitle>
-              <div className="text-sm text-indigo-600/80 dark:text-indigo-400 mt-2">
+              <div className="text-base text-indigo-600/80 dark:text-indigo-400 mt-2 max-w-sm mx-auto">
                 {currentStep.description}
               </div>
             </DialogHeader>
 
-            <div className="flex justify-center my-6">
+            <div className="flex justify-center my-8 w-full">
               {Array.from({ length: totalSteps }).map((_, index) => (
                 <div
                   key={index}
-                  className={`h-1.5 w-12 mx-1 rounded-full ${
+                  className={`h-2 ${
                     index === step
-                      ? "bg-indigo-500"
+                      ? "w-8 bg-indigo-500"
                       : index < step
-                      ? "bg-indigo-300"
-                      : "bg-gray-200 dark:bg-gray-700"
-                  }`}
+                      ? "w-8 bg-indigo-300"
+                      : "w-8 bg-gray-200 dark:bg-gray-700"
+                  } mx-1 rounded-full transition-all duration-300`}
                 />
               ))}
             </div>
 
-            <DialogFooter className="flex-col gap-3 mt-6">
+            <div className="flex flex-col w-full gap-4 mt-2">
               {/* Afficher le bouton d'action seulement pour les étapes qui en ont un */}
               {step > 0 && currentStep.action && (
                 <Button
                   onClick={currentStep.action}
-                  className="w-full mx-auto bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+                  className="w-full md:w-3/4 mx-auto bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 py-6"
+                  size="lg"
                 >
                   {currentStep.actionText}
                 </Button>
               )}
               
-              <div className="flex w-full justify-between">
+              <div className="flex w-full justify-between mt-4">
                 <Button
                   variant="outline"
                   onClick={prevStep}
                   disabled={step === 0}
-                  className={`${step === 0 ? 'opacity-0' : ''}`}
+                  className={`${step === 0 ? 'opacity-0 pointer-events-none' : ''}`}
                 >
                   <ChevronLeft className="mr-1 h-4 w-4" />
                   Précédent
                 </Button>
                 
                 <Button
-                  variant="ghost"
+                  variant={step === 0 ? "default" : "ghost"}
                   onClick={nextStep}
+                  className={step === 0 ? "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600" : ""}
                 >
                   {currentStep.skipText}
-                  {step < totalSteps - 1 && <ChevronRight className="ml-1 h-4 w-4" />}
+                  {step < totalSteps - 1 && step === 0 && <ChevronRight className="ml-1 h-4 w-4" />}
                 </Button>
               </div>
               
               {step === totalSteps - 1 && (
-                <div className="flex items-center space-x-2 mt-2 self-start">
+                <div className="flex items-center space-x-2 mt-4 self-start">
                   <Checkbox 
                     id="dontShowAgain" 
                     checked={dontShowAgain} 
@@ -184,7 +189,7 @@ export const OnboardingDialog = ({ open, onOpenChange }: OnboardingDialogProps) 
                   </label>
                 </div>
               )}
-            </DialogFooter>
+            </div>
           </motion.div>
         </AnimatePresence>
       </DialogContent>
