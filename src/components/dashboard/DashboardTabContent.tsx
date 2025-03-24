@@ -1,11 +1,10 @@
-
 import { motion } from "framer-motion";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
 import { useCreditStats } from "./dashboard-tab/CreditStats";
 import { useContributorMapper } from "./dashboard-tab/ContributorMapper";
 import { useProfileFetcher } from "./dashboard-tab/ProfileFetcher";
-import { DashboardCardsSection } from "./dashboard-tab/DashboardCards";
+import { DashboardCards } from "./dashboard-tab/DashboardCards";
 import { ExpenseStatsSection } from "./dashboard-tab/ExpenseStats";
 import { DashboardChartsSection } from "./dashboard-tab/DashboardChartsSection";
 import { ContributorsSection } from "./dashboard-tab/ContributorsSection";
@@ -57,7 +56,6 @@ interface DashboardTabContentProps {
   fuelVolume?: number;
 }
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -88,10 +86,8 @@ export const DashboardTabContent = ({
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   
-  // Utiliser useMediaQuery pour détecter les petits écrans (smartphones)
   const isMobileScreen = useMediaQuery("(max-width: 768px)");
 
-  // Utiliser les hooks extraits
   const { data: credits = [] } = useCreditsFetcher();
   const { expensesTotal } = useExpenseStats(currentView);
   const { totalMensualites } = useCreditStats({ credits, firstDayOfMonth });
@@ -105,8 +101,7 @@ export const DashboardTabContent = ({
       animate="visible"
       variants={containerVariants}
     >
-      {/* Section des cartes principales */}
-      <DashboardCardsSection 
+      <DashboardCards 
         revenue={revenue}
         expenses={expenses}
         totalMensualites={totalMensualites}
@@ -122,7 +117,6 @@ export const DashboardTabContent = ({
         currentView={currentView}
       />
       
-      {/* Section des statistiques de dépenses */}
       <ExpenseStatsSection 
         totalExpenses={expensesTotal}
         viewMode={currentView}
@@ -132,7 +126,6 @@ export const DashboardTabContent = ({
         profile={profile}
       />
       
-      {/* Section des graphiques - masquée sur mobile */}
       {!isMobileScreen && (
         <DashboardChartsSection 
           expenses={expenses}
@@ -144,7 +137,6 @@ export const DashboardTabContent = ({
         />
       )}
       
-      {/* Section des contributeurs */}
       <ContributorsSection 
         contributors={mappedContributors}
         expenses={expenses}

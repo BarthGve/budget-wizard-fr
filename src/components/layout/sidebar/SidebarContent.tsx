@@ -2,7 +2,6 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { NavigationMenu } from "@/components/layout/NavigationMenu";
-import { ProjectAnnouncementCard } from "@/components/layout/ProjectAnnouncementCard";
 
 interface SidebarContentProps {
   collapsed: boolean;
@@ -23,11 +22,7 @@ export const SidebarContent = ({ collapsed, isAdmin, userId }: SidebarContentPro
         <div className="h-[1px] bg-border/40 w-full"></div>
       </div>
       
-      {/* Les éléments du bas avec espacement amélioré */}
-      <div className="px-4 mb-4">
-        {/* Project announcement card */}
-        <ProjectAnnouncementCard collapsed={collapsed} userId={userId} />
-      </div>
+      {/* La carte d'annonce de projet a été supprimée de cette section */}
     </div>
   );
 };
