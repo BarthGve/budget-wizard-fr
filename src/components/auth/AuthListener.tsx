@@ -1,55 +1,45 @@
 
-import { useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { ZeroIncomeDialog } from "./ZeroIncomeDialog";
-import { useAuthStateListener } from "@/hooks/useAuthStateListener";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useIncomeVerification } from "@/hooks/useIncomeVerification";
-import { processAuthAction, handlePostEmailVerification } from "@/utils/authActions";
+import { supabase } from "@/integrations/supabase/client";
 
-/**
- * Composant qui écoute les changements d'état d'authentification
- * et gère les interactions utilisateur en conséquence
- */
 export const AuthListener = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const { isInitialMount } = useAuthStateListener();
-  const { showIncomeDialog, setShowIncomeDialog, checkOwnerContributorIncome } = useIncomeVerification();
+  const navigate = useNavigate();
+  const { showOnboardingDialog, setShowOnboardingDialog, checkOwnerContributorIncome } = useIncomeVerification();
 
-  // Détecter et gérer les actions de vérification d'email
   useEffect(() => {
-    // Appel de la fonction de traitement des actions d'authentification
-    processAuthAction();
+    checkOwnerContributorIncome();
     
-    // Écouter les changements d'URL qui pourraient contenir de nouveaux tokens
-    const handleLocationChange = () => {
-      processAuthAction();
+    // Vérifier l'état d'authentification
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Si l'utilisateur n'est pas authentifié et n'est pas sur une page publique
+      if (!user && 
+          !location.pathname.includes("/login") && 
+          !location.pathname.includes("/register") && 
+          !location.pathname.includes("/reset-password") && 
+          !location.pathname.includes("/email-verification") && 
+          !location.pathname === "/") {
+        navigate("/login");
+      }
     };
     
-    window.addEventListener("hashchange", handleLocationChange);
+    checkAuth();
+    
+    // Écouter les changements d'authentification
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        navigate("/login");
+      }
+    });
+    
     return () => {
-      window.removeEventListener("hashchange", handleLocationChange);
+      subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [location, navigate, checkOwnerContributorIncome]);
 
-  // Gérer la redirection post-vérification email
-  useEffect(() => {
-    handlePostEmailVerification(navigate);
-  }, [location.pathname, navigate]);
-
-  // Vérifier les revenus après la connexion initiale
-  useEffect(() => {
-    if (!isInitialMount.current && location.pathname === "/dashboard") {
-      setTimeout(() => {
-        checkOwnerContributorIncome();
-      }, 1000);
-    }
-  }, [isInitialMount, location.pathname, checkOwnerContributorIncome]);
-
-  return (
-    <ZeroIncomeDialog 
-      open={showIncomeDialog} 
-      onOpenChange={setShowIncomeDialog} 
-    />
-  );
+  return null;
 };
