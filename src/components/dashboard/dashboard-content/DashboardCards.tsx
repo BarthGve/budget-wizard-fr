@@ -1,9 +1,10 @@
 
-import { CreditCard } from "../CreditCard";
-import { ExpensesCard } from "../ExpensesCard";
 import { RevenueCard } from "../RevenueCard";
+import { ExpensesCard } from "../ExpensesCard";
+import { CreditCard } from "../CreditCard";
 import { SavingsCard } from "../SavingsCard";
-import { BalanceCard } from "../BalanceCard";
+import { motion } from "framer-motion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface DashboardCardsProps {
   revenue: number;
@@ -23,7 +24,7 @@ interface DashboardCardsProps {
     debit_month: number | null;
     periodicity: "monthly" | "quarterly" | "yearly";
   }>;
-  currentView: "monthly" | "yearly";
+  currentView?: "monthly" | "yearly";
 }
 
 export const DashboardCards = ({
@@ -34,31 +35,72 @@ export const DashboardCards = ({
   savingsGoal,
   contributorShares,
   recurringExpenses,
-  currentView,
+  currentView = "monthly",
 }: DashboardCardsProps) => {
+  // Vérifier si on est sur mobile
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // Animation variants for staggered children
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <RevenueCard 
-        totalRevenue={revenue} 
-        contributorShares={contributorShares} 
-      />
-      <CreditCard 
-        totalMensualites={totalMensualites} 
-        totalRevenue={revenue} 
-        currentView={currentView}
-      />
-      <ExpensesCard 
-        totalExpenses={expenses} 
-        recurringExpenses={recurringExpenses} 
-        currentView={currentView}
-      />
-      <SavingsCard 
-        totalMonthlySavings={savings} 
-        savingsGoal={savingsGoal} 
-      />
-      <BalanceCard 
-        balance={revenue - expenses - totalMensualites}
-      />
-    </div>
+    <motion.div 
+      className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-4'}`}
+      variants={containerVariants}
+    >
+      <motion.div variants={itemVariants} className="w-full">
+        <RevenueCard
+          totalRevenue={revenue}
+          contributorShares={contributorShares}
+        />
+      </motion.div>
+      <motion.div variants={itemVariants} className="w-full">
+        <CreditCard
+          totalMensualites={totalMensualites}
+          totalRevenue={revenue}
+          currentView={currentView}
+        />
+      </motion.div>
+      <motion.div variants={itemVariants} className="w-full">
+        <ExpensesCard
+          totalExpenses={expenses}
+          recurringExpenses={recurringExpenses}
+        />
+      </motion.div>
+      
+      <motion.div variants={itemVariants} className="w-full">
+        <SavingsCard
+          totalMonthlySavings={savings}
+          savingsGoal={savingsGoal}
+        />
+      </motion.div>
+    </motion.div>
   );
 };
