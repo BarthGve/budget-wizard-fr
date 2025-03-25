@@ -50,6 +50,11 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   }
 
   if (!authData?.isAuthenticated) {
+    // Ne pas rediriger vers login si on est sur la page changelog publique
+    if (location.pathname === '/changelog') {
+      return <>{children}</>;
+    }
+    
     // Utilisation de state pour préserver l'URL de redirection
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
