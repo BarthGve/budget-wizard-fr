@@ -341,7 +341,7 @@ export const FloatingActionButton = () => {
             isMenuOpen && "rotate-45"
           )}
         >
-          <Plus className="h-9 w-9" />
+          <Plus className="h-7 w-7" />
         </Button>
       </div>
 
