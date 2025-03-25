@@ -63,14 +63,14 @@ export function ExpenseForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-5">
         <FormField
           control={form.control}
           name="retailerId"
           rules={{ required: "L'enseigne est requise" }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 dark:text-gray-300">Enseigne</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300 text-sm font-medium">Enseigne</FormLabel>
               {preSelectedRetailer || disableRetailerSelect ? (
                 <Input
                   value={preSelectedRetailer?.name || retailers?.find(r => r.id === field.value)?.name || ""}
@@ -115,18 +115,21 @@ export function ExpenseForm({
           }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 dark:text-gray-300">Montant</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300 text-sm font-medium">Montant</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  step="0.01" 
-                  placeholder="0.00" 
-                  {...field} 
-                  className={cn(
-                    "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200",
-                    "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
-                  )} 
-                />
+                <div className="relative">
+                  <Input 
+                    type="number" 
+                    step="0.01" 
+                    placeholder="0.00" 
+                    {...field} 
+                    className={cn(
+                      "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200 pr-6",
+                      "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
+                    )} 
+                  />
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">€</span>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -138,7 +141,7 @@ export function ExpenseForm({
           rules={{ required: "La date est requise" }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 dark:text-gray-300">Date</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300 text-sm font-medium">Date</FormLabel>
               <FormControl>
                 <Input
                   type="date"
@@ -159,13 +162,13 @@ export function ExpenseForm({
           name="comment"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 dark:text-gray-300">Commentaire (facultatif)</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300 text-sm font-medium">Commentaire (facultatif)</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Ajouter un commentaire..." 
                   {...field} 
                   className={cn(
-                    "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200 min-h-24 resize-none",
+                    "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200 min-h-20 resize-none",
                     "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
                   )} 
                 />
