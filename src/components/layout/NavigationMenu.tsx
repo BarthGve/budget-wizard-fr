@@ -62,7 +62,7 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId }: NavigationMenuPro
 
   return (
     <nav className="flex flex-col h-full justify-between p-4">
-      <ul className="space-y-1 flex-grow overflow-y-auto scrollbar-none">
+      <ul className="space-y-2.5 flex-grow overflow-y-auto scrollbar-none">
         {menuItems.map((item) => {
           const isActive = item.matchPath
             ? new RegExp(item.matchPath).test(location.pathname)
@@ -75,9 +75,9 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId }: NavigationMenuPro
               <NavLink
                 to={item.path}
                 className={({ isActive }) => cn(
-                  "flex items-center space-x-3 px-3 py-2 rounded-xl transition-colors",
+                  "flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-colors",
                   "hover:bg-gray-100 dark:hover:bg-gray-800/60",
-                  collapsed && "justify-center py-2.5",
+                  collapsed && "justify-center py-3",
                   isActive && "bg-gray-200 text-gray-900 hover:bg-gray-200/90 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-800/90"
                 )}
                 end
