@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CreditCardInfo } from "./card-components/CreditCardInfo";
 import { CreditCardDetails } from "./card-components/CreditCardDetails";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface CreditCardProps {
   credit: Credit;
@@ -14,6 +15,9 @@ interface CreditCardProps {
 }
 
 export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) => {
+  // Utilisation du hook pour détecter si l'écran est petit (mobile)
+  const isMobile = useMediaQuery("(max-width: 639px)");
+  
   return (
     <motion.div
       key={credit.id}
@@ -32,7 +36,7 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
         delay: index * 0.08,
       }}
       whileHover={{
-        scale: 1.01,
+        scale: isMobile ? 1 : 1.01,
         transition: { duration: 0.2 }
       }}
       className="transform-gpu"
@@ -46,18 +50,45 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
           "dark:bg-gray-800/90 dark:border-purple-800/40 dark:hover:border-purple-700/60 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50"
         )}
       >
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between ">
-          <CreditCardInfo credit={credit} index={index} />
-          <CreditCardDetails credit={credit} index={index} />
-          <motion.div 
-            className="px-4 py-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: index * 0.08 + 0.3, duration: 0.3 }}
-          >
+        {isMobile ? (
+          // Version mobile compacte
+          <div className="flex items-center justify-between p-3">
+            <div className="flex items-center flex-1">
+              <CreditCardInfo credit={credit} index={index} isMobile={true} />
+              <div className="ml-2">
+                <span className={cn(
+                  "text-sm font-medium",
+                  "text-gray-500 dark:text-gray-400"
+                )}>
+                  Mensualité
+                </span>
+                <p className={cn(
+                  "font-semibold",
+                  "text-gray-800 dark:text-gray-200"
+                )}>
+                  {credit.montant_mensualite
+                    ? credit.montant_mensualite.toLocaleString("fr-FR") + " €"
+                    : "N/A"}
+                </p>
+              </div>
+            </div>
             <CreditActions credit={credit} onCreditDeleted={onCreditDeleted} />
-          </motion.div>
-        </div>
+          </div>
+        ) : (
+          // Version desktop originale
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <CreditCardInfo credit={credit} index={index} />
+            <CreditCardDetails credit={credit} index={index} />
+            <motion.div 
+              className="px-4 py-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: index * 0.08 + 0.3, duration: 0.3 }}
+            >
+              <CreditActions credit={credit} onCreditDeleted={onCreditDeleted} />
+            </motion.div>
+          </div>
+        )}
       </Card>
     </motion.div>
   );
