@@ -1,4 +1,3 @@
-
 import { Plus, Car, Store } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
 import { useVehicles } from "@/hooks/useVehicles";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AddVehicleExpenseDialog } from "@/components/vehicles/expenses/AddVehicleExpenseDialog";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useProfileFetcher } from "@/components/dashboard/dashboard-tab/ProfileFetcher";
-import { ProfileType } from "@/types/profile";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface Retailer {
   id: string;
@@ -37,6 +36,7 @@ export const FloatingActionButton = () => {
   const navigate = useNavigate();
   const { selectedVehicleId, setSelectedVehicleId } = useVehiclesContainer();
   const { vehicles, isLoading } = useVehicles();
+  const isMobile = useMediaQuery("(max-width: 768px)");
   
   // Récupérer le profil de l'utilisateur pour vérifier s'il est "pro" ou "basic"
   const { data: profile } = useProfileFetcher();
@@ -347,10 +347,7 @@ export const FloatingActionButton = () => {
 
       {selectedVehicle && (
         <Dialog open={expenseDialogOpen} onOpenChange={setExpenseDialogOpen}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Ajouter une dépense carburant</DialogTitle>
-            </DialogHeader>
+          <DialogContent className="sm:max-w-[500px] p-0 border-0 overflow-hidden bg-transparent shadow-2xl">
             <AddVehicleExpenseDialog
               vehicleId={selectedVehicle}
               hideDialogWrapper={true}
@@ -374,16 +371,14 @@ export const FloatingActionButton = () => {
 
       {selectedRetailer && (
         <Dialog open={retailerExpenseDialogOpen} onOpenChange={setRetailerExpenseDialogOpen}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Ajouter une dépense pour {selectedRetailer.name}</DialogTitle>
-            </DialogHeader>
+          <DialogContent className="sm:max-w-[500px] p-0 border-0 overflow-hidden bg-transparent shadow-2xl">
             <AddExpenseDialog 
               onExpenseAdded={handleRetailerExpenseSuccess}
               preSelectedRetailer={selectedRetailer}
               open={retailerExpenseDialogOpen}
               onOpenChange={setRetailerExpenseDialogOpen}
               hideDialogWrapper={true}
+              hideTitleBar={true}
             />
           </DialogContent>
         </Dialog>

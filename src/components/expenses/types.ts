@@ -21,6 +21,7 @@ export interface AddExpenseDialogProps {
     id: string;
     name: string;
   };
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTitleBar?: boolean;
 }
