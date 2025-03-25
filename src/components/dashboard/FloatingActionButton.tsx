@@ -378,15 +378,13 @@ export const FloatingActionButton = () => {
             <DialogHeader>
               <DialogTitle>Ajouter une dépense pour {selectedRetailer.name}</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <AddExpenseDialog 
-                onExpenseAdded={handleRetailerExpenseSuccess}
-                preSelectedRetailer={selectedRetailer}
-                open={retailerExpenseDialogOpen}
-                onOpenChange={setRetailerExpenseDialogOpen}
-                hideDialogWrapper={true}
-              />
-            </div>
+            <AddExpenseDialog 
+              onExpenseAdded={handleRetailerExpenseSuccess}
+              preSelectedRetailer={selectedRetailer}
+              open={retailerExpenseDialogOpen}
+              onOpenChange={setRetailerExpenseDialogOpen}
+              hideDialogWrapper={true}
+            />
           </DialogContent>
         </Dialog>
       )}
