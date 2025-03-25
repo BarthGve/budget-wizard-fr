@@ -96,113 +96,99 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
   ];
 
   return (
-    <div className={cn(
-      "rounded-lg p-5",
-      isDarkTheme 
-        ? "bg-gray-800/50 border border-gray-700/50" 
-        : "bg-white border border-gray-100 shadow-sm"
+    <Card className={cn(
+      "border shadow-sm overflow-hidden rounded-lg",
+      "bg-white dark:bg-gray-800/90", 
+      "border-gray-100 dark:border-gray-700/50"
     )}>
-      <CardTitle
-        className={cn(
-          "text-xl font-semibold flex items-center gap-2 mb-2",
-          // Light mode
-          "text-blue-700",
-          // Dark mode
-          "dark:text-blue-300"
-        )}
-      >
-        <div
+      <CardHeader className="pb-2">
+        <CardTitle
           className={cn(
-            "p-1.5 rounded", // Common styles
-            // Light mode
-            "bg-blue-100",
-            // Dark mode
-            "dark:bg-blue-800/40"
+            "text-xl font-semibold flex items-center gap-2",
+            "text-blue-700 dark:text-blue-300"
           )}
         >
-          <Calendar
+          <div
             className={cn(
-              "w-5 h-5", // Common styles
-              // Light mode
-              "text-blue-500",
-              // Dark mode
-              "dark:text-blue-400"
+              "p-1.5 rounded",
+              "bg-blue-100 dark:bg-blue-800/40"
             )}
-          />
-        </div>
-        Archives des années précédentes
-      </CardTitle>
-      
-      <Tabs defaultValue={yearlyData[0]?.year.toString()} className="w-full mt-2">
-        <TabsList className={cn(
-          "mt-4 mb-4 w-full justify-start overflow-x-auto pb-1",
-          isDarkTheme 
-            ? "bg-gray-800/70 border-b border-gray-700" 
-            : "bg-gray-50/70 border-b border-gray-200"
-        )}>
-          {yearlyData.map(year => (
-            <TabsTrigger 
-              key={year.year} 
-              value={year.year.toString()}
-              onClick={() => handleYearClick(year.year)}
+          >
+            <Calendar
               className={cn(
-                "data-[state=active]:bg-blue-500 data-[state=active]:text-white",
-                "data-[state=active]:shadow-sm",
-                isDarkTheme
-                  ? "text-gray-300 hover:text-blue-300 data-[state=active]:border-blue-400"
-                  : "text-gray-600 hover:text-blue-600 data-[state=active]:border-blue-500",
-                "transition-all duration-150"
+                "w-5 h-5",
+                "text-blue-600 dark:text-blue-400"
               )}
-            >
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5" />
-                {year.year}
-                <span className={cn(
-                  "ml-1 px-1.5 py-0.5 rounded-full text-xs",
-                  isDarkTheme 
-                    ? "bg-blue-900/50 text-blue-300" 
-                    : "bg-blue-100 text-blue-700"
-                )}>
-                  {year.count}
+            />
+          </div>
+          Archives des années précédentes
+        </CardTitle>
+      </CardHeader>
+      
+      <CardContent className="pt-0">
+        <Tabs defaultValue={yearlyData[0]?.year.toString()} className="w-full">
+          <TabsList className={cn(
+            "mt-4 mb-4 w-full justify-start overflow-x-auto pb-1",
+            "bg-transparent dark:bg-transparent",
+            "border-b dark:border-gray-700 border-gray-200"
+          )}>
+            {yearlyData.map(year => (
+              <TabsTrigger 
+                key={year.year} 
+                value={year.year.toString()}
+                onClick={() => handleYearClick(year.year)}
+                className={cn(
+                  "data-[state=active]:bg-blue-500 data-[state=active]:text-white",
+                  "data-[state=active]:shadow-sm",
+                  "text-gray-600 dark:text-gray-300",
+                  "hover:text-blue-600 dark:hover:text-blue-300", 
+                  "data-[state=active]:border-blue-500 dark:data-[state=active]:border-blue-400",
+                  "transition-all duration-150"
+                )}
+              >
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5" />
+                  {year.year}
+                  <span className={cn(
+                    "ml-1 px-1.5 py-0.5 rounded-full text-xs",
+                    "bg-blue-100 dark:bg-blue-900/50", 
+                    "text-blue-700 dark:text-blue-300"
+                  )}>
+                    {year.count}
+                  </span>
                 </span>
-              </span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </CardContent>
       
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent 
           className={cn(
             "p-0 sm:max-w-[650px] w-[95vw] border-0 rounded-lg overflow-hidden",
-            isDarkTheme 
-              ? "bg-gradient-to-br from-gray-900 to-gray-800" 
-              : "bg-gradient-to-br from-white to-gray-50"
+            "bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800",
+            "shadow-lg dark:shadow-gray-900/50"
           )}
-          style={{
-            boxShadow: isDarkTheme 
-              ? "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4)"
-              : "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04)"
-          }}
         >
           <div className="overflow-y-auto max-h-[80vh] scrollbar-thin">
             <DialogHeader className={cn(
               "p-5 border-b sticky top-0 z-10 backdrop-blur-sm",
-              isDarkTheme ? "border-gray-700/50 bg-gray-900/95" : "border-gray-200/70 bg-white/95"
+              "border-gray-200/70 dark:border-gray-700/50",
+              "bg-white/95 dark:bg-gray-900/95"
             )}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "p-2 rounded-lg",
-                    isDarkTheme 
-                      ? "bg-blue-900/30 text-blue-300" 
-                      : "bg-blue-100 text-blue-600"
+                    "bg-blue-100 dark:bg-blue-900/30",
+                    "text-blue-600 dark:text-blue-300"
                   )}>
                     <BarChart className="w-5 h-5" />
                   </div>
                   <DialogTitle className={cn(
                     "text-xl font-bold",
-                    isDarkTheme ? "text-blue-100" : "text-blue-800"
+                    "text-blue-800 dark:text-blue-100"
                   )}>
                     Statistiques {selectedYear}
                   </DialogTitle>
@@ -210,7 +196,8 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                 
                 <DialogClose className={cn(
                   "rounded-full p-1.5 hover:bg-gray-200/20 transition-colors",
-                  isDarkTheme ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-800"
+                  "text-gray-500 dark:text-gray-400",
+                  "hover:text-gray-800 dark:hover:text-gray-200"
                 )}>
                   <X className="h-4 w-4" />
                   <span className="sr-only">Fermer</span>
@@ -230,7 +217,8 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                     <Card 
                       className={cn(
                         "border shadow-sm overflow-hidden",
-                        "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10"
+                        "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10",
+                        "border-blue-100/60 dark:border-blue-800/30"
                       )}
                     >
                       <CardHeader className="pb-2">
@@ -257,7 +245,8 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                     <Card 
                       className={cn(
                         "border shadow-sm overflow-hidden",
-                        "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10"
+                        "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10",
+                        "border-purple-100/60 dark:border-purple-800/30"
                       )}
                     >
                       <CardHeader className="pb-2">
@@ -279,10 +268,14 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                 </div>
 
                 {/* Répartition par mois */}
-                <div className="bg-gray-50/10 rounded-lg p-4 border border-gray-700/20 mt-6">
+                <div className={cn(
+                  "rounded-lg p-4 border mt-6",
+                  "bg-gray-50 dark:bg-gray-800/30",
+                  "border-gray-200 dark:border-gray-700/50"
+                )}>
                   <h3 className={cn(
                     "text-lg font-semibold mb-4",
-                    isDarkTheme ? "text-gray-200" : "text-gray-800"
+                    "text-gray-800 dark:text-gray-200"
                   )}>
                     Répartition mensuelle
                   </h3>
@@ -297,9 +290,9 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                           key={month} 
                           className={cn(
                             "p-3 rounded-lg flex items-center justify-between",
-                            isDarkTheme 
-                              ? hasData ? "bg-gray-800/70 border border-gray-700/70" : "bg-gray-800/20 border border-gray-700/30"
-                              : hasData ? "bg-white border border-gray-200" : "bg-gray-100/40 border border-gray-200/40",
+                            hasData 
+                              ? "bg-white dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700/70" 
+                              : "bg-gray-100/40 dark:bg-gray-800/20 border border-gray-200/40 dark:border-gray-700/30",
                             hasData ? "" : "opacity-60"
                           )}
                         >
@@ -307,11 +300,11 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                             <div className={cn(
                               "w-2 h-10 rounded-full",
                               hasData 
-                                ? isDarkTheme ? "bg-blue-500" : "bg-blue-500" 
-                                : isDarkTheme ? "bg-gray-700" : "bg-gray-300"
+                                ? "bg-blue-500 dark:bg-blue-500" 
+                                : "bg-gray-300 dark:bg-gray-700"
                             )} />
                             <span className={cn(
-                              isDarkTheme ? "text-gray-300" : "text-gray-700",
+                              "text-gray-700 dark:text-gray-300",
                               "font-medium"
                             )}>
                               {monthNames[month]}
@@ -322,13 +315,13 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                             <div className="text-right">
                               <p className={cn(
                                 "font-semibold",
-                                isDarkTheme ? "text-blue-300" : "text-blue-600"
+                                "text-blue-600 dark:text-blue-300"
                               )}>
                                 {formatCurrency(data.total)}
                               </p>
                               <p className={cn(
                                 "text-xs",
-                                isDarkTheme ? "text-gray-400" : "text-gray-500"
+                                "text-gray-500 dark:text-gray-400"
                               )}>
                                 {data.count} dépense{data.count > 1 ? 's' : ''}
                               </p>
@@ -336,7 +329,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                           ) : (
                             <span className={cn(
                               "text-sm italic",
-                              isDarkTheme ? "text-gray-500" : "text-gray-400"
+                              "text-gray-400 dark:text-gray-500"
                             )}>
                               Aucune
                             </span>
@@ -348,7 +341,10 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                 </div>
                 
                 {/* Ajout de la section pour la moyenne par achat */}
-                <p className="text-center text-sm text-muted-foreground">
+                <p className={cn(
+                  "text-center text-sm", 
+                  "text-gray-500 dark:text-gray-400"
+                )}>
                   Moyenne par achat: {formatCurrency(selectedYearData.total / selectedYearData.count)}
                 </p>
               </div>
@@ -356,6 +352,6 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </Card>
   );
 }

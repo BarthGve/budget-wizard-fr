@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LayoutGrid, LayoutList } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -27,8 +27,18 @@ interface RetailersGridProps {
 }
 
 export const RetailersGrid = ({ expensesByRetailer, onExpenseUpdated, viewMode }: RetailersGridProps) => {
-  const [displayMode, setDisplayMode] = useState<'standard' | 'mini'>('standard');
+  // Détection des appareils mobiles (moins de 768px)
   const isMobile = useMediaQuery("(max-width: 768px)");
+  
+  // Définir le mode d'affichage par défaut en fonction de l'appareil
+  const [displayMode, setDisplayMode] = useState<'standard' | 'mini'>(
+    isMobile ? 'mini' : 'standard'
+  );
+  
+  // Mettre à jour le mode d'affichage lorsque la taille de l'écran change
+  useEffect(() => {
+    setDisplayMode(isMobile ? 'mini' : 'standard');
+  }, [isMobile]);
   
   const containerVariants = {
     hidden: { opacity: 0 },

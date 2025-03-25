@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -5,10 +6,13 @@ import { formatCurrency } from "@/utils/format";
 import { ExpenseActionsDropdown } from "@/components/recurring-expenses/dialogs/ExpenseActionsDropdown";
 import { TablePagination } from "@/components/recurring-expenses/table/TablePagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowUpDown, Calendar, Euro, MessageSquareText, ChevronRight, TableIcon } from "lucide-react";
+import { ArrowUpDown, Calendar, Euro, MessageSquareText, ChevronRight, TableIcon, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface Expense {
   id: string;
@@ -41,6 +45,7 @@ export function RetailerExpensesTable({
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setCurrentPage(1);
@@ -152,6 +157,152 @@ export function RetailerExpensesTable({
     }
   });
   
+  // Version mobile : affichage des derniers achats
+  if (isMobile) {
+    if (isLoading) {
+      return (
+        <Card className={cn(
+          "border shadow-sm overflow-hidden relative",
+          currentColors.lightCardBg, currentColors.lightBorder,
+          currentColors.darkCardBg, currentColors.darkBorder
+        )}>
+          <CardHeader className="relative z-10 pb-2">
+            <CardTitle className={cn(
+              "text-base font-semibold flex items-center gap-2",
+              currentColors.cardHeaderText,
+              currentColors.cardHeaderTextDark
+            )}>
+              <div className={cn(
+                "p-1.5 rounded",
+                currentColors.iconBgLight,
+                currentColors.iconBgDark
+              )}>
+                <Clock className={cn(
+                  "h-4 w-4",
+                  currentColors.iconLight,
+                  currentColors.iconDark
+                )} />
+              </div>
+              Derniers achats
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-0">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="flex justify-between items-center px-2 py-2">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-5 w-16" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      );
+    }
+    
+    if (expenses.length === 0) {
+      return (
+        <Card className={cn(
+          "border shadow-sm overflow-hidden relative",
+          currentColors.lightCardBg, currentColors.lightBorder,
+          currentColors.darkCardBg, currentColors.darkBorder
+        )}>
+          <CardHeader className="relative z-10 pb-2">
+            <CardTitle className={cn(
+              "text-base font-semibold flex items-center gap-2",
+              currentColors.cardHeaderText,
+              currentColors.cardHeaderTextDark
+            )}>
+              <div className={cn(
+                "p-1.5 rounded",
+                currentColors.iconBgLight,
+                currentColors.iconBgDark
+              )}>
+                <Clock className={cn(
+                  "h-4 w-4",
+                  currentColors.iconLight,
+                  currentColors.iconDark
+                )} />
+              </div>
+              Derniers achats
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-2 text-center py-6">
+            <div className="mx-auto w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+              <Euro className="h-5 w-5 text-gray-400" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Aucune dépense enregistrée
+            </p>
+          </CardContent>
+        </Card>
+      );
+    }
+    
+    // Récupérer les 5 dernières dépenses
+    const latestExpenses = sortedExpenses.slice(0, 5);
+    
+    return (
+      <Card className={cn(
+        "border shadow-sm overflow-hidden relative",
+        currentColors.lightCardBg, currentColors.lightBorder,
+        currentColors.darkCardBg, currentColors.darkBorder
+      )}>
+        <div className={cn(
+          "absolute inset-0 opacity-5",
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]",
+          currentColors.gradientFrom, currentColors.gradientVia, "to-transparent",
+          "dark:opacity-10"
+        )} />
+        
+        <CardHeader className="relative z-10 pb-2">
+          <CardTitle className={cn(
+            "text-base font-semibold flex items-center gap-2",
+            currentColors.cardHeaderText,
+            currentColors.cardHeaderTextDark
+          )}>
+            <div className={cn(
+              "p-1.5 rounded",
+              currentColors.iconBgLight,
+              currentColors.iconBgDark
+            )}>
+              <Clock className={cn(
+                "h-4 w-4",
+                currentColors.iconLight,
+                currentColors.iconDark
+              )} />
+            </div>
+            Derniers achats
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent className="space-y-1.5 pt-1 pb-3">
+          {latestExpenses.map((expense) => (
+            <div 
+              key={expense.id} 
+              className={cn(
+                "flex justify-between items-center px-3 py-2.5 rounded-md",
+                "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+              )}
+              onClick={() => onViewDetails && onViewDetails(expense)}
+            >
+              <div className="flex items-center gap-3">
+                <div className={cn("w-8 h-8 rounded-md flex items-center justify-center", currentColors.accentBg)}>
+                  <Calendar className="h-4 w-4 text-gray-500" />
+                </div>
+                <span className="text-sm">
+                  {format(new Date(expense.date), "d MMM yyyy", { locale: fr })}
+                </span>
+              </div>
+              <span className={cn("font-semibold text-sm", currentColors.amountText)}>
+                {formatCurrency(expense.amount)}
+              </span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  // Version desktop : affichage du tableau complet
   if (isLoading) {
     return (
       <Card className={cn(

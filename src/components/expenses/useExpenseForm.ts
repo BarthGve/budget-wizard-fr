@@ -1,83 +1,44 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { ExpenseFormData } from "./types";
-import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-export function useExpenseForm(onExpenseAdded: () => void) {
-  const queryClient = useQueryClient();
+export const useExpenseForm = (onSuccess?: () => void) => {
+  const { currentUser } = useCurrentUser();
 
-  const handleSubmit = async (values: ExpenseFormData) => {
+  const handleSubmit = async (data: ExpenseFormData) => {
     try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
+      if (!currentUser) {
         toast.error("Vous devez être connecté pour ajouter une dépense");
         return;
       }
 
-      const { error } = await supabase
-        .from("expenses")
-        .insert({
-          retailer_id: values.retailerId,
-          amount: Number(values.amount),
-          date: values.date,
-          comment: values.comment,
-          profile_id: session.session.user.id,
-        });
+      const { error } = await supabase.from("expenses").insert({
+        retailer_id: data.retailerId,
+        amount: parseFloat(data.amount),
+        date: data.date,
+        comment: data.comment || null,
+        profile_id: currentUser.id // Ajout de l'ID du profil utilisateur
+      });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error adding expense:", error);
+        toast.error("Erreur lors de l'ajout de la dépense");
+        throw error;
+      }
 
-      toast.success("La dépense a été ajoutée");
-      
-      // Invalidation de toutes les requêtes liées aux dépenses
-      queryClient.invalidateQueries({ 
-        queryKey: ["expenses"],
-        exact: false
-      });
-      
-      // Invalidation des requêtes spécifiques au détaillant
-      queryClient.invalidateQueries({ 
-        queryKey: ["retailer-expenses", values.retailerId],
-        exact: false
-      });
-      
-      // Invalidation des statistiques globales des dépenses
-      queryClient.invalidateQueries({ 
-        queryKey: ["expenses-stats"],
-        exact: false
-      });
-      
-      // Invalidation des statistiques mensuelles pour le dashboard
-      queryClient.invalidateQueries({ 
-        queryKey: ["all-expenses-for-stats"],
-        exact: false,
-        refetchType: 'all'
-      });
-      
-      // Invalidation des statistiques des dépenses carburant
-      queryClient.invalidateQueries({ 
-        queryKey: ["period-fuel-expenses"],
-        exact: false,
-        refetchType: 'all'
-      });
-      
-      // Invalidation des données du dashboard
-      queryClient.invalidateQueries({ 
-        queryKey: ["dashboard-data"],
-        exact: false,
-        refetchType: 'all'
-      });
-      
-      onExpenseAdded();
-      return true;
+      toast.success("Dépense ajoutée avec succès");
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
-      console.error("Error adding expense:", error);
-      toast.error("Impossible d'ajouter la dépense");
-      return false;
+      console.error("Error in submit operation:", error);
+      throw error;
     }
   };
 
   return {
-    handleSubmit,
+    handleSubmit
   };
-}
+};
