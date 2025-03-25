@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ExpenseForm } from "./ExpenseForm";
 import { AddExpenseDialogProps } from "./types";
@@ -71,17 +72,22 @@ export function AddExpenseDialog({
         "relative flex flex-col pb-6 p-6 rounded-lg",
         "bg-gradient-to-br",
         currentColors.lightBg,
-        currentColors.darkBg
+        currentColors.darkBg,
+        // Nouveau dégradé subtil ajouté ici
+        "before:absolute before:inset-0 before:bg-gradient-to-br before:opacity-20 before:rounded-lg",
+        "before:from-blue-300 before:to-blue-500",
+        "dark:before:from-blue-700 dark:before:to-blue-900 dark:before:opacity-30",
+        "overflow-hidden"
       )}
     >
+      {/* Overlay pour le dégradé subtil principal */}
       <div className={cn(
-        "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg",
-        currentColors.gradientFrom,
-        currentColors.gradientTo,
-        currentColors.darkGradientFrom,
-        currentColors.darkGradientTo
+        "absolute inset-0 pointer-events-none opacity-10 bg-gradient-to-br rounded-lg",
+        "from-blue-300 to-blue-600",
+        "dark:from-blue-600 dark:to-blue-900 dark:opacity-20"
       )} />
 
+      {/* Effet radial */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
       
       <DialogHeader className="relative z-10 mb-4">
