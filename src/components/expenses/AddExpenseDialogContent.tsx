@@ -5,12 +5,14 @@ import { ExpenseForm } from "./ExpenseForm";
 import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Retailer } from "@/components/settings/retailers/types";
 import { ExpenseFormData } from "./types";
 
 interface AddExpenseDialogContentProps {
   onSubmit?: (values: ExpenseFormData) => Promise<void>;
-  preSelectedRetailer?: Retailer | null;
+  preSelectedRetailer?: {
+    id: string;
+    name: string;
+  } | null;
   onExpenseAdded?: () => void;
   onCancel?: () => void;
 }
