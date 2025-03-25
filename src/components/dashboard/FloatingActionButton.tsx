@@ -335,7 +335,7 @@ export const FloatingActionButton = () => {
         <Button 
           onClick={toggleMenu}
           className={cn(
-            "h-18 w-18 rounded-full shadow-xl",
+            "h-14 w-14 rounded-full shadow-xl",
             "bg-primary hover:bg-primary/90 dark:bg-primary dark:hover:bg-primary/90",
             "transition-all duration-300 ease-in-out transform",
             isMenuOpen && "rotate-45"
