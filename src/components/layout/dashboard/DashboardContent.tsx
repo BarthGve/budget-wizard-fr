@@ -1,4 +1,3 @@
-
 import { ReactNode, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -6,7 +5,7 @@ import { GlobalBalanceCard } from "../../common/GlobalBalanceCard";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { BadgeEuro } from "lucide-react";
-import { FloatingActionButton } from "@/components/dashboard/FloatingActionButton";
+import { FloatingActionButton } from "@/components/dashboard/floating-action-button";
 
 interface DashboardContentProps {
   children: ReactNode;
