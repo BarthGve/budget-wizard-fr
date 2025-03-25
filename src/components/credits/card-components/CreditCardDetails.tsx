@@ -14,7 +14,11 @@ export const CreditCardDetails = ({ credit, index }: CreditCardDetailsProps) => 
   const isMobile = useMediaQuery("(max-width: 640px)");
   
   return (
-    <div className="grid grid-cols-3 gap-6 flex-1 py-2 px-4">
+    <div className={cn(
+      "flex-1 py-2 px-4",
+      // Sur mobile, utiliser flex pour aligner les éléments sur une seule ligne
+      isMobile ? "flex items-center justify-between" : "grid grid-cols-3 gap-6"
+    )}>
       <div className="flex flex-col">
         <span className={cn(
           "text-sm",
@@ -87,4 +91,3 @@ export const CreditCardDetails = ({ credit, index }: CreditCardDetailsProps) => 
     </div>
   );
 };
-

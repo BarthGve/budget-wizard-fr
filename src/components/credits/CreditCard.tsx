@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CreditCardInfo } from "./card-components/CreditCardInfo";
 import { CreditCardDetails } from "./card-components/CreditCardDetails";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface CreditCardProps {
   credit: Credit;
@@ -14,6 +15,8 @@ interface CreditCardProps {
 }
 
 export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) => {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  
   return (
     <motion.div
       key={credit.id}
@@ -46,17 +49,39 @@ export const CreditCard = ({ credit, index, onCreditDeleted }: CreditCardProps) 
           "dark:bg-gray-800/90 dark:border-purple-800/40 dark:hover:border-purple-700/60 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50"
         )}
       >
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between ">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <CreditCardInfo credit={credit} index={index} />
-          <CreditCardDetails credit={credit} index={index} />
-          <motion.div 
-            className="px-4 py-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: index * 0.08 + 0.3, duration: 0.3 }}
-          >
-            <CreditActions credit={credit} onCreditDeleted={onCreditDeleted} />
-          </motion.div>
+          
+          <div className={cn(
+            "flex",
+            // Sur mobile, placer le menu d'actions à l'intérieur de CreditCardDetails
+            isMobile ? "hidden" : "px-4 py-2"
+          )}>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: index * 0.08 + 0.3, duration: 0.3 }}
+            >
+              <CreditActions credit={credit} onCreditDeleted={onCreditDeleted} />
+            </motion.div>
+          </div>
+          
+          {/* Flex container pour le détail et les actions */}
+          <div className="flex flex-1 items-center justify-between">
+            <CreditCardDetails credit={credit} index={index} />
+            
+            {/* Menu d'actions à afficher uniquement sur mobile */}
+            {isMobile && (
+              <motion.div 
+                className="px-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: index * 0.08 + 0.3, duration: 0.3 }}
+              >
+                <CreditActions credit={credit} onCreditDeleted={onCreditDeleted} />
+              </motion.div>
+            )}
+          </div>
         </div>
       </Card>
     </motion.div>
