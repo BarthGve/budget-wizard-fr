@@ -6,6 +6,7 @@ import { GlobalBalanceCard } from "../../common/GlobalBalanceCard";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { BadgeEuro } from "lucide-react";
+import { FloatingActionButton } from "@/components/dashboard/FloatingActionButton";
 
 interface DashboardContentProps {
   children: ReactNode;
@@ -66,6 +67,9 @@ export const DashboardContent = ({
           {children}
         </div>
       </div>
+
+      {/* Bouton d'action flottant sur mobile uniquement */}
+      {isMobile && <FloatingActionButton />}
 
       {isMobile && <div className="h-16 ios-bottom-safe" />}
     </main>

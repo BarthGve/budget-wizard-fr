@@ -30,7 +30,7 @@ const containerVariants = {
 
 const Dashboard = () => {
   const [currentView, setCurrentView] = useState<"monthly" | "yearly">("monthly");
-  const { contributors, monthlySavings, profile, recurringExpenses } = useDashboardData();
+  const { contributors, monthlySavings, profile, recurringExpenses, refetch } = useDashboardData();
   const { fuelExpensesTotal, fuelExpensesCount, fuelVolume } = useExpenseStats(currentView);
   const { showOnboardingDialog, setShowOnboardingDialog } = useIncomeVerification();
 
