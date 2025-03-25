@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ interface ExpenseFormProps {
   disableRetailerSelect?: boolean;
   buttonClassName?: string;
   onExpenseAdded?: () => void;
+  renderCustomActions?: (isSubmitting: boolean) => React.ReactNode;
 }
 
 export function ExpenseForm({ 
@@ -31,7 +33,8 @@ export function ExpenseForm({
   submitLabel = "Ajouter", 
   disableRetailerSelect,
   buttonClassName,
-  onExpenseAdded
+  onExpenseAdded,
+  renderCustomActions
 }: ExpenseFormProps) {
   const { retailers } = useRetailers();
   const { theme } = useTheme();
@@ -67,17 +70,23 @@ export function ExpenseForm({
           rules={{ required: "L'enseigne est requise" }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Enseigne</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300">Enseigne</FormLabel>
               {preSelectedRetailer || disableRetailerSelect ? (
                 <Input
                   value={preSelectedRetailer?.name || retailers?.find(r => r.id === field.value)?.name || ""}
                   disabled
-                  className="bg-muted text-muted-foreground"
+                  className={cn(
+                    "bg-gray-50 text-gray-600 border-gray-200",
+                    "dark:bg-gray-800/50 dark:text-gray-300 dark:border-gray-700"
+                  )}
                 />
               ) : (
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200">
+                    <SelectTrigger className={cn(
+                      "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200",
+                      "dark:border-gray-700 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
+                    )}>
                       <SelectValue placeholder="Sélectionnez une enseigne" />
                     </SelectTrigger>
                   </FormControl>
@@ -106,9 +115,18 @@ export function ExpenseForm({
           }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Montant</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300">Montant</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" placeholder="0.00" {...field} className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200" />
+                <Input 
+                  type="number" 
+                  step="0.01" 
+                  placeholder="0.00" 
+                  {...field} 
+                  className={cn(
+                    "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200",
+                    "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
+                  )} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -120,13 +138,16 @@ export function ExpenseForm({
           rules={{ required: "La date est requise" }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300">Date</FormLabel>
               <FormControl>
                 <Input
                   type="date"
                   {...field}
                   max={format(new Date(), "yyyy-MM-dd")}
-                  className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
+                  className={cn(
+                    "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200",
+                    "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
+                  )}
                 />
               </FormControl>
               <FormMessage />
@@ -138,34 +159,46 @@ export function ExpenseForm({
           name="comment"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Commentaire (facultatif)</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300">Commentaire (facultatif)</FormLabel>
               <FormControl>
-                <Textarea placeholder="Ajouter un commentaire..." {...field} className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200" />
+                <Textarea 
+                  placeholder="Ajouter un commentaire..." 
+                  {...field} 
+                  className={cn(
+                    "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200 min-h-24 resize-none",
+                    "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
+                  )} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button 
-          type="submit" 
-          className={cn(
-            "w-full mt-6",
-            "bg-blue-500 hover:bg-blue-600 text-white",
-            "dark:bg-blue-600 dark:hover:bg-blue-500",
-            "transition-colors duration-200 shadow-sm",
-            "focus-visible:ring-blue-500",
-            isSubmitting && "opacity-80 cursor-not-allowed",
-            buttonClassName
-          )}
-          style={{
-            boxShadow: isDarkMode
-              ? "0 2px 8px -2px rgba(37, 99, 235, 0.3)"
-              : "0 2px 8px -2px rgba(37, 99, 235, 0.25)"
-          }}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "En cours..." : submitLabel}
-        </Button>
+        
+        {renderCustomActions ? (
+          renderCustomActions(isSubmitting)
+        ) : (
+          <Button 
+            type="submit" 
+            className={cn(
+              "w-full mt-6",
+              "bg-blue-500 hover:bg-blue-600 text-white",
+              "dark:bg-blue-600 dark:hover:bg-blue-500",
+              "transition-colors duration-200 shadow-sm",
+              "focus-visible:ring-blue-500",
+              isSubmitting && "opacity-80 cursor-not-allowed",
+              buttonClassName
+            )}
+            style={{
+              boxShadow: isDarkMode
+                ? "0 2px 8px -2px rgba(37, 99, 235, 0.3)"
+                : "0 2px 8px -2px rgba(37, 99, 235, 0.25)"
+            }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "En cours..." : submitLabel}
+          </Button>
+        )}
       </form>
     </Form>
   );
