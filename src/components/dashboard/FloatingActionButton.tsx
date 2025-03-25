@@ -178,7 +178,7 @@ export const FloatingActionButton = () => {
 
   return (
     <>
-      <div className="fixed right-4 bottom-20 z-50 flex flex-col-reverse items-end space-y-reverse space-y-2">
+      <div className="fixed right-4 bottom-4 z-50 flex flex-col-reverse items-end space-y-reverse space-y-2">
         <AnimatePresence>
           {isMenuOpen && !showVehiclesList && !showRetailersList && (
             <motion.div 
@@ -335,13 +335,13 @@ export const FloatingActionButton = () => {
         <Button 
           onClick={toggleMenu}
           className={cn(
-            "h-14 w-14 rounded-full shadow-xl",
+            "h-18 w-18 rounded-full shadow-xl",
             "bg-primary hover:bg-primary/90 dark:bg-primary dark:hover:bg-primary/90",
             "transition-all duration-300 ease-in-out transform",
             isMenuOpen && "rotate-45"
           )}
         >
-          <Plus className="h-7 w-7" />
+          <Plus className="h-9 w-9" />
         </Button>
       </div>
 
