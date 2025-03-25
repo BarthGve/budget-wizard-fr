@@ -73,22 +73,22 @@ export function AddExpenseDialog({
         "bg-gradient-to-br",
         currentColors.lightBg,
         currentColors.darkBg,
-        // Nouveau dégradé subtil ajouté ici
+        // Dégradé bleu subtil sans gris
         "before:absolute before:inset-0 before:bg-gradient-to-br before:opacity-20 before:rounded-lg",
         "before:from-blue-300 before:to-blue-500",
         "dark:before:from-blue-700 dark:before:to-blue-900 dark:before:opacity-30",
         "overflow-hidden"
       )}
     >
-      {/* Overlay pour le dégradé subtil principal */}
+      {/* Overlay pour le dégradé bleu principal - suppression des tons gris */}
       <div className={cn(
         "absolute inset-0 pointer-events-none opacity-10 bg-gradient-to-br rounded-lg",
         "from-blue-300 to-blue-600",
         "dark:from-blue-600 dark:to-blue-900 dark:opacity-20"
       )} />
 
-      {/* Effet radial */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
+      {/* Remplacer l'effet radial gris par un effet bleu subtil */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100 via-blue-50 to-transparent opacity-[0.02] dark:from-blue-500 dark:via-blue-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
       
       <DialogHeader className="relative z-10 mb-4">
         <div className="flex items-center gap-3">
@@ -110,7 +110,6 @@ export function AddExpenseDialog({
         <ExpenseForm 
           onExpenseAdded={onExpenseAdded} 
           preSelectedRetailer={preSelectedRetailer}
-          colorScheme={colorScheme}
         />
       </div>
 
