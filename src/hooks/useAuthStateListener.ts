@@ -16,6 +16,7 @@ export const useAuthStateListener = () => {
   const isInitialMount = useRef(true);
   const previousAuthState = useRef<boolean | null>(null);
   const navigationInProgress = useRef(false);
+  const redirectTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
@@ -53,7 +54,20 @@ export const useAuthStateListener = () => {
           // on le redirige vers le dashboard
           if (location.pathname === "/login" && justVerified) {
             localStorage.removeItem("justVerified");
-            navigate("/dashboard");
+            
+            // Éviter les redirections multiples
+            if (!navigationInProgress.current) {
+              navigationInProgress.current = true;
+              navigate("/dashboard");
+              
+              // Réinitialiser le drapeau après un délai
+              if (redirectTimeoutRef.current) {
+                clearTimeout(redirectTimeoutRef.current);
+              }
+              redirectTimeoutRef.current = window.setTimeout(() => {
+                navigationInProgress.current = false;
+              }, 300);
+            }
           }
         } else if (event === "USER_UPDATED") {
           // Gérer la mise à jour du profil utilisateur
@@ -87,10 +101,22 @@ export const useAuthStateListener = () => {
               // Informer l'utilisateur
               toast.success("Votre adresse email a été mise à jour avec succès");
               
-              // Rediriger vers les paramètres utilisateur
-              setTimeout(() => {
-                navigate("/user-settings");
-              }, 500);
+              // Rediriger vers les paramètres utilisateur - avec protection contre les redirections multiples
+              if (!navigationInProgress.current) {
+                navigationInProgress.current = true;
+                
+                if (redirectTimeoutRef.current) {
+                  clearTimeout(redirectTimeoutRef.current);
+                }
+                redirectTimeoutRef.current = window.setTimeout(() => {
+                  navigate("/user-settings");
+                  
+                  // Réinitialiser le drapeau après navigation
+                  redirectTimeoutRef.current = window.setTimeout(() => {
+                    navigationInProgress.current = false;
+                  }, 300);
+                }, 500);
+              }
             }
           }
         } else if (event === "SIGNED_OUT") {
@@ -121,9 +147,12 @@ export const useAuthStateListener = () => {
             navigate("/", { replace: true });
             
             // Réinitialiser le drapeau après un délai pour permettre la navigation complète
-            setTimeout(() => {
+            if (redirectTimeoutRef.current) {
+              clearTimeout(redirectTimeoutRef.current);
+            }
+            redirectTimeoutRef.current = window.setTimeout(() => {
               navigationInProgress.current = false;
-            }, 200);
+            }, 300);
             
           } catch (error) {
             console.error("Error during sign out handling:", error);
@@ -137,6 +166,10 @@ export const useAuthStateListener = () => {
     return () => {
       if (subscription) {
         subscription.unsubscribe();
+      }
+      
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
       }
     };
   }, [queryClient, navigate, location.pathname, location.hash, location.search]);

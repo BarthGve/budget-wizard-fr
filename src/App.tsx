@@ -52,14 +52,16 @@ const App = () => {
           <BrowserRouter>
             <AuthListener />
             <Routes>
+              {/* Routes publiques */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/email-verification" element={<EmailVerification />} />
-              <Route path="/changelog" element={<Changelog />} />
+              <Route path="/changelog" element={<Changelog />} /> {/* Route publique pour le changelog */}
               
+              {/* Routes protégées */}
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/contributors" element={<ProtectedRoute><Contributors /></ProtectedRoute>} />
               <Route path="/user-settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />

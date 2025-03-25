@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import StyledLoader from "../ui/StyledLoader";
-import { memo } from "react";
+import { memo, useRef } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -15,10 +15,11 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const location = useLocation();
   const { canAccessPage, isAdmin } = usePagePermissions();
+  const hasRedirectedRef = useRef(false);
   
   // Configuration optimisée de la requête d'authentification
   const { data: authData, isLoading } = useQuery({
-    queryKey: ["auth"],
+    queryKey: ["auth", location.pathname],
     queryFn: async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
@@ -49,23 +50,35 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     );
   }
 
+  // Éviter les redirections en boucle
+  if (hasRedirectedRef.current) {
+    return <>{children}</>;
+  }
+
   if (!authData?.isAuthenticated) {
+    // Ne pas rediriger vers login si on est sur la page changelog publique
+    if (location.pathname === '/changelog') {
+      return <>{children}</>;
+    }
+    
+    // Marquer que nous avons redirigé
+    hasRedirectedRef.current = true;
+    
     // Utilisation de state pour préserver l'URL de redirection
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
-
-  // Debugging log for current path
-  console.log("Current path in ProtectedRoute:", location.pathname);
 
   // Liste des routes toujours accessibles une fois connecté
   const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
   
   // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
   if (authData.isAdmin && location.pathname === '/dashboard') {
+    hasRedirectedRef.current = true;
     return <Navigate to="/admin" replace />;
   }
 
   if (requireAdmin && !isAdmin) {
+    hasRedirectedRef.current = true;
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -85,7 +98,6 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
 
   // Gestion spéciale pour les routes de détail des enseignes
   if (location.pathname.startsWith('/expenses/retailer/')) {
-    console.log("Retailer detail route detected in ProtectedRoute");
     // Si l'utilisateur peut accéder à /expenses, il peut accéder aux détails des enseignes
     const canAccessExpenses = canAccessPage('/expenses');
     if (canAccessExpenses) {
@@ -95,7 +107,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
 
   // Vérifier les permissions pour les autres routes
   if (!canAccessPage(location.pathname)) {
-    console.log("Access denied to path:", location.pathname);
+    hasRedirectedRef.current = true;
     return <Navigate to="/dashboard" replace />;
   }
 
