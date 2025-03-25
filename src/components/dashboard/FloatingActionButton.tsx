@@ -178,7 +178,7 @@ export const FloatingActionButton = () => {
 
   return (
     <>
-      <div className="fixed right-4 bottom-10 z-50 flex flex-col-reverse items-end space-y-reverse space-y-2">
+      <div className="fixed right-4 bottom-20 z-50 flex flex-col-reverse items-end space-y-reverse space-y-2">
         <AnimatePresence>
           {isMenuOpen && !showVehiclesList && !showRetailersList && (
             <motion.div 
