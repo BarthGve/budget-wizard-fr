@@ -22,6 +22,7 @@ export const AuthListener = () => {
           !location.pathname.includes("/register") && 
           !location.pathname.includes("/reset-password") && 
           !location.pathname.includes("/email-verification") && 
+          !location.pathname.includes("/changelog") && // Ajout de /changelog aux pages publiques
           location.pathname !== "/") {
         navigate("/login");
       }

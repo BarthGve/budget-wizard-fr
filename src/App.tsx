@@ -58,6 +58,8 @@ const App = () => {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/email-verification" element={<EmailVerification />} />
+              
+              {/* Route publique pour le changelog, sans ProtectedRoute */}
               <Route path="/changelog" element={<Changelog />} />
               
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
