@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { ExpenseFormData } from "./types";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { useExpenseForm } from "./useExpenseForm";
+import { ReactNode } from "react";
 
 interface ExpenseFormProps {
   onSubmit?: (values: ExpenseFormData) => Promise<void>;
@@ -22,6 +24,7 @@ interface ExpenseFormProps {
   disableRetailerSelect?: boolean;
   buttonClassName?: string;
   onExpenseAdded?: () => void;
+  renderCustomActions?: ReactNode;
 }
 
 export function ExpenseForm({ 
@@ -31,7 +34,8 @@ export function ExpenseForm({
   submitLabel = "Ajouter", 
   disableRetailerSelect,
   buttonClassName,
-  onExpenseAdded
+  onExpenseAdded,
+  renderCustomActions
 }: ExpenseFormProps) {
   const { retailers } = useRetailers();
   const { theme } = useTheme();
@@ -146,26 +150,31 @@ export function ExpenseForm({
             </FormItem>
           )}
         />
-        <Button 
-          type="submit" 
-          className={cn(
-            "w-full mt-6",
-            "bg-blue-500 hover:bg-blue-600 text-white",
-            "dark:bg-blue-600 dark:hover:bg-blue-500",
-            "transition-colors duration-200 shadow-sm",
-            "focus-visible:ring-blue-500",
-            isSubmitting && "opacity-80 cursor-not-allowed",
-            buttonClassName
-          )}
-          style={{
-            boxShadow: isDarkMode
-              ? "0 2px 8px -2px rgba(37, 99, 235, 0.3)"
-              : "0 2px 8px -2px rgba(37, 99, 235, 0.25)"
-          }}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "En cours..." : submitLabel}
-        </Button>
+        
+        {renderCustomActions ? (
+          renderCustomActions
+        ) : (
+          <Button 
+            type="submit" 
+            className={cn(
+              "w-full mt-6",
+              "bg-blue-500 hover:bg-blue-600 text-white",
+              "dark:bg-blue-600 dark:hover:bg-blue-500",
+              "transition-colors duration-200 shadow-sm",
+              "focus-visible:ring-blue-500",
+              isSubmitting && "opacity-80 cursor-not-allowed",
+              buttonClassName
+            )}
+            style={{
+              boxShadow: isDarkMode
+                ? "0 2px 8px -2px rgba(37, 99, 235, 0.3)"
+                : "0 2px 8px -2px rgba(37, 99, 235, 0.25)"
+            }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "En cours..." : submitLabel}
+          </Button>
+        )}
       </form>
     </Form>
   );

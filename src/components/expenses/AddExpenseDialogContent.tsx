@@ -56,23 +56,28 @@ export function AddExpenseDialogContent({
           onSubmit={onSubmit}
           preSelectedRetailer={preSelectedRetailer}
           onExpenseAdded={onExpenseAdded}
-          buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500"
+          buttonClassName="mb-4 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500"
           disableRetailerSelect={!!preSelectedRetailer}
           submitLabel="Ajouter"
+          renderCustomActions={onCancel ? (
+            <div className="flex justify-end gap-3 mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                className="text-white border-blue-400/30 hover:bg-blue-800/50 hover:text-white"
+              >
+                Annuler
+              </Button>
+              <Button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500"
+              >
+                Ajouter
+              </Button>
+            </div>
+          ) : undefined}
         />
-        
-        {onCancel && (
-          <div className="flex justify-end mt-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={onCancel}
-              className="text-white hover:bg-blue-800/50"
-            >
-              Annuler
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
