@@ -255,7 +255,7 @@ export const FloatingActionButton = () => {
               onCancel={handleExpenseCancel}
               initialValues={{
                 vehicleId: selectedVehicle,
-                expenseType: "fuel",
+                expenseType: "carburant", // Valeur préréglée sur "carburant"
                 date: new Date().toISOString().split('T')[0],
                 amount: "",
                 mileage: "",
