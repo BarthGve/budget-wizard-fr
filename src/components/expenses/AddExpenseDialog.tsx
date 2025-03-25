@@ -1,194 +1,127 @@
-
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ExpenseForm } from "./ExpenseForm";
 import { AddExpenseDialogProps } from "./types";
-import { Plus, X } from "lucide-react";
+import { PlusCircle, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { Sheet, SheetContent } from "../ui/sheet";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useRef } from "react";
 
 export function AddExpenseDialog({ 
   onExpenseAdded, 
   preSelectedRetailer, 
   open, 
   onOpenChange,
-  hideDialogWrapper = false 
-}: AddExpenseDialogProps & { hideDialogWrapper?: boolean }) {
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  hideDialogWrapper = false,
+  colorScheme = "blue" 
+}: AddExpenseDialogProps & { hideDialogWrapper?: boolean, colorScheme?: "blue" | "green" | "purple" }) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Couleurs dynamiques selon le colorScheme
+  const colors = {
+    blue: {
+      gradientFrom: "from-blue-500",
+      gradientTo: "to-indigo-400",
+      darkGradientFrom: "dark:from-blue-600",
+      darkGradientTo: "dark:to-indigo-500",
+      iconBg: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+      headingText: "text-blue-900 dark:text-blue-200",
+      descriptionText: "text-blue-700/80 dark:text-blue-300/80",
+      buttonBg: "bg-blue-600 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600",
+      lightBg: "from-white via-blue-50/40 to-blue-100/70",
+      darkBg: "dark:from-gray-900 dark:via-blue-950/20 dark:to-blue-900/30",
+      borderLight: "border-blue-100/70",
+      borderDark: "dark:border-blue-800/20",
+    },
+    green: {
+      gradientFrom: "from-green-500",
+      gradientTo: "to-emerald-400",
+      darkGradientFrom: "dark:from-green-600",
+      darkGradientTo: "dark:to-emerald-500",
+      iconBg: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+      headingText: "text-green-900 dark:text-green-200",
+      descriptionText: "text-green-700/80 dark:text-green-300/80",
+      buttonBg: "bg-green-600 hover:bg-green-500 dark:bg-green-700 dark:hover:bg-green-600",
+      lightBg: "from-white via-green-50/40 to-green-100/70",
+      darkBg: "dark:from-gray-900 dark:via-green-950/20 dark:to-green-900/30",
+      borderLight: "border-green-100/70", 
+      borderDark: "dark:border-green-800/20",
+    },
+    purple: {
+      gradientFrom: "from-purple-500",
+      gradientTo: "to-violet-400",
+      darkGradientFrom: "dark:from-purple-600",
+      darkGradientTo: "dark:to-violet-500",
+      iconBg: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+      headingText: "text-purple-900 dark:text-purple-200",
+      descriptionText: "text-purple-700/80 dark:text-purple-300/80",
+      buttonBg: "bg-purple-600 hover:bg-purple-500 dark:bg-purple-700 dark:hover:bg-purple-600",
+      lightBg: "from-white via-purple-50/40 to-purple-100/70",
+      darkBg: "dark:from-gray-900 dark:via-purple-950/20 dark:to-purple-900/30",
+      borderLight: "border-purple-100/70", 
+      borderDark: "dark:border-purple-800/20",
+    },
+  };
+  
+  const currentColors = colors[colorScheme];
   
   // Si hideDialogWrapper est vrai, on n'affiche pas le Dialog wrapper
+  const dialogContent = (
+    <div 
+      ref={contentRef}
+      className={cn(
+        "relative flex flex-col pb-6 p-6 rounded-lg",
+        "bg-gradient-to-br",
+        currentColors.lightBg,
+        currentColors.darkBg
+      )}
+    >
+      <div className={cn(
+        "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg",
+        currentColors.gradientFrom,
+        currentColors.gradientTo,
+        currentColors.darkGradientFrom,
+        currentColors.darkGradientTo
+      )} />
+
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
+      
+      <DialogHeader className="relative z-10 mb-4">
+        <div className="flex items-center gap-3">
+          <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
+            <PlusCircle className="w-5 h-5" />
+          </div>
+          <DialogTitle className={cn("text-2xl font-bold", currentColors.headingText)}>
+            Ajouter une dépense
+          </DialogTitle>
+        </div>
+        <div className="ml-[52px] mt-2">
+          <DialogDescription className={cn("text-base", currentColors.descriptionText)}>
+            Ajoutez une nouvelle dépense à votre historique financier.
+          </DialogDescription>
+        </div>
+      </DialogHeader>
+
+      <div className="relative z-10 px-1">
+        <ExpenseForm 
+          onExpenseAdded={onExpenseAdded} 
+          preSelectedRetailer={preSelectedRetailer}
+          colorScheme={colorScheme}
+        />
+      </div>
+
+      <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
+        <Receipt className="w-full h-full" />
+      </div>
+    </div>
+  );
+
   if (hideDialogWrapper) {
-    return (
-      <ExpenseForm 
-        onExpenseAdded={onExpenseAdded} 
-        preSelectedRetailer={preSelectedRetailer}
-        renderCustomActions={(isSubmitting) => (
-          <div className="flex justify-end space-x-4 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange?.(false)}
-              className="w-full sm:w-auto"
-            >
-              Annuler
-            </Button>
-            <Button
-              type="submit"
-              className={cn(
-                "bg-blue-500 hover:bg-blue-600 text-white w-full sm:w-auto",
-                "dark:bg-blue-600 dark:hover:bg-blue-500",
-                "transition-colors duration-200 shadow-sm",
-                "focus-visible:ring-blue-500",
-                isSubmitting && "opacity-80 cursor-not-allowed"
-              )}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "En cours..." : "Ajouter"}
-            </Button>
-          </div>
-        )}
-      />
-    );
+    return dialogContent;
   }
 
-  // Pour mobile, on utilise une Sheet (drawer)
-  if (isMobile) {
-    return (
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="p-0 rounded-t-xl max-h-[90vh] overflow-y-auto">
-          <div className="relative">
-            {/* En-tête de la modale */}
-            <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-t-xl">
-              <div className="flex items-center gap-3">
-                {/* Icône d'ajout */}
-                <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-800/40 flex items-center justify-center">
-                  <Plus size={20} className="text-blue-600 dark:text-blue-300" />
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-200">
-                    Ajouter une dépense
-                  </h3>
-                  <p className="text-sm text-blue-600/80 dark:text-blue-300/80">
-                    Ajoutez une nouvelle dépense pour {preSelectedRetailer?.name || "cette enseigne"}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Formulaire */}
-            <div className="p-5">
-              <ExpenseForm 
-                onExpenseAdded={onExpenseAdded} 
-                preSelectedRetailer={preSelectedRetailer}
-                buttonClassName="hidden"
-                renderCustomActions={(isSubmitting) => (
-                  <div className="flex gap-3 mt-6">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => onOpenChange?.(false)}
-                      className="flex-1"
-                    >
-                      Annuler
-                    </Button>
-                    <Button
-                      type="submit"
-                      className={cn(
-                        "bg-blue-500 hover:bg-blue-600 text-white flex-1",
-                        "dark:bg-blue-600 dark:hover:bg-blue-500",
-                        "transition-colors duration-200",
-                        isSubmitting && "opacity-80 cursor-not-allowed"
-                      )}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "En cours..." : "Ajouter"}
-                    </Button>
-                  </div>
-                )}
-              />
-            </div>
-            
-            {/* Bouton fermer */}
-            <button 
-              onClick={() => onOpenChange?.(false)}
-              className="absolute right-4 top-4 p-1.5 rounded-full text-blue-600/70 hover:bg-blue-100/80 dark:text-blue-300/70 dark:hover:bg-blue-800/30"
-            >
-              <X size={18} />
-              <span className="sr-only">Fermer</span>
-            </button>
-          </div>
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  // Pour desktop, on utilise un Dialog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-xl">
-        <div className="relative">
-          {/* En-tête de la modale */}
-          <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
-            <div className="flex items-center gap-3">
-              {/* Icône d'ajout */}
-              <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-800/40 flex items-center justify-center">
-                <Plus size={20} className="text-blue-600 dark:text-blue-300" />
-              </div>
-              
-              <div>
-                <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-200">
-                  Ajouter une dépense
-                </h3>
-                <p className="text-sm text-blue-600/80 dark:text-blue-300/80">
-                  Ajoutez une nouvelle dépense pour {preSelectedRetailer?.name || "cette enseigne"}
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Formulaire */}
-          <div className="p-6">
-            <ExpenseForm 
-              onExpenseAdded={onExpenseAdded} 
-              preSelectedRetailer={preSelectedRetailer}
-              buttonClassName="hidden"
-              renderCustomActions={(isSubmitting) => (
-                <div className="flex justify-end gap-3 mt-6">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => onOpenChange?.(false)}
-                  >
-                    Annuler
-                  </Button>
-                  <Button
-                    type="submit"
-                    className={cn(
-                      "bg-blue-500 hover:bg-blue-600 text-white",
-                      "dark:bg-blue-600 dark:hover:bg-blue-500",
-                      "transition-colors duration-200",
-                      isSubmitting && "opacity-80 cursor-not-allowed"
-                    )}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "En cours..." : "Ajouter"}
-                  </Button>
-                </div>
-              )}
-            />
-          </div>
-          
-          {/* Bouton fermer */}
-          <button 
-            onClick={() => onOpenChange?.(false)}
-            className="absolute right-4 top-4 p-1.5 rounded-full text-blue-600/70 hover:bg-blue-100/80 dark:text-blue-300/70 dark:hover:bg-blue-800/30"
-          >
-            <X size={18} />
-            <span className="sr-only">Fermer</span>
-          </button>
-        </div>
+      <DialogContent className="sm:max-w-[525px] p-0 border-0 overflow-hidden bg-transparent shadow-2xl">
+        {dialogContent}
       </DialogContent>
     </Dialog>
   );
