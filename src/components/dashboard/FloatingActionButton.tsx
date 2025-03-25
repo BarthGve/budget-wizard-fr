@@ -1,4 +1,3 @@
-
 import { Plus, Car, Store } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,10 +8,10 @@ import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
 import { useVehicles } from "@/hooks/useVehicles";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AddVehicleExpenseDialog } from "@/components/vehicles/expenses/AddVehicleExpenseDialog";
+import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Type pour les détaillants (enseignes)
 interface Retailer {
   id: string;
   name: string;
@@ -36,10 +35,8 @@ export const FloatingActionButton = () => {
   const { selectedVehicleId, setSelectedVehicleId } = useVehiclesContainer();
   const { vehicles, isLoading } = useVehicles();
   
-  // Liste des véhicules actifs uniquement
   const activeVehicles = vehicles?.filter(v => v.status !== "vendu") || [];
 
-  // Charger les détaillants (enseignes)
   useEffect(() => {
     const fetchRetailers = async () => {
       setIsLoadingRetailers(true);
@@ -64,7 +61,6 @@ export const FloatingActionButton = () => {
     }
   }, [showRetailersList]);
 
-  // Méthodes pour gérer les différentes actions
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
     if ((showVehiclesList || showRetailersList) && !isMenuOpen) {
@@ -74,25 +70,21 @@ export const FloatingActionButton = () => {
   };
   
   const handleAddFuelExpenseClick = () => {
-    // Afficher la liste des véhicules si on a des véhicules actifs
     if (activeVehicles.length > 0) {
       setShowVehiclesList(true);
       setShowRetailersList(false);
     } else {
-      // Si aucun véhicule n'est disponible, naviguer vers la page des véhicules
       navigate('/vehicles?action=addVehicle');
       setIsMenuOpen(false);
     }
   };
   
   const handleAddRetailerExpense = () => {
-    // Afficher la liste des enseignes
     setShowRetailersList(true);
     setShowVehiclesList(false);
   };
   
   const handleVehicleSelect = (vehicleId: string) => {
-    // Au lieu de naviguer, on stocke l'ID du véhicule sélectionné et on ouvre la modale
     setSelectedVehicleId(vehicleId);
     setSelectedVehicle(vehicleId);
     setExpenseDialogOpen(true);
@@ -101,7 +93,6 @@ export const FloatingActionButton = () => {
   };
   
   const handleRetailerSelect = (retailer: Retailer) => {
-    // Stocke l'enseigne sélectionnée et ouvre la modale
     setSelectedRetailer(retailer);
     setRetailerExpenseDialogOpen(true);
     setIsMenuOpen(false);
@@ -109,30 +100,25 @@ export const FloatingActionButton = () => {
   };
   
   const handleExpenseSuccess = () => {
-    // Fermer la modale après l'ajout d'une dépense
     setExpenseDialogOpen(false);
     setSelectedVehicle(null);
   };
   
   const handleExpenseCancel = () => {
-    // Fermer la modale si l'utilisateur annule
     setExpenseDialogOpen(false);
     setSelectedVehicle(null);
   };
 
   const handleRetailerExpenseSuccess = () => {
-    // Fermer la modale après l'ajout d'une dépense
     setRetailerExpenseDialogOpen(false);
     setSelectedRetailer(null);
   };
   
   const handleRetailerExpenseCancel = () => {
-    // Fermer la modale si l'utilisateur annule
     setRetailerExpenseDialogOpen(false);
     setSelectedRetailer(null);
   };
 
-  // Animation variants
   const menuVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.8 },
     visible: { 
@@ -171,7 +157,6 @@ export const FloatingActionButton = () => {
     }
   };
 
-  // Fermer le menu lorsqu'on change de page
   useEffect(() => {
     return () => {
       setIsMenuOpen(false);
@@ -187,7 +172,6 @@ export const FloatingActionButton = () => {
   return (
     <>
       <div className="fixed right-4 bottom-20 z-50 flex flex-col-reverse items-end space-y-reverse space-y-2">
-        {/* Menu flottant qui s'affiche lors du clic sur le bouton principal */}
         <AnimatePresence>
           {isMenuOpen && !showVehiclesList && !showRetailersList && (
             <motion.div 
@@ -197,7 +181,6 @@ export const FloatingActionButton = () => {
               animate="visible"
               exit="exit"
             >
-              {/* Option pour ajouter une dépense carburant */}
               <motion.div 
                 variants={itemVariants}
                 className="flex items-center gap-2"
@@ -220,7 +203,6 @@ export const FloatingActionButton = () => {
                 </Button>
               </motion.div>
               
-              {/* Option pour ajouter une dépense enseigne */}
               <motion.div 
                 variants={itemVariants}
                 className="flex items-center gap-2"
@@ -239,7 +221,6 @@ export const FloatingActionButton = () => {
             </motion.div>
           )}
 
-          {/* Liste des véhicules qui s'affiche lorsqu'on clique sur dépense carburant */}
           {isMenuOpen && showVehiclesList && (
             <motion.div 
               className="flex flex-col items-end gap-2 min-w-52"
@@ -287,7 +268,6 @@ export const FloatingActionButton = () => {
             </motion.div>
           )}
 
-          {/* Liste des enseignes qui s'affiche lorsqu'on clique sur dépense enseigne */}
           {isMenuOpen && showRetailersList && (
             <motion.div 
               className="flex flex-col items-end gap-2 min-w-52"
@@ -342,7 +322,6 @@ export const FloatingActionButton = () => {
           )}
         </AnimatePresence>
         
-        {/* Bouton principal qui ouvre le menu */}
         <Button 
           onClick={toggleMenu}
           className={cn(
@@ -356,7 +335,6 @@ export const FloatingActionButton = () => {
         </Button>
       </div>
 
-      {/* Modale pour ajouter une dépense carburant */}
       {selectedVehicle && (
         <Dialog open={expenseDialogOpen} onOpenChange={setExpenseDialogOpen}>
           <DialogContent className="sm:max-w-[500px]">
@@ -370,7 +348,7 @@ export const FloatingActionButton = () => {
               onCancel={handleExpenseCancel}
               initialValues={{
                 vehicleId: selectedVehicle,
-                expenseType: "carburant", // Valeur préréglée sur "carburant"
+                expenseType: "carburant",
                 date: new Date().toISOString().split('T')[0],
                 amount: "",
                 mileage: "",
@@ -384,7 +362,6 @@ export const FloatingActionButton = () => {
         </Dialog>
       )}
 
-      {/* Modale pour ajouter une dépense enseigne */}
       {selectedRetailer && (
         <Dialog open={retailerExpenseDialogOpen} onOpenChange={setRetailerExpenseDialogOpen}>
           <DialogContent className="sm:max-w-[500px]">

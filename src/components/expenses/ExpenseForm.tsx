@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -10,9 +9,10 @@ import { useRetailers } from "@/components/settings/retailers/useRetailers";
 import { ExpenseFormData } from "./types";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { useExpenseForm } from "./useExpenseForm";
 
 interface ExpenseFormProps {
-  onSubmit: (values: ExpenseFormData) => Promise<void>;
+  onSubmit?: (values: ExpenseFormData) => Promise<void>;
   defaultValues?: Partial<ExpenseFormData>;
   preSelectedRetailer?: {
     id: string;
@@ -20,7 +20,8 @@ interface ExpenseFormProps {
   };
   submitLabel?: string;
   disableRetailerSelect?: boolean;
-  buttonClassName?: string; // Nouvelle prop pour personnaliser le style du bouton
+  buttonClassName?: string;
+  onExpenseAdded?: () => void;
 }
 
 export function ExpenseForm({ 
@@ -29,11 +30,14 @@ export function ExpenseForm({
   preSelectedRetailer, 
   submitLabel = "Ajouter", 
   disableRetailerSelect,
-  buttonClassName 
+  buttonClassName,
+  onExpenseAdded
 }: ExpenseFormProps) {
   const { retailers } = useRetailers();
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  
+  const expenseFormHandler = onExpenseAdded ? useExpenseForm(onExpenseAdded) : null;
   
   const form = useForm<ExpenseFormData>({
     defaultValues: {
@@ -45,10 +49,18 @@ export function ExpenseForm({
   });
 
   const isSubmitting = form.formState.isSubmitting;
+  
+  const handleFormSubmit = async (values: ExpenseFormData) => {
+    if (expenseFormHandler && onExpenseAdded) {
+      await expenseFormHandler.handleSubmit(values);
+    } else if (onSubmit) {
+      await onSubmit(values);
+    }
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="retailerId"
@@ -143,7 +155,7 @@ export function ExpenseForm({
             "transition-colors duration-200 shadow-sm",
             "focus-visible:ring-blue-500",
             isSubmitting && "opacity-80 cursor-not-allowed",
-            buttonClassName // Applique les classes personnalisées si fournies
+            buttonClassName
           )}
           style={{
             boxShadow: isDarkMode
