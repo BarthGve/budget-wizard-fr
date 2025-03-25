@@ -1,6 +1,6 @@
 
-import { Plus, Car } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { Plus, Car, Store } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,15 @@ import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
 import { useVehicles } from "@/hooks/useVehicles";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AddVehicleExpenseDialog } from "@/components/vehicles/expenses/AddVehicleExpenseDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+// Type pour les détaillants (enseignes)
+interface Retailer {
+  id: string;
+  name: string;
+  logo_url?: string;
+}
 
 /**
  * Bouton d'action flottant qui s'affiche sur mobile pour ajouter des dépenses rapidement
@@ -16,8 +25,13 @@ import { AddVehicleExpenseDialog } from "@/components/vehicles/expenses/AddVehic
 export const FloatingActionButton = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showVehiclesList, setShowVehiclesList] = useState(false);
+  const [showRetailersList, setShowRetailersList] = useState(false);
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
+  const [retailerExpenseDialogOpen, setRetailerExpenseDialogOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
+  const [selectedRetailer, setSelectedRetailer] = useState<Retailer | null>(null);
+  const [retailers, setRetailers] = useState<Retailer[]>([]);
+  const [isLoadingRetailers, setIsLoadingRetailers] = useState(false);
   const navigate = useNavigate();
   const { selectedVehicleId, setSelectedVehicleId } = useVehiclesContainer();
   const { vehicles, isLoading } = useVehicles();
@@ -25,11 +39,37 @@ export const FloatingActionButton = () => {
   // Liste des véhicules actifs uniquement
   const activeVehicles = vehicles?.filter(v => v.status !== "vendu") || [];
 
+  // Charger les détaillants (enseignes)
+  useEffect(() => {
+    const fetchRetailers = async () => {
+      setIsLoadingRetailers(true);
+      try {
+        const { data, error } = await supabase
+          .from("retailers")
+          .select("*")
+          .order("name");
+
+        if (error) throw error;
+        setRetailers(data || []);
+      } catch (error) {
+        console.error("Erreur lors du chargement des enseignes:", error);
+        toast.error("Impossible de charger les enseignes");
+      } finally {
+        setIsLoadingRetailers(false);
+      }
+    };
+
+    if (showRetailersList) {
+      fetchRetailers();
+    }
+  }, [showRetailersList]);
+
   // Méthodes pour gérer les différentes actions
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    if (showVehiclesList && !isMenuOpen) {
+    if ((showVehiclesList || showRetailersList) && !isMenuOpen) {
       setShowVehiclesList(false);
+      setShowRetailersList(false);
     }
   };
   
@@ -37,11 +77,18 @@ export const FloatingActionButton = () => {
     // Afficher la liste des véhicules si on a des véhicules actifs
     if (activeVehicles.length > 0) {
       setShowVehiclesList(true);
+      setShowRetailersList(false);
     } else {
       // Si aucun véhicule n'est disponible, naviguer vers la page des véhicules
       navigate('/vehicles?action=addVehicle');
       setIsMenuOpen(false);
     }
+  };
+  
+  const handleAddRetailerExpense = () => {
+    // Afficher la liste des enseignes
+    setShowRetailersList(true);
+    setShowVehiclesList(false);
   };
   
   const handleVehicleSelect = (vehicleId: string) => {
@@ -51,6 +98,14 @@ export const FloatingActionButton = () => {
     setExpenseDialogOpen(true);
     setIsMenuOpen(false);
     setShowVehiclesList(false);
+  };
+  
+  const handleRetailerSelect = (retailer: Retailer) => {
+    // Stocke l'enseigne sélectionnée et ouvre la modale
+    setSelectedRetailer(retailer);
+    setRetailerExpenseDialogOpen(true);
+    setIsMenuOpen(false);
+    setShowRetailersList(false);
   };
   
   const handleExpenseSuccess = () => {
@@ -64,10 +119,17 @@ export const FloatingActionButton = () => {
     setExpenseDialogOpen(false);
     setSelectedVehicle(null);
   };
+
+  const handleRetailerExpenseSuccess = () => {
+    // Fermer la modale après l'ajout d'une dépense
+    setRetailerExpenseDialogOpen(false);
+    setSelectedRetailer(null);
+  };
   
-  const handleAddRetailerExpense = () => {
-    navigate('/expenses?action=addExpense');
-    setIsMenuOpen(false);
+  const handleRetailerExpenseCancel = () => {
+    // Fermer la modale si l'utilisateur annule
+    setRetailerExpenseDialogOpen(false);
+    setSelectedRetailer(null);
   };
 
   // Animation variants
@@ -114,8 +176,11 @@ export const FloatingActionButton = () => {
     return () => {
       setIsMenuOpen(false);
       setShowVehiclesList(false);
+      setShowRetailersList(false);
       setExpenseDialogOpen(false);
+      setRetailerExpenseDialogOpen(false);
       setSelectedVehicle(null);
+      setSelectedRetailer(null);
     };
   }, []);
 
@@ -124,7 +189,7 @@ export const FloatingActionButton = () => {
       <div className="fixed right-4 bottom-20 z-50 flex flex-col-reverse items-end space-y-reverse space-y-2">
         {/* Menu flottant qui s'affiche lors du clic sur le bouton principal */}
         <AnimatePresence>
-          {isMenuOpen && !showVehiclesList && (
+          {isMenuOpen && !showVehiclesList && !showRetailersList && (
             <motion.div 
               className="flex flex-col items-end gap-2"
               variants={menuVariants}
@@ -168,11 +233,7 @@ export const FloatingActionButton = () => {
                   className="h-12 w-12 rounded-full bg-purple-500 hover:bg-purple-600 shadow-lg"
                   onClick={handleAddRetailerExpense}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                    <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9" />
-                    <path d="M12 3v6" />
-                  </svg>
+                  <Store className="h-5 w-5" />
                 </Button>
               </motion.div>
             </motion.div>
@@ -225,6 +286,60 @@ export const FloatingActionButton = () => {
               )}
             </motion.div>
           )}
+
+          {/* Liste des enseignes qui s'affiche lorsqu'on clique sur dépense enseigne */}
+          {isMenuOpen && showRetailersList && (
+            <motion.div 
+              className="flex flex-col items-end gap-2 min-w-52"
+              variants={menuVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <motion.div variants={itemVariants} className="flex items-center justify-between w-full">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-2 text-xs"
+                  onClick={() => setShowRetailersList(false)}
+                >
+                  Retour
+                </Button>
+                <span className="text-sm font-medium">Sélectionner une enseigne</span>
+              </motion.div>
+              
+              {isLoadingRetailers ? (
+                <motion.div variants={itemVariants} className="w-full p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
+                  Chargement...
+                </motion.div>
+              ) : retailers.length === 0 ? (
+                <motion.div variants={itemVariants} className="w-full p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
+                  Aucune enseigne disponible
+                </motion.div>
+              ) : (
+                retailers.map(retailer => (
+                  <motion.div 
+                    key={retailer.id}
+                    variants={itemVariants}
+                    className="w-full flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    onClick={() => handleRetailerSelect(retailer)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Store className="h-4 w-4 text-purple-500" />
+                      <span className="font-medium">{retailer.name}</span>
+                    </div>
+                    {retailer.logo_url && (
+                      <img 
+                        src={retailer.logo_url} 
+                        alt={retailer.name} 
+                        className="h-6 w-6 object-contain"
+                      />
+                    )}
+                  </motion.div>
+                ))
+              )}
+            </motion.div>
+          )}
         </AnimatePresence>
         
         {/* Bouton principal qui ouvre le menu */}
@@ -265,6 +380,26 @@ export const FloatingActionButton = () => {
                 comment: ""
               }}
             />
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Modale pour ajouter une dépense enseigne */}
+      {selectedRetailer && (
+        <Dialog open={retailerExpenseDialogOpen} onOpenChange={setRetailerExpenseDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Ajouter une dépense pour {selectedRetailer.name}</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <AddExpenseDialog 
+                onExpenseAdded={handleRetailerExpenseSuccess}
+                preSelectedRetailer={selectedRetailer}
+                open={retailerExpenseDialogOpen}
+                onOpenChange={setRetailerExpenseDialogOpen}
+                hideDialogWrapper={true}
+              />
+            </div>
           </DialogContent>
         </Dialog>
       )}

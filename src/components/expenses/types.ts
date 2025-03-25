@@ -7,6 +7,7 @@ export interface AddExpenseDialogProps {
   };
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  hideDialogWrapper?: boolean;
 }
 
 export interface ExpenseFormData {
