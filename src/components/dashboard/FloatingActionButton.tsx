@@ -1,5 +1,5 @@
 
-import { Plus, Car } from "lucide-react";
+import { Plus, Car, ShoppingBag } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +9,19 @@ import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
 import { useVehicles } from "@/hooks/useVehicles";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AddVehicleExpenseDialog } from "@/components/vehicles/expenses/AddVehicleExpenseDialog";
+import { useExpenseForm } from "@/components/expenses/useExpenseForm";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 /**
  * Bouton d'action flottant qui s'affiche sur mobile pour ajouter des dépenses rapidement
@@ -18,12 +31,51 @@ export const FloatingActionButton = () => {
   const [showVehiclesList, setShowVehiclesList] = useState(false);
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
+  const [retailerExpenseOpen, setRetailerExpenseOpen] = useState(false);
   const navigate = useNavigate();
   const { selectedVehicleId, setSelectedVehicleId } = useVehiclesContainer();
   const { vehicles, isLoading } = useVehicles();
+  const { handleSubmit: submitRetailerExpense } = useExpenseForm(() => {
+    // Fermer la modale après l'ajout
+    setRetailerExpenseOpen(false);
+  });
   
   // Liste des véhicules actifs uniquement
   const activeVehicles = vehicles?.filter(v => v.status !== "vendu") || [];
+
+  // Schéma de validation pour le formulaire de dépense d'enseigne
+  const retailerExpenseSchema = z.object({
+    retailerId: z.string().min(1, "L'enseigne est requise"),
+    amount: z.string().min(1, "Le montant est requis"),
+    date: z.date({
+      required_error: "Veuillez sélectionner une date",
+    }),
+    comment: z.string().optional(),
+  });
+
+  // Type pour les valeurs du formulaire
+  type RetailerExpenseFormValues = z.infer<typeof retailerExpenseSchema>;
+
+  // Initialisation du formulaire
+  const form = useForm<RetailerExpenseFormValues>({
+    resolver: zodResolver(retailerExpenseSchema),
+    defaultValues: {
+      retailerId: "",
+      amount: "",
+      date: new Date(),
+      comment: "",
+    },
+  });
+
+  // Méthode pour soumettre le formulaire de dépense d'enseigne
+  const onRetailerExpenseSubmit = (values: RetailerExpenseFormValues) => {
+    submitRetailerExpense({
+      retailerId: values.retailerId,
+      amount: values.amount,
+      date: format(values.date, 'yyyy-MM-dd'),
+      comment: values.comment || ""
+    });
+  };
 
   // Méthodes pour gérer les différentes actions
   const toggleMenu = () => {
@@ -66,7 +118,8 @@ export const FloatingActionButton = () => {
   };
   
   const handleAddRetailerExpense = () => {
-    navigate('/expenses?action=addExpense');
+    // Ouvrir la modale de dépense d'enseigne au lieu de naviguer
+    setRetailerExpenseOpen(true);
     setIsMenuOpen(false);
   };
 
@@ -116,6 +169,7 @@ export const FloatingActionButton = () => {
       setShowVehiclesList(false);
       setExpenseDialogOpen(false);
       setSelectedVehicle(null);
+      setRetailerExpenseOpen(false);
     };
   }, []);
 
@@ -168,11 +222,7 @@ export const FloatingActionButton = () => {
                   className="h-12 w-12 rounded-full bg-purple-500 hover:bg-purple-600 shadow-lg"
                   onClick={handleAddRetailerExpense}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                    <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9" />
-                    <path d="M12 3v6" />
-                  </svg>
+                  <ShoppingBag className="h-5 w-5" />
                 </Button>
               </motion.div>
             </motion.div>
@@ -268,6 +318,125 @@ export const FloatingActionButton = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Modale pour ajouter une dépense d'enseigne */}
+      <Sheet open={retailerExpenseOpen} onOpenChange={setRetailerExpenseOpen}>
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Ajouter une dépense enseigne</SheetTitle>
+          </SheetHeader>
+          
+          <div className="py-4">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onRetailerExpenseSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="retailerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Enseigne</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Choisir une enseigne" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Montant</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          placeholder="0.00" 
+                          step="0.01" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP", { locale: fr })
+                              ) : (
+                                <span>Choisir une date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="comment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Commentaire (optionnel)</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Commentaire..." 
+                          className="resize-none" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setRetailerExpenseOpen(false)}
+                  >
+                    Annuler
+                  </Button>
+                  <Button type="submit">Ajouter</Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 };
