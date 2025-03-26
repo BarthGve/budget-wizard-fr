@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Expense } from "@/types/expense";
 import { useState, useMemo, useEffect } from "react";
@@ -36,7 +35,7 @@ const CustomBar = (props: any) => {
   // Appliquer le radius uniquement à la barre du haut
   // Pour recharts, on peut utiliser soit un nombre unique, soit un tableau exact de 4 éléments
   const radius = isTopBar ? 
-    [[4, 4, 0, 0] as [number, number, number, number]] : // Cast explicite en tuple à 4 éléments
+    [4, 4, 0, 0] as [number, number, number, number] : // Cast explicite en tuple à 4 éléments
     0;
   
   return (
@@ -328,7 +327,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
     // Appliquer le radius uniquement à la barre du haut de la pile
     // Pour recharts, on peut utiliser soit un nombre unique, soit un tableau exact de 4 éléments
     const radius = isTopOfStack ? 
-      [[4, 4, 0, 0] as [number, number, number, number]] : // Cast explicite en tuple à 4 éléments
+      [4, 4, 0, 0] as [number, number, number, number] : // Cast explicite en tuple à 4 éléments
       0;
     
     return (
@@ -449,7 +448,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                   />
                   <Bar 
                     dataKey="total" 
-                    radius={[4, 4, 4, 4] as [number, number, number, number]} // Cast explicite pour chaque rayon
+                    radius={[4, 4, 4, 4] as [number, number, number, number]}
                     maxBarSize={30}
                     animationDuration={1000}
                     animationEasing="ease-out"
@@ -514,7 +513,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                         fill={getBarColor(index)}
                         // Spécification correcte du radius avec un cast explicite
                         radius={isLastBar ? 
-                          ([4, 4, 0, 0] as [number, number, number, number]) : 
+                          [4, 4, 0, 0] as [number, number, number, number] : 
                           0
                         }
                         maxBarSize={80} // Barres un peu plus fines pour plus d'élégance
