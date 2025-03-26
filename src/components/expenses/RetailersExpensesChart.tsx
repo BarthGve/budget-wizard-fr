@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Expense } from "@/types/expense";
 import { useState, useMemo, useEffect } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Cell, Rectangle } from "recharts";
 import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval, getYear } from "date-fns";
 import { fr } from "date-fns/locale";
 import { formatCurrency } from "@/utils/format";
@@ -25,6 +25,28 @@ interface RetailersExpensesChartProps {
   }>;
   viewMode: 'monthly' | 'yearly';
 }
+
+// Composant personnalisé pour dessiner les barres avec radius uniquement en haut
+const CustomBar = (props: any) => {
+  const { x, y, width, height, fill, dataKey, index, payload } = props;
+  
+  // Déterminer si cette barre est au sommet
+  const isTopBar = y === Math.min(...props.yAxis.map((item: any) => item.y));
+  
+  // Appliquer le radius uniquement à la barre du haut
+  const radius = isTopBar ? [4, 4, 0, 0] : [0, 0, 0, 0];
+  
+  return (
+    <Rectangle
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fill={fill}
+      radius={radius}
+    />
+  );
+};
 
 export function RetailersExpensesChart({ expenses, retailers, viewMode }: RetailersExpensesChartProps) {
   const [dataVersion, setDataVersion] = useState(0);
@@ -296,6 +318,25 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
     );
   }
 
+  // Composant personnalisé pour dessiner les barres avec radius uniquement en haut de la pile
+  const TopRadiusBar = (props: any) => {
+    const { x, y, width, height, fill, isTopOfStack } = props;
+    
+    // Appliquer le radius uniquement à la barre du haut de la pile
+    const radius = isTopOfStack ? [4, 4, 0, 0] : [0, 0, 0, 0];
+    
+    return (
+      <Rectangle
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={fill}
+        radius={radius}
+      />
+    );
+  };
+
   return (
     <Card className={cn(
       "overflow-hidden transition-all duration-200 relative h-full",
@@ -419,61 +460,64 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
               ) : (
                 // Graphique à barres empilées pour les dépenses annuelles par enseigne
                 <BarChart
-                data={yearlyData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
-                barGap={2} // Espace réduit entre les groupes de barres pour plus d'élégance
-                barCategoryGap="10%" // Espace entre catégories
-              >
-                {/* Suppression de CartesianGrid comme demandé */}
-                
-                {/* Masquer les axes tout en conservant leurs fonctionnalités */}
-                <XAxis 
-                  dataKey="year"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: axisColor, fontSize: 12 }}
-                  dy={10} // Espacement légèrement augmenté
-                />
-                <YAxis 
-                  hide={true} // Masquer complètement l'axe Y
-                />
-                
-                {/* Tooltip amélioré */}
-                <Tooltip 
-                  content={<CustomTooltip />} 
-                  cursor={{ 
-                    fill: 'rgba(180, 180, 180, 0.1)' // Curseur très subtil
-                  }} 
-                />
-                
-                {/* Légende conservée en bas */}
-                <Legend 
-                  wrapperStyle={{ 
-                    paddingTop: 15,
-                    fontSize: 12,
-                    opacity: 0.9
-                  }}
-                  iconSize={10} // Taille d'icône réduite pour plus d'élégance
-                  iconType="circle" // Utilisation de cercles au lieu de rectangles
-                />
-                
-                {/* Barres avec radius uniquement en haut */}
-                {topRetailers.map((retailer, index) => (
-                  <Bar 
-                    key={retailer}
-                    dataKey={retailer} 
-                    stackId="a" 
-                    fill={getBarColor(index)}
-                    radius={[4, 4, 0, 0]} // Radius uniquement en haut: [top-left, top-right, bottom-right, bottom-left]
-                    maxBarSize={80} // Barres un peu plus fines pour plus d'élégance
-                    // Animation personnalisée pour un rendu plus élégant
-                    animationDuration={1000}
-                    animationEasing="ease-out"
+                  data={yearlyData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
+                  barGap={2} // Espace réduit entre les groupes de barres pour plus d'élégance
+                  barCategoryGap="10%" // Espace entre catégories
+                >
+                  {/* Masquer les axes tout en conservant leurs fonctionnalités */}
+                  <XAxis 
+                    dataKey="year"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: axisColor, fontSize: 12 }}
+                    dy={10} // Espacement légèrement augmenté
                   />
-                ))}
-              </BarChart>
-              
-
+                  <YAxis 
+                    hide={true} // Masquer complètement l'axe Y
+                  />
+                  
+                  {/* Tooltip amélioré */}
+                  <Tooltip 
+                    content={<CustomTooltip />} 
+                    cursor={{ 
+                      fill: 'rgba(180, 180, 180, 0.1)' // Curseur très subtil
+                    }} 
+                  />
+                  
+                  {/* Légende conservée en bas */}
+                  <Legend 
+                    wrapperStyle={{ 
+                      paddingTop: 15,
+                      fontSize: 12,
+                      opacity: 0.9
+                    }}
+                    iconSize={10} // Taille d'icône réduite pour plus d'élégance
+                    iconType="circle" // Utilisation de cercles au lieu de rectangles
+                  />
+                  
+                  {/* Barres avec radius uniquement pour la barre du haut */}
+                  {topRetailers.map((retailer, index) => {
+                    // Pour la dernière barre (celle du haut dans la pile), on applique un radius
+                    const isLastBar = index === 0;
+                    return (
+                      <Bar 
+                        key={retailer}
+                        dataKey={retailer} 
+                        stackId="a" 
+                        fill={getBarColor(index)}
+                        // Le radius uniquement au sommet
+                        radius={isLastBar ? [4, 4, 0, 0] : [0, 0, 0, 0]}
+                        maxBarSize={80} // Barres un peu plus fines pour plus d'élégance
+                        // Animation personnalisée pour un rendu plus élégant
+                        animationDuration={1000}
+                        animationEasing="ease-out"
+                        // Pour la barres intermédiaires et inférieures, pas de radius
+                        isAnimationActive={true}
+                      />
+                    );
+                  })}
+                </BarChart>
               )}
             </ResponsiveContainer>
           </motion.div>
