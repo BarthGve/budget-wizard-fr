@@ -72,8 +72,11 @@ export const usePagePermissions = () => {
     if (!profile || !permissions) return false;
     if (isAdmin) return true;
 
-    // Add debugging for the path being checked
-    console.log("Checking access for path:", pagePath);
+    // Ajouter un traitement spécial pour la page de logement
+    if (pagePath === '/housing') {
+      console.log("Page Housing détectée, accordant l'accès");
+      return true; // Toujours autoriser l'accès à la page logement
+    }
 
     // Special case for retailer detail pages
     if (pagePath.startsWith('/expenses/retailer/')) {

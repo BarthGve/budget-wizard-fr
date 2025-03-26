@@ -1,3 +1,4 @@
+
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -58,7 +59,13 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId }: NavigationMenuPro
   const { canAccessPage } = usePagePermissions();
   const { pendingCount } = usePendingFeedbacks(isAdmin);
 
-  const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
+  // Filtrer les éléments du menu que l'utilisateur peut accéder
+  const menuItems = isAdmin 
+    ? adminMenu 
+    : userMenu.filter(item => {
+        console.log(`Checking access for path: ${item.path}, title: ${item.title}, canAccess: ${canAccessPage(item.path)}`);
+        return canAccessPage(item.path);
+      });
 
   return (
     <nav className="flex flex-col h-full justify-between p-4">
