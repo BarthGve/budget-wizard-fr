@@ -419,34 +419,69 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
               ) : (
                 // Graphique à barres empilées pour les dépenses annuelles par enseigne
                 <BarChart
-                  data={yearlyData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                  <XAxis 
-                    dataKey="year"
-                    stroke={axisColor}
-                    fontSize={12}
-                  />
-                  <YAxis 
-                    tickFormatter={(value) => formatCurrency(value)}
-                    stroke={axisColor}
-                    fontSize={12}
-                    axisLine={false}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  {topRetailers.map((retailer, index) => (
-                    <Bar 
-                      key={retailer}
-                      dataKey={retailer} 
-                      stackId="a" 
-                      fill={getBarColor(index)}
-                      radius={[0, 0, 4, 4]}
-                      maxBarSize={100}
-                    />
-                  ))}
-                </BarChart>
+  data={yearlyData}
+  margin={{ top: 30, right: 30, left: 20, bottom: 20 }}
+  barGap={8}
+  barCategoryGap={30}
+  className="overflow-visible"
+>
+  {/* Suppression de la grille comme demandé */}
+  
+  {/* XAxis sans ligne mais avec labels */}
+  <XAxis 
+    dataKey="year"
+    axisLine={false}
+    tickLine={false}
+    fontSize={12}
+    dy={10}
+    tick={{ fill: axisColor, fontWeight: 500 }}
+  />
+  
+  {/* YAxis sans ligne mais avec labels formatés */}
+  <YAxis 
+    tickFormatter={(value) => formatCurrency(value)}
+    axisLine={false}
+    tickLine={false}
+    fontSize={12}
+    dx={-10}
+    tick={{ fill: axisColor }}
+    width={60}
+  />
+  
+  {/* Tooltip amélioré */}
+  <Tooltip 
+    content={<CustomTooltip />} 
+    cursor={{ opacity: 0.1 }}
+    wrapperStyle={{ outline: 'none' }}
+  />
+  
+  {/* Legend avec style personnalisé */}
+  <Legend 
+    verticalAlign="top" 
+    height={36}
+    wrapperStyle={{ paddingTop: '10px' }}
+    iconSize={10}
+    iconType="circle"
+  />
+  
+  {/* Barres avec rayon uniquement en haut */}
+  {topRetailers.map((retailer, index) => (
+    <Bar 
+      key={retailer}
+      dataKey={retailer} 
+      stackId="a" 
+      fill={getBarColor(index)}
+      radius={[4, 4, 0, 0]} // Rayon uniquement en haut
+      maxBarSize={80}
+      animationDuration={800}
+      animationEasing="ease-out"
+      // Ajouter un effet de bordure subtil pour plus d'élégance
+      strokeWidth={0.5}
+      stroke={`${getBarColor(index)}CC`}
+    />
+  ))}
+</BarChart>
+
               )}
             </ResponsiveContainer>
           </motion.div>
