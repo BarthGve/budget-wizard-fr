@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Expense } from "@/types/expense";
 import { useState, useMemo, useEffect } from "react";
@@ -33,8 +34,10 @@ const CustomBar = (props: any) => {
   const isTopBar = y === Math.min(...props.yAxis.map((item: any) => item.y));
   
   // Appliquer le radius uniquement à la barre du haut
-  // Format de radius correct pour recharts: [topLeft, topRight, bottomRight, bottomLeft]
-  const radius = isTopBar ? [4, 4, 0, 0] : 0;
+  // Pour recharts, on peut utiliser soit un nombre unique, soit un tableau exact de 4 éléments
+  const radius = isTopBar ? 
+    [[4, 4, 0, 0] as [number, number, number, number]] : // Cast explicite en tuple à 4 éléments
+    0;
   
   return (
     <Rectangle
@@ -323,8 +326,10 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
     const { x, y, width, height, fill, isTopOfStack } = props;
     
     // Appliquer le radius uniquement à la barre du haut de la pile
-    // Format de radius correct pour recharts: [topLeft, topRight, bottomRight, bottomLeft]
-    const radius = isTopOfStack ? [4, 4, 0, 0] : 0;
+    // Pour recharts, on peut utiliser soit un nombre unique, soit un tableau exact de 4 éléments
+    const radius = isTopOfStack ? 
+      [[4, 4, 0, 0] as [number, number, number, number]] : // Cast explicite en tuple à 4 éléments
+      0;
     
     return (
       <Rectangle
@@ -444,7 +449,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                   />
                   <Bar 
                     dataKey="total" 
-                    radius={[4, 4, 4, 4]}
+                    radius={[4, 4, 4, 4] as [number, number, number, number]} // Cast explicite pour chaque rayon
                     maxBarSize={30}
                     animationDuration={1000}
                     animationEasing="ease-out"
@@ -507,8 +512,11 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                         dataKey={retailer} 
                         stackId="a" 
                         fill={getBarColor(index)}
-                        // Format de radius correct pour recharts: [topLeft, topRight, bottomRight, bottomLeft]
-                        radius={isLastBar ? [4, 4, 0, 0] : 0}
+                        // Spécification correcte du radius avec un cast explicite
+                        radius={isLastBar ? 
+                          ([4, 4, 0, 0] as [number, number, number, number]) : 
+                          0
+                        }
                         maxBarSize={80} // Barres un peu plus fines pour plus d'élégance
                         // Animation personnalisée pour un rendu plus élégant
                         animationDuration={1000}
