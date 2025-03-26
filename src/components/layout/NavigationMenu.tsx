@@ -50,6 +50,7 @@ const userMenu: MenuItem[] = [
   { title: "Épargne", icon: PiggyBank, path: "/savings" },
   { title: "Bourse", icon: TrendingUp, path: "/stocks" },
   { title: "Immobilier", icon: Home, path: "/properties" },
+  { title: "Logement", icon: Home, path: "/housing" },
   { title: "Véhicules", icon: Car, path: "/vehicles" },
 ];
 

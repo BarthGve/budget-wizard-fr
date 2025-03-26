@@ -599,6 +599,7 @@ export type Database = {
           address: string
           area: number
           created_at: string
+          heating_type: string | null
           id: string
           investment_type: string | null
           latitude: number | null
@@ -615,6 +616,7 @@ export type Database = {
           address: string
           area: number
           created_at?: string
+          heating_type?: string | null
           id?: string
           investment_type?: string | null
           latitude?: number | null
@@ -631,6 +633,7 @@ export type Database = {
           address?: string
           area?: number
           created_at?: string
+          heating_type?: string | null
           id?: string
           investment_type?: string | null
           latitude?: number | null
@@ -700,6 +703,42 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_recurring_expenses: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          recurring_expense_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          recurring_expense_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          recurring_expense_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_recurring_expenses_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_recurring_expenses_recurring_expense_id_fkey"
+            columns: ["recurring_expense_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_expenses"
             referencedColumns: ["id"]
           },
         ]

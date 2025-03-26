@@ -17,6 +17,7 @@ export const usePropertyForm = (onSuccess: () => void) => {
     monthly_rent: "",
     loan_payment: "",
     investment_type: "",
+    heating_type: "",
   });
 
   const handleSubmit = async () => {
@@ -63,6 +64,7 @@ export const usePropertyForm = (onSuccess: () => void) => {
         monthly_rent: newProperty.monthly_rent ? Number(newProperty.monthly_rent) : null,
         loan_payment: newProperty.loan_payment ? Number(newProperty.loan_payment) : null,
         investment_type: newProperty.investment_type ? newProperty.investment_type.trim() : null,
+        heating_type: newProperty.heating_type ? newProperty.heating_type.trim() : null,
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
         profile_id: user.id,
@@ -79,6 +81,7 @@ export const usePropertyForm = (onSuccess: () => void) => {
         monthly_rent: "",
         loan_payment: "",
         investment_type: "",
+        heating_type: "",
       });
       queryClient.invalidateQueries({ queryKey: ["properties"] });
       onSuccess();
