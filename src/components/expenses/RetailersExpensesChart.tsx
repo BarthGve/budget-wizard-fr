@@ -419,68 +419,60 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
               ) : (
                 // Graphique à barres empilées pour les dépenses annuelles par enseigne
                 <BarChart
-  data={yearlyData}
-  margin={{ top: 30, right: 30, left: 20, bottom: 20 }}
-  barGap={8}
-  barCategoryGap={30}
-  className="overflow-visible"
->
-  {/* Suppression de la grille comme demandé */}
-  
-  {/* XAxis sans ligne mais avec labels */}
-  <XAxis 
-    dataKey="year"
-    axisLine={false}
-    tickLine={false}
-    fontSize={12}
-    dy={10}
-    tick={{ fill: axisColor, fontWeight: 500 }}
-  />
-  
-  {/* YAxis sans ligne mais avec labels formatés */}
-  <YAxis 
-    tickFormatter={(value) => formatCurrency(value)}
-    axisLine={false}
-    tickLine={false}
-    fontSize={12}
-    dx={-10}
-    tick={{ fill: axisColor }}
-    width={60}
-  />
-  
-  {/* Tooltip amélioré */}
-  <Tooltip 
-    content={<CustomTooltip />} 
-    cursor={{ opacity: 0.1 }}
-    wrapperStyle={{ outline: 'none' }}
-  />
-  
-  {/* Legend avec style personnalisé */}
-  <Legend 
-    verticalAlign="top" 
-    height={36}
-    wrapperStyle={{ paddingTop: '10px' }}
-    iconSize={10}
-    iconType="circle"
-  />
-  
-  {/* Barres avec rayon uniquement en haut */}
-  {topRetailers.map((retailer, index) => (
-    <Bar 
-      key={retailer}
-      dataKey={retailer} 
-      stackId="a" 
-      fill={getBarColor(index)}
-      radius={[4, 4, 0, 0]} // Rayon uniquement en haut
-      maxBarSize={80}
-      animationDuration={800}
-      animationEasing="ease-out"
-      // Ajouter un effet de bordure subtil pour plus d'élégance
-      strokeWidth={0.5}
-      stroke={`${getBarColor(index)}CC`}
-    />
-  ))}
-</BarChart>
+                data={yearlyData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
+                barGap={2} // Espace réduit entre les groupes de barres pour plus d'élégance
+                barCategoryGap="10%" // Espace entre catégories
+              >
+                {/* Suppression de CartesianGrid comme demandé */}
+                
+                {/* Masquer les axes tout en conservant leurs fonctionnalités */}
+                <XAxis 
+                  dataKey="year"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: axisColor, fontSize: 12 }}
+                  dy={10} // Espacement légèrement augmenté
+                />
+                <YAxis 
+                  hide={true} // Masquer complètement l'axe Y
+                />
+                
+                {/* Tooltip amélioré */}
+                <Tooltip 
+                  content={<CustomTooltip />} 
+                  cursor={{ 
+                    fill: 'rgba(180, 180, 180, 0.1)' // Curseur très subtil
+                  }} 
+                />
+                
+                {/* Légende conservée en bas */}
+                <Legend 
+                  wrapperStyle={{ 
+                    paddingTop: 15,
+                    fontSize: 12,
+                    opacity: 0.9
+                  }}
+                  iconSize={10} // Taille d'icône réduite pour plus d'élégance
+                  iconType="circle" // Utilisation de cercles au lieu de rectangles
+                />
+                
+                {/* Barres avec radius uniquement en haut */}
+                {topRetailers.map((retailer, index) => (
+                  <Bar 
+                    key={retailer}
+                    dataKey={retailer} 
+                    stackId="a" 
+                    fill={getBarColor(index)}
+                    radius={[4, 4, 0, 0]} // Radius uniquement en haut: [top-left, top-right, bottom-right, bottom-left]
+                    maxBarSize={80} // Barres un peu plus fines pour plus d'élégance
+                    // Animation personnalisée pour un rendu plus élégant
+                    animationDuration={1000}
+                    animationEasing="ease-out"
+                  />
+                ))}
+              </BarChart>
+              
 
               )}
             </ResponsiveContainer>
