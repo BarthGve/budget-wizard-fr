@@ -7,7 +7,7 @@ import StyledLoader from "@/components/ui/StyledLoader";
 
 const Housing = () => {
   const { 
-    hasProperty, 
+    property,
     isLoadingProperty
   } = useHousing();
 
@@ -24,7 +24,7 @@ const Housing = () => {
   return (
     <DashboardLayout>
       <div className="container mx-auto p-4">
-        {hasProperty ? (
+        {property ? (
           <HousingContent />
         ) : (
           <div className="max-w-2xl mx-auto">

@@ -31,7 +31,7 @@ export const HousingCard = ({ property }: HousingCardProps) => {
             
             <div>
               <h3 className="text-sm font-medium text-muted-foreground">Type de chauffage</h3>
-              <p className="mt-1">{property.heating_type}</p>
+              <p className="mt-1">{property.heating_type || "Non spécifié"}</p>
             </div>
           </div>
         </div>
