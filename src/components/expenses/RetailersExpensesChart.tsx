@@ -432,6 +432,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                     tickFormatter={(value) => formatCurrency(value)}
                     stroke={axisColor}
                     fontSize={12}
+                    axisLine={false}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
@@ -441,6 +442,8 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                       dataKey={retailer} 
                       stackId="a" 
                       fill={getBarColor(index)}
+                      radius={[4, 4, 4, 4]}
+                      maxBarSize={30}
                     />
                   ))}
                 </BarChart>
