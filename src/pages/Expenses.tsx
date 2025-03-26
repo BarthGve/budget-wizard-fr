@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
@@ -10,7 +11,7 @@ import { ExpensesHeader } from "@/components/expenses/ExpensesHeader";
 import { RetailersGrid } from "@/components/expenses/RetailersGrid";
 import { useExpensesData } from "@/hooks/useExpensesData";
 import { useYearlyTotals } from "@/hooks/useYearlyTotals";
-import { RetailersExpensesChart } from "@/components/expenses/RetailersExpensesChart";
+import { RetailersExpensesChart } from "@/components/expenses/retailers-chart";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { Calculator } from "lucide-react";
