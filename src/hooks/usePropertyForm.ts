@@ -17,7 +17,7 @@ export const usePropertyForm = (onSuccess: () => void) => {
     monthly_rent: "",
     loan_payment: "",
     investment_type: "",
-    heating_type: "",
+    heating_type: "", // Ajout du champ manquant
   });
 
   const handleSubmit = async () => {
@@ -64,7 +64,7 @@ export const usePropertyForm = (onSuccess: () => void) => {
         monthly_rent: newProperty.monthly_rent ? Number(newProperty.monthly_rent) : null,
         loan_payment: newProperty.loan_payment ? Number(newProperty.loan_payment) : null,
         investment_type: newProperty.investment_type ? newProperty.investment_type.trim() : null,
-        heating_type: newProperty.heating_type ? newProperty.heating_type.trim() : null,
+        heating_type: newProperty.heating_type ? newProperty.heating_type.trim() : null, // Ajout du heating_type
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
         profile_id: user.id,
@@ -81,7 +81,7 @@ export const usePropertyForm = (onSuccess: () => void) => {
         monthly_rent: "",
         loan_payment: "",
         investment_type: "",
-        heating_type: "",
+        heating_type: "", // Réinitialisation du champ
       });
       queryClient.invalidateQueries({ queryKey: ["properties"] });
       onSuccess();

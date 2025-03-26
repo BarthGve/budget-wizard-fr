@@ -18,6 +18,7 @@ export const useEditProperty = (property: Property, onSuccess: () => void) => {
     monthly_rent: property.monthly_rent?.toString() || "",
     loan_payment: property.loan_payment?.toString() || "",
     investment_type: property.investment_type || "",
+    heating_type: property.heating_type || "", // Ajout de la propriété manquante
   });
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,6 +91,7 @@ export const useEditProperty = (property: Property, onSuccess: () => void) => {
           monthly_rent: editedProperty.monthly_rent ? Number(editedProperty.monthly_rent) : null,
           loan_payment: editedProperty.loan_payment ? Number(editedProperty.loan_payment) : null,
           investment_type: editedProperty.investment_type || null,
+          heating_type: editedProperty.heating_type || null, // Ajout du heating_type à la mise à jour
           latitude: coordinates.latitude,
           longitude: coordinates.longitude,
         })
@@ -116,4 +118,3 @@ export const useEditProperty = (property: Property, onSuccess: () => void) => {
     isLoading
   };
 };
-

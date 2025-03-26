@@ -2,6 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NewProperty } from "@/types/property";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PropertyFormProps {
   newProperty: NewProperty;
@@ -9,6 +10,19 @@ interface PropertyFormProps {
 }
 
 export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
+  // Types de chauffage disponibles
+  const heatingTypes = [
+    "Électrique", 
+    "Gaz", 
+    "Fioul", 
+    "Pompe à chaleur", 
+    "Bois/Pellets", 
+    "Charbon", 
+    "Solaire", 
+    "Géothermie", 
+    "Autre"
+  ];
+
   return (
     <div className="grid gap-4 py-4">
       <div className="grid gap-2">
@@ -84,6 +98,24 @@ export const PropertyForm = ({ newProperty, onChange }: PropertyFormProps) => {
           placeholder="Ex: 1500"
           className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
         />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="heating_type">Type de chauffage</Label>
+        <Select
+          value={newProperty.heating_type}
+          onValueChange={(value) => onChange({ ...newProperty, heating_type: value })}
+        >
+          <SelectTrigger id="heating_type">
+            <SelectValue placeholder="Sélectionner un type de chauffage" />
+          </SelectTrigger>
+          <SelectContent>
+            {heatingTypes.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
