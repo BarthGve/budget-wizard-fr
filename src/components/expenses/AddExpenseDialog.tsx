@@ -24,46 +24,37 @@ export function AddExpenseDialog({
   // Couleurs dynamiques selon le colorScheme
   const colors = {
     blue: {
-      gradientFrom: "from-blue-500",
-      gradientTo: "to-indigo-400",
-      darkGradientFrom: "dark:from-blue-600",
-      darkGradientTo: "dark:to-indigo-500",
-      iconBg: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-      headingText: "text-blue-900 dark:text-blue-200",
-      descriptionText: "text-blue-700/80 dark:text-blue-300/80",
+      gradientFrom: "from-blue-50",
+      gradientTo: "to-blue-100",
+      darkGradientFrom: "dark:from-blue-950",
+      darkGradientTo: "dark:to-blue-900",
+      iconBg: "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300",
+      headingText: "text-blue-900 dark:text-blue-100",
+      descriptionText: "text-blue-700 dark:text-blue-400",
       buttonBg: "bg-blue-600 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600",
-      lightBg: "from-white via-blue-50/40 to-blue-100/70",
-      darkBg: "dark:from-gray-900 dark:via-blue-950/20 dark:to-blue-900/30",
-      borderLight: "border-blue-100/70",
-      borderDark: "dark:border-blue-800/20",
+      border: "border-blue-200 dark:border-blue-800",
     },
     green: {
-      gradientFrom: "from-green-500",
-      gradientTo: "to-emerald-400",
-      darkGradientFrom: "dark:from-green-600",
-      darkGradientTo: "dark:to-emerald-500",
-      iconBg: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-      headingText: "text-green-900 dark:text-green-200",
-      descriptionText: "text-green-700/80 dark:text-green-300/80",
+      gradientFrom: "from-green-50",
+      gradientTo: "to-green-100",
+      darkGradientFrom: "dark:from-green-950",
+      darkGradientTo: "dark:to-green-900",
+      iconBg: "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300",
+      headingText: "text-green-900 dark:text-green-100",
+      descriptionText: "text-green-700 dark:text-green-400",
       buttonBg: "bg-green-600 hover:bg-green-500 dark:bg-green-700 dark:hover:bg-green-600",
-      lightBg: "from-white via-green-50/40 to-green-100/70",
-      darkBg: "dark:from-gray-900 dark:via-green-950/20 dark:to-green-900/30",
-      borderLight: "border-green-100/70", 
-      borderDark: "dark:border-green-800/20",
+      border: "border-green-200 dark:border-green-800",
     },
     purple: {
-      gradientFrom: "from-purple-500",
-      gradientTo: "to-violet-400",
-      darkGradientFrom: "dark:from-purple-600",
-      darkGradientTo: "dark:to-violet-500",
-      iconBg: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
-      headingText: "text-purple-900 dark:text-purple-200",
-      descriptionText: "text-purple-700/80 dark:text-purple-300/80",
+      gradientFrom: "from-purple-50",
+      gradientTo: "to-purple-100",
+      darkGradientFrom: "dark:from-purple-950",
+      darkGradientTo: "dark:to-purple-900",
+      iconBg: "bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-300",
+      headingText: "text-purple-900 dark:text-purple-100",
+      descriptionText: "text-purple-700 dark:text-purple-400",
       buttonBg: "bg-purple-600 hover:bg-purple-500 dark:bg-purple-700 dark:hover:bg-purple-600",
-      lightBg: "from-white via-purple-50/40 to-purple-100/70",
-      darkBg: "dark:from-gray-900 dark:via-purple-950/20 dark:to-purple-900/30",
-      borderLight: "border-purple-100/70", 
-      borderDark: "dark:border-purple-800/20",
+      border: "border-purple-200 dark:border-purple-800",
     },
   };
   
@@ -74,31 +65,32 @@ export function AddExpenseDialog({
     <div 
       ref={contentRef}
       className={cn(
-        "relative flex flex-col pb-6 p-6 rounded-lg",
+        "relative flex flex-col pb-6 p-6 rounded-lg border",
         "bg-gradient-to-br",
-        currentColors.lightBg,
-        currentColors.darkBg,
-        // Dégradé bleu subtil sans gris
-        "before:absolute before:inset-0 before:bg-gradient-to-br before:opacity-20 before:rounded-lg",
-        "before:from-blue-300 before:to-blue-500",
-        "dark:before:from-blue-700 dark:before:to-blue-900 dark:before:opacity-30",
-        "overflow-hidden border-0"
+        currentColors.gradientFrom,
+        currentColors.gradientTo,
+        currentColors.darkGradientFrom,
+        currentColors.darkGradientTo,
+        currentColors.border
       )}
+      style={{
+        backgroundImage: `
+          linear-gradient(to bottom right, 
+          var(--tw-gradient-stops)),
+          linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(37, 99, 235, 0.1))
+        `
+      }}
     >
-      {/* Overlay pour le dégradé bleu principal - suppression des tons gris */}
-      <div className={cn(
-        "absolute inset-0 pointer-events-none opacity-10 bg-gradient-to-br rounded-lg",
-        "from-blue-300 to-blue-600",
-        "dark:from-blue-600 dark:to-blue-900 dark:opacity-20"
-      )} />
-
-      {/* Remplacer l'effet radial gris par un effet bleu subtil */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100 via-blue-50 to-transparent opacity-[0.02] dark:from-blue-500 dark:via-blue-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
+      {/* Accent diagonal bleu subtil en haut */}
+      <div className="absolute top-0 right-0 h-24 w-1/2 bg-gradient-to-br from-blue-200/40 to-blue-300/10 dark:from-blue-800/20 dark:to-blue-700/5 rounded-tr-lg pointer-events-none" />
+      
+      {/* Point brillant dans le coin */}
+      <div className="absolute top-4 right-4 h-20 w-20 rounded-full bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 dark:to-transparent blur-xl pointer-events-none" />
       
       {!hideTitleBar && (
         <DialogHeader className="relative z-10 mb-4">
           <div className="flex items-center gap-3">
-            <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
+            <div className={cn("p-2.5 rounded-lg shadow-sm", currentColors.iconBg)}>
               <PlusCircle className="w-5 h-5" />
             </div>
             <DialogTitle className={cn("text-2xl font-bold", currentColors.headingText)}>
@@ -120,9 +112,12 @@ export function AddExpenseDialog({
         />
       </div>
 
-      <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
+      <div className="absolute bottom-0 right-0 w-28 h-28 pointer-events-none opacity-[0.07] dark:opacity-[0.04]">
         <Receipt className="w-full h-full" />
       </div>
+      
+      {/* Ligne décorative subtile */}
+      <div className="absolute bottom-4 left-4 w-16 h-0.5 bg-blue-300/30 dark:bg-blue-700/30 rounded-full pointer-events-none" />
     </div>
   );
 
@@ -132,7 +127,7 @@ export function AddExpenseDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[525px] p-0 border-0 overflow-hidden bg-transparent shadow-2xl">
+      <DialogContent className="sm:max-w-[525px] p-0 border-0 overflow-hidden bg-transparent shadow-xl">
         {dialogContent}
       </DialogContent>
     </Dialog>
