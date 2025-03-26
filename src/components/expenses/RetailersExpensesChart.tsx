@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Expense } from "@/types/expense";
 import { useState, useMemo, useEffect } from "react";
@@ -34,8 +33,8 @@ const CustomBar = (props: any) => {
   const isTopBar = y === Math.min(...props.yAxis.map((item: any) => item.y));
   
   // Appliquer le radius uniquement à la barre du haut
-  // Utilisation correcte du format RectRadius pour les coins arrondis
-  const radius = isTopBar ? { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 } : 0;
+  // Format de radius correct pour recharts: [topLeft, topRight, bottomRight, bottomLeft]
+  const radius = isTopBar ? [4, 4, 0, 0] : 0;
   
   return (
     <Rectangle
@@ -324,8 +323,8 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
     const { x, y, width, height, fill, isTopOfStack } = props;
     
     // Appliquer le radius uniquement à la barre du haut de la pile
-    // Utilisation correcte du format pour les coins arrondis
-    const radius = isTopOfStack ? { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 } : 0;
+    // Format de radius correct pour recharts: [topLeft, topRight, bottomRight, bottomLeft]
+    const radius = isTopOfStack ? [4, 4, 0, 0] : 0;
     
     return (
       <Rectangle
@@ -508,8 +507,8 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                         dataKey={retailer} 
                         stackId="a" 
                         fill={getBarColor(index)}
-                        // Le radius uniquement au sommet - format corrigé
-                        radius={isLastBar ? { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 } : 0}
+                        // Format de radius correct pour recharts: [topLeft, topRight, bottomRight, bottomLeft]
+                        radius={isLastBar ? [4, 4, 0, 0] : 0}
                         maxBarSize={80} // Barres un peu plus fines pour plus d'élégance
                         // Animation personnalisée pour un rendu plus élégant
                         animationDuration={1000}
