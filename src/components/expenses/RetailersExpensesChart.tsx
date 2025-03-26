@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Expense } from "@/types/expense";
 import { useState, useMemo, useEffect } from "react";
@@ -320,15 +321,28 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
     );
   }
 
-  // Composant personnalisé pour dessiner les barres avec radius uniquement en haut de la pile
-  const TopRadiusBar = (props: any) => {
-    const { x, y, width, height, fill, isTopOfStack } = props;
+  // Fonction personnalisée pour rendre les barres empilées avec des rayons arrondis
+  const renderCustomizedStackBar = (props: any) => {
+    const { x, y, width, height, value, index, dataKey, fill, payload } = props;
+    
+    // On détermine si cette barre est la première (supérieure) dans la pile
+    // Pour chaque année, nous stockons les positions y afin de pouvoir identifier la barre supérieure
+    const yearKey = payload.year;
+    
+    // Trouver la position de cette barre spécifique dans la pile
+    // Dans un graphique empilé, le premier dataKey affiché est celui du bas, donc nous devons déterminer
+    // si ce dataKey est le premier dans l'ordre d'empilement pour cette année
+    
+    // Récupérer l'index du retailer actuel dans la liste des retailers affichés
+    const retailerIndex = topRetailers.findIndex(retailer => retailer === dataKey);
+    
+    // Dans Recharts, le premier retailer (index 0) est affiché en bas de la pile
+    // Pour notre cas, nous voulons arrondir les coins de la dernière barre (celle du haut)
+    // Donc nous vérifions si c'est le dernier retailer de la pile (celui avec l'index 0)
+    const isTopBar = retailerIndex === 0;
     
     // Appliquer le radius uniquement à la barre du haut de la pile
-    // Pour recharts, on peut utiliser soit un nombre unique, soit un tableau exact de 4 éléments
-    const radius = isTopOfStack ? 
-      [4, 4, 0, 0] as [number, number, number, number] : // Cast explicite en tuple à 4 éléments
-      0;
+    const radius = isTopBar ? [4, 4, 0, 0] as [number, number, number, number] : 0;
     
     return (
       <Rectangle
@@ -502,29 +516,19 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                   />
                   
                   {/* Barres avec radius uniquement pour la barre du haut */}
-                  {topRetailers.map((retailer, index) => {
-                    // Pour la dernière barre (celle du haut dans la pile), on applique un radius
-                    const isLastBar = index === 0;
-                    return (
-                      <Bar 
-                        key={retailer}
-                        dataKey={retailer} 
-                        stackId="a" 
-                        fill={getBarColor(index)}
-                        // Spécification correcte du radius avec un cast explicite
-                        radius={isLastBar ? 
-                          [4, 4, 0, 0] as [number, number, number, number] : 
-                          0
-                        }
-                        maxBarSize={80} // Barres un peu plus fines pour plus d'élégance
-                        // Animation personnalisée pour un rendu plus élégant
-                        animationDuration={1000}
-                        animationEasing="ease-out"
-                        // Pour la barres intermédiaires et inférieures, pas de radius
-                        isAnimationActive={true}
-                      />
-                    );
-                  })}
+                  {topRetailers.map((retailer, index) => (
+                    <Bar 
+                      key={retailer}
+                      dataKey={retailer}
+                      stackId="a"
+                      fill={getBarColor(index)}
+                      shape={renderCustomizedStackBar}
+                      maxBarSize={80}
+                      animationDuration={1000}
+                      animationEasing="ease-out"
+                      isAnimationActive={true}
+                    />
+                  ))}
                 </BarChart>
               )}
             </ResponsiveContainer>
