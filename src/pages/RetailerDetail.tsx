@@ -10,7 +10,7 @@ import { RetailerStats } from "@/components/expenses/retailer-detail/RetailerSta
 import { RetailerExpensesTable } from "@/components/expenses/retailer-detail/RetailerExpensesTable";
 import { useRetailerExpenseStats } from "@/components/expenses/retailer-detail/useRetailerExpenseStats";
 import { RetailerYearlyArchives } from "@/components/expenses/retailer-detail/RetailerYearlyArchives";
-import { RetailerExpensesChart } from "@/components/expenses/retailer-detail/RetailerExpensesChart";
+import { RetailerExpensesChart } from "@/components/expenses/retailer-chart";
 import { useRetailerDetail } from "@/components/expenses/retailer-detail/useRetailerDetail";
 import { RetailerDialogs } from "@/components/expenses/retailer-detail/RetailerDialogs";
 
