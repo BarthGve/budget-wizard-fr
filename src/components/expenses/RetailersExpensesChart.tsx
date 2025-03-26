@@ -442,8 +442,8 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                       dataKey={retailer} 
                       stackId="a" 
                       fill={getBarColor(index)}
-                      radius={[4, 4, 4, 4]}
-                      maxBarSize={30}
+                      radius={[0, 0, 4, 4]}
+                      maxBarSize={100}
                     />
                   ))}
                 </BarChart>
