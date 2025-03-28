@@ -97,7 +97,7 @@ export const RetailerExpensesChart = ({ data, expenses, isLoading, className }: 
   }
 
   return (
-    <div className={cn("relative rounded-xl border p-6 h-[350px]", className)}>
+    <div className={cn("relative rounded-xl border p-6 h-[380px]", className)}>
       <ChartBackground />
 
       <ExpensesChartHeader 
@@ -105,11 +105,16 @@ export const RetailerExpensesChart = ({ data, expenses, isLoading, className }: 
         onViewModeChange={handleViewModeChange} 
       />
 
-      <div className="mt-4 h-[280px]">
+      <div className="mt-4 h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartData}
-            margin={{ top: 10, right: isMobileScreen ? 10 : 30, left: isMobileScreen ? -10 : 0, bottom: 5 }}
+            margin={{ 
+              top: 10, 
+              right: isMobileScreen ? 15 : 35, 
+              left: isMobileScreen ? 0 : 10, 
+              bottom: 25 
+            }}
           >
             <CartesianGrid 
               strokeDasharray="3 3" 
@@ -120,7 +125,6 @@ export const RetailerExpensesChart = ({ data, expenses, isLoading, className }: 
               dataKey="name" 
               axisLine={false} 
               tickLine={false} 
-              fontSize={isMobileScreen ? 10 : 12}
               dy={10}
               tick={{ 
                 fontSize: isMobileScreen ? 10 : 12,
@@ -131,7 +135,6 @@ export const RetailerExpensesChart = ({ data, expenses, isLoading, className }: 
               tickFormatter={formatYAxis}
               axisLine={false} 
               tickLine={false}
-              fontSize={isMobileScreen ? 10 : 12}
               dx={isMobileScreen ? -5 : 0}
               width={isMobileScreen ? 40 : 60}
               tick={{ 
@@ -162,7 +165,7 @@ export const RetailerExpensesChart = ({ data, expenses, isLoading, className }: 
               dataKey="value" 
               fill={isDarkMode ? "#3b82f6" : "#60a5fa"} 
               radius={[4, 4, 0, 0]} 
-              maxBarSize={isMobileScreen ? 40 : 60}
+              maxBarSize={isMobileScreen ? 35 : 50}
             />
           </BarChart>
         </ResponsiveContainer>
