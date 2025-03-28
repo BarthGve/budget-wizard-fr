@@ -42,7 +42,7 @@ export const ExpenseSections = ({
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <div className="space-y-6">
+    <>
       <RecurringExpensesHeader />
 
       <motion.div variants={itemVariants}>
@@ -78,6 +78,6 @@ export const ExpenseSections = ({
           />
         </motion.div>
       )}
-    </div>
+    </>
   );
 };
