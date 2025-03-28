@@ -21,7 +21,7 @@ import { StepTwo } from './steps/StepTwo';
 import { StepThree } from './steps/StepThree';
 import { StepFour } from './steps/StepFour';
 import { StepFive } from './steps/StepFive';
-import { SavingsProject } from '@/types/savings-project';
+import { SavingsMode, SavingsProject } from '@/types/savings-project';
 import { WizardStepper } from './components/WizardStepper';
 import { useProjectWizard } from './hooks/useProjectWizard';
 import { supabase } from '@/integrations/supabase/client';
@@ -80,7 +80,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         return;
       }
 
-      // Préparer les données du projet
+      // Préparer les données du projet avec le statut correctement typé
       const projectData = {
         profile_id: user.id,
         nom_projet: formData.nom_projet,
@@ -88,11 +88,11 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         montant_total: formData.montant_total,
         target_date: formData.target_date || null,
         montant_mensuel: formData.montant_mensuel || null,
-        mode_planification: savingsMode,
+        mode_planification: savingsMode as "par_date" | "par_mensualite",
         nombre_mois: formData.nombre_mois || null,
         date_estimee: formData.date_estimee || null,
         added_to_recurring: false,
-        statut: "actif",
+        statut: "actif" as "actif" | "en_attente" | "dépassé", // Typage explicite
         image_url: formData.image_url || null
       };
 
@@ -146,7 +146,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
           <StepThree 
             data={formData} 
             onChange={handleChange} 
-            savingsMode={savingsMode}
+            mode={savingsMode}
             onModeChange={handleModeChange}
           />
         )}
@@ -154,13 +154,13 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
           <StepFour 
             data={formData} 
             onChange={handleChange} 
-            savingsMode={savingsMode} 
+            mode={savingsMode} 
           />
         )}
         {currentStep === 4 && (
           <StepFive 
             data={formData} 
-            savingsMode={savingsMode} 
+            mode={savingsMode} 
           />
         )}
       </div>

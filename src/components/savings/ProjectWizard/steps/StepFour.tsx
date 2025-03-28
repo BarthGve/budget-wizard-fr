@@ -6,7 +6,7 @@ import { addMonths, differenceInMonths, parseISO, format, parse, isValid } from 
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-interface StepFourProps {
+export interface StepFourProps {
   data: Partial<SavingsProject>;
   mode: SavingsMode;
   onChange: (data: Partial<SavingsProject>) => void;
