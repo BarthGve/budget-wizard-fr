@@ -1,3 +1,4 @@
+
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { SavingsProject } from "@/types/savings-project";
@@ -127,9 +128,6 @@ export const StepFive = ({ data, onChange }: StepFiveProps) => {
                   </div>
                 </div>
               </div>
-
-              {/* Note */}
-              
             </div>
           </motion.div>
         )}

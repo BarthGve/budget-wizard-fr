@@ -59,6 +59,33 @@ const RetailerDetail = () => {
     previousYearTotal
   } = useRetailerExpenseStats(expenses);
 
+  // Préparer les données pour le graphique
+  const prepareChartData = () => {
+    if (!expenses || expenses.length === 0) return [];
+    
+    // Grouper les dépenses par mois
+    const expensesByMonth = expenses.reduce((acc, expense) => {
+      const date = new Date(expense.date);
+      const monthYear = `${date.getMonth() + 1}-${date.getFullYear()}`;
+      
+      if (!acc[monthYear]) {
+        acc[monthYear] = {
+          name: date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }),
+          value: 0,
+          date: date // Garder la date pour le tri
+        };
+      }
+      
+      acc[monthYear].value += expense.amount;
+      return acc;
+    }, {});
+    
+    // Convertir en tableau et trier par date
+    return Object.values(expensesByMonth)
+      .sort((a: any, b: any) => a.date.getTime() - b.date.getTime())
+      .slice(-12); // Garder uniquement les 12 derniers mois
+  };
+
   if (isLoadingRetailer) {
     return (
       <DashboardLayout>
@@ -92,6 +119,7 @@ const RetailerDetail = () => {
   }
 
   const currentYear = new Date().getFullYear();
+  const chartData = prepareChartData();
 
   return (
     <DashboardLayout>
@@ -113,7 +141,10 @@ const RetailerDetail = () => {
         />
         
         {expenses && expenses.length > 0 && (
-          <RetailerExpensesChart expenses={expenses} />
+          <RetailerExpensesChart 
+            data={chartData} 
+            isLoading={isLoadingExpenses}
+          />
         )}
 
         <RetailerExpensesTable
@@ -125,14 +156,12 @@ const RetailerDetail = () => {
           currentYear={currentYear}
         />
 
-     
         {expenses && expenses.length > 0 && (
           <RetailerYearlyArchives
             expenses={expenses}
             currentYear={currentYear}
           />
         )}
-       
         
         <RetailerDialogs
           expenseToEdit={expenseToEdit}
