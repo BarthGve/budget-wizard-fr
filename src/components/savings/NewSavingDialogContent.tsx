@@ -53,6 +53,10 @@ export const NewSavingDialogContent = ({
       headingText: "text-green-900 dark:text-green-200",
       descriptionText: "text-green-700/80 dark:text-green-300/80",
       buttonBg: "bg-green-600 hover:bg-green-500 dark:bg-green-700 dark:hover:bg-green-600",
+      lightBg: "from-white via-green-50/40 to-green-100/70",
+      darkBg: "dark:from-gray-900 dark:via-green-950/20 dark:to-green-900/30",
+      borderLight: "border-green-100/70",
+      borderDark: "dark:border-green-800/20",
     },
     blue: {
       gradientFrom: "from-blue-500",
@@ -63,6 +67,10 @@ export const NewSavingDialogContent = ({
       headingText: "text-blue-900 dark:text-blue-200",
       descriptionText: "text-blue-700/80 dark:text-blue-300/80",
       buttonBg: "bg-blue-600 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600",
+      lightBg: "from-white via-blue-50/40 to-blue-100/70",
+      darkBg: "dark:from-gray-900 dark:via-blue-950/20 dark:to-blue-900/30",
+      borderLight: "border-blue-100/70",
+      borderDark: "dark:border-blue-800/20",
     },
     purple: {
       gradientFrom: "from-purple-500",
@@ -73,6 +81,10 @@ export const NewSavingDialogContent = ({
       headingText: "text-purple-900 dark:text-purple-200",
       descriptionText: "text-purple-700/80 dark:text-purple-300/80",
       buttonBg: "bg-purple-600 hover:bg-purple-500 dark:bg-purple-700 dark:hover:bg-purple-600",
+      lightBg: "from-white via-purple-50/40 to-purple-100/70",
+      darkBg: "dark:from-gray-900 dark:via-purple-950/20 dark:to-purple-900/30",
+      borderLight: "border-purple-100/70", 
+      borderDark: "dark:border-purple-800/20",
     },
   };
   const currentColors = colors[colorScheme];
@@ -80,17 +92,20 @@ export const NewSavingDialogContent = ({
   return (
     <div 
       ref={contentRef}
-      className="relative flex flex-col pb-6 p-6 rounded-lg"
+      className={cn(
+        "relative flex flex-col pb-6 p-6 rounded-lg",
+        "bg-gradient-to-br",
+        currentColors.lightBg,
+        currentColors.darkBg
+      )}
     >
-      <div className="absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg">
-        <div className={cn(
-          "h-full w-full bg-gradient-to-br",
-          currentColors.gradientFrom,
-          currentColors.gradientTo,
-          currentColors.darkGradientFrom,
-          currentColors.darkGradientTo
-        )} />
-      </div>
+      <div className={cn(
+        "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg",
+        currentColors.gradientFrom,
+        currentColors.gradientTo,
+        currentColors.darkGradientFrom,
+        currentColors.darkGradientTo
+      )} />
 
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
       
