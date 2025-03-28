@@ -120,18 +120,24 @@ export const RetailerExpensesChart = ({ data, expenses, isLoading, className }: 
               dataKey="name" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fontSize: isMobileScreen ? 10 : 12 }}
+              fontSize={isMobileScreen ? 10 : 12}
               dy={10}
-              tick={isDarkMode ? { fill: '#aaa' } : { fill: '#666' }}
+              tick={{ 
+                fontSize: isMobileScreen ? 10 : 12,
+                fill: isDarkMode ? '#aaa' : '#666'
+              }}
             />
             <YAxis 
               tickFormatter={formatYAxis}
               axisLine={false} 
               tickLine={false}
-              tick={{ fontSize: isMobileScreen ? 10 : 12 }}
+              fontSize={isMobileScreen ? 10 : 12}
               dx={isMobileScreen ? -5 : 0}
               width={isMobileScreen ? 40 : 60}
-              tick={isDarkMode ? { fill: '#aaa' } : { fill: '#666' }}
+              tick={{ 
+                fontSize: isMobileScreen ? 10 : 12,
+                fill: isDarkMode ? '#aaa' : '#666'
+              }}
             />
             <Tooltip 
               cursor={{ fill: isDarkMode ? 'rgba(30, 41, 59, 0.4)' : 'rgba(241, 245, 249, 0.8)' }}
