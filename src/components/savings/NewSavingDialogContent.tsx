@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormLabel } from "@/components/ui/form";
@@ -6,6 +5,7 @@ import { DialogTitle, DialogHeader, DialogClose } from "@/components/ui/dialog";
 import { LogoPreview } from "./LogoPreview";
 import { Leaf, X, PiggyBank, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLogoPreview } from "./hooks/useLogoPreview";
 
 interface NewSavingDialogContentProps {
   saving?: {
@@ -45,7 +45,8 @@ export function NewSavingDialogContent({
 }: NewSavingDialogContentProps) {
   const isEditMode = !!saving?.id;
   
-  // Couleurs dynamiques basées sur le colorScheme
+  const { previewLogoUrl, isLogoValid, isCheckingLogo } = useLogoPreview(domain);
+  
   const colors = {
     green: {
       iconBg: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
@@ -97,7 +98,6 @@ export function NewSavingDialogContent({
       currentColors.lightBg,
       currentColors.darkBg
     )}>
-      {/* Background gradient */}
       <div className={cn(
         "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br",
         currentColors.gradientFrom,
@@ -106,10 +106,8 @@ export function NewSavingDialogContent({
         currentColors.darkGradientTo
       )} />
       
-      {/* Radial gradient pour texture */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01]" />
       
-      {/* En-tête */}
       <DialogHeader className={cn("relative z-10 p-6", isMobile ? "pt-4 pb-4" : "")}>
         <div className="flex items-center gap-3">
           <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
@@ -129,12 +127,9 @@ export function NewSavingDialogContent({
         </DialogClose>
       </DialogHeader>
       
-      {/* Ligne séparatrice */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200/60 to-transparent dark:via-gray-700/40" />
       
-      {/* Contenu du formulaire */}
       <div className={cn("relative z-10 space-y-4 p-6", isMobile ? "pb-20" : "")}>
-        {/* Champ Nom */}
         <div className="space-y-2">
           <FormLabel htmlFor="name" className="text-gray-700 dark:text-gray-300">
             Nom du versement
@@ -151,7 +146,6 @@ export function NewSavingDialogContent({
           />
         </div>
         
-        {/* Champ Domaine (pour logo) */}
         <div className="space-y-2 relative">
           <FormLabel htmlFor="domain" className="text-gray-700 dark:text-gray-300">
             Domaine (pour le logo)
@@ -169,14 +163,18 @@ export function NewSavingDialogContent({
                 )}
               />
             </div>
-            <LogoPreview domain={domain} />
+            <LogoPreview 
+              url={previewLogoUrl} 
+              isValid={isLogoValid} 
+              isChecking={isCheckingLogo} 
+              domain={domain}
+            />
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Saisissez le nom de domaine pour afficher le logo
           </p>
         </div>
         
-        {/* Champ Montant */}
         <div className="space-y-2">
           <FormLabel htmlFor="amount" className="text-gray-700 dark:text-gray-300">
             Montant mensuel (€)
@@ -195,7 +193,6 @@ export function NewSavingDialogContent({
           />
         </div>
         
-        {/* Champ Description */}
         <div className="space-y-2">
           <FormLabel htmlFor="description" className="text-gray-700 dark:text-gray-300">
             Description (optionnel)
@@ -213,7 +210,6 @@ export function NewSavingDialogContent({
         </div>
       </div>
       
-      {/* Boutons d'action - en bas fixe pour mobile, en bas normal pour desktop */}
       <div className={cn(
         "flex justify-end gap-4 p-6",
         isMobile ? "fixed bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent dark:from-gray-900 dark:via-gray-900 dark:to-transparent pt-4" : ""
