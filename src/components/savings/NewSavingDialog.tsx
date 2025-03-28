@@ -6,6 +6,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { NewSavingDialogContent } from "./NewSavingDialogContent";
 import { useSavingDialog } from "./hooks/useSavingDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 interface NewSavingDialogProps {
   saving?: {
@@ -81,6 +82,41 @@ export const NewSavingDialog = memo(({
     return "sm:max-w-[650px] w-full";
   };
 
+  // Si on est sur mobile, utiliser Sheet au lieu de Dialog
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
+        <SheetContent 
+          className={cn(
+            "p-0 shadow-lg rounded-t-lg border-t overflow-y-auto",
+            currentColors.borderLight,
+            currentColors.borderDark,
+            "dark:bg-gray-900"
+          )}
+          side="bottom"
+        >
+          <NewSavingDialogContent
+            saving={saving}
+            name={name}
+            onNameChange={setName}
+            domain={domain}
+            onDomainChange={setDomain}
+            amount={amount}
+            onAmountChange={setAmount}
+            description={description}
+            onDescriptionChange={setDescription}
+            onSave={handleSaveSaving}
+            onCancel={() => onOpenChange?.(false)}
+            colorScheme={colorScheme}
+            isMobile={true}
+          />
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Version desktop avec Dialog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
@@ -106,6 +142,7 @@ export const NewSavingDialog = memo(({
           onSave={handleSaveSaving}
           onCancel={() => onOpenChange?.(false)}
           colorScheme={colorScheme}
+          isMobile={false}
         />
       </DialogContent>
     </Dialog>
