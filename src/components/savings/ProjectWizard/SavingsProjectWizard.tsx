@@ -27,6 +27,7 @@ import { useProjectWizard } from './hooks/useProjectWizard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PiggyBank, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface SavingsProjectWizardProps {
   onClose: () => void;
@@ -92,7 +93,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         nombre_mois: formData.nombre_mois || null,
         date_estimee: formData.date_estimee || null,
         added_to_recurring: false,
-        statut: "actif",
+        statut: "actif" as "actif" | "dépassé" | "en_attente", // Correction du type
         image_url: formData.image_url || null
       };
 
@@ -115,7 +116,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     }
   }, [formData, savingsMode, setIsLoading, setError, onProjectCreated, handleClose]);
 
-  // Rendu conditionnel selon le type d'appareil
+  // Style commun pour le contenu
   const renderContent = () => (
     <div className="space-y-6 py-2 max-w-full">
       <div className="flex items-center gap-3 mb-2">
@@ -140,8 +141,18 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       />
 
       <div className="min-h-[300px] py-4">
-        {currentStep === 0 && <StepOne data={formData} onChange={handleChange} />}
-        {currentStep === 1 && <StepTwo data={formData} onChange={handleChange} />}
+        {currentStep === 0 && (
+          <StepOne 
+            data={formData} 
+            onChange={handleChange} 
+          />
+        )}
+        {currentStep === 1 && (
+          <StepTwo 
+            data={formData} 
+            onChange={handleChange} 
+          />
+        )}
         {currentStep === 2 && (
           <StepThree 
             data={formData} 
@@ -193,19 +204,19 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     </div>
   );
 
-  // Utiliser le Sheet pour mobile et Dialog pour desktop
+  // Utiliser le Sheet pour mobile et Dialog pour desktop avec style cohérent
   return isMobile ? (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent 
         side="bottom" 
-        className="h-[90vh] rounded-t-xl pt-6 px-4 pb-8 overflow-y-auto"
+        className="h-[90vh] rounded-t-xl pt-6 px-4 pb-8 overflow-y-auto bg-gradient-to-br from-white via-purple-50/40 to-purple-100/70 dark:from-gray-900 dark:via-purple-950/20 dark:to-purple-900/30"
       >
         {renderContent()}
       </SheetContent>
     </Sheet>
   ) : (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[600px] p-6 overflow-y-auto max-h-[90vh]">
+      <DialogContent className="sm:max-w-[600px] p-0 overflow-y-auto max-h-[90vh] bg-gradient-to-br from-white via-purple-50/40 to-purple-100/70 dark:from-gray-900 dark:via-purple-950/20 dark:to-purple-900/30">
         {renderContent()}
       </DialogContent>
     </Dialog>
