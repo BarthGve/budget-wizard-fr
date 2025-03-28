@@ -5,7 +5,6 @@ import { Rocket, PartyPopper } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProjectAnnouncementCardProps {
   collapsed: boolean;
@@ -15,7 +14,6 @@ interface ProjectAnnouncementCardProps {
 export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnouncementCardProps) => {
   const navigate = useNavigate();
   const [dismissed, setDismissed] = useState(false);
-  const isMobile = useIsMobile();
   
   // Check if user has already created a project
   const { data: hasProjects } = useQuery({
@@ -74,8 +72,8 @@ export const ProjectAnnouncementCard = ({ collapsed, userId }: ProjectAnnounceme
           <div className="flex items-start gap-3">
             <PartyPopper className="h-5 w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
             <div className="space-y-2">
-              <p className={`text-xs text-gray-800 ${isMobile ? "line-clamp-2" : ""}`}>
-                {isMobile ? "Nouveau projet d'épargne !" : "Nouveau: créer un projet d'épargne !"}
+              <p className="text-xs text-gray-800">
+                Nouveau: créer un projet d'épargne !
               </p>
             </div>
           </div>
