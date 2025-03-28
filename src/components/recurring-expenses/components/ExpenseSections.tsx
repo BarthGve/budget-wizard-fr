@@ -78,6 +78,6 @@ export const ExpenseSections = ({
           />
         </motion.div>
       )}
-    </>
+    </div>
   );
 };
