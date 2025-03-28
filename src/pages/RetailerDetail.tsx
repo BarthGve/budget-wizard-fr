@@ -113,7 +113,10 @@ const RetailerDetail = () => {
         />
         
         {expenses && expenses.length > 0 && (
-          <RetailerExpensesChart expenses={expenses} />
+          <RetailerExpensesChart 
+            expenses={expenses} 
+            isLoading={isLoadingExpenses}
+          />
         )}
 
         <RetailerExpensesTable
