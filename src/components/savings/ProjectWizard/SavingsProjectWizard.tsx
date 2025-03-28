@@ -27,7 +27,6 @@ import { useProjectWizard } from './hooks/useProjectWizard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PiggyBank, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface SavingsProjectWizardProps {
   onClose: () => void;
@@ -116,41 +115,18 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     }
   }, [formData, savingsMode, setIsLoading, setError, onProjectCreated, handleClose]);
 
-  // Couleurs dans le style du NewSavingDialogContent (vert)
-  const colors = {
-    iconBg: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-    headingText: "text-green-900 dark:text-green-200",
-    descriptionText: "text-green-700/80 dark:text-green-300/80",
-    buttonBg: "bg-green-600 hover:bg-green-500 text-white dark:bg-green-700 dark:hover:bg-green-600",
-    borderLight: "border-green-100/70",
-    borderDark: "dark:border-green-800/20",
-    lightBg: "from-white via-green-50/40 to-green-100/70",
-    darkBg: "dark:from-gray-900 dark:via-green-950/20 dark:to-green-900/30",
-  };
-
   // Rendu conditionnel selon le type d'appareil
   const renderContent = () => (
-    <div className={cn(
-      "space-y-6 py-2 max-w-full",
-      "relative flex flex-col pb-6 rounded-lg",
-      "bg-gradient-to-br",
-      colors.lightBg,
-      colors.darkBg
-    )}>
-      {/* Fond de décoration */}
-      <div className="absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg from-green-500 to-emerald-400 dark:from-green-600 dark:to-emerald-500" />
-
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
-
-      <div className="flex items-center gap-3 mb-2 relative z-10">
-        <div className={cn("p-2 rounded-lg", colors.iconBg)}>
+    <div className="space-y-6 py-2 max-w-full">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="p-2 rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
           <PiggyBank className="h-5 w-5" />
         </div>
         <div>
-          <h2 className={cn("text-xl font-semibold", colors.headingText)}>
+          <h2 className="text-xl font-semibold text-purple-900 dark:text-purple-100">
             Nouveau projet d'épargne
           </h2>
-          <p className={cn("text-sm", colors.descriptionText)}>
+          <p className="text-sm text-purple-700/80 dark:text-purple-300/80">
             Planifiez votre objectif d'épargne en quelques étapes simples
           </p>
         </div>
@@ -159,11 +135,11 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
       <WizardStepper 
         steps={steps}
         currentStep={currentStep}
-        colorScheme="green"
+        colorScheme="purple"
         className={isMobile ? "scale-90 -ml-5 -mr-5 w-[calc(100%+40px)]" : ""}
       />
 
-      <div className="min-h-[300px] py-4 relative z-10">
+      <div className="min-h-[300px] py-4">
         {currentStep === 0 && <StepOne data={formData} onChange={handleChange} />}
         {currentStep === 1 && <StepTwo data={formData} onChange={handleChange} />}
         {currentStep === 2 && (
@@ -189,18 +165,18 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         )}
       </div>
 
-      <div className="flex justify-between mt-6 pt-4 border-t relative z-10">
+      <div className="flex justify-between mt-6 pt-4 border-t">
         <Button
           variant="outline"
           onClick={currentStep === 0 ? handleClose : handlePrevious}
-          className="border-green-200 text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-300 dark:hover:bg-green-900/20"
+          className="border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-900/20"
         >
           {currentStep === 0 ? "Annuler" : "Précédent"}
         </Button>
         <Button
           onClick={currentStep === steps.length - 1 ? handleSubmit : handleNext}
           disabled={isLoading}
-          className={colors.buttonBg}
+          className="bg-purple-600 hover:bg-purple-500 text-white dark:bg-purple-700 dark:hover:bg-purple-600"
         >
           {isLoading ? (
             <>
@@ -214,11 +190,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
           )}
         </Button>
       </div>
-      
-      {/* Icône décorative */}
-      <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
-        <PiggyBank className="w-full h-full" />
-      </div>
     </div>
   );
 
@@ -227,24 +198,14 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent 
         side="bottom" 
-        className={cn(
-          "h-[90vh] rounded-t-xl pt-6 px-4 pb-8 overflow-y-auto",
-          "p-0 shadow-lg border",
-          colors.borderLight, 
-          colors.borderDark
-        )}
+        className="h-[90vh] rounded-t-xl pt-6 px-4 pb-8 overflow-y-auto"
       >
         {renderContent()}
       </SheetContent>
     </Sheet>
   ) : (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className={cn(
-        "sm:max-w-[600px] p-0 overflow-y-auto max-h-[90vh]",
-        "shadow-lg border rounded-lg",
-        colors.borderLight, 
-        colors.borderDark
-      )}>
+      <DialogContent className="sm:max-w-[600px] p-6 overflow-y-auto max-h-[90vh]">
         {renderContent()}
       </DialogContent>
     </Dialog>
