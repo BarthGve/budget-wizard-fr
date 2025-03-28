@@ -6,24 +6,84 @@ import { ExpensesChartHeader } from "./components/ExpensesChartHeader";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
+import { Expense } from "@/types/expense";
+import { format, parseISO } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface RetailerExpensesChartProps {
-  data: any[];
+  data?: any[];
+  expenses?: Expense[];
   isLoading?: boolean;
   className?: string;
 }
 
-export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerExpensesChartProps) => {
+export const RetailerExpensesChart = ({ data, expenses, isLoading, className }: RetailerExpensesChartProps) => {
   const { viewMode, isMobileScreen, handleViewModeChange } = useChartDisplay();
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+
+  // Préparer les données pour le graphique en fonction du mode (mensuel ou annuel)
+  const chartData = useMemo(() => {
+    // Si les données sont directement fournies, les utiliser
+    if (data && data.length > 0) {
+      return data;
+    }
+    
+    // Sinon, construire les données à partir des dépenses
+    if (!expenses || expenses.length === 0) {
+      return [];
+    }
+
+    if (viewMode === 'monthly') {
+      // Regrouper par mois
+      const monthlyData = expenses.reduce((acc, expense) => {
+        const date = parseISO(expense.date);
+        const month = format(date, 'MMM yyyy', { locale: fr });
+        
+        const existingMonth = acc.find(item => item.name === month);
+        if (existingMonth) {
+          existingMonth.value += expense.amount;
+        } else {
+          acc.push({ name: month, value: expense.amount });
+        }
+        
+        return acc;
+      }, [] as { name: string; value: number }[]);
+      
+      // Trier par date
+      return monthlyData.sort((a, b) => {
+        const dateA = new Date(a.name);
+        const dateB = new Date(b.name);
+        return dateA.getTime() - dateB.getTime();
+      });
+    } else {
+      // Regrouper par année
+      const yearlyData = expenses.reduce((acc, expense) => {
+        const date = parseISO(expense.date);
+        const year = format(date, 'yyyy');
+        
+        const existingYear = acc.find(item => item.name === year);
+        if (existingYear) {
+          existingYear.value += expense.amount;
+        } else {
+          acc.push({ name: year, value: expense.amount });
+        }
+        
+        return acc;
+      }, [] as { name: string; value: number }[]);
+      
+      // Trier par année
+      return yearlyData.sort((a, b) => a.name.localeCompare(b.name));
+    }
+  }, [data, expenses, viewMode]);
 
   // Formater les données pour l'affichage du montant avec €
   const formatYAxis = (value: number) => `${value}€`;
 
   if (isLoading) {
     return (
-      <div className={cn("relative rounded-xl border p-4 h-[350px] flex items-center justify-center", className)}>
+      <div className={cn("relative rounded-xl border p-6 h-[350px] flex items-center justify-center", className)}>
         <div className="animate-pulse flex flex-col gap-2 w-full">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
           <div className="h-[280px] bg-gray-100 dark:bg-gray-800 rounded"></div>
@@ -32,12 +92,12 @@ export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerEx
     );
   }
 
-  if (!data || data.length === 0) {
+  if (!chartData || chartData.length === 0) {
     return <EmptyChart className={className} />;
   }
 
   return (
-    <div className={cn("relative rounded-xl border p-4 h-[350px]", className)}>
+    <div className={cn("relative rounded-xl border p-6 h-[350px]", className)}>
       <ChartBackground />
 
       <ExpensesChartHeader 
@@ -48,8 +108,8 @@ export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerEx
       <div className="mt-4 h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={data}
-            margin={{ top: 10, right: isMobileScreen ? 0 : 30, left: isMobileScreen ? -20 : 0, bottom: 0 }}
+            data={chartData}
+            margin={{ top: 10, right: isMobileScreen ? 10 : 30, left: isMobileScreen ? -10 : 0, bottom: 5 }}
           >
             <CartesianGrid 
               strokeDasharray="3 3" 
