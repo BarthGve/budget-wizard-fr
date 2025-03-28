@@ -89,7 +89,7 @@ const RetailerDetail = () => {
   if (isLoadingRetailer) {
     return (
       <DashboardLayout>
-        <div className="space-y-4 mt-4">
+        <div className="space-y-4 mt-4 px-4 sm:px-6">
           <Skeleton className="h-8 w-64" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Skeleton className="h-32" />
@@ -105,7 +105,7 @@ const RetailerDetail = () => {
   if (!retailer) {
     return (
       <DashboardLayout>
-        <div className="text-center py-12">
+        <div className="text-center py-12 px-4 sm:px-6">
           <h1 className="text-2xl font-bold mb-4">Enseigne non trouvée</h1>
           <p className="text-muted-foreground">
             L'enseigne que vous recherchez n'existe pas ou a été supprimée.
@@ -123,7 +123,7 @@ const RetailerDetail = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 px-4 sm:px-6">
         <RetailerHeader 
           retailer={retailer} 
           onAddExpense={handleAddExpense} 
