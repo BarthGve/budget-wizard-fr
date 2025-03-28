@@ -120,7 +120,8 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
         // Light mode
         "bg-white border-blue-100",
         // Dark mode
-        "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10"
+        "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10",
+      "mb-6"
       )}>
         <div className={cn(
           "absolute inset-0 opacity-5",
