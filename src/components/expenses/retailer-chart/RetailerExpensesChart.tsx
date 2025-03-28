@@ -125,7 +125,6 @@ function formatExpensesForChart(expenses: Expense[], viewMode: 'monthly' | 'year
     expenses.forEach(expense => {
       const date = new Date(expense.date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long' }).format(date);
       
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = 0;
@@ -133,18 +132,30 @@ function formatExpensesForChart(expenses: Expense[], viewMode: 'monthly' | 'year
       monthlyData[monthKey] += expense.amount;
     });
     
-    return Object.entries(monthlyData)
+    // Mapper les clés et valeurs en objets pour le graphique
+    const result = Object.entries(monthlyData)
       .map(([key, value]) => {
         const [year, month] = key.split('-');
+        // Créer un objet de date pour obtenir le nom du mois
         const date = new Date(parseInt(year), parseInt(month) - 1, 1);
         const name = new Intl.DateTimeFormat('fr-FR', { month: 'long' }).format(date);
-        return { name, value };
+        return { 
+          name, 
+          value,
+          // Stocker la date pour le tri
+          sortDate: date,
+          // Stocker la clé originale pour garder l'année
+          key
+        };
       })
-      .sort((a, b) => {
-        const monthA = new Intl.DateTimeFormat('fr-FR', { month: 'long' }).format(new Date(`${a.name} 1, 2000`));
-        const monthB = new Intl.DateTimeFormat('fr-FR', { month: 'long' }).format(new Date(`${b.name} 1, 2000`));
-        return monthA.localeCompare(monthB, 'fr');
-      });
+      // Trier par date (du plus ancien au plus récent)
+      .sort((a, b) => a.sortDate.getTime() - b.sortDate.getTime());
+    
+    // Nettoyer les objets pour ne garder que ce dont on a besoin pour le graphique
+    return result.map(item => ({
+      name: item.name, 
+      value: item.value
+    }));
   } else {
     // Grouper par année pour la vue annuelle
     const yearlyData: Record<string, number> = {};
@@ -157,8 +168,9 @@ function formatExpensesForChart(expenses: Expense[], viewMode: 'monthly' | 'year
       yearlyData[year] += expense.amount;
     });
     
+    // Convertir et trier numériquement par année
     return Object.entries(yearlyData)
       .map(([year, value]) => ({ name: year, value }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => parseInt(a.name) - parseInt(b.name));
   }
 }
