@@ -93,7 +93,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         nombre_mois: formData.nombre_mois || null,
         date_estimee: formData.date_estimee || null,
         added_to_recurring: false,
-        statut: "actif" as "actif" | "en_attente" | "dépassé",
+        statut: "actif",
         image_url: formData.image_url || null
       };
 
@@ -170,7 +170,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
           <StepThree 
             data={formData} 
             onChange={handleChange} 
-            mode={savingsMode}
+            savingsMode={savingsMode}
             onModeChange={handleModeChange}
           />
         )}
@@ -178,13 +178,13 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
           <StepFour 
             data={formData} 
             onChange={handleChange} 
-            mode={savingsMode} 
+            savingsMode={savingsMode} 
           />
         )}
         {currentStep === 4 && (
           <StepFive 
             data={formData} 
-            onChange={handleChange}
+            savingsMode={savingsMode} 
           />
         )}
       </div>

@@ -59,37 +59,10 @@ const RetailerDetail = () => {
     previousYearTotal
   } = useRetailerExpenseStats(expenses);
 
-  // Préparer les données pour le graphique
-  const prepareChartData = () => {
-    if (!expenses || expenses.length === 0) return [];
-    
-    // Grouper les dépenses par mois
-    const expensesByMonth = expenses.reduce((acc, expense) => {
-      const date = new Date(expense.date);
-      const monthYear = `${date.getMonth() + 1}-${date.getFullYear()}`;
-      
-      if (!acc[monthYear]) {
-        acc[monthYear] = {
-          name: date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }),
-          value: 0,
-          date: date // Garder la date pour le tri
-        };
-      }
-      
-      acc[monthYear].value += expense.amount;
-      return acc;
-    }, {});
-    
-    // Convertir en tableau et trier par date
-    return Object.values(expensesByMonth)
-      .sort((a: any, b: any) => a.date.getTime() - b.date.getTime())
-      .slice(-12); // Garder uniquement les 12 derniers mois
-  };
-
   if (isLoadingRetailer) {
     return (
       <DashboardLayout>
-        <div className="space-y-4 mt-4 px-4 sm:px-6">
+        <div className="space-y-4 mt-4">
           <Skeleton className="h-8 w-64" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Skeleton className="h-32" />
@@ -105,7 +78,7 @@ const RetailerDetail = () => {
   if (!retailer) {
     return (
       <DashboardLayout>
-        <div className="text-center py-12 px-4 sm:px-6">
+        <div className="text-center py-12">
           <h1 className="text-2xl font-bold mb-4">Enseigne non trouvée</h1>
           <p className="text-muted-foreground">
             L'enseigne que vous recherchez n'existe pas ou a été supprimée.
@@ -119,11 +92,10 @@ const RetailerDetail = () => {
   }
 
   const currentYear = new Date().getFullYear();
-  const chartData = prepareChartData();
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 px-4 sm:px-6">
+      <div className="space-y-6">
         <RetailerHeader 
           retailer={retailer} 
           onAddExpense={handleAddExpense} 
@@ -141,10 +113,7 @@ const RetailerDetail = () => {
         />
         
         {expenses && expenses.length > 0 && (
-          <RetailerExpensesChart 
-            data={chartData} 
-            isLoading={isLoadingExpenses}
-          />
+          <RetailerExpensesChart expenses={expenses} />
         )}
 
         <RetailerExpensesTable
@@ -156,12 +125,14 @@ const RetailerDetail = () => {
           currentYear={currentYear}
         />
 
+     
         {expenses && expenses.length > 0 && (
           <RetailerYearlyArchives
             expenses={expenses}
             currentYear={currentYear}
           />
         )}
+       
         
         <RetailerDialogs
           expenseToEdit={expenseToEdit}

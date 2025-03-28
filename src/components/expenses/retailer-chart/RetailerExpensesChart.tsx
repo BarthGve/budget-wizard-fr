@@ -23,7 +23,7 @@ export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerEx
 
   if (isLoading) {
     return (
-      <div className={cn("relative rounded-xl border p-6 h-[350px] flex items-center justify-center", className)}>
+      <div className={cn("relative rounded-xl border p-4 h-[350px] flex items-center justify-center", className)}>
         <div className="animate-pulse flex flex-col gap-2 w-full">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
           <div className="h-[280px] bg-gray-100 dark:bg-gray-800 rounded"></div>
@@ -37,7 +37,7 @@ export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerEx
   }
 
   return (
-    <div className={cn("relative rounded-xl border p-6 h-[350px]", className)}>
+    <div className={cn("relative rounded-xl border p-4 h-[350px]", className)}>
       <ChartBackground />
 
       <ExpensesChartHeader 
@@ -49,7 +49,7 @@ export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerEx
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 10, right: isMobileScreen ? 10 : 30, left: isMobileScreen ? -10 : 10, bottom: 5 }}
+            margin={{ top: 10, right: isMobileScreen ? 0 : 30, left: isMobileScreen ? -20 : 0, bottom: 0 }}
           >
             <CartesianGrid 
               strokeDasharray="3 3" 
@@ -60,7 +60,7 @@ export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerEx
               dataKey="name" 
               axisLine={false} 
               tickLine={false} 
-              fontSize={isMobileScreen ? 10 : 12}
+              tick={{ fontSize: isMobileScreen ? 10 : 12 }}
               dy={10}
               tick={isDarkMode ? { fill: '#aaa' } : { fill: '#666' }}
             />
@@ -68,9 +68,9 @@ export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerEx
               tickFormatter={formatYAxis}
               axisLine={false} 
               tickLine={false}
-              fontSize={isMobileScreen ? 10 : 12}
-              dx={isMobileScreen ? 0 : 5}
-              width={isMobileScreen ? 45 : 60}
+              tick={{ fontSize: isMobileScreen ? 10 : 12 }}
+              dx={isMobileScreen ? -5 : 0}
+              width={isMobileScreen ? 40 : 60}
               tick={isDarkMode ? { fill: '#aaa' } : { fill: '#666' }}
             />
             <Tooltip 
@@ -79,7 +79,6 @@ export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerEx
                 backgroundColor: isDarkMode ? '#1e293b' : '#fff',
                 borderColor: isDarkMode ? '#334155' : '#e2e8f0',
                 borderRadius: '0.5rem',
-                padding: '0.75rem',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
               }}
               labelStyle={{

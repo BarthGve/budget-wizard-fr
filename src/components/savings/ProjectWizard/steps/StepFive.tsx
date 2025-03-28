@@ -1,4 +1,3 @@
-
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { SavingsProject } from "@/types/savings-project";
@@ -20,7 +19,7 @@ export const StepFive = ({ data, onChange }: StepFiveProps) => {
   });
 
   return (
-    <div className="space-y-6 px-1 sm:px-2">
+    <div className="space-y-6">
       <div className="mb-8">
         <h3 className="text-lg font-medium text-green-800 dark:text-green-300 mb-2">
           Versement mensuel automatique
@@ -30,7 +29,7 @@ export const StepFive = ({ data, onChange }: StepFiveProps) => {
         </p>
       </div>
       
-      <div className="flex items-center justify-between p-5 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/30 rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/30 rounded-lg">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-green-100 dark:bg-green-800/40 text-green-600 dark:text-green-300 rounded-full">
             <CreditCard className="h-5 w-5" />
@@ -65,7 +64,7 @@ export const StepFive = ({ data, onChange }: StepFiveProps) => {
             className="overflow-hidden"
           >
             <div className={cn(
-              "p-6 rounded-lg border mt-4 space-y-4",
+              "p-5 rounded-lg border mt-4 space-y-4",
               "bg-gradient-to-br from-white to-green-50/50",
               "dark:from-gray-900 dark:to-green-900/20",
               "border-green-200/70 dark:border-green-800/30"
@@ -128,6 +127,9 @@ export const StepFive = ({ data, onChange }: StepFiveProps) => {
                   </div>
                 </div>
               </div>
+
+              {/* Note */}
+              
             </div>
           </motion.div>
         )}

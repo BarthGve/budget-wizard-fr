@@ -1,4 +1,3 @@
-
 import { Label } from "@/components/ui/label";
 import { SavingsMode } from "@/types/savings-project";
 import { Button } from "@/components/ui/button";
@@ -7,14 +6,7 @@ import { StepComponentProps } from "../types";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface StepThreeProps {
-  data: StepComponentProps["data"];
-  onChange: StepComponentProps["onChange"];
-  mode: SavingsMode;
-  onModeChange: (mode: SavingsMode) => void;
-}
-
-export const StepThree = ({ mode = "par_date", onModeChange, data, onChange }: StepThreeProps) => {
+export const StepThree = ({ mode = "par_date", onModeChange, data }: StepComponentProps) => {
   // If onModeChange is not provided, we don't want the component to crash
   const handleModeChange = (newMode: SavingsMode) => {
     onModeChange?.(newMode);
