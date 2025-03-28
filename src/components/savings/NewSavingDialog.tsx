@@ -1,6 +1,7 @@
 
 import { memo, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { NewSavingDialogContent } from "./NewSavingDialogContent";
@@ -74,48 +75,61 @@ export const NewSavingDialog = memo(({
   };
   const currentColors = colors[colorScheme];
 
-  // Ajuster la largeur de la boîte de dialogue en fonction du type d'appareil
-  const getDialogWidth = () => {
-    if (isMobile) return "w-[95%] max-w-[95%]";
-    if (isTablet) return "w-[85%] max-w-[85%]";
-    return "sm:max-w-[650px] w-full";
-  };
+  // Contenu partagé pour le Dialog et le Sheet
+  const dialogContent = (
+    <NewSavingDialogContent
+      saving={saving}
+      name={name}
+      onNameChange={setName}
+      domain={domain}
+      onDomainChange={setDomain}
+      amount={amount}
+      onAmountChange={setAmount}
+      description={description}
+      onDescriptionChange={setDescription}
+      onSave={handleSaveSaving}
+      onCancel={() => onOpenChange?.(false)}
+      colorScheme={colorScheme}
+    />
+  );
 
+  // Si on est sur mobile, utiliser Sheet au lieu de Dialog
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
+        <SheetContent 
+          side="bottom" 
+          className={cn(
+            "p-0 shadow-lg rounded-t-lg border overflow-y-auto h-[90vh]",
+            currentColors.borderLight,
+            currentColors.borderDark,
+            "dark:bg-gray-900"
+          )}
+        >
+          {dialogContent}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Pour tablette et desktop, on utilise Dialog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent 
         className={cn(
-          getDialogWidth(),
+          isTablet ? "w-[85%] max-w-[85%]" : "sm:max-w-[650px] w-full",
           "p-0 shadow-lg rounded-lg border overflow-y-auto",
           currentColors.borderLight,
           currentColors.borderDark,
           "dark:bg-gray-900"
         )}
       >
-        <NewSavingDialogContent
-          saving={saving}
-          name={name}
-          onNameChange={setName}
-          domain={domain}
-          onDomainChange={setDomain}
-          amount={amount}
-          onAmountChange={setAmount}
-          description={description}
-          onDescriptionChange={setDescription}
-          onSave={handleSaveSaving}
-          onCancel={() => onOpenChange?.(false)}
-          colorScheme={colorScheme}
-        />
+        {dialogContent}
       </DialogContent>
     </Dialog>
   );
-}, (prevProps, nextProps) => {
-  return prevProps.open === nextProps.open &&
-    prevProps.saving?.id === nextProps.saving?.id &&
-    prevProps.colorScheme === nextProps.colorScheme &&
-    prevProps.trigger === nextProps.trigger &&
-    prevProps.onSavingAdded === nextProps.onSavingAdded;
 });
 
 NewSavingDialog.displayName = "NewSavingDialog";

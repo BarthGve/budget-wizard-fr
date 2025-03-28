@@ -1,85 +1,106 @@
 
-import { useState } from "react";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { ExpensesChart } from "@/components/expenses/ExpensesChart";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { useChartDisplay } from "./hooks/useChartDisplay";
-import { ExpensesChartHeader } from "./components/ExpensesChartHeader";
 import { ChartBackground } from "./components/ChartBackground";
 import { EmptyChart } from "./components/EmptyChart";
-
-interface Expense {
-  id: string;
-  date: string;
-  amount: number;
-  comment?: string;
-  retailer_id: string;
-}
+import { ExpensesChartHeader } from "./components/ExpensesChartHeader";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 interface RetailerExpensesChartProps {
-  expenses: Expense[];
+  data: any[];
+  isLoading?: boolean;
+  className?: string;
 }
 
-export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) {
+export const RetailerExpensesChart = ({ data, isLoading, className }: RetailerExpensesChartProps) => {
   const { viewMode, isMobileScreen, handleViewModeChange } = useChartDisplay();
-  const [dataVersion, setDataVersion] = useState(0);
-  
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-  
-  // Si on est sur mobile, ne pas afficher le composant du tout
-  if (isMobileScreen) {
-    return null;
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
+
+  // Formater les données pour l'affichage du montant avec €
+  const formatYAxis = (value: number) => `${value}€`;
+
+  if (isLoading) {
+    return (
+      <div className={cn("relative rounded-xl border p-4 h-[350px] flex items-center justify-center", className)}>
+        <div className="animate-pulse flex flex-col gap-2 w-full">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
+          <div className="h-[280px] bg-gray-100 dark:bg-gray-800 rounded"></div>
+        </div>
+      </div>
+    );
   }
-  
+
+  if (!data || data.length === 0) {
+    return <EmptyChart className={className} />;
+  }
+
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <Card className={cn(
-        "w-full relative overflow-hidden",
-        "border shadow-sm",
-        // Light mode
-        "bg-white border-blue-100",
-        // Dark mode
-        "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10"
-      )}>
-        <ChartBackground />
-        
-        <CardHeader className="relative z-10">
-          <ExpensesChartHeader 
-            viewMode={viewMode} 
-            onViewModeChange={handleViewModeChange} 
-          />
-        </CardHeader>
-        
-        <CardContent className="pt-4 relative z-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`chart-${viewMode}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4 }}
-            >
-              {expenses.length > 0 ? (
-                <ExpensesChart expenses={expenses} viewMode={viewMode} />
-              ) : (
-                <EmptyChart />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </CardContent>
-      </Card>
-    </motion.div>
+    <div className={cn("relative rounded-xl border p-4 h-[350px]", className)}>
+      <ChartBackground />
+
+      <ExpensesChartHeader 
+        viewMode={viewMode} 
+        onViewModeChange={handleViewModeChange} 
+      />
+
+      <div className="mt-4 h-[280px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            margin={{ top: 10, right: isMobileScreen ? 0 : 30, left: isMobileScreen ? -20 : 0, bottom: 0 }}
+          >
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              vertical={false} 
+              stroke={isDarkMode ? "#333" : "#eee"} 
+            />
+            <XAxis 
+              dataKey="name" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fontSize: isMobileScreen ? 10 : 12 }}
+              dy={10}
+              tick={isDarkMode ? { fill: '#aaa' } : { fill: '#666' }}
+            />
+            <YAxis 
+              tickFormatter={formatYAxis}
+              axisLine={false} 
+              tickLine={false}
+              tick={{ fontSize: isMobileScreen ? 10 : 12 }}
+              dx={isMobileScreen ? -5 : 0}
+              width={isMobileScreen ? 40 : 60}
+              tick={isDarkMode ? { fill: '#aaa' } : { fill: '#666' }}
+            />
+            <Tooltip 
+              cursor={{ fill: isDarkMode ? 'rgba(30, 41, 59, 0.4)' : 'rgba(241, 245, 249, 0.8)' }}
+              contentStyle={{
+                backgroundColor: isDarkMode ? '#1e293b' : '#fff',
+                borderColor: isDarkMode ? '#334155' : '#e2e8f0',
+                borderRadius: '0.5rem',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+              }}
+              labelStyle={{
+                color: isDarkMode ? '#cbd5e1' : '#475569',
+                fontWeight: '600',
+                marginBottom: '4px',
+              }}
+              itemStyle={{
+                color: isDarkMode ? '#94a3b8' : '#64748b',
+                padding: '2px 0',
+              }}
+              formatter={(value: number) => [`${value}€`, 'Montant']}
+            />
+            <Bar 
+              dataKey="value" 
+              fill={isDarkMode ? "#3b82f6" : "#60a5fa"} 
+              radius={[4, 4, 0, 0]} 
+              maxBarSize={isMobileScreen ? 40 : 60}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
-}
+};
