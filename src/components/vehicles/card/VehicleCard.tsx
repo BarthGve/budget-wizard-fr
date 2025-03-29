@@ -33,6 +33,14 @@ export const VehicleCard = ({
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   
+  const handleCardClick = (e: React.MouseEvent) => {
+    // S'assurer que le clic sur le card n'est traité que si ce n'est pas un clic sur un bouton d'action
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    onClick(vehicle.id);
+  };
+  
   return (
     <VehicleCardAnimation index={index} isVisible={isVisible}>
       <Card 
@@ -47,7 +55,7 @@ export const VehicleCard = ({
             ? "0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 5px 15px -5px rgba(0, 0, 0, 0.1)"
             : "0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 5px 15px -5px rgba(0, 0, 0, 0.05)"
         }}
-        onClick={() => onClick(vehicle.id)}
+        onClick={handleCardClick}
       >
         <VehicleCardImage 
           photoUrl={vehicle.photo_url} 

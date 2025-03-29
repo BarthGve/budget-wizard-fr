@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActiveVehiclesGrid } from "./ActiveVehiclesGrid";
@@ -8,6 +8,7 @@ import { useVehicles } from "@/hooks/useVehicles";
 import { Vehicle } from "@/types/vehicle";
 import { cn } from "@/lib/utils";
 import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
+import { useNavigate } from "react-router-dom";
 
 interface VehiclesTabsProps {
   vehicles: Vehicle[];
@@ -21,6 +22,7 @@ export const VehiclesTabs = ({ vehicles, isLoading }: VehiclesTabsProps) => {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const navigate = useNavigate(); // Utiliser le hook de navigation de React Router
   
   const handleEdit = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
@@ -34,8 +36,8 @@ export const VehiclesTabs = ({ vehicles, isLoading }: VehiclesTabsProps) => {
   
   const handleVehicleClick = (id: string) => {
     setSelectedVehicleId(id);
-    // Naviguer vers la page de détail
-    window.location.href = `/vehicles/${id}`;
+    // Utiliser navigate au lieu de window.location.href pour éviter le rechargement complet
+    navigate(`/vehicles/${id}`);
   };
   
   // Compte des véhicules actifs et vendus pour les badges

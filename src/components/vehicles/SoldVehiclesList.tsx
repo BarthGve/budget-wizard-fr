@@ -14,6 +14,7 @@ import { useVehicles } from "@/hooks/useVehicles";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 type SoldVehiclesListProps = {
   vehicles: Vehicle[];
@@ -24,6 +25,7 @@ type SoldVehiclesListProps = {
 const SoldVehicleRow = ({ vehicle, onVehicleClick }: { vehicle: Vehicle; onVehicleClick?: (id: string) => void }) => {
   const { previewLogoUrl, isLogoValid } = useVehicleBrandLogo(vehicle.brand || "");
   const { updateVehicle, deleteVehicle } = useVehicles();
+  const navigate = useNavigate();
   
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -45,6 +47,16 @@ const SoldVehicleRow = ({ vehicle, onVehicleClick }: { vehicle: Vehicle; onVehic
   const handleCardClick = () => {
     if (onVehicleClick) {
       onVehicleClick(vehicle.id);
+    }
+  };
+  
+  // Si onVehicleClick n'est pas fourni, naviguer directement
+  const handleViewVehicle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onVehicleClick) {
+      onVehicleClick(vehicle.id);
+    } else {
+      navigate(`/vehicles/${vehicle.id}`);
     }
   };
   
@@ -81,10 +93,7 @@ const SoldVehicleRow = ({ vehicle, onVehicleClick }: { vehicle: Vehicle; onVehic
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              handleCardClick();
-            }}>
+            <DropdownMenuItem onClick={handleViewVehicle}>
               <Car className="mr-2 h-4 w-4" />
               Voir le véhicule
             </DropdownMenuItem>
@@ -136,7 +145,7 @@ export const SoldVehiclesList = ({ vehicles, onVehicleClick }: SoldVehiclesListP
       </CardHeader>
       <CardContent className="pt-0 px-0">
         <div>
-          {soldVehicles.map((vehicle, index) => (
+          {soldVehicles.map((vehicle) => (
             <SoldVehicleRow 
               key={vehicle.id} 
               vehicle={vehicle} 

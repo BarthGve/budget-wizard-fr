@@ -74,7 +74,7 @@ export const VehiclesList = () => {
       />
       
       {/* Section des véhicules vendus */}
-      <SoldVehiclesList vehicles={vehicles || []} />
+      <SoldVehiclesList vehicles={vehicles || []} onVehicleClick={handleVehicleClick} />
 
       {/* Dialog de modification */}
       <VehicleEditDialog
