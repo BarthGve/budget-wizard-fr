@@ -187,20 +187,10 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
               "bg-gray-300 dark:bg-gray-600 rounded-full"
             )} />
             
-            {/* Bouton de fermeture */}
-            <DialogClose 
-              className={cn(
-                "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none z-20",
-                "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
-              )}
-              onClick={onClose}
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </DialogClose>
+            {/* Nous supprimons le bouton DialogClose personnalisé ici car SheetContent a déjà son propre bouton de fermeture */}
             
             {/* En-tête avec titre et description */}
-            <div className="relative z-10 p-4 pb-2">
+            <div className="relative z-10 p-4 pb-2 mt-4">
               <div className="flex items-center gap-3">
                 <div className={cn("p-2 rounded-lg", colors.iconBg)}>
                   <PiggyBank className="w-5 h-5" />
