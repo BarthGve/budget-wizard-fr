@@ -14,6 +14,12 @@ const handleFetch = (event) => {
     return;
   }
   
+  // Ne pas intercepter les navigations principales (celles qui sont faites par React Router)
+  if (event.request.mode === 'navigate' && event.request.destination === 'document') {
+    // Laisser React Router gérer la navigation SPA
+    return;
+  }
+  
   // Stratégie stale-while-revalidate pour les ressources statiques
   if (matchesPatterns(url, staleWhileRevalidateResources)) {
     event.respondWith(handleStaleWhileRevalidate(event));

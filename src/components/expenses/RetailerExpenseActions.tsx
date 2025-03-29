@@ -21,7 +21,9 @@ interface RetailerExpenseActionsProps {
 export function RetailerExpenseActions({ onEdit, onDelete }: RetailerExpenseActionsProps) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   
+  // Utilisons React.MouseEvent pour assurer la compatibilité avec React Router
   const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault(); // Empêcher le comportement par défaut
     e.stopPropagation();
     setIsAlertOpen(true);
   };
@@ -37,6 +39,7 @@ export function RetailerExpenseActions({ onEdit, onDelete }: RetailerExpenseActi
         variant="ghost" 
         size="icon" 
         onClick={(e) => {
+          e.preventDefault(); // Empêcher le comportement par défaut
           e.stopPropagation();
           onEdit();
         }}

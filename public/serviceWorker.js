@@ -10,6 +10,13 @@ self.addEventListener('activate', handleActivate);
 self.addEventListener('fetch', handleFetch);
 self.addEventListener('message', handleMessage);
 
+// Ajout d'un gestionnaire spécifique pour les navigations
+self.addEventListener('navigate', (event) => {
+  // Laisser le navigateur gérer les navigations normalement
+  // Ne pas interférer avec React Router
+  return;
+});
+
 // Gestion des événements périodiques
 self.addEventListener('periodicsync', (event) => {
   if (event.tag === 'cache-cleanup') {

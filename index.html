@@ -27,7 +27,9 @@
 
   <body>
     <div id="root"></div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <!-- Le script principal de l'application doit être chargé avant le script GPT Engineer -->
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Script GPT Engineer chargé après pour éviter les interférences avec la navigation -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   </body>
 </html>
