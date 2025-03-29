@@ -18,9 +18,27 @@ export const VehicleEditDialog = ({
   onUpdate,
   isPending
 }: VehicleEditDialogProps) => {
+  // S'assurer que le dialogue reste ouvert tant qu'isOpen est true
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px]">
+    <Dialog 
+      open={isOpen} 
+      onOpenChange={(open) => {
+        // Empêcher la fermeture pendant le chargement
+        if (isPending && !open) {
+          return;
+        }
+        onOpenChange(open);
+      }}
+    >
+      <DialogContent 
+        className="sm:max-w-[550px]"
+        onInteractOutside={(e) => {
+          // Empêcher la fermeture par clic extérieur si en chargement
+          if (isPending) {
+            e.preventDefault();
+          }
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Modifier le véhicule</DialogTitle>
         </DialogHeader>

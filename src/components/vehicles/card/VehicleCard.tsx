@@ -34,10 +34,14 @@ export const VehicleCard = ({
   const isDarkMode = theme === "dark";
   
   const handleCardClick = (e: React.MouseEvent) => {
-    // S'assurer que le clic sur le card n'est traité que si ce n'est pas un clic sur un bouton d'action
-    if ((e.target as HTMLElement).closest('button')) {
+    // Vérifier si le clic provient d'un bouton ou d'un autre élément interactif
+    const target = e.target as HTMLElement;
+    if (target.closest('button') !== null) {
+      // Si c'est un clic sur un bouton, ne pas naviguer vers la page de détail
       return;
     }
+    
+    // Sinon, naviguer vers la page de détail du véhicule
     onClick(vehicle.id);
   };
   

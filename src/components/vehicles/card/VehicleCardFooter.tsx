@@ -48,6 +48,7 @@ export const VehicleCardFooter = ({
           variant="outline"
           className="text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
           onClick={(e) => {
+            e.preventDefault(); // Ajouter preventDefault
             e.stopPropagation();
             onEdit(vehicle);
           }}
@@ -60,6 +61,7 @@ export const VehicleCardFooter = ({
           variant="destructive"
           className="bg-red-500/10 text-red-600 hover:bg-red-500/20 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
           onClick={(e) => {
+            e.preventDefault(); // Ajouter preventDefault
             e.stopPropagation();
             onDelete(vehicle);
           }}

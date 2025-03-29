@@ -21,12 +21,14 @@ export const VehiclesContainer = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
 
   const handleEdit = (vehicle: Vehicle) => {
+    console.log("Demande d'édition du véhicule:", vehicle.id);
     setSelectedVehicle(vehicle);
     setIsEditDialogOpen(true);
   };
 
   const handleUpdate = (data: VehicleFormValues) => {
     if (selectedVehicle) {
+      console.log("Mise à jour du véhicule:", selectedVehicle.id);
       updateVehicle({
         id: selectedVehicle.id,
         ...data
@@ -36,12 +38,14 @@ export const VehiclesContainer = () => {
   };
 
   const handleDeleteClick = (vehicle: Vehicle) => {
+    console.log("Demande de suppression du véhicule:", vehicle.id);
     setSelectedVehicle(vehicle);
     setIsDeleteDialogOpen(true);
   };
 
   const handleConfirmDelete = () => {
     if (selectedVehicle) {
+      console.log("Confirmation de suppression du véhicule:", selectedVehicle.id);
       deleteVehicle(selectedVehicle.id);
       setIsDeleteDialogOpen(false);
     }
@@ -49,6 +53,7 @@ export const VehiclesContainer = () => {
 
   const handleMarkAsSold = () => {
     if (selectedVehicle) {
+      console.log("Marquer le véhicule comme vendu:", selectedVehicle.id);
       markVehicleAsSold(selectedVehicle.id);
       setIsDeleteDialogOpen(false);
     }
@@ -107,6 +112,8 @@ export const VehiclesContainer = () => {
           <VehiclesTabs 
             vehicles={vehicles || []}
             isLoading={isLoading}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
           />
         </div>
       </motion.div>
