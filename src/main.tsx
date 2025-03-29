@@ -20,12 +20,14 @@ window.addEventListener('load', () => {
     // Marquer l'application comme initialisée
     appFullyInitialized = true;
     
-    // Délai BEAUCOUP plus long pour l'enregistrement du service worker
+    // Délai encore plus long pour l'enregistrement du service worker
     // pour éviter toute interférence avec la navigation SPA initiale
     setTimeout(() => {
+      // Stocker une indication que la SPA est en cours d'utilisation pour éviter les rechargements complets
+      sessionStorage.setItem('spa_active', 'true');
       registerServiceWorker();
-    }, 30000); // Délai augmenté à 30 secondes pour s'assurer que l'application est stable
-  }, 2000);
+    }, 60000); // Délai augmenté à 60 secondes (1 minute) pour s'assurer que l'application est stable
+  }, 5000);
 });
 
 // Vérifier les mises à jour moins fréquemment pour réduire les interférences

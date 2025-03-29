@@ -25,10 +25,13 @@ const noInterceptPatterns = [
   'wss:'
 ];
 
-// DÉSACTIVATION COMPLÈTE de l'interception pour les navigations
+// DÉSACTIVATION COMPLÈTE de toute interception liée à la navigation
 self.addEventListener('fetch', (event) => {
-  // 1. Vérifier si c'est une navigation ou une requête document
-  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
+  // 1. Vérifier si c'est une navigation, un document ou une requête HTML
+  if (event.request.mode === 'navigate' || 
+      event.request.destination === 'document' || 
+      event.request.url.includes('.html') ||
+      event.request.headers.get('Accept')?.includes('text/html')) {
     // NE JAMAIS intercepter les navigations - essentiel pour le bon fonctionnement SPA
     return;
   }
@@ -43,8 +46,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // 4. Pour les ressources statiques uniquement, utiliser le gestionnaire de cache
-  handleFetch(event);
+  // 4. Ne gérer que les ressources statiques et seulement si ce sont des GET
+  if (event.request.method === 'GET') {
+    // Uniquement pour les ressources statiques (CSS, JS, images, etc.)
+    const isStaticResource = ['style', 'script', 'image', 'font', 'audio', 'video'].includes(event.request.destination);
+    
+    if (isStaticResource) {
+      handleFetch(event);
+    }
+  }
 });
 
 // Ignorer explicitement toutes les navigations

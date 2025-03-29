@@ -28,10 +28,36 @@ import Changelog from "./pages/Changelog";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import EmailVerification from "./pages/EmailVerification";
 import { AuthListener } from "./components/auth/AuthListener";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Vehicles from "./pages/Vehicles";
 import VehicleDetail from "./pages/VehicleDetail";
 import { UpdateNotification } from "./components/layout/UpdateNotification";
+
+// Désactiver le rechargement complet de la page lors des clics sur les liens
+if (typeof window !== 'undefined') {
+  window.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const anchor = target.closest('a');
+    
+    if (anchor && 
+        anchor.getAttribute('href') && 
+        anchor.getAttribute('href').startsWith('/') && 
+        !anchor.getAttribute('target') && 
+        !anchor.getAttribute('download') &&
+        !anchor.getAttribute('rel')?.includes('external')) {
+      
+      // Empêcher le comportement par défaut pour les liens internes
+      e.preventDefault();
+      
+      // Utiliser l'API History pour naviguer sans rechargement complet
+      const href = anchor.getAttribute('href');
+      if (href) {
+        history.pushState({}, '', href);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+    }
+  });
+}
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient({
@@ -43,6 +69,39 @@ const App = () => {
       },
     },
   }));
+  
+  // Marquer explicitement que nous utilisons une navigation SPA
+  useEffect(() => {
+    sessionStorage.setItem('spa_active', 'true');
+    
+    // Forcer les ancres à utiliser l'historique du navigateur au lieu de recharger
+    const handleLinkClicks = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+      
+      if (anchor && 
+          anchor.getAttribute('href')?.startsWith('/') && 
+          !anchor.getAttribute('target') && 
+          !anchor.getAttribute('download')) {
+        
+        // Ne pas recharger pour les liens internes
+        e.preventDefault();
+        
+        // Utiliser l'historique du navigateur à la place
+        const href = anchor.getAttribute('href');
+        if (href && href !== location.pathname) {
+          history.pushState({}, '', href);
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+      }
+    };
+    
+    document.addEventListener('click', handleLinkClicks);
+    
+    return () => {
+      document.removeEventListener('click', handleLinkClicks);
+    };
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

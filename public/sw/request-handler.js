@@ -20,17 +20,15 @@ const neverCachePatterns = [
  * @param {FetchEvent} event - L'événement fetch
  */
 const handleFetch = (event) => {
-  // Si c'est une navigation, ne JAMAIS intercepter
-  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
+  // Si c'est une navigation ou un document HTML, ne JAMAIS intercepter
+  if (event.request.mode === 'navigate' || 
+      event.request.destination === 'document' || 
+      event.request.url.includes('.html') ||
+      event.request.headers.get('Accept')?.includes('text/html')) {
     return;
   }
   
   const url = new URL(event.request.url);
-  
-  // Ne pas intercepter les requêtes HTML
-  if (url.pathname.endsWith('.html')) {
-    return;
-  }
   
   // Vérifier si l'URL contient l'un des patterns à ne jamais mettre en cache
   const shouldNeverCache = neverCachePatterns.some(pattern => url.toString().includes(pattern));
@@ -40,15 +38,22 @@ const handleFetch = (event) => {
     return;
   }
   
-  // Stratégie stale-while-revalidate uniquement pour les ressources statiques
-  if (matchesPatterns(url, staleWhileRevalidateResources)) {
-    event.respondWith(handleStaleWhileRevalidate(event));
-    return;
-  }
-  
-  // Stratégie Network First pour les autres ressources non-navigation
-  if (event.request.method === 'GET') {
-    event.respondWith(handleNetworkFirst(event));
+  // Pour les resources statiques uniquement
+  if (event.request.destination === 'style' || 
+      event.request.destination === 'script' || 
+      event.request.destination === 'image' || 
+      event.request.destination === 'font') {
+    
+    // Stratégie stale-while-revalidate uniquement pour les ressources statiques
+    if (matchesPatterns(url, staleWhileRevalidateResources)) {
+      event.respondWith(handleStaleWhileRevalidate(event));
+      return;
+    }
+    
+    // Stratégie Network First pour les autres ressources statiques
+    if (event.request.method === 'GET') {
+      event.respondWith(handleNetworkFirst(event));
+    }
   }
 };
 

@@ -13,7 +13,11 @@ export const AuthListener = () => {
   const initialCheckDone = useRef(false);
   const scheduledNavigationTimeout = useRef<number | null>(null);
 
+  // Marquer que nous sommes dans une SPA
   useEffect(() => {
+    // Définir une indication explicite que la navigation SPA est active
+    sessionStorage.setItem('spa_active', 'true');
+    
     // Nettoyer le timeout existant si le composant est démonté
     return () => {
       if (scheduledNavigationTimeout.current) {
@@ -68,7 +72,8 @@ export const AuthListener = () => {
                 replace: true,
                 state: { 
                   from: location.pathname,
-                  isSpaNavigation: true
+                  isSpaNavigation: true,
+                  timestamp: Date.now() // Ajouter un timestamp pour garantir l'unicité
                 } 
               });
               
@@ -112,7 +117,10 @@ export const AuthListener = () => {
           scheduledNavigationTimeout.current = window.setTimeout(() => {
             navigate("/login", { 
               replace: true,
-              state: { isSpaNavigation: true } 
+              state: { 
+                isSpaNavigation: true,
+                timestamp: Date.now() // Ajouter un timestamp pour garantir l'unicité
+              } 
             });
             
             // Réinitialiser après un court délai
@@ -132,9 +140,13 @@ export const AuthListener = () => {
           }
           
           scheduledNavigationTimeout.current = window.setTimeout(() => {
+            // Garantir que c'est bien une navigation SPA
             navigate("/dashboard", { 
               replace: true,
-              state: { isSpaNavigation: true } 
+              state: { 
+                isSpaNavigation: true,
+                timestamp: Date.now() // Ajouter un timestamp pour garantir l'unicité
+              } 
             });
             
             // Réinitialiser après un court délai

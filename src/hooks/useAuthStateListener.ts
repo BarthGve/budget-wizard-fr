@@ -18,6 +18,11 @@ export const useAuthStateListener = () => {
   const navigationInProgress = useRef(false);
   const redirectTimeoutRef = useRef<number | null>(null);
 
+  // Marquer explicitement que nous utilisons une navigation SPA
+  useEffect(() => {
+    sessionStorage.setItem('spa_active', 'true');
+  }, []);
+
   useEffect(() => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -46,6 +51,7 @@ export const useAuthStateListener = () => {
           const justVerified = localStorage.getItem("justVerified") === "true";
           
           // Marquer explicitement comme authentification SPA
+          sessionStorage.setItem("spa_auth", "true");
           localStorage.setItem("spa_auth", "true");
           
           // Invalidation simple des caches pertinents
@@ -65,7 +71,10 @@ export const useAuthStateListener = () => {
               // Utiliser replace: true et state pour identifier la navigation SPA
               navigate("/dashboard", { 
                 replace: true,
-                state: { isSpaNavigation: true }
+                state: { 
+                  isSpaNavigation: true,
+                  timestamp: Date.now() // Ajouter un timestamp pour garantir l'unicité
+                }
               });
               
               // Réinitialiser le drapeau après un délai
@@ -99,7 +108,10 @@ export const useAuthStateListener = () => {
               
               // Nettoyer l'URL
               if (window.history && window.history.replaceState) {
-                window.history.replaceState({}, document.title, window.location.pathname);
+                window.history.replaceState({
+                  isSpaNavigation: true,
+                  timestamp: Date.now()
+                }, document.title, window.location.pathname);
               }
               
               // Nettoyer le localStorage
@@ -117,7 +129,10 @@ export const useAuthStateListener = () => {
                 }
                 redirectTimeoutRef.current = window.setTimeout(() => {
                   navigate("/user-settings", {
-                    state: { isSpaNavigation: true }
+                    state: { 
+                      isSpaNavigation: true,
+                      timestamp: Date.now()
+                    }
                   });
                   
                   // Réinitialiser le drapeau après navigation
@@ -155,7 +170,10 @@ export const useAuthStateListener = () => {
             // CRUCIAL: utiliser navigate avec replace et état SPA
             navigate("/login", { 
               replace: true, 
-              state: { isSpaNavigation: true }
+              state: { 
+                isSpaNavigation: true,
+                timestamp: Date.now()
+              }
             });
             
             // Réinitialiser le drapeau après un délai pour permettre la navigation complète

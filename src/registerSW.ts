@@ -11,7 +11,7 @@ let refreshing = false;
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     // Attendre BEAUCOUP plus longtemps pour l'enregistrement
-    const registrationDelay = 30000; // 30 secondes de délai
+    const registrationDelay = 60000; // 60 secondes de délai (1 minute)
     
     console.log(`[SW] Enregistrement du Service Worker programmé dans ${registrationDelay/1000}s...`);
     
@@ -31,6 +31,13 @@ export function registerServiceWorker() {
     
     // Délai très important pour laisser l'application SPA se stabiliser
     setTimeout(() => {
+      // Ne pas enregistrer le service worker si une navigation est en cours
+      if (document.hidden || sessionStorage.getItem('navigation_in_progress') === 'true') {
+        console.log('[SW] Navigation en cours, report de l\'enregistrement du service worker');
+        setTimeout(() => registerServiceWorker(), 10000);
+        return;
+      }
+      
       navigator.serviceWorker.register('/serviceWorker.js', {
         // Limiter la portée du service worker
         scope: '/',
@@ -158,3 +165,38 @@ export function unregisterServiceWorker() {
     });
   }
 }
+
+// Ajouter un gestionnaire pour suivre l'état de la navigation SPA
+export function setupNavigationTracking() {
+  const pushState = history.pushState;
+  const replaceState = history.replaceState;
+  
+  // Intercepter les appels à history.pushState
+  history.pushState = function() {
+    sessionStorage.setItem('navigation_in_progress', 'true');
+    setTimeout(() => {
+      sessionStorage.removeItem('navigation_in_progress');
+    }, 500);
+    return pushState.apply(history, arguments as any);
+  };
+  
+  // Intercepter les appels à history.replaceState
+  history.replaceState = function() {
+    sessionStorage.setItem('navigation_in_progress', 'true');
+    setTimeout(() => {
+      sessionStorage.removeItem('navigation_in_progress');
+    }, 500);
+    return replaceState.apply(history, arguments as any);
+  };
+  
+  // Écouter les événements de navigation
+  window.addEventListener('popstate', () => {
+    sessionStorage.setItem('navigation_in_progress', 'true');
+    setTimeout(() => {
+      sessionStorage.removeItem('navigation_in_progress');
+    }, 500);
+  });
+}
+
+// Initialiser le suivi de navigation
+setupNavigationTracking();
