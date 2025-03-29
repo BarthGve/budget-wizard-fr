@@ -61,14 +61,26 @@ export const NewSavingDialog = memo(({
   // Couleurs dynamiques selon le colorScheme
   const colors = {
     green: {
+      gradientFrom: "from-green-50",
+      gradientTo: "to-green-100",
+      darkGradientFrom: "dark:from-green-950",
+      darkGradientTo: "dark:to-green-900",
       borderLight: "border-green-100/70",
       borderDark: "dark:border-green-800/20"
     },
     blue: {
+      gradientFrom: "from-blue-50",
+      gradientTo: "to-blue-100",
+      darkGradientFrom: "dark:from-blue-950",
+      darkGradientTo: "dark:to-blue-900",
       borderLight: "border-blue-100/70",
       borderDark: "dark:border-blue-800/20"
     },
     purple: {
+      gradientFrom: "from-purple-50",
+      gradientTo: "to-purple-100",
+      darkGradientFrom: "dark:from-purple-950",
+      darkGradientTo: "dark:to-purple-900",
       borderLight: "border-purple-100/70", 
       borderDark: "dark:border-purple-800/20"
     },
@@ -94,7 +106,12 @@ export const NewSavingDialog = memo(({
             currentColors.borderLight,
             currentColors.borderDark,
             "max-h-[90vh] overflow-y-auto",
-            "dark:bg-gray-900"
+            "dark:bg-gray-900",
+            "bg-gradient-to-br",
+            currentColors.gradientFrom,
+            currentColors.gradientTo,
+            currentColors.darkGradientFrom,
+            currentColors.darkGradientTo
           )}
         >
           <div className={cn(
@@ -131,7 +148,12 @@ export const NewSavingDialog = memo(({
           getDialogWidth(),
           "p-0 border-0 shadow-lg rounded-lg overflow-hidden",
           currentColors.borderLight,
-          currentColors.borderDark
+          currentColors.borderDark,
+          "bg-gradient-to-br",
+          currentColors.gradientFrom,
+          currentColors.gradientTo,
+          currentColors.darkGradientFrom,
+          currentColors.darkGradientTo
         )}
       >
         <NewSavingDialogContent
