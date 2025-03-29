@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SubmitHandler } from "react-hook-form";
+import { useState } from "react";
 
 export const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
@@ -27,11 +28,7 @@ export const formSchema = z.object({
       return !isNaN(month) && month >= 1 && month <= 12;
     },
     "Le mois doit être entre 1 et 12"
-  ),
-  // Champs pour l'association avec un véhicule
-  vehicle_id: z.string().nullish(),
-  vehicle_expense_type: z.string().nullish(),
-  auto_generate_vehicle_expense: z.boolean().optional().default(false)
+  )
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -51,8 +48,7 @@ interface UseRecurringExpenseFormProps {
     auto_generate_vehicle_expense?: boolean;
   };
   initialDomain?: string;
-  initialVehicleId?: string;
-  onSuccess: () => void;
+  onSuccess: (data?: any) => void;
 }
 
 const getFaviconUrl = (domain: string) => {
@@ -61,8 +57,10 @@ const getFaviconUrl = (domain: string) => {
   return `https://logo.clearbit.com/${cleanDomain}`;
 };
 
-export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVehicleId = "", onSuccess }: UseRecurringExpenseFormProps) => {
+export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess }: UseRecurringExpenseFormProps) => {
   const queryClient = useQueryClient();
+  const [showVehicleDialog, setShowVehicleDialog] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -74,13 +72,10 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
       debit_month: expense?.debit_month?.toString() || null,
-      vehicle_id: expense?.vehicle_id || initialVehicleId || null,
-      vehicle_expense_type: expense?.vehicle_expense_type || null,
-      auto_generate_vehicle_expense: expense?.auto_generate_vehicle_expense || false
     },
   });
 
-  const onSubmit: SubmitHandler<FormValues> = async (values) => {
+  const saveExpense = async (data: any) => {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -90,32 +85,33 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
         return;
       }
 
-      let debit_month = values.debit_month ? parseInt(values.debit_month) : null;
-      if (values.periodicity === "monthly") {
+      let debit_month = data.debit_month ? parseInt(data.debit_month) : null;
+      if (data.periodicity === "monthly") {
         debit_month = null;
       }
 
       // Générer l'URL du logo à partir du domaine
-      const logo_url = getFaviconUrl(values.domain || "");
+      const logo_url = getFaviconUrl(data.domain || "");
 
       // S'assurer que les valeurs sont correctement typées pour la BD
       const expenseData = {
-        name: values.name,
-        amount: Number(values.amount),
-        category: values.category,
-        periodicity: values.periodicity,
-        debit_day: parseInt(values.debit_day),
+        name: data.name,
+        amount: Number(data.amount),
+        category: data.category,
+        periodicity: data.periodicity,
+        debit_day: parseInt(data.debit_day),
         debit_month: debit_month,
         logo_url,
         // Gestion explicite des valeurs nulles pour les champs liés au véhicule
-        vehicle_id: values.vehicle_id || null,
-        vehicle_expense_type: values.vehicle_expense_type || null,
-        auto_generate_vehicle_expense: values.auto_generate_vehicle_expense || false
+        vehicle_id: data.vehicle_id || null,
+        vehicle_expense_type: data.vehicle_expense_type || null,
+        auto_generate_vehicle_expense: data.auto_generate_vehicle_expense || false
       };
 
       console.log("Données à enregistrer:", expenseData);
 
       if (expense) {
+        // Mise à jour d'une charge existante
         const { error } = await supabase
           .from("recurring_expenses")
           .update(expenseData)
@@ -124,6 +120,7 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
         if (error) throw error;
         toast.success("Charge récurrente mise à jour avec succès");
       } else {
+        // Création d'une nouvelle charge
         const { error } = await supabase.from("recurring_expenses").insert({
           ...expenseData,
           profile_id: user.id,
@@ -144,14 +141,14 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
       });
       
       // Invalider les données des véhicules si une charge récurrente est associée à un véhicule
-      if (values.vehicle_id) {
+      if (data.vehicle_id) {
         queryClient.invalidateQueries({ 
-          queryKey: ["vehicle-expenses", values.vehicle_id],
+          queryKey: ["vehicle-expenses", data.vehicle_id],
           exact: true
         });
         
         queryClient.invalidateQueries({ 
-          queryKey: ["vehicle-detail", values.vehicle_id],
+          queryKey: ["vehicle-detail", data.vehicle_id],
           exact: false
         });
       }
@@ -176,8 +173,39 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
     }
   };
 
+  const onSubmit: SubmitHandler<FormValues> = async (values) => {
+    if (expense) {
+      // Si c'est une mise à jour, on passe directement, car les champs véhicule restent inchangés
+      await saveExpense({
+        ...values,
+        vehicle_id: expense.vehicle_id,
+        vehicle_expense_type: expense.vehicle_expense_type,
+        auto_generate_vehicle_expense: expense.auto_generate_vehicle_expense
+      });
+    } else {
+      // Si c'est une création, on stocke les données et on ouvre le dialogue d'association
+      setFormData(values);
+      setShowVehicleDialog(true);
+    }
+  };
+
+  const handleVehicleDialogComplete = async (data: any) => {
+    // Sauvegarde avec ou sans les données de véhicule
+    await saveExpense(data);
+    setShowVehicleDialog(false);
+    setFormData(null);
+  };
+
+  const handleVehicleDialogClose = () => {
+    setShowVehicleDialog(false);
+  };
+
   return {
     form,
     handleSubmit: form.handleSubmit(onSubmit),
+    showVehicleDialog,
+    formData,
+    handleVehicleDialogComplete,
+    handleVehicleDialogClose
   };
 };

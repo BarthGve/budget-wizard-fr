@@ -12,10 +12,6 @@ import { PeriodicityField } from "./form-fields/PeriodicityField";
 import { DebitDayField } from "./form-fields/DebitDayField";
 import { DebitMonthField } from "./form-fields/DebitMonthField";
 import { DomainField } from "./form-fields/DomainField";
-import { VehicleField } from "./form-fields/VehicleField";
-import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
-import { AutoGenerateField } from "./form-fields/AutoGenerateField";
-import { expenseTypes } from "@/components/vehicles/expenses/form/ExpenseTypeField";
 
 export interface RecurringExpenseFormProps {
   expense?: {
@@ -32,10 +28,9 @@ export interface RecurringExpenseFormProps {
     vehicle_expense_type?: string | null;
     auto_generate_vehicle_expense?: boolean;
   };
-  onSuccess: () => void;
+  onSuccess: (data?: any) => void;
   onCancel: () => void;
   variant?: string;
-  initialVehicleId?: string;
 }
 
 const extractDomainFromLogoUrl = (logoUrl?: string) => {
@@ -53,14 +48,12 @@ export function RecurringExpenseForm({
   onSuccess,
   onCancel,
   variant,
-  initialVehicleId,
 }: RecurringExpenseFormProps) {
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
   const { form, handleSubmit } = useRecurringExpenseForm({
     expense,
     initialDomain,
-    initialVehicleId,
     onSuccess
   });
 
@@ -76,12 +69,6 @@ export function RecurringExpenseForm({
     }
   });
 
-  // Convertir les types de dépenses du format de ExpenseTypeField au format attendu
-  const formattedExpenseTypes = expenseTypes.map(type => ({
-    id: type.value,
-    name: type.label
-  }));
-
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       // Gestion de la périodicité
@@ -93,29 +80,10 @@ export function RecurringExpenseForm({
           form.setValue("debit_month", "1");
         }
       }
-
-      // Gestion des champs liés au véhicule
-      if (name === "vehicle_id") {
-        if (!value.vehicle_id) {
-          // Réinitialiser les champs liés au véhicule
-          form.setValue("vehicle_expense_type", null);
-          form.setValue("auto_generate_vehicle_expense", false);
-        }
-      }
-      
-      // Désactiver l'option auto-generate si le type n'est pas spécifié
-      if (name === "vehicle_expense_type") {
-        if (!value.vehicle_expense_type || value.vehicle_expense_type === "no-type") {
-          form.setValue("auto_generate_vehicle_expense", false);
-        }
-      }
     });
 
     return () => subscription.unsubscribe();
   }, [form]);
-
-  // Vérifie si un véhicule est sélectionné
-  const vehicleSelected = !!form.watch("vehicle_id");
 
   return (
     <Form {...form}>
@@ -124,18 +92,6 @@ export function RecurringExpenseForm({
         <DomainField form={form} />
         <AmountField form={form} />
         <CategoryField form={form} categories={categories || []} />
-        
-        {/* Champ pour sélectionner un véhicule */}
-        <VehicleField form={form} />
-        
-        {/* Champs conditionnels qui s'affichent uniquement si un véhicule est sélectionné */}
-        {vehicleSelected && (
-          <>
-            <ExpenseTypeField form={form} expenseTypes={formattedExpenseTypes} />
-            <AutoGenerateField form={form} />
-          </>
-        )}
-        
         <PeriodicityField form={form} />
         <DebitDayField form={form} />
         

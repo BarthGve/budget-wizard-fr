@@ -9,6 +9,7 @@ import { RecurringExpense } from "./types";
 import { DialogHeader } from "./dialog/DialogHeader";
 import { DialogContent as ExpenseDialogContent } from "./dialog/DialogContent";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { VehicleAssociationDialog } from "./dialogs/VehicleAssociationDialog";
 
 interface RecurringExpenseDialogProps {
   expense?: RecurringExpense;
