@@ -28,7 +28,7 @@ export const useCurrentUser = () => {
     retry: 1,
     // Utiliser les données en cache en cas d'erreur lors du rechargement
     // pour maintenir l'expérience utilisateur SPA
-    keepPreviousData: true,
+    placeholderData: undefined // Remplacé keepPreviousData par undefined car nous n'avons pas besoin de cette fonctionnalité ici
   });
 
   return { 

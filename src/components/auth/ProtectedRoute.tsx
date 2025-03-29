@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
@@ -47,8 +46,8 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     refetchOnMount: true,
     refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
     retry: 1,
-    // Utiliser les données en cache si elles existent
-    keepPreviousData: true,
+    // Remplacer keepPreviousData par placeholderData qui est l'équivalent dans React Query v5+
+    placeholderData: cachedAuthState ? () => ({ isAuthenticated: true, isAdmin: false }) : undefined,
     // Si cachedAuthState est true, on initialise avec une valeur par défaut pour éviter le flash de chargement
     initialData: cachedAuthState ? { isAuthenticated: true, isAdmin: false } : undefined,
   });
