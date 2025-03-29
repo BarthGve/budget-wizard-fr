@@ -67,15 +67,7 @@ export const RetailersList = ({
       animate="visible"
       exit="exit"
     >
-      <motion.div variants={itemVariants} className="flex items-center justify-between w-full">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onBackClick}
-        >
-        </Button>
-  
-      </motion.div>
+    
       
       {isLoading ? (
         <motion.div variants={itemVariants} className="w-full p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
