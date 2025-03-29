@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { VehicleDocumentsGrid } from "./VehicleDocumentsGrid";
 import { VehicleDocumentCategory, VehicleDocument } from "@/types/vehicle-documents";
-import { AddDocumentDialog } from "./add-document";
+import { AddDocumentDialog } from "./AddDocumentDialog";
 import { FileIcon, FolderIcon } from "lucide-react";
 
 interface VehicleDocumentsTabProps {
