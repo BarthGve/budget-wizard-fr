@@ -129,7 +129,7 @@ export const NewSavingDialog = memo(({
       <DialogContent 
         className={cn(
           getDialogWidth(),
-          "p-0 border-0 shadow-lg rounded-lg overflow-hidden bg-transparent",
+          "p-0 border-0 shadow-lg rounded-lg overflow-hidden",
           currentColors.borderLight,
           currentColors.borderDark
         )}
