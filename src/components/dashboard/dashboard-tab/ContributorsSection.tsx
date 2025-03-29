@@ -46,11 +46,11 @@ export const ContributorsSection = ({
 }: ContributorsSectionProps) => {
   const isMobile = useIsMobile();
   
-  // Afficher la section des contributeurs même s'il n'y en a qu'un
-  // Permet de voir immédiatement l'ajout d'un nouveau contributeur
+  // N'afficher la section des contributeurs que s'il y a plus d'un contributeur
+  // Sur mobile, on n'affiche pas la section s'il n'y a qu'un seul contributeur
   const showContributorsSection = useMemo(() => {
-    return contributors.length > 0;
-  }, [contributors.length]);
+    return isMobile ? contributors.length > 1 : contributors.length > 0;
+  }, [contributors.length, isMobile]);
 
   if (!showContributorsSection) return null;
 
