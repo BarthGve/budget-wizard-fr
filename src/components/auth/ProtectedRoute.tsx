@@ -35,6 +35,11 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     queryFn: async () => {
       console.log("Vérification d'authentification pour:", location.pathname);
       try {
+        // Ne pas vérifier l'authentification pour la page changelog publique
+        if (location.pathname === '/changelog') {
+          return { isAuthenticated: true };
+        }
+        
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError || !user) return { isAuthenticated: false };
 
@@ -61,47 +66,48 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   });
 
   useEffect(() => {
-    if (!isLoading && !hasRedirectedRef.current) {
-      // Logique de redirection
-      if (!authData?.isAuthenticated) {
-        // Ne pas rediriger vers login si on est sur la page changelog publique
-        if (location.pathname === '/changelog') {
-          setAuthChecked(true);
-          return;
-        }
-        
-        console.log("Redirection vers /login depuis ProtectedRoute");
-        setShouldRedirect("/login");
-      } 
-      // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
-      else if (authData.isAdmin && location.pathname === '/dashboard') {
-        console.log("Redirection admin vers /admin");
-        setShouldRedirect("/admin");
-      }
-      // Vérifier si l'utilisateur peut accéder à cette page
-      else if (requireAdmin && !isAdmin) {
-        console.log("Redirection vers /dashboard - accès admin requis");
-        setShouldRedirect("/dashboard");
-      }
-      // Vérifier les permissions spéciales pour les routes de détail
-      else if (location.pathname.startsWith('/properties/') && !canAccessPage('/properties')) {
-        console.log("Redirection - pas accès aux propriétés");
-        setShouldRedirect("/dashboard");
-      }
-      else if (location.pathname.startsWith('/expenses/retailer/') && !canAccessPage('/expenses')) {
-        console.log("Redirection - pas accès aux dépenses");
-        setShouldRedirect("/dashboard");
-      }
-      // Vérifier les permissions générales
-      else if (!canAccessPage(location.pathname) && 
-               !location.pathname.includes('/user-settings') && 
-               !location.pathname.includes('/settings')) {
-        console.log("Redirection vers /dashboard - pas de permission");
-        setShouldRedirect("/dashboard");
-      }
-      else {
+    // Éviter la vérification si la redirection est déjà en cours
+    if (isLoading || hasRedirectedRef.current) return;
+    
+    // Logique de redirection
+    if (!authData?.isAuthenticated) {
+      // Ne pas rediriger vers login si on est sur la page changelog publique
+      if (location.pathname === '/changelog') {
         setAuthChecked(true);
+        return;
       }
+      
+      console.log("Redirection vers /login depuis ProtectedRoute");
+      setShouldRedirect("/login");
+    } 
+    // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
+    else if (authData.isAdmin && location.pathname === '/dashboard') {
+      console.log("Redirection admin vers /admin");
+      setShouldRedirect("/admin");
+    }
+    // Vérifier si l'utilisateur peut accéder à cette page
+    else if (requireAdmin && !isAdmin) {
+      console.log("Redirection vers /dashboard - accès admin requis");
+      setShouldRedirect("/dashboard");
+    }
+    // Vérifier les permissions spéciales pour les routes de détail
+    else if (location.pathname.startsWith('/properties/') && !canAccessPage('/properties')) {
+      console.log("Redirection - pas accès aux propriétés");
+      setShouldRedirect("/dashboard");
+    }
+    else if (location.pathname.startsWith('/expenses/retailer/') && !canAccessPage('/expenses')) {
+      console.log("Redirection - pas accès aux dépenses");
+      setShouldRedirect("/dashboard");
+    }
+    // Vérifier les permissions générales
+    else if (!canAccessPage(location.pathname) && 
+             !location.pathname.includes('/user-settings') && 
+             !location.pathname.includes('/settings')) {
+      console.log("Redirection vers /dashboard - pas de permission");
+      setShouldRedirect("/dashboard");
+    }
+    else {
+      setAuthChecked(true);
     }
   }, [isLoading, authData, location.pathname, canAccessPage, isAdmin, requireAdmin]);
 
@@ -115,11 +121,11 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   }
 
   // Effectuer la redirection si nécessaire
-  if (shouldRedirect) {
+  if (shouldRedirect && !hasRedirectedRef.current) {
     hasRedirectedRef.current = true;
     
-    // CRUCIAL: Utiliser Navigate avec state pour indiquer que c'est une navigation SPA
-    // Et forcer le replace pour éviter de poluer l'historique
+    // Utiliser Navigate avec state pour indiquer que c'est une navigation SPA
+    // Et forcer le replace pour éviter de polluer l'historique
     return <Navigate 
       to={shouldRedirect} 
       state={{ from: location.pathname, isSpaNavigation: true, timestamp: Date.now() }} 

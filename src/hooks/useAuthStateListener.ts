@@ -17,6 +17,8 @@ export const useAuthStateListener = () => {
   const previousAuthState = useRef<boolean | null>(null);
   const navigationInProgress = useRef(false);
   const redirectTimeoutRef = useRef<number | null>(null);
+  const lastNavigationTime = useRef<number>(0);
+  const throttleDelay = 1000; // 1 seconde entre chaque navigation
 
   // Marquer explicitement que nous utilisons une navigation SPA
   useEffect(() => {
@@ -45,6 +47,14 @@ export const useAuthStateListener = () => {
         }
         
         previousAuthState.current = currentAuthState;
+
+        // Éviter les navigations trop fréquentes
+        if (Date.now() - lastNavigationTime.current < throttleDelay) {
+          console.log("Navigation limitée pour éviter les boucles de redirection");
+          return;
+        }
+        
+        lastNavigationTime.current = Date.now();
 
         if (event === "SIGNED_IN") {
           // Vérifier si l'utilisateur vient de vérifier son email
@@ -83,7 +93,7 @@ export const useAuthStateListener = () => {
               }
               redirectTimeoutRef.current = window.setTimeout(() => {
                 navigationInProgress.current = false;
-              }, 300);
+              }, 500);
             }
           }
         } else if (event === "USER_UPDATED") {
@@ -138,7 +148,7 @@ export const useAuthStateListener = () => {
                   // Réinitialiser le drapeau après navigation
                   redirectTimeoutRef.current = window.setTimeout(() => {
                     navigationInProgress.current = false;
-                  }, 300);
+                  }, 500);
                 }, 500);
               }
             }
@@ -182,7 +192,7 @@ export const useAuthStateListener = () => {
             }
             redirectTimeoutRef.current = window.setTimeout(() => {
               navigationInProgress.current = false;
-            }, 300);
+            }, 500);
             
           } catch (error) {
             console.error("Error during sign out handling:", error);

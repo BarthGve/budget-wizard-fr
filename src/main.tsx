@@ -26,14 +26,14 @@ window.addEventListener('load', () => {
       // Stocker une indication que la SPA est en cours d'utilisation pour éviter les rechargements complets
       sessionStorage.setItem('spa_active', 'true');
       registerServiceWorker();
-    }, 60000); // Délai augmenté à 60 secondes (1 minute) pour s'assurer que l'application est stable
-  }, 5000);
+    }, 300000); // Délai augmenté à 5 minutes (300000ms) pour éviter les interférences
+  }, 30000); // 30 secondes pour l'initialisation initiale
 });
 
-// Vérifier les mises à jour moins fréquemment pour réduire les interférences
+// Vérifier les mises à jour beaucoup moins fréquemment pour réduire les interférences
 setInterval(() => {
   // Ne vérifier que si l'application est pleinement initialisée
   if (appFullyInitialized) {
     checkForSWUpdates();
   }
-}, 180 * 60 * 1000); // Toutes les 3 heures
+}, 24 * 60 * 60 * 1000); // Une fois par jour

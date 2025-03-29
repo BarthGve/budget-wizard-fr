@@ -28,36 +28,10 @@ import Changelog from "./pages/Changelog";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import EmailVerification from "./pages/EmailVerification";
 import { AuthListener } from "./components/auth/AuthListener";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Vehicles from "./pages/Vehicles";
 import VehicleDetail from "./pages/VehicleDetail";
 import { UpdateNotification } from "./components/layout/UpdateNotification";
-
-// Désactiver le rechargement complet de la page lors des clics sur les liens
-if (typeof window !== 'undefined') {
-  window.addEventListener('click', (e) => {
-    const target = e.target as HTMLElement;
-    const anchor = target.closest('a');
-    
-    if (anchor && 
-        anchor.getAttribute('href') && 
-        anchor.getAttribute('href').startsWith('/') && 
-        !anchor.getAttribute('target') && 
-        !anchor.getAttribute('download') &&
-        !anchor.getAttribute('rel')?.includes('external')) {
-      
-      // Empêcher le comportement par défaut pour les liens internes
-      e.preventDefault();
-      
-      // Utiliser l'API History pour naviguer sans rechargement complet
-      const href = anchor.getAttribute('href');
-      if (href) {
-        history.pushState({}, '', href);
-        window.dispatchEvent(new PopStateEvent('popstate'));
-      }
-    }
-  });
-}
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient({
@@ -74,8 +48,12 @@ const App = () => {
   useEffect(() => {
     sessionStorage.setItem('spa_active', 'true');
     
-    // Forcer les ancres à utiliser l'historique du navigateur au lieu de recharger
-    const handleLinkClicks = (e: MouseEvent) => {
+    // Créer un débouncer pour limiter le nombre de mises à jour de l'historique
+    let debouncerTimeout: number | null = null;
+    const debounceDuration = 300; // ms
+    
+    // Fonction optimisée pour gérer les clics sur les liens
+    const handleLinkClicks = useCallback((e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
       
@@ -87,19 +65,32 @@ const App = () => {
         // Ne pas recharger pour les liens internes
         e.preventDefault();
         
+        // Débouncer les mises à jour de l'historique
+        if (debouncerTimeout) {
+          clearTimeout(debouncerTimeout);
+        }
+        
         // Utiliser l'historique du navigateur à la place
         const href = anchor.getAttribute('href');
         if (href && href !== location.pathname) {
-          history.pushState({}, '', href);
-          window.dispatchEvent(new PopStateEvent('popstate'));
+          debouncerTimeout = window.setTimeout(() => {
+            history.pushState({ 
+              isSpaNavigation: true,
+              timestamp: Date.now() 
+            }, '', href);
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }, debounceDuration);
         }
       }
-    };
+    }, []);
     
     document.addEventListener('click', handleLinkClicks);
     
     return () => {
       document.removeEventListener('click', handleLinkClicks);
+      if (debouncerTimeout) {
+        clearTimeout(debouncerTimeout);
+      }
     };
   }, []);
 

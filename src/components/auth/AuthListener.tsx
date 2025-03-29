@@ -12,6 +12,8 @@ export const AuthListener = () => {
   const navigationInProgress = useRef(false);
   const initialCheckDone = useRef(false);
   const scheduledNavigationTimeout = useRef<number | null>(null);
+  const lastNavigationTime = useRef<number>(0);
+  const throttleDelay = 1000; // 1 seconde entre chaque navigation
 
   // Marquer que nous sommes dans une SPA
   useEffect(() => {
@@ -55,9 +57,11 @@ export const AuthListener = () => {
         // Si l'utilisateur n'est pas authentifié et n'est pas sur une page publique
         if (!user && !publicPages.some(path => location.pathname.includes(path))) {
           
-          // Éviter les redirections multiples
-          if (!navigationInProgress.current) {
+          // Éviter les redirections multiples et limiter la fréquence des navigations
+          if (!navigationInProgress.current && Date.now() - lastNavigationTime.current > throttleDelay) {
             navigationInProgress.current = true;
+            lastNavigationTime.current = Date.now();
+            
             console.log("Redirection vers /login via SPA - utilisateur non authentifié");
             
             // Annuler toute navigation programmée précédemment
@@ -104,9 +108,10 @@ export const AuthListener = () => {
       console.log("Événement auth détecté:", event);
       
       if (event === 'SIGNED_OUT') {
-        // Éviter les redirections multiples
-        if (!navigationInProgress.current) {
+        // Éviter les redirections multiples et limiter la fréquence des navigations
+        if (!navigationInProgress.current && Date.now() - lastNavigationTime.current > throttleDelay) {
           navigationInProgress.current = true;
+          lastNavigationTime.current = Date.now();
           
           // Annuler toute navigation programmée précédemment
           if (scheduledNavigationTimeout.current) {
@@ -131,8 +136,9 @@ export const AuthListener = () => {
         }
       } else if (event === 'SIGNED_IN') {
         // Rediriger vers le dashboard en mode SPA après connexion
-        if (!navigationInProgress.current) {
+        if (!navigationInProgress.current && Date.now() - lastNavigationTime.current > throttleDelay) {
           navigationInProgress.current = true;
+          lastNavigationTime.current = Date.now();
           
           // Annuler toute navigation programmée précédemment
           if (scheduledNavigationTimeout.current) {
