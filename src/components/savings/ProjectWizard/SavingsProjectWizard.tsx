@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { StepOne } from "./steps/StepOne";
 import { StepTwo } from "./steps/StepTwo";
@@ -50,7 +49,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
   const isMobile = useIsMobile();
 
-  // Thème de couleurs
   const colors = {
     gradientFrom: "from-green-500",
     gradientTo: "to-emerald-400",
@@ -102,10 +100,8 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
         await createMonthlySaving(formData, newProject.profile_id, newProject.id);
       }
 
-      // Invalider les queries après création réussie
       await queryClient.invalidateQueries({ queryKey: ["savings-projects"] });
 
-      // Forcer un rafraîchissement immédiat
       setTimeout(() => {
         queryClient.refetchQueries({ queryKey: ["savings-projects"] });
         queryClient.refetchQueries({ queryKey: ["dashboard-data"] });
@@ -137,14 +133,12 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   const isLastStep = currentStep === steps.length - 1;
   const isSecondStep = currentStep === 1;
 
-  // Animation variants pour les transitions
   const contentVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
     exit: { opacity: 0, y: -10, transition: { duration: 0.2 } }
   };
 
-  // Utiliser Sheet pour mobile et Dialog pour desktop
   if (isMobile) {
     return (
       <Sheet open={true} onOpenChange={(open) => !open && onClose()}>
@@ -169,7 +163,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
               colors.darkBg
             )}
           >
-            {/* Background gradient */}
             <div className={cn(
               "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-t-lg",
               colors.gradientFrom,
@@ -178,18 +171,13 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
               colors.darkGradientTo
             )} />
 
-            {/* Radial gradient pour texture */}
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-t-lg" />
             
-            {/* Handle visuel */}
             <div className={cn(
               "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
               "bg-gray-300 dark:bg-gray-600 rounded-full"
             )} />
             
-            {/* Nous supprimons le bouton DialogClose personnalisé ici car SheetContent a déjà son propre bouton de fermeture */}
-            
-            {/* En-tête avec titre et description */}
             <div className="relative z-10 p-4 pb-2 mt-4">
               <div className="flex items-center gap-3">
                 <div className={cn("p-2 rounded-lg", colors.iconBg)}>
@@ -206,14 +194,12 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
               </div>
             </div>
             
-            {/* Ligne séparatrice */}
             <div className={cn(
               "h-px w-full my-2",
               "bg-gradient-to-r from-transparent to-transparent",
               colors.separator
             )} />
             
-            {/* Étapes du wizard - simplifié pour mobile */}
             <div className="px-4 py-1">
               <div className="text-sm font-medium text-center">
                 Étape {currentStep + 1} sur {steps.length}: {steps[currentStep].title}
@@ -233,7 +219,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
               </div>
             </div>
             
-            {/* Contenu principal - composants d'étape */}
             <div className="relative flex-1 px-4 pt-4 pb-2 z-10 min-h-[300px]">
               <motion.div
                 key={currentStep}
@@ -254,10 +239,8 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
               </motion.div>
             </div>
             
-            {/* Boutons de navigation - fixés en bas */}
-            <div className="sticky bottom-0 left-0 right-0 px-4 pt-2 pb-2 bg-gradient-to-t from-white dark:from-gray-900 to-transparent">
+            <div className="sticky bottom-0 left-0 right-0 px-4 pt-2 pb-2 bg-gradient-to-t from-transparent to-transparent">
               <div className="flex items-center justify-between space-x-3">
-                {/* Bouton Annuler/Précédent */}
                 <Button 
                   variant="outline"
                   onClick={currentStep === 0 ? onClose : handlePrevious}
@@ -269,7 +252,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
                   {currentStep === 0 ? "Annuler" : "Précédent"}
                 </Button>
 
-                {/* Bouton Suivant/Créer */}
                 <Button
                   onClick={isLastStep ? handleFinish : handleNext}
                   disabled={isLoading || (isSecondStep && !formData.montant_total)}
@@ -279,7 +261,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
                     isLoading && "opacity-90 pointer-events-none"
                   )}
                 >
-                  {/* Text du bouton avec transition */}
                   <span className={cn(
                     "flex items-center justify-center gap-1.5",
                     isLoading && "opacity-0"
@@ -288,7 +269,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
                     {isLastStep ? <Leaf className="h-4 w-4 ml-1" /> : <ArrowRight className="h-4 w-4 ml-1" />}
                   </span>
                   
-                  {/* Indicateur de chargement */}
                   {isLoading && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -306,7 +286,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
     );
   }
 
-  // Version originale pour desktop
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
       <DialogContent 
@@ -330,7 +309,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             colors.darkBg
           )}
         >
-          {/* Background gradient */}
           <div className={cn(
             "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg",
             colors.gradientFrom,
@@ -339,10 +317,8 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             colors.darkGradientTo
           )} />
 
-          {/* Radial gradient pour texture */}
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
           
-          {/* Bouton de fermeture */}
           <DialogClose 
             className={cn(
               "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none z-20",
@@ -354,7 +330,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             <span className="sr-only">Close</span>
           </DialogClose>
           
-          {/* En-tête avec titre et description */}
           <div className="relative z-10 p-6 pb-2">
             <div className="flex items-center gap-3">
               <div className={cn("p-2.5 rounded-lg", colors.iconBg)}>
@@ -371,14 +346,12 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             </div>
           </div>
           
-          {/* Ligne séparatrice */}
           <div className={cn(
             "h-px w-full my-4",
             "bg-gradient-to-r from-transparent to-transparent",
             colors.separator
           )} />
           
-          {/* Étapes du wizard */}
           <div className="px-6 py-2">
             <WizardStepper 
               steps={steps.map((step) => step.title)}
@@ -388,7 +361,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             />
           </div>
           
-          {/* Contenu principal - composants d'étape */}
           <div className="relative flex-1 px-6 pt-6 pb-2 z-10 min-h-[320px]">
             <motion.div
               key={currentStep}
@@ -409,12 +381,8 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             </motion.div>
           </div>
           
-          {/* Boutons de navigation - maintenant côte à côte à droite */}
           <div className="flex items-center justify-end px-6 mt-4">
-          
-            
             <div className="flex items-center space-x-3">
-              {/* Bouton Annuler/Précédent */}
               <Button 
                 variant="outline"
                 onClick={currentStep === 0 ? onClose : handlePrevious}
@@ -426,7 +394,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
                 {currentStep === 0 ? "Annuler" : "Précédent"}
               </Button>
 
-              {/* Bouton Suivant/Créer */}
               <Button
                 onClick={isLastStep ? handleFinish : handleNext}
                 disabled={isLoading || (isSecondStep && !formData.montant_total)}
@@ -437,7 +404,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
                   isLoading && "opacity-90 pointer-events-none"
                 )}
               >
-                {/* Text du bouton avec transition */}
                 <span className={cn(
                   "flex items-center gap-1.5 px-1",
                   isLoading && "opacity-0"
@@ -446,7 +412,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
                   {isLastStep ? <Leaf className="h-4 w-4 ml-1" /> : <ArrowRight className="h-4 w-4 ml-1" />}
                 </span>
                 
-                {/* Indicateur de chargement */}
                 {isLoading && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -459,7 +424,6 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             </div>
           </div>
           
-          {/* Élément décoratif */}
           <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
             <PiggyBank className="w-full h-full" />
           </div>
