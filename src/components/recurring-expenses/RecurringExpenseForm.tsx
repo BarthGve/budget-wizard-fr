@@ -76,37 +76,11 @@ export function RecurringExpenseForm({
     }
   });
 
-  // Récupérer les types de dépenses uniquement pour le véhicule sélectionné
-  // Nous récupérons directement les types de dépenses déjà utilisés pour ce véhicule
-  const vehicleId = form.watch("vehicle_id");
-  const { data: vehicleExpenseTypes, isLoading: typesLoading } = useQuery({
-    queryKey: ["vehicle-specific-expense-types", vehicleId],
-    queryFn: async () => {
-      if (!vehicleId) return [];
-      
-      // Récupérer les types de dépenses déjà utilisés pour ce véhicule
-      const { data, error } = await supabase
-        .from("vehicle_expenses")
-        .select("expense_type")
-        .eq("vehicle_id", vehicleId)
-        .order("expense_type");
-        
-      if (error) throw error;
-      
-      // Convertir en tableau d'objets uniques
-      const uniqueTypes = [...new Set(data.map(item => item.expense_type))];
-      return uniqueTypes.map((name) => ({ 
-        id: name, // Utiliser le nom comme id pour avoir un identifiant unique
-        name 
-      }));
-    },
-    enabled: !!vehicleId,
-  });
-
-  // Fusionner avec les types génériques au cas où il n'y a pas encore de dépenses
-  const mergedExpenseTypes = (vehicleExpenseTypes && vehicleExpenseTypes.length > 0) 
-    ? vehicleExpenseTypes 
-    : expenseTypes.map(type => ({ id: type.value, name: type.label }));
+  // Convertir les types de dépenses du format de ExpenseTypeField au format attendu
+  const formattedExpenseTypes = expenseTypes.map(type => ({
+    id: type.value,
+    name: type.label
+  }));
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
@@ -157,7 +131,7 @@ export function RecurringExpenseForm({
         {/* Champs conditionnels qui s'affichent uniquement si un véhicule est sélectionné */}
         {vehicleSelected && (
           <>
-            <ExpenseTypeField form={form} expenseTypes={mergedExpenseTypes || []} />
+            <ExpenseTypeField form={form} expenseTypes={formattedExpenseTypes} />
             <AutoGenerateField form={form} />
           </>
         )}
