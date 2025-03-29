@@ -81,12 +81,6 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId }: NavigationMenuPro
                   isActive && "bg-gray-200 text-gray-900 hover:bg-gray-200/90 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-800/90"
                 )}
                 end
-                onClick={(e) => {
-                  // Empêcher le comportement par défaut si nécessaire
-                  if (e.target && (e.target as HTMLElement).tagName === 'A') {
-                    e.preventDefault();
-                  }
-                }}
               >
                 <div className="relative">
                   <item.icon className={cn(

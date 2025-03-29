@@ -10,15 +10,6 @@
     <meta name="description" content="Application de gestion de budget et finances personnelles" />
     <meta name="author" content="Budget Wizard team" />
     <meta property="og:image" content="/og-image.png" />
-    <meta name="application-type" content="single-page-application" />
-    <meta name="fragment" content="!" />
-    <meta name="router" content="react-router" />
-    <meta name="spa" content="true" />
-    
-    <!-- SPA Meta Tags pour éviter les rechargements complets -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="renderer" content="webkit" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#ffffff" />
@@ -36,9 +27,7 @@
 
   <body>
     <div id="root"></div>
-    <!-- Script Lovable requis -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <!-- Le script principal de l'application doit être chargé en premier -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

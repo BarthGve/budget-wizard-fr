@@ -2,59 +2,26 @@
 // Gestionnaire des requêtes pour le Service Worker
 import { staleWhileRevalidateResources, matchesPatterns, handleStaleWhileRevalidate, handleNetworkFirst } from './cache-strategies.js';
 
-// Liste des patterns d'URL qui ne doivent jamais être interceptés
-const neverCachePatterns = [
-  '/api/',
-  '/auth/',
-  'supabase',
-  'auth/v1',
-  'rest/v1',
-  '.html',
-  'socket',
-  'ws:',
-  'wss:'
-];
-
 /**
- * Gestionnaire pour l'événement fetch - strictement limité aux ressources statiques
+ * Gestionnaire pour l'événement fetch
  * @param {FetchEvent} event - L'événement fetch
  */
 const handleFetch = (event) => {
-  // Si c'est une navigation ou un document HTML, ne JAMAIS intercepter
-  if (event.request.mode === 'navigate' || 
-      event.request.destination === 'document' || 
-      event.request.url.includes('.html') ||
-      event.request.headers.get('Accept')?.includes('text/html')) {
-    return;
-  }
-  
   const url = new URL(event.request.url);
   
-  // Vérifier si l'URL contient l'un des patterns à ne jamais mettre en cache
-  const shouldNeverCache = neverCachePatterns.some(pattern => url.toString().includes(pattern));
-  
-  // Ne pas intercepter les requêtes API
-  if (shouldNeverCache) {
+  // Ne pas intercepter les requêtes vers Supabase ou d'autres API
+  if (url.hostname.includes('supabase.co') || url.pathname.includes('/api/')) {
     return;
   }
   
-  // Pour les resources statiques uniquement
-  if (event.request.destination === 'style' || 
-      event.request.destination === 'script' || 
-      event.request.destination === 'image' || 
-      event.request.destination === 'font') {
-    
-    // Stratégie stale-while-revalidate uniquement pour les ressources statiques
-    if (matchesPatterns(url, staleWhileRevalidateResources)) {
-      event.respondWith(handleStaleWhileRevalidate(event));
-      return;
-    }
-    
-    // Stratégie Network First pour les autres ressources statiques
-    if (event.request.method === 'GET') {
-      event.respondWith(handleNetworkFirst(event));
-    }
+  // Stratégie stale-while-revalidate pour les ressources statiques
+  if (matchesPatterns(url, staleWhileRevalidateResources)) {
+    event.respondWith(handleStaleWhileRevalidate(event));
+    return;
   }
+  
+  // Stratégie Network First pour les autres requêtes
+  event.respondWith(handleNetworkFirst(event));
 };
 
 export { handleFetch };

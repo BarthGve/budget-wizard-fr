@@ -17,6 +17,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 
@@ -36,9 +37,7 @@ export const VehicleExpenseTableActions = ({
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   
   // Fonction pour fermer proprement le menu après une action
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Empêcher le comportement par défaut
-    e.stopPropagation(); // Arrêter la propagation
+  const handleEditClick = () => {
     setIsOpen(false); // Fermer le menu après clic
     onEdit();
   };
@@ -52,9 +51,7 @@ export const VehicleExpenseTableActions = ({
   };
   
   // Fonction pour gérer la confirmation de suppression
-  const handleConfirmDelete = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleConfirmDelete = () => {
     onDelete(); // Appeler la fonction de suppression
     setIsAlertOpen(false); // Fermer la boîte de dialogue
   };
@@ -66,10 +63,6 @@ export const VehicleExpenseTableActions = ({
           <Button
             variant="ghost"
             className="h-8 w-8 p-0 data-[state=open]:bg-muted"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
           >
             <span className="sr-only">Actions</span>
             <MoreHorizontal className="h-4 w-4" />
@@ -106,7 +99,7 @@ export const VehicleExpenseTableActions = ({
       
       {/* Boîte de dialogue de confirmation séparée du menu déroulant */}
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
             <AlertDialogDescription>
@@ -114,11 +107,7 @@ export const VehicleExpenseTableActions = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsAlertOpen(false);
-            }}>Annuler</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setIsAlertOpen(false)}>Annuler</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
               className="bg-red-600 hover:bg-red-700 text-white"

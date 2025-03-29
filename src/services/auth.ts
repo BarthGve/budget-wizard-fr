@@ -176,10 +176,6 @@ export const loginUser = async (credentials: LoginCredentials) => {
     throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
   }
   
-  // Marquer explicitement que cette connexion s'est produite dans l'application
-  // pour éviter les rechargements complets de page
-  localStorage.setItem("spa_auth", "true");
-  
   toast.success("Connexion réussie!");
   
   return data;

@@ -17,13 +17,6 @@ export const useAuthStateListener = () => {
   const previousAuthState = useRef<boolean | null>(null);
   const navigationInProgress = useRef(false);
   const redirectTimeoutRef = useRef<number | null>(null);
-  const lastNavigationTime = useRef<number>(0);
-  const throttleDelay = 1000; // 1 seconde entre chaque navigation
-
-  // Marquer explicitement que nous utilisons une navigation SPA
-  useEffect(() => {
-    sessionStorage.setItem('spa_active', 'true');
-  }, []);
 
   useEffect(() => {
     // Configuration de l'écouteur d'événements pour les changements d'authentification
@@ -48,21 +41,9 @@ export const useAuthStateListener = () => {
         
         previousAuthState.current = currentAuthState;
 
-        // Éviter les navigations trop fréquentes
-        if (Date.now() - lastNavigationTime.current < throttleDelay) {
-          console.log("Navigation limitée pour éviter les boucles de redirection");
-          return;
-        }
-        
-        lastNavigationTime.current = Date.now();
-
         if (event === "SIGNED_IN") {
           // Vérifier si l'utilisateur vient de vérifier son email
           const justVerified = localStorage.getItem("justVerified") === "true";
-          
-          // Marquer explicitement comme authentification SPA
-          sessionStorage.setItem("spa_auth", "true");
-          localStorage.setItem("spa_auth", "true");
           
           // Invalidation simple des caches pertinents
           queryClient.invalidateQueries({ queryKey: ["auth"] });
@@ -77,15 +58,7 @@ export const useAuthStateListener = () => {
             // Éviter les redirections multiples
             if (!navigationInProgress.current) {
               navigationInProgress.current = true;
-              
-              // Utiliser replace: true et state pour identifier la navigation SPA
-              navigate("/dashboard", { 
-                replace: true,
-                state: { 
-                  isSpaNavigation: true,
-                  timestamp: Date.now() // Ajouter un timestamp pour garantir l'unicité
-                }
-              });
+              navigate("/dashboard");
               
               // Réinitialiser le drapeau après un délai
               if (redirectTimeoutRef.current) {
@@ -93,7 +66,7 @@ export const useAuthStateListener = () => {
               }
               redirectTimeoutRef.current = window.setTimeout(() => {
                 navigationInProgress.current = false;
-              }, 500);
+              }, 300);
             }
           }
         } else if (event === "USER_UPDATED") {
@@ -110,6 +83,7 @@ export const useAuthStateListener = () => {
             queryClient.invalidateQueries({ queryKey: ["profile"] });
             
             // Vérifier si le changement provient d'un lien de changement d'email
+            // en regardant soit le hash, soit les paramètres d'URL, soit le localStorage
             if (location.hash.includes("type=email_change") || 
                 location.search.includes("type=emailChange") ||
                 localStorage.getItem("verificationEmail")) {
@@ -118,10 +92,7 @@ export const useAuthStateListener = () => {
               
               // Nettoyer l'URL
               if (window.history && window.history.replaceState) {
-                window.history.replaceState({
-                  isSpaNavigation: true,
-                  timestamp: Date.now()
-                }, document.title, window.location.pathname);
+                window.history.replaceState({}, document.title, window.location.pathname);
               }
               
               // Nettoyer le localStorage
@@ -138,17 +109,12 @@ export const useAuthStateListener = () => {
                   clearTimeout(redirectTimeoutRef.current);
                 }
                 redirectTimeoutRef.current = window.setTimeout(() => {
-                  navigate("/user-settings", {
-                    state: { 
-                      isSpaNavigation: true,
-                      timestamp: Date.now()
-                    }
-                  });
+                  navigate("/user-settings");
                   
                   // Réinitialiser le drapeau après navigation
                   redirectTimeoutRef.current = window.setTimeout(() => {
                     navigationInProgress.current = false;
-                  }, 500);
+                  }, 300);
                 }, 500);
               }
             }
@@ -177,14 +143,8 @@ export const useAuthStateListener = () => {
               queryClient.invalidateQueries({ queryKey: [key] });
             });
             
-            // CRUCIAL: utiliser navigate avec replace et état SPA
-            navigate("/login", { 
-              replace: true, 
-              state: { 
-                isSpaNavigation: true,
-                timestamp: Date.now()
-              }
-            });
+            // Utiliser navigate avec replace pour éviter d'ajouter à l'historique
+            navigate("/", { replace: true });
             
             // Réinitialiser le drapeau après un délai pour permettre la navigation complète
             if (redirectTimeoutRef.current) {
@@ -192,7 +152,7 @@ export const useAuthStateListener = () => {
             }
             redirectTimeoutRef.current = window.setTimeout(() => {
               navigationInProgress.current = false;
-            }, 500);
+            }, 300);
             
           } catch (error) {
             console.error("Error during sign out handling:", error);
