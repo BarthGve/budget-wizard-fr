@@ -103,7 +103,7 @@ export function RecurringExpenseForm({
     enabled: !!vehicleId,
   });
 
-  // Créer directement un tableau à partir des types standards définis dans expenseTypes
+  // Transformer les types standards pour correspondre à la structure {id, name}
   const standardExpenseTypes = expenseTypes.map(type => ({ 
     id: type.value, 
     name: type.label 
@@ -113,7 +113,7 @@ export function RecurringExpenseForm({
   const mergedExpenseTypes = (vehicleExpenseTypes && vehicleExpenseTypes.length > 0) 
     ? [...vehicleExpenseTypes, ...standardExpenseTypes.filter(
         // Filtrer pour éviter les doublons
-        stdType => !vehicleExpenseTypes.some(vType => vType.name === stdType.name)
+        stdType => !vehicleExpenseTypes.some(vType => vType.id === stdType.id)
       )] 
     : standardExpenseTypes;
 
