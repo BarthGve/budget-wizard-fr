@@ -1,9 +1,10 @@
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { RecurringExpense } from "./types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ChevronRight, ListFilter } from "lucide-react";
+import { ChevronRight, ListFilter, ArrowLeft } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
 import { itemVariants } from "./animations/AnimationVariants";
 
@@ -14,9 +15,12 @@ interface MobileCategoryListProps {
 
 /**
  * Composant qui affiche une liste simple des catégories de charges avec leurs montants
- * pour les appareils mobiles
+ * pour les appareils mobiles, avec possibilité d'afficher le détail des charges par catégorie
  */
 export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryListProps) => {
+  // État pour suivre la catégorie sélectionnée
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
   // Filtrer les dépenses selon la période sélectionnée ou prendre les mensuelles par défaut
   const filteredExpenses = selectedPeriod 
     ? expenses.filter(expense => expense.periodicity === selectedPeriod)
@@ -38,6 +42,11 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
   const periodLabel = selectedPeriod 
     ? selectedPeriod === "monthly" ? "mensuelles" : selectedPeriod === "quarterly" ? "trimestrielles" : "annuelles"
     : "mensuelles";
+
+  // Obtenir les dépenses de la catégorie sélectionnée
+  const categoryExpenses = selectedCategory 
+    ? filteredExpenses.filter(expense => expense.category === selectedCategory).sort((a, b) => b.amount - a.amount)
+    : [];
 
   return (
     <motion.div variants={itemVariants}>
@@ -61,11 +70,22 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
               "bg-blue-100",
               "dark:bg-blue-800/40"
             )}>
-              <ListFilter className={cn(
-                "h-5 w-5",
-                "text-blue-600",
-                "dark:text-blue-400"
-              )} />
+              {selectedCategory ? (
+                <ArrowLeft 
+                  className={cn(
+                    "h-5 w-5 cursor-pointer",
+                    "text-blue-600",
+                    "dark:text-blue-400"
+                  )}
+                  onClick={() => setSelectedCategory(null)}
+                />
+              ) : (
+                <ListFilter className={cn(
+                  "h-5 w-5",
+                  "text-blue-600",
+                  "dark:text-blue-400"
+                )} />
+              )}
             </div>
             <div>
               <CardTitle className={cn(
@@ -73,47 +93,87 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
                 "text-blue-700",
                 "dark:text-blue-300"
               )}>
-                Charges par catégorie
+                {selectedCategory ? selectedCategory : "Charges par catégorie"}
               </CardTitle>
               <CardDescription className={cn(
                 "text-sm",
                 "text-blue-600/80",
                 "dark:text-blue-400/90"
               )}>
-                Dépenses {periodLabel} regroupées
+                {selectedCategory 
+                  ? `${categoryExpenses.length} charge${categoryExpenses.length > 1 ? 's' : ''} ${periodLabel}`
+                  : `Dépenses ${periodLabel} regroupées`
+                }
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         
         <CardContent className="pt-0 pb-4 relative z-10">
-          {categoriesList.length > 0 ? (
+          {selectedCategory ? (
+            // Afficher la liste des charges pour la catégorie sélectionnée
             <ul className="space-y-2 mt-2">
-              {categoriesList.map((item, index) => (
-                <li 
-                  key={item.category}
-                  className={cn(
-                    "flex items-center justify-between p-3 rounded-md",
-                    "border-l-4 border-blue-500 dark:border-blue-400",
-                    "bg-blue-50/50 dark:bg-blue-900/20"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <ChevronRight className="h-4 w-4 text-blue-500 dark:text-blue-400" />
-                    <span className="font-medium text-gray-800 dark:text-gray-200">
-                      {item.category}
+              {categoryExpenses.length > 0 ? (
+                categoryExpenses.map((expense) => (
+                  <li 
+                    key={expense.id}
+                    className={cn(
+                      "flex items-center justify-between p-3 rounded-md",
+                      "border-l-4 border-blue-400 dark:border-blue-500",
+                      "bg-blue-50/50 dark:bg-blue-900/20"
+                    )}
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-medium text-gray-800 dark:text-gray-200">
+                        {expense.name}
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {expense.debit_day ? `Débit: jour ${expense.debit_day}` : "Date de débit non définie"}
+                      </span>
+                    </div>
+                    <span className="font-mono font-semibold text-blue-600 dark:text-blue-300">
+                      {formatCurrency(expense.amount)}
                     </span>
-                  </div>
-                  <span className="font-mono font-semibold text-blue-600 dark:text-blue-300">
-                    {formatCurrency(item.total)}
-                  </span>
-                </li>
-              ))}
+                  </li>
+                ))
+              ) : (
+                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  Aucune charge dans cette catégorie
+                </div>
+              )}
             </ul>
           ) : (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              Aucune donnée disponible pour cette période
-            </div>
+            // Afficher la liste des catégories
+            <ul className="space-y-2 mt-2">
+              {categoriesList.length > 0 ? (
+                categoriesList.map((item) => (
+                  <li 
+                    key={item.category}
+                    className={cn(
+                      "flex items-center justify-between p-3 rounded-md",
+                      "border-l-4 border-blue-500 dark:border-blue-400",
+                      "bg-blue-50/50 dark:bg-blue-900/20",
+                      "cursor-pointer hover:bg-blue-100/50 dark:hover:bg-blue-800/30 transition-colors"
+                    )}
+                    onClick={() => setSelectedCategory(item.category)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <ChevronRight className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                      <span className="font-medium text-gray-800 dark:text-gray-200">
+                        {item.category}
+                      </span>
+                    </div>
+                    <span className="font-mono font-semibold text-blue-600 dark:text-blue-300">
+                      {formatCurrency(item.total)}
+                    </span>
+                  </li>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  Aucune donnée disponible pour cette période
+                </div>
+              )}
+            </ul>
           )}
         </CardContent>
       </Card>
