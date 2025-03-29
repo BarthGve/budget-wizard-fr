@@ -69,14 +69,14 @@ export const RetailersList = ({
     >
       <motion.div variants={itemVariants} className="flex items-center justify-between w-full">
         <Button 
-          variant="ghost" 
+          variant="secondary" 
           size="sm" 
           className="h-8 px-2 text-xs"
           onClick={onBackClick}
         >
           Retour
         </Button>
-        <span className="text-sm font-medium">Sélectionner une enseigne</span>
+        
       </motion.div>
       
       {isLoading ? (
