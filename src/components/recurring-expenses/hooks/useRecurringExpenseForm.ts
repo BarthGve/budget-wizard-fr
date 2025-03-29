@@ -28,6 +28,8 @@ export const formSchema = z.object({
     },
     "Le mois doit être entre 1 et 12"
   ),
+  // Nouveau champ pour l'association avec un véhicule
+  associate_with_vehicle: z.boolean().default(false),
   // Champs pour l'association avec un véhicule
   vehicle_id: z.string().nullish(),
   vehicle_expense_type: z.string().nullish(),
@@ -64,6 +66,9 @@ const getFaviconUrl = (domain: string) => {
 export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVehicleId = "", onSuccess }: UseRecurringExpenseFormProps) => {
   const queryClient = useQueryClient();
 
+  // Détermine si la charge est déjà associée à un véhicule
+  const hasVehicle = !!(expense?.vehicle_id);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -74,6 +79,8 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
       debit_month: expense?.debit_month?.toString() || null,
+      // Définir l'état initial du toggle en fonction de la présence d'un véhicule
+      associate_with_vehicle: hasVehicle,
       vehicle_id: expense?.vehicle_id || initialVehicleId || null,
       vehicle_expense_type: expense?.vehicle_expense_type || null,
       auto_generate_vehicle_expense: expense?.auto_generate_vehicle_expense || false
@@ -98,6 +105,19 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
       // Générer l'URL du logo à partir du domaine
       const logo_url = getFaviconUrl(values.domain || "");
 
+      // S'assurer que les valeurs liées au véhicule sont nulles si l'association n'est pas activée
+      const vehicleData = values.associate_with_vehicle 
+        ? {
+            vehicle_id: values.vehicle_id || null,
+            vehicle_expense_type: values.vehicle_expense_type || null,
+            auto_generate_vehicle_expense: values.auto_generate_vehicle_expense || false
+          }
+        : {
+            vehicle_id: null,
+            vehicle_expense_type: null,
+            auto_generate_vehicle_expense: false
+          };
+
       // S'assurer que les valeurs sont correctement typées pour la BD
       const expenseData = {
         name: values.name,
@@ -107,10 +127,8 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
         debit_day: parseInt(values.debit_day),
         debit_month: debit_month,
         logo_url,
-        // Gestion explicite des valeurs nulles pour les champs liés au véhicule
-        vehicle_id: values.vehicle_id || null,
-        vehicle_expense_type: values.vehicle_expense_type || null,
-        auto_generate_vehicle_expense: values.auto_generate_vehicle_expense || false
+        // Utiliser les valeurs de véhicule en fonction du toggle
+        ...vehicleData
       };
 
       console.log("Données à enregistrer:", expenseData);
@@ -144,7 +162,7 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVe
       });
       
       // Invalider les données des véhicules si une charge récurrente est associée à un véhicule
-      if (values.vehicle_id) {
+      if (values.associate_with_vehicle && values.vehicle_id) {
         queryClient.invalidateQueries({ 
           queryKey: ["vehicle-expenses", values.vehicle_id],
           exact: true

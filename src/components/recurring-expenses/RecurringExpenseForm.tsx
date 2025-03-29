@@ -15,6 +15,7 @@ import { DomainField } from "./form-fields/DomainField";
 import { VehicleField } from "./form-fields/VehicleField";
 import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
 import { AutoGenerateField } from "./form-fields/AutoGenerateField";
+import { AssociateVehicleField } from "./form-fields/AssociateVehicleField";
 import { expenseTypes } from "@/components/vehicles/expenses/form/ExpenseTypeField";
 
 export interface RecurringExpenseFormProps {
@@ -114,8 +115,8 @@ export function RecurringExpenseForm({
     return () => subscription.unsubscribe();
   }, [form]);
 
-  // Vérifie si un véhicule est sélectionné
-  const vehicleSelected = !!form.watch("vehicle_id");
+  // Vérifie si l'association avec un véhicule est activée
+  const associateWithVehicle = form.watch("associate_with_vehicle");
 
   return (
     <Form {...form}>
@@ -125,23 +126,32 @@ export function RecurringExpenseForm({
         <AmountField form={form} />
         <CategoryField form={form} categories={categories || []} />
         
-        {/* Champ pour sélectionner un véhicule */}
-        <VehicleField form={form} />
-        
-        {/* Champs conditionnels qui s'affichent uniquement si un véhicule est sélectionné */}
-        {vehicleSelected && (
-          <>
-            <ExpenseTypeField form={form} expenseTypes={formattedExpenseTypes} />
-            <AutoGenerateField form={form} />
-          </>
-        )}
-        
         <PeriodicityField form={form} />
         <DebitDayField form={form} />
         
         {form.watch("periodicity") !== "monthly" && (
           <DebitMonthField form={form} />
         )}
+
+        {/* Section association avec un véhicule */}
+        <div className="pt-2 border-t">
+          <AssociateVehicleField form={form} />
+          
+          {/* Champs conditionnels qui s'affichent uniquement si l'association est activée */}
+          {associateWithVehicle && (
+            <div className="mt-4 space-y-4">
+              <VehicleField form={form} />
+              
+              {/* Champs supplémentaires qui s'affichent si un véhicule est sélectionné */}
+              {form.watch("vehicle_id") && (
+                <>
+                  <ExpenseTypeField form={form} expenseTypes={formattedExpenseTypes} />
+                  <AutoGenerateField form={form} />
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="flex justify-end space-x-2">
           <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">

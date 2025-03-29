@@ -10,9 +10,9 @@ interface VehicleFieldProps {
 }
 
 export function VehicleField({ form }: VehicleFieldProps) {
-  // Récupérer la liste des véhicules
+  // Récupérer la liste des véhicules actifs uniquement
   const { data: vehicles, isLoading } = useQuery({
-    queryKey: ["vehicles"],
+    queryKey: ["active-vehicles"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
@@ -31,7 +31,7 @@ export function VehicleField({ form }: VehicleFieldProps) {
       name="vehicle_id"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Véhicule (optionnel)</FormLabel>
+          <FormLabel>Véhicule</FormLabel>
           <Select
             value={field.value || undefined}
             onValueChange={(value) => {
@@ -48,8 +48,8 @@ export function VehicleField({ form }: VehicleFieldProps) {
             disabled={isLoading}
           >
             <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un véhicule (optionnel)" />
+              <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectValue placeholder="Sélectionner un véhicule" />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
