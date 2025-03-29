@@ -17,19 +17,28 @@ interface ExpenseFormProps {
     name: string;
   };
   renderCustomActions?: (isSubmitting: boolean) => React.ReactNode;
+  // Nouvelles propriétés pour supporter EditExpenseDialog
+  onSubmit?: (formData: ExpenseFormData) => Promise<void>;
+  defaultValues?: ExpenseFormData;
+  submitLabel?: string;
+  disableRetailerSelect?: boolean;
 }
 
 export function ExpenseForm({ 
   onExpenseAdded, 
   preSelectedRetailer,
-  renderCustomActions
+  renderCustomActions,
+  onSubmit: externalSubmit,
+  defaultValues: externalDefaultValues,
+  submitLabel = "Ajouter",
+  disableRetailerSelect = false
 }: ExpenseFormProps) {
   const { retailers } = useRetailers();
   const isMobile = useIsMobile();
   const expenseFormHandler = onExpenseAdded ? useExpenseForm(onExpenseAdded) : null;
   
   const form = useForm<ExpenseFormData>({
-    defaultValues: {
+    defaultValues: externalDefaultValues || {
       retailerId: preSelectedRetailer?.id || "",
       amount: "",
       date: format(new Date(), "yyyy-MM-dd"),
@@ -40,7 +49,9 @@ export function ExpenseForm({
   const isSubmitting = form.formState.isSubmitting;
   
   const handleFormSubmit = async (values: ExpenseFormData) => {
-    if (expenseFormHandler && onExpenseAdded) {
+    if (externalSubmit) {
+      await externalSubmit(values);
+    } else if (expenseFormHandler && onExpenseAdded) {
       await expenseFormHandler.handleSubmit(values);
     }
   };
@@ -59,9 +70,9 @@ export function ExpenseForm({
                 "text-gray-700 dark:text-gray-300",
                 isMobile ? "text-xs" : "text-sm"
               )}>Enseigne</FormLabel>
-              {preSelectedRetailer ? (
+              {preSelectedRetailer || disableRetailerSelect ? (
                 <Input
-                  value={preSelectedRetailer.name}
+                  value={preSelectedRetailer?.name || (retailers?.find(r => r.id === field.value)?.name || "")}
                   disabled
                   className="bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800/50 dark:text-gray-300 dark:border-gray-700"
                 />
@@ -141,7 +152,26 @@ export function ExpenseForm({
           )}
         />
         
-        {/* Commentaire - Supprimé dans la version simplifiée pour mobile */}
+        {/* Commentaire - Ajoutée si nécessaire */}
+        <FormField
+          control={form.control}
+          name="comment"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className={cn(
+                "text-gray-700 dark:text-gray-300",
+                isMobile ? "text-xs" : "text-sm"
+              )}>Commentaire</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Commentaire (optionnel)"
+                  {...field}
+                  className={isMobile && "h-9 text-sm"}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
         
         {renderCustomActions ? (
           renderCustomActions(isSubmitting)
@@ -157,7 +187,7 @@ export function ExpenseForm({
             )}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "En cours..." : "Ajouter"}
+            {isSubmitting ? "En cours..." : submitLabel}
           </button>
         )}
       </form>

@@ -4,6 +4,7 @@ import { ExpenseForm } from "./ExpenseForm";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { ExpenseFormData } from "./types";
 
 interface EditExpenseDialogProps {
   open: boolean;
@@ -20,12 +21,12 @@ export function EditExpenseDialog({
 }: EditExpenseDialogProps) {
   const queryClient = useQueryClient();
   
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: ExpenseFormData) => {
     try {
       const { error } = await supabase
         .from("expenses")
         .update({
-          amount: formData.amount,
+          amount: parseFloat(formData.amount),
           date: formData.date,
           comment: formData.comment
         })
@@ -51,6 +52,7 @@ export function EditExpenseDialog({
 
       toast.success("Dépense mise à jour avec succès");
       onExpenseUpdated();
+      onOpenChange(false);
     } catch (error) {
       console.error("Error in update operation:", error);
       toast.error("Une erreur s'est produite");
@@ -67,13 +69,13 @@ export function EditExpenseDialog({
           <ExpenseForm
             onSubmit={handleSubmit}
             defaultValues={{
-              amount: expense.amount,
+              amount: expense.amount.toString(),
               date: expense.date,
               comment: expense.comment || "",
               retailerId: expense.retailer_id
             }}
             submitLabel="Mettre à jour"
-            disableRetailerSelect
+            disableRetailerSelect={true}
           />
         )}
       </DialogContent>
