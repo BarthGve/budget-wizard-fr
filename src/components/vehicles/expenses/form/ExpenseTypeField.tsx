@@ -7,7 +7,7 @@ import { ExpenseFormValues } from "@/hooks/useExpenseForm";
 // Types de dépenses disponibles
 export const expenseTypes = [
   { value: "carburant", label: "Carburant" },
-    { value: "Loyer", label: "Loyer" }
+    { value: "Loyer", label: "Loyer" },
   { value: "entretien", label: "Entretien" },
   { value: "reparation", label: "Réparation" },
   { value: "assurance", label: "Assurance" },
