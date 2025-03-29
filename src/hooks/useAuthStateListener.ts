@@ -45,6 +45,9 @@ export const useAuthStateListener = () => {
           // Vérifier si l'utilisateur vient de vérifier son email
           const justVerified = localStorage.getItem("justVerified") === "true";
           
+          // Marquer explicitement comme authentification SPA
+          localStorage.setItem("spa_auth", "true");
+          
           // Invalidation simple des caches pertinents
           queryClient.invalidateQueries({ queryKey: ["auth"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
@@ -149,7 +152,7 @@ export const useAuthStateListener = () => {
               queryClient.invalidateQueries({ queryKey: [key] });
             });
             
-            // Utiliser navigate avec replace pour éviter d'ajouter à l'historique et indiquer que c'est une navigation SPA
+            // CRUCIAL: utiliser navigate avec replace et état SPA
             navigate("/login", { 
               replace: true, 
               state: { isSpaNavigation: true }

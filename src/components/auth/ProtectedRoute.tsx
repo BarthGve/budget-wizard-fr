@@ -118,7 +118,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   if (shouldRedirect) {
     hasRedirectedRef.current = true;
     
-    // Utiliser Navigate avec state pour indiquer que c'est une navigation SPA
+    // CRUCIAL: Utiliser Navigate avec state pour indiquer que c'est une navigation SPA
     return <Navigate 
       to={shouldRedirect} 
       state={{ from: location.pathname, isSpaNavigation: true }} 

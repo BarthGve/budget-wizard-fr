@@ -25,27 +25,30 @@ const noInterceptPatterns = [
   'wss:'
 ];
 
-// Désactiver COMPLÈTEMENT l'interception des requêtes de navigation
+// DÉSACTIVATION COMPLÈTE de l'interception pour les navigations
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-  
-  // Vérifier si l'URL contient l'un des patterns à ne pas intercepter
-  const shouldNotIntercept = noInterceptPatterns.some(pattern => url.toString().includes(pattern));
-  
-  // Ne JAMAIS intercepter les navigations, requêtes HTML, routes d'API ou patterns spécifiques
-  if (event.request.mode === 'navigate' || 
-      event.request.destination === 'document' ||
-      shouldNotIntercept) {
-    // Laisser le navigateur et React Router gérer normalement
+  // 1. Vérifier si c'est une navigation ou une requête document
+  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
+    // NE JAMAIS intercepter les navigations - essentiel pour le bon fonctionnement SPA
     return;
   }
   
-  // Pour les ressources statiques uniquement, utiliser le gestionnaire normal
+  const url = new URL(event.request.url);
+  
+  // 2. Vérifier si l'URL correspond à des patterns à ne jamais intercepter
+  const shouldNotIntercept = noInterceptPatterns.some(pattern => url.toString().includes(pattern));
+  
+  // 3. Ne pas intercepter les requêtes API ou système
+  if (shouldNotIntercept) {
+    return;
+  }
+  
+  // 4. Pour les ressources statiques uniquement, utiliser le gestionnaire de cache
   handleFetch(event);
 });
 
 // Ignorer explicitement toutes les navigations
-self.addEventListener('navigate', (event) => {
+self.addEventListener('navigate', () => {
   // Ne rien faire, laisser le navigateur et React Router gérer la navigation
   return;
 });

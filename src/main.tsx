@@ -10,10 +10,9 @@ createRoot(document.getElementById("root")!).render(<App />);
 // Variable pour suivre si l'application a déjà été initialisée complètement
 let appFullyInitialized = false;
 
-// Enregistrement du service worker pour les fonctionnalités PWA 
-// seulement après que l'application soit complètement chargée et stable
+// DÉLAI IMPORTANT: Enregistrement du service worker seulement après que l'application soit complètement chargée
 window.addEventListener('load', () => {
-  // Différer significativement l'enregistrement du service worker pour donner la priorité au chargement de l'app
+  // Différer significativement l'enregistrement du service worker pour donner la priorité à l'expérience SPA
   console.log("Planification de l'enregistrement du service worker...");
   
   // Première initialisation après un délai court pour les fonctionnalités essentielles
@@ -21,11 +20,12 @@ window.addEventListener('load', () => {
     // Marquer l'application comme initialisée
     appFullyInitialized = true;
     
-    // Délai plus long pour l'enregistrement du service worker
+    // Délai BEAUCOUP plus long pour l'enregistrement du service worker
+    // pour éviter toute interférence avec la navigation SPA initiale
     setTimeout(() => {
       registerServiceWorker();
-    }, 10000); // Délai augmenté à 10 secondes pour s'assurer que l'application est stable
-  }, 1000);
+    }, 30000); // Délai augmenté à 30 secondes pour s'assurer que l'application est stable
+  }, 2000);
 });
 
 // Vérifier les mises à jour moins fréquemment pour réduire les interférences

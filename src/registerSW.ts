@@ -4,10 +4,14 @@
 // Variable pour éviter les rechargements multiples
 let refreshing = false;
 
+/**
+ * Enregistre le service worker avec un délai important pour ne pas interférer
+ * avec le chargement initial et la navigation SPA
+ */
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    // Attendre le chargement complet de la page et le premier rendu
-    const registrationDelay = 15000; // 15 secondes de délai
+    // Attendre BEAUCOUP plus longtemps pour l'enregistrement
+    const registrationDelay = 30000; // 30 secondes de délai
     
     console.log(`[SW] Enregistrement du Service Worker programmé dans ${registrationDelay/1000}s...`);
     
@@ -15,8 +19,8 @@ export function registerServiceWorker() {
     if (navigator.serviceWorker.controller) {
       console.log('[SW] Service Worker déjà actif, mise à jour si nécessaire');
       
+      // Si déjà installé, on se contente de planifier une mise à jour
       navigator.serviceWorker.ready.then(registration => {
-        // Si une mise à jour est disponible, la service worker la détectera automatiquement
         registration.update().catch(error => {
           console.error('[SW] Erreur lors de la mise à jour du Service Worker:', error);
         });
@@ -25,11 +29,12 @@ export function registerServiceWorker() {
       return;
     }
     
+    // Délai très important pour laisser l'application SPA se stabiliser
     setTimeout(() => {
       navigator.serviceWorker.register('/serviceWorker.js', {
         // Limiter la portée du service worker
         scope: '/',
-        // Utiliser le mode "no-cors" pour éviter les problèmes CORS
+        // Utiliser le mode "none" pour la mise à jour du cache
         updateViaCache: 'none'
       })
         .then(registration => {
@@ -59,10 +64,11 @@ export function registerServiceWorker() {
         if (refreshing) return;
         refreshing = true;
         console.log('[SW] Service Worker Controller changé, rechargement...');
-        // Ne pas recharger immédiatement la page pour éviter les interactions avec la navigation SPA
+        
+        // Ne pas recharger immédiatement - planifier pour après les navigations en cours
         setTimeout(() => {
           window.location.reload();
-        }, 1000);
+        }, 3000); // 3 secondes pour être sûr que toute navigation en cours est terminée
       });
     }, registrationDelay);
   }
