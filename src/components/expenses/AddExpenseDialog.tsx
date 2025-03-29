@@ -1,10 +1,12 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ExpenseForm } from "./ExpenseForm";
 import { AddExpenseDialogProps } from "./types";
 import { PlusCircle, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function AddExpenseDialog({ 
   onExpenseAdded, 
@@ -20,6 +22,7 @@ export function AddExpenseDialog({
   colorScheme?: "blue" | "green" | "purple" 
 }) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   
   // Couleurs dynamiques selon le colorScheme
   const colors = {
@@ -60,7 +63,7 @@ export function AddExpenseDialog({
   
   const currentColors = colors[colorScheme];
   
-  // Si hideDialogWrapper est vrai, on n'affiche pas le Dialog wrapper
+  // Contenu du dialogue commun aux deux versions
   const dialogContent = (
     <div 
       ref={contentRef}
@@ -121,10 +124,37 @@ export function AddExpenseDialog({
     </div>
   );
 
+  // Si hideDialogWrapper est vrai, renvoyer uniquement le contenu
   if (hideDialogWrapper) {
     return dialogContent;
   }
 
+  // Version mobile avec Sheet
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent 
+          side="bottom" 
+          className={cn(
+            "px-0 py-0 rounded-t-xl",
+            "border-t shadow-lg",
+            currentColors.border,
+            "max-h-[90vh] overflow-y-auto",
+            "dark:bg-gray-900"
+          )}
+        >
+          <div className={cn(
+            "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
+            "bg-gray-300 dark:bg-gray-600 rounded-full"
+          )} />
+          
+          {dialogContent}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Version desktop avec Dialog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px] p-0 border-0 overflow-hidden bg-transparent shadow-xl">

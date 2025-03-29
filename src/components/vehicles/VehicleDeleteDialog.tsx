@@ -1,6 +1,7 @@
+
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { TrashIcon, ShoppingCart, AlertTriangle, X } from "lucide-react";
+import { TrashIcon, ShoppingCart, AlertTriangle, X, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type VehicleDeleteDialogProps = {
@@ -71,6 +72,27 @@ export const VehicleDeleteDialog = ({
         </AlertDialogHeader>
         
         <div className="p-5 space-y-4">
+          {/* Avertissement sur la suppression des charges récurrentes */}
+          <div className={cn(
+            "p-4 rounded-lg mb-4",
+            "bg-blue-50 border border-blue-100",
+            "dark:bg-blue-900/20 dark:border-blue-800/40"
+          )}>
+            <div className="flex gap-3">
+              <div className="text-blue-600 dark:text-blue-300 mt-0.5">
+                <Info className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-medium text-blue-800 dark:text-blue-200">
+                  Information importante
+                </h3>
+                <p className="text-sm text-blue-700/90 dark:text-blue-300/90 mt-1">
+                  Si vous supprimez ou vendez ce véhicule, toutes les charges récurrentes qui lui sont associées seront également supprimées.
+                </p>
+              </div>
+            </div>
+          </div>
+          
           <div className={cn(
             "p-4 rounded-lg",
             "bg-white border border-gray-200",

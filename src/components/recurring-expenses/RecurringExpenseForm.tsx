@@ -15,7 +15,10 @@ import { DomainField } from "./form-fields/DomainField";
 import { VehicleField } from "./form-fields/VehicleField";
 import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
 import { AutoGenerateField } from "./form-fields/AutoGenerateField";
+import { AssociateVehicleField } from "./form-fields/AssociateVehicleField";
 import { expenseTypes } from "@/components/vehicles/expenses/form/ExpenseTypeField";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export interface RecurringExpenseFormProps {
   expense?: {
@@ -55,6 +58,7 @@ export function RecurringExpenseForm({
   variant,
   initialVehicleId,
 }: RecurringExpenseFormProps) {
+  const isMobile = useIsMobile();
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
   const { form, handleSubmit } = useRecurringExpenseForm({
@@ -76,37 +80,11 @@ export function RecurringExpenseForm({
     }
   });
 
-  // Récupérer les types de dépenses uniquement pour le véhicule sélectionné
-  // Nous récupérons directement les types de dépenses déjà utilisés pour ce véhicule
-  const vehicleId = form.watch("vehicle_id");
-  const { data: vehicleExpenseTypes, isLoading: typesLoading } = useQuery({
-    queryKey: ["vehicle-specific-expense-types", vehicleId],
-    queryFn: async () => {
-      if (!vehicleId) return [];
-      
-      // Récupérer les types de dépenses déjà utilisés pour ce véhicule
-      const { data, error } = await supabase
-        .from("vehicle_expenses")
-        .select("expense_type")
-        .eq("vehicle_id", vehicleId)
-        .order("expense_type");
-        
-      if (error) throw error;
-      
-      // Convertir en tableau d'objets uniques
-      const uniqueTypes = [...new Set(data.map(item => item.expense_type))];
-      return uniqueTypes.map((name) => ({ 
-        id: name, // Utiliser le nom comme id pour avoir un identifiant unique
-        name 
-      }));
-    },
-    enabled: !!vehicleId,
-  });
-
-  // Fusionner avec les types génériques au cas où il n'y a pas encore de dépenses
-  const mergedExpenseTypes = (vehicleExpenseTypes && vehicleExpenseTypes.length > 0) 
-    ? vehicleExpenseTypes 
-    : expenseTypes.map(type => ({ id: type.value, name: type.label }));
+  // Convertir les types de dépenses du format de ExpenseTypeField au format attendu
+  const formattedExpenseTypes = expenseTypes.map(type => ({
+    id: type.value,
+    name: type.label
+  }));
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
@@ -140,40 +118,71 @@ export function RecurringExpenseForm({
     return () => subscription.unsubscribe();
   }, [form]);
 
-  // Vérifie si un véhicule est sélectionné
-  const vehicleSelected = !!form.watch("vehicle_id");
+  // Vérifie si l'association avec un véhicule est activée
+  const associateWithVehicle = form.watch("associate_with_vehicle");
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <NameField form={form} />
-        <DomainField form={form} />
-        <AmountField form={form} />
-        <CategoryField form={form} categories={categories || []} />
-        
-        {/* Champ pour sélectionner un véhicule */}
-        <VehicleField form={form} />
-        
-        {/* Champs conditionnels qui s'affichent uniquement si un véhicule est sélectionné */}
-        {vehicleSelected && (
-          <>
-            <ExpenseTypeField form={form} expenseTypes={mergedExpenseTypes || []} />
-            <AutoGenerateField form={form} />
-          </>
-        )}
-        
-        <PeriodicityField form={form} />
-        <DebitDayField form={form} />
-        
-        {form.watch("periodicity") !== "monthly" && (
-          <DebitMonthField form={form} />
-        )}
+      <form onSubmit={handleSubmit} className={cn("space-y-4", isMobile && "space-y-3")}>
+        <div className={cn(isMobile ? "space-y-3" : "space-y-4")}>
+          <NameField form={form} />
+          <DomainField form={form} />
+          <AmountField form={form} />
+          <CategoryField form={form} categories={categories || []} />
+          
+          <PeriodicityField form={form} />
+          <DebitDayField form={form} />
+          
+          {form.watch("periodicity") !== "monthly" && (
+            <DebitMonthField form={form} />
+          )}
+        </div>
 
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">
+        {/* Section association avec un véhicule */}
+        <div className={cn(
+          "pt-2 border-t",
+          isMobile && "pt-3 mt-3"
+        )}>
+          <AssociateVehicleField form={form} />
+          
+          {/* Champs conditionnels qui s'affichent uniquement si l'association est activée */}
+          {associateWithVehicle && (
+            <div className={cn("mt-4 space-y-4", isMobile && "mt-3 space-y-3")}>
+              <VehicleField form={form} />
+              
+              {/* Champs supplémentaires qui s'affichent si un véhicule est sélectionné */}
+              {form.watch("vehicle_id") && (
+                <>
+                  <ExpenseTypeField form={form} expenseTypes={formattedExpenseTypes} />
+                  <AutoGenerateField form={form} />
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className={cn(
+          "flex justify-end space-x-2 pt-2",
+          isMobile && "pt-3"
+        )}>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onCancel} 
+            className={cn(
+              "border-gray-300 hover:border-gray-400",
+              isMobile && "text-sm h-9"
+            )}
+          >
             Annuler
           </Button>
-          <Button type="submit" className="bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white">
+          <Button 
+            type="submit" 
+            className={cn(
+              "bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white",
+              isMobile && "text-sm h-9"
+            )}
+          >
             {expense ? "Mettre à jour" : "Ajouter"}
           </Button>
         </div>

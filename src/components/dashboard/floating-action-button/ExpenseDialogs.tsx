@@ -1,8 +1,11 @@
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { AddVehicleExpenseDialog } from "@/components/vehicles/expenses/AddVehicleExpenseDialog";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { type Retailer } from "./useFloatingActionButton";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface ExpenseDialogsProps {
   selectedVehicle: string | null;
@@ -18,6 +21,7 @@ interface ExpenseDialogsProps {
 
 /**
  * Dialogues modaux pour l'ajout de dépenses
+ * Sur mobile, ils s'affichent comme des sheets du bas vers le haut
  */
 export const ExpenseDialogs = ({
   selectedVehicle,
@@ -32,43 +36,37 @@ export const ExpenseDialogs = ({
 }: ExpenseDialogsProps) => {
   return (
     <>
+      {/* Dialogue de dépense de carburant */}
       {selectedVehicle && (
-        <Dialog open={expenseDialogOpen} onOpenChange={setExpenseDialogOpen}>
-          <DialogContent className="sm:max-w-[500px] p-0 border-0 overflow-hidden bg-transparent shadow-2xl">
-            <AddVehicleExpenseDialog
-              vehicleId={selectedVehicle}
-              hideDialogWrapper={true}
-              onSuccess={handleExpenseSuccess}
-              onCancel={handleExpenseCancel}
-              initialValues={{
-                vehicleId: selectedVehicle,
-                expenseType: "carburant",
-                date: new Date().toISOString().split('T')[0],
-                amount: "",
-                mileage: "",
-                fuelVolume: "",
-                maintenanceType: "",
-                repairType: "",
-                comment: ""
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+        <AddVehicleExpenseDialog
+          vehicleId={selectedVehicle}
+          open={expenseDialogOpen}
+          onOpenChange={setExpenseDialogOpen}
+          onSuccess={handleExpenseSuccess}
+          onCancel={handleExpenseCancel}
+          colorScheme="gray"
+          initialValues={{
+            vehicleId: selectedVehicle,
+            expenseType: "carburant",
+            date: new Date().toISOString().split('T')[0],
+            amount: "",
+            mileage: "",
+            fuelVolume: "",
+            maintenanceType: "",
+            repairType: "",
+            comment: ""
+          }}
+        />
       )}
 
+      {/* Dialogue de dépense d'enseigne */}
       {selectedRetailer && (
-        <Dialog open={retailerExpenseDialogOpen} onOpenChange={setRetailerExpenseDialogOpen}>
-          <DialogContent className="sm:max-w-[500px] p-0 border-0 overflow-hidden bg-transparent shadow-2xl">
-            <AddExpenseDialog 
-              onExpenseAdded={handleRetailerExpenseSuccess}
-              preSelectedRetailer={selectedRetailer}
-              open={retailerExpenseDialogOpen}
-              onOpenChange={setRetailerExpenseDialogOpen}
-              hideDialogWrapper={true}
-              hideTitleBar={true}
-            />
-          </DialogContent>
-        </Dialog>
+        <AddExpenseDialog 
+          onExpenseAdded={handleRetailerExpenseSuccess}
+          preSelectedRetailer={selectedRetailer}
+          open={retailerExpenseDialogOpen}
+          onOpenChange={setRetailerExpenseDialogOpen}
+        />
       )}
     </>
   );

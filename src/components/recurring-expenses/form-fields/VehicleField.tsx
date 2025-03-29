@@ -4,15 +4,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery } from "@tanstack/react-query";
 import { UseFormReturn } from "react-hook-form";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface VehicleFieldProps {
   form: UseFormReturn<any>;
 }
 
 export function VehicleField({ form }: VehicleFieldProps) {
-  // Récupérer la liste des véhicules
+  const isMobile = useIsMobile();
+  
+  // Récupérer la liste des véhicules actifs uniquement
   const { data: vehicles, isLoading } = useQuery({
-    queryKey: ["vehicles"],
+    queryKey: ["active-vehicles"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
@@ -31,7 +35,7 @@ export function VehicleField({ form }: VehicleFieldProps) {
       name="vehicle_id"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Véhicule (optionnel)</FormLabel>
+          <FormLabel className={cn(isMobile && "text-sm")}>Véhicule</FormLabel>
           <Select
             value={field.value || undefined}
             onValueChange={(value) => {
@@ -48,11 +52,14 @@ export function VehicleField({ form }: VehicleFieldProps) {
             disabled={isLoading}
           >
             <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un véhicule (optionnel)" />
+              <SelectTrigger className={cn(
+                "bg-white dark:bg-gray-800",
+                isMobile && "h-9 text-sm"
+              )}>
+                <SelectValue placeholder="Sélectionner un véhicule" />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent className={cn(isMobile && "text-sm")}>
               {/* Utiliser une valeur spécifique au lieu d'une chaîne vide */}
               <SelectItem value="no-vehicle">Aucun véhicule</SelectItem>
               {vehicles?.map((vehicle) => (
@@ -62,7 +69,7 @@ export function VehicleField({ form }: VehicleFieldProps) {
               ))}
             </SelectContent>
           </Select>
-          <FormMessage />
+          <FormMessage className={cn(isMobile && "text-xs")} />
         </FormItem>
       )}
     />

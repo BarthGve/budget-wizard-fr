@@ -9,6 +9,7 @@ import { RecurringExpensesHeader } from "../RecurringExpensesHeader";
 import { MutableRefObject } from "react";
 import { RecurringExpensesCategoryChart } from "../RecurringExpensesCategoryChart";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { MobileCategoryList } from "../MobileCategoryList";
 
 interface ExpenseSectionsProps {
   recurringExpenses: RecurringExpense[];
@@ -59,11 +60,18 @@ export const ExpenseSections = ({
         />
       </div>
 
-      {/* Graphique des dépenses par catégorie */}
-      <RecurringExpensesCategoryChart 
-        expenses={recurringExpenses} 
-        selectedPeriod={selectedPeriod} 
-      />
+      {/* Affichage conditionnel selon le type d'appareil */}
+      {isMobile ? (
+        <MobileCategoryList 
+          expenses={recurringExpenses}
+          selectedPeriod={selectedPeriod} 
+        />
+      ) : (
+        <RecurringExpensesCategoryChart 
+          expenses={recurringExpenses} 
+          selectedPeriod={selectedPeriod} 
+        />
+      )}
 
       {/* Masquer le tableau sur mobile */}
       {!isMobile && (

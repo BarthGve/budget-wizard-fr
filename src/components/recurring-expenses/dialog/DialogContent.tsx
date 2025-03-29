@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { RecurringExpenseForm } from "../RecurringExpenseForm";
 import { RecurringExpense } from "../types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DialogContentProps {
   expense?: RecurringExpense;
@@ -10,6 +11,7 @@ interface DialogContentProps {
   needsScrolling: boolean;
   onOpenChange: (open: boolean) => void;
   className?: string;
+  initialVehicleId?: string; // Ajout de la propriété initialVehicleId
 }
 
 export const DialogContent = ({ 
@@ -17,8 +19,10 @@ export const DialogContent = ({
   isEditMode, 
   needsScrolling,
   onOpenChange,
+  initialVehicleId, // Ajout du prop
   className 
 }: DialogContentProps) => {
+  const isMobile = useIsMobile();
   
   // Gestionnaire du succès du formulaire
   const handleSuccess = () => {
@@ -43,6 +47,7 @@ export const DialogContent = ({
         onSuccess={handleSuccess}
         onCancel={handleCancel}
         variant={isEditMode ? "edit" : "create"}
+        initialVehicleId={initialVehicleId} // Passer la propriété au formulaire
       />
     </motion.div>
   );
@@ -51,7 +56,8 @@ export const DialogContent = ({
     <div className="relative z-10 mt-2">
       <div 
         className={cn(
-          "p-6 max-w-full", // Ajout de max-w-full pour contraindre le contenu
+          isMobile ? "p-2 pb-6" : "p-6",
+          "max-w-full", // Ajout de max-w-full pour contraindre le contenu
           className
         )}
       >

@@ -8,28 +8,14 @@ interface ExpenseFormActionsProps {
   onCancel: () => void;
 }
 
-export const ExpenseFormActions = ({ isLoading, isEditMode, onCancel }: ExpenseFormActionsProps) => {
-  // Fonction explicite pour gérer l'annulation avec preventDefault
-  const handleCancel = (e: React.MouseEvent) => {
-    // Empêcher le comportement par défaut du bouton
-    e.preventDefault();
-    
-    // Appeler le callback d'annulation
-    onCancel();
-  };
-
+export const ExpenseFormActions = ({ isLoading, isEditMode }: ExpenseFormActionsProps) => {
   return (
-    <div className="flex justify-end space-x-2 pt-4">
-      <Button 
-        type="button" 
-        variant="outline" 
-        onClick={handleCancel}
-      >
-        Annuler
-      </Button>
+    <div className="pt-4">
       <Button 
         type="submit" 
         disabled={isLoading}
+        variant="outline"
+        className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
       >
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {isEditMode ? 'Mettre à jour' : 'Ajouter'} la dépense
