@@ -31,7 +31,7 @@ export const VehicleCardHeader = ({
         hasPhoto && "text-white"
       )}>
         <div className={cn(
-          "flex-shrink-0 w-12 h-12 rounded-full overflow-hidden",
+          "flex-shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden",
           hasPhoto && "border-2 border-white shadow-md"
         )}>
           <BrandLogoPreview 

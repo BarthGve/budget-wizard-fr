@@ -48,12 +48,14 @@ export const VehicleRegistrationFields = ({ form }: VehicleRegistrationFieldsPro
                     {...field} 
                   />
                 </FormControl>
-                <BrandLogoPreview
-                  url={previewLogoUrl}
-                  isValid={isLogoValid}
-                  isChecking={isCheckingLogo}
-                  brand={brand}
-                />
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white flex items-center justify-center border border-gray-200">
+                  <BrandLogoPreview
+                    url={previewLogoUrl}
+                    isValid={isLogoValid}
+                    isChecking={isCheckingLogo}
+                    brand={brand}
+                  />
+                </div>
               </div>
               <FormMessage />
             </FormItem>
