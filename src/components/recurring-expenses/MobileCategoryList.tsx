@@ -47,7 +47,10 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
 
   // Obtenir les dépenses de la catégorie sélectionnée en tenant compte de la période
   const categoryExpenses = selectedCategory 
-    ? filteredExpenses.filter(expense => expense.category === selectedCategory).sort((a, b) => b.amount - a.amount)
+    ? expenses.filter(expense => 
+        expense.category === selectedCategory && 
+        expense.periodicity === effectivePeriod
+      ).sort((a, b) => b.amount - a.amount)
     : [];
 
   return (
