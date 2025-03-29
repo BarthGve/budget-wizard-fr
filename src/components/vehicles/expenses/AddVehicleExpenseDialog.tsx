@@ -4,7 +4,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { ExpenseForm } from "./form/ExpenseForm";
 import { ExpenseInitialValues } from "@/hooks/useExpenseForm";
 import { cn } from "@/lib/utils";
-import { Fuel, PlusCircle } from "lucide-react";
+import { CarFront, PlusCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRef } from "react";
 
@@ -129,15 +129,15 @@ export const AddVehicleExpenseDialog = ({
         <DialogHeader className="relative z-10 mb-4">
           <div className="flex items-center gap-3">
             <div className={cn("p-2.5 rounded-lg shadow-sm", currentColors.iconBg)}>
-              <Fuel className="w-5 h-5" />
+              <CarFront className="w-5 h-5" />
             </div>
             <DialogTitle className={cn("text-2xl font-bold", currentColors.headingText)}>
-              {isEditMode ? 'Modifier' : 'Ajouter'} une dépense de carburant
+              {isEditMode ? 'Modifier' : 'Ajouter'} une dépense du véhicule
             </DialogTitle>
           </div>
           <div className="ml-[52px] mt-2">
             <DialogDescription className={cn("text-base", currentColors.descriptionText)}>
-              {isEditMode ? 'Modifiez' : 'Ajoutez'} les détails de votre dépense de carburant.
+              {isEditMode ? 'Modifiez' : 'Ajoutez'} les détails de votre dépense.
             </DialogDescription>
           </div>
         </DialogHeader>
