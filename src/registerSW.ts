@@ -4,28 +4,36 @@
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/serviceWorker.js')
-        .then(registration => {
-          console.log('Service Worker enregistré avec succès:', registration.scope);
-          
-          // Vérifier s'il y a une mise à jour disponible
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            console.log('Nouvelle version du Service Worker trouvée...');
-            
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Nouveau Service Worker disponible, notifier l'utilisateur
-                  notifyUserOfUpdate();
-                }
-              });
-            }
-          });
+      // Utilisation d'un délai pour s'assurer que l'application est chargée
+      setTimeout(() => {
+        navigator.serviceWorker.register('/serviceWorker.js', {
+          // Limiter la portée du service worker
+          scope: '/',
+          // Utiliser le mode "no-cors" pour éviter les problèmes CORS
+          updateViaCache: 'none'
         })
-        .catch(error => {
-          console.error('Erreur lors de l\'enregistrement du Service Worker:', error);
-        });
+          .then(registration => {
+            console.log('Service Worker enregistré avec succès:', registration.scope);
+            
+            // Vérifier s'il y a une mise à jour disponible
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              console.log('Nouvelle version du Service Worker trouvée...');
+              
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // Nouveau Service Worker disponible, notifier l'utilisateur
+                    notifyUserOfUpdate();
+                  }
+                });
+              }
+            });
+          })
+          .catch(error => {
+            console.error('Erreur lors de l\'enregistrement du Service Worker:', error);
+          });
+      }, 2000); // Délai augmenté à 2 secondes
         
       // Écouter les messages des autres onglets concernant les mises à jour
       navigator.serviceWorker.addEventListener('controllerchange', () => {

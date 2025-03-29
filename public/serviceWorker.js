@@ -10,10 +10,10 @@ self.addEventListener('activate', handleActivate);
 self.addEventListener('fetch', handleFetch);
 self.addEventListener('message', handleMessage);
 
-// Ajout d'un gestionnaire spécifique pour les navigations
+// Désactiver explicitement l'interception des navigations
 self.addEventListener('navigate', (event) => {
-  // Laisser le navigateur gérer les navigations normalement
-  // Ne pas interférer avec React Router
+  // Ne rien faire, laisser le navigateur et React Router gérer la navigation
+  console.log('[ServiceWorker] Navigation détectée, laissant passer:', event.url);
   return;
 });
 

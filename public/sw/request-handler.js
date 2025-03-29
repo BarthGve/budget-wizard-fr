@@ -14,9 +14,14 @@ const handleFetch = (event) => {
     return;
   }
   
-  // Ne pas intercepter les navigations principales (celles qui sont faites par React Router)
-  if (event.request.mode === 'navigate' && event.request.destination === 'document') {
-    // Laisser React Router gérer la navigation SPA
+  // IMPORTANT: Ne jamais intercepter les navigations, laisser React Router les gérer
+  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
+    console.log('[ServiceWorker] Navigation détectée, laissant React Router gérer:', url.pathname);
+    return;
+  }
+  
+  // Ne pas intercepter les requêtes pour les fichiers HTML
+  if (url.pathname.endsWith('.html')) {
     return;
   }
   

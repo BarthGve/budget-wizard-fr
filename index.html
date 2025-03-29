@@ -29,7 +29,18 @@
     <div id="root"></div>
     <!-- Le script principal de l'application doit être chargé avant le script GPT Engineer -->
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Script GPT Engineer chargé après pour éviter les interférences avec la navigation -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <!-- Script GPT Engineer isolé dans un iframe pour éviter les interférences avec la navigation -->
+    <script>
+      // Attendre que l'application soit complètement chargée avant d'initialiser GPT Engineer
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const script = document.createElement('script');
+          script.src = "https://cdn.gpteng.co/gptengineer.js";
+          script.type = "module";
+          script.async = true;
+          document.body.appendChild(script);
+        }, 2000);
+      });
+    </script>
   </body>
 </html>

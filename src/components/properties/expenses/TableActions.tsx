@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,8 +10,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 interface TableActionsProps {
   onEdit: () => void;
@@ -19,30 +19,50 @@ interface TableActionsProps {
 }
 
 export function TableActions({ onEdit, onDelete }: TableActionsProps) {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  
   return (
-    <div className="flex items-center gap-2">
-      <Button variant="ghost" size="icon" onClick={onEdit}>
-        <Edit2 className="h-4 w-4" />
+    <div className="flex justify-end space-x-2">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onEdit();
+        }}
+      >
+        <Edit className="h-3.5 w-3.5" />
+        <span className="sr-only">Modifier</span>
       </Button>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-destructive hover:text-destructive"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsAlertOpen(true);
+        }}
+      >
+        <Trash className="h-3.5 w-3.5" />
+        <span className="sr-only">Supprimer</span>
+      </Button>
+      
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer la dépense</AlertDialogTitle>
+            <AlertDialogTitle>Supprimer cette dépense ?</AlertDialogTitle>
             <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action ne peut pas être annulée.
+              Cette action ne peut pas être annulée. Cette dépense sera définitivement supprimée.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={onDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={() => {
+              onDelete();
+              setIsAlertOpen(false);
+            }}>
               Supprimer
             </AlertDialogAction>
           </AlertDialogFooter>

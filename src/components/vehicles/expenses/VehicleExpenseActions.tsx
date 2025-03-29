@@ -27,7 +27,9 @@ interface VehicleExpenseActionsProps {
 export function VehicleExpenseActions({ onEdit, onDelete }: VehicleExpenseActionsProps) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   
-  const handleDelete = () => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault(); // Empêcher le comportement par défaut
+    e.stopPropagation(); // Arrêter la propagation
     setIsAlertOpen(true);
   };
   
@@ -40,7 +42,11 @@ export function VehicleExpenseActions({ onEdit, onDelete }: VehicleExpenseAction
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={(e) => e.preventDefault()}
+          >
             <MoreVertical className="h-4 w-4" />
             <span className="sr-only">Menu d'actions</span>
           </Button>
@@ -60,11 +66,7 @@ export function VehicleExpenseActions({ onEdit, onDelete }: VehicleExpenseAction
           </DropdownMenuItem>
           <DropdownMenuItem 
             className="text-destructive" 
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleDelete();
-            }}
+            onClick={handleDelete}
           >
             <Trash2 className="h-4 w-4 mr-2 text-destructive" />
             <span className="text-destructive">Supprimer</span>
@@ -74,7 +76,7 @@ export function VehicleExpenseActions({ onEdit, onDelete }: VehicleExpenseAction
       
       {/* Dialog de confirmation de suppression séparé */}
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer cette dépense</AlertDialogTitle>
             <AlertDialogDescription>
@@ -82,9 +84,12 @@ export function VehicleExpenseActions({ onEdit, onDelete }: VehicleExpenseAction
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel onClick={(e) => e.preventDefault()}>Annuler</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleConfirmDelete}
+              onClick={(e) => {
+                e.preventDefault();
+                handleConfirmDelete();
+              }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Supprimer
