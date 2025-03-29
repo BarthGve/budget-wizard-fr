@@ -1,4 +1,3 @@
-
 import { useRef } from "react";
 import { Dialog, DialogContent as UIDialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { AnimatePresence, motion } from "framer-motion";
@@ -9,6 +8,7 @@ import { DialogHeader } from "./DialogHeader";
 import { DialogContent } from "./DialogContent";
 import { RecurringExpense } from "../types";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { DialogBackground } from "./DialogBackground";
 
 interface DesktopDialogProps {
   expense?: RecurringExpense;
@@ -32,15 +32,12 @@ export const DesktopDialog = ({
   trigger,
   initialVehicleId
 }: DesktopDialogProps) => {
-  // Thème et référence pour mesurer la hauteur du contenu
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const contentRef = useRef<HTMLDivElement>(null);
   
-  // Vérifier si nous sommes sur tablette
   const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
   
-  // Fonction pour gérer la fermeture du dialogue
   const handleClose = () => {
     if (onOpenChange) {
       onOpenChange(false);
@@ -59,9 +56,7 @@ export const DesktopDialog = ({
               "p-0 border-0 relative overflow-hidden",
               "fixed left-[50%] top-[50%] z-50 grid w-full max-w-[650px] translate-x-[-50%] translate-y-[-50%] gap-0",
               "bg-white dark:bg-gray-900",
-              // Ajustement pour les tablettes
               isTablet ? "sm:max-w-[85%] w-[85%]" : "w-[90vw]",
-              // Hauteur maximum définie pour permettre le défilement
               needsScrolling ? "max-h-[90vh]" : ""
             )}
             style={{
@@ -70,10 +65,8 @@ export const DesktopDialog = ({
                 : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)",
             }}
           >
-            {/* Fond avec dégradés */}
             <DialogBackground isDarkMode={isDarkMode} />
 
-            {/* Bouton de fermeture personnalisé */}
             <button 
               onClick={handleClose}
               className={cn(
@@ -81,7 +74,7 @@ export const DesktopDialog = ({
                 "transition-opacity hover:opacity-100 focus:outline-none focus:ring-2",
                 "focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none",
                 "data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
-                "z-20" // Assurer que le bouton est au-dessus des autres éléments
+                "z-20"
               )}
             >
               <X className="h-4 w-4" />
@@ -97,7 +90,6 @@ export const DesktopDialog = ({
                 "dark:scrollbar-thumb-gray-700"
               )}
             >
-              {/* En-tête du dialogue */}
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -106,7 +98,6 @@ export const DesktopDialog = ({
                 <DialogHeader isEditMode={isEditMode} />
               </motion.div>
               
-              {/* Contenu du dialogue avec formulaire */}
               <DialogContent
                 expense={expense}
                 isEditMode={isEditMode}
@@ -120,7 +111,6 @@ export const DesktopDialog = ({
               />
             </div>
 
-            {/* Décoration graphique dans le coin inférieur droit */}
             <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.025] z-0">
               <svg
                 viewBox="0 0 100 100"
