@@ -42,6 +42,10 @@ export default defineConfig(({ mode }) => ({
             purpose: 'maskable'
           }
         ]
+      },
+      workbox: {
+        // Augmentation de la taille maximale des fichiers à mettre en cache à 4 Mo
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4 Mo
       }
     })
   ].filter(Boolean),
