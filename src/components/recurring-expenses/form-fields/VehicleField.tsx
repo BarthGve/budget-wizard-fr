@@ -4,9 +4,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery } from "@tanstack/react-query";
 import { UseFormReturn } from "react-hook-form";
 import { supabase } from "@/integrations/supabase/client";
+import { FormValues } from "../hooks/useRecurringExpenseForm";
 
 interface VehicleFieldProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FormValues>;
 }
 
 export function VehicleField({ form }: VehicleFieldProps) {

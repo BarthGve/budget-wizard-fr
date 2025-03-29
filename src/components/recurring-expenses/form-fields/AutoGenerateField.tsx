@@ -4,9 +4,10 @@ import { Switch } from "@/components/ui/switch";
 import { UseFormReturn } from "react-hook-form";
 import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { FormValues } from "../hooks/useRecurringExpenseForm";
 
 interface AutoGenerateFieldProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FormValues>;
 }
 
 export function AutoGenerateField({ form }: AutoGenerateFieldProps) {

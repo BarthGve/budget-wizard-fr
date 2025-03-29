@@ -28,7 +28,11 @@ export const formSchema = z.object({
       return !isNaN(month) && month >= 1 && month <= 12;
     },
     "Le mois doit être entre 1 et 12"
-  )
+  ),
+  // Ajout des champs pour les véhicules
+  vehicle_id: z.string().optional().nullable(),
+  vehicle_expense_type: z.string().optional().nullable(),
+  auto_generate_vehicle_expense: z.boolean().optional()
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -72,6 +76,10 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
       debit_month: expense?.debit_month?.toString() || null,
+      // Initialiser les champs de véhicule
+      vehicle_id: expense?.vehicle_id || null,
+      vehicle_expense_type: expense?.vehicle_expense_type || null,
+      auto_generate_vehicle_expense: expense?.auto_generate_vehicle_expense || false
     },
   });
 

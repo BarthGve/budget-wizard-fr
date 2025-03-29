@@ -104,7 +104,7 @@ export function RecurringExpenseForm({
             Annuler
           </Button>
           <Button type="submit" className="bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white">
-            {expense ? "Mettre à jour" : "Ajouter"}
+            {expense?.id ? "Mettre à jour" : "Ajouter"}
           </Button>
         </div>
       </form>
