@@ -14,6 +14,17 @@ import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
+// Créons une constante locale pour les types d'actifs au cas où l'import ne fonctionnerait pas correctement
+const assetTypesList = [
+  { value: "action", label: "Action" },
+  { value: "etf", label: "ETF" },
+  { value: "obligation", label: "Obligation" },
+  { value: "crypto", label: "Cryptomonnaie" },
+  { value: "forex", label: "Forex" },
+  { value: "matiere_premiere", label: "Matière première" },
+  { value: "autre", label: "Autre" }
+];
+
 export const AssetsSection = () => {
   const [assets, setAssets] = useState<AssetWithValueData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -204,7 +215,7 @@ export const AssetsSection = () => {
                   <TableBody>
                     {assets.map((asset) => {
                       const assetTypeLabel = asset.asset_type 
-                        ? assetTypes.find(t => t.value === asset.asset_type)?.label || asset.asset_type
+                        ? assetTypesList.find(t => t.value === asset.asset_type)?.label || asset.asset_type
                         : "Non défini";
                         
                       return (
