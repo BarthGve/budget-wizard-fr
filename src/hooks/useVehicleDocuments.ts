@@ -63,6 +63,15 @@ export const useVehicleDocuments = (vehicleId: string) => {
     },
   });
 
+  // Fonction pour nettoyer les noms de fichiers
+  const sanitizeFileName = (fileName: string): string => {
+    // Remplacer les caractères accentués et spéciaux
+    return fileName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+      .replace(/[^\w.-]/g, '_'); // Remplacer les autres caractères spéciaux par des underscores
+  };
+
   // Télécharger un document
   const uploadDocument = async (
     file: File,
@@ -77,8 +86,12 @@ export const useVehicleDocuments = (vehicleId: string) => {
       console.log("Démarrage de l'upload du document:", file.name);
       setIsUploading(true);
 
+      // Nettoyer le nom du fichier pour éviter les problèmes avec Supabase Storage
+      const cleanFileName = sanitizeFileName(file.name);
+      console.log("Nom du fichier nettoyé:", cleanFileName);
+
       // 1. Upload du fichier dans le stockage Supabase
-      const filePath = `${userId}/${vehicleId}/${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
+      const filePath = `${userId}/${vehicleId}/${Date.now()}_${cleanFileName}`;
       console.log("Chemin du fichier:", filePath);
       
       const { data: uploadData, error: uploadError } = await supabase
