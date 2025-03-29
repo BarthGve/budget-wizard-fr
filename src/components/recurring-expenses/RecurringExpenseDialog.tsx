@@ -18,13 +18,15 @@ interface RecurringExpenseDialogProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  initialVehicleId?: string; // Ajout de la propriété initialVehicleId optionnelle
 }
 
 export function RecurringExpenseDialog({ 
   expense, 
   trigger,
   open: controlledOpen,
-  onOpenChange: controlledOnOpenChange 
+  onOpenChange: controlledOnOpenChange,
+  initialVehicleId // Ajout du prop
 }: RecurringExpenseDialogProps) {
   // État contrôlé ou non contrôlé
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
@@ -185,6 +187,7 @@ export function RecurringExpenseDialog({
                 isEditMode={isEditMode}
                 needsScrolling={needsScrolling}
                 onOpenChange={onOpenChange}
+                initialVehicleId={initialVehicleId} // Passer la propriété au sous-composant
                 className={cn(
                   isTablet ? "overflow-y-auto" : "",
                   isTablet ? "flex-grow" : ""

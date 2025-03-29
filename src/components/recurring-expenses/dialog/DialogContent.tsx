@@ -11,6 +11,7 @@ interface DialogContentProps {
   needsScrolling: boolean;
   onOpenChange: (open: boolean) => void;
   className?: string;
+  initialVehicleId?: string; // Ajout de la propriété initialVehicleId
 }
 
 export const DialogContent = ({ 
@@ -18,6 +19,7 @@ export const DialogContent = ({
   isEditMode, 
   needsScrolling,
   onOpenChange,
+  initialVehicleId, // Ajout du prop
   className 
 }: DialogContentProps) => {
   const isMobile = useIsMobile();
@@ -45,6 +47,7 @@ export const DialogContent = ({
         onSuccess={handleSuccess}
         onCancel={handleCancel}
         variant={isEditMode ? "edit" : "create"}
+        initialVehicleId={initialVehicleId} // Passer la propriété au formulaire
       />
     </motion.div>
   );
