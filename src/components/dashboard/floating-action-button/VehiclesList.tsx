@@ -106,7 +106,7 @@ export const VehiclesList = ({
           >
             <div className="flex items-center gap-2">
               <Car className="h-4 w-4 text-blue-500" />
-              <span className="font-medium">{formatBrand(vehicle.brand)} {vehicle.model || ""}</span>
+              <span className="font-medium">{formatBrand(vehicle.brand)} </span>
             </div>
             <span className="text-xs text-gray-500">{vehicle.registration_number}</span>
           </motion.div>
