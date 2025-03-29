@@ -19,16 +19,19 @@ export const TotalDebtCard = ({
   const progressPercentage = totalDebt > 0 
     ? Math.min(100, Math.max(0, (amountPaid / totalDebt) * 100))
     : 0;
+    
+  // Calculer le montant restant à rembourser
+  const remainingDebt = Math.max(0, totalDebt - amountPaid);
 
   return (
     <CardComponent
       icon={<Wallet className="h-4 w-4" />}
       title="Endettement total"
       description={`${activeCreditsCount} crédit(s) en cours`}
-      amount={totalDebt}
+      amount={remainingDebt}
       subtitle={
         <div className="flex items-center gap-2">
-          <span>Montant total</span>
+          <span>Montant restant</span>
           <span className="badge">{/* Badge sera rendu par CreditCard */}</span>
           <div className="flex-grow ml-2">
             <CreditProgressBar 
@@ -44,7 +47,7 @@ export const TotalDebtCard = ({
           </div>
         </div>
       }
-      badgeText="cumul"
+      badgeText="reste à payer"
       colorScheme="blue"
     />
   );
