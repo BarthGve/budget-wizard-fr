@@ -74,9 +74,9 @@ export const RetailersList = ({
           className="h-8 px-2 text-xs"
           onClick={onBackClick}
         >
-     
+          Retour
         </Button>
-  
+        <span className="text-sm font-medium">Sélectionner une enseigne</span>
       </motion.div>
       
       {isLoading ? (
