@@ -85,7 +85,7 @@ export const VehiclesList = ({
         >
           Retour
         </Button>
-        <span className="text-sm font-medium">Sélectionner un véhicule</span>
+        
       </motion.div>
       
       {isLoading ? (
