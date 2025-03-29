@@ -1,4 +1,3 @@
-
 import { Vehicle } from "@/types/vehicle";
 import { useState } from "react";
 import { useVehicles } from "@/hooks/useVehicles";
@@ -73,10 +72,8 @@ export const VehiclesList = () => {
         isDeleting={isDeleting || isMarking}
       />
       
-      {/* Section des véhicules vendus */}
       <SoldVehiclesList vehicles={vehicles || []} onVehicleClick={handleVehicleClick} />
 
-      {/* Dialog de modification */}
       <VehicleEditDialog
         isOpen={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
@@ -85,12 +82,13 @@ export const VehiclesList = () => {
         isPending={isUpdating}
       />
       
-      {/* Dialog de suppression/vente */}
       <VehicleDeleteDialog 
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        onDelete={handleConfirmDelete}
-        onMarkAsSold={handleMarkAsSold}
+        onConfirm={handleConfirmDelete}
+        isPending={isDeleting}
+        vehicleBrand={selectedVehicle?.brand}
+        vehicleModel={selectedVehicle?.model}
       />
     </>
   );

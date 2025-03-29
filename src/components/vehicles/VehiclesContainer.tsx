@@ -1,4 +1,3 @@
-
 import { VehiclesHeader } from "./VehiclesHeader";
 import { VehiclesTabs } from "./VehiclesTabs";
 import { motion } from "framer-motion";
@@ -59,7 +58,6 @@ export const VehiclesContainer = () => {
     }
   };
   
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -118,7 +116,6 @@ export const VehiclesContainer = () => {
         </div>
       </motion.div>
       
-      {/* Dialog de modification */}
       <VehicleEditDialog
         isOpen={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
@@ -127,12 +124,13 @@ export const VehiclesContainer = () => {
         isPending={isUpdating}
       />
       
-      {/* Dialog de suppression/vente */}
       <VehicleDeleteDialog 
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        onDelete={handleConfirmDelete}
-        onMarkAsSold={handleMarkAsSold}
+        onConfirm={handleConfirmDelete}
+        isPending={isDeleting}
+        vehicleBrand={selectedVehicle?.brand}
+        vehicleModel={selectedVehicle?.model}
       />
     </motion.div>
   );
