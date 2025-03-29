@@ -44,7 +44,7 @@ export const BrandLogoPreview = ({
       <img 
         src={url} 
         alt={`Logo ${brand}`} 
-        className="w-[90%] h-[90%] object-contain"
+        className="w-full h-full object-contain"
         onError={(e) => {
           // En cas d'erreur de chargement, remplacer par le fallback de la première lettre
           e.currentTarget.style.display = 'none';
