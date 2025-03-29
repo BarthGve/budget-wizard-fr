@@ -38,7 +38,7 @@ export const Hero = ({
   };
 
   return (
-    <section className="relative pt-16 md:pt-24 lg:pt-32 px-6 mx-auto max-w-7xl">
+    <section className="relative pt-20 md:pt-24 lg:pt-32 px-4 md:px-6 mx-auto max-w-7xl">
       <motion.div 
         className="flex flex-col items-center text-center"
         initial="hidden"
@@ -47,21 +47,21 @@ export const Hero = ({
       >
         <motion.h1 
           variants={itemVariants}
-          className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-6"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-4 sm:mb-6 px-2"
         >
           {title}
         </motion.h1>
         
         <motion.p 
           variants={itemVariants}
-          className="max-w-[600px] text-gray-500 dark:text-gray-400 mb-8 text-lg"
+          className="max-w-[600px] text-gray-500 dark:text-gray-400 mb-6 sm:mb-8 text-base sm:text-lg px-2"
         >
           {description}
         </motion.p>
         
         <motion.div 
           variants={itemVariants}
-          className="flex flex-wrap gap-4 justify-center"
+          className="flex flex-wrap gap-3 sm:gap-4 justify-center"
         >
           <Link to="/register">
             <Button size="lg" className="gap-1 rounded-full">

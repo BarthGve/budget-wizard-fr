@@ -77,10 +77,10 @@ const Landing = () => {
     { icon: "https://cdn.worldvectorlogo.com/logos/tailwindcss.svg", name: "Tailwind CSS" },
     { icon: "https://app.supabase.com/img/supabase-logo.svg", name: "Supabase" },
     { icon: "https://ui.shadcn.com/favicon.ico", name: "shadcn/ui" },
-   ];
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-background">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-background pt-safe-top">
       <Navbar />
       
       <Hero

@@ -10,14 +10,14 @@ const Navbar = () => {
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   return (
-    <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-7xl z-50 rounded-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-950/70 border shadow-sm">
-      <div className="container mx-auto px-3 sm:px-6">
-        <div className="flex items-center justify-between h-14 sm:h-16">
+    <nav className="fixed top-0 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] max-w-7xl z-50 mt-2 sm:mt-4 rounded-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-950/70 border shadow-sm">
+      <div className="container mx-auto px-2 sm:px-6">
+        <div className="flex items-center justify-between h-12 sm:h-16">
           <Link to="/" className="flex items-center gap-1 sm:gap-2">
             <img 
               src="/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.avif"
               alt="Budget Wizard"
-              className="w-7 h-7 sm:w-8 sm:h-8 transform-fix"
+              className="w-6 h-6 sm:w-8 sm:h-8 transform-fix"
               style={{
                 WebkitBackfaceVisibility: 'hidden',
                 backfaceVisibility: 'hidden',
@@ -25,10 +25,10 @@ const Navbar = () => {
                 transform: 'translateZ(0)'
               }}
             />
-            <span className="font-semibold text-base sm:text-lg">{appConfig.name}</span>
+            <span className="font-semibold text-sm sm:text-lg">{appConfig.name}</span>
           </Link>
           
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1 sm:gap-4">
             {!isMobile && (
               <Link to="/changelog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Changelog
