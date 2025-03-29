@@ -1,5 +1,5 @@
 
-import { motion } from "framer-motion";
+import { motion, Variant } from "framer-motion";
 import { ReactNode } from "react";
 
 type VehicleCardAnimationProps = {
@@ -10,7 +10,7 @@ type VehicleCardAnimationProps = {
 
 // Animation variants pour les cartes
 const cardVariants = {
-  visible: {
+  visible: (index: number) => ({
     opacity: 1,
     y: 0,
     scale: 1,
@@ -19,9 +19,9 @@ const cardVariants = {
       stiffness: 100,
       damping: 15,
       duration: 0.5,
-      delay: (index: number) => index * 0.05
+      delay: index * 0.05
     }
-  },
+  }),
   hidden: {
     opacity: 0,
     y: 20,
@@ -44,6 +44,7 @@ export const VehicleCardAnimation = ({
     <motion.div
       className="perspective-1000 h-full pb-4"
       variants={cardVariants}
+      custom={index}
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
       whileHover={{ 
@@ -52,7 +53,6 @@ export const VehicleCardAnimation = ({
         transition: { duration: 0.2 }
       }}
       whileTap={{ scale: 0.98 }}
-      custom={index}
     >
       {children}
     </motion.div>
