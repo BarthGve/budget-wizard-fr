@@ -9,17 +9,21 @@ export const AuthListener = () => {
   const navigate = useNavigate();
   const { showOnboardingDialog, setShowOnboardingDialog, checkOwnerContributorIncome } = useIncomeVerification();
   const isCheckingRef = useRef(false);
+  const navigationInProgress = useRef(false);
+  const initialCheckDone = useRef(false);
 
   useEffect(() => {
-    // Éviter les vérifications multiples
-    if (isCheckingRef.current) return;
+    // Éviter les vérifications multiples ou pendant la navigation
+    if (isCheckingRef.current || navigationInProgress.current) return;
     
     const checkAuthAndIncome = async () => {
       try {
         isCheckingRef.current = true;
         
-        // Vérifier les revenus uniquement si nécessaire
-        await checkOwnerContributorIncome();
+        // Vérifier les revenus uniquement si nécessaire et si ce n'est pas la vérification initiale
+        if (initialCheckDone.current) {
+          await checkOwnerContributorIncome();
+        }
         
         // Vérifier l'état d'authentification
         const { data: { user } } = await supabase.auth.getUser();
@@ -32,8 +36,21 @@ export const AuthListener = () => {
             !location.pathname.includes("/email-verification") && 
             !location.pathname.includes("/changelog") && // Page changelog publique
             location.pathname !== "/") {
-          navigate("/login");
+          
+          // Éviter les redirections multiples
+          if (!navigationInProgress.current) {
+            navigationInProgress.current = true;
+            console.log("Redirection vers /login - utilisateur non authentifié");
+            navigate("/login", { replace: true });
+            
+            // Réinitialiser après un court délai
+            setTimeout(() => {
+              navigationInProgress.current = false;
+            }, 500);
+          }
         }
+        
+        initialCheckDone.current = true;
       } finally {
         // Reset flag after check completes
         isCheckingRef.current = false;
@@ -45,8 +62,19 @@ export const AuthListener = () => {
     
     // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Événement auth détecté:", event);
+      
       if (event === 'SIGNED_OUT') {
-        navigate("/login");
+        // Éviter les redirections multiples
+        if (!navigationInProgress.current) {
+          navigationInProgress.current = true;
+          navigate("/login", { replace: true });
+          
+          // Réinitialiser après un court délai
+          setTimeout(() => {
+            navigationInProgress.current = false;
+          }, 500);
+        }
       }
     });
     

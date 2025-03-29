@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import StyledLoader from "../ui/StyledLoader";
-import { memo, useRef } from "react";
+import { memo, useRef, useState, useEffect } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -15,12 +15,15 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const location = useLocation();
   const { canAccessPage, isAdmin } = usePagePermissions();
+  const [authChecked, setAuthChecked] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState<string | null>(null);
   const hasRedirectedRef = useRef(false);
   
   // Configuration optimisée de la requête d'authentification
   const { data: authData, isLoading } = useQuery({
     queryKey: ["auth", location.pathname],
     queryFn: async () => {
+      console.log("Vérification d'authentification pour:", location.pathname);
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (!user) return { isAuthenticated: false };
 
@@ -42,6 +45,51 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     retry: false,
   });
 
+  useEffect(() => {
+    if (!isLoading && !hasRedirectedRef.current) {
+      // Logique de redirection
+      if (!authData?.isAuthenticated) {
+        // Ne pas rediriger vers login si on est sur la page changelog publique
+        if (location.pathname === '/changelog') {
+          setAuthChecked(true);
+          return;
+        }
+        
+        console.log("Redirection vers /login depuis ProtectedRoute");
+        setShouldRedirect("/login");
+      } 
+      // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
+      else if (authData.isAdmin && location.pathname === '/dashboard') {
+        console.log("Redirection admin vers /admin");
+        setShouldRedirect("/admin");
+      }
+      // Vérifier si l'utilisateur peut accéder à cette page
+      else if (requireAdmin && !isAdmin) {
+        console.log("Redirection vers /dashboard - accès admin requis");
+        setShouldRedirect("/dashboard");
+      }
+      // Vérifier les permissions spéciales pour les routes de détail
+      else if (location.pathname.startsWith('/properties/') && !canAccessPage('/properties')) {
+        console.log("Redirection - pas accès aux propriétés");
+        setShouldRedirect("/dashboard");
+      }
+      else if (location.pathname.startsWith('/expenses/retailer/') && !canAccessPage('/expenses')) {
+        console.log("Redirection - pas accès aux dépenses");
+        setShouldRedirect("/dashboard");
+      }
+      // Vérifier les permissions générales
+      else if (!canAccessPage(location.pathname) && 
+               !location.pathname.includes('/user-settings') && 
+               !location.pathname.includes('/settings')) {
+        console.log("Redirection vers /dashboard - pas de permission");
+        setShouldRedirect("/dashboard");
+      }
+      else {
+        setAuthChecked(true);
+      }
+    }
+  }, [isLoading, authData, location.pathname, canAccessPage, isAdmin, requireAdmin]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -50,66 +98,19 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     );
   }
 
-  // Éviter les redirections en boucle
-  if (hasRedirectedRef.current) {
+  if (shouldRedirect) {
+    hasRedirectedRef.current = true;
+    return <Navigate to={shouldRedirect} state={{ from: location }} replace />;
+  }
+
+  if (authChecked) {
     return <>{children}</>;
   }
 
-  if (!authData?.isAuthenticated) {
-    // Ne pas rediriger vers login si on est sur la page changelog publique
-    if (location.pathname === '/changelog') {
-      return <>{children}</>;
-    }
-    
-    // Marquer que nous avons redirigé
-    hasRedirectedRef.current = true;
-    
-    // Utilisation de state pour préserver l'URL de redirection
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  // Liste des routes toujours accessibles une fois connecté
-  const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
-  
-  // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
-  if (authData.isAdmin && location.pathname === '/dashboard') {
-    hasRedirectedRef.current = true;
-    return <Navigate to="/admin" replace />;
-  }
-
-  if (requireAdmin && !isAdmin) {
-    hasRedirectedRef.current = true;
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  // Permettre l'accès aux routes toujours accessibles
-  if (alwaysAccessibleRoutes.includes(location.pathname)) {
-    return <>{children}</>;
-  }
-
-  // Gestion spéciale pour les routes de détail des propriétés
-  if (location.pathname.startsWith('/properties/')) {
-    // Si c'est la page principale des propriétés ou si l'utilisateur peut accéder à /properties
-    const canAccessProperties = canAccessPage('/properties');
-    if (canAccessProperties) {
-      return <>{children}</>;
-    }
-  }
-
-  // Gestion spéciale pour les routes de détail des enseignes
-  if (location.pathname.startsWith('/expenses/retailer/')) {
-    // Si l'utilisateur peut accéder à /expenses, il peut accéder aux détails des enseignes
-    const canAccessExpenses = canAccessPage('/expenses');
-    if (canAccessExpenses) {
-      return <>{children}</>;
-    }
-  }
-
-  // Vérifier les permissions pour les autres routes
-  if (!canAccessPage(location.pathname)) {
-    hasRedirectedRef.current = true;
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return <>{children}</>;
+  // État intermédiaire pendant la vérification
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <StyledLoader/>
+    </div>
+  );
 });

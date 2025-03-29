@@ -9,19 +9,20 @@ import { staleWhileRevalidateResources, matchesPatterns, handleStaleWhileRevalid
 const handleFetch = (event) => {
   const url = new URL(event.request.url);
   
+  // Vérifier si la requête est une navigation ou une requête HTML
+  if (event.request.mode === 'navigate' || 
+      event.request.destination === 'document' ||
+      url.pathname.endsWith('.html')) {
+    console.log('[ServiceWorker] Navigation détectée dans handleFetch, ignorée:', url.pathname);
+    return;
+  }
+  
   // Ne pas intercepter les requêtes vers Supabase ou d'autres API
-  if (url.hostname.includes('supabase.co') || url.pathname.includes('/api/')) {
-    return;
-  }
-  
-  // IMPORTANT: Ne jamais intercepter les navigations, laisser React Router les gérer
-  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
-    console.log('[ServiceWorker] Navigation détectée, laissant React Router gérer:', url.pathname);
-    return;
-  }
-  
-  // Ne pas intercepter les requêtes pour les fichiers HTML
-  if (url.pathname.endsWith('.html')) {
+  if (url.hostname.includes('supabase') || 
+      url.pathname.includes('/api/') || 
+      url.pathname.includes('/auth/') ||
+      url.pathname.includes('/storage/')) {
+    console.log('[ServiceWorker] Requête API détectée, ignorée:', url.pathname);
     return;
   }
   

@@ -27,19 +27,36 @@
 
   <body>
     <div id="root"></div>
-    <!-- Le script principal de l'application doit être chargé avant le script GPT Engineer -->
+    <!-- Le script principal de l'application doit être chargé en premier -->
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Script GPT Engineer isolé dans un iframe pour éviter les interférences avec la navigation -->
+    
+    <!-- Script GPT Engineer isolé dans un iframe après le chargement complet -->
     <script>
-      // Attendre que l'application soit complètement chargée avant d'initialiser GPT Engineer
       window.addEventListener('load', () => {
+        // S'assurer que l'application est chargée avant d'initialiser le script externe
         setTimeout(() => {
-          const script = document.createElement('script');
-          script.src = "https://cdn.gpteng.co/gptengineer.js";
-          script.type = "module";
-          script.async = true;
-          document.body.appendChild(script);
-        }, 2000);
+          // Créer un iframe isolé pour le script GPT Engineer
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none'; // Cacher l'iframe
+          document.body.appendChild(iframe);
+          
+          // Ajouter le script au document de l'iframe
+          try {
+            const script = iframe.contentDocument.createElement('script');
+            script.src = "https://cdn.gpteng.co/gptengineer.js";
+            script.type = "module";
+            iframe.contentDocument.body.appendChild(script);
+            console.log("GPT Engineer script chargé dans un iframe isolé");
+          } catch (e) {
+            // Fallback si l'approche iframe échoue
+            console.log("Fallback pour le chargement du script GPT Engineer");
+            const script = document.createElement('script');
+            script.src = "https://cdn.gpteng.co/gptengineer.js";
+            script.type = "module";
+            script.async = true;
+            document.body.appendChild(script);
+          }
+        }, 3000); // Délai augmenté à 3 secondes
       });
     </script>
   </body>

@@ -4,19 +4,20 @@ import App from './App.tsx'
 import './index.css'
 import { registerServiceWorker, checkForSWUpdates } from './registerSW'
 
+// Rendu de l'application React en premier pour assurer une navigation rapide
+createRoot(document.getElementById("root")!).render(<App />);
+
 // Enregistrement du service worker pour les fonctionnalités PWA 
-// seulement après que l'application soit complètement chargée
+// seulement après que l'application soit complètement chargée et stable
 window.addEventListener('load', () => {
-  // Différer l'enregistrement du service worker pour donner la priorité au chargement de l'app
+  // Différer significativement l'enregistrement du service worker pour donner la priorité au chargement de l'app
   setTimeout(() => {
+    console.log("Enregistrement du service worker...");
     registerServiceWorker();
-  }, 1000);
+  }, 5000); // Délai augmenté à 5 secondes
 });
 
-// Vérifier les mises à jour toutes les 60 minutes
+// Vérifier les mises à jour moins fréquemment pour réduire les interférences
 setInterval(() => {
   checkForSWUpdates();
-}, 60 * 60 * 1000);
-
-// Rendu de l'application React
-createRoot(document.getElementById("root")!).render(<App />);
+}, 120 * 60 * 1000); // Toutes les 2 heures au lieu de chaque heure
