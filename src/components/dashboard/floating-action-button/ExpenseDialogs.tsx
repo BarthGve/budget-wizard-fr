@@ -34,50 +34,9 @@ export const ExpenseDialogs = ({
   handleExpenseCancel,
   handleRetailerExpenseSuccess
 }: ExpenseDialogsProps) => {
-  const isMobile = useIsMobile();
-
-  // Si on est sur mobile, on affiche un sheet à la place d'un dialog
-  if (isMobile) {
-    return (
-      <>
-        {/* Dialogue de dépense de carburant (version mobile) */}
-        {selectedVehicle && (
-          <AddVehicleExpenseDialog
-            vehicleId={selectedVehicle}
-            open={expenseDialogOpen}
-            onOpenChange={setExpenseDialogOpen}
-            onSuccess={handleExpenseSuccess}
-            onCancel={handleExpenseCancel}
-            initialValues={{
-              vehicleId: selectedVehicle,
-              expenseType: "carburant",
-              date: new Date().toISOString().split('T')[0],
-              amount: "",
-              mileage: "",
-              fuelVolume: "",
-              maintenanceType: "",
-              repairType: "",
-              comment: ""
-            }}
-          />
-        )}
-
-        {/* Dialogue de dépense d'enseigne (version mobile) */}
-        {selectedRetailer && (
-          <AddExpenseDialog 
-            onExpenseAdded={handleRetailerExpenseSuccess}
-            preSelectedRetailer={selectedRetailer}
-            open={retailerExpenseDialogOpen}
-            onOpenChange={setRetailerExpenseDialogOpen}
-          />
-        )}
-      </>
-    );
-  }
-
-  // Version desktop avec Dialog standard
   return (
     <>
+      {/* Dialogue de dépense de carburant */}
       {selectedVehicle && (
         <AddVehicleExpenseDialog
           vehicleId={selectedVehicle}
@@ -85,6 +44,7 @@ export const ExpenseDialogs = ({
           onOpenChange={setExpenseDialogOpen}
           onSuccess={handleExpenseSuccess}
           onCancel={handleExpenseCancel}
+          colorScheme="gray"
           initialValues={{
             vehicleId: selectedVehicle,
             expenseType: "carburant",
@@ -99,6 +59,7 @@ export const ExpenseDialogs = ({
         />
       )}
 
+      {/* Dialogue de dépense d'enseigne */}
       {selectedRetailer && (
         <AddExpenseDialog 
           onExpenseAdded={handleRetailerExpenseSuccess}

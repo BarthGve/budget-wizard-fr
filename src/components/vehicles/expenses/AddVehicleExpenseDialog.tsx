@@ -18,7 +18,7 @@ interface AddVehicleExpenseDialogProps {
   onSuccess?: () => void;
   onCancel?: () => void;
   hideDialogWrapper?: boolean;
-  colorScheme?: "green" | "blue" | "purple";
+  colorScheme?: "green" | "blue" | "purple" | "gray";
   hideTitleBar?: boolean;
 }
 
@@ -32,7 +32,7 @@ export const AddVehicleExpenseDialog = ({
   onSuccess,
   onCancel,
   hideDialogWrapper = false,
-  colorScheme = "green",
+  colorScheme = "gray",
   hideTitleBar = false
 }: AddVehicleExpenseDialogProps) => {
   
@@ -83,6 +83,17 @@ export const AddVehicleExpenseDialog = ({
       buttonBg: "bg-purple-600 hover:bg-purple-500 dark:bg-purple-700 dark:hover:bg-purple-600",
       border: "border-purple-200 dark:border-purple-800",
     },
+    gray: {
+      gradientFrom: "from-gray-50",
+      gradientTo: "to-gray-100",
+      darkGradientFrom: "dark:from-gray-950",
+      darkGradientTo: "dark:to-gray-900",
+      iconBg: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+      headingText: "text-gray-900 dark:text-gray-100",
+      descriptionText: "text-gray-700 dark:text-gray-400",
+      buttonBg: "bg-gray-600 hover:bg-gray-500 dark:bg-gray-700 dark:hover:bg-gray-600",
+      border: "border-gray-200 dark:border-gray-800",
+    },
   };
   
   const currentColors = colors[colorScheme];
@@ -109,7 +120,7 @@ export const AddVehicleExpenseDialog = ({
       }}
     >
       {/* Accent diagonal en haut */}
-      <div className="absolute top-0 right-0 h-24 w-1/2 bg-gradient-to-br from-green-200/40 to-green-300/10 dark:from-green-800/20 dark:to-green-700/5 rounded-tr-lg pointer-events-none" />
+      <div className="absolute top-0 right-0 h-24 w-1/2 bg-gradient-to-br from-gray-200/40 to-gray-300/10 dark:from-gray-800/20 dark:to-gray-700/5 rounded-tr-lg pointer-events-none" />
       
       {/* Point brillant dans le coin */}
       <div className="absolute top-4 right-4 h-20 w-20 rounded-full bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 dark:to-transparent blur-xl pointer-events-none" />
@@ -149,7 +160,7 @@ export const AddVehicleExpenseDialog = ({
       </div>
       
       {/* Ligne décorative subtile */}
-      <div className="absolute bottom-4 left-4 w-16 h-0.5 bg-green-300/30 dark:bg-green-700/30 rounded-full pointer-events-none" />
+      <div className="absolute bottom-4 left-4 w-16 h-0.5 bg-gray-300/30 dark:bg-gray-700/30 rounded-full pointer-events-none" />
     </div>
   );
   
