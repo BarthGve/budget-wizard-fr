@@ -1,11 +1,14 @@
+
 import { useState, memo, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { CreditForm } from "./CreditForm";
 import { Credit } from "./types";
 import { cn } from "@/lib/utils";
 import { CreditCardIcon, EditIcon, PlusCircleIcon, X } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useTheme } from "next-themes";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CreditDialogProps {
   credit?: Credit;
@@ -26,15 +29,16 @@ export const CreditDialog = memo(({
   const contentRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
-  // Détecter si nous sommes sur tablette
+  // Détecter si nous sommes sur mobile ou tablette
   const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
+  const isMobile = useIsMobile();
 
   // Gestion de l'état contrôlé/non contrôlé
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : uncontrolledOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange : setUncontrolledOpen;
 
-  // Couleurs du thème violet
+  // Couleurs du thème selon le colorScheme
   const colors = {
     purple: {
       gradientFrom: "from-purple-500",
@@ -85,13 +89,101 @@ export const CreditDialog = memo(({
 
   const currentColors = colors[colorScheme];
 
+  // Afficher Sheet sur mobile, Dialog sur desktop
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
+        <SheetContent 
+          side="bottom"
+          className={cn(
+            "px-0 py-0 rounded-t-xl",
+            "border-t shadow-lg",
+            currentColors.borderLight,
+            currentColors.borderDark,
+            "max-h-[90vh] overflow-y-auto",
+            "dark:bg-gray-900"
+          )}
+        >
+          <div className={cn(
+            "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
+            "bg-gray-300 dark:bg-gray-600 rounded-full"
+          )} />
+
+          <div 
+            className={cn(
+              "relative flex flex-col pb-6 pt-5",
+              "bg-gradient-to-br",
+              currentColors.lightBg,
+              currentColors.darkBg
+            )}
+          >
+            {/* Background gradient */}
+            <div className={cn(
+              "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-t-lg",
+              currentColors.gradientFrom,
+              currentColors.gradientTo,
+              currentColors.darkGradientFrom,
+              currentColors.darkGradientTo
+            )} />
+
+            {/* Radial gradient */}
+            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-t-lg" />
+            
+            {/* Dialog header */}
+            <DialogHeader className="relative z-10 mb-4 px-6">
+              <div className="flex items-center gap-3">
+                <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
+                  {credit ? <EditIcon className="w-5 h-5" /> : <PlusCircleIcon className="w-5 h-5" />}
+                </div>
+                <DialogTitle className={cn("text-2xl font-bold", currentColors.headingText)}>
+                  {credit ? "Modifier le crédit" : "Ajouter un crédit"}
+                </DialogTitle>
+              </div>
+              <div className="ml-[52px] mt-2">
+                <DialogDescription className={cn("text-base", currentColors.descriptionText)}>
+                  {credit 
+                    ? "Modifiez les informations de votre crédit. Les modifications seront appliquées immédiatement."
+                    : "Ajoutez un nouveau crédit en remplissant les informations ci-dessous."}
+                </DialogDescription>
+              </div>
+            </DialogHeader>
+            
+            {/* Ligne séparatrice stylée */}
+            <div className={cn(
+              "h-px w-full mb-6",
+              "bg-gradient-to-r from-transparent to-transparent",
+              currentColors.separator
+            )} />
+            
+            {/* Section du formulaire */}
+            <div className="relative z-10 px-6">
+              <CreditForm
+                credit={credit}
+                onSuccess={() => onOpenChange?.(false)}
+                onCancel={() => onOpenChange?.(false)}
+                colorScheme={colorScheme}
+              />
+            </div>
+            
+            {/* Decorative icon */}
+            <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
+              <CreditCardIcon className="w-full h-full" />
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Version desktop avec Dialog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent 
         className={cn(
           "sm:max-w-[650px] w-full p-0 shadow-lg rounded-lg border",
-          isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto",
+          isTablet && "sm:max-w-[85%] w-[85%]",
           currentColors.borderLight,
           currentColors.borderDark,
           "dark:bg-gray-900"
