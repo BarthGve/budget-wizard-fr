@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -45,6 +44,7 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
   });
   
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
   
   const onSubmit = async (data: DocumentFormValues) => {
     console.log("Soumission du formulaire:", data);
@@ -75,20 +75,54 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
     const files = e.target.files;
     if (files && files[0]) {
       const file = files[0];
-      console.log("Fichier sélectionné:", file);
-      form.setValue("file", file);
-      setSelectedFileName(file.name);
-      
-      // Auto-remplir le nom du document s'il est vide
-      if (!form.getValues().name) {
-        // Enlever l'extension du fichier pour le nom
-        const fileName = file.name.replace(/\.[^/.]+$/, "");
-        form.setValue("name", fileName);
-      }
+      handleSelectedFile(file);
     }
   };
   
-  // Couleurs du thème gris
+  const handleSelectedFile = (file: File) => {
+    console.log("Fichier sélectionné:", file);
+    form.setValue("file", file);
+    setSelectedFileName(file.name);
+    
+    // Auto-remplir le nom du document s'il est vide
+    if (!form.getValues().name) {
+      // Enlever l'extension du fichier pour le nom
+      const fileName = file.name.replace(/\.[^/.]+$/, "");
+      form.setValue("name", fileName);
+    }
+  };
+  
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+  
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+  
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isDragOver) {
+      setIsDragOver(true);
+    }
+  };
+  
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      handleSelectedFile(files[0]);
+    }
+  };
+  
   const colors = {
     gradientFrom: "from-gray-500",
     gradientTo: "to-gray-400",
@@ -115,14 +149,33 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
             <FormItem>
               <FormLabel>Fichier</FormLabel>
               <FormControl>
-                <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg py-6 px-4 cursor-pointer" onClick={() => {
-                  const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-                  if (fileInput) fileInput.click();
-                }}>
+                <div 
+                  className={cn(
+                    "flex flex-col items-center justify-center border-2 border-dashed rounded-lg py-6 px-4 cursor-pointer transition-colors",
+                    isDragOver 
+                      ? "border-blue-400 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-600" 
+                      : "border-gray-300 dark:border-gray-700",
+                    selectedFileName ? "bg-gray-50 dark:bg-gray-800/50" : ""
+                  )}
+                  onClick={() => {
+                    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                    if (fileInput) fileInput.click();
+                  }}
+                  onDragEnter={handleDragEnter}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
                   {!selectedFileName ? (
                     <>
-                      <UploadIcon className="h-10 w-10 text-gray-400 mb-2" />
-                      <div className="text-sm text-center text-gray-500 dark:text-gray-400">
+                      <UploadIcon className={cn(
+                        "h-10 w-10 mb-2",
+                        isDragOver ? "text-blue-500 dark:text-blue-400" : "text-gray-400"
+                      )} />
+                      <div className={cn(
+                        "text-sm text-center",
+                        isDragOver ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"
+                      )}>
                         Cliquez pour sélectionner un fichier<br />
                         ou déposez-le ici
                       </div>
