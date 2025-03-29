@@ -1,6 +1,6 @@
 
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AddContributorDialog } from "@/components/contributors/AddContributorDialog";
+import { AddContributorDialog } from "@/components/contributors/add-contributor";
 import { ContributorCard } from "@/components/contributors/ContributorCard";
 import { Contributor, NewContributor } from "@/types/contributor";
 
