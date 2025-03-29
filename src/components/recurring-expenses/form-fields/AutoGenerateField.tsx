@@ -26,13 +26,12 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
   }, [vehicleId, vehicleExpenseType, autoGenerate]);
   
   // Désactiver si aucun véhicule ou type d'expense n'est sélectionné
-  // ou si le type est "no-type"
-  const isDisabled = !vehicleId || !vehicleExpenseType || vehicleExpenseType === "no-type";
+  const isDisabled = !vehicleId || !vehicleExpenseType;
   
   // Message d'aide spécifique selon la raison de désactivation
   const getHelpMessage = () => {
     if (!vehicleId) return "Veuillez sélectionner un véhicule";
-    if (!vehicleExpenseType || vehicleExpenseType === "no-type") return "Veuillez sélectionner un type de dépense";
+    if (!vehicleExpenseType) return "Veuillez sélectionner un type de dépense";
     return "Option disponible";
   };
   
@@ -77,7 +76,7 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
                 checked={field.value || false}
                 onCheckedChange={(checked) => {
                   console.log("Auto-génération définie sur:", checked);
-                  // Utiliser null quand désactivé pour éviter les problèmes de types
+                  // S'assurer que la valeur est un booléen
                   field.onChange(checked);
                   
                   // Désactiver automatiquement si les conditions ne sont pas remplies

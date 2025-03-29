@@ -25,7 +25,8 @@ export const DialogContent = ({
     console.log("DialogContent - Props reçues:", {
       isEditMode,
       needsScrolling,
-      hasExpense: !!expense
+      hasExpense: !!expense,
+      expenseDetails: expense
     });
   }, [expense, isEditMode, needsScrolling]);
 

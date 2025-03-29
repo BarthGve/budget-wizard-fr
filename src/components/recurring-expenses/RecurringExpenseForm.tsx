@@ -70,11 +70,11 @@ export function RecurringExpenseForm({
       
       // Pour les nouvelles charges sans ID et sans véhicule déjà associé
       if (!expense?.id && !data.vehicle_id) {
-        console.log("Affichage du dialogue d'association de véhicule");
+        console.log("Affichage du dialogue d'association de véhicule - données:", data);
         setFormData(data);
         setShowVehicleAssociationDialog(true);
       } else {
-        console.log("Pas besoin de dialogue d'association, on transmet les données");
+        console.log("Pas besoin de dialogue d'association, on transmet les données:", data);
         onSuccess(data);
       }
     }

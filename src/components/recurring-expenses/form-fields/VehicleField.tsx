@@ -43,14 +43,16 @@ export function VehicleField({ form }: VehicleFieldProps) {
         <FormItem>
           <FormLabel>Véhicule (optionnel)</FormLabel>
           <Select
-            value={field.value || undefined}
+            value={field.value || ""}
             onValueChange={(value) => {
               // Si "no-vehicle" est sélectionné, définir comme null
               const newValue = value === "no-vehicle" ? null : value;
               console.log("Nouveau vehicle_id sélectionné:", newValue);
+              
+              // Important: Mettre à jour correctement la valeur dans le formulaire
               field.onChange(newValue);
               
-              // Réinitialiser les champs liés au véhicule
+              // Réinitialiser les champs liés au véhicule si aucun véhicule sélectionné
               if (!newValue) {
                 console.log("Réinitialisation des champs liés au véhicule");
                 form.setValue("vehicle_expense_type", null);

@@ -54,13 +54,17 @@ export function VehicleAssociationDialog({
   const handleVehicleSelected = (vehicleData: any) => {
     // Fusionner les données de l'expense avec les données du véhicule
     console.log("Véhicule sélectionné:", vehicleData);
+    
+    // S'assurer que nous avons les bonnes valeurs pour l'association
     const completeData = {
       ...expenseData,
-      ...vehicleData,
-      auto_generate_vehicle_expense: true, // Activer automatiquement la génération
+      vehicle_id: vehicleData.vehicle_id,
+      // S'assurer que ces champs sont correctement définis pour être envoyés à la BD
+      vehicle_expense_type: vehicleData.vehicle_expense_type || null,
+      auto_generate_vehicle_expense: vehicleData.auto_generate_vehicle_expense === true
     };
     
-    console.log("Données complètes après fusion:", completeData);
+    console.log("Données complètes après fusion pour enregistrement:", completeData);
     onComplete(completeData);
     setShowVehicleSelection(false);
   };

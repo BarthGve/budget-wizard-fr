@@ -59,7 +59,8 @@ export function ExpenseTypeField({ form }: ExpenseTypeFieldProps) {
             value={field.value || ""}
             onValueChange={(value) => {
               console.log("Type de dépense sélectionné:", value);
-              field.onChange(value);
+              // Assurer que la valeur est correctement définie (jamais une chaîne vide)
+              field.onChange(value || null);
               
               // Activer automatiquement la génération si un type est sélectionné
               if (value && value !== "") {

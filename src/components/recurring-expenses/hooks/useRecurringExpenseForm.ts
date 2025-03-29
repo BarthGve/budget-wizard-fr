@@ -79,7 +79,7 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
       debit_month: expense?.debit_month?.toString() || null,
-      // Initialiser les champs de véhicule
+      // Initialiser les champs de véhicule avec les valeurs correctes
       vehicle_id: expense?.vehicle_id || null,
       vehicle_expense_type: expense?.vehicle_expense_type || null,
       auto_generate_vehicle_expense: expense?.auto_generate_vehicle_expense || false
@@ -116,13 +116,13 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
         debit_day: parseInt(data.debit_day),
         debit_month: debit_month,
         logo_url,
-        // Gestion explicite des valeurs nulles pour les champs liés au véhicule
-        vehicle_id: data.vehicle_id || null,
+        // Assurer que les valeurs liées au véhicule sont correctement traitées
+        vehicle_id: data.vehicle_id || null, // Utiliser null explicitement si vide
         vehicle_expense_type: data.vehicle_expense_type || null,
-        auto_generate_vehicle_expense: data.auto_generate_vehicle_expense || false
+        auto_generate_vehicle_expense: Boolean(data.auto_generate_vehicle_expense)
       };
 
-      console.log("Données à enregistrer:", expenseData);
+      console.log("Données à enregistrer dans la BD:", expenseData);
 
       if (expense?.id) {
         // Mise à jour d'une charge existante
@@ -137,7 +137,10 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
         // Invalidation des requêtes
         updateQueriesAfterSave(data.vehicle_id);
         
-        onSuccess(expenseData);
+        onSuccess({
+          ...expenseData,
+          id: expense.id // Inclure l'ID dans les données renvoyées
+        });
       } else {
         // Création d'une nouvelle charge
         const { data: savedData, error } = await supabase
