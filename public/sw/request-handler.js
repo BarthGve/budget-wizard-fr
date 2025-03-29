@@ -2,6 +2,19 @@
 // Gestionnaire des requêtes pour le Service Worker
 import { staleWhileRevalidateResources, matchesPatterns, handleStaleWhileRevalidate, handleNetworkFirst } from './cache-strategies.js';
 
+// Liste des patterns d'URL qui ne doivent jamais être interceptés
+const neverCachePatterns = [
+  '/api/',
+  '/auth/',
+  'supabase',
+  'auth/v1',
+  'rest/v1',
+  '.html',
+  'socket',
+  'ws:',
+  'wss:'
+];
+
 /**
  * Gestionnaire pour l'événement fetch
  * @param {FetchEvent} event - L'événement fetch
@@ -17,13 +30,12 @@ const handleFetch = (event) => {
     return;
   }
   
-  // Ne pas intercepter les requêtes vers Supabase, API, Auth ou Storage
-  if (url.hostname.includes('supabase') || 
-      url.pathname.includes('/api/') || 
-      url.pathname.includes('/auth/') ||
-      url.pathname.includes('/storage/') ||
-      url.pathname.includes('/rest/')) {
-    console.log('[ServiceWorker] Requête API ou Auth détectée, ignorée:', url.pathname);
+  // Vérifier si l'URL contient l'un des patterns à ne jamais mettre en cache
+  const shouldNeverCache = neverCachePatterns.some(pattern => url.toString().includes(pattern));
+  
+  // Ne pas intercepter les requêtes qui ne doivent jamais être mises en cache
+  if (shouldNeverCache) {
+    console.log('[ServiceWorker] Requête API ou système détectée, ignorée:', url.pathname);
     return;
   }
   

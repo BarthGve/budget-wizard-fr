@@ -9,19 +9,35 @@ self.addEventListener('install', handleInstall);
 self.addEventListener('activate', handleActivate);
 self.addEventListener('message', handleMessage);
 
+// Liste des URL qui ne doivent JAMAIS être interceptées
+const noInterceptPatterns = [
+  '/api/',
+  '/auth/',
+  '/supabase',
+  'supabase',
+  'supabase.co',
+  'auth/v1',
+  'rest/v1',
+  'supabse.auth',
+  '.html',
+  'socket',
+  'ws:',
+  'wss:'
+];
+
 // Désactiver COMPLÈTEMENT l'interception des requêtes de navigation
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Ne JAMAIS intercepter les navigations, requêtes HTML ou routes d'API
+  // Vérifier si l'URL contient l'un des patterns à ne pas intercepter
+  const shouldNotIntercept = noInterceptPatterns.some(pattern => url.toString().includes(pattern));
+  
+  // Ne JAMAIS intercepter les navigations, requêtes HTML, routes d'API ou patterns spécifiques
   if (event.request.mode === 'navigate' || 
       event.request.destination === 'document' ||
-      url.pathname.endsWith('.html') ||
-      url.pathname.includes('/api/') || 
-      url.pathname.includes('/auth/') ||
-      url.hostname.includes('supabase')) {
+      shouldNotIntercept) {
     // Laisser le navigateur et React Router gérer normalement
-    console.log('[ServiceWorker] Navigation/HTML détectée, non interceptée:', url.pathname);
+    console.log('[ServiceWorker] Navigation ou requête système détectée, non interceptée:', url.pathname);
     return;
   }
   

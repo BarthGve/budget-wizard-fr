@@ -11,6 +11,16 @@ export const AuthListener = () => {
   const isCheckingRef = useRef(false);
   const navigationInProgress = useRef(false);
   const initialCheckDone = useRef(false);
+  const scheduledNavigationTimeout = useRef<number | null>(null);
+
+  useEffect(() => {
+    // Nettoyer le timeout existant si le composant est démonté
+    return () => {
+      if (scheduledNavigationTimeout.current) {
+        clearTimeout(scheduledNavigationTimeout.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Éviter les vérifications multiples ou pendant la navigation
@@ -28,28 +38,44 @@ export const AuthListener = () => {
         // Vérifier l'état d'authentification
         const { data: { user } } = await supabase.auth.getUser();
         
+        // Définir les pages publiques pour éviter la duplication
+        const publicPages = [
+          "/login",
+          "/register",
+          "/reset-password",
+          "/email-verification",
+          "/changelog",
+          "/"
+        ];
+        
         // Si l'utilisateur n'est pas authentifié et n'est pas sur une page publique
-        if (!user && 
-            !location.pathname.includes("/login") && 
-            !location.pathname.includes("/register") && 
-            !location.pathname.includes("/reset-password") && 
-            !location.pathname.includes("/email-verification") && 
-            !location.pathname.includes("/changelog") && // Page changelog publique
-            location.pathname !== "/") {
+        if (!user && !publicPages.some(path => location.pathname.includes(path))) {
           
           // Éviter les redirections multiples
           if (!navigationInProgress.current) {
             navigationInProgress.current = true;
-            console.log("Redirection vers /login - utilisateur non authentifié");
+            console.log("Redirection vers /login via SPA - utilisateur non authentifié");
             
-            // Utiliser setTimeout pour éviter les problèmes de navigation
-            setTimeout(() => {
-              navigate("/login", { replace: true });
+            // Annuler toute navigation programmée précédemment
+            if (scheduledNavigationTimeout.current) {
+              clearTimeout(scheduledNavigationTimeout.current);
+            }
+            
+            // Utiliser navigate avec state pour conserver l'information de SPA
+            scheduledNavigationTimeout.current = window.setTimeout(() => {
+              // Utiliser replace: true pour éviter d'ajouter à l'historique
+              navigate("/login", { 
+                replace: true,
+                state: { 
+                  from: location.pathname,
+                  isSpaNavigation: true
+                } 
+              });
               
-              // Réinitialiser après un court délai
-              setTimeout(() => {
+              // Réinitialiser le flag après un court délai
+              scheduledNavigationTimeout.current = window.setTimeout(() => {
                 navigationInProgress.current = false;
-              }, 500);
+              }, 300);
             }, 0);
           }
         }
@@ -77,12 +103,42 @@ export const AuthListener = () => {
         if (!navigationInProgress.current) {
           navigationInProgress.current = true;
           
+          // Annuler toute navigation programmée précédemment
+          if (scheduledNavigationTimeout.current) {
+            clearTimeout(scheduledNavigationTimeout.current);
+          }
+          
           // Utiliser setTimeout pour éviter les problèmes de navigation
-          setTimeout(() => {
-            navigate("/login", { replace: true });
+          scheduledNavigationTimeout.current = window.setTimeout(() => {
+            navigate("/login", { 
+              replace: true,
+              state: { isSpaNavigation: true } 
+            });
             
             // Réinitialiser après un court délai
-            setTimeout(() => {
+            scheduledNavigationTimeout.current = window.setTimeout(() => {
+              navigationInProgress.current = false;
+            }, 500);
+          }, 0);
+        }
+      } else if (event === 'SIGNED_IN') {
+        // Rediriger vers le dashboard en mode SPA après connexion
+        if (!navigationInProgress.current) {
+          navigationInProgress.current = true;
+          
+          // Annuler toute navigation programmée précédemment
+          if (scheduledNavigationTimeout.current) {
+            clearTimeout(scheduledNavigationTimeout.current);
+          }
+          
+          scheduledNavigationTimeout.current = window.setTimeout(() => {
+            navigate("/dashboard", { 
+              replace: true,
+              state: { isSpaNavigation: true } 
+            });
+            
+            // Réinitialiser après un court délai
+            scheduledNavigationTimeout.current = window.setTimeout(() => {
               navigationInProgress.current = false;
             }, 500);
           }, 0);
@@ -92,6 +148,9 @@ export const AuthListener = () => {
     
     return () => {
       subscription.unsubscribe();
+      if (scheduledNavigationTimeout.current) {
+        clearTimeout(scheduledNavigationTimeout.current);
+      }
     };
   }, [location.pathname, navigate, checkOwnerContributorIncome]);
 

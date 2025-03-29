@@ -58,7 +58,12 @@ export const useAuthStateListener = () => {
             // Éviter les redirections multiples
             if (!navigationInProgress.current) {
               navigationInProgress.current = true;
-              navigate("/dashboard");
+              
+              // Utiliser replace: true et state pour identifier la navigation SPA
+              navigate("/dashboard", { 
+                replace: true,
+                state: { isSpaNavigation: true }
+              });
               
               // Réinitialiser le drapeau après un délai
               if (redirectTimeoutRef.current) {
@@ -83,7 +88,6 @@ export const useAuthStateListener = () => {
             queryClient.invalidateQueries({ queryKey: ["profile"] });
             
             // Vérifier si le changement provient d'un lien de changement d'email
-            // en regardant soit le hash, soit les paramètres d'URL, soit le localStorage
             if (location.hash.includes("type=email_change") || 
                 location.search.includes("type=emailChange") ||
                 localStorage.getItem("verificationEmail")) {
@@ -109,7 +113,9 @@ export const useAuthStateListener = () => {
                   clearTimeout(redirectTimeoutRef.current);
                 }
                 redirectTimeoutRef.current = window.setTimeout(() => {
-                  navigate("/user-settings");
+                  navigate("/user-settings", {
+                    state: { isSpaNavigation: true }
+                  });
                   
                   // Réinitialiser le drapeau après navigation
                   redirectTimeoutRef.current = window.setTimeout(() => {
@@ -143,8 +149,11 @@ export const useAuthStateListener = () => {
               queryClient.invalidateQueries({ queryKey: [key] });
             });
             
-            // Utiliser navigate avec replace pour éviter d'ajouter à l'historique
-            navigate("/", { replace: true });
+            // Utiliser navigate avec replace pour éviter d'ajouter à l'historique et indiquer que c'est une navigation SPA
+            navigate("/login", { 
+              replace: true, 
+              state: { isSpaNavigation: true }
+            });
             
             // Réinitialiser le drapeau après un délai pour permettre la navigation complète
             if (redirectTimeoutRef.current) {

@@ -7,9 +7,23 @@ let refreshing = false;
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     // Attendre le chargement complet de la page et le premier rendu
-    const registrationDelay = 8000; // 8 secondes de délai
+    const registrationDelay = 10000; // 10 secondes de délai
     
     console.log(`[SW] Enregistrement du Service Worker programmé dans ${registrationDelay/1000}s...`);
+    
+    // Vérifier si un service worker est déjà actif
+    if (navigator.serviceWorker.controller) {
+      console.log('[SW] Service Worker déjà actif, mise à jour si nécessaire');
+      
+      navigator.serviceWorker.ready.then(registration => {
+        // Si une mise à jour est disponible, la service worker la détectera automatiquement
+        registration.update().catch(error => {
+          console.error('[SW] Erreur lors de la mise à jour du Service Worker:', error);
+        });
+      });
+      
+      return;
+    }
     
     setTimeout(() => {
       navigator.serviceWorker.register('/serviceWorker.js', {
@@ -53,7 +67,7 @@ export function registerServiceWorker() {
 
 // Fonction pour vérifier les mises à jour du service worker
 export function checkForSWUpdates() {
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     console.log('[SW] Vérification des mises à jour du Service Worker...');
     navigator.serviceWorker.ready.then(registration => {
       registration.update().catch(error => {
@@ -73,7 +87,7 @@ function notifyUserOfUpdate() {
 
 // Pour forcer un service worker à prendre le contrôle immédiatement
 export function updateServiceWorker() {
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     console.log('[SW] Activation de la mise à jour du Service Worker...');
     navigator.serviceWorker.ready.then(registration => {
       if (registration.waiting) {
@@ -90,7 +104,7 @@ export function updateServiceWorker() {
 // Enregistrer le gestionnaire d'événements pour le nettoyage périodique du cache
 export function registerPeriodicCacheCleanup() {
   // Vérifier si la fonctionnalité periodicSync est disponible
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     navigator.serviceWorker.ready.then(async (registration) => {
       // Vérifier si l'API periodicSync existe dans le navigateur
       if ('periodicSync' in registration && 'PeriodicSyncManager' in window) {
@@ -105,6 +119,33 @@ export function registerPeriodicCacheCleanup() {
       } else {
         console.log('[SW] L\'API Periodic Sync n\'est pas disponible dans ce navigateur');
       }
+    });
+  }
+}
+
+// Désinstaller complètement le service worker (utile pour le débogage)
+export function unregisterServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(registration => {
+      registration.unregister().then(success => {
+        if (success) {
+          console.log('[SW] Service Worker désinstallé avec succès');
+          if (window.caches) {
+            // Effacer tous les caches
+            window.caches.keys().then(cacheNames => {
+              return Promise.all(
+                cacheNames.map(cacheName => {
+                  return window.caches.delete(cacheName);
+                })
+              );
+            }).then(() => {
+              console.log('[SW] Tous les caches ont été supprimés');
+            });
+          }
+        } else {
+          console.log('[SW] Échec de la désinstallation du Service Worker');
+        }
+      });
     });
   }
 }

@@ -18,6 +18,16 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   const [authChecked, setAuthChecked] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState<string | null>(null);
   const hasRedirectedRef = useRef(false);
+  const redirectTimeoutRef = useRef<number | null>(null);
+  
+  // Nettoyer le timeout lors du démontage
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+    };
+  }, []);
   
   // Configuration optimisée de la requête d'authentification
   const { data: authData, isLoading } = useQuery({
@@ -46,7 +56,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     refetchOnWindowFocus: false,
     refetchInterval: false,
     refetchOnMount: true,
-    refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
+    refetchOnReconnect: false,
     retry: false,
   });
 
@@ -107,7 +117,13 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   // Effectuer la redirection si nécessaire
   if (shouldRedirect) {
     hasRedirectedRef.current = true;
-    return <Navigate to={shouldRedirect} state={{ from: location.pathname }} replace />;
+    
+    // Utiliser Navigate avec state pour indiquer que c'est une navigation SPA
+    return <Navigate 
+      to={shouldRedirect} 
+      state={{ from: location.pathname, isSpaNavigation: true }} 
+      replace 
+    />;
   }
 
   // Rendu des enfants une fois l'authentification vérifiée
