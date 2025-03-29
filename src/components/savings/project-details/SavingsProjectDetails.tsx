@@ -67,7 +67,16 @@ export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetail
         colors.borderLight,
         colors.borderDark
       )}>
-        <div className="p-5">
+        <div className={cn(
+          "relative flex flex-col pb-6 p-5 rounded-lg w-full h-full",
+          "bg-gradient-to-br",
+          "from-white via-green-50/40 to-green-100/70",
+          "dark:from-gray-900 dark:via-green-950/20 dark:to-green-900/30"
+        )}>
+          <div className="absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br from-green-500 to-emerald-400 dark:from-green-700 dark:to-emerald-600 rounded-lg" />
+          
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
+          
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold text-green-800 dark:text-green-300">
               {project.nom_projet}
