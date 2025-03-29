@@ -9,7 +9,7 @@ import { RecurringExpense } from "./types";
 import { DialogHeader } from "./dialog/DialogHeader";
 import { DialogContent as ExpenseDialogContent } from "./dialog/DialogContent";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { VehicleAssociationDialog } from "./dialogs/VehicleAssociationDialog";
+import { useEffect } from "react";
 
 interface RecurringExpenseDialogProps {
   expense?: RecurringExpense;
@@ -24,6 +24,16 @@ export function RecurringExpenseDialog({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange 
 }: RecurringExpenseDialogProps) {
+  // Log des propriétés reçues
+  useEffect(() => {
+    console.log("RecurringExpenseDialog - Props reçues:", { 
+      hasExpense: !!expense,
+      hasTrigger: !!trigger,
+      controlledOpen,
+      isControlled: controlledOpen !== undefined 
+    });
+  }, [expense, trigger, controlledOpen]);
+
   // État contrôlé ou non contrôlé
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;

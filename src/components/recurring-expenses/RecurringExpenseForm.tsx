@@ -59,15 +59,22 @@ export function RecurringExpenseForm({
   const [showVehicleAssociationDialog, setShowVehicleAssociationDialog] = useState(false);
   const [formData, setFormData] = useState<any>(null);
   
+  // Ajout de logs pour le débogage
+  console.log("Formulaire initialisé avec expense:", expense);
+
   const { form, handleSubmit, isSubmitting } = useRecurringExpenseForm({
     expense,
     initialDomain,
     onSuccess: (data) => {
+      console.log("Formulaire soumis avec succès, données:", data);
+      
       // Pour les nouvelles charges sans ID et sans véhicule déjà associé
       if (!expense?.id && !data.vehicle_id) {
+        console.log("Affichage du dialogue d'association de véhicule");
         setFormData(data);
         setShowVehicleAssociationDialog(true);
       } else {
+        console.log("Pas besoin de dialogue d'association, on transmet les données");
         onSuccess(data);
       }
     }
@@ -103,8 +110,17 @@ export function RecurringExpenseForm({
 
   // Gestionnaire pour finaliser après association de véhicule
   const handleVehicleAssociationComplete = (data: any) => {
+    console.log("Association de véhicule terminée avec données:", data);
     setShowVehicleAssociationDialog(false);
     onSuccess(data);
+  };
+
+  // Gestionnaire pour annuler l'association
+  const handleVehicleAssociationCancel = () => {
+    console.log("Association de véhicule annulée - on transmet les données originales");
+    setShowVehicleAssociationDialog(false);
+    // En cas d'annulation, on envoie quand même les données originales
+    onSuccess(formData);
   };
 
   // Déterminer si nous devons afficher les champs relatifs aux véhicules
@@ -152,11 +168,7 @@ export function RecurringExpenseForm({
       {/* Dialogue d'association de véhicule */}
       <VehicleAssociationDialog
         isOpen={showVehicleAssociationDialog}
-        onClose={() => {
-          setShowVehicleAssociationDialog(false);
-          // En cas d'annulation, on envoie quand même les données originales
-          onSuccess(formData);
-        }}
+        onClose={handleVehicleAssociationCancel}
         expenseData={formData}
         onComplete={handleVehicleAssociationComplete}
       />

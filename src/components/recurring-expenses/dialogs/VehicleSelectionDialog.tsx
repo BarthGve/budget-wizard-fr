@@ -11,7 +11,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -37,6 +37,12 @@ export function VehicleSelectionDialog({
   onSelected,
 }: VehicleSelectionDialogProps) {
   const [step, setStep] = useState<"vehicle" | "expense_type">("vehicle");
+  
+  // Log pour débogage
+  useEffect(() => {
+    console.log("VehicleSelectionDialog - État isOpen:", isOpen);
+    console.log("VehicleSelectionDialog - Étape actuelle:", step);
+  }, [isOpen, step]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,6 +51,17 @@ export function VehicleSelectionDialog({
       vehicle_expense_type: "",
     },
   });
+
+  // Réinitialiser le formulaire et l'étape lorsque le dialogue s'ouvre
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        vehicle_id: "",
+        vehicle_expense_type: "",
+      });
+      setStep("vehicle");
+    }
+  }, [isOpen, form]);
 
   const { data: vehicles, isLoading: isLoadingVehicles } = useQuery({
     queryKey: ["active-vehicles"],
@@ -56,6 +73,7 @@ export function VehicleSelectionDialog({
         .order("brand");
       
       if (error) throw error;
+      console.log("Véhicules récupérés:", data);
       return data;
     },
     enabled: isOpen,
@@ -68,13 +86,16 @@ export function VehicleSelectionDialog({
   }));
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log("Formulaire soumis avec valeurs:", values);
     onSelected(values);
   };
 
   const handleNextStep = () => {
     if (form.getValues("vehicle_id")) {
+      console.log("Passage à l'étape suivante (type de dépense)");
       setStep("expense_type");
     } else {
+      console.log("Erreur: aucun véhicule sélectionné");
       form.setError("vehicle_id", {
         type: "manual",
         message: "Veuillez sélectionner un véhicule",
@@ -119,7 +140,10 @@ export function VehicleSelectionDialog({
                     <FormLabel>Véhicule</FormLabel>
                     <Select
                       value={field.value}
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        console.log("Véhicule sélectionné:", value);
+                        field.onChange(value);
+                      }}
                       disabled={isLoadingVehicles}
                     >
                       <FormControl>
@@ -150,7 +174,10 @@ export function VehicleSelectionDialog({
                     <FormLabel>Type de dépense véhicule</FormLabel>
                     <Select 
                       value={field.value}
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        console.log("Type de dépense sélectionné:", value);
+                        field.onChange(value);
+                      }}
                     >
                       <FormControl>
                         <SelectTrigger>

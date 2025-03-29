@@ -5,6 +5,7 @@ import { UseFormReturn } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { FormValues } from "../hooks/useRecurringExpenseForm";
+import { useEffect } from "react";
 
 interface ExpenseTypeFieldProps {
   form: UseFormReturn<FormValues>;
@@ -13,7 +14,17 @@ interface ExpenseTypeFieldProps {
 export function ExpenseTypeField({ form }: ExpenseTypeFieldProps) {
   // Vérifier si un véhicule est sélectionné
   const hasVehicle = form.watch("vehicle_id");
+  const vehicleId = form.watch("vehicle_id");
   const autoGenerate = form.watch("auto_generate_vehicle_expense");
+  
+  // Débogage pour suivre l'état du champ
+  useEffect(() => {
+    console.log("ExpenseTypeField - État actuel:", {
+      vehicleId,
+      autoGenerate,
+      expenseType: form.watch("vehicle_expense_type")
+    });
+  }, [vehicleId, autoGenerate, form]);
 
   // Récupérer les types de dépenses pour véhicules
   const { data: expenseTypes, isLoading } = useQuery({
@@ -25,13 +36,15 @@ export function ExpenseTypeField({ form }: ExpenseTypeFieldProps) {
         .order("name");
       
       if (error) throw error;
+      console.log("Types de dépenses récupérés:", data);
       return data;
     },
     // Seulement exécuter si un véhicule est sélectionné
     enabled: !!hasVehicle
   });
 
-  if (!hasVehicle || !autoGenerate) {
+  // Si pas de véhicule ou auto-génération désactivée, ne pas afficher le champ
+  if (!hasVehicle) {
     return null;
   }
 
@@ -44,7 +57,15 @@ export function ExpenseTypeField({ form }: ExpenseTypeFieldProps) {
           <FormLabel>Type de dépense véhicule</FormLabel>
           <Select
             value={field.value || ""}
-            onValueChange={field.onChange}
+            onValueChange={(value) => {
+              console.log("Type de dépense sélectionné:", value);
+              field.onChange(value);
+              
+              // Activer automatiquement la génération si un type est sélectionné
+              if (value && value !== "") {
+                form.setValue("auto_generate_vehicle_expense", true);
+              }
+            }}
             disabled={isLoading}
           >
             <FormControl>

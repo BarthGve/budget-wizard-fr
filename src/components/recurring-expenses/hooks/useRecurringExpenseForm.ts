@@ -65,6 +65,10 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Log initial pour déboguer les valeurs par défaut
+  console.log("useRecurringExpenseForm - Initialisation avec expense:", expense);
+  console.log("useRecurringExpenseForm - Domaine initial:", initialDomain);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {

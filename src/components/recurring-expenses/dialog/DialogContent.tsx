@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { RecurringExpenseForm } from "../RecurringExpenseForm";
 import { RecurringExpense } from "../types";
+import { useEffect } from "react";
 
 interface DialogContentProps {
   expense?: RecurringExpense;
@@ -19,13 +20,24 @@ export const DialogContent = ({
   onOpenChange,
   className 
 }: DialogContentProps) => {
+  // Log pour déboguer les props reçues
+  useEffect(() => {
+    console.log("DialogContent - Props reçues:", {
+      isEditMode,
+      needsScrolling,
+      hasExpense: !!expense
+    });
+  }, [expense, isEditMode, needsScrolling]);
+
   // Gestionnaire du succès du formulaire
   const handleSuccess = (data?: any) => {
+    console.log("DialogContent - Formulaire soumis avec succès:", data);
     onOpenChange?.(false);
   };
 
   // Gestionnaire d'annulation du formulaire
   const handleCancel = () => {
+    console.log("DialogContent - Formulaire annulé");
     onOpenChange?.(false);
   };
 

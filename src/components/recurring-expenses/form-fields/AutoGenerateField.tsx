@@ -5,6 +5,7 @@ import { UseFormReturn } from "react-hook-form";
 import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { FormValues } from "../hooks/useRecurringExpenseForm";
+import { useEffect } from "react";
 
 interface AutoGenerateFieldProps {
   form: UseFormReturn<FormValues>;
@@ -13,6 +14,16 @@ interface AutoGenerateFieldProps {
 export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
   const vehicleId = form.watch("vehicle_id");
   const vehicleExpenseType = form.watch("vehicle_expense_type");
+  const autoGenerate = form.watch("auto_generate_vehicle_expense");
+  
+  // Débogage pour suivre l'état des champs
+  useEffect(() => {
+    console.log("AutoGenerateField - État actuel:", {
+      vehicleId,
+      vehicleExpenseType,
+      autoGenerate
+    });
+  }, [vehicleId, vehicleExpenseType, autoGenerate]);
   
   // Désactiver si aucun véhicule ou type d'expense n'est sélectionné
   // ou si le type est "no-type"
@@ -24,6 +35,11 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
     if (!vehicleExpenseType || vehicleExpenseType === "no-type") return "Veuillez sélectionner un type de dépense";
     return "Option disponible";
   };
+  
+  // Ne pas afficher si aucun véhicule n'est sélectionné
+  if (!vehicleId) {
+    return null;
+  }
   
   return (
     <FormField
@@ -60,6 +76,7 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
               <Switch
                 checked={field.value || false}
                 onCheckedChange={(checked) => {
+                  console.log("Auto-génération définie sur:", checked);
                   // Utiliser null quand désactivé pour éviter les problèmes de types
                   field.onChange(checked);
                   

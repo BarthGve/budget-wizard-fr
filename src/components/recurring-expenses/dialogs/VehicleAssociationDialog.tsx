@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Car, XCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { VehicleSelectionDialog } from "./VehicleSelectionDialog";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +27,12 @@ export function VehicleAssociationDialog({
   onComplete,
 }: VehicleAssociationDialogProps) {
   const [showVehicleSelection, setShowVehicleSelection] = useState(false);
+  
+  // Log pour déboguer l'ouverture du dialogue
+  useEffect(() => {
+    console.log("VehicleAssociationDialog - État isOpen:", isOpen);
+    console.log("VehicleAssociationDialog - Données reçues:", expenseData);
+  }, [isOpen, expenseData]);
 
   // Ne rien afficher si on n'a pas de données ou si le dialogue n'est pas ouvert
   if (!expenseData || !isOpen) {
@@ -35,22 +41,26 @@ export function VehicleAssociationDialog({
 
   const handleYes = () => {
     // Montrer la boîte de dialogue de sélection de véhicule
+    console.log("Utilisateur souhaite associer un véhicule");
     setShowVehicleSelection(true);
   };
 
   const handleNo = () => {
     // Compléter le processus sans association de véhicule
+    console.log("Utilisateur ne souhaite pas associer un véhicule");
     onComplete(expenseData);
   };
 
   const handleVehicleSelected = (vehicleData: any) => {
     // Fusionner les données de l'expense avec les données du véhicule
+    console.log("Véhicule sélectionné:", vehicleData);
     const completeData = {
       ...expenseData,
       ...vehicleData,
       auto_generate_vehicle_expense: true, // Activer automatiquement la génération
     };
     
+    console.log("Données complètes après fusion:", completeData);
     onComplete(completeData);
     setShowVehicleSelection(false);
   };
