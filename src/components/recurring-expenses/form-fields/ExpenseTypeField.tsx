@@ -43,15 +43,12 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
               <SelectItem key="no-type" value="no-type">
                 Aucun type de dépense
               </SelectItem>
-              {vehicleId && (
-                <>
-                  {expenseTypes.map(type => (
-                    <SelectItem key={type.id} value={type.id}>
-                      {type.name}
-                    </SelectItem>
-                  ))}
-                </>
-              )}
+              {/* Utiliser les types de dépenses provenant des options du véhicule */}
+              {expenseTypes.map(type => (
+                <SelectItem key={type.id || type.name} value={type.name}>
+                  {type.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           {vehicleId && (

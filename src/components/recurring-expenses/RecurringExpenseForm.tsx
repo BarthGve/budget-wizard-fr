@@ -103,19 +103,10 @@ export function RecurringExpenseForm({
     enabled: !!vehicleId,
   });
 
-  // Transformer les types standards pour correspondre à la structure {id, name}
-  const standardExpenseTypes = expenseTypes.map(type => ({ 
-    id: type.value, 
-    name: type.label 
-  }));
-
-  // Fusionner avec les types récupérés de la base de données
+  // Fusionner avec les types génériques au cas où il n'y a pas encore de dépenses
   const mergedExpenseTypes = (vehicleExpenseTypes && vehicleExpenseTypes.length > 0) 
-    ? [...vehicleExpenseTypes, ...standardExpenseTypes.filter(
-        // Filtrer pour éviter les doublons
-        stdType => !vehicleExpenseTypes.some(vType => vType.id === stdType.id)
-      )] 
-    : standardExpenseTypes;
+    ? vehicleExpenseTypes 
+    : expenseTypes.map(type => ({ id: type.value, name: type.label }));
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
