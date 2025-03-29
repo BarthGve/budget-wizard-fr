@@ -51,6 +51,7 @@ export const VehicleCardFooter = ({
             e.stopPropagation();
             onEdit(vehicle);
           }}
+          aria-label="Modifier le véhicule"
         >
           <PencilIcon className="h-4 w-4" />
         </Button>
@@ -63,6 +64,7 @@ export const VehicleCardFooter = ({
             onDelete(vehicle);
           }}
           disabled={isDeleting}
+          aria-label="Supprimer le véhicule"
         >
           <TrashIcon className="h-4 w-4" />
         </Button>
