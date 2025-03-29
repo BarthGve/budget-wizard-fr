@@ -12,10 +12,12 @@ createRoot(document.getElementById("root")!).render(<App />);
 window.addEventListener('load', () => {
   // Différer significativement l'enregistrement du service worker pour donner la priorité au chargement de l'app
   console.log("Planification de l'enregistrement du service worker...");
-  registerServiceWorker();
+  setTimeout(() => {
+    registerServiceWorker();
+  }, 3000); // Délai de 3 secondes pour s'assurer que l'application est stable
 });
 
 // Vérifier les mises à jour moins fréquemment pour réduire les interférences
 setInterval(() => {
   checkForSWUpdates();
-}, 180 * 60 * 1000); // Toutes les 3 heures au lieu de chaque heure pour réduire la charge
+}, 180 * 60 * 1000); // Toutes les 3 heures
