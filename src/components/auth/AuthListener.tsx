@@ -41,19 +41,27 @@ export const AuthListener = () => {
           if (!navigationInProgress.current) {
             navigationInProgress.current = true;
             console.log("Redirection vers /login - utilisateur non authentifié");
-            navigate("/login", { replace: true });
             
-            // Réinitialiser après un court délai
+            // Utiliser setTimeout pour éviter les problèmes de navigation
             setTimeout(() => {
-              navigationInProgress.current = false;
-            }, 500);
+              navigate("/login", { replace: true });
+              
+              // Réinitialiser après un court délai
+              setTimeout(() => {
+                navigationInProgress.current = false;
+              }, 500);
+            }, 0);
           }
         }
         
         initialCheckDone.current = true;
+      } catch (error) {
+        console.error("Erreur lors de la vérification d'authentification:", error);
       } finally {
-        // Reset flag after check completes
-        isCheckingRef.current = false;
+        // Réinitialiser le flag une fois la vérification terminée
+        setTimeout(() => {
+          isCheckingRef.current = false;
+        }, 300);
       }
     };
     
@@ -68,12 +76,16 @@ export const AuthListener = () => {
         // Éviter les redirections multiples
         if (!navigationInProgress.current) {
           navigationInProgress.current = true;
-          navigate("/login", { replace: true });
           
-          // Réinitialiser après un court délai
+          // Utiliser setTimeout pour éviter les problèmes de navigation
           setTimeout(() => {
-            navigationInProgress.current = false;
-          }, 500);
+            navigate("/login", { replace: true });
+            
+            // Réinitialiser après un court délai
+            setTimeout(() => {
+              navigationInProgress.current = false;
+            }, 500);
+          }, 0);
         }
       }
     });

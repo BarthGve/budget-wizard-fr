@@ -30,33 +30,31 @@
     <!-- Le script principal de l'application doit être chargé en premier -->
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Script GPT Engineer isolé dans un iframe après le chargement complet -->
+    <!-- Script GPT Engineer complètement isolé dans un iframe -->
     <script>
+      // N'initialiser le script GPT Engineer qu'une fois que l'application est complètement chargée
       window.addEventListener('load', () => {
-        // S'assurer que l'application est chargée avant d'initialiser le script externe
+        // Attendre plus longtemps pour s'assurer que tous les événements d'initialisation sont terminés
         setTimeout(() => {
-          // Créer un iframe isolé pour le script GPT Engineer
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none'; // Cacher l'iframe
-          document.body.appendChild(iframe);
-          
-          // Ajouter le script au document de l'iframe
           try {
-            const script = iframe.contentDocument.createElement('script');
+            // Créer un iframe complètement isolé pour le script GPT Engineer
+            const iframe = document.createElement('iframe');
+            iframe.style.cssText = 'display:none; border:none; width:0; height:0;';
+            iframe.title = "GPT Engineer";
+            iframe.setAttribute('sandbox', 'allow-scripts');
+            document.body.appendChild(iframe);
+            
+            // Utiliser le document de l'iframe pour ajouter le script
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            const script = doc.createElement('script');
             script.src = "https://cdn.gpteng.co/gptengineer.js";
             script.type = "module";
-            iframe.contentDocument.body.appendChild(script);
-            console.log("GPT Engineer script chargé dans un iframe isolé");
+            doc.body.appendChild(script);
+            console.log("GPT Engineer script chargé dans un iframe complètement isolé");
           } catch (e) {
-            // Fallback si l'approche iframe échoue
-            console.log("Fallback pour le chargement du script GPT Engineer");
-            const script = document.createElement('script');
-            script.src = "https://cdn.gpteng.co/gptengineer.js";
-            script.type = "module";
-            script.async = true;
-            document.body.appendChild(script);
+            console.error("Erreur lors du chargement du script GPT Engineer:", e);
           }
-        }, 3000); // Délai augmenté à 3 secondes
+        }, 5000); // Délai augmenté à 5 secondes pour éviter toute interférence
       });
     </script>
   </body>

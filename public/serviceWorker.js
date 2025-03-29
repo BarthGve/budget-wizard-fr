@@ -9,27 +9,30 @@ self.addEventListener('install', handleInstall);
 self.addEventListener('activate', handleActivate);
 self.addEventListener('message', handleMessage);
 
-// Désactiver complètement l'interception des requêtes de navigation
-// mais conserver l'interception pour les ressources statiques
+// Désactiver COMPLÈTEMENT l'interception des requêtes de navigation
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Ne jamais intercepter les navigations ou requêtes HTML
+  // Ne JAMAIS intercepter les navigations, requêtes HTML ou routes d'API
   if (event.request.mode === 'navigate' || 
       event.request.destination === 'document' ||
-      url.pathname.endsWith('.html')) {
-    console.log('[ServiceWorker] Navigation détectée, ignorée:', event.request.url);
+      url.pathname.endsWith('.html') ||
+      url.pathname.includes('/api/') || 
+      url.pathname.includes('/auth/') ||
+      url.hostname.includes('supabase')) {
+    // Laisser le navigateur et React Router gérer normalement
+    console.log('[ServiceWorker] Navigation/HTML détectée, non interceptée:', url.pathname);
     return;
   }
   
-  // Pour toutes les autres requêtes, utiliser le gestionnaire normal
+  // Pour les ressources statiques uniquement, utiliser le gestionnaire normal
   handleFetch(event);
 });
 
-// Désactiver explicitement l'interception des navigations
+// Ignorer explicitement toutes les navigations
 self.addEventListener('navigate', (event) => {
   // Ne rien faire, laisser le navigateur et React Router gérer la navigation
-  console.log('[ServiceWorker] Navigation événement détecté, laissant passer:', event.url);
+  console.log('[ServiceWorker] Navigation explicitement ignorée:', event.url);
   return;
 });
 

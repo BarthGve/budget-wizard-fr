@@ -17,22 +17,23 @@ const handleFetch = (event) => {
     return;
   }
   
-  // Ne pas intercepter les requêtes vers Supabase ou d'autres API
+  // Ne pas intercepter les requêtes vers Supabase, API, Auth ou Storage
   if (url.hostname.includes('supabase') || 
       url.pathname.includes('/api/') || 
       url.pathname.includes('/auth/') ||
-      url.pathname.includes('/storage/')) {
-    console.log('[ServiceWorker] Requête API détectée, ignorée:', url.pathname);
+      url.pathname.includes('/storage/') ||
+      url.pathname.includes('/rest/')) {
+    console.log('[ServiceWorker] Requête API ou Auth détectée, ignorée:', url.pathname);
     return;
   }
   
-  // Stratégie stale-while-revalidate pour les ressources statiques
+  // Stratégie stale-while-revalidate pour les ressources statiques uniquement
   if (matchesPatterns(url, staleWhileRevalidateResources)) {
     event.respondWith(handleStaleWhileRevalidate(event));
     return;
   }
   
-  // Stratégie Network First pour les autres requêtes
+  // Stratégie Network First pour les autres requêtes non-navigation
   event.respondWith(handleNetworkFirst(event));
 };
 

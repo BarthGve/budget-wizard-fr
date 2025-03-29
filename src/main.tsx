@@ -11,13 +11,11 @@ createRoot(document.getElementById("root")!).render(<App />);
 // seulement après que l'application soit complètement chargée et stable
 window.addEventListener('load', () => {
   // Différer significativement l'enregistrement du service worker pour donner la priorité au chargement de l'app
-  setTimeout(() => {
-    console.log("Enregistrement du service worker...");
-    registerServiceWorker();
-  }, 5000); // Délai augmenté à 5 secondes
+  console.log("Planification de l'enregistrement du service worker...");
+  registerServiceWorker();
 });
 
 // Vérifier les mises à jour moins fréquemment pour réduire les interférences
 setInterval(() => {
   checkForSWUpdates();
-}, 120 * 60 * 1000); // Toutes les 2 heures au lieu de chaque heure
+}, 180 * 60 * 1000); // Toutes les 3 heures au lieu de chaque heure pour réduire la charge

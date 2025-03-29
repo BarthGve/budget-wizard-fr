@@ -24,20 +24,25 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     queryKey: ["auth", location.pathname],
     queryFn: async () => {
       console.log("Vérification d'authentification pour:", location.pathname);
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (!user) return { isAuthenticated: false };
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) return { isAuthenticated: false };
 
-      const { data: isAdmin, error } = await supabase.rpc('has_role', {
-        user_id: user.id,
-        role: 'admin'
-      });
+        const { data: isAdmin, error } = await supabase.rpc('has_role', {
+          user_id: user.id,
+          role: 'admin'
+        });
 
-      return { 
-        isAuthenticated: true,
-        isAdmin
-      };
+        return { 
+          isAuthenticated: true,
+          isAdmin
+        };
+      } catch (error) {
+        console.error("Erreur lors de la vérification d'authentification:", error);
+        return { isAuthenticated: false };
+      }
     },
-    staleTime: 1000 * 60 * 10, // 10 minutes pour réduire les vérifications fréquentes
+    staleTime: 1000 * 60 * 15, // 15 minutes pour réduire les vérifications fréquentes
     refetchOnWindowFocus: false,
     refetchInterval: false,
     refetchOnMount: true,
@@ -90,6 +95,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     }
   }, [isLoading, authData, location.pathname, canAccessPage, isAdmin, requireAdmin]);
 
+  // Retourner un composant de chargement pendant la vérification
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -98,11 +104,13 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     );
   }
 
+  // Effectuer la redirection si nécessaire
   if (shouldRedirect) {
     hasRedirectedRef.current = true;
-    return <Navigate to={shouldRedirect} state={{ from: location }} replace />;
+    return <Navigate to={shouldRedirect} state={{ from: location.pathname }} replace />;
   }
 
+  // Rendu des enfants une fois l'authentification vérifiée
   if (authChecked) {
     return <>{children}</>;
   }
