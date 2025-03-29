@@ -40,11 +40,11 @@ export const BrandLogoPreview = ({
   }
 
   return (
-    <div className="flex items-center justify-center w-full h-full p-1">
+    <div className="flex items-center justify-center w-full h-full">
       <img 
         src={url} 
         alt={`Logo ${brand}`} 
-        className="w-full h-full object-contain"
+        className="w-[90%] h-[90%] object-contain"
         onError={(e) => {
           // En cas d'erreur de chargement, remplacer par le fallback de la première lettre
           e.currentTarget.style.display = 'none';
