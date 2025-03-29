@@ -1,7 +1,9 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -13,6 +15,35 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' &&
     componentTagger(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+      manifest: {
+        name: 'Budget Wizard',
+        short_name: 'BudgetWiz',
+        description: 'Une application de gestion de budget et de finances personnelles',
+        theme_color: '#f59e0b',
+        background_color: '#ffffff',
+        icons: [
+          {
+            src: '/icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: '/icons/maskable_icon.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          }
+        ]
+      }
+    })
   ].filter(Boolean),
   resolve: {
     alias: {

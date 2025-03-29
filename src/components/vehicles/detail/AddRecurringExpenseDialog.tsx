@@ -1,24 +1,33 @@
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RecurringExpenseForm } from "@/components/recurring-expenses/RecurringExpenseForm";
 import { useState } from "react";
 import { Plus } from "lucide-react";
+
 interface AddRecurringExpenseDialogProps {
   vehicleId: string;
 }
+
 export function AddRecurringExpenseDialog({
   vehicleId
 }: AddRecurringExpenseDialogProps) {
   const [open, setOpen] = useState(false);
+
   const handleSuccess = () => {
     setOpen(false);
   };
+
   const handleCancel = () => {
     setOpen(false);
   };
+
   return <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        
+        <Button variant="outline" size="sm" className="flex items-center gap-1">
+          <Plus className="h-4 w-4" />
+          Charge récurrente
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
