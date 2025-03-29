@@ -1,77 +1,67 @@
 
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface VehicleDeleteDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
-  isPending: boolean;
-  vehicleBrand?: string;
-  vehicleModel?: string;
+  onDelete: () => void;
+  onMarkAsSold: () => void;
 }
 
 export const VehicleDeleteDialog = ({
   isOpen,
   onOpenChange,
-  onConfirm,
-  isPending,
-  vehicleBrand = "",
-  vehicleModel = ""
+  onDelete,
+  onMarkAsSold,
 }: VehicleDeleteDialogProps) => {
-  const handleConfirm = () => {
-    onConfirm();
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onDelete();
   };
 
-  const vehicleInfo = vehicleBrand || vehicleModel 
-    ? `${vehicleBrand} ${vehicleModel}`.trim()
-    : "ce véhicule";
+  const handleMarkAsSold = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onMarkAsSold();
+  };
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-md">
-        <AlertDialogHeader className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="bg-red-100 dark:bg-red-900/30 p-2.5 rounded-lg">
-              <X className="h-5 w-5 text-red-600 dark:text-red-400" />
-            </div>
-            <AlertDialogTitle className="text-xl">
-              Supprimer le véhicule
-            </AlertDialogTitle>
-          </div>
-          
-          <AlertDialogDescription className="text-base pt-2">
-            Êtes-vous sûr de vouloir supprimer {vehicleInfo} ? Cette action ne peut pas être annulée.
+      <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Gestion du véhicule</AlertDialogTitle>
+          <AlertDialogDescription>
+            Que souhaitez-vous faire avec ce véhicule ?
           </AlertDialogDescription>
         </AlertDialogHeader>
-        
-        <AlertDialogFooter>
-          <AlertDialogCancel
-            className={cn(
-              "border-gray-200 text-gray-700 hover:text-gray-800 hover:bg-gray-50",
-              "dark:border-gray-700 dark:text-gray-300 dark:hover:text-gray-200 dark:hover:bg-gray-800/50"
-            )}
-            disabled={isPending}
-          >
-            Annuler
-          </AlertDialogCancel>
-          <AlertDialogAction
-            className="bg-red-600 hover:bg-red-700 focus:ring-red-500 text-white"
-            onClick={handleConfirm}
-            disabled={isPending}
-          >
-            {isPending ? "Suppression en cours..." : "Supprimer"}
-          </AlertDialogAction>
+        <AlertDialogFooter className="flex flex-col space-y-2 sm:space-y-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+            <Button
+              variant="outline"
+              onClick={handleMarkAsSold}
+              className="w-full"
+            >
+              Marquer comme vendu
+            </Button>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDelete}
+            >
+              Supprimer définitivement
+            </AlertDialogAction>
+          </div>
+          <AlertDialogCancel className="mt-2 sm:mt-0">Annuler</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
