@@ -44,8 +44,9 @@ const App = () => {
     },
   }));
   
-  // Marquer explicitement que nous utilisons une navigation SPA
+  // Déplacement du hook useEffect à l'intérieur du composant App
   useEffect(() => {
+    // Marquer explicitement que nous utilisons une navigation SPA
     sessionStorage.setItem('spa_active', 'true');
     
     // Créer un débouncer pour limiter le nombre de mises à jour de l'historique
@@ -53,7 +54,7 @@ const App = () => {
     const debounceDuration = 300; // ms
     
     // Fonction optimisée pour gérer les clics sur les liens
-    const handleLinkClicks = useCallback((e: MouseEvent) => {
+    const handleLinkClicks = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
       
@@ -82,7 +83,7 @@ const App = () => {
           }, debounceDuration);
         }
       }
-    }, []);
+    };
     
     document.addEventListener('click', handleLinkClicks);
     
