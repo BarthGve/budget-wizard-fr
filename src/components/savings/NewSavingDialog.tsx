@@ -1,6 +1,6 @@
 
 import { memo, useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { NewSavingDialogContent } from "./NewSavingDialogContent";
@@ -82,33 +82,41 @@ export const NewSavingDialog = memo(({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent 
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
+      <SheetContent 
+        side="bottom"
         className={cn(
-          getDialogWidth(),
-          "p-0 shadow-lg rounded-lg border overflow-y-auto",
+          "px-0 py-0 rounded-t-xl",
+          "border-t shadow-lg",
           currentColors.borderLight,
           currentColors.borderDark,
+          "max-h-[90vh] overflow-y-auto",
           "dark:bg-gray-900"
         )}
       >
-        <NewSavingDialogContent
-          saving={saving}
-          name={name}
-          onNameChange={setName}
-          domain={domain}
-          onDomainChange={setDomain}
-          amount={amount}
-          onAmountChange={setAmount}
-          description={description}
-          onDescriptionChange={setDescription}
-          onSave={handleSaveSaving}
-          onCancel={() => onOpenChange?.(false)}
-          colorScheme={colorScheme}
-        />
-      </DialogContent>
-    </Dialog>
+        <div className={cn(
+          "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
+          "bg-gray-300 dark:bg-gray-600 rounded-full"
+        )} />
+        <div className="pt-5">
+          <NewSavingDialogContent
+            saving={saving}
+            name={name}
+            onNameChange={setName}
+            domain={domain}
+            onDomainChange={setDomain}
+            amount={amount}
+            onAmountChange={setAmount}
+            description={description}
+            onDescriptionChange={setDescription}
+            onSave={handleSaveSaving}
+            onCancel={() => onOpenChange?.(false)}
+            colorScheme={colorScheme}
+          />
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }, (prevProps, nextProps) => {
   return prevProps.open === nextProps.open &&
