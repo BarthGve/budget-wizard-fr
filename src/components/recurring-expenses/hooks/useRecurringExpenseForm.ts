@@ -63,8 +63,7 @@ const getFaviconUrl = (domain: string) => {
 
 export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess }: UseRecurringExpenseFormProps) => {
   const queryClient = useQueryClient();
-  const [showVehicleDialog, setShowVehicleDialog] = useState(false);
-  const [formData, setFormData] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -83,7 +82,10 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
     },
   });
 
-  const saveExpense = async (data: any) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -118,7 +120,7 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
 
       console.log("Données à enregistrer:", expenseData);
 
-      if (expense) {
+      if (expense?.id) {
         // Mise à jour d'une charge existante
         const { error } = await supabase
           .from("recurring_expenses")
@@ -174,46 +176,18 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
     } catch (error) {
       console.error("Error saving recurring expense:", error);
       toast.error(
-        expense
+        expense?.id
           ? "Erreur lors de la mise à jour de la charge récurrente"
           : "Erreur lors de l'ajout de la charge récurrente"
       );
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const onSubmit: SubmitHandler<FormValues> = async (values) => {
-    if (expense) {
-      // Si c'est une mise à jour, on passe directement, car les champs véhicule restent inchangés
-      await saveExpense({
-        ...values,
-        vehicle_id: expense.vehicle_id,
-        vehicle_expense_type: expense.vehicle_expense_type,
-        auto_generate_vehicle_expense: expense.auto_generate_vehicle_expense
-      });
-    } else {
-      // Si c'est une création, on stocke les données et on ouvre le dialogue d'association
-      setFormData(values);
-      setShowVehicleDialog(true);
-    }
-  };
-
-  const handleVehicleDialogComplete = async (data: any) => {
-    // Sauvegarde avec ou sans les données de véhicule
-    await saveExpense(data);
-    setShowVehicleDialog(false);
-    setFormData(null);
-  };
-
-  const handleVehicleDialogClose = () => {
-    setShowVehicleDialog(false);
   };
 
   return {
     form,
     handleSubmit: form.handleSubmit(onSubmit),
-    showVehicleDialog,
-    formData,
-    handleVehicleDialogComplete,
-    handleVehicleDialogClose
+    isSubmitting
   };
 };

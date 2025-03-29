@@ -1,20 +1,40 @@
 
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { FormValues } from "../hooks/useRecurringExpenseForm";
-import { expenseTypes } from "@/components/vehicles/expenses/form/ExpenseTypeField";
 
 interface ExpenseTypeFieldProps {
   form: UseFormReturn<FormValues>;
-  expenseTypes: { id: string; name: string; }[];
 }
 
-export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) => {
-  // Obtenir vehicle_id pour la validation
-  const vehicleId = form.watch("vehicle_id");
+export function ExpenseTypeField({ form }: ExpenseTypeFieldProps) {
+  // Vérifier si un véhicule est sélectionné
+  const hasVehicle = form.watch("vehicle_id");
   const autoGenerate = form.watch("auto_generate_vehicle_expense");
-  
+
+  // Récupérer les types de dépenses pour véhicules
+  const { data: expenseTypes, isLoading } = useQuery({
+    queryKey: ["vehicle-expense-types"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicle_expense_types")
+        .select("id, name, category")
+        .order("name");
+      
+      if (error) throw error;
+      return data;
+    },
+    // Seulement exécuter si un véhicule est sélectionné
+    enabled: !!hasVehicle
+  });
+
+  if (!hasVehicle || !autoGenerate) {
+    return null;
+  }
+
   return (
     <FormField
       control={form.control}
@@ -22,43 +42,27 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
       render={({ field }) => (
         <FormItem>
           <FormLabel>Type de dépense véhicule</FormLabel>
-          <Select 
-            onValueChange={(value) => {
-              field.onChange(value === "no-type" ? null : value);
-              
-              // Désactiver l'auto-génération si aucun type n'est sélectionné
-              if (value === "no-type" && autoGenerate) {
-                form.setValue("auto_generate_vehicle_expense", false);
-              }
-            }}
-            value={field.value || "no-type"}
-            disabled={!vehicleId}
+          <Select
+            value={field.value || ""}
+            onValueChange={field.onChange}
+            disabled={isLoading}
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Sélectionnez un type de dépense" />
+                <SelectValue placeholder="Sélectionner un type de dépense" />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectItem key="no-type" value="no-type">
-                Aucun type de dépense
-              </SelectItem>
-              {/* Utiliser les types de dépenses provenant des options du véhicule */}
-              {expenseTypes.map(type => (
+              {expenseTypes?.map((type) => (
                 <SelectItem key={type.id} value={type.id}>
-                  {type.name}
+                  {type.name} ({type.category})
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {vehicleId && (
-            <FormDescription>
-              Sélectionnez un type de dépense pour activer la génération automatique
-            </FormDescription>
-          )}
           <FormMessage />
         </FormItem>
       )}
     />
   );
-};
+}

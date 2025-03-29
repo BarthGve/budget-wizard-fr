@@ -25,7 +25,14 @@ export function AddRecurringExpenseDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        
+        <Button 
+          variant="outline"
+          className="bg-white hover:bg-blue-50 text-blue-600 border-blue-200"
+          onClick={() => setOpen(true)}
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Ajouter une charge
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
@@ -37,7 +44,6 @@ export function AddRecurringExpenseDialog({
         <RecurringExpenseForm 
           onSuccess={handleSuccess} 
           onCancel={handleCancel} 
-          // Nous allons plutôt passer un objet expense préconfiguré avec le vehicleId
           expense={{
             id: "",
             name: "",
