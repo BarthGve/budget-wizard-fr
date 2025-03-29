@@ -71,10 +71,8 @@ export const RetailersList = ({
         <Button 
           variant="ghost" 
           size="sm" 
-          className="h-8 px-2 text-xs"
           onClick={onBackClick}
         >
-     
         </Button>
   
       </motion.div>
