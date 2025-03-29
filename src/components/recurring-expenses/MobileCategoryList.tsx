@@ -53,6 +53,14 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
       ).sort((a, b) => b.amount - a.amount)
     : [];
 
+  // Debug
+  console.log("Période effective:", effectivePeriod);
+  console.log("Catégorie sélectionnée:", selectedCategory);
+  console.log("Nombre de dépenses trouvées:", categoryExpenses.length);
+  if (categoryExpenses.length > 0) {
+    console.log("Exemple de dépense:", categoryExpenses[0].name, categoryExpenses[0].periodicity);
+  }
+
   return (
     <motion.div variants={itemVariants}>
       <Card className={cn(
@@ -143,7 +151,7 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
                 ))
               ) : (
                 <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                  Aucune charge dans cette catégorie
+                  Aucune charge dans cette catégorie pour la période {periodLabel}
                 </div>
               )}
             </ul>
