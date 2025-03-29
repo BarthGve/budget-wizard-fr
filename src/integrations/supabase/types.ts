@@ -1067,6 +1067,87 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicle_document_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      vehicle_documents: {
+        Row: {
+          category_id: string | null
+          content_type: string | null
+          created_at: string | null
+          description: string | null
+          file_path: string
+          file_size: number | null
+          id: string
+          name: string
+          updated_at: string | null
+          vehicle_id: string
+        }
+        Insert: {
+          category_id?: string | null
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_path: string
+          file_size?: number | null
+          id?: string
+          name: string
+          updated_at?: string | null
+          vehicle_id: string
+        }
+        Update: {
+          category_id?: string | null
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_documents_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_document_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehicle_documents_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vehicle_expense_types: {
         Row: {
           category: string

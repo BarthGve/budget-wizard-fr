@@ -8,12 +8,13 @@ import { VehicleExpenseStats } from "@/components/vehicles/expenses/VehicleExpen
 import { motion } from "framer-motion";
 import { VehicleMonthlyExpensesChart } from "./expenses-chart/VehicleMonthlyExpensesChart";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CalendarClock } from "lucide-react";
+import { AlertCircle, CalendarClock, FileIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { VehicleDocumentsTab } from "../documents/VehicleDocumentsTab";
 
 interface VehicleDetailTabsProps {
   vehicle: Vehicle;
@@ -100,6 +101,12 @@ export const VehicleDetailTabs = ({
       <TabsList>
         <TabsTrigger value="details">Détails</TabsTrigger>
         {canAccessExpenses && <TabsTrigger value="expenses">Dépenses</TabsTrigger>}
+        <TabsTrigger value="documents">
+          <span className="flex items-center gap-1">
+            <FileIcon className="w-4 h-4" />
+            Documents
+          </span>
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="details">
@@ -159,6 +166,10 @@ export const VehicleDetailTabs = ({
           </motion.div>
         </TabsContent>
       )}
+
+      <TabsContent value="documents">
+        <VehicleDocumentsTab vehicleId={vehicle.id} />
+      </TabsContent>
     </Tabs>
   );
 };

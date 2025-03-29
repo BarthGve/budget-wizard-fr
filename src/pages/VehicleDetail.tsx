@@ -1,7 +1,6 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useParams } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useVehicleDetail } from "@/hooks/useVehicleDetail";
 import { useState } from "react";
 import { VehicleForm, VehicleFormValues } from "@/components/vehicles/VehicleForm";
@@ -13,6 +12,7 @@ import { VehicleDetailHeader } from "@/components/vehicles/detail/VehicleDetailH
 import { VehicleDetailLoading } from "@/components/vehicles/detail/VehicleDetailLoading";
 import { VehicleNotFound } from "@/components/vehicles/detail/VehicleNotFound";
 import { VehicleDetailTabs } from "@/components/vehicles/detail/VehicleDetailTabs";
+import { VehicleEditDialog } from "@/components/vehicles/VehicleEditDialog";
 
 const VehicleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -79,19 +79,13 @@ const VehicleDetail = () => {
         />
       </motion.div>
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[550px]">
-          <DialogHeader>
-            <DialogTitle>Modifier le véhicule</DialogTitle>
-          </DialogHeader>
-          <VehicleForm
-            vehicle={vehicle}
-            onSubmit={handleUpdate}
-            onCancel={() => setIsEditDialogOpen(false)}
-            isPending={isUpdating}
-          />
-        </DialogContent>
-      </Dialog>
+      <VehicleEditDialog
+        isOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        selectedVehicle={vehicle}
+        onUpdate={handleUpdate}
+        isPending={isUpdating}
+      />
     </DashboardLayout>
   );
 };
