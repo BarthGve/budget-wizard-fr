@@ -918,32 +918,87 @@ export type Database = {
           },
         ]
       }
+      stock_assets: {
+        Row: {
+          asset_type: string
+          created_at: string | null
+          current_price: number | null
+          id: string
+          name: string
+          profile_id: string
+          purchase_date: string
+          purchase_price: number
+          quantity: number
+          symbol: string
+          updated_at: string | null
+        }
+        Insert: {
+          asset_type: string
+          created_at?: string | null
+          current_price?: number | null
+          id?: string
+          name: string
+          profile_id: string
+          purchase_date?: string
+          purchase_price?: number
+          quantity?: number
+          symbol: string
+          updated_at?: string | null
+        }
+        Update: {
+          asset_type?: string
+          created_at?: string | null
+          current_price?: number | null
+          id?: string
+          name?: string
+          profile_id?: string
+          purchase_date?: string
+          purchase_price?: number
+          quantity?: number
+          symbol?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       stock_investments: {
         Row: {
           amount: number
+          asset_id: string | null
           created_at: string
           id: string
           investment_date: string
+          notes: string | null
           profile_id: string
           updated_at: string
         }
         Insert: {
           amount?: number
+          asset_id?: string | null
           created_at?: string
           id?: string
           investment_date?: string
+          notes?: string | null
           profile_id: string
           updated_at?: string
         }
         Update: {
           amount?: number
+          asset_id?: string | null
           created_at?: string
           id?: string
           investment_date?: string
+          notes?: string | null
           profile_id?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "stock_investments_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "stock_assets"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "stock_investments_profile_id_fkey"
             columns: ["profile_id"]

@@ -25,61 +25,129 @@ serve(async (req) => {
     const fromDate = sixMonthsAgo.toISOString().split('T')[0]
     const toDate = today.toISOString().split('T')[0]
 
+    // Indice et actions de référence affichés sur toutes les vues
     const symbols = ['I:FCHI', 'AAPL', 'BTC-EUR']
-    const promises = symbols.map(async symbol => {
+    
+    // Récupérer les symboles personnalisés dans la requête si présents
+    let userAssetSymbols: string[] = [];
+    const url = new URL(req.url);
+    const userSymbolsParam = url.searchParams.get("symbols");
+    
+    if (userSymbolsParam) {
+      try {
+        userAssetSymbols = JSON.parse(userSymbolsParam);
+        console.log("Requête de prix pour les actifs utilisateur:", userAssetSymbols);
+      } catch (error) {
+        console.error("Erreur de parsing des symboles utilisateur:", error);
+      }
+    }
+    
+    // Combiner les symboles référence avec les symboles utilisateur
+    const allSymbols = [...symbols, ...userAssetSymbols];
+    
+    // Déduplication des symboles
+    const uniqueSymbols = [...new Set(allSymbols)];
+    
+    const promises = uniqueSymbols.map(async symbol => {
       let url = '';
       let historyUrl = '';
+      let processedSymbol = symbol;
+      let isUserAsset = userAssetSymbols.includes(symbol);
       
+      // Adaptation du symbole pour l'API Polygon
       if (symbol === 'BTC-EUR') {
-        url = `https://api.polygon.io/v2/aggs/ticker/X:BTCEUR/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
-        historyUrl = `https://api.polygon.io/v2/aggs/ticker/X:BTCEUR/range/1/day/${fromDate}/${toDate}?adjusted=true&apiKey=${POLYGON_API_KEY}`;
+        processedSymbol = 'X:BTCEUR';
       } else if (symbol === 'I:FCHI') {
-        url = `https://api.polygon.io/v2/aggs/ticker/I:FCHI/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
-        historyUrl = `https://api.polygon.io/v2/aggs/ticker/I:FCHI/range/1/day/${fromDate}/${toDate}?adjusted=true&apiKey=${POLYGON_API_KEY}`;
-      } else {
-        url = `https://api.polygon.io/v2/aggs/ticker/AAPL/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
-        historyUrl = `https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/${fromDate}/${toDate}?adjusted=true&apiKey=${POLYGON_API_KEY}`;
+        processedSymbol = 'I:FCHI';
+      } else if (!symbol.includes(':')) {
+        // Si ce n'est pas un symbole spécial, on le considère comme une action
+        processedSymbol = symbol;
+      }
+      
+      // Construction des URLs pour les requêtes
+      url = `https://api.polygon.io/v2/aggs/ticker/${processedSymbol}/prev?adjusted=true&apiKey=${POLYGON_API_KEY}`;
+      
+      // On récupère l'historique uniquement pour les symboles de référence, pas pour les actifs de l'utilisateur
+      if (!isUserAsset) {
+        historyUrl = `https://api.polygon.io/v2/aggs/ticker/${processedSymbol}/range/1/day/${fromDate}/${toDate}?adjusted=true&apiKey=${POLYGON_API_KEY}`;
       }
 
-      console.log(`Fetching current data for ${symbol} from URL: ${url}`);
-      console.log(`Fetching historical data for ${symbol} from URL: ${historyUrl}`);
-
-      const [currentResponse, historyResponse] = await Promise.all([
-        fetch(url),
-        fetch(historyUrl)
-      ]);
-
-      const [currentData, historyData] = await Promise.all([
-        currentResponse.json(),
-        historyResponse.json()
-      ]);
-
-      console.log(`Current data response for ${symbol}:`, JSON.stringify(currentData, null, 2));
-      console.log(`Historical data response for ${symbol}:`, JSON.stringify(historyData, null, 2));
-
-      if (!currentData?.results?.[0]) {
-        console.error(`Invalid response for ${symbol}:`, currentData);
+      console.log(`Fetching current data for ${symbol} using ${processedSymbol} from URL: ${url}`);
+      
+      try {
+        // Si c'est un actif utilisateur, on ne récupère que le prix actuel
+        if (isUserAsset) {
+          const currentResponse = await fetch(url);
+          const currentData = await currentResponse.json();
+          
+          console.log(`Current data response for ${symbol}:`, JSON.stringify(currentData, null, 2));
+          
+          if (!currentData?.results?.[0]) {
+            console.error(`Invalid response for ${symbol}:`, currentData);
+            return {
+              symbol,
+              data: { c: 0, pc: 0 },
+              isUserAsset: true
+            };
+          }
+          
+          const result = currentData.results[0];
+          return {
+            symbol,
+            data: {
+              c: result.c,  // Prix de clôture
+              pc: result.o   // Prix d'ouverture
+            },
+            isUserAsset: true
+          };
+        } else {
+          // Pour les symboles de référence, récupérer aussi l'historique
+          const [currentResponse, historyResponse] = await Promise.all([
+            fetch(url),
+            fetch(historyUrl)
+          ]);
+          
+          const [currentData, historyData] = await Promise.all([
+            currentResponse.json(),
+            historyResponse.json()
+          ]);
+          
+          console.log(`Current data response for ${symbol}:`, JSON.stringify(currentData, null, 2));
+          console.log(`Historical data response for ${symbol}:`, JSON.stringify(historyData, null, 2));
+          
+          if (!currentData?.results?.[0]) {
+            console.error(`Invalid response for ${symbol}:`, currentData);
+            return {
+              symbol,
+              data: { c: 0, pc: 0 },
+              history: []
+            };
+          }
+          
+          const result = currentData.results[0];
+          const history = (historyData?.results || []).map((item: any) => ({
+            date: new Date(item.t).toISOString().split('T')[0],
+            value: item.c
+          }));
+          
+          return {
+            symbol,
+            data: {
+              c: result.c,
+              pc: result.o
+            },
+            history
+          };
+        }
+      } catch (error) {
+        console.error(`Error fetching data for ${symbol}:`, error);
         return {
           symbol,
           data: { c: 0, pc: 0 },
-          history: []
+          history: isUserAsset ? undefined : [],
+          error: error.message
         };
       }
-
-      const result = currentData.results[0];
-      const history = (historyData?.results || []).map((item: any) => ({
-        date: new Date(item.t).toISOString().split('T')[0],
-        value: item.c
-      }));
-
-      return {
-        symbol,
-        data: {
-          c: result.c,
-          pc: result.o
-        },
-        history
-      };
     });
 
     const results = await Promise.all(promises);

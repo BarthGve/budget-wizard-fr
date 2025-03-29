@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 import { StocksHeader } from "@/components/stocks/StocksHeader";
 import { MarketDataSection } from "@/components/stocks/MarketDataSection";
 import { InvestmentsSummary } from "@/components/stocks/InvestmentsSummary";
+import { AssetsSection } from "@/components/stocks/AssetsSection";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Process investment data to calculate yearly totals, current year total, etc.
 const processInvestmentData = (investmentHistory: any[] | undefined) => {
@@ -52,6 +54,8 @@ const formatPrice = (price: number) => {
 };
 
 const StocksPage = () => {
+  const [activeTab, setActiveTab] = useState("overview");
+  
   // Fetch market data
   const {
     data: marketData,
@@ -133,19 +137,36 @@ const StocksPage = () => {
       >
         <StocksHeader onSuccess={refetchHistory} />
         
-        <MarketDataSection 
-          marketCards={marketCards} 
-          isLoading={isMarketDataLoading} 
-        />
-        
-        <InvestmentsSummary 
-          yearlyData={yearlyData}
-          currentYearTotal={currentYearTotal}
-          totalInvestment={totalInvestment}
-          currentYearInvestments={currentYearInvestments}
-          onSuccess={refetchHistory}
-          formatPrice={formatPrice}
-        />
+        <Tabs 
+          value={activeTab} 
+          onValueChange={setActiveTab} 
+          className="w-full"
+        >
+          <TabsList className="mb-4">
+            <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+            <TabsTrigger value="assets">Mes actifs</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview" className="space-y-6">
+            <MarketDataSection 
+              marketCards={marketCards} 
+              isLoading={isMarketDataLoading} 
+            />
+            
+            <InvestmentsSummary 
+              yearlyData={yearlyData}
+              currentYearTotal={currentYearTotal}
+              totalInvestment={totalInvestment}
+              currentYearInvestments={currentYearInvestments}
+              onSuccess={refetchHistory}
+              formatPrice={formatPrice}
+            />
+          </TabsContent>
+          
+          <TabsContent value="assets" className="space-y-6">
+            <AssetsSection />
+          </TabsContent>
+        </Tabs>
       </motion.div>
     </DashboardLayout>
   );

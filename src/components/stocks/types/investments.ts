@@ -3,6 +3,8 @@ export interface Investment {
   id: string;
   investment_date: string;
   amount: number;
+  asset_id?: string;
+  notes?: string;
 }
 
 export interface CurrentYearInvestmentsDialogProps {
