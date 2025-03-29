@@ -156,7 +156,7 @@ export const AddVehicleExpenseDialog = ({
 
       {/* Icône décorative en filigrane */}
       <div className="absolute bottom-0 right-0 w-28 h-28 pointer-events-none opacity-[0.07] dark:opacity-[0.04]">
-        <Fuel className="w-full h-full" />
+        <CarFront className="w-full h-full" />
       </div>
       
       {/* Ligne décorative subtile */}
