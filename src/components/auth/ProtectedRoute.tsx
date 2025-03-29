@@ -19,6 +19,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   const [shouldRedirect, setShouldRedirect] = useState<string | null>(null);
   const hasRedirectedRef = useRef(false);
   const redirectTimeoutRef = useRef<number | null>(null);
+  const isFirstRender = useRef(true);
   
   // Nettoyer le timeout lors du démontage
   useEffect(() => {
@@ -33,6 +34,26 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   const { data: authData, isLoading } = useQuery({
     queryKey: ["auth", location.pathname],
     queryFn: async () => {
+      // Si c'est le premier rendu, utiliser les données de session locales si disponibles 
+      // pour éviter un rechargement complet de la page
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        
+        // Vérifier si nous avons des données en session storage
+        const storedAuth = sessionStorage.getItem('auth_state');
+        if (storedAuth) {
+          try {
+            const parsedAuth = JSON.parse(storedAuth);
+            if (parsedAuth && new Date().getTime() - parsedAuth.timestamp < 300000) { // 5 minutes 
+              console.log("Utilisation des données d'authentification en cache");
+              return parsedAuth.data;
+            }
+          } catch (e) {
+            console.error("Erreur lors de la lecture des données d'authentification en cache", e);
+          }
+        }
+      }
+      
       console.log("Vérification d'authentification pour:", location.pathname);
       try {
         // Ne pas vérifier l'authentification pour la page changelog publique
@@ -48,10 +69,18 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
           role: 'admin'
         });
 
-        return { 
+        const authData = { 
           isAuthenticated: true,
           isAdmin
         };
+        
+        // Stocker les données en session storage pour les utiliser lors du prochain rendu
+        sessionStorage.setItem('auth_state', JSON.stringify({
+          data: authData,
+          timestamp: new Date().getTime()
+        }));
+        
+        return authData;
       } catch (error) {
         console.error("Erreur lors de la vérification d'authentification:", error);
         return { isAuthenticated: false };
@@ -128,7 +157,12 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     // Et forcer le replace pour éviter de polluer l'historique
     return <Navigate 
       to={shouldRedirect} 
-      state={{ from: location.pathname, isSpaNavigation: true, timestamp: Date.now() }} 
+      state={{ 
+        from: location.pathname, 
+        isSpaNavigation: true, 
+        timestamp: Date.now(),
+        noReload: true // Indiquer explicitement de ne pas recharger
+      }} 
       replace 
     />;
   }

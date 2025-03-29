@@ -10,80 +10,95 @@ let refreshing = false;
  */
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    // Attendre BEAUCOUP plus longtemps pour l'enregistrement
-    const registrationDelay = 60000; // 60 secondes de délai (1 minute)
-    
-    console.log(`[SW] Enregistrement du Service Worker programmé dans ${registrationDelay/1000}s...`);
-    
-    // Vérifier si un service worker est déjà actif
-    if (navigator.serviceWorker.controller) {
-      console.log('[SW] Service Worker déjà actif, mise à jour si nécessaire');
-      
-      // Si déjà installé, on se contente de planifier une mise à jour
-      navigator.serviceWorker.ready.then(registration => {
-        registration.update().catch(error => {
-          console.error('[SW] Erreur lors de la mise à jour du Service Worker:', error);
-        });
-      });
-      
+    // Vérifier si une navigation SPA est en cours
+    if (sessionStorage.getItem('navigation_in_progress') === 'true') {
+      console.log('[SW] Navigation en cours, report de l\'enregistrement');
+      // Réessayer plus tard
+      setTimeout(() => registerServiceWorker(), 30000);
       return;
     }
     
-    // Délai très important pour laisser l'application SPA se stabiliser
-    setTimeout(() => {
-      // Ne pas enregistrer le service worker si une navigation est en cours
-      if (document.hidden || sessionStorage.getItem('navigation_in_progress') === 'true') {
-        console.log('[SW] Navigation en cours, report de l\'enregistrement du service worker');
-        setTimeout(() => registerServiceWorker(), 10000);
-        return;
-      }
+    // Vérifier si un service worker est déjà actif
+    if (navigator.serviceWorker.controller) {
+      console.log('[SW] Service Worker déjà actif, mise à jour programmée');
       
+      // Planifier une mise à jour différée
+      setTimeout(() => {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.update().catch(error => {
+            console.error('[SW] Erreur lors de la mise à jour du Service Worker:', error);
+          });
+        });
+      }, 300000); // 5 minutes
+      
+      return;
+    }
+
+    console.log('[SW] Tentative d\'enregistrement du Service Worker...');
+    
+    try {
       navigator.serviceWorker.register('/serviceWorker.js', {
         // Limiter la portée du service worker
         scope: '/',
         // Utiliser le mode "none" pour la mise à jour du cache
         updateViaCache: 'none'
       })
-        .then(registration => {
-          console.log('[SW] Service Worker enregistré avec succès:', registration.scope);
+      .then(registration => {
+        console.log('[SW] Service Worker enregistré avec succès:', registration.scope);
+        
+        // Vérifier s'il y a une mise à jour disponible
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('[SW] Nouvelle version du Service Worker trouvée...');
           
-          // Vérifier s'il y a une mise à jour disponible
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            console.log('[SW] Nouvelle version du Service Worker trouvée...');
-            
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Nouveau Service Worker disponible, notifier l'utilisateur
-                  notifyUserOfUpdate();
-                }
-              });
-            }
-          });
-        })
-        .catch(error => {
-          console.error('[SW] Erreur lors de l\'enregistrement du Service Worker:', error);
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // Nouveau Service Worker disponible, notifier l'utilisateur
+                notifyUserOfUpdate();
+              }
+            });
+          }
         });
+      })
+      .catch(error => {
+        console.error('[SW] Erreur lors de l\'enregistrement du Service Worker:', error);
+      });
         
       // Écouter les messages des autres onglets concernant les mises à jour
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (refreshing) return;
-        refreshing = true;
-        console.log('[SW] Service Worker Controller changé, rechargement...');
         
-        // Ne pas recharger immédiatement - planifier pour après les navigations en cours
+        // Attendre un moment avant de recharger pour éviter les problèmes pendant la navigation
+        refreshing = true;
+        console.log('[SW] Controller changé, rechargement planifié...');
+        
+        // Ne recharger que si aucune navigation n'est en cours
         setTimeout(() => {
-          window.location.reload();
-        }, 3000); // 3 secondes pour être sûr que toute navigation en cours est terminée
+          if (sessionStorage.getItem('navigation_in_progress') !== 'true') {
+            console.log('[SW] Rechargement de la page suite au changement de controller');
+            window.location.reload();
+          } else {
+            console.log('[SW] Navigation en cours, annulation du rechargement');
+            refreshing = false;
+          }
+        }, 5000); // Attendre 5 secondes pour éviter les interférences
       });
-    }, registrationDelay);
+    } catch (err) {
+      console.error('[SW] Exception lors de l\'enregistrement du SW:', err);
+    }
   }
 }
 
 // Fonction pour vérifier les mises à jour du service worker
 export function checkForSWUpdates() {
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    // Ne pas vérifier pendant une navigation
+    if (sessionStorage.getItem('navigation_in_progress') === 'true') {
+      console.log('[SW] Navigation en cours, vérification reportée');
+      return;
+    }
+    
     console.log('[SW] Vérification des mises à jour du Service Worker...');
     navigator.serviceWorker.ready.then(registration => {
       registration.update().catch(error => {
@@ -104,6 +119,13 @@ function notifyUserOfUpdate() {
 // Pour forcer un service worker à prendre le contrôle immédiatement
 export function updateServiceWorker() {
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    // Ne pas activer pendant une navigation
+    if (sessionStorage.getItem('navigation_in_progress') === 'true') {
+      console.log('[SW] Navigation en cours, activation reportée');
+      setTimeout(updateServiceWorker, 5000);
+      return;
+    }
+    
     console.log('[SW] Activation de la mise à jour du Service Worker...');
     navigator.serviceWorker.ready.then(registration => {
       if (registration.waiting) {
@@ -168,30 +190,59 @@ export function unregisterServiceWorker() {
 
 // Ajouter un gestionnaire pour suivre l'état de la navigation SPA
 export function setupNavigationTracking() {
-  const pushState = history.pushState;
-  const replaceState = history.replaceState;
+  const originalPushState = history.pushState;
+  const originalReplaceState = history.replaceState;
+  
+  // Limiter le taux de pushState/replaceState
+  let lastHistoryOperation = 0;
+  const minInterval = 100; // ms entre chaque opération d'historique
   
   // Intercepter les appels à history.pushState
   history.pushState = function() {
+    const now = Date.now();
+    
+    // Limiter le taux d'appels
+    if (now - lastHistoryOperation < minInterval) {
+      console.log("Trop d'opérations d'historique, ignorée");
+      return originalPushState.apply(history, arguments as any);
+    }
+    
+    lastHistoryOperation = now;
     sessionStorage.setItem('navigation_in_progress', 'true');
+    
+    // Utiliser un délai pour réinitialiser l'état
     setTimeout(() => {
       sessionStorage.removeItem('navigation_in_progress');
     }, 500);
-    return pushState.apply(history, arguments as any);
+    
+    return originalPushState.apply(history, arguments as any);
   };
   
   // Intercepter les appels à history.replaceState
   history.replaceState = function() {
+    const now = Date.now();
+    
+    // Limiter le taux d'appels
+    if (now - lastHistoryOperation < minInterval) {
+      console.log("Trop d'opérations d'historique, ignorée");
+      return originalReplaceState.apply(history, arguments as any);
+    }
+    
+    lastHistoryOperation = now;
     sessionStorage.setItem('navigation_in_progress', 'true');
+    
+    // Utiliser un délai pour réinitialiser l'état
     setTimeout(() => {
       sessionStorage.removeItem('navigation_in_progress');
     }, 500);
-    return replaceState.apply(history, arguments as any);
+    
+    return originalReplaceState.apply(history, arguments as any);
   };
   
   // Écouter les événements de navigation
   window.addEventListener('popstate', () => {
     sessionStorage.setItem('navigation_in_progress', 'true');
+    
     setTimeout(() => {
       sessionStorage.removeItem('navigation_in_progress');
     }, 500);

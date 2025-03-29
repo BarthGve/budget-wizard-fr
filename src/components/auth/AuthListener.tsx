@@ -14,6 +14,11 @@ export const AuthListener = () => {
   const scheduledNavigationTimeout = useRef<number | null>(null);
   const lastNavigationTime = useRef<number>(0);
   const throttleDelay = 1000; // 1 seconde entre chaque navigation
+  const isFirstVisit = useRef(sessionStorage.getItem('visited') !== 'true');
+
+  // Utiliser location.state pour détecter si nous sommes dans une navigation SPA
+  const isSpaNavigation = location.state && location.state.isSpaNavigation;
+  const noReload = location.state && location.state.noReload;
 
   // Marquer que nous sommes dans une SPA
   useEffect(() => {
@@ -29,6 +34,14 @@ export const AuthListener = () => {
   }, []);
 
   useEffect(() => {
+    // Ignorer la vérification lors du premier rendu si c'est une navigation SPA
+    // et que nous arrivons d'une autre page
+    if (isSpaNavigation && noReload) {
+      initialCheckDone.current = true;
+      console.log("Navigation SPA détectée, vérification d'authentification ignorée");
+      return;
+    }
+    
     // Éviter les vérifications multiples ou pendant la navigation
     if (isCheckingRef.current || navigationInProgress.current) return;
     
@@ -39,6 +52,15 @@ export const AuthListener = () => {
         // Vérifier les revenus uniquement si nécessaire et si ce n'est pas la vérification initiale
         if (initialCheckDone.current) {
           await checkOwnerContributorIncome();
+        }
+        
+        // Pour la première visite, utiliser une vérification différée
+        if (isFirstVisit.current) {
+          isFirstVisit.current = false;
+          console.log("Première visite détectée, vérification d'authentification différée");
+          initialCheckDone.current = true;
+          isCheckingRef.current = false;
+          return;
         }
         
         // Vérifier l'état d'authentification
@@ -69,7 +91,7 @@ export const AuthListener = () => {
               clearTimeout(scheduledNavigationTimeout.current);
             }
             
-            // Utiliser navigate avec state pour conserver l'information de SPA
+            // Utiliser une seule navigation programmée
             scheduledNavigationTimeout.current = window.setTimeout(() => {
               // Utiliser replace: true pour éviter d'ajouter à l'historique
               navigate("/login", { 
@@ -77,7 +99,8 @@ export const AuthListener = () => {
                 state: { 
                   from: location.pathname,
                   isSpaNavigation: true,
-                  timestamp: Date.now() // Ajouter un timestamp pour garantir l'unicité
+                  timestamp: Date.now(), // Ajouter un timestamp pour garantir l'unicité
+                  noReload: true // Indiquer explicitement de ne pas recharger
                 } 
               });
               
@@ -118,13 +141,17 @@ export const AuthListener = () => {
             clearTimeout(scheduledNavigationTimeout.current);
           }
           
+          // Stocker l'information de déconnexion en session storage
+          sessionStorage.setItem('just_signed_out', 'true');
+          
           // Utiliser setTimeout pour éviter les problèmes de navigation
           scheduledNavigationTimeout.current = window.setTimeout(() => {
             navigate("/login", { 
               replace: true,
               state: { 
                 isSpaNavigation: true,
-                timestamp: Date.now() // Ajouter un timestamp pour garantir l'unicité
+                timestamp: Date.now(), // Ajouter un timestamp pour garantir l'unicité
+                noReload: true // Indiquer explicitement de ne pas recharger
               } 
             });
             
@@ -151,7 +178,8 @@ export const AuthListener = () => {
               replace: true,
               state: { 
                 isSpaNavigation: true,
-                timestamp: Date.now() // Ajouter un timestamp pour garantir l'unicité
+                timestamp: Date.now(), // Ajouter un timestamp pour garantir l'unicité
+                noReload: true // Indiquer explicitement de ne pas recharger
               } 
             });
             
@@ -170,7 +198,7 @@ export const AuthListener = () => {
         clearTimeout(scheduledNavigationTimeout.current);
       }
     };
-  }, [location.pathname, navigate, checkOwnerContributorIncome]);
+  }, [location.pathname, navigate, checkOwnerContributorIncome, isSpaNavigation, noReload]);
 
   return null;
 };

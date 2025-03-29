@@ -1,2 +1,8 @@
 
-/*    /index.html   200
+# Fichier de redirection pour les services d'hébergement statique (Netlify, Vercel, etc.)
+# Assure que toutes les routes sont redirigées vers index.html pour le fonctionnement SPA
+# Le code 200 indique que la redirection doit être faite sans changer l'URL dans le navigateur
+
+# Application de l'en-tête Cache-Control pour éviter les mises en cache indésirables
+/* /index.html 200! Cache-Control: no-store, no-cache, must-revalidate
+

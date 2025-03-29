@@ -28,7 +28,7 @@ import Changelog from "./pages/Changelog";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import EmailVerification from "./pages/EmailVerification";
 import { AuthListener } from "./components/auth/AuthListener";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import Vehicles from "./pages/Vehicles";
 import VehicleDetail from "./pages/VehicleDetail";
 import { UpdateNotification } from "./components/layout/UpdateNotification";
@@ -44,42 +44,69 @@ const App = () => {
     },
   }));
   
-  // Déplacement du hook useEffect à l'intérieur du composant App
+  const isFirstVisit = useRef(sessionStorage.getItem('visited') !== 'true');
+  const clickHandlerAttached = useRef(false);
+  const debouncerTimeout = useRef<number | null>(null);
+  
+  // Gestionnaire des clics sur les liens amélioré
   useEffect(() => {
-    // Marquer explicitement que nous utilisons une navigation SPA
+    // Marquer que nous avons visité le site
+    sessionStorage.setItem('visited', 'true');
     sessionStorage.setItem('spa_active', 'true');
     
-    // Créer un débouncer pour limiter le nombre de mises à jour de l'historique
-    let debouncerTimeout: number | null = null;
+    // Éviter d'attacher plusieurs fois le gestionnaire
+    if (clickHandlerAttached.current) return;
+    clickHandlerAttached.current = true;
+    
+    // Constante pour limiter le taux d'appels
     const debounceDuration = 300; // ms
+    const cooldownPeriod = 500; // ms
+    let lastClickTime = 0;
     
     // Fonction optimisée pour gérer les clics sur les liens
     const handleLinkClicks = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
       
+      // Ignorer les clics trop rapprochés
+      const now = Date.now();
+      if (now - lastClickTime < cooldownPeriod) {
+        return;
+      }
+      lastClickTime = now;
+      
       if (anchor && 
           anchor.getAttribute('href')?.startsWith('/') && 
           !anchor.getAttribute('target') && 
-          !anchor.getAttribute('download')) {
+          !anchor.getAttribute('download') &&
+          !anchor.classList.contains('no-spa')) {
         
         // Ne pas recharger pour les liens internes
         e.preventDefault();
         
-        // Débouncer les mises à jour de l'historique
-        if (debouncerTimeout) {
-          clearTimeout(debouncerTimeout);
+        // Annuler tout debouncer précédent
+        if (debouncerTimeout.current) {
+          clearTimeout(debouncerTimeout.current);
         }
         
         // Utiliser l'historique du navigateur à la place
         const href = anchor.getAttribute('href');
         if (href && href !== location.pathname) {
-          debouncerTimeout = window.setTimeout(() => {
+          // Marquer qu'une navigation SPA est en cours
+          sessionStorage.setItem('navigation_in_progress', 'true');
+          
+          debouncerTimeout.current = window.setTimeout(() => {
             history.pushState({ 
               isSpaNavigation: true,
               timestamp: Date.now() 
             }, '', href);
+            
             window.dispatchEvent(new PopStateEvent('popstate'));
+            
+            // Réinitialiser le marqueur après un délai
+            setTimeout(() => {
+              sessionStorage.removeItem('navigation_in_progress');
+            }, 300);
           }, debounceDuration);
         }
       }
@@ -89,8 +116,8 @@ const App = () => {
     
     return () => {
       document.removeEventListener('click', handleLinkClicks);
-      if (debouncerTimeout) {
-        clearTimeout(debouncerTimeout);
+      if (debouncerTimeout.current) {
+        clearTimeout(debouncerTimeout.current);
       }
     };
   }, []);
