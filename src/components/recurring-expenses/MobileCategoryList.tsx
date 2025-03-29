@@ -21,10 +21,11 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
   // État pour suivre la catégorie sélectionnée
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
-  // Filtrer les dépenses selon la période sélectionnée ou prendre les mensuelles par défaut
-  const filteredExpenses = selectedPeriod 
-    ? expenses.filter(expense => expense.periodicity === selectedPeriod)
-    : expenses.filter(expense => expense.periodicity === "monthly");
+  // Déterminer la période effective à utiliser (mensuelle par défaut si aucune n'est sélectionnée)
+  const effectivePeriod = selectedPeriod || "monthly";
+  
+  // Filtrer les dépenses selon la période sélectionnée
+  const filteredExpenses = expenses.filter(expense => expense.periodicity === effectivePeriod);
 
   // Regrouper les dépenses par catégorie et calculer les totaux
   const categoriesMap = new Map<string, number>();
@@ -38,12 +39,13 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
     .map(([category, total]) => ({ category, total }))
     .sort((a, b) => b.total - a.total);
 
-  // Périodicité à afficher
-  const periodLabel = selectedPeriod 
-    ? selectedPeriod === "monthly" ? "mensuelles" : selectedPeriod === "quarterly" ? "trimestrielles" : "annuelles"
-    : "mensuelles";
+  // Périodicité à afficher dans l'interface
+  const periodLabel = 
+    effectivePeriod === "monthly" ? "mensuelles" : 
+    effectivePeriod === "quarterly" ? "trimestrielles" : 
+    "annuelles";
 
-  // Obtenir les dépenses de la catégorie sélectionnée
+  // Obtenir les dépenses de la catégorie sélectionnée en tenant compte de la période
   const categoryExpenses = selectedCategory 
     ? filteredExpenses.filter(expense => expense.category === selectedCategory).sort((a, b) => b.amount - a.amount)
     : [];
