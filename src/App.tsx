@@ -31,6 +31,7 @@ import { AuthListener } from "./components/auth/AuthListener";
 import { useState } from "react";
 import Vehicles from "./pages/Vehicles";
 import VehicleDetail from "./pages/VehicleDetail";
+import { UpdateNotification } from "./components/layout/UpdateNotification";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient({
@@ -49,6 +50,7 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <UpdateNotification />
           <BrowserRouter>
             <AuthListener />
             <Routes>
