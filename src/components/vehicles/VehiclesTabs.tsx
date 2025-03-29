@@ -68,14 +68,14 @@ export const VehiclesTabs = ({ vehicles, isLoading, onEdit, onDelete }: Vehicles
       className="w-full"
     >
       <div className="bg-gradient-to-b from-gray-100/80 to-transparent dark:from-gray-900/30 dark:to-transparent rounded-xl p-4 mb-6">
-        <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto">
+        <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto relative">
           <TabsTrigger 
             value="active" 
             className="relative data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
           >
             Véhicules actifs
             {activeVehiclesCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-800 rounded-full text-xs px-2 py-0.5">
+              <span className="absolute -top-2 -right-2 bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-800 rounded-full text-xs px-2 py-0.5 z-10">
                 {activeVehiclesCount}
               </span>
             )}
@@ -86,7 +86,7 @@ export const VehiclesTabs = ({ vehicles, isLoading, onEdit, onDelete }: Vehicles
           >
             Véhicules vendus
             {soldVehiclesCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-800 rounded-full text-xs px-2 py-0.5">
+              <span className="absolute -top-2 -right-2 bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-800 rounded-full text-xs px-2 py-0.5 z-10">
                 {soldVehiclesCount}
               </span>
             )}
