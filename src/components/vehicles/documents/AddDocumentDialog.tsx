@@ -95,7 +95,7 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
     separator: "via-gray-200/60 dark:via-gray-700/30"
   };
 
-  const DialogContent = () => (
+  const DialogFormContent = () => (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
@@ -129,7 +129,7 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
                       <Button
                         type="button"
                         variant="ghost"
-                        size="xs"
+                        size="sm"
                         className="text-red-500 hover:text-red-700"
                         onClick={() => {
                           form.setValue("file", undefined as any);
@@ -296,7 +296,7 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
             
             {/* Section du formulaire */}
             <div className="relative z-10 px-6">
-              <DialogContent />
+              <DialogFormContent />
             </div>
           </div>
         </SheetContent>
@@ -366,7 +366,7 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
           
           {/* Section du formulaire */}
           <div className="relative z-10">
-            <DialogContent />
+            <DialogFormContent />
           </div>
         </div>
       </DialogContent>

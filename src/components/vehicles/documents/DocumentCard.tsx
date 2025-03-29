@@ -7,13 +7,12 @@ import { useVehicleDocuments } from "@/hooks/useVehicleDocuments";
 import { 
   FileIcon, 
   FileTextIcon,
-  FilePdfIcon,
-  FileImageIcon,
+  FileImage,
   ExternalLinkIcon, 
   Trash2Icon,
   ShieldIcon,
   WrenchIcon,
-  ToolIcon
+  FileIcon as FileIconAlias
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogDescription } from "@/components/ui/alert-dialog";
@@ -56,9 +55,9 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
     if (!contentType) return <FileTextIcon className="w-12 h-12 text-gray-400" />;
     
     if (contentType.includes("pdf")) {
-      return <FilePdfIcon className="w-12 h-12 text-red-500" />;
+      return <FileTextIcon className="w-12 h-12 text-red-500" />;
     } else if (contentType.includes("image")) {
-      return <FileImageIcon className="w-12 h-12 text-blue-500" />;
+      return <FileImage className="w-12 h-12 text-blue-500" />;
     } else if (contentType.includes("text")) {
       return <FileTextIcon className="w-12 h-12 text-gray-500" />;
     } else {
@@ -78,7 +77,7 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
       case "wrench":
         return <WrenchIcon className="w-4 h-4" />;
       case "tool":
-        return <ToolIcon className="w-4 h-4" />;
+        return <FileIconAlias className="w-4 h-4" />;
       default:
         return <FileIcon className="w-4 h-4" />;
     }
