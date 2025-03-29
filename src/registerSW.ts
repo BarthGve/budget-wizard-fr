@@ -71,17 +71,22 @@ export function updateServiceWorker() {
 
 // Enregistrer le gestionnaire d'événements pour le nettoyage périodique du cache
 export function registerPeriodicCacheCleanup() {
-  if ('serviceWorker' in navigator && 'periodicSync' in registration) {
+  // Vérifier si la fonctionnalité periodicSync est disponible
+  if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then(async (registration) => {
-      try {
-        await registration.periodicSync.register('cache-cleanup', {
-          minInterval: 24 * 60 * 60 * 1000, // Une fois par jour
-        });
-        console.log('Nettoyage périodique du cache enregistré');
-      } catch (error) {
-        console.log('Le nettoyage périodique du cache n\'est pas pris en charge', error);
+      // Vérifier si l'API periodicSync existe dans le navigateur
+      if ('periodicSync' in registration && 'PeriodicSyncManager' in window) {
+        try {
+          await (registration as any).periodicSync.register('cache-cleanup', {
+            minInterval: 24 * 60 * 60 * 1000, // Une fois par jour
+          });
+          console.log('Nettoyage périodique du cache enregistré');
+        } catch (error) {
+          console.log('Le nettoyage périodique du cache n\'est pas pris en charge', error);
+        }
+      } else {
+        console.log('L\'API Periodic Sync n\'est pas disponible dans ce navigateur');
       }
     });
   }
 }
-
