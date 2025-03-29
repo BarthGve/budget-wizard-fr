@@ -7,7 +7,7 @@ let refreshing = false;
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     // Attendre le chargement complet de la page et le premier rendu
-    const registrationDelay = 10000; // 10 secondes de délai
+    const registrationDelay = 15000; // 15 secondes de délai
     
     console.log(`[SW] Enregistrement du Service Worker programmé dans ${registrationDelay/1000}s...`);
     
@@ -59,7 +59,10 @@ export function registerServiceWorker() {
         if (refreshing) return;
         refreshing = true;
         console.log('[SW] Service Worker Controller changé, rechargement...');
-        window.location.reload();
+        // Ne pas recharger immédiatement la page pour éviter les interactions avec la navigation SPA
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       });
     }, registrationDelay);
   }

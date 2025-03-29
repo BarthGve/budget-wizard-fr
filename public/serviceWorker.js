@@ -37,7 +37,6 @@ self.addEventListener('fetch', (event) => {
       event.request.destination === 'document' ||
       shouldNotIntercept) {
     // Laisser le navigateur et React Router gérer normalement
-    console.log('[ServiceWorker] Navigation ou requête système détectée, non interceptée:', url.pathname);
     return;
   }
   
@@ -48,7 +47,6 @@ self.addEventListener('fetch', (event) => {
 // Ignorer explicitement toutes les navigations
 self.addEventListener('navigate', (event) => {
   // Ne rien faire, laisser le navigateur et React Router gérer la navigation
-  console.log('[ServiceWorker] Navigation explicitement ignorée:', event.url);
   return;
 });
 

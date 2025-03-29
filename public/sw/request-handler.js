@@ -26,7 +26,6 @@ const handleFetch = (event) => {
   if (event.request.mode === 'navigate' || 
       event.request.destination === 'document' ||
       url.pathname.endsWith('.html')) {
-    console.log('[ServiceWorker] Navigation détectée dans handleFetch, ignorée:', url.pathname);
     return;
   }
   
@@ -35,7 +34,6 @@ const handleFetch = (event) => {
   
   // Ne pas intercepter les requêtes qui ne doivent jamais être mises en cache
   if (shouldNeverCache) {
-    console.log('[ServiceWorker] Requête API ou système détectée, ignorée:', url.pathname);
     return;
   }
   

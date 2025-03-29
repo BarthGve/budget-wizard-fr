@@ -24,8 +24,8 @@ window.addEventListener('load', () => {
     // Délai plus long pour l'enregistrement du service worker
     setTimeout(() => {
       registerServiceWorker();
-    }, 5000); // Délai de 5 secondes pour s'assurer que l'application est stable
-  }, 500);
+    }, 10000); // Délai augmenté à 10 secondes pour s'assurer que l'application est stable
+  }, 1000);
 });
 
 // Vérifier les mises à jour moins fréquemment pour réduire les interférences
