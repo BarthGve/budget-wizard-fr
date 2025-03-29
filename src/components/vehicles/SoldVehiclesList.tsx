@@ -8,14 +8,22 @@ import { motion } from "framer-motion";
 type SoldVehiclesListProps = {
   vehicles: Vehicle[];
   onVehicleClick?: (id: string) => void;
+  onEdit?: (vehicle: Vehicle) => void;
+  onDelete?: (vehicle: Vehicle) => void;
 };
 
-export const SoldVehiclesList = ({ vehicles, onVehicleClick }: SoldVehiclesListProps) => {
+export const SoldVehiclesList = ({ 
+  vehicles, 
+  onVehicleClick, 
+  onEdit, 
+  onDelete 
+}: SoldVehiclesListProps) => {
   // Filtrer pour n'afficher que les véhicules vendus
   const soldVehicles = vehicles.filter(v => v.status === "vendu");
   
-  // Fonction factice pour les actions d'édition/suppression (seul le clic pour voir les détails est actif)
-  const handleNoOp = () => {};
+  // Fonctions factices pour les actions d'édition/suppression si non fournies
+  const handleEdit = onEdit || (() => {});
+  const handleDelete = onDelete || (() => {});
   
   if (soldVehicles.length === 0) {
     return (
@@ -36,7 +44,7 @@ export const SoldVehiclesList = ({ vehicles, onVehicleClick }: SoldVehiclesListP
   return (
     <div className="w-full">
       {/* Grille pour les véhicules vendus */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {soldVehicles.map((vehicle, index) => (
           <motion.div
             key={vehicle.id}
@@ -46,13 +54,13 @@ export const SoldVehiclesList = ({ vehicles, onVehicleClick }: SoldVehiclesListP
           >
             <VehicleCard
               vehicle={vehicle}
-              onEdit={handleNoOp} // Fonction factice car on ne peut pas éditer les véhicules vendus
-              onDelete={handleNoOp} // Fonction factice car la suppression se fait via le menu déroulant
+              onEdit={handleEdit}
+              onDelete={handleDelete}
               onClick={(id) => onVehicleClick && onVehicleClick(id)}
               isDeleting={false}
               index={index}
               isVisible={true}
-              isSold={true} // Nouveau prop pour indiquer que c'est un véhicule vendu
+              isSold={true}
             />
           </motion.div>
         ))}

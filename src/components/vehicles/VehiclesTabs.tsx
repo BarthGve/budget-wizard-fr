@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,28 +23,24 @@ export const VehiclesTabs = ({ vehicles, isLoading, onEdit, onDelete }: Vehicles
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const navigate = useNavigate(); // Utiliser le hook de navigation de React Router
-  
-  // Utiliser les props onEdit et onDelete passées du parent
+  const navigate = useNavigate();
+
   const handleEdit = (vehicle: Vehicle) => {
     onEdit(vehicle);
   };
-  
+
   const handleDelete = (vehicle: Vehicle) => {
     onDelete(vehicle);
   };
-  
+
   const handleVehicleClick = (id: string) => {
     setSelectedVehicleId(id);
-    // Utiliser navigate au lieu de window.location.href pour éviter le rechargement complet
     navigate(`/vehicles/${id}`);
   };
-  
-  // Compte des véhicules actifs et vendus pour les badges
+
   const activeVehiclesCount = vehicles?.filter(v => v.status !== "vendu").length || 0;
   const soldVehiclesCount = vehicles?.filter(v => v.status === "vendu").length || 0;
 
-  // Animation variants
   const tabContentVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: { 
@@ -127,6 +122,8 @@ export const VehiclesTabs = ({ vehicles, isLoading, onEdit, onDelete }: Vehicles
           <SoldVehiclesList 
             vehicles={vehicles || []} 
             onVehicleClick={handleVehicleClick} 
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         </motion.div>
       </TabsContent>

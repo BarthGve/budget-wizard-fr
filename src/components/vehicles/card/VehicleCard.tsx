@@ -52,13 +52,18 @@ export const VehicleCard = ({
     onClick(vehicle.id);
   };
   
-  const handleReactivate = (e: React.MouseEvent) => {
+  const handleReactivate = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    updateVehicle({
-      id: vehicle.id,
-      status: "actif"
-    });
-    toast.success("Véhicule remis en statut actif");
+    try {
+      await updateVehicle({
+        id: vehicle.id,
+        status: "actif"
+      });
+      toast.success("Véhicule remis en statut actif");
+    } catch (error) {
+      console.error("Erreur lors de la réactivation:", error);
+      toast.error("Erreur lors de la réactivation du véhicule");
+    }
   };
   
   const handlePermanentDelete = (e: React.MouseEvent) => {
