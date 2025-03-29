@@ -15,6 +15,11 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
   const vehicleId = form.watch("vehicle_id");
   const autoGenerate = form.watch("auto_generate_vehicle_expense");
   
+  // Utiliser directement les types de dépenses du fichier ExpenseTypeField.tsx
+  const allVehicleExpenseTypes = expenseTypes.length > 0 
+    ? expenseTypes 
+    : expenseTypes.map(type => ({ id: type.id || type.name, name: type.name }));
+  
   return (
     <FormField
       control={form.control}
@@ -43,12 +48,16 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
               <SelectItem key="no-type" value="no-type">
                 Aucun type de dépense
               </SelectItem>
-              {/* Utiliser les types de dépenses provenant des options du véhicule */}
-              {expenseTypes.map(type => (
-                <SelectItem key={type.id || type.name} value={type.name}>
-                  {type.name}
-                </SelectItem>
-              ))}
+              {vehicleId && (
+                <>
+                  {/* Utiliser les types de dépenses standardisés des véhicules */}
+                  {expenseTypes.map(type => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </>
+              )}
             </SelectContent>
           </Select>
           {vehicleId && (
