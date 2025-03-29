@@ -42,69 +42,34 @@ export const ExpenseDialogs = ({
       <>
         {/* Dialogue de dépense de carburant (version mobile) */}
         {selectedVehicle && (
-          <Sheet open={expenseDialogOpen} onOpenChange={setExpenseDialogOpen}>
-            <SheetContent 
-              side="bottom"
-              className={cn(
-                "px-0 py-0 rounded-t-xl",
-                "border-t shadow-lg",
-                "max-h-[90vh] overflow-y-auto",
-                "dark:bg-gray-900"
-              )}
-            >
-              <div className={cn(
-                "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
-                "bg-gray-300 dark:bg-gray-600 rounded-full"
-              )} />
-              
-              <AddVehicleExpenseDialog
-                vehicleId={selectedVehicle}
-                hideDialogWrapper={true}
-                onSuccess={handleExpenseSuccess}
-                onCancel={handleExpenseCancel}
-                initialValues={{
-                  vehicleId: selectedVehicle,
-                  expenseType: "carburant",
-                  date: new Date().toISOString().split('T')[0],
-                  amount: "",
-                  mileage: "",
-                  fuelVolume: "",
-                  maintenanceType: "",
-                  repairType: "",
-                  comment: ""
-                }}
-              />
-            </SheetContent>
-          </Sheet>
+          <AddVehicleExpenseDialog
+            vehicleId={selectedVehicle}
+            open={expenseDialogOpen}
+            onOpenChange={setExpenseDialogOpen}
+            onSuccess={handleExpenseSuccess}
+            onCancel={handleExpenseCancel}
+            initialValues={{
+              vehicleId: selectedVehicle,
+              expenseType: "carburant",
+              date: new Date().toISOString().split('T')[0],
+              amount: "",
+              mileage: "",
+              fuelVolume: "",
+              maintenanceType: "",
+              repairType: "",
+              comment: ""
+            }}
+          />
         )}
 
         {/* Dialogue de dépense d'enseigne (version mobile) */}
         {selectedRetailer && (
-          <Sheet open={retailerExpenseDialogOpen} onOpenChange={setRetailerExpenseDialogOpen}>
-            <SheetContent 
-              side="bottom"
-              className={cn(
-                "px-0 py-0 rounded-t-xl",
-                "border-t shadow-lg",
-                "max-h-[90vh] overflow-y-auto",
-                "dark:bg-gray-900"
-              )}
-            >
-              <div className={cn(
-                "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
-                "bg-gray-300 dark:bg-gray-600 rounded-full"
-              )} />
-              
-              <AddExpenseDialog 
-                onExpenseAdded={handleRetailerExpenseSuccess}
-                preSelectedRetailer={selectedRetailer}
-                open={retailerExpenseDialogOpen}
-                onOpenChange={setRetailerExpenseDialogOpen}
-                hideDialogWrapper={true}
-                hideTitleBar={true}
-              />
-            </SheetContent>
-          </Sheet>
+          <AddExpenseDialog 
+            onExpenseAdded={handleRetailerExpenseSuccess}
+            preSelectedRetailer={selectedRetailer}
+            open={retailerExpenseDialogOpen}
+            onOpenChange={setRetailerExpenseDialogOpen}
+          />
         )}
       </>
     );
@@ -114,42 +79,33 @@ export const ExpenseDialogs = ({
   return (
     <>
       {selectedVehicle && (
-        <Dialog open={expenseDialogOpen} onOpenChange={setExpenseDialogOpen}>
-          <DialogContent className="sm:max-w-[500px] p-0 border-0 overflow-hidden bg-transparent shadow-2xl">
-            <AddVehicleExpenseDialog
-              vehicleId={selectedVehicle}
-              hideDialogWrapper={true}
-              onSuccess={handleExpenseSuccess}
-              onCancel={handleExpenseCancel}
-              initialValues={{
-                vehicleId: selectedVehicle,
-                expenseType: "carburant",
-                date: new Date().toISOString().split('T')[0],
-                amount: "",
-                mileage: "",
-                fuelVolume: "",
-                maintenanceType: "",
-                repairType: "",
-                comment: ""
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+        <AddVehicleExpenseDialog
+          vehicleId={selectedVehicle}
+          open={expenseDialogOpen}
+          onOpenChange={setExpenseDialogOpen}
+          onSuccess={handleExpenseSuccess}
+          onCancel={handleExpenseCancel}
+          initialValues={{
+            vehicleId: selectedVehicle,
+            expenseType: "carburant",
+            date: new Date().toISOString().split('T')[0],
+            amount: "",
+            mileage: "",
+            fuelVolume: "",
+            maintenanceType: "",
+            repairType: "",
+            comment: ""
+          }}
+        />
       )}
 
       {selectedRetailer && (
-        <Dialog open={retailerExpenseDialogOpen} onOpenChange={setRetailerExpenseDialogOpen}>
-          <DialogContent className="sm:max-w-[500px] p-0 border-0 overflow-hidden bg-transparent shadow-2xl">
-            <AddExpenseDialog 
-              onExpenseAdded={handleRetailerExpenseSuccess}
-              preSelectedRetailer={selectedRetailer}
-              open={retailerExpenseDialogOpen}
-              onOpenChange={setRetailerExpenseDialogOpen}
-              hideDialogWrapper={true}
-              hideTitleBar={true}
-            />
-          </DialogContent>
-        </Dialog>
+        <AddExpenseDialog 
+          onExpenseAdded={handleRetailerExpenseSuccess}
+          preSelectedRetailer={selectedRetailer}
+          open={retailerExpenseDialogOpen}
+          onOpenChange={setRetailerExpenseDialogOpen}
+        />
       )}
     </>
   );
