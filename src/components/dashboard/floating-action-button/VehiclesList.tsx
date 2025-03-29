@@ -29,6 +29,20 @@ const menuVariants = {
   }
 };
 
+
+const brand = vehicle.brand;
+
+// Supprimer l'extension (.com / .fr ...)
+{vehicle.brand.replace(/\.[^.]*$/, '').charAt(0).toUpperCase() + vehicle.brand.replace(/\.[^.]*$/, '').slice(1)}
+
+
+// Mettre en majuscule la première lettre du mot
+const brandFormatted = brandWithoutExtension.charAt(0).toUpperCase() + brandWithoutExtension.slice(1);
+
+
+
+
+
 const itemVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.8 },
   visible: { 
@@ -97,7 +111,7 @@ export const VehiclesList = ({
           >
             <div className="flex items-center gap-2">
               <Car className="h-4 w-4 text-blue-500" />
-              <span className="font-medium">{vehicle.brand} {vehicle.model || ""}</span>
+              <span className="font-medium">{brandFormatted}</span> {vehicle.model || ""}</span>
             </div>
             <span className="text-xs text-gray-500">{vehicle.registration_number}</span>
           </motion.div>
