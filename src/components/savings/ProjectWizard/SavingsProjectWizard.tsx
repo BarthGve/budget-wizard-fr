@@ -148,12 +148,15 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   if (isMobile) {
     return (
       <Sheet open={true} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent className={cn(
-          "w-full p-0 shadow-lg border-t rounded-t-lg overflow-auto pt-2",
-          colors.borderLight,
-          colors.borderDark,
-          "dark:bg-gray-900"
-        )}>
+        <SheetContent 
+          side="bottom" 
+          className={cn(
+            "w-full p-0 shadow-lg border-t rounded-t-lg overflow-auto pt-2",
+            colors.borderLight,
+            colors.borderDark,
+            "dark:bg-gray-900"
+          )}
+        >
           <motion.div
             initial="hidden"
             animate="visible"
@@ -177,6 +180,12 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
 
             {/* Radial gradient pour texture */}
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-t-lg" />
+            
+            {/* Handle visuel */}
+            <div className={cn(
+              "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
+              "bg-gray-300 dark:bg-gray-600 rounded-full"
+            )} />
             
             {/* Bouton de fermeture */}
             <DialogClose 
