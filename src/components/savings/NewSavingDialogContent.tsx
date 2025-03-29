@@ -93,7 +93,7 @@ export const NewSavingDialogContent = ({
     <div 
       ref={contentRef}
       className={cn(
-        "relative flex flex-col pb-6 p-6 rounded-lg",
+        "relative flex flex-col pb-6 p-6 rounded-lg w-full h-full",
         "bg-gradient-to-br",
         currentColors.lightBg,
         currentColors.darkBg
