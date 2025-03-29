@@ -59,6 +59,15 @@ export const VehiclesList = ({
   onVehicleSelect, 
   onBackClick 
 }: VehiclesListProps) => {
+  
+  // Fonction pour formater le nom de la marque
+  const formatBrand = (brand: string | undefined) => {
+    if (!brand) return "";
+    // Supprimer l'extension et mettre en majuscule la première lettre
+    const brandWithoutExtension = brand.replace(/\.[^.]*$/, '');
+    return brandWithoutExtension.charAt(0).toUpperCase() + brandWithoutExtension.slice(1);
+  };
+  
   return (
     <motion.div 
       className="flex flex-col items-end gap-2 min-w-52"
@@ -76,7 +85,7 @@ export const VehiclesList = ({
         >
           Retour
         </Button>
-        <span className="text-sm font-medium">Sélectionner un véhicule</span>
+        
       </motion.div>
       
       {isLoading ? (
@@ -97,7 +106,7 @@ export const VehiclesList = ({
           >
             <div className="flex items-center gap-2">
               <Car className="h-4 w-4 text-blue-500" />
-              <span className="font-medium">{vehicle.brand} {vehicle.model || ""}</span>
+              <span className="font-medium">{formatBrand(vehicle.brand)} </span>
             </div>
             <span className="text-xs text-gray-500">{vehicle.registration_number}</span>
           </motion.div>

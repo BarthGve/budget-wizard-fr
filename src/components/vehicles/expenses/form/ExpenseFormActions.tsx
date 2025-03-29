@@ -18,7 +18,7 @@ export const ExpenseFormActions = ({ isLoading, isEditMode }: ExpenseFormActions
         className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
       >
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {isEditMode ? 'Mettre à jour' : 'Ajouter'} la dépense
+        {isEditMode ? 'Mettre à jour' : 'Ajouter'}
       </Button>
     </div>
   );
