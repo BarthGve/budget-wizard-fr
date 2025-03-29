@@ -1,5 +1,5 @@
 
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "../hooks/useRecurringExpenseForm";
@@ -13,6 +13,7 @@ interface ExpenseTypeFieldProps {
 export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) => {
   // Obtenir vehicle_id pour la validation
   const vehicleId = form.watch("vehicle_id");
+  const autoGenerate = form.watch("auto_generate_vehicle_expense");
   
   return (
     <FormField
@@ -22,7 +23,14 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
         <FormItem>
           <FormLabel>Type de dépense véhicule</FormLabel>
           <Select 
-            onValueChange={(value) => field.onChange(value === "no-type" ? null : value)}
+            onValueChange={(value) => {
+              field.onChange(value === "no-type" ? null : value);
+              
+              // Désactiver l'auto-génération si aucun type n'est sélectionné
+              if (value === "no-type" && autoGenerate) {
+                form.setValue("auto_generate_vehicle_expense", false);
+              }
+            }}
             value={field.value || "no-type"}
             disabled={!vehicleId}
           >
@@ -43,6 +51,11 @@ export const ExpenseTypeField = ({ form, expenseTypes }: ExpenseTypeFieldProps) 
               ))}
             </SelectContent>
           </Select>
+          {vehicleId && (
+            <FormDescription>
+              Sélectionnez un type de dépense pour activer la génération automatique
+            </FormDescription>
+          )}
           <FormMessage />
         </FormItem>
       )}

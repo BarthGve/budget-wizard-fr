@@ -17,6 +17,13 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
   // ou si le type est "no-type"
   const isDisabled = !vehicleId || !vehicleExpenseType || vehicleExpenseType === "no-type";
   
+  // Message d'aide spécifique selon la raison de désactivation
+  const getHelpMessage = () => {
+    if (!vehicleId) return "Veuillez sélectionner un véhicule";
+    if (!vehicleExpenseType || vehicleExpenseType === "no-type") return "Veuillez sélectionner un type de dépense";
+    return "Option disponible";
+  };
+  
   return (
     <FormField
       control={form.control}
@@ -41,23 +48,44 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
             <div className="text-sm text-muted-foreground">
               Créer automatiquement une dépense véhicule à la date d'échéance
             </div>
+            {isDisabled && (
+              <div className="text-xs text-amber-600 dark:text-amber-400 mt-1.5 font-medium">
+                {getHelpMessage()}
+              </div>
+            )}
           </div>
-          <FormControl>
-            <Switch
-              checked={field.value || false}
-              onCheckedChange={(checked) => {
-                // Utiliser null quand désactivé pour éviter les problèmes de types
-                field.onChange(checked);
-                
-                // Désactiver automatiquement si les conditions ne sont pas remplies
-                if (isDisabled && checked) {
-                  field.onChange(false);
-                }
-              }}
-              disabled={isDisabled}
-            />
-          </FormControl>
-          <FormMessage />
+          <div className="flex flex-col items-end gap-1">
+            <FormControl>
+              <Switch
+                checked={field.value || false}
+                onCheckedChange={(checked) => {
+                  // Utiliser null quand désactivé pour éviter les problèmes de types
+                  field.onChange(checked);
+                  
+                  // Désactiver automatiquement si les conditions ne sont pas remplies
+                  if (isDisabled && checked) {
+                    field.onChange(false);
+                  }
+                }}
+                disabled={isDisabled}
+              />
+            </FormControl>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className={`text-xs ${isDisabled ? 'text-muted-foreground' : 'text-green-600 dark:text-green-400'}`}>
+                    {isDisabled ? 'Désactivé' : 'Activé'}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {isDisabled 
+                    ? "L'option de génération automatique nécessite un véhicule et un type de dépense valides" 
+                    : "L'option de génération automatique est disponible"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <FormMessage />
+          </div>
         </FormItem>
       )}
     />
