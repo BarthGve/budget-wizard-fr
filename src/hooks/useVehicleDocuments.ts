@@ -20,6 +20,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
   } = useQuery({
     queryKey: ["vehicle-documents", vehicleId],
     queryFn: async () => {
+      console.log("Chargement des documents pour le véhicule:", vehicleId);
       const { data, error } = await supabase
         .from("vehicle_documents")
         .select("*, vehicle_document_categories(*)")
@@ -32,6 +33,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
         throw error;
       }
 
+      console.log("Documents chargés:", data);
       return data as (VehicleDocument & { vehicle_document_categories: VehicleDocumentCategory })[];
     },
     enabled: !!vehicleId && !!userId,
@@ -44,6 +46,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
   } = useQuery({
     queryKey: ["vehicle-document-categories"],
     queryFn: async () => {
+      console.log("Chargement des catégories de documents");
       const { data, error } = await supabase
         .from("vehicle_document_categories")
         .select("*")
@@ -55,6 +58,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
         throw error;
       }
 
+      console.log("Catégories chargées:", data);
       return data as VehicleDocumentCategory[];
     },
   });
@@ -70,10 +74,12 @@ export const useVehicleDocuments = (vehicleId: string) => {
     }
 
     try {
+      console.log("Démarrage de l'upload du document:", file.name);
       setIsUploading(true);
 
       // 1. Upload du fichier dans le stockage Supabase
       const filePath = `${userId}/${vehicleId}/${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
+      console.log("Chemin du fichier:", filePath);
       
       const { data: uploadData, error: uploadError } = await supabase
         .storage
@@ -84,8 +90,11 @@ export const useVehicleDocuments = (vehicleId: string) => {
         });
 
       if (uploadError) {
+        console.error("Erreur d'upload:", uploadError);
         throw new Error(`Erreur lors de l'upload: ${uploadError.message}`);
       }
+
+      console.log("Fichier uploadé avec succès:", uploadData);
 
       // 2. Enregistrer les informations du document dans la base de données
       const { data, error } = await supabase
@@ -105,9 +114,11 @@ export const useVehicleDocuments = (vehicleId: string) => {
           .from("vehicle_documents")
           .remove([filePath]);
           
+        console.error("Erreur lors de l'insertion en base de données:", error);
         throw new Error(`Erreur lors de l'enregistrement: ${error.message}`);
       }
 
+      console.log("Document ajouté avec succès en base de données:", data);
       toast.success("Document ajouté avec succès");
       return data as VehicleDocument;
 
@@ -126,6 +137,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
       file: File, 
       document: Omit<VehicleDocument, "id" | "file_path" | "file_size" | "content_type" | "created_at" | "updated_at"> 
     }) => {
+      console.log("Ajout d'un document", { file, document });
       return uploadDocument(file, document);
     },
     onSuccess: () => {
@@ -136,6 +148,8 @@ export const useVehicleDocuments = (vehicleId: string) => {
   // Supprimer un document
   const { mutate: deleteDocument, isPending: isDeleting } = useMutation({
     mutationFn: async (document: VehicleDocument) => {
+      console.log("Suppression du document:", document);
+      
       // 1. Supprimer le fichier du stockage
       const { error: storageError } = await supabase
         .storage
@@ -171,6 +185,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
   // Obtenir l'URL publique (signée) d'un document
   const getDocumentUrl = async (filePath: string) => {
     try {
+      console.log("Création d'une URL signée pour:", filePath);
       const { data, error } = await supabase
         .storage
         .from("vehicle_documents")
@@ -182,6 +197,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
         return null;
       }
 
+      console.log("URL signée créée:", data.signedUrl);
       return data.signedUrl;
     } catch (err) {
       console.error("Erreur lors de la récupération de l'URL du document:", err);

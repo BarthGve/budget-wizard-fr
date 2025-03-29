@@ -47,25 +47,35 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   
   const onSubmit = async (data: DocumentFormValues) => {
-    await addDocument({
-      file: data.file,
-      document: {
-        vehicle_id: vehicleId,
-        category_id: data.category_id,
-        name: data.name,
-        description: data.description,
-      }
-    });
+    console.log("Soumission du formulaire:", data);
     
-    form.reset();
-    setSelectedFileName(null);
-    setIsOpen(false);
+    try {
+      await addDocument({
+        file: data.file,
+        document: {
+          vehicle_id: vehicleId,
+          category_id: data.category_id,
+          name: data.name,
+          description: data.description,
+        }
+      });
+      
+      console.log("Document ajouté avec succès");
+      
+      // Réinitialiser le formulaire
+      form.reset();
+      setSelectedFileName(null);
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du document:", error);
+    }
   };
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files[0]) {
       const file = files[0];
+      console.log("Fichier sélectionné:", file);
       form.setValue("file", file);
       setSelectedFileName(file.name);
       
@@ -105,7 +115,10 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
             <FormItem>
               <FormLabel>Fichier</FormLabel>
               <FormControl>
-                <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg py-6 px-4">
+                <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg py-6 px-4 cursor-pointer" onClick={() => {
+                  const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                  if (fileInput) fileInput.click();
+                }}>
                   {!selectedFileName ? (
                     <>
                       <UploadIcon className="h-10 w-10 text-gray-400 mb-2" />
@@ -131,7 +144,8 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
                         variant="ghost"
                         size="sm"
                         className="text-red-500 hover:text-red-700"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation(); // Empêcher le clic de remonter à l'élément parent
                           form.setValue("file", undefined as any);
                           setSelectedFileName(null);
                         }}
@@ -188,6 +202,7 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  value={field.value}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner une catégorie" />
