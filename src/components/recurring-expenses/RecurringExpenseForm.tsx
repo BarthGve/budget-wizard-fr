@@ -17,6 +17,8 @@ import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
 import { AutoGenerateField } from "./form-fields/AutoGenerateField";
 import { AssociateVehicleField } from "./form-fields/AssociateVehicleField";
 import { expenseTypes } from "@/components/vehicles/expenses/form/ExpenseTypeField";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export interface RecurringExpenseFormProps {
   expense?: {
@@ -56,6 +58,7 @@ export function RecurringExpenseForm({
   variant,
   initialVehicleId,
 }: RecurringExpenseFormProps) {
+  const isMobile = useIsMobile();
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
   const { form, handleSubmit } = useRecurringExpenseForm({
@@ -120,26 +123,31 @@ export function RecurringExpenseForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <NameField form={form} />
-        <DomainField form={form} />
-        <AmountField form={form} />
-        <CategoryField form={form} categories={categories || []} />
-        
-        <PeriodicityField form={form} />
-        <DebitDayField form={form} />
-        
-        {form.watch("periodicity") !== "monthly" && (
-          <DebitMonthField form={form} />
-        )}
+      <form onSubmit={handleSubmit} className={cn("space-y-4", isMobile && "space-y-3")}>
+        <div className={cn(isMobile ? "space-y-3" : "space-y-4")}>
+          <NameField form={form} />
+          <DomainField form={form} />
+          <AmountField form={form} />
+          <CategoryField form={form} categories={categories || []} />
+          
+          <PeriodicityField form={form} />
+          <DebitDayField form={form} />
+          
+          {form.watch("periodicity") !== "monthly" && (
+            <DebitMonthField form={form} />
+          )}
+        </div>
 
         {/* Section association avec un véhicule */}
-        <div className="pt-2 border-t">
+        <div className={cn(
+          "pt-2 border-t",
+          isMobile && "pt-3 mt-3"
+        )}>
           <AssociateVehicleField form={form} />
           
           {/* Champs conditionnels qui s'affichent uniquement si l'association est activée */}
           {associateWithVehicle && (
-            <div className="mt-4 space-y-4">
+            <div className={cn("mt-4 space-y-4", isMobile && "mt-3 space-y-3")}>
               <VehicleField form={form} />
               
               {/* Champs supplémentaires qui s'affichent si un véhicule est sélectionné */}
@@ -153,11 +161,28 @@ export function RecurringExpenseForm({
           )}
         </div>
 
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">
+        <div className={cn(
+          "flex justify-end space-x-2 pt-2",
+          isMobile && "pt-3"
+        )}>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onCancel} 
+            className={cn(
+              "border-gray-300 hover:border-gray-400",
+              isMobile && "text-sm h-9"
+            )}
+          >
             Annuler
           </Button>
-          <Button type="submit" className="bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white">
+          <Button 
+            type="submit" 
+            className={cn(
+              "bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white",
+              isMobile && "text-sm h-9"
+            )}
+          >
             {expense ? "Mettre à jour" : "Ajouter"}
           </Button>
         </div>

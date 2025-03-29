@@ -9,6 +9,8 @@ import { RecurringExpense } from "./types";
 import { DialogHeader } from "./dialog/DialogHeader";
 import { DialogContent as ExpenseDialogContent } from "./dialog/DialogContent";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { X } from "lucide-react";
 
 interface RecurringExpenseDialogProps {
@@ -35,7 +37,8 @@ export function RecurringExpenseDialog({
   const isDarkMode = theme === "dark";
   const contentRef = useRef<HTMLDivElement>(null);
   
-  // Vérifier si nous sommes sur tablette
+  // Vérifier si nous sommes sur mobile ou tablette
+  const isMobile = useIsMobile();
   const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
   
   // Déterminer si nous sommes en mode édition
@@ -51,6 +54,58 @@ export function RecurringExpenseDialog({
     }
   };
 
+  // Si on est sur mobile, utiliser un Sheet (bottom sheet) au lieu du Dialog
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
+        <SheetContent 
+          side="bottom"
+          className={cn(
+            "px-0 pb-0 rounded-t-xl h-[92vh] overflow-hidden",
+            "border-t shadow-lg"
+          )}
+        >
+          <div 
+            className={cn(
+              "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
+              "bg-gray-300 dark:bg-gray-600 rounded-full"
+            )}
+          />
+          
+          <div 
+            ref={contentRef} 
+            className={cn(
+              "h-full overflow-y-auto pb-safe pt-4 px-0",
+              "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent",
+              "dark:scrollbar-thumb-gray-700"
+            )}
+          >
+            {/* En-tête du sheet avec une version plus compacte */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="px-4"
+            >
+              <DialogHeader isEditMode={isEditMode} />
+            </motion.div>
+            
+            {/* Contenu du dialogue avec formulaire */}
+            <ExpenseDialogContent
+              expense={expense}
+              isEditMode={isEditMode}
+              needsScrolling={needsScrolling}
+              onOpenChange={onOpenChange}
+              className="px-4 pb-20" // Padding supplémentaire en bas pour éviter que le dernier élément soit caché par les barres de navigation mobiles
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Version desktop avec Dialog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
@@ -63,10 +118,8 @@ export function RecurringExpenseDialog({
               "p-0 border-0 relative overflow-hidden",
               "fixed left-[50%] top-[50%] z-50 grid w-full max-w-[650px] translate-x-[-50%] translate-y-[-50%] gap-0",
               "bg-white dark:bg-gray-900",
-              // Ajustement pour les tablettes et mobiles
-              isTablet 
-                ? "sm:max-w-[85%] w-[85%]" 
-                : "w-[90vw]",
+              // Ajustement pour les tablettes
+              isTablet ? "sm:max-w-[85%] w-[85%]" : "w-[90vw]",
               // Hauteur maximum définie pour permettre le défilement
               needsScrolling ? "max-h-[90vh]" : ""
             )}
