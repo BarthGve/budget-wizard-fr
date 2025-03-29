@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useRecurringExpenseForm } from "./hooks/useRecurringExpenseForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NameField } from "./form-fields/NameField";
 import { AmountField } from "./form-fields/AmountField";
 import { CategoryField } from "./form-fields/CategoryField";
@@ -12,6 +12,10 @@ import { PeriodicityField } from "./form-fields/PeriodicityField";
 import { DebitDayField } from "./form-fields/DebitDayField";
 import { DebitMonthField } from "./form-fields/DebitMonthField";
 import { DomainField } from "./form-fields/DomainField";
+import { VehicleField } from "./form-fields/VehicleField";
+import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
+import { AutoGenerateField } from "./form-fields/AutoGenerateField";
+import { VehicleAssociationDialog } from "./dialogs/VehicleAssociationDialog";
 
 export interface RecurringExpenseFormProps {
   expense?: {
@@ -51,10 +55,22 @@ export function RecurringExpenseForm({
 }: RecurringExpenseFormProps) {
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
-  const { form, handleSubmit } = useRecurringExpenseForm({
+  // États pour gérer le dialogue d'association de véhicule
+  const [showVehicleAssociationDialog, setShowVehicleAssociationDialog] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
+  
+  const { form, handleSubmit, isSubmitting } = useRecurringExpenseForm({
     expense,
     initialDomain,
-    onSuccess
+    onSuccess: (data) => {
+      // Pour les nouvelles charges sans ID et sans véhicule déjà associé
+      if (!expense?.id && !data.vehicle_id) {
+        setFormData(data);
+        setShowVehicleAssociationDialog(true);
+      } else {
+        onSuccess(data);
+      }
+    }
   });
 
   const { data: categories } = useQuery({
@@ -85,32 +101,65 @@ export function RecurringExpenseForm({
     return () => subscription.unsubscribe();
   }, [form]);
 
-  return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <NameField form={form} />
-        <DomainField form={form} />
-        <AmountField form={form} />
-        <CategoryField form={form} categories={categories || []} />
-        <PeriodicityField form={form} />
-        <DebitDayField form={form} />
-        
-        {form.watch("periodicity") !== "monthly" && (
-          <DebitMonthField form={form} />
-        )}
+  // Gestionnaire pour finaliser après association de véhicule
+  const handleVehicleAssociationComplete = (data: any) => {
+    setShowVehicleAssociationDialog(false);
+    onSuccess(data);
+  };
 
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">
-            Annuler
-          </Button>
-          <Button 
-            type="submit" 
-            className="bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white"
-          >
-            {expense?.id ? "Mettre à jour" : "Ajouter"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+  // Déterminer si nous devons afficher les champs relatifs aux véhicules
+  const showVehicleFields = !!expense?.vehicle_id || form.watch("vehicle_id");
+
+  return (
+    <>
+      <Form {...form}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <NameField form={form} />
+          <DomainField form={form} />
+          <AmountField form={form} />
+          <CategoryField form={form} categories={categories || []} />
+          <PeriodicityField form={form} />
+          <DebitDayField form={form} />
+          
+          {form.watch("periodicity") !== "monthly" && (
+            <DebitMonthField form={form} />
+          )}
+
+          {/* Afficher les champs de véhicule uniquement si approprié */}
+          {showVehicleFields && (
+            <>
+              <VehicleField form={form} />
+              <ExpenseTypeField form={form} />
+              <AutoGenerateField form={form} />
+            </>
+          )}
+
+          <div className="flex justify-end space-x-2">
+            <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">
+              Annuler
+            </Button>
+            <Button 
+              type="submit" 
+              className="bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white"
+              disabled={isSubmitting}
+            >
+              {expense?.id ? "Mettre à jour" : "Ajouter"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+
+      {/* Dialogue d'association de véhicule */}
+      <VehicleAssociationDialog
+        isOpen={showVehicleAssociationDialog}
+        onClose={() => {
+          setShowVehicleAssociationDialog(false);
+          // En cas d'annulation, on envoie quand même les données originales
+          onSuccess(formData);
+        }}
+        expenseData={formData}
+        onComplete={handleVehicleAssociationComplete}
+      />
+    </>
   );
 }

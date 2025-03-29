@@ -28,6 +28,11 @@ export function VehicleAssociationDialog({
 }: VehicleAssociationDialogProps) {
   const [showVehicleSelection, setShowVehicleSelection] = useState(false);
 
+  // Ne rien afficher si on n'a pas de données ou si le dialogue n'est pas ouvert
+  if (!expenseData || !isOpen) {
+    return null;
+  }
+
   const handleYes = () => {
     // Montrer la boîte de dialogue de sélection de véhicule
     setShowVehicleSelection(true);
@@ -36,7 +41,6 @@ export function VehicleAssociationDialog({
   const handleNo = () => {
     // Compléter le processus sans association de véhicule
     onComplete(expenseData);
-    onClose();
   };
 
   const handleVehicleSelected = (vehicleData: any) => {
@@ -49,7 +53,6 @@ export function VehicleAssociationDialog({
     
     onComplete(completeData);
     setShowVehicleSelection(false);
-    onClose();
   };
 
   return (

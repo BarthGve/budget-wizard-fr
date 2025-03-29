@@ -29,7 +29,7 @@ export const formSchema = z.object({
     },
     "Le mois doit être entre 1 et 12"
   ),
-  // Ajout des champs pour les véhicules
+  // Champs pour les véhicules
   vehicle_id: z.string().optional().nullable(),
   vehicle_expense_type: z.string().optional().nullable(),
   auto_generate_vehicle_expense: z.boolean().optional()
@@ -129,49 +129,31 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
 
         if (error) throw error;
         toast.success("Charge récurrente mise à jour avec succès");
+        
+        // Invalidation des requêtes
+        updateQueriesAfterSave(data.vehicle_id);
+        
+        onSuccess(expenseData);
       } else {
         // Création d'une nouvelle charge
-        const { error } = await supabase.from("recurring_expenses").insert({
-          ...expenseData,
-          profile_id: user.id,
-        });
+        const { data: savedData, error } = await supabase
+          .from("recurring_expenses")
+          .insert({
+            ...expenseData,
+            profile_id: user.id,
+          })
+          .select();
 
         if (error) throw error;
         toast.success("Charge récurrente ajoutée avec succès");
-      }
-
-      // Invalidation des requêtes pour mettre à jour les données
-      queryClient.invalidateQueries({ queryKey: ["recurring-expenses"] });
-      
-      // Ajouter l'invalidation du dashboard pour mettre à jour la balance globale
-      queryClient.invalidateQueries({ 
-        queryKey: ["dashboard-data"],
-        exact: false,
-        refetchType: 'all'
-      });
-      
-      // Invalider les données des véhicules si une charge récurrente est associée à un véhicule
-      if (data.vehicle_id) {
-        queryClient.invalidateQueries({ 
-          queryKey: ["vehicle-expenses", data.vehicle_id],
-          exact: true
-        });
         
-        queryClient.invalidateQueries({ 
-          queryKey: ["vehicle-detail", data.vehicle_id],
-          exact: false
-        });
+        // Invalidation des requêtes
+        updateQueriesAfterSave(data.vehicle_id);
+        
+        // Passer les données complètes (y compris l'ID généré) au callback de succès
+        onSuccess(savedData?.[0] || expenseData);
       }
       
-      // Force refresh immédiat
-      setTimeout(() => {
-        queryClient.refetchQueries({ 
-          queryKey: ["dashboard-data"],
-          exact: false
-        });
-      }, 100);
-      
-      onSuccess();
       form.reset();
     } catch (error) {
       console.error("Error saving recurring expense:", error);
@@ -182,6 +164,31 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
       );
     } finally {
       setIsSubmitting(false);
+    }
+  };
+  
+  // Fonction d'aide pour l'invalidation des requêtes
+  const updateQueriesAfterSave = (vehicleId: string | null | undefined) => {
+    // Invalidation des requêtes pour mettre à jour les données
+    queryClient.invalidateQueries({ queryKey: ["recurring-expenses"] });
+    
+    // Ajouter l'invalidation du dashboard pour mettre à jour la balance globale
+    queryClient.invalidateQueries({ 
+      queryKey: ["dashboard-data"],
+      exact: false,
+    });
+    
+    // Invalider les données des véhicules si une charge récurrente est associée à un véhicule
+    if (vehicleId) {
+      queryClient.invalidateQueries({ 
+        queryKey: ["vehicle-expenses", vehicleId],
+        exact: true
+      });
+      
+      queryClient.invalidateQueries({ 
+        queryKey: ["vehicle-detail", vehicleId],
+        exact: false
+      });
     }
   };
 
