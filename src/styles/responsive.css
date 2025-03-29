@@ -16,4 +16,25 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+  
+  /* Style simplifié pour les dialogues sur smartphone */
+  .mobile-form-label {
+    @apply text-xs mb-1;
+  }
+  
+  .mobile-input {
+    @apply h-9 text-sm;
+  }
+  
+  .mobile-button {
+    @apply h-9 text-sm py-0;
+  }
+  
+  .mobile-sheet {
+    @apply rounded-t-xl pt-4;
+  }
+  
+  .mobile-dialog-content {
+    @apply p-4 space-y-3;
+  }
 }
