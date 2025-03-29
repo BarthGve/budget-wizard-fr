@@ -1,14 +1,16 @@
+
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart as BarChartIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { BarChart as BarChartIcon, ChevronLeft, ChevronRight, InfoIcon } from "lucide-react";
 import { RecurringExpense } from "./types";
 import { formatCurrency } from "@/utils/format";
 import { itemVariants } from "./animations/AnimationVariants";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface RecurringExpensesCategoryChartProps {
   expenses: RecurringExpense[];
@@ -41,6 +43,11 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     return expenses.filter(expense => expense.periodicity === chartPeriodicity);
   }, [expenses, selectedPeriod, chartPeriodicity]);
 
+  // Extraire les dépenses liées aux véhicules
+  const vehicleExpenses = useMemo(() => {
+    return filteredExpenses.filter(expense => expense.vehicle_id !== null);
+  }, [filteredExpenses]);
+
   // Calculer les données par catégorie pour le graphique
   const chartData = useMemo(() => {
     // Regrouper les dépenses par catégorie
@@ -62,6 +69,18 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
   const totalAmount = useMemo(() => 
     chartData.reduce((sum, item) => sum + item.total, 0),
     [chartData]
+  );
+
+  // Calculer le total des dépenses liées aux véhicules
+  const totalVehicleExpenses = useMemo(() => 
+    vehicleExpenses.reduce((sum, expense) => sum + expense.amount, 0),
+    [vehicleExpenses]
+  );
+
+  // Pourcentage des dépenses liées aux véhicules par rapport au total
+  const vehicleExpensesPercentage = useMemo(() => 
+    totalAmount > 0 ? (totalVehicleExpenses / totalAmount) * 100 : 0,
+    [totalAmount, totalVehicleExpenses]
   );
 
   // Gérer le changement de périodicité du graphique
@@ -165,6 +184,27 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
               "dark:text-blue-400/90"
             )}>
               Répartition des charges {selectedPeriod ? periodicityLabels[selectedPeriod].toLowerCase() : chartPeriodicity === "monthly" ? "mensuelles" : chartPeriodicity === "quarterly" ? "trimestrielles" : "annuelles"}
+              
+              {vehicleExpenses.length > 0 && (
+                <span className="ml-2 inline-flex items-center">
+                  <TooltipProvider>
+                    <UITooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex items-center cursor-help">
+                          <InfoIcon className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>
+                          {vehicleExpenses.length} charge(s) récurrente(s) liée(s) à des véhicules 
+                          représentant {vehicleExpensesPercentage.toFixed(1)}% du total des charges
+                          ({formatCurrency(totalVehicleExpenses)})
+                        </p>
+                      </TooltipContent>
+                    </UITooltip>
+                  </TooltipProvider>
+                </span>
+              )}
             </CardDescription>
           </div>
           
