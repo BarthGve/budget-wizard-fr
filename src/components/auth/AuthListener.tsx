@@ -15,6 +15,7 @@ export const AuthListener = () => {
   const lastNavigationTime = useRef<number>(0);
   const throttleDelay = 1000; // 1 seconde entre chaque navigation
   const isFirstVisit = useRef(sessionStorage.getItem('visited') !== 'true');
+  const authCheckInProgress = useRef(false);
 
   // Utiliser location.state pour détecter si nous sommes dans une navigation SPA
   const isSpaNavigation = location.state && location.state.isSpaNavigation;
@@ -31,6 +32,30 @@ export const AuthListener = () => {
         clearTimeout(scheduledNavigationTimeout.current);
       }
     };
+  }, []);
+
+  // Vérifier si l'utilisateur est déjà authentifié au démarrage
+  useEffect(() => {
+    // Pour éviter les vérifications multiples
+    if (authCheckInProgress.current) return;
+    authCheckInProgress.current = true;
+
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          // Si l'utilisateur est authentifié, on l'indique dans la session
+          sessionStorage.setItem('authenticated', 'true');
+          console.log("Utilisateur déjà authentifié");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification initiale d'authentification:", error);
+      } finally {
+        authCheckInProgress.current = false;
+      }
+    };
+    
+    checkAuth();
   }, []);
 
   useEffect(() => {
@@ -63,8 +88,25 @@ export const AuthListener = () => {
           return;
         }
         
+        // Si nous sommes déjà authentifiés selon sessionStorage, pas besoin de vérifier à nouveau
+        if (sessionStorage.getItem('authenticated') === 'true' && 
+            !location.pathname.includes('/login') && 
+            !location.pathname.includes('/register')) {
+          console.log("Utilisateur déjà connu comme authentifié");
+          initialCheckDone.current = true;
+          isCheckingRef.current = false;
+          return;
+        }
+        
         // Vérifier l'état d'authentification
         const { data: { user } } = await supabase.auth.getUser();
+        
+        // Si l'utilisateur est authentifié, le marquer dans sessionStorage
+        if (user) {
+          sessionStorage.setItem('authenticated', 'true');
+        } else {
+          sessionStorage.removeItem('authenticated');
+        }
         
         // Définir les pages publiques pour éviter la duplication
         const publicPages = [
@@ -73,11 +115,12 @@ export const AuthListener = () => {
           "/reset-password",
           "/email-verification",
           "/changelog",
+          "/forgot-password",
           "/"
         ];
         
         // Si l'utilisateur n'est pas authentifié et n'est pas sur une page publique
-        if (!user && !publicPages.some(path => location.pathname.includes(path))) {
+        if (!user && !publicPages.some(path => location.pathname.includes(path) || location.pathname === path)) {
           
           // Éviter les redirections multiples et limiter la fréquence des navigations
           if (!navigationInProgress.current && Date.now() - lastNavigationTime.current > throttleDelay) {
@@ -130,6 +173,13 @@ export const AuthListener = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Événement auth détecté:", event);
       
+      // Mettre à jour l'état d'authentification en session
+      if (event === 'SIGNED_IN' && session) {
+        sessionStorage.setItem('authenticated', 'true');
+      } else if (event === 'SIGNED_OUT') {
+        sessionStorage.removeItem('authenticated');
+      }
+      
       if (event === 'SIGNED_OUT') {
         // Éviter les redirections multiples et limiter la fréquence des navigations
         if (!navigationInProgress.current && Date.now() - lastNavigationTime.current > throttleDelay) {
@@ -150,8 +200,8 @@ export const AuthListener = () => {
               replace: true,
               state: { 
                 isSpaNavigation: true,
-                timestamp: Date.now(), // Ajouter un timestamp pour garantir l'unicité
-                noReload: true // Indiquer explicitement de ne pas recharger
+                timestamp: Date.now(),
+                noReload: true
               } 
             });
             
@@ -178,8 +228,8 @@ export const AuthListener = () => {
               replace: true,
               state: { 
                 isSpaNavigation: true,
-                timestamp: Date.now(), // Ajouter un timestamp pour garantir l'unicité
-                noReload: true // Indiquer explicitement de ne pas recharger
+                timestamp: Date.now(),
+                noReload: true
               } 
             });
             

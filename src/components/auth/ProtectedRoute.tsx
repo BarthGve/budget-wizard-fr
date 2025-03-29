@@ -20,18 +20,57 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   const hasRedirectedRef = useRef(false);
   const redirectTimeoutRef = useRef<number | null>(null);
   const isFirstRender = useRef(true);
+  const loadingTimeoutRef = useRef<number | null>(null);
   
-  // Nettoyer le timeout lors du démontage
+  // Nettoyer les timeouts lors du démontage
   useEffect(() => {
     return () => {
       if (redirectTimeoutRef.current) {
         clearTimeout(redirectTimeoutRef.current);
       }
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
     };
   }, []);
+
+  // Définir un délai maximum pour le loader
+  useEffect(() => {
+    // Si après 5 secondes on est toujours sur le loader, essayer de récupérer la session localement
+    loadingTimeoutRef.current = window.setTimeout(() => {
+      if (!authChecked && !shouldRedirect) {
+        console.log("Délai de chargement dépassé, vérification session locale");
+        try {
+          const storedAuth = sessionStorage.getItem('auth_state');
+          if (storedAuth) {
+            const parsedAuth = JSON.parse(storedAuth);
+            if (parsedAuth && parsedAuth.data) {
+              console.log("Utilisation des données d'authentification en cache (fallback)");
+              setAuthChecked(true);
+            } else {
+              // Redirection vers login en cas d'échec
+              setShouldRedirect("/login");
+            }
+          } else {
+            // Redirection vers login si pas de données
+            setShouldRedirect("/login");
+          }
+        } catch (e) {
+          console.error("Erreur lors de la récupération de la session", e);
+          setShouldRedirect("/login");
+        }
+      }
+    }, 5000); // 5 secondes de délai maximum
+    
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, [authChecked, shouldRedirect]);
   
   // Configuration optimisée de la requête d'authentification
-  const { data: authData, isLoading } = useQuery({
+  const { data: authData, isLoading, isError } = useQuery({
     queryKey: ["auth", location.pathname],
     queryFn: async () => {
       // Si c'est le premier rendu, utiliser les données de session locales si disponibles 
@@ -91,10 +130,17 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     refetchInterval: false,
     refetchOnMount: true,
     refetchOnReconnect: false,
-    retry: false,
+    retry: 1, // Limiter à une seule tentative pour éviter les boucles
   });
 
   useEffect(() => {
+    // Gérer les erreurs de requête
+    if (isError) {
+      console.log("Erreur lors de la vérification d'authentification, redirection vers /login");
+      setShouldRedirect("/login");
+      return;
+    }
+    
     // Éviter la vérification si la redirection est déjà en cours
     if (isLoading || hasRedirectedRef.current) return;
     
@@ -138,10 +184,10 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     else {
       setAuthChecked(true);
     }
-  }, [isLoading, authData, location.pathname, canAccessPage, isAdmin, requireAdmin]);
+  }, [isLoading, authData, location.pathname, canAccessPage, isAdmin, requireAdmin, isError]);
 
   // Retourner un composant de chargement pendant la vérification
-  if (isLoading) {
+  if (isLoading && !authChecked && !shouldRedirect) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <StyledLoader/>
@@ -172,7 +218,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     return <>{children}</>;
   }
 
-  // État intermédiaire pendant la vérification
+  // État intermédiaire pendant la vérification (ne devrait pas rester trop longtemps)
   return (
     <div className="flex items-center justify-center min-h-screen">
       <StyledLoader/>

@@ -10,6 +10,7 @@ import { useDashboardViewCalculations } from "@/hooks/useDashboardViewCalculatio
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useIncomeVerification } from "@/hooks/useIncomeVerification";
 import { OnboardingDialog } from "@/components/auth/OnboardingDialog";
+import CardLoader from "@/components/ui/cardloader";
 
 // Composants memoizés pour éviter les re-rendus inutiles
 const MemoizedDashboardHeader = memo(DashboardHeader);
@@ -33,6 +34,7 @@ const Dashboard = () => {
   const { contributors, monthlySavings, profile, recurringExpenses, refetch } = useDashboardData();
   const { fuelExpensesTotal, fuelExpensesCount, fuelVolume } = useExpenseStats(currentView);
   const { showOnboardingDialog, setShowOnboardingDialog } = useIncomeVerification();
+  const [isLoading, setIsLoading] = useState(true);
 
   // Obtenir le nom du mois courant (memoizé)
   const currentMonthName = useMemo(() => {
@@ -47,6 +49,31 @@ const Dashboard = () => {
     recurringExpenses,
     profile
   );
+  
+  // Automatiquement refetch les données après le montage
+  useEffect(() => {
+    // Rafraîchir les données après le montage
+    const fetchTimeout = setTimeout(() => {
+      refetch();
+    }, 300);
+    
+    // Masquer le loader après un certain temps pour éviter de rester bloqué
+    const loadingTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); 
+    
+    return () => {
+      clearTimeout(fetchTimeout);
+      clearTimeout(loadingTimeout);
+    };
+  }, [refetch]);
+  
+  // Gérer la fin du chargement
+  useEffect(() => {
+    if (contributors && monthlySavings && recurringExpenses) {
+      setIsLoading(false);
+    }
+  }, [contributors, monthlySavings, recurringExpenses]);
 
   // Fonction memoizée pour changer la vue
   const handleViewChange = useMemo(() => {
@@ -54,6 +81,18 @@ const Dashboard = () => {
       setCurrentView(view);
     };
   }, []);
+
+  // Afficher le loader pendant le chargement initial
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-full min-h-[50vh]">
+          <CardLoader />
+          <p className="text-gray-500 mt-4">Chargement de votre tableau de bord...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

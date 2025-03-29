@@ -17,10 +17,10 @@ window.addEventListener('load', () => {
   // Marquer que l'application a été visitée
   sessionStorage.setItem('visited', 'true');
   
-  // Délai encore plus important pour la première visite
-  const initialDelay = isFirstVisit ? 120000 : 60000; // 2 minutes pour la première visite, 1 minute sinon
+  // Délai plus court pour l'enregistrement du service worker
+  const initialDelay = isFirstVisit ? 30000 : 15000; // 30 secondes pour la première visite, 15 secondes sinon
   
-  // Planifier l'enregistrement du service worker avec un délai très important
+  // Planifier l'enregistrement du service worker avec un délai raisonnable
   setTimeout(() => {
     // Ne pas enregistrer si une navigation est en cours
     if (sessionStorage.getItem('navigation_in_progress') === 'true') {
@@ -31,12 +31,12 @@ window.addEventListener('load', () => {
     console.log("Enregistrement différé du service worker...");
     registerServiceWorker();
     
-    // Vérifier les mises à jour beaucoup moins fréquemment (une fois par jour)
+    // Vérifier les mises à jour moins fréquemment (toutes les 12 heures)
     setInterval(() => {
       // Ne vérifier que si aucune navigation n'est en cours
       if (sessionStorage.getItem('navigation_in_progress') !== 'true') {
         checkForSWUpdates();
       }
-    }, 24 * 60 * 60 * 1000);
+    }, 12 * 60 * 60 * 1000);
   }, initialDelay);
 });
