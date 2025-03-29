@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useRecurringExpenseForm } from "./hooks/useRecurringExpenseForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NameField } from "./form-fields/NameField";
 import { AmountField } from "./form-fields/AmountField";
 import { CategoryField } from "./form-fields/CategoryField";
@@ -15,7 +15,7 @@ import { DomainField } from "./form-fields/DomainField";
 import { VehicleField } from "./form-fields/VehicleField";
 import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
 import { AutoGenerateField } from "./form-fields/AutoGenerateField";
-import { VehicleAssociationDialog } from "./dialogs/VehicleAssociationDialog";
+import { expenseTypes } from "@/components/vehicles/expenses/form/ExpenseTypeField";
 
 export interface RecurringExpenseFormProps {
   expense?: {
@@ -32,9 +32,10 @@ export interface RecurringExpenseFormProps {
     vehicle_expense_type?: string | null;
     auto_generate_vehicle_expense?: boolean;
   };
-  onSuccess: (data?: any) => void;
+  onSuccess: () => void;
   onCancel: () => void;
   variant?: string;
+  initialVehicleId?: string;
 }
 
 const extractDomainFromLogoUrl = (logoUrl?: string) => {
@@ -52,32 +53,15 @@ export function RecurringExpenseForm({
   onSuccess,
   onCancel,
   variant,
+  initialVehicleId,
 }: RecurringExpenseFormProps) {
   const initialDomain = extractDomainFromLogoUrl(expense?.logo_url);
   
-  // États pour gérer le dialogue d'association de véhicule
-  const [showVehicleAssociationDialog, setShowVehicleAssociationDialog] = useState(false);
-  const [formData, setFormData] = useState<any>(null);
-  
-  // Ajout de logs pour le débogage
-  console.log("Formulaire initialisé avec expense:", expense);
-
-  const { form, handleSubmit, isSubmitting } = useRecurringExpenseForm({
+  const { form, handleSubmit } = useRecurringExpenseForm({
     expense,
     initialDomain,
-    onSuccess: (data) => {
-      console.log("Formulaire soumis avec succès, données:", data);
-      
-      // Pour les nouvelles charges sans ID et sans véhicule déjà associé
-      if (!expense?.id && !data.vehicle_id) {
-        console.log("Affichage du dialogue d'association de véhicule - données:", data);
-        setFormData(data);
-        setShowVehicleAssociationDialog(true);
-      } else {
-        console.log("Pas besoin de dialogue d'association, on transmet les données:", data);
-        onSuccess(data);
-      }
-    }
+    initialVehicleId,
+    onSuccess
   });
 
   const { data: categories } = useQuery({
@@ -92,6 +76,12 @@ export function RecurringExpenseForm({
     }
   });
 
+  // Convertir les types de dépenses du format de ExpenseTypeField au format attendu
+  const formattedExpenseTypes = expenseTypes.map(type => ({
+    id: type.value,
+    name: type.label
+  }));
+
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       // Gestion de la périodicité
@@ -103,75 +93,65 @@ export function RecurringExpenseForm({
           form.setValue("debit_month", "1");
         }
       }
+
+      // Gestion des champs liés au véhicule
+      if (name === "vehicle_id") {
+        if (!value.vehicle_id) {
+          // Réinitialiser les champs liés au véhicule
+          form.setValue("vehicle_expense_type", null);
+          form.setValue("auto_generate_vehicle_expense", false);
+        }
+      }
+      
+      // Désactiver l'option auto-generate si le type n'est pas spécifié
+      if (name === "vehicle_expense_type") {
+        if (!value.vehicle_expense_type || value.vehicle_expense_type === "no-type") {
+          form.setValue("auto_generate_vehicle_expense", false);
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
   }, [form]);
 
-  // Gestionnaire pour finaliser après association de véhicule
-  const handleVehicleAssociationComplete = (data: any) => {
-    console.log("Association de véhicule terminée avec données:", data);
-    setShowVehicleAssociationDialog(false);
-    onSuccess(data);
-  };
-
-  // Gestionnaire pour annuler l'association
-  const handleVehicleAssociationCancel = () => {
-    console.log("Association de véhicule annulée - on transmet les données originales");
-    setShowVehicleAssociationDialog(false);
-    // En cas d'annulation, on envoie quand même les données originales
-    onSuccess(formData);
-  };
-
-  // Déterminer si nous devons afficher les champs relatifs aux véhicules
-  const showVehicleFields = !!expense?.vehicle_id || form.watch("vehicle_id");
+  // Vérifie si un véhicule est sélectionné
+  const vehicleSelected = !!form.watch("vehicle_id");
 
   return (
-    <>
-      <Form {...form}>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <NameField form={form} />
-          <DomainField form={form} />
-          <AmountField form={form} />
-          <CategoryField form={form} categories={categories || []} />
-          <PeriodicityField form={form} />
-          <DebitDayField form={form} />
-          
-          {form.watch("periodicity") !== "monthly" && (
-            <DebitMonthField form={form} />
-          )}
+    <Form {...form}>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <NameField form={form} />
+        <DomainField form={form} />
+        <AmountField form={form} />
+        <CategoryField form={form} categories={categories || []} />
+        
+        {/* Champ pour sélectionner un véhicule */}
+        <VehicleField form={form} />
+        
+        {/* Champs conditionnels qui s'affichent uniquement si un véhicule est sélectionné */}
+        {vehicleSelected && (
+          <>
+            <ExpenseTypeField form={form} expenseTypes={formattedExpenseTypes} />
+            <AutoGenerateField form={form} />
+          </>
+        )}
+        
+        <PeriodicityField form={form} />
+        <DebitDayField form={form} />
+        
+        {form.watch("periodicity") !== "monthly" && (
+          <DebitMonthField form={form} />
+        )}
 
-          {/* Afficher les champs de véhicule uniquement si approprié */}
-          {showVehicleFields && (
-            <>
-              <VehicleField form={form} />
-              <ExpenseTypeField form={form} />
-              <AutoGenerateField form={form} />
-            </>
-          )}
-
-          <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">
-              Annuler
-            </Button>
-            <Button 
-              type="submit" 
-              className="bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white"
-              disabled={isSubmitting}
-            >
-              {expense?.id ? "Mettre à jour" : "Ajouter"}
-            </Button>
-          </div>
-        </form>
-      </Form>
-
-      {/* Dialogue d'association de véhicule */}
-      <VehicleAssociationDialog
-        isOpen={showVehicleAssociationDialog}
-        onClose={handleVehicleAssociationCancel}
-        expenseData={formData}
-        onComplete={handleVehicleAssociationComplete}
-      />
-    </>
+        <div className="flex justify-end space-x-2">
+          <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">
+            Annuler
+          </Button>
+          <Button type="submit" className="bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white">
+            {expense ? "Mettre à jour" : "Ajouter"}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }

@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SubmitHandler } from "react-hook-form";
-import { useState } from "react";
 
 export const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
@@ -29,10 +28,10 @@ export const formSchema = z.object({
     },
     "Le mois doit être entre 1 et 12"
   ),
-  // Champs pour les véhicules
-  vehicle_id: z.string().optional().nullable(),
-  vehicle_expense_type: z.string().optional().nullable(),
-  auto_generate_vehicle_expense: z.boolean().optional()
+  // Champs pour l'association avec un véhicule
+  vehicle_id: z.string().nullish(),
+  vehicle_expense_type: z.string().nullish(),
+  auto_generate_vehicle_expense: z.boolean().optional().default(false)
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -52,7 +51,8 @@ interface UseRecurringExpenseFormProps {
     auto_generate_vehicle_expense?: boolean;
   };
   initialDomain?: string;
-  onSuccess: (data?: any) => void;
+  initialVehicleId?: string;
+  onSuccess: () => void;
 }
 
 const getFaviconUrl = (domain: string) => {
@@ -61,13 +61,8 @@ const getFaviconUrl = (domain: string) => {
   return `https://logo.clearbit.com/${cleanDomain}`;
 };
 
-export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess }: UseRecurringExpenseFormProps) => {
+export const useRecurringExpenseForm = ({ expense, initialDomain = "", initialVehicleId = "", onSuccess }: UseRecurringExpenseFormProps) => {
   const queryClient = useQueryClient();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Log initial pour déboguer les valeurs par défaut
-  console.log("useRecurringExpenseForm - Initialisation avec expense:", expense);
-  console.log("useRecurringExpenseForm - Domaine initial:", initialDomain);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -79,17 +74,13 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
       periodicity: expense?.periodicity || "monthly",
       debit_day: expense?.debit_day?.toString() || "1",
       debit_month: expense?.debit_month?.toString() || null,
-      // Initialiser les champs de véhicule avec les valeurs correctes
-      vehicle_id: expense?.vehicle_id || null,
+      vehicle_id: expense?.vehicle_id || initialVehicleId || null,
       vehicle_expense_type: expense?.vehicle_expense_type || null,
       auto_generate_vehicle_expense: expense?.auto_generate_vehicle_expense || false
     },
   });
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    
+  const onSubmit: SubmitHandler<FormValues> = async (values) => {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -99,33 +90,32 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
         return;
       }
 
-      let debit_month = data.debit_month ? parseInt(data.debit_month) : null;
-      if (data.periodicity === "monthly") {
+      let debit_month = values.debit_month ? parseInt(values.debit_month) : null;
+      if (values.periodicity === "monthly") {
         debit_month = null;
       }
 
       // Générer l'URL du logo à partir du domaine
-      const logo_url = getFaviconUrl(data.domain || "");
+      const logo_url = getFaviconUrl(values.domain || "");
 
       // S'assurer que les valeurs sont correctement typées pour la BD
       const expenseData = {
-        name: data.name,
-        amount: Number(data.amount),
-        category: data.category,
-        periodicity: data.periodicity,
-        debit_day: parseInt(data.debit_day),
+        name: values.name,
+        amount: Number(values.amount),
+        category: values.category,
+        periodicity: values.periodicity,
+        debit_day: parseInt(values.debit_day),
         debit_month: debit_month,
         logo_url,
-        // Assurer que les valeurs liées au véhicule sont correctement traitées
-        vehicle_id: data.vehicle_id || null, // Utiliser null explicitement si vide
-        vehicle_expense_type: data.vehicle_expense_type || null,
-        auto_generate_vehicle_expense: Boolean(data.auto_generate_vehicle_expense)
+        // Gestion explicite des valeurs nulles pour les champs liés au véhicule
+        vehicle_id: values.vehicle_id || null,
+        vehicle_expense_type: values.vehicle_expense_type || null,
+        auto_generate_vehicle_expense: values.auto_generate_vehicle_expense || false
       };
 
-      console.log("Données à enregistrer dans la BD:", expenseData);
+      console.log("Données à enregistrer:", expenseData);
 
-      if (expense?.id) {
-        // Mise à jour d'une charge existante
+      if (expense) {
         const { error } = await supabase
           .from("recurring_expenses")
           .update(expenseData)
@@ -133,75 +123,61 @@ export const useRecurringExpenseForm = ({ expense, initialDomain = "", onSuccess
 
         if (error) throw error;
         toast.success("Charge récurrente mise à jour avec succès");
-        
-        // Invalidation des requêtes
-        updateQueriesAfterSave(data.vehicle_id);
-        
-        onSuccess({
-          ...expenseData,
-          id: expense.id // Inclure l'ID dans les données renvoyées
-        });
       } else {
-        // Création d'une nouvelle charge
-        const { data: savedData, error } = await supabase
-          .from("recurring_expenses")
-          .insert({
-            ...expenseData,
-            profile_id: user.id,
-          })
-          .select();
+        const { error } = await supabase.from("recurring_expenses").insert({
+          ...expenseData,
+          profile_id: user.id,
+        });
 
         if (error) throw error;
         toast.success("Charge récurrente ajoutée avec succès");
+      }
+
+      // Invalidation des requêtes pour mettre à jour les données
+      queryClient.invalidateQueries({ queryKey: ["recurring-expenses"] });
+      
+      // Ajouter l'invalidation du dashboard pour mettre à jour la balance globale
+      queryClient.invalidateQueries({ 
+        queryKey: ["dashboard-data"],
+        exact: false,
+        refetchType: 'all'
+      });
+      
+      // Invalider les données des véhicules si une charge récurrente est associée à un véhicule
+      if (values.vehicle_id) {
+        queryClient.invalidateQueries({ 
+          queryKey: ["vehicle-expenses", values.vehicle_id],
+          exact: true
+        });
         
-        // Invalidation des requêtes
-        updateQueriesAfterSave(data.vehicle_id);
-        
-        // Passer les données complètes (y compris l'ID généré) au callback de succès
-        onSuccess(savedData?.[0] || expenseData);
+        queryClient.invalidateQueries({ 
+          queryKey: ["vehicle-detail", values.vehicle_id],
+          exact: false
+        });
       }
       
+      // Force refresh immédiat
+      setTimeout(() => {
+        queryClient.refetchQueries({ 
+          queryKey: ["dashboard-data"],
+          exact: false
+        });
+      }, 100);
+      
+      onSuccess();
       form.reset();
     } catch (error) {
       console.error("Error saving recurring expense:", error);
       toast.error(
-        expense?.id
+        expense
           ? "Erreur lors de la mise à jour de la charge récurrente"
           : "Erreur lors de l'ajout de la charge récurrente"
       );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  // Fonction d'aide pour l'invalidation des requêtes
-  const updateQueriesAfterSave = (vehicleId: string | null | undefined) => {
-    // Invalidation des requêtes pour mettre à jour les données
-    queryClient.invalidateQueries({ queryKey: ["recurring-expenses"] });
-    
-    // Ajouter l'invalidation du dashboard pour mettre à jour la balance globale
-    queryClient.invalidateQueries({ 
-      queryKey: ["dashboard-data"],
-      exact: false,
-    });
-    
-    // Invalider les données des véhicules si une charge récurrente est associée à un véhicule
-    if (vehicleId) {
-      queryClient.invalidateQueries({ 
-        queryKey: ["vehicle-expenses", vehicleId],
-        exact: true
-      });
-      
-      queryClient.invalidateQueries({ 
-        queryKey: ["vehicle-detail", vehicleId],
-        exact: false
-      });
     }
   };
 
   return {
     form,
     handleSubmit: form.handleSubmit(onSubmit),
-    isSubmitting
   };
 };

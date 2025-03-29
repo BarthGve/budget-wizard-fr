@@ -4,21 +4,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery } from "@tanstack/react-query";
 import { UseFormReturn } from "react-hook-form";
 import { supabase } from "@/integrations/supabase/client";
-import { FormValues } from "../hooks/useRecurringExpenseForm";
-import { useEffect } from "react";
 
 interface VehicleFieldProps {
-  form: UseFormReturn<FormValues>;
+  form: UseFormReturn<any>;
 }
 
 export function VehicleField({ form }: VehicleFieldProps) {
-  const vehicleId = form.watch("vehicle_id");
-  
-  // Log pour débogage
-  useEffect(() => {
-    console.log("VehicleField - Vehicle ID actuel:", vehicleId);
-  }, [vehicleId]);
-  
   // Récupérer la liste des véhicules
   const { data: vehicles, isLoading } = useQuery({
     queryKey: ["vehicles"],
@@ -30,7 +21,6 @@ export function VehicleField({ form }: VehicleFieldProps) {
         .order("brand");
       
       if (error) throw error;
-      console.log("Véhicules récupérés:", data);
       return data;
     }
   });
@@ -43,18 +33,14 @@ export function VehicleField({ form }: VehicleFieldProps) {
         <FormItem>
           <FormLabel>Véhicule (optionnel)</FormLabel>
           <Select
-            value={field.value || ""}
+            value={field.value || undefined}
             onValueChange={(value) => {
               // Si "no-vehicle" est sélectionné, définir comme null
               const newValue = value === "no-vehicle" ? null : value;
-              console.log("Nouveau vehicle_id sélectionné:", newValue);
-              
-              // Important: Mettre à jour correctement la valeur dans le formulaire
               field.onChange(newValue);
               
-              // Réinitialiser les champs liés au véhicule si aucun véhicule sélectionné
+              // Réinitialiser les champs liés au véhicule
               if (!newValue) {
-                console.log("Réinitialisation des champs liés au véhicule");
                 form.setValue("vehicle_expense_type", null);
                 form.setValue("auto_generate_vehicle_expense", false);
               }
