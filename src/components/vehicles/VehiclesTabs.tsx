@@ -13,9 +13,11 @@ import { useNavigate } from "react-router-dom";
 interface VehiclesTabsProps {
   vehicles: Vehicle[];
   isLoading: boolean;
+  onEdit: (vehicle: Vehicle) => void;
+  onDelete: (vehicle: Vehicle) => void;
 }
 
-export const VehiclesTabs = ({ vehicles, isLoading }: VehiclesTabsProps) => {
+export const VehiclesTabs = ({ vehicles, isLoading, onEdit, onDelete }: VehiclesTabsProps) => {
   const [activeTab, setActiveTab] = useState("active");
   const { selectedVehicleId, setSelectedVehicleId } = useVehiclesContainer();
   const { deleteVehicle, updateVehicle, isDeleting, isMarking } = useVehicles();
@@ -24,14 +26,13 @@ export const VehiclesTabs = ({ vehicles, isLoading }: VehiclesTabsProps) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate(); // Utiliser le hook de navigation de React Router
   
+  // Utiliser les props onEdit et onDelete passées du parent
   const handleEdit = (vehicle: Vehicle) => {
-    setSelectedVehicle(vehicle);
-    setIsEditDialogOpen(true);
+    onEdit(vehicle);
   };
   
   const handleDelete = (vehicle: Vehicle) => {
-    setSelectedVehicle(vehicle);
-    setIsDeleteDialogOpen(true);
+    onDelete(vehicle);
   };
   
   const handleVehicleClick = (id: string) => {
