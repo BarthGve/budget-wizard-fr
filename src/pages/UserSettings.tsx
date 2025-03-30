@@ -8,6 +8,7 @@ import { SecuritySettings } from "@/components/settings/SecuritySettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RetailersSettings } from "@/components/settings/RetailersSettings";
 import { ExpenseCategoriesSettings } from "@/components/settings/expense-categories/ExpenseCategoriesSettings";
+import { DashboardPreferencesSettings } from "@/components/settings/dashboard-preferences/DashboardPreferencesSettings";
 import { User, Settings2, Bell } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { useLocation } from "react-router-dom"; 
@@ -102,6 +103,7 @@ const UserSettings = () => {
             <NotificationSettings />
           </TabsContent>
           <TabsContent value="settings" className="space-y-6">
+            <DashboardPreferencesSettings />
             {canAccessRetailers && <RetailersSettings />}
             <ExpenseCategoriesSettings />
           </TabsContent>

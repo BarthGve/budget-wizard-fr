@@ -3,6 +3,7 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { DashboardCards as OriginalDashboardCards } from "../dashboard-content/DashboardCards";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { DashboardPreferences } from "@/types/profile";
 
 const MemoizedDashboardCards = memo(OriginalDashboardCards);
 
@@ -38,6 +39,7 @@ interface DashboardCardsProps {
     periodicity: "monthly" | "quarterly" | "yearly";
   }>;
   currentView: "monthly" | "yearly";
+  dashboardPreferences?: DashboardPreferences;
 }
 
 /**
@@ -52,6 +54,12 @@ export const DashboardCards = ({
   contributorShares,
   recurringExpenses,
   currentView,
+  dashboardPreferences = {
+    show_revenue_card: true,
+    show_expenses_card: true,
+    show_credits_card: true,
+    show_savings_card: true
+  }
 }: DashboardCardsProps) => {
   // Vérifier si on est sur mobile
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -70,6 +78,7 @@ export const DashboardCards = ({
         contributorShares={contributorShares}
         recurringExpenses={recurringExpenses}
         currentView={currentView}
+        dashboardPreferences={dashboardPreferences}
       />
     </motion.div>
   );
