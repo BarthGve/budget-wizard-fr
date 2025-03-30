@@ -29,14 +29,16 @@ export const defaultDashboardPreferences: DashboardPreferences = {
 /**
  * Fusionne les préférences utilisateur avec les préférences par défaut
  * 
- * @param userPrefs Préférences définies par l'utilisateur
+ * @param userPrefs Préférences définies par l'utilisateur (peut être de n'importe quel type)
  * @returns Préférences fusionnées
  */
 export const mergeDashboardPreferences = (
-  userPrefs: DashboardPreferences | null | undefined
+  userPrefs: any
 ): DashboardPreferences => {
   try {
-    if (userPrefs && isDashboardPreferences(userPrefs)) {
+    // Vérification que userPrefs est un objet valide
+    if (userPrefs && typeof userPrefs === 'object') {
+      // Utiliser Object.assign pour fusionner les objets
       return Object.assign({}, defaultDashboardPreferences, userPrefs);
     }
     return defaultDashboardPreferences;

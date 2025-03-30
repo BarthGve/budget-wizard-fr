@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
@@ -92,6 +91,7 @@ export const DashboardTabContent = ({
   const { totalMensualites } = useCreditStats({ credits, firstDayOfMonth });
   const mappedContributors = useContributorMapper({ contributors });
   const { data: profile } = useProfileFetcher();
+  
   const { dashboardPrefs } = useDashboardPreferencesResolver(profile);
 
   return (

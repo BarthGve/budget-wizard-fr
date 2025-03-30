@@ -7,7 +7,10 @@ import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
  */
 export const useDashboardPreferencesResolver = (profile: Profile | null | undefined) => {
   try {
-    const dashboardPrefs = mergeDashboardPreferences(profile?.dashboard_preferences);
+    // Assurons-nous que le profil et ses préférences sont bien typés
+    // Le cast explicite aide TypeScript à comprendre que nous gérons la conversion
+    const preferencesObject = profile?.dashboard_preferences || null;
+    const dashboardPrefs = mergeDashboardPreferences(preferencesObject);
     
     return {
       dashboardPrefs,
