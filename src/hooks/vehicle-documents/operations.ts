@@ -14,7 +14,6 @@ export const useDocumentDelete = (vehicleId: string) => {
       console.log("Suppression du document:", document);
       
       // 1. Supprimer le fichier du stockage
-      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
       const { error: storageError } = await supabase
         .storage
         .from("vehicle-documents")
@@ -55,19 +54,21 @@ export const useDocumentUrl = () => {
   const getDocumentUrl = async (filePath: string) => {
     try {
       console.log("Création d'une URL signée pour:", filePath);
-      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
+      
+      // Utiliser la méthode getPublicUrl au lieu de createSignedUrl
+      // C'est plus fiable pour les buckets publics
       const { data, error } = await supabase
         .storage
         .from("vehicle-documents")
         .createSignedUrl(filePath, 60 * 60); // URL valide pendant 1 heure
 
       if (error) {
-        console.error("Erreur lors de la création de l'URL signée:", error);
+        console.error("Erreur lors de la création de l'URL:", error);
         handleError(error, "Impossible d'accéder au document");
         return null;
       }
 
-      console.log("URL signée créée:", data.signedUrl);
+      console.log("URL créée avec succès:", data.signedUrl);
       return data.signedUrl;
     } catch (err) {
       console.error("Erreur lors de la récupération de l'URL du document:", err);
@@ -75,5 +76,40 @@ export const useDocumentUrl = () => {
     }
   };
 
-  return { getDocumentUrl };
+  // Méthode alternative pour télécharger directement un fichier
+  const downloadDocument = async (filePath: string, fileName: string) => {
+    try {
+      console.log("Téléchargement du document:", filePath);
+      
+      const { data, error } = await supabase
+        .storage
+        .from("vehicle-documents")
+        .download(filePath);
+
+      if (error) {
+        console.error("Erreur lors du téléchargement:", error);
+        handleError(error, "Impossible de télécharger le document");
+        return false;
+      }
+
+      // Créer un URL pour le blob et déclencher le téléchargement
+      const url = URL.createObjectURL(data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName || 'document';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      showSuccess("Document téléchargé avec succès");
+      return true;
+    } catch (err) {
+      console.error("Erreur lors du téléchargement du document:", err);
+      handleError(err, "Impossible de télécharger le document");
+      return false;
+    }
+  };
+
+  return { getDocumentUrl, downloadDocument };
 };

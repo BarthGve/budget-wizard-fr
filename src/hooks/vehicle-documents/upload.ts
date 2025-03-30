@@ -42,8 +42,9 @@ export const useDocumentUpload = (vehicleId: string, userId?: string) => {
         const filePath = `${userPath}/${documentInfo.vehicle_id}/${fileName}`;
 
         console.log("Début de l'upload du fichier:", filePath);
+        console.log("Stockage utilisé:", "vehicle-documents"); // Log pour vérification
         
-        // 2. Uploader le fichier - Correction du bucket "vehicle-documents" au lieu de "vehicle_documents"
+        // 2. Upload le fichier
         const { error: uploadError } = await supabase.storage
           .from('vehicle-documents')
           .upload(filePath, file, {

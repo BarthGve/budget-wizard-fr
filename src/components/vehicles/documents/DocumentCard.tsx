@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { VehicleDocument } from "@/types/vehicle-documents";
@@ -7,10 +6,8 @@ import { FileIcon, Download, Calendar, Trash2, ExternalLink, Loader2 } from "luc
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { useDocumentTypes } from "@/hooks/useDocumentTypes";
-import { downloadFile } from "./DocumentCardHelpers";
+import { useDocumentUrl } from "@/hooks/vehicle-documents/operations";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,34 +28,22 @@ interface DocumentCardProps {
 
 export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardProps) => {
   const { getDocumentType } = useDocumentTypes();
+  const { getDocumentUrl, downloadDocument } = useDocumentUrl();
   const documentType = getDocumentType(document.file_path);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   
   // Fonction pour télécharger le fichier
   const handleDownload = async () => {
     try {
       setIsDownloading(true);
       
-      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
-      const { data, error } = await supabase.storage
-        .from('vehicle-documents')
-        .download(document.file_path);
-        
-      if (error) {
-        console.error("Erreur de téléchargement:", error);
-        throw error;
-      }
+      // Utiliser la nouvelle méthode downloadDocument
+      await downloadDocument(document.file_path, document.name || 'document');
       
-      // Utiliser la fonction helper pour télécharger le fichier
-      downloadFile(data, document.name || 'document');
-      
-      toast.success(`Le document "${document.name}" a été téléchargé.`);
     } catch (error) {
       console.error("Erreur lors du téléchargement:", error);
-      toast.error("Impossible de télécharger le document.");
     } finally {
       setIsDownloading(false);
     }
@@ -69,24 +54,16 @@ export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardPro
     try {
       setIsLoadingPreview(true);
       
-      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
-      const { data, error } = await supabase
-        .storage
-        .from('vehicle-documents')
-        .createSignedUrl(document.file_path, 60 * 5); // URL valide pendant 5 minutes
-        
-      if (error) {
-        console.error("Erreur de création d'URL signée:", error);
-        throw error;
+      const signedUrl = await getDocumentUrl(document.file_path);
+      
+      if (!signedUrl) {
+        throw new Error("Impossible de générer l'URL du document");
       }
       
-      setPreviewUrl(data.signedUrl);
-      
       // Ouvrir l'URL dans un nouvel onglet
-      window.open(data.signedUrl, '_blank');
+      window.open(signedUrl, '_blank');
     } catch (error) {
       console.error("Erreur lors de la prévisualisation:", error);
-      toast.error("Impossible de prévisualiser ce document.");
     } finally {
       setIsLoadingPreview(false);
     }
@@ -97,7 +74,6 @@ export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardPro
     try {
       setIsDeleting(true);
       
-      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
       const { error: storageError } = await supabase
         .storage
         .from('vehicle-documents')
