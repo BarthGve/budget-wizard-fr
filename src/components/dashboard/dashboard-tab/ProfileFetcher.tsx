@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Profile } from "@/types/profile";
 
 /**
  * Hook qui récupère le profil utilisateur courant
@@ -23,7 +24,8 @@ export const useProfileFetcher = () => {
         return null;
       }
 
-      return data;
+      // S'assurer que les données retournées sont conformes au type Profile
+      return data as Profile;
     },
     staleTime: 1000 * 60 * 30, // 30 minutes
   });
