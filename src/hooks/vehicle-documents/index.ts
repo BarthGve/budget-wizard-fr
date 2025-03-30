@@ -2,7 +2,8 @@
 import { useMemo } from 'react';
 import {
   useDocumentDelete,
-  useDocumentUrl
+  useDocumentUrl,
+  useDocumentUpdate
 } from './operations';
 import {
   useDocumentCategoriesQuery,
@@ -30,6 +31,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
   // Opérations de base de données
   const { addDocument, isAdding, isUploading } = useDocumentUpload(vehicleId);
   const { deleteDocument, isDeleting } = useDocumentDelete(vehicleId);
+  const { updateDocument, isUpdating } = useDocumentUpdate(vehicleId);
   const { getDocumentUrl } = useDocumentUrl();
   
   // Mémoisation des catégories avec la nouvelle catégorie "Financement"
@@ -60,6 +62,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
     isLoadingCategories,
     isAdding,
     isDeleting,
+    isUpdating,
     isUploading,
     
     // Erreurs
@@ -69,6 +72,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
     // Actions
     addDocument,
     deleteDocument,
+    updateDocument,
     getDocumentUrl,
     refetchDocuments
   };

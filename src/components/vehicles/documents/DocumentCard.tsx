@@ -12,11 +12,13 @@ import {
   Trash2Icon,
   ShieldIcon,
   WrenchIcon,
-  FileIcon as FileIconAlias
+  FileIcon as FileIconAlias,
+  Edit2Icon
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogDescription } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { EditDocumentDialog } from "./EditDocumentDialog";
 
 interface DocumentCardProps {
   document: VehicleDocument & { 
@@ -26,10 +28,11 @@ interface DocumentCardProps {
 }
 
 export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
-  const { deleteDocument, isDeleting, getDocumentUrl } = useVehicleDocuments(vehicleId);
+  const { deleteDocument, isDeleting, getDocumentUrl, updateDocument, isUpdating, categories } = useVehicleDocuments(vehicleId);
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
   const [isUrlLoading, setIsUrlLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   
   const handleViewDocument = async () => {
     setIsUrlLoading(true);
@@ -47,6 +50,16 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
   const handleDeleteDocument = () => {
     deleteDocument(document);
     setIsDeleteDialogOpen(false);
+  };
+  
+  const handleUpdateDocument = (documentId: string, data: { name: string; description?: string; categoryId?: string }) => {
+    updateDocument({
+      documentId,
+      name: data.name,
+      description: data.description,
+      categoryId: data.categoryId
+    });
+    setIsEditDialogOpen(false);
   };
   
   // Déterminer l'icône en fonction du type de fichier
@@ -147,6 +160,15 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
             <Button
               variant="ghost" 
               size="sm"
+              className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+              onClick={() => setIsEditDialogOpen(true)}
+            >
+              <Edit2Icon className="w-4 h-4" />
+            </Button>
+            
+            <Button
+              variant="ghost" 
+              size="sm"
               className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
               onClick={() => setIsDeleteDialogOpen(true)}
             >
@@ -156,6 +178,7 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
         </Card>
       </motion.div>
       
+      {/* Boîte de dialogue de confirmation de suppression */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -176,6 +199,18 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
+      {/* Boîte de dialogue d'édition de document */}
+      {categories && (
+        <EditDocumentDialog
+          isOpen={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          document={document}
+          categories={categories}
+          onUpdate={handleUpdateDocument}
+          isUpdating={isUpdating}
+        />
+      )}
     </>
   );
 };

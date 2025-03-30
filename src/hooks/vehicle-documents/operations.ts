@@ -75,3 +75,60 @@ export const useDocumentUrl = () => {
 
   return { getDocumentUrl };
 };
+
+// Hook pour la mise à jour des documents
+export const useDocumentUpdate = (vehicleId: string) => {
+  const queryClient = useQueryClient();
+
+  // Mettre à jour un document
+  const { mutate: updateDocument, isPending: isUpdating } = useMutation({
+    mutationFn: async ({ 
+      documentId, 
+      name, 
+      description, 
+      categoryId 
+    }: { 
+      documentId: string; 
+      name?: string;
+      description?: string;
+      categoryId?: string;
+    }) => {
+      console.log("Mise à jour du document:", documentId, "avec la catégorie:", categoryId);
+      
+      // Préparer les données à mettre à jour
+      const updateData: Partial<VehicleDocument> = {};
+      if (name) updateData.name = name;
+      if (description !== undefined) updateData.description = description;
+      if (categoryId) updateData.category_id = categoryId;
+
+      // Aucune donnée à mettre à jour
+      if (Object.keys(updateData).length === 0) {
+        return null;
+      }
+
+      // Mettre à jour les informations du document dans la base de données
+      const { data, error } = await supabase
+        .from("vehicle_documents")
+        .update(updateData)
+        .eq("id", documentId)
+        .select("*")
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vehicle-documents", vehicleId] });
+      showSuccess("Document mis à jour avec succès");
+    },
+    onError: (error: any) => {
+      console.error("Erreur lors de la mise à jour du document:", error);
+      handleError(error, "Erreur lors de la mise à jour du document");
+    },
+  });
+
+  return { updateDocument, isUpdating };
+};
