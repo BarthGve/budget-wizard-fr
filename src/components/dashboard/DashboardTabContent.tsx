@@ -69,6 +69,20 @@ const containerVariants = {
   }
 };
 
+// Fonction utilitaire pour vérifier si un objet est du type DashboardPreferences
+const isDashboardPreferences = (obj: any): obj is DashboardPreferences => {
+  return obj !== null && 
+         typeof obj === 'object' &&
+         // Vérification des propriétés essentielles, même si null/undefined
+         'show_revenue_card' in obj ||
+         'show_expenses_card' in obj ||
+         'show_credits_card' in obj ||
+         'show_savings_card' in obj ||
+         'show_expense_stats' in obj ||
+         'show_charts' in obj ||
+         'show_contributors' in obj;
+};
+
 export const DashboardTabContent = ({
   revenue,
   expenses,
@@ -96,7 +110,7 @@ export const DashboardTabContent = ({
   const mappedContributors = useContributorMapper({ contributors });
   const { data: profile } = useProfileFetcher();
   
-  // Récupérer les préférences du tableau de bord ou utiliser les valeurs par défaut
+  // Définir les préférences par défaut
   const defaultPreferences: DashboardPreferences = {
     show_revenue_card: true,
     show_expenses_card: true,
@@ -107,7 +121,21 @@ export const DashboardTabContent = ({
     show_contributors: true
   };
   
-  const dashboardPrefs: DashboardPreferences = profile?.dashboard_preferences || defaultPreferences;
+  // Vérifier et convertir les préférences du tableau de bord
+  let dashboardPrefs: DashboardPreferences = defaultPreferences;
+  
+  if (profile?.dashboard_preferences) {
+    // Vérifier si les préférences du profil sont du type attendu
+    if (isDashboardPreferences(profile.dashboard_preferences)) {
+      // Fusionner avec les valeurs par défaut pour s'assurer que toutes les propriétés sont présentes
+      dashboardPrefs = {
+        ...defaultPreferences,
+        ...profile.dashboard_preferences
+      };
+    } else {
+      console.warn("Format de préférences du tableau de bord invalide, utilisation des valeurs par défaut");
+    }
+  }
 
   return (
     <motion.div 

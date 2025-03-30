@@ -16,29 +16,48 @@ const defaultPreferences: DashboardPreferences = {
   show_contributors: true
 };
 
+// Fonction utilitaire pour vérifier si un objet est du type DashboardPreferences
+const isDashboardPreferences = (obj: any): obj is DashboardPreferences => {
+  return obj !== null && 
+         typeof obj === 'object' &&
+         // Vérification des propriétés essentielles, même si null/undefined
+         'show_revenue_card' in obj ||
+         'show_expenses_card' in obj ||
+         'show_credits_card' in obj ||
+         'show_savings_card' in obj ||
+         'show_expense_stats' in obj ||
+         'show_charts' in obj ||
+         'show_contributors' in obj;
+};
+
 export const useDashboardPreferences = (profile: Profile | null | undefined) => {
+  // Récupérer les préférences du profil ou utiliser les valeurs par défaut
+  const profilePreferences = profile?.dashboard_preferences && 
+    isDashboardPreferences(profile.dashboard_preferences) ? 
+    profile.dashboard_preferences : 
+    defaultPreferences;
+    
   // Initialiser les états avec les valeurs du profil ou les valeurs par défaut
-  // En utilisant !== false pour garantir que les valeurs sont true par défaut si null/undefined
   const [showRevenueCard, setShowRevenueCard] = useState<boolean>(
-    profile?.dashboard_preferences?.show_revenue_card !== false
+    profilePreferences.show_revenue_card !== false
   );
   const [showExpensesCard, setShowExpensesCard] = useState<boolean>(
-    profile?.dashboard_preferences?.show_expenses_card !== false
+    profilePreferences.show_expenses_card !== false
   );
   const [showCreditsCard, setShowCreditsCard] = useState<boolean>(
-    profile?.dashboard_preferences?.show_credits_card !== false
+    profilePreferences.show_credits_card !== false
   );
   const [showSavingsCard, setShowSavingsCard] = useState<boolean>(
-    profile?.dashboard_preferences?.show_savings_card !== false
+    profilePreferences.show_savings_card !== false
   );
   const [showExpenseStats, setShowExpenseStats] = useState<boolean>(
-    profile?.dashboard_preferences?.show_expense_stats !== false
+    profilePreferences.show_expense_stats !== false
   );
   const [showCharts, setShowCharts] = useState<boolean>(
-    profile?.dashboard_preferences?.show_charts !== false
+    profilePreferences.show_charts !== false
   );
   const [showContributors, setShowContributors] = useState<boolean>(
-    profile?.dashboard_preferences?.show_contributors !== false
+    profilePreferences.show_contributors !== false
   );
   
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -51,7 +70,8 @@ export const useDashboardPreferences = (profile: Profile | null | undefined) => 
     setIsUpdating(true);
     try {
       // Convertir explicitement l'objet de préférences en un objet simple pour Supabase
-      const preferencesForDB: Record<string, boolean> = {
+      // Cette étape est cruciale pour s'assurer que les données sont correctement typées pour PostgreSQL
+      const preferencesForDB = {
         show_revenue_card: preferences.show_revenue_card ?? true,
         show_expenses_card: preferences.show_expenses_card ?? true,
         show_credits_card: preferences.show_credits_card ?? true,
@@ -84,58 +104,73 @@ export const useDashboardPreferences = (profile: Profile | null | undefined) => 
   // Gestionnaires pour chaque toggle
   const handleRevenueCardToggle = (checked: boolean) => {
     setShowRevenueCard(checked);
-    updatePreferences({
-      ...profile?.dashboard_preferences || defaultPreferences,
+    // Créer une copie des préférences existantes ou par défaut
+    const updatedPreferences = {
+      ...defaultPreferences,
+      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
       show_revenue_card: checked
-    });
+    };
+    updatePreferences(updatedPreferences);
   };
 
   const handleExpensesCardToggle = (checked: boolean) => {
     setShowExpensesCard(checked);
-    updatePreferences({
-      ...profile?.dashboard_preferences || defaultPreferences,
+    const updatedPreferences = {
+      ...defaultPreferences,
+      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
       show_expenses_card: checked
-    });
+    };
+    updatePreferences(updatedPreferences);
   };
 
   const handleCreditsCardToggle = (checked: boolean) => {
     setShowCreditsCard(checked);
-    updatePreferences({
-      ...profile?.dashboard_preferences || defaultPreferences,
+    const updatedPreferences = {
+      ...defaultPreferences,
+      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
       show_credits_card: checked
-    });
+    };
+    updatePreferences(updatedPreferences);
   };
 
   const handleSavingsCardToggle = (checked: boolean) => {
     setShowSavingsCard(checked);
-    updatePreferences({
-      ...profile?.dashboard_preferences || defaultPreferences,
+    const updatedPreferences = {
+      ...defaultPreferences,
+      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
       show_savings_card: checked
-    });
+    };
+    updatePreferences(updatedPreferences);
   };
 
   const handleExpenseStatsToggle = (checked: boolean) => {
     setShowExpenseStats(checked);
-    updatePreferences({
-      ...profile?.dashboard_preferences || defaultPreferences,
+    const updatedPreferences = {
+      ...defaultPreferences,
+      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
       show_expense_stats: checked
-    });
+    };
+    updatePreferences(updatedPreferences);
   };
 
   const handleChartsToggle = (checked: boolean) => {
     setShowCharts(checked);
-    updatePreferences({
-      ...profile?.dashboard_preferences || defaultPreferences,
+    const updatedPreferences = {
+      ...defaultPreferences,
+      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
       show_charts: checked
-    });
+    };
+    updatePreferences(updatedPreferences);
   };
 
   const handleContributorsToggle = (checked: boolean) => {
     setShowContributors(checked);
-    updatePreferences({
-      ...profile?.dashboard_preferences || defaultPreferences,
+    const updatedPreferences = {
+      ...defaultPreferences,
+      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
       show_contributors: checked
-    });
+    };
+    updatePreferences(updatedPreferences);
   };
 
   return {
