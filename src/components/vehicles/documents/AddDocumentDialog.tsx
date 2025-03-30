@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -18,6 +17,7 @@ import { useTheme } from "next-themes";
 
 interface AddDocumentDialogProps {
   vehicleId: string;
+  onDocumentAdded?: () => void;
 }
 
 const documentFormSchema = z.object({
@@ -29,7 +29,7 @@ const documentFormSchema = z.object({
 
 type DocumentFormValues = z.infer<typeof documentFormSchema>;
 
-export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
+export const AddDocumentDialog = ({ vehicleId, onDocumentAdded }: AddDocumentDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { categories, addDocument, isAdding } = useVehicleDocuments(vehicleId);
   const isMobile = useIsMobile();
@@ -67,6 +67,11 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
       form.reset();
       setSelectedFileName(null);
       setIsOpen(false);
+      
+      // Appeler le callback si fourni
+      if (onDocumentAdded) {
+        onDocumentAdded();
+      }
     } catch (error) {
       console.error("Erreur lors de l'ajout du document:", error);
     }
@@ -199,7 +204,7 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
                         size="sm"
                         className="text-red-500 hover:text-red-700"
                         onClick={(e) => {
-                          e.stopPropagation(); // Empêcher le clic de remonter à l'élément parent
+                          e.stopPropagation();
                           form.setValue("file", undefined as any);
                           setSelectedFileName(null);
                         }}
