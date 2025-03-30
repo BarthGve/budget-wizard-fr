@@ -1,9 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { VehicleDocument } from "@/types/vehicle-documents";
 import { Button } from "@/components/ui/button";
-import { FileIcon, Download, Calendar, Trash2, ExternalLink } from "lucide-react";
+import { FileIcon, Download, Calendar, Trash2, ExternalLink, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -11,19 +11,37 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useDocumentTypes } from "@/hooks/useDocumentTypes";
 import { downloadFile } from "./DocumentCardHelpers";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface DocumentCardProps {
   document: VehicleDocument;
   vehicleId: string;
+  onDeleted?: () => void;
 }
 
-export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
+export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardProps) => {
   const { getDocumentType } = useDocumentTypes();
   const documentType = getDocumentType(document.file_path);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   
   // Fonction pour télécharger le fichier
   const handleDownload = async () => {
     try {
+      setIsDownloading(true);
+      
       const { data, error } = await supabase.storage
         .from('vehicle-documents')
         .download(document.file_path);
@@ -37,6 +55,71 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
     } catch (error) {
       console.error("Erreur lors du téléchargement:", error);
       toast.error("Impossible de télécharger le document.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+  
+  // Fonction pour obtenir l'URL de prévisualisation et ouvrir dans un nouvel onglet
+  const handlePreview = async () => {
+    try {
+      setIsLoadingPreview(true);
+      
+      // Obtenir l'URL signée
+      const { data, error } = await supabase
+        .storage
+        .from('vehicle-documents')
+        .createSignedUrl(document.file_path, 60 * 5); // URL valide pendant 5 minutes
+        
+      if (error) throw error;
+      
+      setPreviewUrl(data.signedUrl);
+      
+      // Ouvrir l'URL dans un nouvel onglet
+      window.open(data.signedUrl, '_blank');
+    } catch (error) {
+      console.error("Erreur lors de la prévisualisation:", error);
+      toast.error("Impossible de prévisualiser ce document.");
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
+  
+  // Fonction pour supprimer le document
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      
+      // 1. Supprimer le fichier du stockage
+      const { error: storageError } = await supabase
+        .storage
+        .from('vehicle-documents')
+        .remove([document.file_path]);
+
+      if (storageError) {
+        console.error("Erreur lors de la suppression du fichier:", storageError);
+        toast.error("Erreur lors de la suppression du fichier.");
+        return;
+      }
+      
+      // 2. Supprimer les informations du document de la base de données
+      const { error } = await supabase
+        .from('vehicle_documents')
+        .delete()
+        .eq('id', document.id);
+
+      if (error) throw error;
+      
+      toast.success(`Le document "${document.name}" a été supprimé.`);
+      
+      // Appeler le callback pour rafraîchir la liste si fourni
+      if (onDeleted) onDeleted();
+      
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
+      toast.error("Impossible de supprimer ce document.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -74,9 +157,14 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
           size="sm" 
           className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
           onClick={handleDownload}
+          disabled={isDownloading}
         >
-          <Download className="w-4 h-4 mr-1" />
-          Télécharger
+          {isDownloading ? (
+            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+          ) : (
+            <Download className="w-4 h-4 mr-1" />
+          )}
+          {isDownloading ? "Téléchargement..." : "Télécharger"}
         </Button>
         
         <div className="flex items-center gap-1">
@@ -84,19 +172,51 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
             variant="ghost"
             size="sm"
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 h-8 w-8 p-0"
+            onClick={handlePreview}
+            disabled={isLoadingPreview}
           >
-            <ExternalLink className="w-4 h-4" />
+            {isLoadingPreview ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <ExternalLink className="w-4 h-4" />
+            )}
             <span className="sr-only">Voir</span>
           </Button>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-red-500/70 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 h-8 w-8 p-0"
-          >
-            <Trash2 className="w-4 h-4" />
-            <span className="sr-only">Supprimer</span>
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-500/70 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 h-8 w-8 p-0"
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                <span className="sr-only">Supprimer</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Êtes-vous sûr de vouloir supprimer le document <strong>"{document.name}"</strong> ? Cette action est irréversible.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                >
+                  Supprimer
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </CardFooter>
     </Card>

@@ -18,5 +18,7 @@ export const downloadFile = (data: Blob, filename: string): void => {
   document.body.removeChild(link);
   
   // Libérer l'URL créée
-  URL.revokeObjectURL(url);
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 100); // Un petit délai pour s'assurer que le téléchargement a bien commencé
 };
