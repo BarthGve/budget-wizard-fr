@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { ExpensesChartContent } from "./components/ExpensesChartContent";
 import { useVehicleDetail } from "@/hooks/useVehicleDetail";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface VehicleMonthlyExpensesChartProps {
   vehicleId: string;
@@ -20,9 +21,15 @@ export const VehicleMonthlyExpensesChart = ({
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const { vehicle } = useVehicleDetail(vehicleId);
+  const isMobile = useIsMobile(); // Utiliser le hook pour détecter si on est sur mobile
   
   // Vérifier si le véhicule est vendu
   const isVehicleSold = vehicle?.status === 'vendu';
+
+  // Si on est sur mobile, ne pas afficher le composant du tout
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <Card className={cn(
