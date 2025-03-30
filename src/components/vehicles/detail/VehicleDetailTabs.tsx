@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Vehicle } from "@/types/vehicle";
 import { VehicleGeneralInfo } from "./VehicleGeneralInfo";
@@ -30,46 +29,39 @@ import {
 interface VehicleDetailTabsProps {
   vehicle: Vehicle;
   canAccessExpenses: boolean;
+  activeSection?: string;
+  onSectionChange?: (section: string) => void;
 }
 
 export const VehicleDetailTabs = ({
   vehicle,
-  canAccessExpenses
+  canAccessExpenses,
+  activeSection: externalActiveTab,
+  onSectionChange: externalOnSectionChange
 }: VehicleDetailTabsProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState("details");
+  const [internalActiveTab, setInternalActiveTab] = useState("details");
   
-  // Référence aux éléments de contenu pour le défilement
+  const activeTab = externalActiveTab || internalActiveTab;
+  
+  const handleTabChange = (value: string) => {
+    if (externalOnSectionChange) {
+      externalOnSectionChange(value);
+    } else {
+      setInternalActiveTab(value);
+    }
+  };
+  
   const detailsRef = useRef<HTMLDivElement>(null);
   const expensesRef = useRef<HTMLDivElement>(null);
   const documentsRef = useRef<HTMLDivElement>(null);
   
-  // Vérifier si le véhicule est vendu
   const isVehicleSold = vehicle.status === 'vendu';
-  
-  // Fonction pour gérer le swipe sur mobile
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    
-    // Faire défiler jusqu'au contenu approprié sur mobile
-    if (isMobile) {
-      setTimeout(() => {
-        if (value === "details" && detailsRef.current) {
-          detailsRef.current.scrollIntoView({ behavior: "smooth" });
-        } else if (value === "expenses" && expensesRef.current) {
-          expensesRef.current.scrollIntoView({ behavior: "smooth" });
-        } else if (value === "documents" && documentsRef.current) {
-          documentsRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100);
-    }
-  };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -99,25 +91,21 @@ export const VehicleDetailTabs = ({
     }
   };
 
-  // Fonction pour générer manuellement les dépenses depuis les charges récurrentes
   const handleGenerateExpensesFromRecurring = async () => {
     try {
       setIsGenerating(true);
       
-      // Appeler la fonction Supabase pour générer les dépenses
       const { data, error } = await supabase
         .rpc('generate_vehicle_expenses_from_recurring');
       
       if (error) throw error;
       
-      // Succès
       toast({
         title: "Génération effectuée",
         description: "Les dépenses liées aux charges récurrentes ont été générées",
         variant: "default"
       });
       
-      // Attendre un peu puis actualiser la page pour voir les nouvelles dépenses
       setTimeout(() => {
         window.location.reload();
       }, 1500);
@@ -134,11 +122,8 @@ export const VehicleDetailTabs = ({
     }
   };
 
-  // Afficher une interface adaptée au mobile ou au desktop
   return isMobile ? (
-    // Interface mobile avec des sections défilables
     <div className="space-y-6 pb-16">
-      {/* Navigation par onglets fixée en haut */}
       <Card className={cn(
         "sticky top-0 z-10 p-0 overflow-hidden border rounded-lg shadow-sm",
         "bg-white dark:bg-gray-900",
@@ -192,8 +177,7 @@ export const VehicleDetailTabs = ({
         </TabsList>
       </Card>
       
-      {/* Section Détails */}
-      <div ref={detailsRef} id="details" className="p-3 pt-0">
+      <div ref={detailsRef} id="details" className={cn("p-3 pt-0", activeTab !== "details" && "hidden")}>
         <motion.div 
           className="space-y-6"
           variants={containerVariants}
@@ -264,26 +248,21 @@ export const VehicleDetailTabs = ({
         </motion.div>
       </div>
       
-      {/* Section Dépenses */}
-      {canAccessExpenses && (
-        <div ref={expensesRef} id="expenses" className="p-3 pt-0">
-          <motion.div 
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <VehicleExpenseContainer vehicleId={vehicle.id} />
-          </motion.div>
-        </div>
-      )}
+      <div ref={expensesRef} id="expenses" className={cn("p-3 pt-0", activeTab !== "expenses" && "hidden")}>
+        <motion.div 
+          variants={itemVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <VehicleExpenseContainer vehicleId={vehicle.id} />
+        </motion.div>
+      </div>
       
-      {/* Section Documents */}
-      <div ref={documentsRef} id="documents" className="p-3 pt-0">
+      <div ref={documentsRef} id="documents" className={cn("p-3 pt-0", activeTab !== "documents" && "hidden")}>
         <VehicleDocumentsTab vehicleId={vehicle.id} />
       </div>
     </div>
   ) : (
-    // Interface desktop normale avec des onglets
     <Card className={cn(
       "p-0 overflow-hidden border rounded-lg shadow-sm",
       "bg-white dark:bg-gray-900",
