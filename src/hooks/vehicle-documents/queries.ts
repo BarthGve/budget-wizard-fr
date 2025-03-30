@@ -5,7 +5,7 @@ import { VehicleDocument, VehicleDocumentCategory } from "@/types/vehicle-docume
 import { handleError } from "./utils";
 
 // Récupérer tous les documents d'un véhicule
-export const useVehicleDocumentsQuery = (vehicleId: string, userId?: string) => {
+export const useVehicleDocumentsQuery = (vehicleId: string) => {
   return useQuery({
     queryKey: ["vehicle-documents", vehicleId],
     queryFn: async () => {
@@ -25,7 +25,7 @@ export const useVehicleDocumentsQuery = (vehicleId: string, userId?: string) => 
       console.log("Documents chargés:", data);
       return data as (VehicleDocument & { vehicle_document_categories: VehicleDocumentCategory })[];
     },
-    enabled: !!vehicleId && !!userId,
+    enabled: !!vehicleId, // Activer la requête uniquement si l'ID du véhicule est défini
   });
 };
 

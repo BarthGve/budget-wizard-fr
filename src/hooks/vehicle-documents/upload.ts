@@ -4,17 +4,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { VehicleDocument } from "@/types/vehicle-documents";
 import { sanitizeFileName, handleError, showSuccess } from "./utils";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-export const useDocumentUpload = (vehicleId: string, userId?: string) => {
+export const useDocumentUpload = (vehicleId: string) => {
   const queryClient = useQueryClient();
   const [isUploading, setIsUploading] = useState(false);
+  const { user } = useCurrentUser();
 
   // Télécharger un document
   const uploadDocument = async (
     file: File,
     document: Omit<VehicleDocument, "id" | "file_path" | "file_size" | "content_type" | "created_at" | "updated_at">
   ) => {
-    if (!userId || !file) {
+    if (!user?.id || !file) {
       handleError(new Error("Informations manquantes"), "Informations manquantes pour l'upload");
       return null;
     }
@@ -28,7 +30,7 @@ export const useDocumentUpload = (vehicleId: string, userId?: string) => {
       console.log("Nom du fichier nettoyé:", cleanFileName);
 
       // 1. Upload du fichier dans le stockage Supabase
-      const filePath = `${userId}/${vehicleId}/${Date.now()}_${cleanFileName}`;
+      const filePath = `${user.id}/${vehicleId}/${Date.now()}_${cleanFileName}`;
       console.log("Chemin du fichier:", filePath);
       
       const { data: uploadData, error: uploadError } = await supabase
