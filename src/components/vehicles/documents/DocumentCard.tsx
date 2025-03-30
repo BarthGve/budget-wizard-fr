@@ -8,7 +8,9 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/toaster";
+import { toast } from "sonner";
+import { useDocumentTypes } from "@/hooks/useDocumentTypes";
+import { downloadFile } from "./DocumentCardHelpers";
 
 interface DocumentCardProps {
   document: VehicleDocument;
@@ -16,26 +18,8 @@ interface DocumentCardProps {
 }
 
 export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
-  const { toast } = useToast();
-  
-  // Fonction pour déterminer l'icône du fichier selon son type
-  const getFileIcon = () => {
-    const extension = document.file_path.split('.').pop()?.toLowerCase();
-    
-    switch (extension) {
-      case 'pdf':
-        return <FileIcon className="w-8 h-8 text-red-500/80" />;
-      case 'doc':
-      case 'docx':
-        return <FileIcon className="w-8 h-8 text-blue-500/80" />;
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-        return <FileIcon className="w-8 h-8 text-green-500/80" />;
-      default:
-        return <FileIcon className="w-8 h-8 text-gray-500/80" />;
-    }
-  };
+  const { getDocumentType } = useDocumentTypes();
+  const documentType = getDocumentType(document.file_path);
   
   // Fonction pour télécharger le fichier
   const handleDownload = async () => {
@@ -46,26 +30,13 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
         
       if (error) throw error;
       
-      // Créer un lien de téléchargement
-      const url = URL.createObjectURL(data);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = document.name || 'document';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Utiliser la fonction helper pour télécharger le fichier
+      downloadFile(data, document.name || 'document');
       
-      toast({
-        title: "Téléchargement réussi",
-        description: `Le document "${document.name}" a été téléchargé.`,
-      });
+      toast.success(`Le document "${document.name}" a été téléchargé.`);
     } catch (error) {
       console.error("Erreur lors du téléchargement:", error);
-      toast({
-        title: "Erreur de téléchargement",
-        description: "Impossible de télécharger le document.",
-        variant: "destructive",
-      });
+      toast.error("Impossible de télécharger le document.");
     }
   };
 
@@ -77,7 +48,7 @@ export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
     )}>
       <CardHeader className="p-4 pb-2 space-y-0 flex flex-row items-start">
         <div className="p-3 rounded-md border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/70 shadow-sm mr-3">
-          {getFileIcon()}
+          <documentType.icon className={`w-8 h-8 ${documentType.color}`} />
         </div>
         <div className="space-y-1 flex-1 min-w-0">
           <h3 className="font-medium text-base text-gray-800 dark:text-gray-100 line-clamp-2">

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { VehicleDocument, VehicleDocumentCategory } from '@/types/vehicle-documents';
 import { v4 as uuidv4 } from 'uuid';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 type DocumentUploadInfo = {
   vehicle_id: string;
@@ -48,7 +48,7 @@ export default function useVehicleDocuments(vehicleId: string) {
     queryKey: ['document-categories'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('document_categories')
+        .from('vehicle_document_categories')
         .select('*')
         .order('name');
 
