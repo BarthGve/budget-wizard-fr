@@ -44,7 +44,7 @@ export const VehicleFuelExpensesCard = ({
 
   const averagePrice = fuelVolume > 0 ? totalFuelExpenses / fuelVolume : 0;
 
-  // Contenu du tooltip avec les informations détaillées
+  // Contenu du tooltip avec les informations détaillées (uniquement pour les PRO)
   const tooltipContent = isPro && fuelVolume > 0 ? (
     <div className="space-y-2 py-1">
       <div className="flex justify-between items-center gap-4">
@@ -82,29 +82,6 @@ export const VehicleFuelExpensesCard = ({
         )} 
         onClick={() => navigate("/vehicles")}
       >
-        {/* Flou pour les utilisateurs non-pro */}
-        {!isPro && (
-          <div className="absolute inset-0 backdrop-blur-sm bg-white/50 dark:bg-black/60 z-10 flex flex-col items-center justify-center p-6 text-center">
-            <div className={cn(
-              "bg-primary/90 dark:bg-primary/80 text-white rounded-full mb-4",
-              // Ajustement de taille pour éviter la troncature
-              isMobile ? "p-4" : "p-3"
-            )}>
-              <Fuel className={cn(
-                isMobile ? "h-7 w-7" : "h-6 w-6"
-              )} />
-            </div>
-            <h3 className="font-semibold text-lg mb-2 dark:text-white">Fonctionnalité PRO</h3>
-            <p className={cn(
-              "text-sm text-gray-700 dark:text-gray-300",
-              // Augmentation de l'espacement pour mobile
-              isMobile && "mb-2 mx-2"
-            )}>
-              Passez au compte PRO pour accéder au suivi des dépenses carburant
-            </p>
-          </div>
-        )}
-        
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -160,6 +137,15 @@ export const VehicleFuelExpensesCard = ({
                 )}>
                   {formatCurrency(totalFuelExpenses)}
                 </p>
+              )}
+              
+              {/* Badge PRO pour les fonctionnalités avancées - Visible uniquement si l'utilisateur n'est pas PRO */}
+              {!isPro && (
+                <div className="mt-2">
+                  <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
+                    Passez PRO pour les statistiques détaillées
+                  </span>
+                </div>
               )}
             </motion.div>
           </div>
