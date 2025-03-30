@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
@@ -90,7 +89,7 @@ export const DashboardTabContent = ({
   const isMobileScreen = useMediaQuery("(max-width: 768px)");
 
   const { data: credits = [] } = useCreditsFetcher();
-  const { expensesTotal, hasActiveVehicles } = useExpenseStats(currentView);
+  const { expensesTotal } = useExpenseStats(currentView);
   const { totalMensualites } = useCreditStats({ credits, firstDayOfMonth });
   const mappedContributors = useContributorMapper({ contributors });
   const { data: profile } = useProfileFetcher();
@@ -125,7 +124,6 @@ export const DashboardTabContent = ({
         fuelVolume={fuelVolume}
         fuelExpensesCount={fuelExpensesCount}
         profile={profile}
-        hasActiveVehicles={hasActiveVehicles}
       />
       
       {!isMobileScreen && (

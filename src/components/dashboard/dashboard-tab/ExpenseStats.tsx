@@ -27,7 +27,6 @@ interface ExpenseStatsProps {
   fuelVolume: number;
   fuelExpensesCount: number;
   profile: any;
-  hasActiveVehicles?: boolean;
 }
 
 /**
@@ -39,8 +38,7 @@ export const ExpenseStatsSection = ({
   totalFuelExpenses,
   fuelVolume,
   fuelExpensesCount,
-  profile,
-  hasActiveVehicles = false
+  profile
 }: ExpenseStatsProps) => {
   return (
     <motion.div 
@@ -51,17 +49,13 @@ export const ExpenseStatsSection = ({
         totalExpenses={totalExpenses} 
         viewMode={viewMode}
       />
-      
-      {/* N'afficher la carte carburant que s'il y a des véhicules actifs */}
-      {hasActiveVehicles && (
-        <MemoizedVehicleFuelExpensesCard 
-          totalFuelExpenses={totalFuelExpenses}
-          fuelVolume={fuelVolume}
-          fuelExpensesCount={fuelExpensesCount}
-          profile={profile}
-          viewMode={viewMode}
-        />
-      )}
+      <MemoizedVehicleFuelExpensesCard 
+        totalFuelExpenses={totalFuelExpenses}
+        fuelVolume={fuelVolume}
+        fuelExpensesCount={fuelExpensesCount}
+        profile={profile}
+        viewMode={viewMode}
+      />
     </motion.div>
   );
 };
