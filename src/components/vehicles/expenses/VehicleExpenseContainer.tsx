@@ -34,6 +34,14 @@ export const VehicleExpenseContainer = ({
   // Vérifier si le véhicule est vendu
   const isVehicleSold = vehicle?.status === 'vendu';
 
+  // Afficher des logs pour le débogage
+  useEffect(() => {
+    console.log("VehicleExpenseContainer - vehicleId:", vehicleId);
+    console.log("VehicleExpenseContainer - expenses:", expenses?.length || 0);
+    console.log("VehicleExpenseContainer - isLoading:", isLoading);
+    console.log("VehicleExpenseContainer - vehicle status:", vehicle?.status);
+  }, [vehicleId, expenses, isLoading, vehicle]);
+
   // Fonction optimisée pour supprimer une dépense
   const handleDeleteExpense = useCallback((id: string) => {
     deleteExpense(id);

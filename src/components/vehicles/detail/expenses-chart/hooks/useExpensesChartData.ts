@@ -26,6 +26,8 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
         : startOfYear(new Date(currentYear, 0, 1));
       
       const endDate = endOfYear(new Date(currentYear, 11, 31));
+
+      console.log(`Fetching expenses for vehicle ${vehicleId} from ${startDate.toISOString().split("T")[0]} to ${endDate.toISOString().split("T")[0]}`);
       
       const { data, error } = await supabase
         .from("vehicle_expenses")
@@ -40,6 +42,7 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
         return [];
       }
 
+      console.log(`Retrieved ${data?.length || 0} expenses`);
       return data as Expense[];
     },
     enabled: !!vehicleId,
@@ -47,7 +50,12 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
 
   // Transformer les données pour le graphique
   const chartData = useMemo(() => {
-    if (!expenses || expenses.length === 0) return [];
+    if (!expenses || expenses.length === 0) {
+      console.log("No expenses data to transform for chart");
+      return [];
+    }
+
+    console.log(`Transforming ${expenses.length} expenses for chart, showMultiYear: ${showMultiYear}`);
 
     if (showMultiYear) {
       // Regrouper par année
