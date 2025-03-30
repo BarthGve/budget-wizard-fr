@@ -45,6 +45,7 @@ export const MobileNavigation = ({
         <div className="text-sm font-medium truncate">Détail du véhicule</div>
       </div>
       
+      {/* Ici, nous utilisons le composant Tabs pour envelopper TabsList */}
       <Tabs value={activeSection} onValueChange={onSectionChange} className="w-full">
         <TabsList className="flex justify-between p-1 overflow-x-auto scrollbar-none">
           <Button
