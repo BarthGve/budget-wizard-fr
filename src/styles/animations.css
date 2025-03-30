@@ -42,3 +42,57 @@
 .card-flip-out {
   animation: card-flip-out 0.6s ease-in forwards;
 }
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out;
+}
+
+.animate-fade-down {
+  animation: fade-down 0.5s ease-out;
+}
+
+.animate-stagger > * {
+  opacity: 0;
+}
+
+.animate-stagger > *:nth-child(1) {
+  animation: fade-up 0.5s ease-out 0.1s forwards;
+}
+
+.animate-stagger > *:nth-child(2) {
+  animation: fade-up 0.5s ease-out 0.2s forwards;
+}
+
+.animate-stagger > *:nth-child(3) {
+  animation: fade-up 0.5s ease-out 0.3s forwards;
+}
+
+.animate-stagger > *:nth-child(4) {
+  animation: fade-up 0.5s ease-out 0.4s forwards;
+}
+
+.animate-stagger > *:nth-child(5) {
+  animation: fade-up 0.5s ease-out 0.5s forwards;
+}
