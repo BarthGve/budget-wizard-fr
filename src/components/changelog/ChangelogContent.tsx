@@ -98,69 +98,66 @@ export const ChangelogContent = ({
 
   return (
     <div className="space-y-8">
-      <div className="relative">
-        <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-border"></div>
-        <div className="space-y-8">
-          {entries.map((entry) => (
-            <Card
-              key={entry.id}
-              className={cn("relative animate-fade-up border overflow-hidden", getEntryTypeColor(entry.type))}
-            >
-              <div className="p-6">
-                <div className="flex items-start gap-2 flex-wrap">
-                  <div className={cn(
-                    "absolute left-0 top-0 bottom-0 w-1.5",
-                    entry.type === "new" ? "bg-blue-500" : 
-                    entry.type === "improvement" ? "bg-green-500" : "bg-orange-500"
-                  )} />
+      <div className="space-y-8">
+        {entries.map((entry) => (
+          <Card
+            key={entry.id}
+            className={cn("relative animate-fade-up border overflow-hidden", getEntryTypeColor(entry.type))}
+          >
+            <div className="p-6">
+              <div className="flex items-start gap-2 flex-wrap">
+                <div className={cn(
+                  "absolute left-0 top-0 bottom-0 w-1.5",
+                  entry.type === "new" ? "bg-blue-500" : 
+                  entry.type === "improvement" ? "bg-green-500" : "bg-orange-500"
+                )} />
                     
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-card border">
-                    {getEntryTypeIcon(entry.type)}
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <h3 className="text-lg font-semibold">{entry.title}</h3>
-                      <Badge variant="outline" className={getEntryTypeBadgeColor(entry.type)}>
-                        {getEntryTypeLabel(entry.type)}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        v{entry.version}
-                      </Badge>
-                    </div>
-                    <time className="text-sm text-muted-foreground block mb-4">
-                      {format(new Date(entry.date), "d MMMM yyyy", { locale: fr })}
-                    </time>
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <ReactMarkdown>{entry.description}</ReactMarkdown>
-                    </div>
-                  </div>
-                  
-                  {isAdmin && (
-                    <div className="ml-auto flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEdit?.(entry)}
-                        className="h-8 px-2"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onDelete?.(entry.id)}
-                        className="h-8 px-2 text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-card border">
+                  {getEntryTypeIcon(entry.type)}
                 </div>
+                  
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h3 className="text-lg font-semibold">{entry.title}</h3>
+                    <Badge variant="outline" className={getEntryTypeBadgeColor(entry.type)}>
+                      {getEntryTypeLabel(entry.type)}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      v{entry.version}
+                    </Badge>
+                  </div>
+                  <time className="text-sm text-muted-foreground block mb-4">
+                    {format(new Date(entry.date), "d MMMM yyyy", { locale: fr })}
+                  </time>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown>{entry.description}</ReactMarkdown>
+                  </div>
+                </div>
+                  
+                {isAdmin && (
+                  <div className="ml-auto flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit?.(entry)}
+                      className="h-8 px-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete?.(entry.id)}
+                      className="h-8 px-2 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
-            </Card>
-          ))}
-        </div>
+            </div>
+          </Card>
+        ))}
       </div>
 
       {entries.length > 0 && (
