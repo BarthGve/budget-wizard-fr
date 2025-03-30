@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { VehicleMonthlyExpensesChart } from "./expenses-chart/VehicleMonthlyExpensesChart";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, CalendarClock, FileIcon } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
