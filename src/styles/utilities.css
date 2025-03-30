@@ -2,80 +2,47 @@
 @tailwind utilities;
 
 @layer utilities {
-  .bg-grid-white {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.05)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  @supports (-webkit-touch-callout: none) {
+    .touch-scroll {
+      -webkit-overflow-scrolling: touch;
+    }
   }
 
-  .bg-grid-black {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(0 0 0 / 0.05)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  @supports (-webkit-touch-callout: none) {
+    .ios-bottom-safe {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .ios-top-safe {
+      padding-top: env(safe-area-inset-top);
+    }
   }
 
-  .mask-radial-faded {
-    mask-image: radial-gradient(circle at center, black 40%, transparent 70%);
+  .radix-scroll-area-viewport {
+    overflow-x: hidden !important;
   }
 
-  .mask-linear-faded {
-    mask-image: linear-gradient(to bottom, black 30%, transparent 70%);
+  [data-radix-scroll-area-viewport] {
+    overflow-x: hidden !important;
   }
 
-  .text-balance {
-    text-wrap: balance;
+  .perspective-1000 {
+    perspective: 1000px;
   }
 
-  /* Animation utilities */
-  .animate-in {
-    animation: animateIn 0.3s ease-in-out forwards;
+  .backface-hidden {
+    backface-visibility: hidden;
   }
 
-  .animate-out {
-    animation: animateOut 0.3s ease-in-out forwards;
+  .transform-gpu {
+    transform: translateZ(0);
   }
 
-  .card-hover-effect {
-    @apply transition-all duration-300 hover:shadow-md hover:translate-y-[-2px];
+  .rotate-x-90 {
+    transform: rotateX(-90deg);
   }
 
-  .bg-gradient-text {
-    @apply bg-clip-text text-transparent;
-  }
-  
-  /* Classes pour la timeline */
-  .timeline-dot {
-    @apply w-3 h-3 rounded-full bg-primary absolute left-8 md:left-[4.5rem] z-10 -translate-x-[6px];
-  }
-  
-  .timeline-card {
-    @apply relative z-20 bg-card isolate shadow-sm hover:shadow-md transition-shadow duration-200;
-  }
-  
-  .card-glow {
-    @apply before:absolute before:inset-0 before:-z-10 before:rounded-lg before:bg-gradient-to-b before:from-background/10 before:to-border/10 before:backdrop-blur-sm;
-  }
-
-  /* Classe pour le conteneur des entrées de changelog */
-  .changelog-entry-container {
-    @apply relative pb-12 last:pb-0;
-  }
-}
-
-@keyframes animateIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes animateOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(10px);
+  .rotate-x-0 {
+    transform: rotateX(0deg);
   }
 }
