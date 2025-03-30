@@ -6,7 +6,6 @@ import { useState, useCallback, useEffect } from "react";
 import { AddVehicleExpenseDialog } from "./AddVehicleExpenseDialog";
 import { VehicleExpenseTable } from "./table/VehicleExpenseTable";
 import { useQueryClient } from "@tanstack/react-query";
-import { Vehicle } from "@/types/vehicle";
 import { useVehicleDetail } from "@/hooks/useVehicleDetail";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -94,14 +93,14 @@ export const VehicleExpenseContainer = ({
       );
     }
     
-    // Afficher la liste simplifiée sur mobile, sinon le tableau complet
+    // Afficher la liste simplifiée sur mobile avec tous les éléments, au lieu de limitée à 5
     return isMobile ? 
       <VehicleExpenseRecentList 
         expenses={expenses} 
         onDeleteExpense={handleDeleteExpense} 
         vehicleId={vehicleId} 
         onSuccess={handleExpenseSuccess}
-        limit={5}
+        limit={expenses.length} // Afficher toutes les dépenses
       /> : 
       <VehicleExpenseTable 
         expenses={expenses} 

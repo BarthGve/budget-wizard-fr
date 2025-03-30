@@ -4,10 +4,18 @@ import { useVehicleDocuments } from "@/hooks/useVehicleDocuments";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { VehicleDocumentsGrid } from "./VehicleDocumentsGrid";
-import { VehicleDocumentCategory, VehicleDocument } from "@/types/vehicle-documents";
+import { VehicleDocumentCategory } from "@/types/vehicle-documents";
 import { AddDocumentDialog } from "./AddDocumentDialog";
-import { FileIcon, FolderIcon, PlusCircle } from "lucide-react";
+import { FileIcon, FolderIcon, PlusCircle, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 
 interface VehicleDocumentsTabProps {
   vehicleId: string;
@@ -22,6 +30,8 @@ export const VehicleDocumentsTab = ({ vehicleId }: VehicleDocumentsTabProps) => 
   } = useVehicleDocuments(vehicleId);
   
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showCategories, setShowCategories] = useState(false);
+  const isMobile = useIsMobile();
   
   // Animation variants
   const containerVariants = {
@@ -57,6 +67,68 @@ export const VehicleDocumentsTab = ({ vehicleId }: VehicleDocumentsTabProps) => 
   const filteredDocuments = documents?.filter(doc => 
     !selectedCategory || doc.category_id === selectedCategory
   );
+
+  // Gestion de la sélection de catégorie
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId === "all" ? null : categoryId);
+  };
+
+  // Rendu des catégories adapté pour mobile
+  const renderCategorySelector = () => {
+    if (isMobile) {
+      return (
+        <Select onValueChange={handleCategoryChange} value={selectedCategory || "all"}>
+          <SelectTrigger className="w-full mb-4">
+            <SelectValue placeholder="Toutes les catégories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous les documents</SelectItem>
+            {categories?.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
+    }
+    
+    // Version desktop inchangée avec les filtres de catégories horizontaux
+    return (
+      <div className="flex gap-2 mb-6 overflow-x-auto py-1 px-0.5">
+        <button
+          className={cn(
+            "px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition-all",
+            "border shadow-sm",
+            !selectedCategory 
+              ? "bg-gradient-to-r from-gray-100 to-gray-50 border-gray-300 text-gray-900 shadow-gray-100/80 dark:shadow-gray-900/20 dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-700 dark:border-gray-600 dark:text-gray-100"
+              : "border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:border-gray-600"
+          )}
+          onClick={() => setSelectedCategory(null)}
+        >
+          <FileIcon className="w-4 h-4" />
+          Tous les documents
+        </button>
+        
+        {categories?.map((category) => (
+          <button
+            key={category.id}
+            className={cn(
+              "px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition-all",
+              "border shadow-sm",
+              selectedCategory === category.id
+                ? "bg-gradient-to-r from-gray-100 to-gray-50 border-gray-300 text-gray-900 shadow-gray-100/80 dark:shadow-gray-900/20 dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-700 dark:border-gray-600 dark:text-gray-100"
+                : "border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:border-gray-600"
+            )}
+            onClick={() => setSelectedCategory(category.id)}
+          >
+            <FolderIcon className="w-4 h-4" />
+            {category.name}
+          </button>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <motion.div 
@@ -109,39 +181,8 @@ export const VehicleDocumentsTab = ({ vehicleId }: VehicleDocumentsTabProps) => 
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        {/* Filtres de catégories sous forme de pills */}
-        <div className="flex gap-2 mb-6 overflow-x-auto py-1 px-0.5">
-          <button
-            className={cn(
-              "px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition-all",
-              "border shadow-sm",
-              !selectedCategory 
-                ? "bg-gradient-to-r from-gray-100 to-gray-50 border-gray-300 text-gray-900 shadow-gray-100/80 dark:shadow-gray-900/20 dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-700 dark:border-gray-600 dark:text-gray-100"
-                : "border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:border-gray-600"
-            )}
-            onClick={() => setSelectedCategory(null)}
-          >
-            <FileIcon className="w-4 h-4" />
-            Tous les documents
-          </button>
-          
-          {categories?.map((category) => (
-            <button
-              key={category.id}
-              className={cn(
-                "px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition-all",
-                "border shadow-sm",
-                selectedCategory === category.id
-                  ? "bg-gradient-to-r from-gray-100 to-gray-50 border-gray-300 text-gray-900 shadow-gray-100/80 dark:shadow-gray-900/20 dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-700 dark:border-gray-600 dark:text-gray-100"
-                  : "border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:border-gray-600"
-              )}
-              onClick={() => setSelectedCategory(category.id)}
-            >
-              <FolderIcon className="w-4 h-4" />
-              {category.name}
-            </button>
-          ))}
-        </div>
+        {/* Sélecteur de catégories optimisé pour mobile */}
+        {renderCategorySelector()}
       </motion.div>
       
       <motion.div variants={itemVariants}>

@@ -7,6 +7,7 @@ import { VehicleExpenseActions } from "./VehicleExpenseActions";
 import { useState, useCallback } from "react";
 import { EditVehicleExpenseDialog } from "./EditVehicleExpenseDialog";
 import { useQueryClient } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VehicleExpenseRecentListProps {
   expenses: VehicleExpense[];
@@ -14,6 +15,7 @@ interface VehicleExpenseRecentListProps {
   vehicleId: string;
   onSuccess?: () => void;
   limit?: number;
+  isLoading?: boolean;
 }
 
 export const VehicleExpenseRecentList = ({ 
@@ -21,7 +23,8 @@ export const VehicleExpenseRecentList = ({
   onDeleteExpense, 
   vehicleId,
   onSuccess,
-  limit = 5
+  limit = 5,
+  isLoading = false
 }: VehicleExpenseRecentListProps) => {
   // État pour le dialogue d'édition
   const [editExpense, setEditExpense] = useState<VehicleExpense | null>(null);
@@ -112,6 +115,32 @@ export const VehicleExpenseRecentList = ({
     }
   }, [handleEditDialogClose]);
 
+  // Rendu des squelettes de chargement
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Card key={index} className="hover:bg-muted/50">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                </div>
+                <div>
+                  <Skeleton className="h-5 w-16" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {limitedExpenses.length > 0 ? (
@@ -158,12 +187,6 @@ export const VehicleExpenseRecentList = ({
               </CardContent>
             </Card>
           ))}
-          
-          {limitedExpenses.length < expenses.length && (
-            <p className="text-center text-sm text-muted-foreground py-2">
-              Toutes les dépenses sont disponibles sur la version desktop
-            </p>
-          )}
         </>
       ) : (
         <div className="text-center p-8 border rounded-lg bg-muted/50">

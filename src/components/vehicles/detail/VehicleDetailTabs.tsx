@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Vehicle } from "@/types/vehicle";
 import { VehicleGeneralInfo } from "./VehicleGeneralInfo";
@@ -125,58 +124,6 @@ export const VehicleDetailTabs = ({
 
   return isMobile ? (
     <div className="space-y-6 pb-16">
-      <Card className={cn(
-        "sticky top-0 z-10 p-0 overflow-hidden border rounded-lg shadow-sm",
-        "bg-white dark:bg-gray-900",
-        "border-gray-200 dark:border-gray-800"
-      )}>
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className={cn(
-            "w-full flex justify-between rounded-none border-b p-0 h-auto",
-            "bg-gray-50 dark:bg-gray-900/50"
-          )}>
-            <TabsTrigger 
-              value="details" 
-              className={cn(
-                "flex-1 rounded-none border-b-2 border-transparent py-3 px-2",
-                "data-[state=active]:border-b-primary data-[state=active]:bg-white data-[state=active]:shadow-none",
-                "dark:data-[state=active]:bg-gray-800 dark:text-gray-300",
-                "flex items-center justify-center gap-1.5 text-xs sm:text-sm"
-              )}
-            >
-              <Info className="w-4 h-4" />
-              Détails
-            </TabsTrigger>
-            {canAccessExpenses && (
-              <TabsTrigger 
-                value="expenses"
-                className={cn(
-                  "flex-1 rounded-none border-b-2 border-transparent py-3 px-2",
-                  "data-[state=active]:border-b-primary data-[state=active]:bg-white data-[state=active]:shadow-none",
-                  "dark:data-[state=active]:bg-gray-800 dark:text-gray-300",
-                  "flex items-center justify-center gap-1.5 text-xs sm:text-sm"
-                )}
-              >
-                <ClipboardList className="w-4 h-4" />
-                Dépenses
-              </TabsTrigger>
-            )}
-            <TabsTrigger 
-              value="documents"
-              className={cn(
-                "flex-1 rounded-none border-b-2 border-transparent py-3 px-2",
-                "data-[state=active]:border-b-primary data-[state=active]:bg-white data-[state=active]:shadow-none",
-                "dark:data-[state=active]:bg-gray-800 dark:text-gray-300",
-                "flex items-center justify-center gap-1.5 text-xs sm:text-sm"
-              )}
-            >
-              <FileIcon className="w-4 h-4" />
-              Docs
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </Card>
-      
       <div ref={detailsRef} id="details" className={cn("p-3 pt-0", activeTab !== "details" && "hidden")}>
         <motion.div 
           className="space-y-6"

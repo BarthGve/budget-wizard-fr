@@ -13,7 +13,6 @@ import { VehicleDetailLoading } from "@/components/vehicles/detail/VehicleDetail
 import { VehicleNotFound } from "@/components/vehicles/detail/VehicleNotFound";
 import { VehicleDetailTabs } from "@/components/vehicles/detail/VehicleDetailTabs";
 import { VehicleEditDialog } from "@/components/vehicles/VehicleEditDialog";
-import { VehicleFloatingButton } from "@/components/vehicles/detail/VehicleFloatingButton";
 import { MobileNavigation } from "@/components/vehicles/detail/MobileNavigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSwipe } from "@/hooks/use-swipe";
@@ -117,9 +116,6 @@ const VehicleDetail = () => {
           activeSection={activeSection}
           onSectionChange={setActiveSection}
         />
-        
-        {/* Bouton d'action flottant pour mobile */}
-        {id && <VehicleFloatingButton vehicleId={id} />}
       </motion.div>
 
       <VehicleEditDialog
