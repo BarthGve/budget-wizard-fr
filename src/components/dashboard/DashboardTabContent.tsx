@@ -97,7 +97,7 @@ export const DashboardTabContent = ({
   const { data: profile } = useProfileFetcher();
   
   // Récupérer les préférences du tableau de bord ou utiliser les valeurs par défaut
-  const dashboardPrefs: DashboardPreferences = profile?.dashboard_preferences || {
+  const defaultPreferences: DashboardPreferences = {
     show_revenue_card: true,
     show_expenses_card: true,
     show_credits_card: true,
@@ -106,6 +106,8 @@ export const DashboardTabContent = ({
     show_charts: true,
     show_contributors: true
   };
+  
+  const dashboardPrefs: DashboardPreferences = profile?.dashboard_preferences || defaultPreferences;
 
   return (
     <motion.div 

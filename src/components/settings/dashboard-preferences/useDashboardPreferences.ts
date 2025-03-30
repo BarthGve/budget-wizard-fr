@@ -50,9 +50,20 @@ export const useDashboardPreferences = (profile: Profile | null | undefined) => 
 
     setIsUpdating(true);
     try {
+      // Convertir explicitement l'objet de préférences en un objet simple pour Supabase
+      const preferencesForDB: Record<string, boolean> = {
+        show_revenue_card: preferences.show_revenue_card ?? true,
+        show_expenses_card: preferences.show_expenses_card ?? true,
+        show_credits_card: preferences.show_credits_card ?? true,
+        show_savings_card: preferences.show_savings_card ?? true,
+        show_expense_stats: preferences.show_expense_stats ?? true,
+        show_charts: preferences.show_charts ?? true,
+        show_contributors: preferences.show_contributors ?? true
+      };
+
       const { error } = await supabase
         .from("profiles")
-        .update({ dashboard_preferences: preferences })
+        .update({ dashboard_preferences: preferencesForDB })
         .eq("id", profile.id);
 
       if (error) throw error;
