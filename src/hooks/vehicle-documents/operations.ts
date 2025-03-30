@@ -14,9 +14,10 @@ export const useDocumentDelete = (vehicleId: string) => {
       console.log("Suppression du document:", document);
       
       // 1. Supprimer le fichier du stockage
+      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
       const { error: storageError } = await supabase
         .storage
-        .from("vehicle_documents")
+        .from("vehicle-documents")
         .remove([document.file_path]);
 
       if (storageError) {
@@ -54,9 +55,10 @@ export const useDocumentUrl = () => {
   const getDocumentUrl = async (filePath: string) => {
     try {
       console.log("Création d'une URL signée pour:", filePath);
+      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
       const { data, error } = await supabase
         .storage
-        .from("vehicle_documents")
+        .from("vehicle-documents")
         .createSignedUrl(filePath, 60 * 60); // URL valide pendant 1 heure
 
       if (error) {

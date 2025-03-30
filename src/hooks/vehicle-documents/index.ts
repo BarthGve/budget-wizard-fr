@@ -13,11 +13,12 @@ export const useVehicleDocuments = (vehicleId: string) => {
     data: documents,
     isLoading: isLoadingDocuments,
     error: documentsError,
+    refetch: refetchDocuments
   } = useVehicleDocumentsQuery(vehicleId, userId);
 
   const {
     data: categories,
-    isLoading: isLoadingCategories,
+    isLoading: isLoadingCategories
   } = useDocumentCategoriesQuery();
 
   // Fonctionnalités d'upload
@@ -34,6 +35,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
     documentsError,
     categories,
     isLoadingCategories,
+    refetchDocuments,
     
     // Actions
     addDocument,

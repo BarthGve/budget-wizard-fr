@@ -42,6 +42,7 @@ export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardPro
     try {
       setIsDownloading(true);
       
+      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
       const { data, error } = await supabase.storage
         .from('vehicle-documents')
         .download(document.file_path);
@@ -68,7 +69,7 @@ export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardPro
     try {
       setIsLoadingPreview(true);
       
-      // Obtenir l'URL signée
+      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
       const { data, error } = await supabase
         .storage
         .from('vehicle-documents')
@@ -96,7 +97,7 @@ export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardPro
     try {
       setIsDeleting(true);
       
-      // 1. Supprimer le fichier du stockage
+      // Correction du bucket: "vehicle-documents" au lieu de "vehicle_documents"
       const { error: storageError } = await supabase
         .storage
         .from('vehicle-documents')

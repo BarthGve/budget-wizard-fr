@@ -1,99 +1,112 @@
 
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { VehicleDocument } from "@/types/vehicle-documents";
-import { sanitizeFileName, handleError, showSuccess } from "./utils";
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'sonner';
+import { sanitizeFileName } from './utils';
+
+type DocumentUploadInfo = {
+  vehicle_id: string;
+  category_id: string;
+  name: string;
+  description?: string;
+};
 
 export const useDocumentUpload = (vehicleId: string, userId?: string) => {
   const queryClient = useQueryClient();
+  const [isAdding, setIsAdding] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Télécharger un document
-  const uploadDocument = async (
-    file: File,
-    document: Omit<VehicleDocument, "id" | "file_path" | "file_size" | "content_type" | "created_at" | "updated_at">
-  ) => {
-    if (!userId || !file) {
-      handleError(new Error("Informations manquantes"), "Informations manquantes pour l'upload");
-      return null;
-    }
-
-    try {
-      console.log("Démarrage de l'upload du document:", file.name);
+  // Mutation pour ajouter un document
+  const addDocumentMutation = useMutation({
+    mutationFn: async ({
+      file,
+      document: documentInfo
+    }: {
+      file: File;
+      document: DocumentUploadInfo;
+    }) => {
+      setIsAdding(true);
       setIsUploading(true);
 
-      // Nettoyer le nom du fichier pour éviter les problèmes avec Supabase Storage
-      const cleanFileName = sanitizeFileName(file.name);
-      console.log("Nom du fichier nettoyé:", cleanFileName);
+      try {
+        // 1. Générer un nom de fichier unique
+        const fileExt = file.name.split('.').pop();
+        const timestamp = Date.now();
+        const sanitizedName = sanitizeFileName(file.name.split('.')[0]);
+        const fileName = `${timestamp}_${sanitizedName}.${fileExt}`;
+        
+        // Construire le chemin avec l'ID utilisateur et l'ID véhicule
+        const userPath = userId || 'anonymous';
+        const filePath = `${userPath}/${documentInfo.vehicle_id}/${fileName}`;
 
-      // 1. Upload du fichier dans le stockage Supabase
-      const filePath = `${userId}/${vehicleId}/${Date.now()}_${cleanFileName}`;
-      console.log("Chemin du fichier:", filePath);
-      
-      const { data: uploadData, error: uploadError } = await supabase
-        .storage
-        .from("vehicle_documents")
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
+        console.log("Début de l'upload du fichier:", filePath);
+        
+        // 2. Uploader le fichier - Correction du bucket "vehicle-documents" au lieu de "vehicle_documents"
+        const { error: uploadError } = await supabase.storage
+          .from('vehicle-documents')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (uploadError) {
+          console.error("Erreur d'upload:", uploadError);
+          throw uploadError;
+        }
+
+        setIsUploading(false);
+        console.log("Fichier uploadé avec succès");
+
+        // 3. Créer l'entrée dans la base de données
+        const { error: dbError } = await supabase
+          .from('vehicle_documents')
+          .insert({
+            vehicle_id: documentInfo.vehicle_id,
+            category_id: documentInfo.category_id,
+            name: documentInfo.name,
+            description: documentInfo.description || null,
+            file_path: filePath,
+            file_size: file.size,
+            content_type: file.type
+          });
+
+        if (dbError) {
+          console.error("Erreur d'insertion dans la base de données:", dbError);
+          throw dbError;
+        }
+
+        // 4. Succès
+        toast.success("Document ajouté", {
+          description: "Le document a été ajouté avec succès"
         });
 
-      if (uploadError) {
-        console.error("Erreur d'upload:", uploadError);
-        throw new Error(`Erreur lors de l'upload: ${uploadError.message}`);
+        return true;
+      } catch (error: any) {
+        console.error("Erreur lors de l'ajout du document:", error);
+        toast.error("Erreur", {
+          description: error.message || "Impossible d'ajouter le document"
+        });
+        return false;
+      } finally {
+        setIsAdding(false);
+        setIsUploading(false);
       }
-
-      console.log("Fichier uploadé avec succès:", uploadData);
-
-      // 2. Enregistrer les informations du document dans la base de données
-      const { data, error } = await supabase
-        .from("vehicle_documents")
-        .insert({
-          ...document,
-          file_path: filePath,
-          file_size: file.size,
-          content_type: file.type,
-        })
-        .select()
-        .single();
-
-      if (error) {
-        // En cas d'erreur, essayer de supprimer le fichier uploadé
-        await supabase.storage
-          .from("vehicle_documents")
-          .remove([filePath]);
-          
-        console.error("Erreur lors de l'insertion en base de données:", error);
-        throw new Error(`Erreur lors de l'enregistrement: ${error.message}`);
-      }
-
-      console.log("Document ajouté avec succès en base de données:", data);
-      showSuccess("Document ajouté avec succès");
-      return data as VehicleDocument;
-
-    } catch (err: any) {
-      console.error("Erreur lors de l'upload du document:", err);
-      handleError(err, err.message || "Erreur lors de l'ajout du document");
-      return null;
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  // Mutation pour ajouter un document
-  const { mutateAsync: addDocument, isPending: isAdding } = useMutation({
-    mutationFn: async ({ file, document }: { 
-      file: File, 
-      document: Omit<VehicleDocument, "id" | "file_path" | "file_size" | "content_type" | "created_at" | "updated_at"> 
-    }) => {
-      console.log("Ajout d'un document", { file, document });
-      return uploadDocument(file, document);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vehicle-documents", vehicleId] });
-    },
+      queryClient.invalidateQueries({ queryKey: ['vehicle-documents', vehicleId] });
+    }
   });
 
-  return { addDocument, isAdding, isUploading };
+  // Fonction pour ajouter un document
+  const addDocument = async (params: { file: File; document: DocumentUploadInfo }) => {
+    return addDocumentMutation.mutateAsync(params);
+  };
+
+  return {
+    addDocument,
+    isAdding,
+    isUploading
+  };
 };
