@@ -21,14 +21,4 @@
   .button-hover {
     @apply hover:opacity-90 active:scale-95 transition-all duration-200;
   }
-  
-  /* Classes spécifiques au changelog avec préfixe 'cl-' pour éviter les conflits */
-  .cl-timeline-card {
-    @apply relative bg-background/50 backdrop-blur-sm border border-border/50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300;
-  }
-  
-  /* Cette classe gère maintenant la disposition verticale et l'espacement des entrées de changelog */
-  .cl-changelog-entry-container {
-    @apply relative pb-12 last:pb-0;
-  }
 }
