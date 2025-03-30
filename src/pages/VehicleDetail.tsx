@@ -3,7 +3,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useParams } from "react-router-dom";
 import { useVehicleDetail } from "@/hooks/useVehicleDetail";
 import { useState } from "react";
-import { VehicleForm, VehicleFormValues } from "@/components/vehicles/VehicleForm";
+import { VehicleFormValues } from "@/components/vehicles/VehicleForm";
 import { useVehicles } from "@/hooks/useVehicles";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { motion } from "framer-motion";
@@ -13,6 +13,7 @@ import { VehicleDetailLoading } from "@/components/vehicles/detail/VehicleDetail
 import { VehicleNotFound } from "@/components/vehicles/detail/VehicleNotFound";
 import { VehicleDetailTabs } from "@/components/vehicles/detail/VehicleDetailTabs";
 import { VehicleEditDialog } from "@/components/vehicles/VehicleEditDialog";
+import { VehicleFloatingButton } from "@/components/vehicles/detail/VehicleFloatingButton";
 
 const VehicleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -77,6 +78,9 @@ const VehicleDetail = () => {
           vehicle={vehicle}
           canAccessExpenses={canAccessExpenses}
         />
+        
+        {/* Bouton d'action flottant pour mobile */}
+        {id && <VehicleFloatingButton vehicleId={id} />}
       </motion.div>
 
       <VehicleEditDialog
