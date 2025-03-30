@@ -79,6 +79,8 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
           acc[year].assurance += expense.amount;
         } else if (expenseType === "reparation") {
           acc[year].reparation += expense.amount;
+             } else if (expenseType === "loyer") {
+          acc[year].loyer += expense.amount;
         } else if (expenseType === "amende") {
           acc[year].amende += expense.amount;
         } else if (expenseType === "peage") {

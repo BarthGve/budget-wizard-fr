@@ -131,6 +131,13 @@ export const ExpensesBarChartRenderer = ({
               maxBarSize={60}
               fill={getCategoryColor("carburant")}
             />
+                  <Bar 
+              dataKey="loyer" 
+              stackId="a" 
+              radius={[0, 0, 0, 0]}
+              maxBarSize={60}
+              fill={getCategoryColor("loyer")}
+            />
             <Bar 
               dataKey="entretien" 
               stackId="a" 
