@@ -34,28 +34,10 @@ export const useVehicleDocuments = (vehicleId: string) => {
   const { updateDocument, isUpdating } = useDocumentUpdate(vehicleId);
   const { getDocumentUrl } = useDocumentUrl();
   
-  // Mémoisation des catégories avec la nouvelle catégorie "Financement"
-  const enhancedCategories = useMemo(() => {
-    // Vérifier si la catégorie "Financement" existe déjà
-    if (categories && !categories.some(cat => cat.name === "Financement")) {
-      console.log("Ajout de la catégorie 'Financement'");
-      // Cette approche est temporaire et n'ajoute la catégorie que dans l'UI
-      // Pour un ajout permanent, il faudrait utiliser une requête à l'API ou une migration SQL
-      return [...categories, {
-        id: "financing",
-        name: "Financement",
-        icon: "currency-dollar",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }];
-    }
-    return categories;
-  }, [categories]);
-  
   return {
     // Données
     documents,
-    categories: enhancedCategories,
+    categories,
     
     // États de chargement
     isLoadingDocuments,
