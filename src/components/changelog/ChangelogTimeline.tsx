@@ -2,13 +2,14 @@
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
-import { BugOff, CheckCircle2, Edit, Share2, Sparkles, ThumbsUp, Trash2 } from "lucide-react";
+import { BugOff, CheckCircle2, Copy, Edit, Share2, Sparkles, ThumbsUp, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 interface ChangelogEntry {
   id: string;
@@ -80,19 +81,61 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
     }));
   };
   
+  // Fonction de partage améliorée compatible avec les iframe
   const shareEntry = (entry: ChangelogEntry) => {
+    // Création du texte à partager
+    const shareText = `${entry.title} - Version ${entry.version}\n\nDécouvrez la mise à jour : ${entry.title}`;
+    const shareUrl = window.location.href;
+    
+    // Essayer d'utiliser l'API de partage native si disponible
     if (navigator.share) {
       navigator.share({
         title: `${entry.title} - Version ${entry.version}`,
         text: `Découvrez la mise à jour : ${entry.title}`,
-        url: window.location.href,
-      }).catch(err => console.log('Erreur de partage:', err));
+        url: shareUrl,
+      }).catch(err => {
+        console.log('Erreur de partage:', err);
+        // Fallback en cas d'erreur avec l'API de partage
+        copyToClipboard(shareText + "\n\n" + shareUrl);
+      });
     } else {
-      // Fallback - copie l'URL dans le presse-papier
-      navigator.clipboard.writeText(window.location.href)
-        .then(() => alert('URL copiée dans le presse-papier'))
-        .catch(err => console.error('Erreur lors de la copie:', err));
+      // Fallback pour les navigateurs qui ne supportent pas l'API Share
+      copyToClipboard(shareText + "\n\n" + shareUrl);
     }
+  };
+  
+  // Fonction pour copier dans le presse-papier
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        toast.success("Lien copié dans le presse-papier", {
+          description: "Vous pouvez maintenant le partager où vous voulez",
+          position: "bottom-center",
+        });
+      })
+      .catch(err => {
+        console.error('Erreur lors de la copie:', err);
+        // Fallback en cas d'échec de l'API clipboard
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        
+        try {
+          const successful = document.execCommand('copy');
+          if (successful) {
+            toast.success("Lien copié dans le presse-papier");
+          } else {
+            toast.error("Impossible de copier le lien");
+          }
+        } catch (err) {
+          toast.error("Impossible de copier le lien");
+        }
+        
+        document.body.removeChild(textarea);
+      });
   };
 
   // Variants for motion animations
@@ -199,7 +242,7 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
                             className="text-muted-foreground hover:text-foreground"
                             onClick={() => shareEntry(entry)}
                           >
-                            <Share2 className="h-4 w-4 mr-1" />
+                            <Copy className="h-4 w-4 mr-1" />
                             Partager
                           </Button>
                         </div>
