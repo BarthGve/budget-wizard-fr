@@ -24,6 +24,20 @@ export const useProfileFetcher = () => {
         return null;
       }
 
+      // Vérification et transformation des préférences si nécessaire
+      if (data && data.dashboard_preferences) {
+        try {
+          // Si les préférences sont stockées en tant que chaîne, les parser
+          if (typeof data.dashboard_preferences === 'string') {
+            data.dashboard_preferences = JSON.parse(data.dashboard_preferences);
+          }
+        } catch (e) {
+          console.error("Erreur lors du parsing des préférences du tableau de bord:", e);
+          // En cas d'erreur, définir les préférences à null pour utiliser les valeurs par défaut
+          data.dashboard_preferences = null;
+        }
+      }
+
       // S'assurer que les données retournées sont conformes au type Profile
       return data as Profile;
     },

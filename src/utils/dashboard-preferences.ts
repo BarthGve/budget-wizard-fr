@@ -36,10 +36,21 @@ export const mergeDashboardPreferences = (
   userPrefs: any
 ): DashboardPreferences => {
   try {
-    // Vérification que userPrefs est un objet valide
+    // Vérification renforcée que userPrefs est un objet valide
+    // et n'est pas null, undefined ou une chaîne JSON non parsée
     if (userPrefs && typeof userPrefs === 'object') {
       // Utiliser Object.assign pour fusionner les objets
       return Object.assign({}, defaultDashboardPreferences, userPrefs);
+    } else if (typeof userPrefs === 'string') {
+      // Tenter de parser si c'est une chaîne JSON
+      try {
+        const parsed = JSON.parse(userPrefs);
+        if (parsed && typeof parsed === 'object') {
+          return Object.assign({}, defaultDashboardPreferences, parsed);
+        }
+      } catch (parseError) {
+        console.error("Erreur lors du parsing des préférences JSON:", parseError);
+      }
     }
     return defaultDashboardPreferences;
   } catch (error) {
