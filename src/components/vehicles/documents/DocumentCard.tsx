@@ -26,7 +26,7 @@ interface DocumentCardProps {
 }
 
 export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
-  const { getDocumentUrl, deleteDocument, isDeleting } = useVehicleDocuments(vehicleId);
+  const { deleteDocument, isDeleting, getDocumentUrl } = useVehicleDocuments(vehicleId);
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
   const [isUrlLoading, setIsUrlLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);

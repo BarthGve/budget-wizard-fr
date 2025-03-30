@@ -1,16 +1,14 @@
 
 import { useMemo } from 'react';
 import {
-  useAddDocument,
-  useDeleteDocument,
-  useUpdateDocument,
-  useViewDocument
+  useDocumentDelete,
+  useDocumentUrl
 } from './operations';
 import {
-  useDocumentCategories,
-  useDocuments,
+  useDocumentCategoriesQuery,
+  useVehicleDocumentsQuery,
 } from './queries';
-import { useStorage } from './upload';
+import { useDocumentUpload } from './upload';
 
 // Hook principal pour gérer les documents des véhicules
 export const useVehicleDocuments = (vehicleId: string) => {
@@ -20,25 +18,19 @@ export const useVehicleDocuments = (vehicleId: string) => {
     isLoading: isLoadingDocuments, 
     error: documentsError,
     refetch: refetchDocuments 
-  } = useDocuments(vehicleId);
+  } = useVehicleDocumentsQuery(vehicleId);
   
   // Récupérer les catégories de documents
   const { 
     data: categories, 
     isLoading: isLoadingCategories, 
     error: categoriesError 
-  } = useDocumentCategories();
+  } = useDocumentCategoriesQuery();
   
   // Opérations de base de données
-  const { addDocument, isAdding } = useAddDocument(vehicleId);
-  const { deleteDocument, isDeleting } = useDeleteDocument(vehicleId);
-  const { updateDocument, isUpdating } = useUpdateDocument(vehicleId);
-  
-  // Opération de visualisation
-  const { viewDocument, isViewing } = useViewDocument();
-  
-  // Hooks de stockage pour les opérations sur les fichiers
-  const { uploadFile, downloadFile, isUploading, isDownloading } = useStorage();
+  const { addDocument, isAdding, isUploading } = useDocumentUpload(vehicleId);
+  const { deleteDocument, isDeleting } = useDocumentDelete(vehicleId);
+  const { getDocumentUrl } = useDocumentUrl();
   
   // Mémoisation des catégories avec la nouvelle catégorie "Financement"
   const enhancedCategories = useMemo(() => {
@@ -68,10 +60,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
     isLoadingCategories,
     isAdding,
     isDeleting,
-    isUpdating,
-    isViewing,
     isUploading,
-    isDownloading,
     
     // Erreurs
     documentsError,
@@ -80,10 +69,7 @@ export const useVehicleDocuments = (vehicleId: string) => {
     // Actions
     addDocument,
     deleteDocument,
-    updateDocument,
-    viewDocument,
-    uploadFile,
-    downloadFile,
+    getDocumentUrl,
     refetchDocuments
   };
 };
