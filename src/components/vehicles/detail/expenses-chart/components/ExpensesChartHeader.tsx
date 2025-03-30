@@ -1,9 +1,7 @@
 
-import { BarChartBig, Calendar, Clock } from "lucide-react";
-import { CardTitle, CardDescription } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { BarChart3, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface ExpensesChartHeaderProps {
   title: string;
@@ -20,45 +18,37 @@ export const ExpensesChartHeader = ({
   onToggleView,
   isVehicleSold = false
 }: ExpensesChartHeaderProps) => {
-  return <div className="flex justify-between items-start">
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
       <div>
-        <CardTitle className="text-lg text-gray-800 dark:text-gray-200 mb-1">{title}</CardTitle>
-        <CardDescription className="text-sm text-gray-500 dark:text-gray-400">{description}</CardDescription>
+        <h3 className={cn(
+          "text-base font-medium flex items-center gap-2",
+          "text-gray-800 dark:text-gray-200"
+        )}>
+          <BarChart3 className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+          {title}
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          {description}
+        </p>
       </div>
       
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={onToggleView} 
-              className={cn(
-                "transition-colors",
-                // Light mode
-                showMultiYear ? "bg-gray-100 border-gray-200 text-gray-700" : "",
-                // Dark mode
-                showMultiYear ? "dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-300" : "",
-                // Désactiver le bouton si le véhicule est vendu
-                isVehicleSold && "opacity-60 cursor-not-allowed"
-              )}
-              disabled={isVehicleSold}
-            >
-              {showMultiYear ? <>
-                <Clock className="h-4 w-4 mr-1" />
-                5 ans
-              </> : <>
-                <Calendar className="h-4 w-4 mr-1" />
-                Année
-              </>}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            {isVehicleSold 
-              ? "Les données sont en lecture seule pour un véhicule vendu" 
-              : (showMultiYear ? "Voir les dépenses mensuelles de l'année en cours" : "Voir les dépenses sur les 5 dernières années")}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </div>;
+      {!isVehicleSold && (
+        <Button
+          onClick={onToggleView}
+          size="sm"
+          className={cn(
+            "gap-1.5 h-9 px-3 font-normal text-sm self-start",
+            "bg-gray-100 hover:bg-gray-200 text-gray-600",
+            "dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300",
+            "border border-gray-200 dark:border-gray-700"
+          )}
+          variant="outline"
+        >
+          <Calendar className="h-3.5 w-3.5" />
+          {showMultiYear ? "Vue mensuelle" : "Vue annuelle"}
+        </Button>
+      )}
+    </div>
+  );
 };

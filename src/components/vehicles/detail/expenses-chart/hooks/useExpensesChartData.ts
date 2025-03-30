@@ -132,7 +132,7 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
             monthsData[monthIndex].assurance += expense.amount;
           } else if (expenseType === "reparation") {
             monthsData[monthIndex].reparation += expense.amount;
-            } else if (expenseType === "loyer") {
+          } else if (expenseType === "loyer") {
             monthsData[monthIndex].loyer += expense.amount;
           } else if (expenseType === "amende") {
             monthsData[monthIndex].amende += expense.amount;
@@ -149,7 +149,10 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
   }, [expenses, currentYear, showMultiYear]);
 
   // Un titre descriptif selon le mode
-  const chartTitle = showMultiYear ? "Dépenses annuelles" : "Dépenses mensuelles";
+  const chartTitle = showMultiYear 
+    ? "Dépenses annuelles" 
+    : "Dépenses mensuelles";
+    
   const chartDescription = showMultiYear 
     ? "Répartition des dépenses annuelles sur les 5 dernières années" 
     : "Répartition des dépenses mensuelles pour l'année en cours";
