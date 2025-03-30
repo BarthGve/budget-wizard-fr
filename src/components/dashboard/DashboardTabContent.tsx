@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
@@ -69,21 +68,10 @@ const containerVariants = {
   }
 };
 
-// Fonction utilitaire pour vérifier si un objet est du type DashboardPreferences
 const isDashboardPreferences = (obj: any): obj is DashboardPreferences => {
   return obj !== null && 
          typeof obj === 'object' &&
-         obj !== undefined &&
-         // Vérifier que l'objet existe et est bien un objet avant de vérifier ses propriétés
-         (
-           'show_revenue_card' in obj ||
-           'show_expenses_card' in obj ||
-           'show_credits_card' in obj ||
-           'show_savings_card' in obj ||
-           'show_expense_stats' in obj ||
-           'show_charts' in obj ||
-           'show_contributors' in obj
-         );
+         obj !== undefined;
 };
 
 export const DashboardTabContent = ({
@@ -113,7 +101,6 @@ export const DashboardTabContent = ({
   const mappedContributors = useContributorMapper({ contributors });
   const { data: profile } = useProfileFetcher();
   
-  // Définir les préférences par défaut
   const defaultPreferences: DashboardPreferences = {
     show_revenue_card: true,
     show_expenses_card: true,
@@ -124,25 +111,17 @@ export const DashboardTabContent = ({
     show_contributors: true
   };
   
-  // Vérifier et convertir les préférences du tableau de bord
   let dashboardPrefs: DashboardPreferences = defaultPreferences;
   
-  if (profile?.dashboard_preferences) {
-    try {
-      // Vérifier si les préférences du profil sont du type attendu
-      if (isDashboardPreferences(profile.dashboard_preferences)) {
-        // Fusionner avec les valeurs par défaut pour s'assurer que toutes les propriétés sont présentes
-        dashboardPrefs = {
-          ...defaultPreferences,
-          ...profile.dashboard_preferences
-        };
-      } else {
-        console.warn("Format de préférences du tableau de bord invalide, utilisation des valeurs par défaut");
-        console.log("Valeur invalide:", JSON.stringify(profile.dashboard_preferences));
-      }
-    } catch (error) {
-      console.error("Erreur lors du traitement des préférences:", error);
+  try {
+    if (profile?.dashboard_preferences && isDashboardPreferences(profile.dashboard_preferences)) {
+      dashboardPrefs = Object.assign({}, defaultPreferences, profile.dashboard_preferences);
+    } else {
+      console.warn("Format de préférences du tableau de bord invalide, utilisation des valeurs par défaut");
+      console.log("Valeur reçue:", profile?.dashboard_preferences);
     }
+  } catch (error) {
+    console.error("Erreur lors du traitement des préférences:", error);
   }
 
   return (
@@ -152,7 +131,6 @@ export const DashboardTabContent = ({
       animate="visible"
       variants={containerVariants}
     >
-      {/* Afficher les cartes uniquement si au moins une des cartes est activée */}
       {(dashboardPrefs.show_revenue_card || 
         dashboardPrefs.show_expenses_card || 
         dashboardPrefs.show_credits_card || 
@@ -175,7 +153,6 @@ export const DashboardTabContent = ({
         />
       )}
       
-      {/* Afficher les statistiques de dépenses uniquement si activées */}
       {dashboardPrefs.show_expense_stats && (
         <ExpenseStatsSection 
           totalExpenses={expensesTotal}
@@ -188,7 +165,6 @@ export const DashboardTabContent = ({
         />
       )}
       
-      {/* Afficher les graphiques uniquement si activés et si on n'est pas sur mobile */}
       {!isMobileScreen && dashboardPrefs.show_charts && (
         <DashboardChartsSection 
           expenses={expenses}
@@ -200,7 +176,6 @@ export const DashboardTabContent = ({
         />
       )}
       
-      {/* Afficher la section des contributeurs uniquement si activée */}
       {dashboardPrefs.show_contributors && (
         <ContributorsSection 
           contributors={mappedContributors}

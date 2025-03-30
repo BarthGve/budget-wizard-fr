@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Profile, DashboardPreferences } from "@/types/profile";
@@ -16,31 +15,21 @@ const defaultPreferences: DashboardPreferences = {
   show_contributors: true
 };
 
-// Fonction utilitaire pour vérifier si un objet est du type DashboardPreferences
+// Fonction utilitaire améliorée pour vérifier si un objet est du type DashboardPreferences
 const isDashboardPreferences = (obj: any): obj is DashboardPreferences => {
   return obj !== null && 
          typeof obj === 'object' &&
-         obj !== undefined &&
-         // Vérifier que l'objet existe et est bien un objet avant de vérifier ses propriétés
-         (
-           'show_revenue_card' in obj ||
-           'show_expenses_card' in obj ||
-           'show_credits_card' in obj ||
-           'show_savings_card' in obj ||
-           'show_expense_stats' in obj ||
-           'show_charts' in obj ||
-           'show_contributors' in obj
-         );
+         obj !== undefined;
 };
 
 export const useDashboardPreferences = (profile: Profile | null | undefined) => {
   // Récupérer les préférences du profil ou utiliser les valeurs par défaut
-  let profilePreferences;
+  let profilePreferences: DashboardPreferences;
   
   try {
     profilePreferences = profile?.dashboard_preferences && 
       isDashboardPreferences(profile.dashboard_preferences) ? 
-      profile.dashboard_preferences : 
+      Object.assign({}, defaultPreferences, profile.dashboard_preferences) : 
       defaultPreferences;
   } catch (error) {
     console.error("Erreur lors de l'accès aux préférences:", error);
