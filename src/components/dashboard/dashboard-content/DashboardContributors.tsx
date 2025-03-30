@@ -1,6 +1,9 @@
 
+import { useState } from "react";
 import { ContributorsTable } from "../ContributorsTable";
 import { motion } from "framer-motion";
+import { ContributorDetailsDialog } from "../ContributorDetailsDialog";
+import { Contributor } from "@/types/contributor";
 
 interface DashboardContributorsProps {
   contributors: Array<{
@@ -22,6 +25,10 @@ export const DashboardContributors = ({
   expenses,
   totalMensualites,
 }: DashboardContributorsProps) => {
+  // État pour gérer le dialogue des détails du contributeur
+  const [selectedContributor, setSelectedContributor] = useState<Contributor | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const itemVariants = {
     hidden: { 
       opacity: 0, 
@@ -40,16 +47,34 @@ export const DashboardContributors = ({
     }
   };
 
+  // Gestionnaire pour la sélection d'un contributeur
+  const handleSelectContributor = (contributor: Contributor) => {
+    setSelectedContributor(contributor);
+    setDialogOpen(true);
+  };
+
   // N'afficher le tableau que s'il y a plus d'un contributeur
   if (!contributors || contributors.length <= 1) return null;
 
   return (
-    <motion.div variants={itemVariants}>
-      <ContributorsTable 
-        contributors={contributors}
-        totalExpenses={expenses}
-        totalCredits={totalMensualites}
-      />
-    </motion.div>
+    <>
+      <motion.div variants={itemVariants}>
+        <ContributorsTable 
+          contributors={contributors}
+          totalExpenses={expenses}
+          totalCredits={totalMensualites}
+          onSelectContributor={handleSelectContributor}
+        />
+      </motion.div>
+
+      {/* Dialogue des détails du contributeur */}
+      {selectedContributor && (
+        <ContributorDetailsDialog 
+          contributor={selectedContributor}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+        />
+      )}
+    </>
   );
 }
