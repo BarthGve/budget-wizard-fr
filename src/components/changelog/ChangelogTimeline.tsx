@@ -157,7 +157,7 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
         {entries.map((entry, index) => (
           <motion.div 
             key={entry.id} 
-            className="changelog-entry-container"
+            className="cl-changelog-entry-container"
             variants={item}
             transition={{ duration: 0.5 }}
           >
@@ -179,7 +179,7 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
             
             {/* Card du changelog */}
             <div className="pl-16 md:pl-24">
-              <Card className="timeline-card">
+              <Card className="cl-timeline-card">
                 <CardContent className="p-0">
                   <div className="grid grid-cols-[auto,1fr] gap-6 p-6">
                     <div className={cn(
