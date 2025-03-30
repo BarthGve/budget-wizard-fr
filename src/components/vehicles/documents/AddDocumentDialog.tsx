@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -17,6 +18,7 @@ import { useTheme } from "next-themes";
 
 interface AddDocumentDialogProps {
   vehicleId: string;
+  children?: React.ReactNode;
 }
 
 const documentFormSchema = z.object({
@@ -28,7 +30,7 @@ const documentFormSchema = z.object({
 
 type DocumentFormValues = z.infer<typeof documentFormSchema>;
 
-export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
+export const AddDocumentDialog = ({ vehicleId, children }: AddDocumentDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { categories, addDocument, isAdding } = useVehicleDocuments(vehicleId);
   const isMobile = useIsMobile();
@@ -285,6 +287,7 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
           <Button
             type="submit"
             disabled={isAdding}
+            className="bg-gray-700 hover:bg-gray-600 text-white dark:bg-gray-600 dark:hover:bg-gray-500"
           >
             {isAdding ? "Ajout en cours..." : "Ajouter"}
           </Button>
@@ -297,10 +300,12 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <Button className="flex items-center gap-1.5">
-            <PlusIcon className="h-4 w-4" />
-            Ajouter un document
-          </Button>
+          {children ? children : (
+            <Button className="flex items-center gap-1.5">
+              <PlusIcon className="h-4 w-4" />
+              Ajouter un document
+            </Button>
+          )}
         </SheetTrigger>
         <SheetContent 
           side="bottom"
@@ -375,10 +380,12 @@ export const AddDocumentDialog = ({ vehicleId }: AddDocumentDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <PlusIcon className="mr-2 h-4 w-4" />
-          Ajouter un document
-        </Button>
+        {children ? children : (
+          <Button>
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Ajouter un document
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent 
         className={cn(

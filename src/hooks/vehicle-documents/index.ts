@@ -1,49 +1,91 @@
 
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useVehicleDocumentsQuery, useDocumentCategoriesQuery } from "./queries";
-import { useDocumentUpload } from "./upload";
-import { useDocumentDelete, useDocumentUrl } from "./operations";
+import { useMemo } from 'react';
+import {
+  useAddDocument,
+  useDeleteDocument,
+  useUpdateDocument,
+  useViewDocument
+} from './operations';
+import {
+  useDocumentCategories,
+  useDocuments,
+} from './queries';
+import { useStorage } from './upload';
 
+// Hook principal pour gérer les documents des véhicules
 export const useVehicleDocuments = (vehicleId: string) => {
-  const { currentUser } = useCurrentUser();
-  const userId = currentUser?.id;
-
-  // Récupérer les documents et catégories
-  const {
-    data: documents,
-    isLoading: isLoadingDocuments,
+  // Récupérer les documents du véhicule
+  const { 
+    data: documents, 
+    isLoading: isLoadingDocuments, 
     error: documentsError,
-  } = useVehicleDocumentsQuery(vehicleId, userId);
-
-  const {
-    data: categories,
-    isLoading: isLoadingCategories,
-  } = useDocumentCategoriesQuery();
-
-  // Fonctionnalités d'upload
-  const { addDocument, isAdding, isUploading } = useDocumentUpload(vehicleId, userId);
-
-  // Fonctionnalités de suppression et d'URL
-  const { deleteDocument, isDeleting } = useDocumentDelete(vehicleId);
-  const { getDocumentUrl } = useDocumentUrl();
-
+    refetch: refetchDocuments 
+  } = useDocuments(vehicleId);
+  
+  // Récupérer les catégories de documents
+  const { 
+    data: categories, 
+    isLoading: isLoadingCategories, 
+    error: categoriesError 
+  } = useDocumentCategories();
+  
+  // Opérations de base de données
+  const { addDocument, isAdding } = useAddDocument(vehicleId);
+  const { deleteDocument, isDeleting } = useDeleteDocument(vehicleId);
+  const { updateDocument, isUpdating } = useUpdateDocument(vehicleId);
+  
+  // Opération de visualisation
+  const { viewDocument, isViewing } = useViewDocument();
+  
+  // Hooks de stockage pour les opérations sur les fichiers
+  const { uploadFile, downloadFile, isUploading, isDownloading } = useStorage();
+  
+  // Mémoisation des catégories avec la nouvelle catégorie "Financement"
+  const enhancedCategories = useMemo(() => {
+    // Vérifier si la catégorie "Financement" existe déjà
+    if (categories && !categories.some(cat => cat.name === "Financement")) {
+      console.log("Ajout de la catégorie 'Financement'");
+      // Cette approche est temporaire et n'ajoute la catégorie que dans l'UI
+      // Pour un ajout permanent, il faudrait utiliser une requête à l'API ou une migration SQL
+      return [...categories, {
+        id: "financing",
+        name: "Financement",
+        icon: "currency-dollar",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }];
+    }
+    return categories;
+  }, [categories]);
+  
   return {
-    // Documents et catégories
+    // Données
     documents,
+    categories: enhancedCategories,
+    
+    // États de chargement
     isLoadingDocuments,
-    documentsError,
-    categories,
     isLoadingCategories,
+    isAdding,
+    isDeleting,
+    isUpdating,
+    isViewing,
+    isUploading,
+    isDownloading,
+    
+    // Erreurs
+    documentsError,
+    categoriesError,
     
     // Actions
     addDocument,
-    isAdding,
     deleteDocument,
-    isDeleting,
-    getDocumentUrl,
-    isUploading
+    updateDocument,
+    viewDocument,
+    uploadFile,
+    downloadFile,
+    refetchDocuments
   };
 };
 
-// Réexporter le hook principal
 export default useVehicleDocuments;
