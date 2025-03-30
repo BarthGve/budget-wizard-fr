@@ -21,4 +21,14 @@
   .button-hover {
     @apply hover:opacity-90 active:scale-95 transition-all duration-200;
   }
+  
+  /* Mises à jour pour la timeline */
+  .timeline-card {
+    @apply relative bg-background/50 backdrop-blur-sm border border-border/50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300;
+  }
+  
+  /* Cette classe gère maintenant la disposition verticale et l'espacement des entrées de changelog */
+  .changelog-entry-container {
+    @apply relative pb-12 last:pb-0;
+  }
 }
