@@ -20,22 +20,32 @@ const defaultPreferences: DashboardPreferences = {
 const isDashboardPreferences = (obj: any): obj is DashboardPreferences => {
   return obj !== null && 
          typeof obj === 'object' &&
-         // Vérification des propriétés essentielles, même si null/undefined
-         'show_revenue_card' in obj ||
-         'show_expenses_card' in obj ||
-         'show_credits_card' in obj ||
-         'show_savings_card' in obj ||
-         'show_expense_stats' in obj ||
-         'show_charts' in obj ||
-         'show_contributors' in obj;
+         obj !== undefined &&
+         // Vérifier que l'objet existe et est bien un objet avant de vérifier ses propriétés
+         (
+           'show_revenue_card' in obj ||
+           'show_expenses_card' in obj ||
+           'show_credits_card' in obj ||
+           'show_savings_card' in obj ||
+           'show_expense_stats' in obj ||
+           'show_charts' in obj ||
+           'show_contributors' in obj
+         );
 };
 
 export const useDashboardPreferences = (profile: Profile | null | undefined) => {
   // Récupérer les préférences du profil ou utiliser les valeurs par défaut
-  const profilePreferences = profile?.dashboard_preferences && 
-    isDashboardPreferences(profile.dashboard_preferences) ? 
-    profile.dashboard_preferences : 
-    defaultPreferences;
+  let profilePreferences;
+  
+  try {
+    profilePreferences = profile?.dashboard_preferences && 
+      isDashboardPreferences(profile.dashboard_preferences) ? 
+      profile.dashboard_preferences : 
+      defaultPreferences;
+  } catch (error) {
+    console.error("Erreur lors de l'accès aux préférences:", error);
+    profilePreferences = defaultPreferences;
+  }
     
   // Initialiser les états avec les valeurs du profil ou les valeurs par défaut
   const [showRevenueCard, setShowRevenueCard] = useState<boolean>(
@@ -104,73 +114,108 @@ export const useDashboardPreferences = (profile: Profile | null | undefined) => 
   // Gestionnaires pour chaque toggle
   const handleRevenueCardToggle = (checked: boolean) => {
     setShowRevenueCard(checked);
-    // Créer une copie des préférences existantes ou par défaut
-    const updatedPreferences = {
-      ...defaultPreferences,
-      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
-      show_revenue_card: checked
-    };
-    updatePreferences(updatedPreferences);
+    try {
+      // Créer une copie des préférences existantes ou par défaut
+      const updatedPreferences = {
+        ...defaultPreferences,
+        ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
+        show_revenue_card: checked
+      };
+      updatePreferences(updatedPreferences);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    }
   };
 
   const handleExpensesCardToggle = (checked: boolean) => {
     setShowExpensesCard(checked);
-    const updatedPreferences = {
-      ...defaultPreferences,
-      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
-      show_expenses_card: checked
-    };
-    updatePreferences(updatedPreferences);
+    try {
+      const updatedPreferences = {
+        ...defaultPreferences,
+        ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
+        show_expenses_card: checked
+      };
+      updatePreferences(updatedPreferences);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    }
   };
 
   const handleCreditsCardToggle = (checked: boolean) => {
     setShowCreditsCard(checked);
-    const updatedPreferences = {
-      ...defaultPreferences,
-      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
-      show_credits_card: checked
-    };
-    updatePreferences(updatedPreferences);
+    try {
+      const updatedPreferences = {
+        ...defaultPreferences,
+        ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
+        show_credits_card: checked
+      };
+      updatePreferences(updatedPreferences);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    }
   };
 
   const handleSavingsCardToggle = (checked: boolean) => {
     setShowSavingsCard(checked);
-    const updatedPreferences = {
-      ...defaultPreferences,
-      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
-      show_savings_card: checked
-    };
-    updatePreferences(updatedPreferences);
+    try {
+      const updatedPreferences = {
+        ...defaultPreferences,
+        ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
+        show_savings_card: checked
+      };
+      updatePreferences(updatedPreferences);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    }
   };
 
   const handleExpenseStatsToggle = (checked: boolean) => {
     setShowExpenseStats(checked);
-    const updatedPreferences = {
-      ...defaultPreferences,
-      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
-      show_expense_stats: checked
-    };
-    updatePreferences(updatedPreferences);
+    try {
+      const updatedPreferences = {
+        ...defaultPreferences,
+        ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
+        show_expense_stats: checked
+      };
+      updatePreferences(updatedPreferences);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    }
   };
 
   const handleChartsToggle = (checked: boolean) => {
     setShowCharts(checked);
-    const updatedPreferences = {
-      ...defaultPreferences,
-      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
-      show_charts: checked
-    };
-    updatePreferences(updatedPreferences);
+    try {
+      const updatedPreferences = {
+        ...defaultPreferences,
+        ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
+        show_charts: checked
+      };
+      updatePreferences(updatedPreferences);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    }
   };
 
   const handleContributorsToggle = (checked: boolean) => {
     setShowContributors(checked);
-    const updatedPreferences = {
-      ...defaultPreferences,
-      ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
-      show_contributors: checked
-    };
-    updatePreferences(updatedPreferences);
+    try {
+      const updatedPreferences = {
+        ...defaultPreferences,
+        ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
+        show_contributors: checked
+      };
+      updatePreferences(updatedPreferences);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    }
   };
 
   return {

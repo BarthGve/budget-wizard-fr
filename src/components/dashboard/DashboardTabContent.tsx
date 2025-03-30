@@ -73,14 +73,17 @@ const containerVariants = {
 const isDashboardPreferences = (obj: any): obj is DashboardPreferences => {
   return obj !== null && 
          typeof obj === 'object' &&
-         // Vérification des propriétés essentielles, même si null/undefined
-         'show_revenue_card' in obj ||
-         'show_expenses_card' in obj ||
-         'show_credits_card' in obj ||
-         'show_savings_card' in obj ||
-         'show_expense_stats' in obj ||
-         'show_charts' in obj ||
-         'show_contributors' in obj;
+         obj !== undefined &&
+         // Vérifier que l'objet existe et est bien un objet avant de vérifier ses propriétés
+         (
+           'show_revenue_card' in obj ||
+           'show_expenses_card' in obj ||
+           'show_credits_card' in obj ||
+           'show_savings_card' in obj ||
+           'show_expense_stats' in obj ||
+           'show_charts' in obj ||
+           'show_contributors' in obj
+         );
 };
 
 export const DashboardTabContent = ({
@@ -125,15 +128,20 @@ export const DashboardTabContent = ({
   let dashboardPrefs: DashboardPreferences = defaultPreferences;
   
   if (profile?.dashboard_preferences) {
-    // Vérifier si les préférences du profil sont du type attendu
-    if (isDashboardPreferences(profile.dashboard_preferences)) {
-      // Fusionner avec les valeurs par défaut pour s'assurer que toutes les propriétés sont présentes
-      dashboardPrefs = {
-        ...defaultPreferences,
-        ...(profile.dashboard_preferences as DashboardPreferences)
-      };
-    } else {
-      console.warn("Format de préférences du tableau de bord invalide, utilisation des valeurs par défaut");
+    try {
+      // Vérifier si les préférences du profil sont du type attendu
+      if (isDashboardPreferences(profile.dashboard_preferences)) {
+        // Fusionner avec les valeurs par défaut pour s'assurer que toutes les propriétés sont présentes
+        dashboardPrefs = {
+          ...defaultPreferences,
+          ...profile.dashboard_preferences
+        };
+      } else {
+        console.warn("Format de préférences du tableau de bord invalide, utilisation des valeurs par défaut");
+        console.log("Valeur invalide:", JSON.stringify(profile.dashboard_preferences));
+      }
+    } catch (error) {
+      console.error("Erreur lors du traitement des préférences:", error);
     }
   }
 
