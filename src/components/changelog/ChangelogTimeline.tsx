@@ -2,7 +2,7 @@
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
-import { BugOff, CheckCircle2, Copy, Edit, Share2, Sparkles, ThumbsUp, Trash2 } from "lucide-react";
+import { BugOff, CheckCircle2, Copy, Edit, Sparkles, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
@@ -72,15 +72,6 @@ const getEntryTypeLabel = (type: ChangelogEntry["type"]) => {
 };
 
 export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: ChangelogTimelineProps) => {
-  const [likedEntries, setLikedEntries] = useState<Record<string, boolean>>({});
-  
-  const toggleLike = (entryId: string) => {
-    setLikedEntries(prev => ({
-      ...prev,
-      [entryId]: !prev[entryId]
-    }));
-  };
-  
   // Fonction de partage améliorée compatible avec les iframe
   const shareEntry = (entry: ChangelogEntry) => {
     // Création du texte à partager
@@ -223,19 +214,6 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
                       
                       <div className="flex justify-between pt-4 border-t border-border/40 flex-wrap gap-2">
                         <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleLike(entry.id)}
-                            className={cn(
-                              "text-muted-foreground hover:text-foreground",
-                              likedEntries[entry.id] && "text-primary hover:text-primary"
-                            )}
-                          >
-                            <ThumbsUp className="h-4 w-4 mr-1" />
-                            {likedEntries[entry.id] ? "Merci!" : "Utile"}
-                          </Button>
-                          
                           <Button
                             variant="ghost"
                             size="sm"
