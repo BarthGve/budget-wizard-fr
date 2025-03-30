@@ -29,6 +29,7 @@ export const ChangelogHeader = ({ isAdmin, onCreateNew }: ChangelogHeaderProps) 
           </Button>
         )}
       </div>
+      <div className="h-1 w-32 bg-gradient-to-r from-primary to-primary/20 rounded-full" />
     </div>
   );
 };
