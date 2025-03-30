@@ -18,6 +18,7 @@ const defaultPreferences: DashboardPreferences = {
 
 export const useDashboardPreferences = (profile: Profile | null | undefined) => {
   // Initialiser les états avec les valeurs du profil ou les valeurs par défaut
+  // En utilisant !== false pour garantir que les valeurs sont true par défaut si null/undefined
   const [showRevenueCard, setShowRevenueCard] = useState<boolean>(
     profile?.dashboard_preferences?.show_revenue_card !== false
   );
