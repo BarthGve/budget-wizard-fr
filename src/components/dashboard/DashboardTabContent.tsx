@@ -130,7 +130,7 @@ export const DashboardTabContent = ({
       // Fusionner avec les valeurs par défaut pour s'assurer que toutes les propriétés sont présentes
       dashboardPrefs = {
         ...defaultPreferences,
-        ...profile.dashboard_preferences
+        ...(profile.dashboard_preferences as DashboardPreferences)
       };
     } else {
       console.warn("Format de préférences du tableau de bord invalide, utilisation des valeurs par défaut");
