@@ -38,6 +38,19 @@
   .bg-gradient-text {
     @apply bg-clip-text text-transparent;
   }
+  
+  /* Nouvelles classes pour la timeline */
+  .timeline-dot {
+    @apply w-3 h-3 rounded-full bg-primary absolute left-8 md:left-[4.5rem] z-10 -translate-x-[6px];
+  }
+  
+  .timeline-card {
+    @apply relative z-20 bg-card isolate;
+  }
+  
+  .card-glow {
+    @apply before:absolute before:inset-0 before:-z-10 before:rounded-lg before:bg-gradient-to-b before:from-background/10 before:to-border/10 before:backdrop-blur-sm;
+  }
 }
 
 @keyframes animateIn {

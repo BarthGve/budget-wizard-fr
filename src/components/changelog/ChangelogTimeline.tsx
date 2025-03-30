@@ -118,7 +118,23 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
       initial="hidden"
       animate="show"
     >
-      <div className="absolute left-8 md:left-[4.5rem] top-0 bottom-0 w-px bg-border"></div>
+      {/* Modification ici: nous allons créer des segments de ligne qui s'arrêtent avant chaque carte */}
+      {entries.map((_, index) => (
+        <div 
+          key={`line-${index}`} 
+          className={cn(
+            "absolute left-8 md:left-[4.5rem] w-px bg-border",
+            index === 0 ? "top-0" : "",
+            index === entries.length - 1 ? "bottom-0" : ""
+          )}
+          style={{
+            top: index === 0 ? 0 : `calc(${index * 100}% / ${entries.length} - 2rem)`,
+            bottom: index === entries.length - 1 ? 0 : `calc(${(entries.length - index - 1) * 100}% / ${entries.length} + 2rem)`,
+            // Chaque segment va de la fin d'une carte au début de la suivante
+            height: index === entries.length - 1 ? '2rem' : 'calc(4rem)'
+          }}
+        />
+      ))}
       
       <div className="space-y-16">
         {entries.map((entry, index) => (
@@ -128,11 +144,11 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
             variants={item}
             transition={{ duration: 0.5 }}
           >
-            <Card className="border bg-card/50 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <Card className="border bg-card/50 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden z-10 relative">
               <CardContent className="p-0">
                 <div className="grid grid-cols-[auto,1fr] gap-6 p-6">
                   <div className={cn(
-                    "w-16 h-16 rounded-full flex items-center justify-center border-2",
+                    "w-16 h-16 rounded-full flex items-center justify-center border-2 relative z-20",
                     getEntryTypeColor(entry.type)
                   )}>
                     {getEntryTypeIcon(entry.type)}
