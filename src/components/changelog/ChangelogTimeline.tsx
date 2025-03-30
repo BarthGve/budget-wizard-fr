@@ -118,118 +118,120 @@ export const ChangelogTimeline = ({ entries, isAdmin, onEdit, onDelete }: Change
       initial="hidden"
       animate="show"
     >
-      {/* Modification ici: nous allons créer des segments de ligne qui s'arrêtent avant chaque carte */}
-      {entries.map((_, index) => (
-        <div 
-          key={`line-${index}`} 
-          className={cn(
-            "absolute left-8 md:left-[4.5rem] w-px bg-border",
-            index === 0 ? "top-0" : "",
-            index === entries.length - 1 ? "bottom-0" : ""
-          )}
-          style={{
-            top: index === 0 ? 0 : `calc(${index * 100}% / ${entries.length} - 2rem)`,
-            bottom: index === entries.length - 1 ? 0 : `calc(${(entries.length - index - 1) * 100}% / ${entries.length} + 2rem)`,
-            // Chaque segment va de la fin d'une carte au début de la suivante
-            height: index === entries.length - 1 ? '2rem' : 'calc(4rem)'
-          }}
-        />
-      ))}
-      
+      {/* Nouvelle approche: pas de ligne continue, mais des points connectés par des segments courts */}
       <div className="space-y-16">
         {entries.map((entry, index) => (
           <motion.div 
             key={entry.id} 
-            className="relative"
+            className="changelog-entry-container"
             variants={item}
             transition={{ duration: 0.5 }}
           >
-            <Card className="border bg-card/50 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden z-10 relative">
-              <CardContent className="p-0">
-                <div className="grid grid-cols-[auto,1fr] gap-6 p-6">
-                  <div className={cn(
-                    "w-16 h-16 rounded-full flex items-center justify-center border-2 relative z-20",
-                    getEntryTypeColor(entry.type)
-                  )}>
-                    {getEntryTypeIcon(entry.type)}
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-start justify-between gap-2 flex-wrap">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-lg font-semibold">{entry.title}</h3>
-                          <Badge variant="outline" className={cn(getEntryTypeBadgeColor(entry.type))}>
-                            {getEntryTypeLabel(entry.type)}
-                          </Badge>
-                          <Badge variant="secondary" className="bg-primary/10 dark:bg-primary/20 text-primary">
-                            v{entry.version}
-                          </Badge>
+            {/* Point de timeline */}
+            <div className="absolute left-8 md:left-[4.5rem] h-full flex flex-col items-center">
+              {/* Point indicateur avec couleur selon le type */}
+              <div className={cn(
+                "w-3 h-3 rounded-full z-10",
+                entry.type === "new" ? "bg-blue-500" : 
+                entry.type === "improvement" ? "bg-green-500" : 
+                "bg-orange-500"
+              )} />
+              
+              {/* Ligne de connexion (uniquement si pas le dernier élément) */}
+              {index < entries.length - 1 && (
+                <div className="w-px bg-border flex-1 my-2" />
+              )}
+            </div>
+            
+            {/* Card du changelog */}
+            <div className="pl-16 md:pl-24">
+              <Card className="timeline-card">
+                <CardContent className="p-0">
+                  <div className="grid grid-cols-[auto,1fr] gap-6 p-6">
+                    <div className={cn(
+                      "w-16 h-16 rounded-full flex items-center justify-center border-2 relative z-20",
+                      getEntryTypeColor(entry.type)
+                    )}>
+                      {getEntryTypeIcon(entry.type)}
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex items-start justify-between gap-2 flex-wrap">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-lg font-semibold">{entry.title}</h3>
+                            <Badge variant="outline" className={cn(getEntryTypeBadgeColor(entry.type))}>
+                              {getEntryTypeLabel(entry.type)}
+                            </Badge>
+                            <Badge variant="secondary" className="bg-primary/10 dark:bg-primary/20 text-primary">
+                              v{entry.version}
+                            </Badge>
+                          </div>
+                          
+                          <time className="text-sm text-muted-foreground">
+                            {format(new Date(entry.date), "d MMMM yyyy", { locale: fr })}
+                          </time>
                         </div>
-                        
-                        <time className="text-sm text-muted-foreground">
-                          {format(new Date(entry.date), "d MMMM yyyy", { locale: fr })}
-                        </time>
-                      </div>
-                    </div>
-                    
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <ReactMarkdown>{entry.description}</ReactMarkdown>
-                    </div>
-                    
-                    <div className="flex justify-between pt-4 border-t border-border/40 flex-wrap gap-2">
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleLike(entry.id)}
-                          className={cn(
-                            "text-muted-foreground hover:text-foreground",
-                            likedEntries[entry.id] && "text-primary hover:text-primary"
-                          )}
-                        >
-                          <ThumbsUp className="h-4 w-4 mr-1" />
-                          {likedEntries[entry.id] ? "Merci!" : "Utile"}
-                        </Button>
-                        
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-muted-foreground hover:text-foreground"
-                          onClick={() => shareEntry(entry)}
-                        >
-                          <Share2 className="h-4 w-4 mr-1" />
-                          Partager
-                        </Button>
                       </div>
                       
-                      {isAdmin && (
-                        <div className="flex gap-2 ml-auto">
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
+                        <ReactMarkdown>{entry.description}</ReactMarkdown>
+                      </div>
+                      
+                      <div className="flex justify-between pt-4 border-t border-border/40 flex-wrap gap-2">
+                        <div className="flex gap-2">
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => onEdit?.(entry)}
-                            className="hover:bg-muted"
+                            onClick={() => toggleLike(entry.id)}
+                            className={cn(
+                              "text-muted-foreground hover:text-foreground",
+                              likedEntries[entry.id] && "text-primary hover:text-primary"
+                            )}
                           >
-                            <Edit className="h-4 w-4" />
-                            <span className="sr-only md:not-sr-only md:ml-2">Modifier</span>
+                            <ThumbsUp className="h-4 w-4 mr-1" />
+                            {likedEntries[entry.id] ? "Merci!" : "Utile"}
                           </Button>
+                          
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => onDelete?.(entry.id)}
-                            className="text-destructive hover:bg-destructive/10"
+                            className="text-muted-foreground hover:text-foreground"
+                            onClick={() => shareEntry(entry)}
                           >
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only md:not-sr-only md:ml-2">Supprimer</span>
+                            <Share2 className="h-4 w-4 mr-1" />
+                            Partager
                           </Button>
                         </div>
-                      )}
+                        
+                        {isAdmin && (
+                          <div className="flex gap-2 ml-auto">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onEdit?.(entry)}
+                              className="hover:bg-muted"
+                            >
+                              <Edit className="h-4 w-4" />
+                              <span className="sr-only md:not-sr-only md:ml-2">Modifier</span>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onDelete?.(entry.id)}
+                              className="text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span className="sr-only md:not-sr-only md:ml-2">Supprimer</span>
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </motion.div>
         ))}
       </div>
