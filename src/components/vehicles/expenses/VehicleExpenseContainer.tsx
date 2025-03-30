@@ -11,6 +11,8 @@ import { useVehicleDetail } from "@/hooks/useVehicleDetail";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { VehicleExpenseRecentList } from "./VehicleExpenseRecentList";
 
 interface VehicleExpenseContainerProps {
   vehicleId: string;
@@ -30,6 +32,7 @@ export const VehicleExpenseContainer = ({
   const { vehicle, isLoading: isVehicleLoading } = useVehicleDetail(vehicleId);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
   
   // Vérifier si le véhicule est vendu
   const isVehicleSold = vehicle?.status === 'vendu';
@@ -40,7 +43,8 @@ export const VehicleExpenseContainer = ({
     console.log("VehicleExpenseContainer - expenses:", expenses?.length || 0);
     console.log("VehicleExpenseContainer - isLoading:", isLoading);
     console.log("VehicleExpenseContainer - vehicle status:", vehicle?.status);
-  }, [vehicleId, expenses, isLoading, vehicle]);
+    console.log("VehicleExpenseContainer - isMobile:", isMobile);
+  }, [vehicleId, expenses, isLoading, vehicle, isMobile]);
 
   // Fonction optimisée pour supprimer une dépense
   const handleDeleteExpense = useCallback((id: string) => {
@@ -72,7 +76,43 @@ export const VehicleExpenseContainer = ({
     };
   }, []);
   
-  return <div className="space-y-4">
+  // Contenu à afficher en fonction de l'état et du périphérique
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      );
+    }
+    
+    if (!expenses || expenses.length === 0) {
+      return (
+        <div className="text-center p-8 border rounded-lg bg-muted/50">
+          <p className="text-muted-foreground">Aucune dépense enregistrée pour ce véhicule.</p>
+        </div>
+      );
+    }
+    
+    // Afficher la liste simplifiée sur mobile, sinon le tableau complet
+    return isMobile ? 
+      <VehicleExpenseRecentList 
+        expenses={expenses} 
+        onDeleteExpense={handleDeleteExpense} 
+        vehicleId={vehicleId} 
+        onSuccess={handleExpenseSuccess}
+        limit={5}
+      /> : 
+      <VehicleExpenseTable 
+        expenses={expenses} 
+        onDeleteExpense={handleDeleteExpense} 
+        vehicleId={vehicleId} 
+        onSuccess={handleExpenseSuccess} 
+      />;
+  };
+  
+  return (
+    <div className="space-y-4">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
           Historique des dépenses
@@ -98,11 +138,7 @@ export const VehicleExpenseContainer = ({
         </Alert>
       )}
 
-      {isLoading ? <div className="flex justify-center items-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div> : expenses && expenses.length > 0 ? <VehicleExpenseTable expenses={expenses} onDeleteExpense={handleDeleteExpense} vehicleId={vehicleId} onSuccess={handleExpenseSuccess} /> : <div className="text-center p-8 border rounded-lg bg-muted/50">
-          <p className="text-muted-foreground">Aucune dépense enregistrée pour ce véhicule.</p>
-        </div>}
+      {renderContent()}
 
       <AddVehicleExpenseDialog 
         key={`add-dialog-${isAddDialogOpen}`} // Forcer le remontage du composant
@@ -111,5 +147,6 @@ export const VehicleExpenseContainer = ({
         vehicleId={vehicleId} 
         onSuccess={handleExpenseSuccess} 
       />
-    </div>;
+    </div>
+  );
 };
