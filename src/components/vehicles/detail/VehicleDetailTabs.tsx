@@ -8,7 +8,7 @@ import { VehicleExpenseStats } from "@/components/vehicles/expenses/VehicleExpen
 import { motion } from "framer-motion";
 import { VehicleMonthlyExpensesChart } from "./expenses-chart/VehicleMonthlyExpensesChart";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CalendarClock, FileIcon } from "lucide-react";
+import { AlertCircle, CalendarClock, FileIcon, ClipboardList, Info } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -116,9 +116,11 @@ export const VehicleDetailTabs = ({
             className={cn(
               "flex-1 max-w-[200px] rounded-none border-b-2 border-transparent py-3 px-4",
               "data-[state=active]:border-b-primary data-[state=active]:bg-white data-[state=active]:shadow-none",
-              "dark:data-[state=active]:bg-gray-800 dark:text-gray-300"
+              "dark:data-[state=active]:bg-gray-800 dark:text-gray-300",
+              "flex items-center gap-1.5"
             )}
           >
+            <Info className="w-4 h-4" />
             Détails
           </TabsTrigger>
           {canAccessExpenses && (
@@ -127,9 +129,11 @@ export const VehicleDetailTabs = ({
               className={cn(
                 "flex-1 max-w-[200px] rounded-none border-b-2 border-transparent py-3 px-4",
                 "data-[state=active]:border-b-primary data-[state=active]:bg-white data-[state=active]:shadow-none",
-                "dark:data-[state=active]:bg-gray-800 dark:text-gray-300"
+                "dark:data-[state=active]:bg-gray-800 dark:text-gray-300",
+                "flex items-center gap-1.5"
               )}
             >
+              <ClipboardList className="w-4 h-4" />
               Dépenses
             </TabsTrigger>
           )}
@@ -139,7 +143,7 @@ export const VehicleDetailTabs = ({
               "flex-1 max-w-[200px] rounded-none border-b-2 border-transparent py-3 px-4",
               "data-[state=active]:border-b-primary data-[state=active]:bg-white data-[state=active]:shadow-none",
               "dark:data-[state=active]:bg-gray-800 dark:text-gray-300",
-              "flex items-center gap-1"
+              "flex items-center gap-1.5"
             )}
           >
             <FileIcon className="w-4 h-4" />
