@@ -1,7 +1,7 @@
 
 import { FC } from "react";
 import { Button } from "@/components/ui/button";
-import { Bell } from "lucide-react";
+import { Bell, Check } from "lucide-react";
 import { ChangelogEntry } from "./types";
 
 interface NotificationSectionProps {
@@ -27,26 +27,31 @@ export const NotificationSection: FC<NotificationSectionProps> = ({
 
   return (
     <div className="space-y-4 py-4">
-      <div className="bg-muted/50 p-4 rounded-lg border border-muted-foreground/20">
-        <h3 className="font-medium text-base mb-2">
-          ✅ Entrée créée avec succès
-        </h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          Souhaitez-vous notifier les utilisateurs de cette mise à jour ?
+      <div className="bg-muted/30 p-6 rounded-lg border border-muted-foreground/20">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="bg-primary/20 p-2 rounded-full">
+            <Check className="h-5 w-5 text-primary" />
+          </div>
+          <h3 className="font-medium text-xl">Entrée créée avec succès</h3>
+        </div>
+        
+        <p className="text-muted-foreground mb-6 max-w-md">
+          Voulez-vous notifier les utilisateurs de cette mise à jour ? Un email leur sera envoyé avec les détails.
         </p>
         
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-3">
           <Button 
             variant="outline" 
             onClick={onClose}
             disabled={isNotifying}
+            className="font-medium"
           >
             Non, pas maintenant
           </Button>
           <Button 
             onClick={handleNotify}
             disabled={isNotifying}
-            className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+            className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-hover hover:opacity-90 font-medium"
           >
             <Bell className="h-4 w-4" />
             {isNotifying ? "Envoi en cours..." : "Notifier les utilisateurs"}
