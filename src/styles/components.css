@@ -21,4 +21,17 @@
   .button-hover {
     @apply hover:opacity-90 active:scale-95 transition-all duration-200;
   }
+  
+  /* Changelog Components */
+  .changelog-card {
+    @apply border transition-all duration-200 hover:shadow-md;
+  }
+  
+  .changelog-item-transition {
+    @apply transition-all duration-300 hover:bg-accent/5;
+  }
+  
+  .changelog-header-gradient {
+    @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
+  }
 }

@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { useTheme } from "next-themes";
@@ -14,12 +15,14 @@ interface ContributorsTableProps {
   contributors: Array<Contributor>;
   totalExpenses: number;
   totalCredits: number;
+  onSelectContributor?: (contributor: Contributor) => void;
 }
 
 export const ContributorsTable = ({ 
   contributors, 
   totalExpenses,
-  totalCredits 
+  totalCredits,
+  onSelectContributor
 }: ContributorsTableProps) => {
   const { theme } = useTheme();
   const [selectedContributor, setSelectedContributor] = useState<Contributor | null>(null);
@@ -32,8 +35,14 @@ export const ContributorsTable = ({
   const isDarkTheme = theme === "dark";
 
   const handleSelectContributor = (contributor: Contributor) => {
-    setSelectedContributor(contributor);
-    setDialogOpen(true);
+    // Si un gestionnaire externe est fourni, l'utiliser
+    if (onSelectContributor) {
+      onSelectContributor(contributor);
+    } else {
+      // Sinon, utiliser le comportement par défaut
+      setSelectedContributor(contributor);
+      setDialogOpen(true);
+    }
   };
 
   return (
@@ -91,7 +100,7 @@ export const ContributorsTable = ({
         </Card>
       </motion.div>
       
-      {selectedContributor && (
+      {selectedContributor && !onSelectContributor && (
         <ContributorDetailsDialog 
           contributor={selectedContributor}
           open={dialogOpen}

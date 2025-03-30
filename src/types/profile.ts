@@ -1,6 +1,16 @@
 
 export type ProfileType = 'basic' | 'pro';
 
+export interface DashboardPreferences {
+  show_revenue_card?: boolean;
+  show_expenses_card?: boolean;
+  show_credits_card?: boolean;
+  show_savings_card?: boolean;
+  show_expense_stats?: boolean;
+  show_charts?: boolean;
+  show_contributors?: boolean;
+}
+
 export interface Profile {
   id: string;
   full_name: string | null;
@@ -15,4 +25,5 @@ export interface Profile {
   notif_changelog?: boolean;
   notif_feedbacks?: boolean;
   onboarding_completed?: boolean;
+  dashboard_preferences?: DashboardPreferences | null;
 }

@@ -10,6 +10,7 @@ import { ExpenseStatsSection } from "./dashboard-tab/ExpenseStats";
 import { DashboardChartsSection } from "./dashboard-tab/DashboardChartsSection";
 import { ContributorsSection } from "./dashboard-tab/ContributorsSection";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { DashboardPreferences } from "@/types/profile";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -68,6 +69,20 @@ const containerVariants = {
   }
 };
 
+// Fonction utilitaire pour vérifier si un objet est du type DashboardPreferences
+const isDashboardPreferences = (obj: any): obj is DashboardPreferences => {
+  return obj !== null && 
+         typeof obj === 'object' &&
+         // Vérification des propriétés essentielles, même si null/undefined
+         'show_revenue_card' in obj ||
+         'show_expenses_card' in obj ||
+         'show_credits_card' in obj ||
+         'show_savings_card' in obj ||
+         'show_expense_stats' in obj ||
+         'show_charts' in obj ||
+         'show_contributors' in obj;
+};
+
 export const DashboardTabContent = ({
   revenue,
   expenses,
@@ -94,6 +109,33 @@ export const DashboardTabContent = ({
   const { totalMensualites } = useCreditStats({ credits, firstDayOfMonth });
   const mappedContributors = useContributorMapper({ contributors });
   const { data: profile } = useProfileFetcher();
+  
+  // Définir les préférences par défaut
+  const defaultPreferences: DashboardPreferences = {
+    show_revenue_card: true,
+    show_expenses_card: true,
+    show_credits_card: true,
+    show_savings_card: true,
+    show_expense_stats: true,
+    show_charts: true,
+    show_contributors: true
+  };
+  
+  // Vérifier et convertir les préférences du tableau de bord
+  let dashboardPrefs: DashboardPreferences = defaultPreferences;
+  
+  if (profile?.dashboard_preferences) {
+    // Vérifier si les préférences du profil sont du type attendu
+    if (isDashboardPreferences(profile.dashboard_preferences)) {
+      // Fusionner avec les valeurs par défaut pour s'assurer que toutes les propriétés sont présentes
+      dashboardPrefs = {
+        ...defaultPreferences,
+        ...(profile.dashboard_preferences as DashboardPreferences)
+      };
+    } else {
+      console.warn("Format de préférences du tableau de bord invalide, utilisation des valeurs par défaut");
+    }
+  }
 
   return (
     <motion.div 
@@ -102,33 +144,44 @@ export const DashboardTabContent = ({
       animate="visible"
       variants={containerVariants}
     >
-      <DashboardCards 
-        revenue={revenue}
-        expenses={expenses}
-        totalMensualites={totalMensualites}
-        savings={savings}
-        savingsGoal={savingsGoal}
-        contributorShares={contributorShares}
-        recurringExpenses={recurringExpenses.map(expense => ({
-          amount: expense.amount,
-          debit_day: expense.debit_day,
-          debit_month: expense.debit_month,
-          periodicity: expense.periodicity
-        }))}
-        currentView={currentView}
-      />
+      {/* Afficher les cartes uniquement si au moins une des cartes est activée */}
+      {(dashboardPrefs.show_revenue_card || 
+        dashboardPrefs.show_expenses_card || 
+        dashboardPrefs.show_credits_card || 
+        dashboardPrefs.show_savings_card) && (
+        <DashboardCards 
+          revenue={revenue}
+          expenses={expenses}
+          totalMensualites={totalMensualites}
+          savings={savings}
+          savingsGoal={savingsGoal}
+          contributorShares={contributorShares}
+          recurringExpenses={recurringExpenses.map(expense => ({
+            amount: expense.amount,
+            debit_day: expense.debit_day,
+            debit_month: expense.debit_month,
+            periodicity: expense.periodicity
+          }))}
+          currentView={currentView}
+          dashboardPreferences={dashboardPrefs}
+        />
+      )}
       
-      <ExpenseStatsSection 
-        totalExpenses={expensesTotal}
-        viewMode={currentView}
-        totalFuelExpenses={fuelExpensesTotal}
-        fuelVolume={fuelVolume}
-        fuelExpensesCount={fuelExpensesCount}
-        profile={profile}
-        hasActiveVehicles={hasActiveVehicles} // Ajout de la nouvelle prop
-      />
+      {/* Afficher les statistiques de dépenses uniquement si activées */}
+      {dashboardPrefs.show_expense_stats && (
+        <ExpenseStatsSection 
+          totalExpenses={expensesTotal}
+          viewMode={currentView}
+          totalFuelExpenses={fuelExpensesTotal}
+          fuelVolume={fuelVolume}
+          fuelExpensesCount={fuelExpensesCount}
+          profile={profile}
+          hasActiveVehicles={hasActiveVehicles}
+        />
+      )}
       
-      {!isMobileScreen && (
+      {/* Afficher les graphiques uniquement si activés et si on n'est pas sur mobile */}
+      {!isMobileScreen && dashboardPrefs.show_charts && (
         <DashboardChartsSection 
           expenses={expenses}
           savings={savings}
@@ -139,11 +192,14 @@ export const DashboardTabContent = ({
         />
       )}
       
-      <ContributorsSection 
-        contributors={mappedContributors}
-        expenses={expenses}
-        totalMensualites={totalMensualites}
-      />
+      {/* Afficher la section des contributeurs uniquement si activée */}
+      {dashboardPrefs.show_contributors && (
+        <ContributorsSection 
+          contributors={mappedContributors}
+          expenses={expenses}
+          totalMensualites={totalMensualites}
+        />
+      )}
     </motion.div>
   );
 };
