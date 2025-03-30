@@ -11,5 +11,8 @@
 /* Animations */
 @import './animations.css';
 
+/* Styles spécifiques pour les véhicules */
+@import './vehicles.css';
+
 /* Responsive */
 @import './responsive.css';

@@ -25,9 +25,11 @@ export const useVehicleExpenses = (vehicleId: string) => {
         .order("date", { ascending: false });
 
       if (error) {
+        console.error("Error fetching vehicle expenses:", error);
         throw error;
       }
 
+      console.log("Vehicle expenses fetched:", data?.length || 0);
       return data as VehicleExpense[];
     },
     enabled: !!currentUser && !!vehicleId,

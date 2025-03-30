@@ -10,8 +10,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 interface RetailerExpenseActionsProps {
   onEdit: () => void;
@@ -19,17 +19,42 @@ interface RetailerExpenseActionsProps {
 }
 
 export function RetailerExpenseActions({ onEdit, onDelete }: RetailerExpenseActionsProps) {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsAlertOpen(true);
+  };
+  
+  const handleConfirmDelete = () => {
+    onDelete();
+    setIsAlertOpen(false);
+  };
+
   return (
     <div className="flex items-center justify-end gap-2">
-      <Button variant="ghost" size="icon" onClick={onEdit}>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit();
+        }}
+        aria-label="Modifier"
+      >
         <Edit2 className="h-4 w-4" />
       </Button>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
-        </AlertDialogTrigger>
+      
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={handleDelete}
+        aria-label="Supprimer"
+      >
+        <Trash2 className="h-4 w-4 text-destructive" />
+      </Button>
+      
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer cette dépense</AlertDialogTitle>
@@ -40,7 +65,7 @@ export function RetailerExpenseActions({ onEdit, onDelete }: RetailerExpenseActi
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction
-              onClick={onDelete}
+              onClick={handleConfirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Supprimer

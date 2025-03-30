@@ -68,13 +68,17 @@ export const VehicleExpenseTableActions = ({
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className={cn(
-          "w-[160px]",
-          // Light mode
-          "border-gray-200 bg-white",
-          // Dark mode
-          "dark:border-gray-800 dark:bg-gray-900"
-        )}>
+        <DropdownMenuContent 
+          align="end" 
+          className={cn(
+            "w-[160px] z-50",
+            // Light mode
+            "border-gray-200 bg-white",
+            // Dark mode
+            "dark:border-gray-800 dark:bg-gray-900"
+          )}
+          onClick={(e) => e.stopPropagation()}
+        >
           <DropdownMenuItem
             onClick={handleEditClick}
             className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"

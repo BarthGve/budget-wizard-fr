@@ -1,4 +1,3 @@
-
 import { memo } from "react";
 import { motion } from "framer-motion";
 import { Credit } from "../types";
@@ -25,8 +24,6 @@ export const CreditsContainer = memo(({
   const totalActiveMensualites = activeCredits.reduce((sum, credit) => sum + credit.montant_mensualite, 0);
   
   // Calcul du montant total emprunté (la somme totale des crédits)
-  // Pour chaque crédit actif, nous calculons le montant total emprunté en multipliant 
-  // la mensualité par le nombre total de mensualités
   const calculateTotalDebt = () => {
     return activeCredits.reduce((total, credit) => {
       // Calcul du nombre total de mensualités pour ce crédit

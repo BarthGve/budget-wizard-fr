@@ -4,6 +4,8 @@ import { useMemo } from "react";
 
 export const useVehicleExpenseStats = (expenses: VehicleExpense[] | undefined) => {
   return useMemo(() => {
+    console.log("Computing vehicle expense stats:", expenses?.length || 0, "expenses");
+    
     if (!expenses || expenses.length === 0) {
       return {
         totalFuelExpense: 0,
@@ -61,6 +63,13 @@ export const useVehicleExpenseStats = (expenses: VehicleExpense[] | undefined) =
       acc[category].count += 1;
       return acc;
     }, {} as Record<string, { total: number, count: number }>);
+    
+    console.log("Stats calculated:", {
+      totalExpense,
+      expenseCount: expenses.length,
+      totalFuelExpense,
+      totalFuelVolume
+    });
 
     return {
       totalFuelExpense,

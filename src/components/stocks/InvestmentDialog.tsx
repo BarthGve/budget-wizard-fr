@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,9 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Asset } from "./types/assets";
 
 interface InvestmentDialogProps {
   onSuccess: () => void;
@@ -21,7 +24,31 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
   const [date, setDate] = useState<Date>(new Date());
   const [dateString, setDateString] = useState(format(new Date(), "dd/MM/yyyy"));
   const [amount, setAmount] = useState("");
+  const [notes, setNotes] = useState("");
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [selectedAssetId, setSelectedAssetId] = useState<string>("");
+
+  // Charger les actifs disponibles
+  useEffect(() => {
+    if (open) {
+      loadAssets();
+    }
+  }, [open]);
+
+  const loadAssets = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("stock_assets")
+        .select("*")
+        .order("name");
+        
+      if (error) throw error;
+      setAssets(data || []);
+    } catch (error) {
+      console.error("Erreur lors du chargement des actifs:", error);
+    }
+  };
 
   const handleDateInput = (value: string) => {
     setDateString(value);
@@ -68,12 +95,16 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
           profile_id: user.id,
           amount: investmentAmount,
           investment_date: date.toISOString(),
+          asset_id: selectedAssetId || null,
+          notes: notes || null
         });
 
       if (error) throw error;
 
       toast.success("Investissement enregistré avec succès");
       setAmount("");
+      setNotes("");
+      setSelectedAssetId("");
       setDate(new Date());
       setDateString(format(new Date(), "dd/MM/yyyy"));
       setOpen(false);
@@ -82,6 +113,17 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
       toast.error(error.message);
     }
   };
+
+  // Réinitialiser le formulaire à l'ouverture
+  useEffect(() => {
+    if (open) {
+      setAmount("");
+      setNotes("");
+      setSelectedAssetId("");
+      setDate(new Date());
+      setDateString(format(new Date(), "dd/MM/yyyy"));
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -127,6 +169,7 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
               <p className="text-sm text-red-500">Format de date invalide. Utilisez JJ/MM/AAAA</p>
             )}
           </div>
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Montant</label>
             <Input
@@ -136,6 +179,37 @@ export const InvestmentDialog = ({ onSuccess }: InvestmentDialogProps) => {
               placeholder="Montant investi"
             />
           </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Actif concerné (optionnel)</label>
+            <Select value={selectedAssetId} onValueChange={setSelectedAssetId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionner un actif" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Aucun actif spécifique</SelectItem>
+                {assets.map(asset => (
+                  <SelectItem key={asset.id} value={asset.id}>
+                    {asset.name} ({asset.symbol})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Lier cet investissement à un actif spécifique de votre portefeuille
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Notes (optionnel)</label>
+            <Textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Informations complémentaires sur cet investissement"
+              rows={3}
+            />
+          </div>
+
           <Button className="w-full" onClick={handleSubmit}>
             Enregistrer
           </Button>

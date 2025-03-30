@@ -1,10 +1,9 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useParams } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useVehicleDetail } from "@/hooks/useVehicleDetail";
 import { useState } from "react";
-import { VehicleForm, VehicleFormValues } from "@/components/vehicles/VehicleForm";
+import { VehicleFormValues } from "@/components/vehicles/VehicleForm";
 import { useVehicles } from "@/hooks/useVehicles";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { motion } from "framer-motion";
@@ -13,6 +12,10 @@ import { VehicleDetailHeader } from "@/components/vehicles/detail/VehicleDetailH
 import { VehicleDetailLoading } from "@/components/vehicles/detail/VehicleDetailLoading";
 import { VehicleNotFound } from "@/components/vehicles/detail/VehicleNotFound";
 import { VehicleDetailTabs } from "@/components/vehicles/detail/VehicleDetailTabs";
+import { VehicleEditDialog } from "@/components/vehicles/VehicleEditDialog";
+import { MobileNavigation } from "@/components/vehicles/detail/MobileNavigation";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useSwipe } from "@/hooks/use-swipe";
 
 const VehicleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,12 +23,37 @@ const VehicleDetail = () => {
   const { updateVehicle, isUpdating } = useVehicles();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { canAccessFeature } = usePagePermissions();
+  const isMobile = useIsMobile();
+  const [activeSection, setActiveSection] = useState("details");
   
   // Vérifier si l'utilisateur a accès aux dépenses des véhicules
   const canAccessExpenses = canAccessFeature('/vehicles', 'vehicles_expenses');
 
   // Important: Nous initialisons le hook avec une chaîne vide par défaut, plutôt que de le mettre dans une condition
   const { previewLogoUrl, isLogoValid, isCheckingLogo } = useVehicleBrandLogo(vehicle?.brand || "");
+  
+  // Gestion du swipe pour changer de section sur mobile
+  const sectionOrder = ["details", ...(canAccessExpenses ? ["expenses"] : []), "documents"];
+  
+  const handleSwipeLeft = () => {
+    const currentIndex = sectionOrder.indexOf(activeSection);
+    if (currentIndex < sectionOrder.length - 1) {
+      setActiveSection(sectionOrder[currentIndex + 1]);
+    }
+  };
+  
+  const handleSwipeRight = () => {
+    const currentIndex = sectionOrder.indexOf(activeSection);
+    if (currentIndex > 0) {
+      setActiveSection(sectionOrder[currentIndex - 1]);
+    }
+  };
+  
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: handleSwipeLeft,
+    onSwipeRight: handleSwipeRight,
+    threshold: 50
+  });
   
   if (isLoading) {
     return <VehicleDetailLoading />;
@@ -59,11 +87,20 @@ const VehicleDetail = () => {
 
   return (
     <DashboardLayout>
+      {isMobile && (
+        <MobileNavigation 
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          canAccessExpenses={canAccessExpenses}
+        />
+      )}
+      
       <motion.div 
-        className="space-y-6"
+        className="space-y-6 pt-16"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
+        {...swipeHandlers}
       >
         <VehicleDetailHeader 
           vehicle={vehicle}
@@ -76,22 +113,18 @@ const VehicleDetail = () => {
         <VehicleDetailTabs 
           vehicle={vehicle}
           canAccessExpenses={canAccessExpenses}
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
         />
       </motion.div>
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[550px]">
-          <DialogHeader>
-            <DialogTitle>Modifier le véhicule</DialogTitle>
-          </DialogHeader>
-          <VehicleForm
-            vehicle={vehicle}
-            onSubmit={handleUpdate}
-            onCancel={() => setIsEditDialogOpen(false)}
-            isPending={isUpdating}
-          />
-        </DialogContent>
-      </Dialog>
+      <VehicleEditDialog
+        isOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        selectedVehicle={vehicle}
+        onUpdate={handleUpdate}
+        isPending={isUpdating}
+      />
     </DashboardLayout>
   );
 };

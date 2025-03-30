@@ -26,6 +26,8 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
         : startOfYear(new Date(currentYear, 0, 1));
       
       const endDate = endOfYear(new Date(currentYear, 11, 31));
+
+      console.log(`Fetching expenses for vehicle ${vehicleId} from ${startDate.toISOString().split("T")[0]} to ${endDate.toISOString().split("T")[0]}`);
       
       const { data, error } = await supabase
         .from("vehicle_expenses")
@@ -40,6 +42,7 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
         return [];
       }
 
+      console.log(`Retrieved ${data?.length || 0} expenses`);
       return data as Expense[];
     },
     enabled: !!vehicleId,
@@ -47,7 +50,12 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
 
   // Transformer les données pour le graphique
   const chartData = useMemo(() => {
-    if (!expenses || expenses.length === 0) return [];
+    if (!expenses || expenses.length === 0) {
+      console.log("No expenses data to transform for chart");
+      return [];
+    }
+
+    console.log(`Transforming ${expenses.length} expenses for chart, showMultiYear: ${showMultiYear}`);
 
     if (showMultiYear) {
       // Regrouper par année
@@ -63,6 +71,7 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
             entretien: 0,
             assurance: 0,
             reparation: 0,
+            loyer: 0,
             amende: 0,
             peage: 0,
             autre: 0
@@ -79,6 +88,8 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
           acc[year].assurance += expense.amount;
         } else if (expenseType === "reparation") {
           acc[year].reparation += expense.amount;
+        } else if (expenseType === "loyer") {
+          acc[year].loyer += expense.amount;
         } else if (expenseType === "amende") {
           acc[year].amende += expense.amount;
         } else if (expenseType === "peage") {
@@ -103,6 +114,7 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
           entretien: 0,
           assurance: 0,
           reparation: 0,
+          loyer: 0,
           amende: 0,
           peage: 0,
           autre: 0
@@ -128,6 +140,8 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
             monthsData[monthIndex].assurance += expense.amount;
           } else if (expenseType === "reparation") {
             monthsData[monthIndex].reparation += expense.amount;
+          } else if (expenseType === "loyer") {
+            monthsData[monthIndex].loyer += expense.amount;
           } else if (expenseType === "amende") {
             monthsData[monthIndex].amende += expense.amount;
           } else if (expenseType === "peage") {
@@ -143,7 +157,10 @@ export const useExpensesChartData = (vehicleId: string, showMultiYear: boolean =
   }, [expenses, currentYear, showMultiYear]);
 
   // Un titre descriptif selon le mode
-  const chartTitle = showMultiYear ? "Dépenses annuelles" : "Dépenses mensuelles";
+  const chartTitle = showMultiYear 
+    ? "Dépenses annuelles" 
+    : "Dépenses mensuelles";
+    
   const chartDescription = showMultiYear 
     ? "Répartition des dépenses annuelles sur les 5 dernières années" 
     : "Répartition des dépenses mensuelles pour l'année en cours";

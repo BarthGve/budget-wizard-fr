@@ -1,5 +1,3 @@
-
-// Configuration des couleurs du graphique par catégorie de dépense
 export const chartConfig = {
   carburant: {
     label: "Carburant",
@@ -48,6 +46,13 @@ export const chartConfig = {
     theme: {
       light: "#8E9196", // Neutral Gray
       dark: "#A1A5AA"   // Lighter Gray
+    }
+  },
+  loyer: {
+    label: "Loyer",
+    theme: {
+      light: "#6A994E", // Vert brunâtre
+      dark: "#8BC34A"   // Vert clair brunâtre
     }
   }
 };

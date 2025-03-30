@@ -1,3 +1,4 @@
+
 import { Property } from "@/types/property";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

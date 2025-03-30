@@ -55,6 +55,11 @@ export const RevenueCard = ({
     }
   }, [totalRevenue, displayedRevenue]);
 
+  // Utiliser le Hook navigate de React Router pour une navigation SPA
+  const handleCardClick = () => {
+    navigate("/contributors");
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -70,7 +75,7 @@ export const RevenueCard = ({
           // Dark mode styles - alignées avec les cards de graphiques
           "dark:bg-gradient-to-br dark:from-gray-900 dark:to-amber-950 dark:border-amber-900/30 dark:shadow-amber-800/30 dark:hover:shadow-amber-800/50"
         )}
-        onClick={() => navigate("/contributors")}
+        onClick={handleCardClick}
       >
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">

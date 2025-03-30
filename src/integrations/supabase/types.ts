@@ -918,32 +918,87 @@ export type Database = {
           },
         ]
       }
+      stock_assets: {
+        Row: {
+          asset_type: string
+          created_at: string | null
+          current_price: number | null
+          id: string
+          name: string
+          profile_id: string
+          purchase_date: string
+          purchase_price: number
+          quantity: number
+          symbol: string
+          updated_at: string | null
+        }
+        Insert: {
+          asset_type: string
+          created_at?: string | null
+          current_price?: number | null
+          id?: string
+          name: string
+          profile_id: string
+          purchase_date?: string
+          purchase_price?: number
+          quantity?: number
+          symbol: string
+          updated_at?: string | null
+        }
+        Update: {
+          asset_type?: string
+          created_at?: string | null
+          current_price?: number | null
+          id?: string
+          name?: string
+          profile_id?: string
+          purchase_date?: string
+          purchase_price?: number
+          quantity?: number
+          symbol?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       stock_investments: {
         Row: {
           amount: number
+          asset_id: string | null
           created_at: string
           id: string
           investment_date: string
+          notes: string | null
           profile_id: string
           updated_at: string
         }
         Insert: {
           amount?: number
+          asset_id?: string | null
           created_at?: string
           id?: string
           investment_date?: string
+          notes?: string | null
           profile_id: string
           updated_at?: string
         }
         Update: {
           amount?: number
+          asset_id?: string | null
           created_at?: string
           id?: string
           investment_date?: string
+          notes?: string | null
           profile_id?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "stock_investments_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "stock_assets"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "stock_investments_profile_id_fkey"
             columns: ["profile_id"]
@@ -1011,6 +1066,87 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vehicle_document_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      vehicle_documents: {
+        Row: {
+          category_id: string | null
+          content_type: string | null
+          created_at: string | null
+          description: string | null
+          file_path: string
+          file_size: number | null
+          id: string
+          name: string
+          updated_at: string | null
+          vehicle_id: string
+        }
+        Insert: {
+          category_id?: string | null
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_path: string
+          file_size?: number | null
+          id?: string
+          name: string
+          updated_at?: string | null
+          vehicle_id: string
+        }
+        Update: {
+          category_id?: string | null
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_documents_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_document_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehicle_documents_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vehicle_expense_types: {
         Row: {

@@ -1,9 +1,8 @@
 
-import { BarChartBig, Calendar, Clock } from "lucide-react";
-import { CardTitle, CardDescription } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { BarChart3, Calendar, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface ExpensesChartHeaderProps {
   title: string;
@@ -20,45 +19,54 @@ export const ExpensesChartHeader = ({
   onToggleView,
   isVehicleSold = false
 }: ExpensesChartHeaderProps) => {
-  return <div className="flex justify-between items-start">
-      <div>
-        <CardTitle className="text-lg text-gray-800 dark:text-gray-200 mb-1">{title}</CardTitle>
-        <CardDescription className="text-sm text-gray-500 dark:text-gray-400">{description}</CardDescription>
-      </div>
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <h3 className={cn(
+          "text-base font-medium flex items-center gap-2",
+          "text-gray-800 dark:text-gray-200"
+        )}>
+          <div className={cn(
+            "p-1.5 rounded",
+            "bg-gray-100 dark:bg-gray-800",
+            "border border-gray-200 dark:border-gray-700"
+          )}>
+            <TrendingUp className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+          </div>
+          {title}
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 pl-1">
+          {description}
+        </p>
+      </motion.div>
       
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={onToggleView} 
-              className={cn(
-                "transition-colors",
-                // Light mode
-                showMultiYear ? "bg-gray-100 border-gray-200 text-gray-700" : "",
-                // Dark mode
-                showMultiYear ? "dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-300" : "",
-                // Désactiver le bouton si le véhicule est vendu
-                isVehicleSold && "opacity-60 cursor-not-allowed"
-              )}
-              disabled={isVehicleSold}
-            >
-              {showMultiYear ? <>
-                <Clock className="h-4 w-4 mr-1" />
-                5 ans
-              </> : <>
-                <Calendar className="h-4 w-4 mr-1" />
-                Année
-              </>}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            {isVehicleSold 
-              ? "Les données sont en lecture seule pour un véhicule vendu" 
-              : (showMultiYear ? "Voir les dépenses mensuelles de l'année en cours" : "Voir les dépenses sur les 5 dernières années")}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </div>;
+      {!isVehicleSold && (
+        <motion.div
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <Button
+            onClick={onToggleView}
+            size="sm"
+            className={cn(
+              "gap-1.5 h-9 px-4 font-medium text-sm self-start",
+              "bg-gray-100 hover:bg-gray-200 text-gray-700",
+              "dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300",
+              "border border-gray-200 dark:border-gray-700",
+              "shadow-sm"
+            )}
+            variant="outline"
+          >
+            <Calendar className="h-3.5 w-3.5" />
+            {showMultiYear ? "Vue mensuelle" : "Vue annuelle"}
+          </Button>
+        </motion.div>
+      )}
+    </div>
+  );
 };
