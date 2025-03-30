@@ -1,207 +1,181 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { VehicleDocument } from "@/types/vehicle-documents";
-import { Button } from "@/components/ui/button";
-import { FileIcon, Download, Calendar, Trash2, ExternalLink, Loader2 } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+
+import { useState } from "react";
+import { VehicleDocument, VehicleDocumentCategory } from "@/types/vehicle-documents";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { useDocumentTypes } from "@/hooks/useDocumentTypes";
-import { useDocumentUrl } from "@/hooks/vehicle-documents/operations";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { useVehicleDocuments } from "@/hooks/useVehicleDocuments";
+import { 
+  FileIcon, 
+  FileTextIcon,
+  FileImage,
+  ExternalLinkIcon, 
+  Trash2Icon,
+  ShieldIcon,
+  WrenchIcon,
+  FileIcon as FileIconAlias
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogDescription } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 interface DocumentCardProps {
-  document: VehicleDocument;
+  document: VehicleDocument & { 
+    vehicle_document_categories?: VehicleDocumentCategory 
+  };
   vehicleId: string;
-  onDeleted?: () => void;
 }
 
-export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardProps) => {
-  const { getDocumentType } = useDocumentTypes();
-  const { getDocumentUrl, downloadDocument } = useDocumentUrl();
-  const documentType = getDocumentType(document.file_path);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+export const DocumentCard = ({ document, vehicleId }: DocumentCardProps) => {
+  const { getDocumentUrl, deleteDocument, isDeleting } = useVehicleDocuments(vehicleId);
+  const [documentUrl, setDocumentUrl] = useState<string | null>(null);
+  const [isUrlLoading, setIsUrlLoading] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
-  // Fonction pour télécharger le fichier
-  const handleDownload = async () => {
+  const handleViewDocument = async () => {
+    setIsUrlLoading(true);
     try {
-      setIsDownloading(true);
-      
-      // Utiliser la nouvelle méthode downloadDocument
-      await downloadDocument(document.file_path, document.name || 'document');
-      
-    } catch (error) {
-      console.error("Erreur lors du téléchargement:", error);
+      const url = await getDocumentUrl(document.file_path);
+      if (url) {
+        setDocumentUrl(url);
+        window.open(url, "_blank");
+      }
     } finally {
-      setIsDownloading(false);
+      setIsUrlLoading(false);
+    }
+  };
+
+  const handleDeleteDocument = () => {
+    deleteDocument(document);
+    setIsDeleteDialogOpen(false);
+  };
+  
+  // Déterminer l'icône en fonction du type de fichier
+  const getDocumentIcon = () => {
+    const contentType = document.content_type;
+    if (!contentType) return <FileTextIcon className="w-12 h-12 text-gray-400" />;
+    
+    if (contentType.includes("pdf")) {
+      return <FileTextIcon className="w-12 h-12 text-red-500" />;
+    } else if (contentType.includes("image")) {
+      return <FileImage className="w-12 h-12 text-blue-500" />;
+    } else if (contentType.includes("text")) {
+      return <FileTextIcon className="w-12 h-12 text-gray-500" />;
+    } else {
+      return <FileIcon className="w-12 h-12 text-gray-400" />;
     }
   };
   
-  // Fonction pour obtenir l'URL de prévisualisation et ouvrir dans un nouvel onglet
-  const handlePreview = async () => {
-    try {
-      setIsLoadingPreview(true);
-      
-      const signedUrl = await getDocumentUrl(document.file_path);
-      
-      if (!signedUrl) {
-        throw new Error("Impossible de générer l'URL du document");
-      }
-      
-      // Ouvrir l'URL dans un nouvel onglet
-      window.open(signedUrl, '_blank');
-    } catch (error) {
-      console.error("Erreur lors de la prévisualisation:", error);
-    } finally {
-      setIsLoadingPreview(false);
+  // Obtenir l'icône de la catégorie
+  const getCategoryIcon = () => {
+    const icon = document.vehicle_document_categories?.icon || "file";
+    
+    switch (icon) {
+      case "file-text":
+        return <FileTextIcon className="w-4 h-4" />;
+      case "shield":
+        return <ShieldIcon className="w-4 h-4" />;
+      case "wrench":
+        return <WrenchIcon className="w-4 h-4" />;
+      case "tool":
+        return <FileIconAlias className="w-4 h-4" />;
+      default:
+        return <FileIcon className="w-4 h-4" />;
     }
   };
   
-  // Fonction pour supprimer le document
-  const handleDelete = async () => {
-    try {
-      setIsDeleting(true);
-      
-      const { error: storageError } = await supabase
-        .storage
-        .from('vehicle-documents')
-        .remove([document.file_path]);
-
-      if (storageError) {
-        console.error("Erreur lors de la suppression du fichier:", storageError);
-        toast.error("Erreur lors de la suppression du fichier.");
-        return;
-      }
-      
-      // 2. Supprimer les informations du document de la base de données
-      const { error } = await supabase
-        .from('vehicle_documents')
-        .delete()
-        .eq('id', document.id);
-
-      if (error) throw error;
-      
-      toast.success(`Le document "${document.name}" a été supprimé.`);
-      
-      // Appeler le callback pour rafraîchir la liste si fourni
-      if (onDeleted) onDeleted();
-      
-    } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
-      toast.error("Impossible de supprimer ce document.");
-    } finally {
-      setIsDeleting(false);
+  // Formater la taille du fichier
+  const formatFileSize = (sizeInBytes?: number) => {
+    if (!sizeInBytes) return "Taille inconnue";
+    
+    if (sizeInBytes < 1024) {
+      return `${sizeInBytes} octets`;
+    } else if (sizeInBytes < 1024 * 1024) {
+      return `${(sizeInBytes / 1024).toFixed(1)} Ko`;
+    } else {
+      return `${(sizeInBytes / (1024 * 1024)).toFixed(1)} Mo`;
     }
   };
 
   return (
-    <Card className={cn(
-      "overflow-hidden transition-all duration-300 border border-gray-200 dark:border-gray-700 h-full",
-      "bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-800 dark:to-gray-900/80",
-      "hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600"
-    )}>
-      <CardHeader className="p-4 pb-2 space-y-0 flex flex-row items-start">
-        <div className="p-3 rounded-md border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/70 shadow-sm mr-3">
-          <documentType.icon className={`w-8 h-8 ${documentType.color}`} />
-        </div>
-        <div className="space-y-1 flex-1 min-w-0">
-          <h3 className="font-medium text-base text-gray-800 dark:text-gray-100 line-clamp-2">
-            {document.name}
-          </h3>
-          <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-            <Calendar className="w-3 h-3 mr-1" />
-            {document.created_at 
-              ? format(new Date(document.created_at), "d MMM yyyy", { locale: fr })
-              : "Date inconnue"
-            }
-          </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="p-4 pt-0 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-        {document.description || "Aucune description"}
-      </CardContent>
-      
-      <CardFooter className="p-3 flex justify-between items-center border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/20">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-          onClick={handleDownload}
-          disabled={isDownloading}
-        >
-          {isDownloading ? (
-            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-          ) : (
-            <Download className="w-4 h-4 mr-1" />
-          )}
-          {isDownloading ? "Téléchargement..." : "Télécharger"}
-        </Button>
-        
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 h-8 w-8 p-0"
-            onClick={handlePreview}
-            disabled={isLoadingPreview}
-          >
-            {isLoadingPreview ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <ExternalLink className="w-4 h-4" />
+    <>
+      <motion.div whileHover={{ scale: 1.02 }} className="h-full">
+        <Card className={cn(
+          "h-full flex flex-col border border-gray-200 dark:border-gray-800",
+          "hover:shadow-md transition-shadow"
+        )}>
+          <CardContent className="p-4 flex-1 flex flex-col">
+            <div className="mb-3 flex justify-center">
+              {getDocumentIcon()}
+            </div>
+            
+            <h3 className="font-medium text-gray-900 dark:text-gray-100 text-center mb-2 line-clamp-2">
+              {document.name}
+            </h3>
+            
+            {document.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+                {document.description}
+              </p>
             )}
-            <span className="sr-only">Voir</span>
-          </Button>
+            
+            <div className="mt-auto">
+              <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 mt-2">
+                <span className="flex items-center gap-1">
+                  {getCategoryIcon()}
+                  <span>{document.vehicle_document_categories?.name || "Sans catégorie"}</span>
+                </span>
+              </div>
+              
+              <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                {formatFileSize(document.file_size)}
+              </div>
+            </div>
+          </CardContent>
           
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-red-500/70 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 h-8 w-8 p-0"
-                disabled={isDeleting}
-              >
-                {isDeleting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Trash2 className="w-4 h-4" />
-                )}
-                <span className="sr-only">Supprimer</span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer le document <strong>"{document.name}"</strong> ? Cette action est irréversible.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleDelete}
-                  className="bg-red-500 hover:bg-red-600 text-white"
-                >
-                  Supprimer
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </CardFooter>
-    </Card>
+          <CardFooter className="p-3 border-t border-gray-100 dark:border-gray-800 gap-2 flex items-center">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full text-xs flex items-center gap-1"
+              onClick={handleViewDocument}
+              disabled={isUrlLoading}
+            >
+              <ExternalLinkIcon className="w-3.5 h-3.5" />
+              Ouvrir
+            </Button>
+            
+            <Button
+              variant="ghost" 
+              size="sm"
+              className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash2Icon className="w-4 h-4" />
+            </Button>
+          </CardFooter>
+        </Card>
+      </motion.div>
+      
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer ce document ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. Le document sera définitivement supprimé.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteDocument}
+              className="bg-red-500 hover:bg-red-600"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Suppression..." : "Supprimer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
