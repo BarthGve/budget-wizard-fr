@@ -22,3 +22,15 @@ export const downloadFile = (data: Blob, filename: string): void => {
     URL.revokeObjectURL(url);
   }, 100); // Un petit délai pour s'assurer que le téléchargement a bien commencé
 };
+
+/**
+ * Vérifie si une chaîne est une URL valide
+ */
+export const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};

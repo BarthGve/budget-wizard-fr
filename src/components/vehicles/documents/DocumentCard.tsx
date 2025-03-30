@@ -46,7 +46,10 @@ export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardPro
         .from('vehicle-documents')
         .download(document.file_path);
         
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur de téléchargement:", error);
+        throw error;
+      }
       
       // Utiliser la fonction helper pour télécharger le fichier
       downloadFile(data, document.name || 'document');
@@ -71,7 +74,10 @@ export const DocumentCard = ({ document, vehicleId, onDeleted }: DocumentCardPro
         .from('vehicle-documents')
         .createSignedUrl(document.file_path, 60 * 5); // URL valide pendant 5 minutes
         
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur de création d'URL signée:", error);
+        throw error;
+      }
       
       setPreviewUrl(data.signedUrl);
       

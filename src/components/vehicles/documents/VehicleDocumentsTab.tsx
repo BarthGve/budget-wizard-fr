@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { AddDocumentDialog } from "./AddDocumentDialog";
 import useVehicleDocuments from "@/hooks/vehicle-documents";
@@ -19,6 +19,7 @@ export const VehicleDocumentsTab = ({ vehicleId }: VehicleDocumentsTabProps) => 
     categories,
     isLoadingDocuments,
     isLoadingCategories,
+    refetchDocuments,
   } = useVehicleDocuments(vehicleId);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -57,9 +58,9 @@ export const VehicleDocumentsTab = ({ vehicleId }: VehicleDocumentsTabProps) => 
     return documents?.filter(doc => doc.category_id === categoryId).length || 0;
   };
 
+  // Gestionnaire pour rafraîchir les documents
   const handleRefresh = () => {
-    // Le hook useVehicleDocuments gère déjà le rechargement des documents
-    window.location.reload();
+    refetchDocuments();
   };
 
   const renderDocumentGrid = () => {
@@ -102,7 +103,7 @@ export const VehicleDocumentsTab = ({ vehicleId }: VehicleDocumentsTabProps) => 
               : "Commencez par ajouter votre premier document."}
           </p>
           <div className="mt-6">
-            <AddDocumentDialog vehicleId={vehicleId} />
+            <AddDocumentDialog vehicleId={vehicleId} onDocumentAdded={handleRefresh} />
           </div>
         </div>
       );
@@ -191,7 +192,7 @@ export const VehicleDocumentsTab = ({ vehicleId }: VehicleDocumentsTabProps) => 
             </Badge>
           )}
         </div>
-        <AddDocumentDialog vehicleId={vehicleId} />
+        <AddDocumentDialog vehicleId={vehicleId} onDocumentAdded={handleRefresh} />
       </div>
       
       {renderCategoryFilters()}

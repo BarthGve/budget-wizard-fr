@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { VehicleDocument, VehicleDocumentCategory } from '@/types/vehicle-documents';
 import { v4 as uuidv4 } from 'uuid';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 type DocumentUploadInfo = {
   vehicle_id: string;
@@ -14,7 +14,6 @@ type DocumentUploadInfo = {
 };
 
 export default function useVehicleDocuments(vehicleId: string) {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,24 +90,23 @@ export default function useVehicleDocuments(vehicleId: string) {
             name: documentInfo.name,
             description: documentInfo.description || null,
             file_path: filePath,
+            file_size: file.size,
+            content_type: file.type
           });
 
         if (dbError) throw dbError;
 
         // 4. Succès
-        toast({
-          title: "Document ajouté",
-          description: "Le document a été ajouté avec succès",
+        toast.success("Document ajouté", {
+          description: "Le document a été ajouté avec succès"
         });
 
         return true;
       } catch (error: any) {
         console.error("Erreur lors de l'ajout du document:", error);
         setError(error.message || "Une erreur est survenue");
-        toast({
-          title: "Erreur",
-          description: error.message || "Impossible d'ajouter le document",
-          variant: "destructive"
+        toast.error("Erreur", {
+          description: error.message || "Impossible d'ajouter le document"
         });
         return false;
       } finally {
