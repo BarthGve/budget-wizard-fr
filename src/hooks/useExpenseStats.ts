@@ -59,6 +59,31 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
   const periodLabel = viewMode === "monthly" ? "mois en cours" : "année en cours";
   console.log(`Total dépenses ${periodLabel}: ${expensesTotal}€ (${filteredExpenses.length} dépenses)`);
 
+  // Vérifier s'il y a des véhicules actifs
+  const { data: activeVehicles, isLoading: isVehiclesLoading } = useQuery({
+    queryKey: ["active-vehicles-check"],
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("id")
+        .eq("profile_id", currentUser.id)
+        .eq("status", "actif");
+
+      if (error) {
+        console.error("Error fetching active vehicles:", error);
+        return [];
+      }
+
+      return data;
+    },
+    enabled: !!currentUser?.id,
+    staleTime: 1000 * 60, // 1 minute pour une réactivité accrue
+  });
+
+  const hasActiveVehicles = activeVehicles && activeVehicles.length > 0;
+
   // Récupérer les dépenses carburant pour la période sélectionnée
   const { data: fuelExpenses, isLoading: isFuelLoading } = useQuery({
     queryKey: ["period-fuel-expenses", viewMode, firstDayStr, lastDayStr],
@@ -101,7 +126,8 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
     fuelExpensesTotal: fuelExpenses?.total || 0,
     fuelExpensesCount: fuelExpenses?.count || 0,
     fuelVolume: fuelExpenses?.volume || 0,
-    isLoading: isExpensesLoading || isFuelLoading,
-    periodLabel: viewMode === "monthly" ? "mensuel" : "annuel"
+    isLoading: isExpensesLoading || isFuelLoading || isVehiclesLoading,
+    periodLabel: viewMode === "monthly" ? "mensuel" : "annuel",
+    hasActiveVehicles // Nouvelle propriété
   };
 };
