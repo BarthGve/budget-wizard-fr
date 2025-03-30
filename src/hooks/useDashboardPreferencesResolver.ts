@@ -1,15 +1,22 @@
 
 import { Profile } from "@/types/profile";
-import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
+import { mergeDashboardPreferences, defaultDashboardPreferences } from "@/utils/dashboard-preferences";
 
 /**
  * Hook pour résoudre les préférences du tableau de bord à partir du profil utilisateur
  */
 export const useDashboardPreferencesResolver = (profile: Profile | null | undefined) => {
   try {
-    // Assurons-nous que le profil et ses préférences sont bien typés
-    // Le cast explicite aide TypeScript à comprendre que nous gérons la conversion
-    const preferencesObject = profile?.dashboard_preferences || null;
+    // Vérification plus stricte du profil et des préférences
+    if (!profile) {
+      return {
+        dashboardPrefs: defaultDashboardPreferences,
+      };
+    }
+
+    // Gérer explicitement le cas où dashboard_preferences pourrait être null, undefined, 
+    // un objet, ou même une chaîne JSON
+    const preferencesObject = profile.dashboard_preferences;
     const dashboardPrefs = mergeDashboardPreferences(preferencesObject);
     
     return {
@@ -19,7 +26,7 @@ export const useDashboardPreferencesResolver = (profile: Profile | null | undefi
     console.error("Erreur lors du traitement des préférences du tableau de bord:", error);
     // En cas d'erreur, retourner les préférences par défaut
     return {
-      dashboardPrefs: mergeDashboardPreferences(null),
+      dashboardPrefs: defaultDashboardPreferences,
     };
   }
 };

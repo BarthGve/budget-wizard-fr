@@ -9,6 +9,7 @@ import { DashboardCardsSection } from "./dashboard-sections/DashboardCardsSectio
 import { ExpenseStatsWrapper } from "./dashboard-sections/ExpenseStatsWrapper";
 import { ChartsWrapper } from "./dashboard-sections/ChartsWrapper";
 import { ContributorsWrapper } from "./dashboard-sections/ContributorsWrapper";
+import { defaultDashboardPreferences } from "@/utils/dashboard-preferences";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -92,7 +93,7 @@ export const DashboardTabContent = ({
   const mappedContributors = useContributorMapper({ contributors });
   const { data: profile } = useProfileFetcher();
   
-  const { dashboardPrefs } = useDashboardPreferencesResolver(profile);
+  const { dashboardPrefs = defaultDashboardPreferences } = useDashboardPreferencesResolver(profile);
 
   return (
     <motion.div 
