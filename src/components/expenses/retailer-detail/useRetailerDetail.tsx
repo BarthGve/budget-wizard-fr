@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ export function useRetailerDetail(retailerId: string | undefined) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
+  const channelRef = useRef<any>(null);
 
   // Requête pour récupérer les informations du détaillant
   const { data: retailer, isLoading: isLoadingRetailer } = useQuery({
@@ -68,9 +69,19 @@ export function useRetailerDetail(retailerId: string | undefined) {
   useEffect(() => {
     if (!retailerId) return;
 
+    // Nettoyer l'ancien canal s'il existe
+    if (channelRef.current) {
+      console.log("Nettoyage du canal existant");
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+
     // Créer un canal pour écouter les changements sur la table expenses
+    const channelId = `expenses-changes-${retailerId}-${Date.now()}`;
+    console.log(`Création d'un nouveau canal: ${channelId}`);
+    
     const channel = supabase
-      .channel(`expenses-changes-${retailerId}`)
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -86,12 +97,18 @@ export function useRetailerDetail(retailerId: string | undefined) {
         }
       )
       .subscribe((status) => {
-        console.log(`Statut du canal expenses-changes:`, status);
+        console.log(`Statut du canal ${channelId}:`, status);
       });
+
+    channelRef.current = channel;
 
     // Nettoyage lors du démontage du composant
     return () => {
-      supabase.removeChannel(channel);
+      console.log(`Nettoyage du canal ${channelId} lors du démontage`);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
   }, [retailerId, refetchExpenses]);
 
