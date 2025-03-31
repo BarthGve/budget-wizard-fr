@@ -1,21 +1,14 @@
 
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export const handleError = (error: any, defaultMessage: string) => {
   const errorMessage = error?.message || defaultMessage;
-  toast({
-    title: "Erreur",
-    description: errorMessage,
-    variant: "destructive"
-  });
+  toast.error(errorMessage);
   return errorMessage;
 };
 
 export const showSuccess = (message: string) => {
-  toast({
-    title: "Succès",
-    description: message
-  });
+  toast.success(message);
   return message;
 };
 

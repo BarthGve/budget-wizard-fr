@@ -1,7 +1,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export const useAddCategory = (onSuccess?: () => void) => {
   const queryClient = useQueryClient();
@@ -19,19 +19,12 @@ export const useAddCategory = (onSuccess?: () => void) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recurring-expense-categories"] });
-      toast({
-        title: "Succès",
-        description: "Catégorie ajoutée avec succès"
-      });
+      toast.success("Catégorie ajoutée avec succès");
       if (onSuccess) onSuccess();
     },
     onError: (error: any) => {
       console.error("Error adding category:", error);
-      toast({
-        title: "Erreur",
-        description: error.message || "Erreur lors de l'ajout de la catégorie",
-        variant: "destructive"
-      });
+      toast.error(error.message || "Erreur lors de l'ajout de la catégorie");
     },
   });
 

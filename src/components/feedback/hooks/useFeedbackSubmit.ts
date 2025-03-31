@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const useFeedbackSubmit = () => {
@@ -26,11 +26,7 @@ export const useFeedbackSubmit = () => {
 
   const submitFeedback = async (title: string, content: string, rating: number | null) => {
     if (!title.trim() || !content.trim() || !rating) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs",
-        variant: "destructive"
-      });
+      toast.error("Veuillez remplir tous les champs");
       return false;
     }
 
@@ -48,10 +44,7 @@ export const useFeedbackSubmit = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Merci",
-        description: "Merci pour votre feedback !"
-      });
+      toast.success("Merci pour votre feedback !");
       
       if (feedback) {
         await notifyAdmins(feedback.id);
@@ -60,11 +53,7 @@ export const useFeedbackSubmit = () => {
       return true;
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'envoi du feedback",
-        variant: "destructive"
-      });
+      toast.error("Une erreur est survenue lors de l'envoi du feedback");
       return false;
     } finally {
       setIsSubmitting(false);

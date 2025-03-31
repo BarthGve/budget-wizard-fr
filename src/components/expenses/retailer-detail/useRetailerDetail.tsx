@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 interface Expense {
   id: string;
@@ -33,11 +33,7 @@ export function useRetailerDetail(retailerId: string | undefined) {
 
       if (error) {
         console.error("Error fetching retailer:", error);
-        toast({
-          title: "Erreur",
-          description: "Erreur lors du chargement des données de l'enseigne",
-          variant: "destructive",
-        });
+        toast.error("Erreur lors du chargement des données de l'enseigne");
         throw error;
       }
 
@@ -59,11 +55,7 @@ export function useRetailerDetail(retailerId: string | undefined) {
 
       if (error) {
         console.error("Error fetching expenses:", error);
-        toast({
-          title: "Erreur",
-          description: "Erreur lors du chargement des dépenses",
-          variant: "destructive",
-        });
+        toast.error("Erreur lors du chargement des dépenses");
         throw error;
       }
 
@@ -140,26 +132,15 @@ export function useRetailerDetail(retailerId: string | undefined) {
 
       if (error) {
         console.error("Error deleting expense:", error);
-        toast({
-          title: "Erreur",
-          description: "Erreur lors de la suppression de la dépense",
-          variant: "destructive",
-        });
+        toast.error("Erreur lors de la suppression de la dépense");
         return;
       }
 
-      toast({
-        title: "Succès",
-        description: "Dépense supprimée avec succès",
-      });
+      toast.success("Dépense supprimée avec succès");
       refetchExpenses();
     } catch (error) {
       console.error("Error in delete operation:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur s'est produite",
-        variant: "destructive",
-      });
+      toast.error("Une erreur s'est produite");
     }
   };
 
