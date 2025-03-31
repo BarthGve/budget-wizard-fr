@@ -1,5 +1,4 @@
 
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -59,17 +58,15 @@ const Properties = () => {
   };
 
   return (
-    <DashboardLayout>
-      <motion.div 
-        className="grid gap-6 mt-4"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
-        <PropertiesHeader />
-        <PropertyContent properties={properties} isLoading={isLoading} />
-      </motion.div>
-    </DashboardLayout>
+    <motion.div 
+      className="grid gap-6 mt-4"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <PropertiesHeader />
+      <PropertyContent properties={properties} isLoading={isLoading} />
+    </motion.div>
   );
 };
 

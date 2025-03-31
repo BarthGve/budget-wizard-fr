@@ -1,6 +1,5 @@
 
 import { memo, useCallback, useEffect } from "react";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -109,17 +108,15 @@ const Credits = memo(function Credits() {
   const isLoading = isLoadingCredits || isLoadingStats;
   
   if (isLoading) {
-    return <DashboardLayout><StyledLoader /></DashboardLayout>;
+    return <StyledLoader />;
   }
   
   return (
-    <DashboardLayout>
-      <CreditsContainer 
-        credits={credits}
-        monthlyStats={monthlyStats}
-        onCreditDeleted={handleCreditDeleted}
-      />
-    </DashboardLayout>
+    <CreditsContainer 
+      credits={credits}
+      monthlyStats={monthlyStats}
+      onCreditDeleted={handleCreditDeleted}
+    />
   );
 });
 

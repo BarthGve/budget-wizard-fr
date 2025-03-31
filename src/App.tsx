@@ -26,6 +26,7 @@ import AuthProvider from "./context/AuthProvider";
 import { AuthWrapper } from "./components/auth/AuthWrapper";
 
 // Import des pages principales (contenu protégé)
+import Dashboard from "./pages/Dashboard";
 import UserSettings from "./pages/UserSettings";
 import Vehicles from "./pages/Vehicles";
 import VehicleDetail from "./pages/VehicleDetail";
@@ -74,17 +75,16 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/email-verification" element={<EmailVerification />} />
                 
-                {/* Redirection par défaut vers le tableau de bord après connexion */}
-                <Route path="/user-settings" element={
+                {/* Routes protégées avec layout dashboard */}
+                <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <DashboardLayout>
-                      <UserSettings />
+                      <Dashboard />
                     </DashboardLayout>
                   </ProtectedRoute>
                 } />
                 
-                {/* Routes protégées avec layout dashboard */}
-                <Route path="/dashboard" element={
+                <Route path="/user-settings" element={
                   <ProtectedRoute>
                     <DashboardLayout>
                       <UserSettings />
