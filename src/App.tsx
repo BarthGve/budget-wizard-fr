@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
+  Navigate
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
@@ -73,8 +74,8 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/email-verification" element={<EmailVerification />} />
                 
-                {/* Routes protégées avec layout dashboard */}
-                <Route path="/dashboard" element={
+                {/* Redirection par défaut vers le tableau de bord après connexion */}
+                <Route path="/user-settings" element={
                   <ProtectedRoute>
                     <DashboardLayout>
                       <UserSettings />
@@ -82,7 +83,8 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                <Route path="/user-settings" element={
+                {/* Routes protégées avec layout dashboard */}
+                <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <DashboardLayout>
                       <UserSettings />

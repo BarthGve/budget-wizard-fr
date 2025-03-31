@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -75,6 +74,9 @@ export function useAuth() {
       localStorage.setItem('auth_session', JSON.stringify(data.session));
       sessionStorage.setItem('is_authenticated', 'true');
       
+      // Rediriger vers le tableau de bord
+      navigate("/dashboard");
+      
       return data;
     } catch (error: any) {
       toast.error(error.message || "Erreur de connexion");
@@ -82,7 +84,7 @@ export function useAuth() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [navigate]);
 
   // Inscription utilisateur
   const register = useCallback(async (credentials: RegisterCredentials) => {

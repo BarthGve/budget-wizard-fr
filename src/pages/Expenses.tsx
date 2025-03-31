@@ -1,5 +1,3 @@
-
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
 import { useState, memo, useMemo } from "react";
@@ -115,137 +113,135 @@ const Expenses = memo(function Expenses() {
   };
   
   if (isLoading) {
-    return <DashboardLayout><StyledLoader/></DashboardLayout>;
+    return <StyledLoader/>;
   }
   
   return (
-    <DashboardLayout>
-      <motion.div 
-        className="grid gap-6 mt-4"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
-        <motion.div variants={itemVariants} className="space-y-4">
-          <ExpensesHeader 
-            viewMode={viewMode} 
-            setViewMode={setViewMode} 
-            onExpenseAdded={handleExpenseUpdated} 
-          />
-          <motion.div variants={itemVariants}>
-            <CreateRetailerBanner />
+    <motion.div 
+      className="grid gap-6 mt-4"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <motion.div variants={itemVariants} className="space-y-4">
+        <ExpensesHeader 
+          viewMode={viewMode} 
+          setViewMode={setViewMode} 
+          onExpenseAdded={handleExpenseUpdated} 
+        />
+        <motion.div variants={itemVariants}>
+          <CreateRetailerBanner />
+        </motion.div>
+        
+        {/* Disposition avec flex pour les écrans larges, colonne pour mobile */}
+        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row gap-6 mt-8 mb-8">
+          {/* Carte de total des dépenses (1/3 sur grands écrans, pleine largeur sur mobile) */}
+          <motion.div variants={itemVariants} className="w-full lg:w-1/3 grid grid-cols-1 gap-4">
+            <YearlyTotalCard 
+              key={`total-card-${currentYearTotal}`}
+              currentYearTotal={currentYearTotal} 
+              previousYearTotal={lastYearTotal} 
+              expenses={expenses || []} 
+              viewMode={viewMode}
+            />
+            
+            {/* Carte de moyenne mensuelle/annuelle avec le même design */}
+            <Card className={cn(
+              "overflow-hidden transition-all duration-200 h-full relative",
+              "border shadow-sm hover:shadow-md",
+              // Light mode
+              "bg-white border-blue-100",
+              // Dark mode
+              "dark:bg-gray-800/90 dark:hover:bg-blue-900/20 dark:border-blue-800/50"
+            )}>
+              {/* Fond radial gradient */}
+              <div className={cn(
+                "absolute inset-0 opacity-5",
+                // Light mode
+                "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+                // Dark mode
+                "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+              )} />
+              
+              <CardHeader className="pb-2 pt-6 relative z-10">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className={cn(
+                      // Light mode
+                      "bg-blue-100 text-blue-700",
+                      // Dark mode
+                      "dark:bg-blue-800/40 dark:text-blue-300",
+                      // Common
+                      "p-2 rounded-lg"
+                    )}>
+                      <Calculator className="h-4 w-4" />
+                    </div>
+                    <CardTitle className={cn(
+                      "text-lg font-semibold",
+                      // Light mode
+                      "text-blue-700",
+                      // Dark mode
+                      "dark:text-blue-300"
+                    )}>
+                      Moyenne des dépenses
+                    </CardTitle>
+                  </div>
+                </div>
+                
+                <CardDescription className={cn(
+                  "mt-2 text-sm",
+                  // Light mode
+                  "text-blue-600/80",
+                  // Dark mode
+                  "dark:text-blue-400/90"
+                )}>
+                  {viewMode === 'monthly' ? "Moyenne mensuelle" : "Moyenne annuelle"}
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="pt-1 pb-6 relative z-10">
+                <p className={cn(
+                  "text-2xl font-bold",
+                  // Light mode
+                  "text-blue-700",
+                  // Dark mode
+                  "dark:text-blue-300"
+                )}>
+                  {formatCurrency(viewMode === 'monthly' ? monthlyAverage : yearlyAverage)}
+                </p>
+                
+                <div className="mt-3">
+                  <p className={cn(
+                    "text-sm",
+                    "text-blue-600/80 dark:text-blue-400/90"
+                  )}>
+                    {Math.round(viewMode === 'monthly' ? averageMonthlyTransactions : averageYearlyTransactions)} 
+                    {viewMode === 'monthly' ? " achats par mois" : " achats par an"}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
           
-          {/* Disposition avec flex pour les écrans larges, colonne pour mobile */}
-          <motion.div variants={itemVariants} className="flex flex-col lg:flex-row gap-6 mt-8 mb-8">
-            {/* Carte de total des dépenses (1/3 sur grands écrans, pleine largeur sur mobile) */}
-            <motion.div variants={itemVariants} className="w-full lg:w-1/3 grid grid-cols-1 gap-4">
-              <YearlyTotalCard 
-                key={`total-card-${currentYearTotal}`}
-                currentYearTotal={currentYearTotal} 
-                previousYearTotal={lastYearTotal} 
+          {/* Graphique des dépenses par enseigne (2/3) - masqué sur mobile */}
+          {!isMobileScreen && (
+            <motion.div variants={itemVariants} className="w-full lg:w-2/3">
+              <RetailersExpensesChart 
                 expenses={expenses || []} 
+                retailers={retailers || []} 
                 viewMode={viewMode}
               />
-              
-              {/* Carte de moyenne mensuelle/annuelle avec le même design */}
-              <Card className={cn(
-                "overflow-hidden transition-all duration-200 h-full relative",
-                "border shadow-sm hover:shadow-md",
-                // Light mode
-                "bg-white border-blue-100",
-                // Dark mode
-                "dark:bg-gray-800/90 dark:hover:bg-blue-900/20 dark:border-blue-800/50"
-              )}>
-                {/* Fond radial gradient */}
-                <div className={cn(
-                  "absolute inset-0 opacity-5",
-                  // Light mode
-                  "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
-                  // Dark mode
-                  "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
-                )} />
-                
-                <CardHeader className="pb-2 pt-6 relative z-10">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-2">
-                      <div className={cn(
-                        // Light mode
-                        "bg-blue-100 text-blue-700",
-                        // Dark mode
-                        "dark:bg-blue-800/40 dark:text-blue-300",
-                        // Common
-                        "p-2 rounded-lg"
-                      )}>
-                        <Calculator className="h-4 w-4" />
-                      </div>
-                      <CardTitle className={cn(
-                        "text-lg font-semibold",
-                        // Light mode
-                        "text-blue-700",
-                        // Dark mode
-                        "dark:text-blue-300"
-                      )}>
-                        Moyenne des dépenses
-                      </CardTitle>
-                    </div>
-                  </div>
-                  
-                  <CardDescription className={cn(
-                    "mt-2 text-sm",
-                    // Light mode
-                    "text-blue-600/80",
-                    // Dark mode
-                    "dark:text-blue-400/90"
-                  )}>
-                    {viewMode === 'monthly' ? "Moyenne mensuelle" : "Moyenne annuelle"}
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardContent className="pt-1 pb-6 relative z-10">
-                  <p className={cn(
-                    "text-2xl font-bold",
-                    // Light mode
-                    "text-blue-700",
-                    // Dark mode
-                    "dark:text-blue-300"
-                  )}>
-                    {formatCurrency(viewMode === 'monthly' ? monthlyAverage : yearlyAverage)}
-                  </p>
-                  
-                  <div className="mt-3">
-                    <p className={cn(
-                      "text-sm",
-                      "text-blue-600/80 dark:text-blue-400/90"
-                    )}>
-                      {Math.round(viewMode === 'monthly' ? averageMonthlyTransactions : averageYearlyTransactions)} 
-                      {viewMode === 'monthly' ? " achats par mois" : " achats par an"}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
             </motion.div>
-            
-            {/* Graphique des dépenses par enseigne (2/3) - masqué sur mobile */}
-            {!isMobileScreen && (
-              <motion.div variants={itemVariants} className="w-full lg:w-2/3">
-                <RetailersExpensesChart 
-                  expenses={expenses || []} 
-                  retailers={retailers || []} 
-                  viewMode={viewMode}
-                />
-              </motion.div>
-            )}
-          </motion.div>
-          
-          <RetailersGrid 
-            expensesByRetailer={expensesByRetailer || []} 
-            onExpenseUpdated={handleExpenseUpdated}
-            viewMode={viewMode} 
-          />
+          )}
         </motion.div>
+        
+        <RetailersGrid 
+          expensesByRetailer={expensesByRetailer || []} 
+          onExpenseUpdated={handleExpenseUpdated}
+          viewMode={viewMode} 
+        />
       </motion.div>
-    </DashboardLayout>
+    </motion.div>
   );
 });
 
