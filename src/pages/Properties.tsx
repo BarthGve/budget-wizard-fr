@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PropertiesHeader } from "@/components/properties/PropertiesHeader";
 import { PropertyContent } from "@/components/properties/PropertyContent";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const Properties = () => {
   const navigate = useNavigate();
@@ -58,15 +59,17 @@ const Properties = () => {
   };
 
   return (
-    <motion.div 
-      className="grid gap-6 mt-4"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <PropertiesHeader />
-      <PropertyContent properties={properties} isLoading={isLoading} />
-    </motion.div>
+    <TooltipProvider>
+      <motion.div 
+        className="grid gap-6 mt-4"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <PropertiesHeader />
+        <PropertyContent properties={properties} isLoading={isLoading} />
+      </motion.div>
+    </TooltipProvider>
   );
 };
 

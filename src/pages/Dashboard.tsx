@@ -9,6 +9,7 @@ import { useExpenseCalculations } from "@/hooks/useExpenseCalculations";
 import { useContributors } from "@/hooks/useContributors";
 import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const Dashboard = () => {
   // Configurer les écouteurs de mises à jour en temps réel
@@ -63,27 +64,35 @@ const Dashboard = () => {
     return <StyledLoader />;
   }
 
+  // Préparer les recurring expenses avec le bon typage pour periodicity
+  const typedRecurringExpenses = dashboardData.recurringExpenses?.map(expense => ({
+    ...expense,
+    periodicity: expense.periodicity as "monthly" | "quarterly" | "yearly"
+  })) || [];
+
   return (
-    <motion.div 
-      className="container px-4 py-6 mx-auto"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <DashboardTabContent
-        revenue={revenue}
-        expenses={expenses}
-        savings={savings}
-        balance={balance}
-        savingsGoal={savingsGoal}
-        contributors={dashboardData.contributors || []}
-        contributorShares={contributorShares}
-        expenseShares={expenseShares}
-        recurringExpenses={dashboardData.recurringExpenses || []}
-        monthlySavings={dashboardData.monthlySavings || []}
-        currentView={currentView}
-      />
-    </motion.div>
+    <TooltipProvider>
+      <motion.div 
+        className="container px-4 py-6 mx-auto"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <DashboardTabContent
+          revenue={revenue}
+          expenses={expenses}
+          savings={savings}
+          balance={balance}
+          savingsGoal={savingsGoal}
+          contributors={dashboardData.contributors || []}
+          contributorShares={contributorShares}
+          expenseShares={expenseShares}
+          recurringExpenses={typedRecurringExpenses}
+          monthlySavings={dashboardData.monthlySavings || []}
+          currentView={currentView}
+        />
+      </motion.div>
+    </TooltipProvider>
   );
 };
 
