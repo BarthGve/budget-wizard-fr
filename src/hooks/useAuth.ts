@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -83,8 +84,33 @@ export function useAuth() {
       setUser(data.user);
       setSession(data.session);
       
-      // Rediriger vers le tableau de bord
-      navigate("/dashboard");
+      // Vérifier si l'utilisateur est un administrateur avant de le rediriger
+      // Cette vérification doit être faite après la connexion et avant la redirection
+      try {
+        console.log("Vérification du rôle administrateur pour", data.user.email);
+        const { data: isAdmin, error: adminError } = await supabase.rpc('has_role', {
+          user_id: data.user.id,
+          role: 'admin'
+        });
+        
+        if (adminError) {
+          console.error("Erreur lors de la vérification du rôle admin:", adminError);
+          throw adminError;
+        }
+        
+        // Redirection conditionnelle selon le statut admin
+        if (isAdmin) {
+          console.log("Utilisateur admin détecté - Redirection vers /admin");
+          navigate("/admin");
+        } else {
+          console.log("Utilisateur standard - Redirection vers /dashboard");
+          navigate("/dashboard");
+        }
+      } catch (adminCheckError) {
+        console.error("Échec de la vérification du rôle admin:", adminCheckError);
+        // En cas d'erreur dans la vérification du rôle, rediriger vers le dashboard par défaut
+        navigate("/dashboard");
+      }
       
       return data;
     } catch (error: any) {
