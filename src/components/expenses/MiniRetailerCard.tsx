@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { Store, PlusCircle, TrendingDown, TrendingUp } from "lucide-react";
@@ -34,7 +33,6 @@ export function MiniRetailerCard({
   const now = new Date();
   const isPeriodMonthly = viewMode === "monthly";
   
-  // Calculer le total pour la période actuelle
   const totalAmount = expenses.reduce((sum, expense) => {
     const expenseDate = new Date(expense.date);
     const isCurrentPeriod = isPeriodMonthly 
@@ -44,7 +42,6 @@ export function MiniRetailerCard({
     return isCurrentPeriod ? sum + expense.amount : sum;
   }, 0);
 
-  // Calculer le total pour la période précédente
   const previousPeriodAmount = expenses.reduce((sum, expense) => {
     const expenseDate = new Date(expense.date);
     const isPreviousPeriod = isPeriodMonthly
@@ -54,7 +51,6 @@ export function MiniRetailerCard({
     return isPreviousPeriod ? sum + expense.amount : sum;
   }, 0);
 
-  // Calculer le pourcentage de variation
   const percentageChange = previousPeriodAmount === 0
     ? 100
     : ((totalAmount - previousPeriodAmount) / previousPeriodAmount) * 100;
@@ -71,7 +67,6 @@ export function MiniRetailerCard({
         )}
       >
         <div className="h-full flex items-center p-3">
-          {/* Logo et nom du commerçant */}
           <div className="flex-shrink-0 mr-3">
             {retailer.logo_url ? (
               <div className="h-10 w-10 rounded-full overflow-hidden border border-gray-100 dark:border-gray-700">
@@ -88,7 +83,6 @@ export function MiniRetailerCard({
             )}
           </div>
           
-          {/* Nom et montant */}
           <div className="flex-grow min-w-0">
             <Link 
               to={`/expenses/retailer/${retailer.id}`}
@@ -101,7 +95,6 @@ export function MiniRetailerCard({
                 {formatCurrency(totalAmount)}
               </span>
               
-              {/* Indicateur de variation en petit */}
               {previousPeriodAmount > 0 && (
                 <div className="flex items-center ml-2">
                   <div className={cn(
@@ -125,7 +118,6 @@ export function MiniRetailerCard({
             </div>
           </div>
           
-          {/* Bouton d'ajout */}
           <Button
             variant="ghost"
             size="sm"

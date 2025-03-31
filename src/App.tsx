@@ -32,6 +32,7 @@ import Vehicles from "./pages/Vehicles";
 import VehicleDetail from "./pages/VehicleDetail";
 import Contributors from "./pages/Contributors";
 import Expenses from "./pages/Expenses";
+import RetailerDetail from "./pages/RetailerDetail";
 import RecurringExpenses from "./pages/RecurringExpenses";
 import Credits from "./pages/Credits";
 import Savings from "./pages/Savings";
@@ -122,6 +123,15 @@ function App() {
                   <ProtectedRoute>
                     <DashboardLayout>
                       <Expenses />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                {/* Nouvelle route pour le détail d'un détaillant */}
+                <Route path="/expenses/retailer/:id" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <RetailerDetail />
                     </DashboardLayout>
                   </ProtectedRoute>
                 } />
