@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useVehiclesContainer } from "@/hooks/useVehiclesContainer";
 import { useVehicles } from "@/hooks/useVehicles";
@@ -60,7 +60,11 @@ export const useFloatingActionButton = () => {
         setRetailers(data || []);
       } catch (error) {
         console.error("Erreur lors du chargement des enseignes:", error);
-        toast.error("Impossible de charger les enseignes");
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les enseignes",
+          variant: "destructive",
+        });
       } finally {
         setIsLoadingRetailers(false);
       }

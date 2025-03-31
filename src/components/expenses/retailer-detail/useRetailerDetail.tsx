@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 interface Expense {
   id: string;
@@ -33,7 +33,11 @@ export function useRetailerDetail(retailerId: string | undefined) {
 
       if (error) {
         console.error("Error fetching retailer:", error);
-        toast.error("Erreur lors du chargement des données de l'enseigne");
+        toast({
+          title: "Erreur",
+          description: "Erreur lors du chargement des données de l'enseigne",
+          variant: "destructive",
+        });
         throw error;
       }
 
@@ -55,7 +59,11 @@ export function useRetailerDetail(retailerId: string | undefined) {
 
       if (error) {
         console.error("Error fetching expenses:", error);
-        toast.error("Erreur lors du chargement des dépenses");
+        toast({
+          title: "Erreur",
+          description: "Erreur lors du chargement des dépenses",
+          variant: "destructive",
+        });
         throw error;
       }
 
@@ -132,15 +140,26 @@ export function useRetailerDetail(retailerId: string | undefined) {
 
       if (error) {
         console.error("Error deleting expense:", error);
-        toast.error("Erreur lors de la suppression de la dépense");
+        toast({
+          title: "Erreur",
+          description: "Erreur lors de la suppression de la dépense",
+          variant: "destructive",
+        });
         return;
       }
 
-      toast.success("Dépense supprimée avec succès");
+      toast({
+        title: "Succès",
+        description: "Dépense supprimée avec succès",
+      });
       refetchExpenses();
     } catch (error) {
       console.error("Error in delete operation:", error);
-      toast.error("Une erreur s'est produite");
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite",
+        variant: "destructive",
+      });
     }
   };
 

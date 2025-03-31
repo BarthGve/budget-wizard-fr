@@ -1,7 +1,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
@@ -17,11 +17,18 @@ export const useDeleteCategory = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recurring-expense-categories"] });
-      toast.success("Catégorie supprimée avec succès");
+      toast({
+        title: "Succès",
+        description: "Catégorie supprimée avec succès"
+      });
     },
     onError: (error: any) => {
       console.error("Error deleting category:", error);
-      toast.error(error.message || "Erreur lors de la suppression de la catégorie");
+      toast({
+        title: "Erreur",
+        description: error.message || "Erreur lors de la suppression de la catégorie",
+        variant: "destructive"
+      });
     },
   });
 

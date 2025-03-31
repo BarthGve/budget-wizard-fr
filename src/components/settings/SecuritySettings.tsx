@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -5,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { TriangleAlert, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
@@ -26,12 +27,20 @@ export const SecuritySettings = () => {
     e.preventDefault();
     
     if (newPassword !== confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
+      toast({
+        title: "Erreur",
+        description: "Les mots de passe ne correspondent pas",
+        variant: "destructive"
+      });
       return;
     }
 
     if (newPassword.length < 6) {
-      toast.error("Le mot de passe doit contenir au moins 6 caractères");
+      toast({
+        title: "Erreur",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -59,19 +68,34 @@ export const SecuritySettings = () => {
       
       if (error) {
         if (error.message?.includes('last admin')) {
-          toast.error("Impossible de supprimer le compte : vous êtes le dernier administrateur. Veuillez d'abord nommer un autre administrateur.");
+          toast({
+            title: "Erreur",
+            description: "Impossible de supprimer le compte : vous êtes le dernier administrateur. Veuillez d'abord nommer un autre administrateur.",
+            variant: "destructive"
+          });
           setIsDialogOpen(false);
         } else {
-          toast.error("Erreur lors de la suppression du compte");
+          toast({
+            title: "Erreur",
+            description: "Erreur lors de la suppression du compte",
+            variant: "destructive"
+          });
         }
         return;
       }
 
-      toast.success("Compte supprimé avec succès");
+      toast({
+        title: "Succès",
+        description: "Compte supprimé avec succès"
+      });
       navigate('/');
     } catch (error: any) {
       console.error("Error deleting account:", error);
-      toast.error(error.message || "Erreur lors de la suppression du compte");
+      toast({
+        title: "Erreur",
+        description: error.message || "Erreur lors de la suppression du compte",
+        variant: "destructive"
+      });
     } finally {
       setIsDeleting(false);
     }
