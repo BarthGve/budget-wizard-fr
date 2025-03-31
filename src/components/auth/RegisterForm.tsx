@@ -1,12 +1,13 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { RegisterFormData, validateRegisterForm } from "@/utils/formValidation";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useForm, zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuthContext } from "@/context/AuthProvider";
 
@@ -14,27 +15,22 @@ interface RegisterFormProps {
   onSubmit?: () => void;
 }
 
-const formSchema = z.object({
-  name: z.string().min(1, "Le prénom est obligatoire"),
-  email: z.string().email("Adresse email invalide"),
-  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
-  confirmPassword: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères").refine((value, ctx) => {
-    if (value !== ctx.parent.password) {
-      return ctx.addIssue({
-        code: "custom",
-        message: "Les mots de passe ne correspondent pas",
-      });
-    }
-    return true;
-  }, "Les mots de passe ne correspondent pas"),
-});
-
 export const RegisterForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   
-  const { register } = useAuthContext();
+  const { register: registerUser } = useAuthContext();
+
+  const formSchema = z.object({
+    name: z.string().min(1, "Le prénom est obligatoire"),
+    email: z.string().email("Adresse email invalide"),
+    password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+    confirmPassword: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,7 +47,7 @@ export const RegisterForm = () => {
     setIsLoading(true);
     
     try {
-      await register({
+      await registerUser({
         name: values.name,
         email: values.email,
         password: values.password,

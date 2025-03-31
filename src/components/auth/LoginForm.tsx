@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useAuthContext } from "@/context/AuthProvider";
-import { useForm, zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 interface LoginFormProps {
@@ -68,8 +70,7 @@ export const LoginForm = () => {
             id="email"
             type="email"
             placeholder="vous@exemple.com"
-            value={form.watch("email")}
-            onChange={form.register("email")}
+            {...form.register("email")}
             required
             disabled={isLoading}
           />
@@ -87,8 +88,7 @@ export const LoginForm = () => {
           <Input
             id="password"
             type="password"
-            value={form.watch("password")}
-            onChange={form.register("password")}
+            {...form.register("password")}
             required
             disabled={isLoading}
           />
