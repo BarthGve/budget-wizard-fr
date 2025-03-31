@@ -1,76 +1,65 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RegisterFormData, validateRegisterForm } from "@/utils/formValidation";
-import { registerUser } from "@/services/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useForm, zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuthContext } from "@/context/AuthProvider";
 
 interface RegisterFormProps {
   onSubmit?: () => void;
 }
 
-export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
+const formSchema = z.object({
+  name: z.string().min(1, "Le prénom est obligatoire"),
+  email: z.string().email("Adresse email invalide"),
+  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+  confirmPassword: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères").refine((value, ctx) => {
+    if (value !== ctx.parent.password) {
+      return ctx.addIssue({
+        code: "custom",
+        message: "Les mots de passe ne correspondent pas",
+      });
+    }
+    return true;
+  }, "Les mots de passe ne correspondent pas"),
+});
+
+export const RegisterForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<RegisterFormData>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const [formError, setFormError] = useState<string | null>(null);
+  
+  const { register } = useAuthContext();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
-    // Réinitialiser le message d'erreur lorsque l'utilisateur modifie quelque chose
-    setError(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const validation = validateRegisterForm(formData);
-    if (!validation.isValid) {
-      setError(validation.error);
-      return;
-    }
-
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setFormError(null);
     setIsLoading(true);
-    setError(null);
     
     try {
-      console.log("Tentative d'inscription depuis le formulaire...");
-      
-      await registerUser({
-        email: formData.email,
-        password: formData.password,
-        name: formData.name
+      await register({
+        name: values.name,
+        email: values.email,
+        password: values.password,
       });
-      
-      console.log("Inscription réussie!");
-      toast.success("Inscription réussie! Veuillez vérifier votre email.");
-      
-      if (onSubmit) {
-        onSubmit();
-      }
       
       navigate("/email-verification");
     } catch (error: any) {
-      console.error("Erreur finale capturée dans le formulaire d'inscription:", error);
-      
-      // Message d'erreur plus compréhensible pour l'utilisateur
-      if (error.message.includes("email") || error.message.includes("existe déjà")) {
-        setError("Un compte existe déjà avec cet email. Veuillez vous connecter ou utiliser une autre adresse email.");
-      } else {
-        setError(error.message || "Une erreur est survenue lors de l'inscription. Veuillez réessayer.");
-      }
+      setFormError(error.message || "Erreur lors de l'inscription");
     } finally {
       setIsLoading(false);
     }
@@ -78,20 +67,19 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
 
   return (
     <>
-      {error && (
+      {formError && (
         <Alert variant="destructive" className="mb-4">
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>{formError}</AlertDescription>
         </Alert>
       )}
       
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Prénom</Label>
           <Input 
             id="name" 
             placeholder="Votre prénom"
-            value={formData.name}
-            onChange={handleChange}
+            {...form.register("name")}
             disabled={isLoading}
           />
         </div>
@@ -101,8 +89,7 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
             id="email" 
             type="email" 
             placeholder="vous@exemple.com"
-            value={formData.email}
-            onChange={handleChange}
+            {...form.register("email")}
             disabled={isLoading}
           />
         </div>
@@ -111,8 +98,7 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
           <Input 
             id="password" 
             type="password"
-            value={formData.password}
-            onChange={handleChange}
+            {...form.register("password")}
             disabled={isLoading}
           />
         </div>
@@ -121,8 +107,7 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
           <Input 
             id="confirmPassword" 
             type="password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
+            {...form.register("confirmPassword")}
             disabled={isLoading}
           />
         </div>

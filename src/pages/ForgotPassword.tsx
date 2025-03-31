@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,14 +7,16 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuthContext } from "@/context/AuthProvider";
 
 const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  
+  const { resetPassword } = useAuthContext();
 
   const validateEmail = (email: string) => {
-    // Expression régulière simple pour valider le format de l'email
     const re = /\S+@\S+\.\S+/;
     return re.test(email);
   };
@@ -23,44 +24,22 @@ const ForgotPassword = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // Validation de l'email avant l'envoi
     if (!validateEmail(email)) {
       toast.error("Veuillez entrer une adresse email valide");
       return;
     }
     
     setIsLoading(true);
-    console.log("Tentative d'envoi d'email de réinitialisation à:", email);
 
     try {
-      // Récupérer l'URL actuelle pour former le lien de redirection
-      const currentUrl = window.location.origin;
-      const redirectUrl = `${currentUrl}/reset-password`;
-      console.log("URL de redirection configurée:", redirectUrl);
-
-      // Appel à l'API Supabase pour l'envoi de l'email de réinitialisation
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl
-      });
-
-      console.log("Réponse de Supabase:", { error });
-
-      if (error) {
-        console.error("Erreur détaillée:", error);
-        throw error;
+      const success = await resetPassword(email);
+      
+      if (success) {
+        setSent(true);
+        setEmail("");
       }
-
-      // Message de succès même si l'email n'existe pas (sécurité)
-      toast.success("Un email de réinitialisation vous a été envoyé");
-      setSent(true);
-      setEmail("");
     } catch (error: any) {
       console.error("Erreur lors de l'envoi de l'email de réinitialisation:", error);
-      
-      // Message générique pour éviter la divulgation d'informations
-      toast.error(
-        "Une erreur s'est produite. Veuillez vérifier votre email et réessayer."
-      );
     } finally {
       setIsLoading(false);
     }

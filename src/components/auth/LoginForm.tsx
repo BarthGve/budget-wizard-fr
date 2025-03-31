@@ -1,45 +1,53 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "@/services/auth";
+import { useLocation } from "react-router-dom";
+import { useAuthContext } from "@/context/AuthProvider";
+import { useForm, zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 interface LoginFormProps {
   onSubmit?: () => void;
 }
 
-export const LoginForm = ({ onSubmit }: LoginFormProps) => {
+export const LoginForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  
+  const { login } = useAuthContext();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email.trim() || !password) {
-      setError("Veuillez remplir tous les champs");
-      return;
-    }
+  const formSchema = z.object({
+    email: z.string().email({ message: "Adresse email invalide" }),
+    password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" }),
+  });
 
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setFormError(null);
     setIsLoading(true);
-    setError(null);
     
     try {
-      await loginUser({ email, password });
+      await login({
+        email: values.email,
+        password: values.password,
+      });
       
-      if (onSubmit) {
-        onSubmit();
-      }
-      
-      navigate("/dashboard");
+      const from = location.state?.from?.pathname || "/dashboard";
+      navigate(from, { replace: true });
     } catch (error: any) {
-      console.error("Erreur de connexion:", error);
-      setError(error.message || "Une erreur est survenue lors de la connexion");
+      setFormError(error.message || "Erreur lors de la connexion");
     } finally {
       setIsLoading(false);
     }
@@ -47,21 +55,21 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
 
   return (
     <>
-      {error && (
+      {formError && (
         <Alert variant="destructive" className="mb-4">
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>{formError}</AlertDescription>
         </Alert>
       )}
       
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
             placeholder="vous@exemple.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={form.watch("email")}
+            onChange={form.register("email")}
             required
             disabled={isLoading}
           />
@@ -79,8 +87,8 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
           <Input
             id="password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={form.watch("password")}
+            onChange={form.register("password")}
             required
             disabled={isLoading}
           />

@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag, Sun, Moon, Monitor } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "next-themes";
+import { useAuthContext } from "@/context/AuthProvider";
 
 interface UserDropdownProps {
   collapsed: boolean;
@@ -24,23 +24,16 @@ export const UserDropdown = ({
   profile
 }: UserDropdownProps) => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { isAdmin } = usePagePermissions();
   const isMobile = useIsMobile();
   const { setTheme, theme } = useTheme();
+  
+  const { logout } = useAuthContext();
 
   const handleLogout = async () => {
     try {
-      // Vider le cache avant la déconnexion pour garantir un état propre
-      queryClient.clear();
-      
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      toast.success("Déconnexion réussie");
-      navigate("/");
-    } catch (error: any) {
-      toast.error("Erreur lors de la déconnexion");
+      await logout();
+    } catch (error) {
       console.error("Logout error:", error);
     }
   };
@@ -56,18 +49,15 @@ export const UserDropdown = ({
             variant="ghost" 
             className={cn(
               "w-full h-auto",
-              // Si collapsed, on centre le contenu, sinon on garde l'alignement à gauche
               collapsed ? "justify-center p-0" : "justify-start p-2"
             )}>
             <div className={cn(
               "flex items-center w-full",
-              // Si collapsed, on supprime le gap et on centre
               collapsed ? "justify-center" : "gap-3"
             )}>
               <div className="relative">
                 <Avatar className={cn(
                   "transition-all duration-300",
-                  // Ajuster la taille de l'avatar pour mobile
                   isMobile && collapsed ? "h-9 w-9" : collapsed ? "h-10 w-10" : "h-12 w-12"
                 )}>
                   <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
@@ -79,14 +69,12 @@ export const UserDropdown = ({
                   <Badge 
                     className={cn(
                       "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
-                      // Si collapsed, on peut ajuster la taille du badge
                       collapsed ? "scale-90" : ""
                     )}>
                     Pro
                   </Badge>
                 )}
               </div>
-              {/* Le reste du contenu qui n'apparaît que quand non collapsed */}
               {!collapsed && (
                 <div className="flex items-center justify-between flex-1">
                   <div className="flex flex-col items-start">
@@ -132,7 +120,6 @@ export const UserDropdown = ({
             </DropdownMenuItem>
           )}
 
-          {/* Option de thème uniquement visible sur mobile */}
           {isMobile && (
             <>
               <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("light")}>
