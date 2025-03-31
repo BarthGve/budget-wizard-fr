@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -44,6 +43,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import Admin from "./pages/Admin";
 import AdminFeedbacks from "./pages/admin/Feedbacks";
 import AdminUsers from "./pages/admin/Users";
+import AdminPermissions from "./pages/admin/Permissions";
 import Changelog from "./pages/Changelog";
 import { ChangelogPage } from "./components/changelog/ChangelogPage";
 
@@ -199,10 +199,15 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Ajout de la route manquante pour la gestion des utilisateurs */}
                 <Route path="/admin/users" element={
                   <ProtectedRoute requireAdmin={true}>
                     <AdminUsers />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/admin/permissions" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <AdminPermissions />
                   </ProtectedRoute>
                 } />
                 

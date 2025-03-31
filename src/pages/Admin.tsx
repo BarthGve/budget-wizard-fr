@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -67,7 +66,7 @@ const Admin = () => {
       title: "Permissions", 
       icon: <Shield className="h-5 w-5" />, 
       description: "Gérer les permissions d'accès aux pages",
-      action: () => {}
+      action: () => navigate("/admin/permissions")
     },
   ];
 
