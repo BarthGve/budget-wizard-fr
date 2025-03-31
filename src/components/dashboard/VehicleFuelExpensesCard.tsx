@@ -14,21 +14,15 @@ interface VehicleFuelExpensesCardProps {
   totalFuelExpenses: number;
   fuelVolume?: number;
   fuelExpensesCount?: number;
-  activeFuelExpensesTotal?: number; // Nouveau paramètre pour les dépenses actives
-  activeFuelVolume?: number; // Nouveau paramètre pour le volume actif
-  activeFuelExpensesCount?: number; // Nouveau paramètre pour le nombre de dépenses actives
   profile: Profile | null | undefined;
   viewMode: "monthly" | "yearly";
-  hasActiveVehicles: boolean;
+  hasActiveVehicles: boolean; // Nouvelle prop pour vérifier la présence de véhicules actifs
 }
 
 export const VehicleFuelExpensesCard = ({
   totalFuelExpenses,
   fuelVolume = 0,
   fuelExpensesCount = 0,
-  activeFuelExpensesTotal = 0, // Valeur par défaut
-  activeFuelVolume = 0, // Valeur par défaut
-  activeFuelExpensesCount = 0, // Valeur par défaut
   profile,
   viewMode,
   hasActiveVehicles
@@ -41,20 +35,14 @@ export const VehicleFuelExpensesCard = ({
   const isPro = profile?.profile_type === 'pro';
   const titleText = "Carburant";
   const descriptionText = viewMode === "monthly" ? `Dépenses du mois de ${currentMonthName}` : `Dépenses de l'année ${new Date().getFullYear()}`;
-  
-  // Utiliser les statistiques des véhicules actifs pour les calculs
-  const amountToDisplay = hasActiveVehicles ? activeFuelExpensesTotal : totalFuelExpenses;
-  const volumeToDisplay = hasActiveVehicles ? activeFuelVolume : fuelVolume;
-  const countToDisplay = hasActiveVehicles ? activeFuelExpensesCount : fuelExpensesCount;
-  
-  const averagePrice = volumeToDisplay > 0 ? amountToDisplay / volumeToDisplay : 0;
+  const averagePrice = fuelVolume > 0 ? totalFuelExpenses / fuelVolume : 0;
 
   // Contenu du tooltip avec les informations détaillées (uniquement pour les PRO)
-  const tooltipContent = isPro && volumeToDisplay > 0 ? (
+  const tooltipContent = isPro && fuelVolume > 0 ? (
     <div className="space-y-2 py-1">
       <div className="flex justify-between items-center gap-4">
         <span>Volume total:</span>
-        <span className="font-medium">{volumeToDisplay.toFixed(2)} L</span>
+        <span className="font-medium">{fuelVolume.toFixed(2)} L</span>
       </div>
       <div className="flex justify-between items-center gap-4">
         <span>Prix moyen:</span>
@@ -62,12 +50,10 @@ export const VehicleFuelExpensesCard = ({
       </div>
       <div className="flex justify-between items-center gap-4">
         <span>Pleins:</span>
-        <span className="font-medium">{countToDisplay}</span>
+        <span className="font-medium">{fuelExpensesCount}</span>
       </div>
       <div className="text-xs text-muted-foreground mt-1">
-        {hasActiveVehicles 
-          ? "Uniquement véhicules actifs" 
-          : "Inclut les véhicules actifs et vendus"}
+        Inclut les véhicules actifs et vendus
       </div>
     </div>
   ) : null;
@@ -119,7 +105,6 @@ export const VehicleFuelExpensesCard = ({
           </div>
           <CardDescription className={cn("text-gray-500", "dark:text-gray-400")}>
             {descriptionText}
-            {hasActiveVehicles && <span className="block text-xs mt-0.5 text-green-600 dark:text-green-400">Véhicules actifs uniquement</span>}
           </CardDescription>
         </CardHeader>
 
@@ -149,7 +134,7 @@ export const VehicleFuelExpensesCard = ({
                           "text-gray-800", 
                           "dark:text-gray-100"
                         )}>
-                          {formatCurrency(amountToDisplay)}
+                          {formatCurrency(totalFuelExpenses)}
                         </p>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="w-56">
@@ -163,7 +148,7 @@ export const VehicleFuelExpensesCard = ({
                     "text-gray-800", 
                     "dark:text-gray-100"
                   )}>
-                    {formatCurrency(amountToDisplay)}
+                    {formatCurrency(totalFuelExpenses)}
                   </p>
                 )}
               </motion.div>

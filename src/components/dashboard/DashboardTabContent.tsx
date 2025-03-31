@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
@@ -88,13 +87,7 @@ export const DashboardTabContent = ({
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   
-  const { 
-    expensesTotal, 
-    hasActiveVehicles, 
-    activeFuelExpensesTotal,
-    activeFuelExpensesCount,
-    activeFuelVolume
-  } = useExpenseStats(currentView);
+  const { expensesTotal, hasActiveVehicles } = useExpenseStats(currentView);
   const { data: credits = [] } = useCreditsFetcher();
   const { totalMensualites } = useCreditStats({ credits, firstDayOfMonth });
   const mappedContributors = useContributorMapper({ contributors });
@@ -129,13 +122,9 @@ export const DashboardTabContent = ({
       <ExpenseStatsWrapper 
         totalExpenses={expensesTotal}
         viewMode={currentView}
-        // Passer à la fois les données pour les véhicules actifs et toutes les statistiques
         totalFuelExpenses={fuelExpensesTotal}
         fuelVolume={fuelVolume}
         fuelExpensesCount={fuelExpensesCount}
-        activeFuelExpensesTotal={activeFuelExpensesTotal}
-        activeFuelVolume={activeFuelVolume}
-        activeFuelExpensesCount={activeFuelExpensesCount}
         profile={profile}
         hasActiveVehicles={hasActiveVehicles}
         dashboardPreferences={dashboardPrefs}
