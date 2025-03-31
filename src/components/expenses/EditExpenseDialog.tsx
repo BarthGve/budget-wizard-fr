@@ -92,7 +92,18 @@ export function EditExpenseDialog({
             }}
             submitLabel="Mettre à jour"
             disableRetailerSelect
-            isSubmitting={isSubmitting}
+            buttonClassName={isSubmitting ? "opacity-70 cursor-not-allowed" : ""}
+            renderCustomActions={(isFormSubmitting) => (
+              <button 
+                type="submit" 
+                className={`w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-500
+                transition-colors duration-200 shadow-sm focus-visible:ring-blue-500 py-2 px-4 rounded
+                ${isSubmitting ? "opacity-80 cursor-not-allowed" : ""}`}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "En cours..." : "Mettre à jour"}
+              </button>
+            )}
           />
         )}
       </DialogContent>
