@@ -66,39 +66,39 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/email-verification" element={<EmailVerification />} />
                 
-                {/* Routes protégées */}
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <ProtectedRoute>
-                      <DashboardLayout>
-                        <UserSettings />
-                      </DashboardLayout>
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<UserSettings />} />
-                  <Route path="user-settings" element={<UserSettings />} />
-                </Route>
+                {/* Routes protégées avec layout dashboard */}
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <UserSettings />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/user-settings" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <UserSettings />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
                 
                 {/* Routes de véhicules */}
-                <Route 
-                  path="/vehicles" 
-                  element={
-                    <ProtectedRoute>
+                <Route path="/vehicles" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
                       <Vehicles />
-                    </ProtectedRoute>
-                  } 
-                />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
                 
-                <Route 
-                  path="/vehicles/:id" 
-                  element={
-                    <ProtectedRoute>
+                <Route path="/vehicles/:id" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
                       <VehicleDetail />
-                    </ProtectedRoute>
-                  } 
-                />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

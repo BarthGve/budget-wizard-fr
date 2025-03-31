@@ -1,5 +1,4 @@
 
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { NotificationSettings } from "@/components/settings/notification-settings";
 import { PaymentSettings } from "@/components/settings/PaymentSettings";
 import { PrivacySettings } from "@/components/settings/PrivacySettings";
@@ -35,81 +34,79 @@ const UserSettings = () => {
   }
 
   return (
-    <DashboardLayout>
-      <div className="space-y-4 md:space-y-6">
-        <div className={isMobile ? "px-2" : ""}>
-          <h2 className={`font-bold tracking-tight ${isMobile ? "text-2xl" : "text-3xl"}`}>
-            Paramètres Du Compte
-          </h2>
-          <p className={`text-muted-foreground ${isMobile ? "text-sm" : ""}`}>
-            Gérez vos paramètres de compte et préférences
-          </p>
-        </div>
-        <Tabs defaultValue={activeTab} className="space-y-4 md:space-y-6">
-          <div className="relative w-full">
-            <TabsList 
-              className={`bg-background border w-full ${
+    <div className="space-y-4 md:space-y-6">
+      <div className={isMobile ? "px-2" : ""}>
+        <h2 className={`font-bold tracking-tight ${isMobile ? "text-2xl" : "text-3xl"}`}>
+          Paramètres Du Compte
+        </h2>
+        <p className={`text-muted-foreground ${isMobile ? "text-sm" : ""}`}>
+          Gérez vos paramètres de compte et préférences
+        </p>
+      </div>
+      <Tabs defaultValue={activeTab} className="space-y-4 md:space-y-6">
+        <div className="relative w-full">
+          <TabsList 
+            className={`bg-background border w-full ${
+              isMobile 
+                ? "flex justify-between overflow-x-auto scrollbar-none p-0.5" 
+                : ""
+            }`}
+            style={isMobile ? { scrollbarWidth: 'none' } : {}}
+          >
+            <TabsTrigger 
+              value="profile" 
+              className={`flex items-center gap-2 ${
                 isMobile 
-                  ? "flex justify-between overflow-x-auto scrollbar-none p-0.5" 
+                  ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
                   : ""
               }`}
-              style={isMobile ? { scrollbarWidth: 'none' } : {}}
             >
-              <TabsTrigger 
-                value="profile" 
-                className={`flex items-center gap-2 ${
-                  isMobile 
-                    ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
-                    : ""
-                }`}
-              >
-                <User className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-                {!isMobile ? "Profil" : ""}
-                <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Profil</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="notifications" 
-                className={`flex items-center gap-2 ${
-                  isMobile 
-                    ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
-                    : ""
-                }`}
-              >
-                <Bell className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-                {!isMobile ? "Notifications" : ""}
-                <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Notif.</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="settings" 
-                className={`flex items-center gap-2 ${
-                  isMobile 
-                    ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
-                    : ""
-                }`}
-              >
-                <Settings2 className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-                {!isMobile ? "Paramétrage" : ""}
-                <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Param.</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
-          <TabsContent value="profile" className={`space-y-4 md:space-y-6 ${isMobile ? "px-0" : ""}`}>
-            <ProfileSettings />
-            <SecuritySettings />
-           {/*<PaymentSettings /> */} 
-            {/*<PrivacySettings /> */}
-          </TabsContent>
-          <TabsContent value="notifications" className="space-y-6">
-            <NotificationSettings />
-          </TabsContent>
-          <TabsContent value="settings" className="space-y-6">
-            <DashboardPreferencesSettings />
-            {canAccessRetailers && <RetailersSettings />}
-            <ExpenseCategoriesSettings />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </DashboardLayout>
+              <User className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+              {!isMobile ? "Profil" : ""}
+              <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Profil</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="notifications" 
+              className={`flex items-center gap-2 ${
+                isMobile 
+                  ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                  : ""
+              }`}
+            >
+              <Bell className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+              {!isMobile ? "Notifications" : ""}
+              <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Notif.</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="settings" 
+              className={`flex items-center gap-2 ${
+                isMobile 
+                  ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                  : ""
+              }`}
+            >
+              <Settings2 className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+              {!isMobile ? "Paramétrage" : ""}
+              <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Param.</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value="profile" className={`space-y-4 md:space-y-6 ${isMobile ? "px-0" : ""}`}>
+          <ProfileSettings />
+          <SecuritySettings />
+         {/*<PaymentSettings /> */} 
+          {/*<PrivacySettings /> */}
+        </TabsContent>
+        <TabsContent value="notifications" className="space-y-6">
+          <NotificationSettings />
+        </TabsContent>
+        <TabsContent value="settings" className="space-y-6">
+          <DashboardPreferencesSettings />
+          {canAccessRetailers && <RetailersSettings />}
+          <ExpenseCategoriesSettings />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
