@@ -9,6 +9,7 @@ import { MarketDataSection } from "@/components/stocks/MarketDataSection";
 import { InvestmentsSummary } from "@/components/stocks/InvestmentsSummary";
 import { AssetsSection } from "@/components/stocks/AssetsSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { WithTooltipProvider } from "@/components/providers/TooltipProviders";
 
 // Process investment data to calculate yearly totals, current year total, etc.
 const processInvestmentData = (investmentHistory: any[] | undefined) => {
@@ -129,45 +130,47 @@ const StocksPage = () => {
 
   return (
     <DashboardLayout>
-      <motion.div 
-        className="space-y-6 mt-4"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
-        <StocksHeader onSuccess={refetchHistory} />
-        
-        <Tabs 
-          value={activeTab} 
-          onValueChange={setActiveTab} 
-          className="w-full"
+      <WithTooltipProvider>
+        <motion.div 
+          className="space-y-6 mt-4"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
         >
-          <TabsList className="mb-4">
-            <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
-            <TabsTrigger value="assets">Mes actifs</TabsTrigger>
-          </TabsList>
+          <StocksHeader onSuccess={refetchHistory} />
           
-          <TabsContent value="overview" className="space-y-6">
-            <MarketDataSection 
-              marketCards={marketCards} 
-              isLoading={isMarketDataLoading} 
-            />
+          <Tabs 
+            value={activeTab} 
+            onValueChange={setActiveTab} 
+            className="w-full"
+          >
+            <TabsList className="mb-4">
+              <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+              <TabsTrigger value="assets">Mes actifs</TabsTrigger>
+            </TabsList>
             
-            <InvestmentsSummary 
-              yearlyData={yearlyData}
-              currentYearTotal={currentYearTotal}
-              totalInvestment={totalInvestment}
-              currentYearInvestments={currentYearInvestments}
-              onSuccess={refetchHistory}
-              formatPrice={formatPrice}
-            />
-          </TabsContent>
-          
-          <TabsContent value="assets" className="space-y-6">
-            <AssetsSection />
-          </TabsContent>
-        </Tabs>
-      </motion.div>
+            <TabsContent value="overview" className="space-y-6">
+              <MarketDataSection 
+                marketCards={marketCards} 
+                isLoading={isMarketDataLoading} 
+              />
+              
+              <InvestmentsSummary 
+                yearlyData={yearlyData}
+                currentYearTotal={currentYearTotal}
+                totalInvestment={totalInvestment}
+                currentYearInvestments={currentYearInvestments}
+                onSuccess={refetchHistory}
+                formatPrice={formatPrice}
+              />
+            </TabsContent>
+            
+            <TabsContent value="assets" className="space-y-6">
+              <AssetsSection />
+            </TabsContent>
+          </Tabs>
+        </motion.div>
+      </WithTooltipProvider>
     </DashboardLayout>
   );
 };

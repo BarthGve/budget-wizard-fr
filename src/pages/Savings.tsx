@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useState, useEffect, useRef } from "react";
@@ -10,6 +9,7 @@ import { SavingsGoalSection } from "@/components/savings/SavingsGoalSection";
 import { ProjectsSection } from "@/components/savings/ProjectsSection";
 import { MonthlySavingsSection } from "@/components/savings/MonthlySavingsSection";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { WithTooltipProvider } from "@/components/providers/TooltipProviders";
 
 const Savings = () => {
   const {
@@ -128,43 +128,45 @@ const Savings = () => {
 
   return (
     <DashboardLayout>
-      <motion.div 
-        className="space-y-4 mt-2 overflow-hidden flex flex-col w-full max-w-full px-2 md:px-4"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
-        {/* Header Section with buttons */}
-        <SavingsHeader 
-          onSavingAdded={handleSavingAdded}
-          onProjectCreated={handleProjectCreated}
-        />
+      <WithTooltipProvider>
+        <motion.div 
+          className="space-y-4 mt-2 overflow-hidden flex flex-col w-full max-w-full px-2 md:px-4"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          {/* Header Section with buttons */}
+          <SavingsHeader 
+            onSavingAdded={handleSavingAdded}
+            onProjectCreated={handleProjectCreated}
+          />
 
-        {/* Savings Goal Section */}
-        <SavingsGoalSection 
-          profile={profile} 
-          totalMonthlyAmount={totalMonthlyAmount}
-          monthlySavings={monthlySavings} 
-        />
-        
-        {/* Monthly Savings Section - Pleine largeur */}
-        <div className="w-full overflow-y-auto">
-          <MonthlySavingsSection 
-            monthlySavings={monthlySavings}
-            onSavingDeleted={handleSavingDeleted}
-            showInitial={!isMobile}
+          {/* Savings Goal Section */}
+          <SavingsGoalSection 
+            profile={profile} 
+            totalMonthlyAmount={totalMonthlyAmount}
+            monthlySavings={monthlySavings} 
           />
-        </div>
-        
-        {/* Projects Section - Pleine largeur */}
-        <div className="w-full overflow-y-auto">
-          <ProjectsSection 
-            projects={projects} 
-            onProjectDeleted={handleProjectDeleted}
-            forceRefresh={projectRefreshCounter}
-          />
-        </div>
-      </motion.div>
+          
+          {/* Monthly Savings Section - Pleine largeur */}
+          <div className="w-full overflow-y-auto">
+            <MonthlySavingsSection 
+              monthlySavings={monthlySavings}
+              onSavingDeleted={handleSavingDeleted}
+              showInitial={!isMobile}
+            />
+          </div>
+          
+          {/* Projects Section - Pleine largeur */}
+          <div className="w-full overflow-y-auto">
+            <ProjectsSection 
+              projects={projects} 
+              onProjectDeleted={handleProjectDeleted}
+              forceRefresh={projectRefreshCounter}
+            />
+          </div>
+        </motion.div>
+      </WithTooltipProvider>
     </DashboardLayout>
   );
 };
