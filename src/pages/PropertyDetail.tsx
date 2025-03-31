@@ -1,5 +1,4 @@
 
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useParams, Link } from "react-router-dom";
@@ -94,28 +93,24 @@ const PropertyDetail = () => {
 
   if (isLoadingProperty) {
     return (
-      <DashboardLayout>
-        <div className="grid gap-6 mt-4">
-          <Skeleton className="h-[200px] w-full" />
-          <div className="grid gap-4">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-          </div>
+      <div className="grid gap-6 mt-4">
+        <Skeleton className="h-[200px] w-full" />
+        <div className="grid gap-4">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   if (!property) {
     return (
-      <DashboardLayout>
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Propriété non trouvée</h1>
-          <p className="text-muted-foreground">
-            La propriété que vous recherchez n'existe pas.
-          </p>
-        </div>
-      </DashboardLayout>
+      <div className="text-center">
+        <h1 className="text-2xl font-bold">Propriété non trouvée</h1>
+        <p className="text-muted-foreground">
+          La propriété que vous recherchez n'existe pas.
+        </p>
+      </div>
     );
   }
 
@@ -125,99 +120,120 @@ const PropertyDetail = () => {
   };
 
   return (
-    <DashboardLayout>
+    <motion.div 
+      className="grid gap-6"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <motion.div 
-        className="grid gap-6"
-        initial="hidden"
-        animate="visible"
+        className="flex flex-col gap-6"
+        variants={itemVariants}
+      >
+        <motion.div
+          whileHover={{ x: 5 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Link to="/properties" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors w-fit">
+            <ChevronLeft className="h-4 w-4" />
+            <span>Retour aux biens</span>
+          </Link>
+        </motion.div>
+
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-3XL text-3xl">{property.name}</h1>
+            <p className="text-muted-foreground">{property.address}</p>
+          </div>
+          <div className="flex items-center gap-6">
+            {property.latitude && property.longitude && 
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <PropertyWeather latitude={property.latitude} longitude={property.longitude} />
+              </motion.div>
+            }
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <AddExpenseDialog propertyId={property.id} onExpenseAdded={() => refetchExpenses()} expense={expenseToEdit} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} />
+            </motion.div>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div 
+        className="grid md:grid-cols-2 gap-4"
         variants={containerVariants}
       >
         <motion.div 
-          className="flex flex-col gap-6"
           variants={itemVariants}
+          whileHover={{ 
+            scale: 1.02, 
+            rotateY: 2,
+            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
+          }}
         >
-          <motion.div
-            whileHover={{ x: 5 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link to="/properties" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors w-fit">
-              <ChevronLeft className="h-4 w-4" />
-              <span>Retour aux biens</span>
-            </Link>
-          </motion.div>
-
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-fade-in text-3XL text-3xl">{property.name}</h1>
-              <p className="text-muted-foreground">{property.address}</p>
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Localisation</h2>
+            <div className="h-[200px] w-full overflow-hidden rounded-lg">
+              <PropertiesMap properties={[property]} />
             </div>
-            <div className="flex items-center gap-6">
-              {property.latitude && property.longitude && 
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <PropertyWeather latitude={property.latitude} longitude={property.longitude} />
-                </motion.div>
-              }
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <AddExpenseDialog propertyId={property.id} onExpenseAdded={() => refetchExpenses()} expense={expenseToEdit} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} />
-              </motion.div>
-            </div>
-          </div>
+          </Card>
         </motion.div>
 
         <motion.div 
-          className="grid md:grid-cols-2 gap-4"
+          variants={itemVariants}
+          whileHover={{ 
+            scale: 1.02, 
+            rotateY: 2,
+            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
+          }}
+        >
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Détails</h2>
+            <div className="grid gap-4">
+              <div>
+                <span className="font-medium">Valeur d'achat:</span>{" "}
+                {formatCurrency(property.purchase_value)}
+              </div>
+              <div>
+                <span className="font-medium">Superficie:</span> {property.area} m²
+              </div>
+              {property.monthly_rent && <div>
+                  <span className="font-medium">Loyer mensuel:</span>{" "}
+                  {formatCurrency(property.monthly_rent)}
+                </div>}
+              <div>
+                <span className="font-medium">Type d'investissement:</span>{" "}
+                {property.investment_type || "Non spécifié"}
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+        <motion.div 
+          className="grid lg:grid-cols-2 gap-4 md:col-span-2"
           variants={containerVariants}
         >
           <motion.div 
             variants={itemVariants}
             whileHover={{ 
-              scale: 1.02, 
-              rotateY: 2,
-              boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
+              scale: 1.01,
+              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
             }}
           >
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Localisation</h2>
-              <div className="h-[200px] w-full overflow-hidden rounded-lg">
-                <PropertiesMap properties={[property]} />
-              </div>
+              <h2 className="text-xl font-semibold mb-4">Dépenses</h2>
+              {isLoadingExpenses ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : (
+                <ExpensesList expenses={expenses || []} onExpenseDeleted={() => refetchExpenses()} onExpenseEdit={handleExpenseEdit} />
+              )}
             </Card>
           </motion.div>
 
-          <motion.div 
-            variants={itemVariants}
-            whileHover={{ 
-              scale: 1.02, 
-              rotateY: 2,
-              boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
-            }}
-          >
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Détails</h2>
-              <div className="grid gap-4">
-                <div>
-                  <span className="font-medium">Valeur d'achat:</span>{" "}
-                  {formatCurrency(property.purchase_value)}
-                </div>
-                <div>
-                  <span className="font-medium">Superficie:</span> {property.area} m²
-                </div>
-                {property.monthly_rent && <div>
-                    <span className="font-medium">Loyer mensuel:</span>{" "}
-                    {formatCurrency(property.monthly_rent)}
-                  </div>}
-                <div>
-                  <span className="font-medium">Type d'investissement:</span>{" "}
-                  {property.investment_type || "Non spécifié"}
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div 
-            className="grid lg:grid-cols-2 gap-4 md:col-span-2"
-            variants={containerVariants}
-          >
+          {!isLoadingExpenses && expenses && (
             <motion.div 
               variants={itemVariants}
               whileHover={{ 
@@ -226,36 +242,13 @@ const PropertyDetail = () => {
               }}
             >
               <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Dépenses</h2>
-                {isLoadingExpenses ? (
-                  <div className="space-y-4">
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                  </div>
-                ) : (
-                  <ExpensesList expenses={expenses || []} onExpenseDeleted={() => refetchExpenses()} onExpenseEdit={handleExpenseEdit} />
-                )}
+                <ExpensesChart expenses={expenses} />
               </Card>
             </motion.div>
-
-            {!isLoadingExpenses && expenses && (
-              <motion.div 
-                variants={itemVariants}
-                whileHover={{ 
-                  scale: 1.01,
-                  boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
-                }}
-              >
-                <Card className="p-6">
-                  <ExpensesChart expenses={expenses} />
-                </Card>
-              </motion.div>
-            )}
-          </motion.div>
+          )}
         </motion.div>
       </motion.div>
-    </DashboardLayout>
+    </motion.div>
   );
 };
 
