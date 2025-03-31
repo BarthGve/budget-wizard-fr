@@ -26,8 +26,11 @@ interface ExpenseStatsProps {
   totalFuelExpenses: number;
   fuelVolume: number;
   fuelExpensesCount: number;
+  activeFuelExpensesTotal: number;
+  activeFuelExpensesCount: number;
+  activeFuelVolume: number;
   profile: any;
-  hasActiveVehicles: boolean; // Nouvelle prop
+  hasActiveVehicles: boolean;
 }
 
 /**
@@ -39,6 +42,9 @@ export const ExpenseStatsSection = ({
   totalFuelExpenses,
   fuelVolume,
   fuelExpensesCount,
+  activeFuelExpensesTotal,
+  activeFuelExpensesCount,
+  activeFuelVolume,
   profile,
   hasActiveVehicles
 }: ExpenseStatsProps) => {
@@ -55,9 +61,12 @@ export const ExpenseStatsSection = ({
         totalFuelExpenses={totalFuelExpenses}
         fuelVolume={fuelVolume}
         fuelExpensesCount={fuelExpensesCount}
+        activeFuelExpensesTotal={activeFuelExpensesTotal}
+        activeFuelExpensesCount={activeFuelExpensesCount}
+        activeFuelVolume={activeFuelVolume}
         profile={profile}
         viewMode={viewMode}
-        hasActiveVehicles={hasActiveVehicles} // Ajout de la nouvelle prop
+        hasActiveVehicles={hasActiveVehicles}
       />
     </motion.div>
   );
