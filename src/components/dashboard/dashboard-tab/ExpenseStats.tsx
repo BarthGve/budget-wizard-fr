@@ -24,8 +24,8 @@ interface ExpenseStatsProps {
   totalExpenses: number;
   viewMode: "monthly" | "yearly";
   totalFuelExpenses: number;
-  fuelVolume: number;
-  fuelExpensesCount: number;
+  fuelVolume?: number;
+  fuelExpensesCount?: number;
   profile: any;
   hasActiveVehicles: boolean; 
 }
@@ -37,8 +37,8 @@ export const ExpenseStatsSection = ({
   totalExpenses,
   viewMode,
   totalFuelExpenses,
-  fuelVolume,
-  fuelExpensesCount,
+  fuelVolume = 0,
+  fuelExpensesCount = 0,
   profile,
   hasActiveVehicles
 }: ExpenseStatsProps) => {

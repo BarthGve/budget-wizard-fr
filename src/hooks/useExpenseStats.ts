@@ -26,7 +26,7 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
 
   // Récupérer TOUTES les dépenses
   const { data: allExpenses, isLoading: isExpensesLoading } = useQuery({
-    queryKey: ["all-expenses-for-stats", viewMode],
+    queryKey: ["all-expenses-for-stats", viewMode], // Inclure viewMode dans la clé de cache
     queryFn: async () => {
       if (!currentUser?.id) return [];
       
@@ -86,7 +86,7 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
 
   // Récupérer les dépenses carburant pour la période sélectionnée
   const { data: fuelExpenses, isLoading: isFuelLoading } = useQuery({
-    queryKey: ["period-fuel-expenses", viewMode, firstDayStr, lastDayStr],
+    queryKey: ["period-fuel-expenses", viewMode, firstDayStr, lastDayStr], // Clé de cache améliorée avec viewMode et dates
     queryFn: async () => {
       if (!currentUser?.id) return { total: 0, count: 0, volume: 0 };
       
@@ -97,8 +97,8 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
         .eq("vehicles.profile_id", currentUser.id)
         .in("vehicles.status", ["actif", "vendu"]) // Inclure les véhicules vendus
         .eq("expense_type", "carburant")
-        .gte("date", firstDayStr)
-        .lte("date", lastDayStr);
+        .gte("date", firstDayStr) // Filtrer par date début
+        .lte("date", lastDayStr); // Filtrer par date fin
 
       if (error) {
         console.error("Error fetching fuel expenses:", error);
