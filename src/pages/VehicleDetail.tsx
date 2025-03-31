@@ -1,5 +1,4 @@
 
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useParams } from "react-router-dom";
 import { useVehicleDetail } from "@/hooks/useVehicleDetail";
 import { useState } from "react";
@@ -16,6 +15,7 @@ import { VehicleEditDialog } from "@/components/vehicles/VehicleEditDialog";
 import { MobileNavigation } from "@/components/vehicles/detail/MobileNavigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSwipe } from "@/hooks/use-swipe";
+import { WithTooltipProvider } from "@/components/providers/TooltipProviders";
 
 const VehicleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -86,7 +86,7 @@ const VehicleDetail = () => {
   };
 
   return (
-    <DashboardLayout>
+    <WithTooltipProvider>
       {isMobile && (
         <MobileNavigation 
           activeSection={activeSection}
@@ -125,7 +125,7 @@ const VehicleDetail = () => {
         onUpdate={handleUpdate}
         isPending={isUpdating}
       />
-    </DashboardLayout>
+    </WithTooltipProvider>
   );
 };
 
