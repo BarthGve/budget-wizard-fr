@@ -10,6 +10,7 @@ import { useContributors } from "@/hooks/useContributors";
 import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useExpenseStats } from "@/hooks/useExpenseStats";
 
 const Dashboard = () => {
   // Configurer les écouteurs de mises à jour en temps réel
@@ -27,6 +28,15 @@ const Dashboard = () => {
 
   // Données du tableau de bord
   const { dashboardData, refetchDashboard } = useDashboardQueries(user?.id);
+
+  // Récupérer les statistiques des dépenses, y compris les dépenses carburant
+  const { 
+    expensesTotal, 
+    fuelExpensesTotal, 
+    fuelExpensesCount, 
+    fuelVolume,
+    hasActiveVehicles 
+  } = useExpenseStats("monthly");
 
   // Rafraîchir les données lorsque le composant est monté
   useEffect(() => {
@@ -91,6 +101,10 @@ const Dashboard = () => {
           recurringExpenses={typedRecurringExpenses}
           monthlySavings={dashboardData.monthlySavings || []}
           currentView={currentView}
+          fuelExpensesTotal={fuelExpensesTotal}
+          fuelExpensesCount={fuelExpensesCount}
+          fuelVolume={fuelVolume}
+          hasActiveVehicles={hasActiveVehicles}
         />
       </motion.div>
     </TooltipProvider>
