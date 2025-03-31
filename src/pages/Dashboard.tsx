@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent";
 import { useDashboardQueries } from "@/hooks/useDashboardQueries";
 import StyledLoader from "@/components/ui/StyledLoader";
-import { useExpenseCalculations } from "@/hooks/useExpenseCalculations";
+import { useDashboardViewCalculations } from "@/hooks/useDashboardViewCalculations";
 import { useContributors } from "@/hooks/useContributors";
 import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
@@ -49,19 +49,25 @@ const Dashboard = () => {
       refetchDashboard();
     }
   }, [user?.id, refetchDashboard]);
-
-  // Calculs des dépenses en passant les contributeurs comme paramètre
-  const { revenue, expenses, savings, balance, savingsGoal } = useExpenseCalculations(
+  
+  // Utiliser useDashboardViewCalculations pour prendre en compte la vue actuelle
+  const {
+    revenue,
+    expenses,
+    savings,
+    balance,
+    savingsGoal,
+    contributorShares,
+    expenseShares,
+    recurringExpensesForChart,
+    monthlySavingsForChart
+  } = useDashboardViewCalculations(
+    currentView,
+    dashboardData?.contributors,
     dashboardData?.monthlySavings,
     dashboardData?.recurringExpenses,
-    dashboardData?.contributors
+    dashboardData?.profile
   );
-
-  // Données des contributeurs
-  const { 
-    contributorShares, 
-    expenseShares 
-  } = useContributors(dashboardData?.contributors || [], expenses);
 
   // Obtenir le nom du mois actuel
   const getCurrentMonthName = () => {
@@ -85,12 +91,6 @@ const Dashboard = () => {
   if (!dashboardData || !user) {
     return <StyledLoader />;
   }
-
-  // Préparer les recurring expenses avec le bon typage pour periodicity
-  const typedRecurringExpenses = dashboardData.recurringExpenses?.map(expense => ({
-    ...expense,
-    periodicity: expense.periodicity as "monthly" | "quarterly" | "yearly"
-  })) || [];
 
   return (
     <TooltipProvider>
@@ -116,8 +116,8 @@ const Dashboard = () => {
           contributors={dashboardData.contributors || []}
           contributorShares={contributorShares}
           expenseShares={expenseShares}
-          recurringExpenses={typedRecurringExpenses}
-          monthlySavings={dashboardData.monthlySavings || []}
+          recurringExpenses={recurringExpensesForChart || []}
+          monthlySavings={monthlySavingsForChart || []}
           currentView={currentView}
           fuelExpensesTotal={fuelExpensesTotal}
           fuelExpensesCount={fuelExpensesCount}
