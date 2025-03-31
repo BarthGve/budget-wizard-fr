@@ -28,6 +28,13 @@ import { AuthWrapper } from "./components/auth/AuthWrapper";
 import UserSettings from "./pages/UserSettings";
 import Vehicles from "./pages/Vehicles";
 import VehicleDetail from "./pages/VehicleDetail";
+import Contributors from "./pages/Contributors";
+import Expenses from "./pages/Expenses";
+import RecurringExpenses from "./pages/RecurringExpenses";
+import Credits from "./pages/Credits";
+import Savings from "./pages/Savings";
+import Stocks from "./pages/Stocks";
+import Properties from "./pages/Properties";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -96,6 +103,63 @@ function App() {
                   <ProtectedRoute>
                     <DashboardLayout>
                       <VehicleDetail />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                {/* Autres routes protégées */}
+                <Route path="/contributors" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Contributors />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/expenses" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Expenses />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/recurring-expenses" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <RecurringExpenses />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/credits" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Credits />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/savings" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Savings />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/stocks" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Stocks />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/properties" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <Properties />
                     </DashboardLayout>
                   </ProtectedRoute>
                 } />

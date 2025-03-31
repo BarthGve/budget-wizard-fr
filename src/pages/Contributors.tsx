@@ -1,5 +1,4 @@
 
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { ContributorsHeader } from "@/components/contributors/ContributorsHeader";
 import { ContributorsContent } from "@/components/contributors/ContributorsContent";
@@ -13,23 +12,21 @@ const Contributors = memo(function Contributors() {
   const { contributors, isLoading, handleAddContributor, handleUpdateContributor, handleDeleteContributor } = useContributorsData();
   
   if (isLoading) {
-    return <DashboardLayout><StyledLoader /></DashboardLayout>;
+    return <StyledLoader />;
   }
   
   return (
-    <DashboardLayout>
-      <div className="grid gap-6 mt-4">
-        <ContributorsHeader />
-        <Card>
-          <ContributorsContent 
-            contributors={contributors} 
-            onAdd={handleAddContributor}
-            onUpdate={handleUpdateContributor}
-            onDelete={handleDeleteContributor}
-          />
-        </Card>
-      </div>
-    </DashboardLayout>
+    <div className="grid gap-6 mt-4">
+      <ContributorsHeader />
+      <Card>
+        <ContributorsContent 
+          contributors={contributors} 
+          onAdd={handleAddContributor}
+          onUpdate={handleUpdateContributor}
+          onDelete={handleDeleteContributor}
+        />
+      </Card>
+    </div>
   );
 });
 

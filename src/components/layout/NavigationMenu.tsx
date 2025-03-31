@@ -61,12 +61,6 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId }: NavigationMenuPro
 
   // Filtrer les éléments du menu accessibles à l'utilisateur
   const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
-  
-  // Handler pour éviter le rechargement complet de la page
-  const handleNavLinkClick = useCallback((e: React.MouseEvent) => {
-    // Marquer le clic pour la navigation SPA
-    sessionStorage.setItem('spa_navigation', 'true');
-  }, []);
 
   return (
     <nav className="flex flex-col h-full justify-between p-4">
@@ -88,7 +82,6 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId }: NavigationMenuPro
                   collapsed && "justify-center py-2.5",
                   isActive && "bg-gray-200 text-gray-900 hover:bg-gray-200/90 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-800/90"
                 )}
-                onClick={handleNavLinkClick}
                 end
               >
                 <div className="relative">
