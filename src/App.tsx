@@ -38,6 +38,7 @@ import Credits from "./pages/Credits";
 import Savings from "./pages/Savings";
 import Stocks from "./pages/Stocks";
 import Properties from "./pages/Properties";
+import PropertyDetail from "./pages/PropertyDetail";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -172,6 +173,15 @@ function App() {
                   <ProtectedRoute>
                     <DashboardLayout>
                       <Properties />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                {/* Ajouter la route pour le détail d'une propriété */}
+                <Route path="/properties/:id" element={
+                  <ProtectedRoute>
+                    <DashboardLayout>
+                      <PropertyDetail />
                     </DashboardLayout>
                   </ProtectedRoute>
                 } />
