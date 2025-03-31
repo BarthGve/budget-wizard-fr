@@ -49,8 +49,9 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   // Liste des routes toujours accessibles une fois connecté
   const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
   
-  // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
-  if (isAdmin && location.pathname === '/dashboard') {
+  // IMPORTANT: Rediriger les admins vers /admin s'ils arrivent sur /dashboard ou sur la racine du site
+  if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
+    console.log("Admin détecté - Redirection vers /admin");
     hasRedirectedRef.current = true;
     return <Navigate to="/admin" replace />;
   }

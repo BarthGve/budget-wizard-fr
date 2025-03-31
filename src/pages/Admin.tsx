@@ -15,6 +15,7 @@ import StyledLoader from "@/components/ui/StyledLoader";
 const Admin = () => {
   const navigate = useNavigate();
   
+  // Vérifier si l'utilisateur est un admin
   const { data: isAdmin, isLoading } = useQuery({
     queryKey: ["isAdmin"],
     queryFn: async () => {
@@ -29,8 +30,10 @@ const Admin = () => {
     }
   });
 
+  // Rediriger vers dashboard si l'utilisateur n'est pas admin
   useEffect(() => {
     if (!isLoading && !isAdmin) {
+      console.log("Non-admin détecté dans Admin.tsx - Redirection vers /dashboard");
       navigate('/dashboard');
     }
   }, [isAdmin, isLoading, navigate]);
