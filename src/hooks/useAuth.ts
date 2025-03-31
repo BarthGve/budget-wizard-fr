@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,11 +27,12 @@ export function useAuth() {
   const navigationInProgress = useRef(false);
   const redirectTimeoutRef = useRef<number | null>(null);
 
-  // Liste des caches à invalider lors d'une déconnexion
+  // Liste des caches à invalider lors d'une déconnexion ou changement d'utilisateur
   const cachesToInvalidate = [
     "auth", 
     "current-user", 
     "profile", 
+    "isAdmin",
     "contributors", 
     "expenses", 
     "recurring-expenses",
@@ -74,6 +76,9 @@ export function useAuth() {
       localStorage.setItem('auth_session', JSON.stringify(data.session));
       sessionStorage.setItem('is_authenticated', 'true');
       
+      // S'assurer que toutes les données utilisateur sont invalidées pour forcer un rechargement
+      invalidateAllCaches();
+      
       // Rediriger vers le tableau de bord
       navigate("/dashboard");
       
@@ -84,7 +89,7 @@ export function useAuth() {
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [navigate, invalidateAllCaches]);
 
   // Inscription utilisateur
   const register = useCallback(async (credentials: RegisterCredentials) => {

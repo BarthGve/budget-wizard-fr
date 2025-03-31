@@ -5,17 +5,17 @@ import { supabase } from "@/integrations/supabase/client";
 export const useProfileAvatar = () => {
   // Récupère d'abord l'utilisateur actuel pour avoir son ID
   const { data: currentUser } = useQuery({
-    queryKey: ["current-user-for-avatar"],
+    queryKey: ["current-user"], // Utilisation d'une clé standardisée
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       return user;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 30, // Réduit à 30 secondes
   });
 
   // Utilise l'ID de l'utilisateur actuel dans la clé de requête
   return useQuery({
-    queryKey: ["profile-avatar", currentUser?.id],
+    queryKey: ["profile", currentUser?.id], // Utilisation d'une clé standardisée
     queryFn: async () => {
       if (!currentUser) return null;
 
@@ -28,6 +28,6 @@ export const useProfileAvatar = () => {
       return data;
     },
     enabled: !!currentUser,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 30, // Réduit à 30 secondes
   });
 };

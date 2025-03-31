@@ -6,17 +6,17 @@ import { Profile } from "@/types/profile";
 export const useUserData = () => {
   // Récupération de l'utilisateur courant
   const { data: currentUser } = useQuery({
-    queryKey: ["current-user-for-sidebar"],
+    queryKey: ["current-user"], // Utilisation d'une clé standardisée
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       return user;
     },
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 30, // Réduit à 30 secondes au lieu de 60
   });
 
   // Récupération du profil
   const { data: profile } = useQuery<Profile>({
-    queryKey: ["profile-for-sidebar", currentUser?.id],
+    queryKey: ["profile", currentUser?.id], // Utilisation d'une clé standardisée
     queryFn: async () => {
       if (!currentUser) throw new Error("User not authenticated");
 
@@ -36,12 +36,12 @@ export const useUserData = () => {
       return profileData;
     },
     enabled: !!currentUser,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 30, // Réduit à 30 secondes au lieu de 60
   });
 
   // Vérification du rôle admin
   const { data: isAdmin } = useQuery({
-    queryKey: ["isAdmin-for-sidebar", currentUser?.id],
+    queryKey: ["isAdmin", currentUser?.id], // Utilisation d'une clé standardisée
     queryFn: async () => {
       if (!currentUser) return false;
 
@@ -54,7 +54,7 @@ export const useUserData = () => {
       return data;
     },
     enabled: !!currentUser,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 30, // Réduit à 30 secondes au lieu de 60
   });
 
   return {

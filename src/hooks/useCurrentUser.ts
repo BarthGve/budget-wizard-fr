@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useCurrentUser = () => {
   const { data: currentUser, isLoading, error } = useQuery({
-    queryKey: ["current-user"],
+    queryKey: ["current-user"], // Clé standardisée
     queryFn: async () => {
       // Vérifier d'abord dans sessionStorage si on est authentifié
       const isAuthenticatedInSession = sessionStorage.getItem('is_authenticated') === 'true';
@@ -23,12 +23,10 @@ export const useCurrentUser = () => {
       if (!user) throw new Error("Non authentifié");
       return user;
     },
-    staleTime: 1000 * 60 * 5, // Cache de 5 minutes pour l'utilisateur
-    // Ne pas relancer en cas d'erreur - cela permet d'éviter des appels inutiles
+    staleTime: 1000 * 30, // Réduit à 30 secondes
     retry: 1,
     // Utiliser les données en cache en cas d'erreur lors du rechargement
-    // pour maintenir l'expérience utilisateur SPA
-    placeholderData: undefined // Remplacé keepPreviousData par undefined car nous n'avons pas besoin de cette fonctionnalité ici
+    placeholderData: undefined
   });
 
   return { 

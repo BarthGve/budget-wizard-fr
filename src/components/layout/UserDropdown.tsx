@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag, Sun, Moon, Monitor } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,11 +28,16 @@ export const UserDropdown = ({
   const { isAdmin } = usePagePermissions();
   const isMobile = useIsMobile();
   const { setTheme, theme } = useTheme();
+  const queryClient = useQueryClient();
   
   const { logout } = useAuthContext();
 
   const handleLogout = async () => {
     try {
+      // Invalider explicitement les caches avant la déconnexion
+      queryClient.invalidateQueries({ queryKey: ["current-user"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      
       await logout();
     } catch (error) {
       console.error("Logout error:", error);
