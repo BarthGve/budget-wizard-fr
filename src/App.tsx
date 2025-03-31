@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -44,6 +43,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import Admin from "./pages/Admin";
 import AdminFeedbacks from "./pages/admin/Feedbacks";
 import Changelog from "./pages/Changelog";
+import { ChangelogPage } from "./components/changelog/ChangelogPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,12 +69,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="theme">
         <Toaster richColors position="top-center" />
-        {/* Router est placé AVANT AuthProvider pour résoudre le problème d'utilisation de useNavigate */}
         <Router>
           <AuthProvider>
             <AuthWrapper>
               <Routes>
-                {/* Pages publiques */}
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -83,7 +81,6 @@ function App() {
                 <Route path="/email-verification" element={<EmailVerification />} />
                 <Route path="/changelog" element={<Changelog />} />
                 
-                {/* Routes protégées avec layout dashboard */}
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <DashboardLayout>
@@ -100,7 +97,6 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Routes de véhicules */}
                 <Route path="/vehicles" element={
                   <ProtectedRoute>
                     <DashboardLayout>
@@ -117,7 +113,6 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Autres routes protégées */}
                 <Route path="/contributors" element={
                   <ProtectedRoute>
                     <DashboardLayout>
@@ -134,7 +129,6 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Route pour le détail d'un détaillant */}
                 <Route path="/expenses/retailer/:id" element={
                   <ProtectedRoute>
                     <DashboardLayout>
@@ -183,7 +177,6 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Route pour le détail d'une propriété */}
                 <Route path="/properties/:id" element={
                   <ProtectedRoute>
                     <DashboardLayout>
@@ -192,7 +185,6 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Routes d'administration */}
                 <Route path="/admin" element={
                   <ProtectedRoute requireAdmin={true}>
                     <Admin />
