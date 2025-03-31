@@ -20,7 +20,6 @@ import { LucideIcon } from "lucide-react";
 import { usePendingFeedbacks } from "@/hooks/usePendingFeedbacks";
 import { Badge } from "@/components/ui/badge";
 import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
-import { useCallback } from "react";
 
 interface MenuItem {
   title: string;
@@ -37,9 +36,10 @@ interface NavigationMenuProps {
 
 // Définir les menus en dehors du composant
 const adminMenu: MenuItem[] = [
-  { title: "Gestion utilisateurs", icon: Users, path: "/admin", matchPath: "^/admin$" },
-  { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "^/admin/feedbacks$" },
-  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog$" }
+  { title: "Tableau de bord", icon: LayoutDashboard, path: "/admin", matchPath: "^/admin$" },
+  { title: "Gestion utilisateurs", icon: Users, path: "/admin/users", matchPath: "^/admin/users" },
+  { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "^/admin/feedbacks" },
+  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog" }
 ];
 
 const userMenu: MenuItem[] = [

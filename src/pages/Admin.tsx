@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserStats } from "@/components/admin/UserStats";
 import StyledLoader from "@/components/ui/StyledLoader";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -98,74 +99,79 @@ const Admin = () => {
     },
   ];
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 py-8 px-4 sm:px-6 md:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* En-tête */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Tableau de bord administrateur</h1>
-          <p className="text-lg text-muted-foreground">
-            Bienvenue dans l'interface d'administration de BudgetWizard
-          </p>
-        </div>
-        
-        {/* Statistiques utilisateurs */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Statistiques utilisateurs</h2>
-          <UserStats />
-        </section>
-        
-        {/* Gestion administrative */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Gestion administrative</h2>
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            {adminLinks.map((link, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{link.title}</CardTitle>
-                    <div className="p-2 rounded-full bg-primary/10">
-                      {link.icon}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-sm mb-4">{link.description}</p>
-                  <Button onClick={link.action} variant="default" size="sm" className="w-full">
-                    Accéder
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-        
-        {/* Données et statistiques */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Données et statistiques</h2>
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            {dataLinks.map((link, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{link.title}</CardTitle>
-                    <div className="p-2 rounded-full bg-primary/10">
-                      {link.icon}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-sm mb-4">{link.description}</p>
-                  <Button onClick={link.action} variant="outline" size="sm" className="w-full">
-                    Consulter
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+  // Le contenu de la page admin
+  const AdminContent = () => (
+    <div className="min-h-screen py-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Tableau de bord administrateur</h1>
+        <p className="text-lg text-muted-foreground">
+          Bienvenue dans l'interface d'administration de BudgetWizard
+        </p>
       </div>
+      
+      {/* Statistiques utilisateurs */}
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Statistiques utilisateurs</h2>
+        <UserStats />
+      </section>
+      
+      {/* Gestion administrative */}
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Gestion administrative</h2>
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {adminLinks.map((link, index) => (
+            <Card key={index} className="hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">{link.title}</CardTitle>
+                  <div className="p-2 rounded-full bg-primary/10">
+                    {link.icon}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm mb-4">{link.description}</p>
+                <Button onClick={link.action} variant="default" size="sm" className="w-full">
+                  Accéder
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+      
+      {/* Données et statistiques */}
+      <section>
+        <h2 className="text-xl font-semibold mb-4">Données et statistiques</h2>
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {dataLinks.map((link, index) => (
+            <Card key={index} className="hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">{link.title}</CardTitle>
+                  <div className="p-2 rounded-full bg-primary/10">
+                    {link.icon}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm mb-4">{link.description}</p>
+                <Button onClick={link.action} variant="outline" size="sm" className="w-full">
+                  Consulter
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
     </div>
+  );
+
+  // Retourner le contenu de la page dans le layout avec sidebar
+  return (
+    <DashboardLayout>
+      <AdminContent />
+    </DashboardLayout>
   );
 };
 
