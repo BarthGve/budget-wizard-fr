@@ -1,23 +1,28 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useProfileAvatar = () => {
+  const queryClient = useQueryClient();
+  
   // Récupère d'abord l'utilisateur actuel pour avoir son ID
   const { data: currentUser } = useQuery({
-    queryKey: ["current-user"], // Utilisation d'une clé standardisée
+    queryKey: ["current-user"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       return user;
     },
-    staleTime: 1000 * 30, // Réduit à 30 secondes
+    staleTime: 0, // Forcer un rafraîchissement à chaque utilisation
   });
 
   // Utilise l'ID de l'utilisateur actuel dans la clé de requête
   return useQuery({
-    queryKey: ["profile", currentUser?.id], // Utilisation d'une clé standardisée
+    queryKey: ["profile-avatar", currentUser?.id],
     queryFn: async () => {
       if (!currentUser) return null;
+
+      // Forcer l'invalidation des autres requêtes liées au profil
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
 
       const { data } = await supabase
         .from("profiles")
@@ -28,6 +33,6 @@ export const useProfileAvatar = () => {
       return data;
     },
     enabled: !!currentUser,
-    staleTime: 1000 * 30, // Réduit à 30 secondes
+    staleTime: 0, // Forcer un rafraîchissement à chaque utilisation
   });
 };

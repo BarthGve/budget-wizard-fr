@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,23 +26,28 @@ export function useAuth() {
   const navigationInProgress = useRef(false);
   const redirectTimeoutRef = useRef<number | null>(null);
 
-  // Liste des caches à invalider lors d'une déconnexion ou changement d'utilisateur
-  const cachesToInvalidate = [
-    "auth", 
-    "current-user", 
-    "profile", 
-    "isAdmin",
-    "contributors", 
-    "expenses", 
-    "recurring-expenses",
-    "recurring-expense-categories",
-    "credits",
-    "credits-monthly-stats",
-    "savings"
-  ];
-
   // Fonction pour invalider tous les caches pertinents
   const invalidateAllCaches = useCallback(() => {
+    console.log("Réinitialisation complète du cache React Query depuis useAuth");
+    queryClient.clear(); // Nettoyage complet du cache
+    
+    // Forcer l'invalidation des caches spécifiques pour garantir leur actualisation
+    const cachesToInvalidate = [
+      "auth", 
+      "current-user", 
+      "profile", 
+      "user-profile",
+      "profile-avatar",
+      "isAdmin",
+      "contributors", 
+      "expenses", 
+      "recurring-expenses",
+      "recurring-expense-categories",
+      "credits",
+      "credits-monthly-stats",
+      "savings"
+    ];
+    
     cachesToInvalidate.forEach(key => {
       queryClient.invalidateQueries({ queryKey: [key] });
     });
@@ -72,12 +76,12 @@ export function useAuth() {
       
       toast.success("Connexion réussie!");
       
-      // Stockage des données de session dans le localStorage pour persistance
-      localStorage.setItem('auth_session', JSON.stringify(data.session));
-      sessionStorage.setItem('is_authenticated', 'true');
-      
-      // S'assurer que toutes les données utilisateur sont invalidées pour forcer un rechargement
+      // Réinitialiser complètement le cache pour forcer un rechargement des données
       invalidateAllCaches();
+      
+      // Stocker les données dans le état
+      setUser(data.user);
+      setSession(data.session);
       
       // Rediriger vers le tableau de bord
       navigate("/dashboard");
@@ -138,14 +142,16 @@ export function useAuth() {
       if (navigationInProgress.current) return;
       navigationInProgress.current = true;
       
+      // Réinitialiser complètement le cache avant la déconnexion
+      invalidateAllCaches();
+      
       // Déconnexion dans Supabase
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Nettoyage du cache et du stockage local
-      invalidateAllCaches();
-      sessionStorage.removeItem('is_authenticated');
-      localStorage.removeItem('auth_session');
+      // Réinitialiser l'état local
+      setUser(null);
+      setSession(null);
       
       toast.success("Déconnexion réussie");
       
@@ -217,22 +223,10 @@ export function useAuth() {
   // Écouteur pour les changements d'état d'authentification
   useEffect(() => {
     const setupAuthListener = async () => {
-      // Vérifier s'il y a une session en cache
-      const cachedSession = localStorage.getItem('auth_session');
-      if (cachedSession) {
-        try {
-          const parsedSession = JSON.parse(cachedSession);
-          setSession(parsedSession);
-          setUser(parsedSession?.user || null);
-        } catch (error) {
-          console.error("Erreur lors de la lecture de la session en cache:", error);
-        }
-      }
-      
       // Configurer l'écouteur d'événements d'authentification
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, newSession) => {
-          console.log("Événement d'authentification détecté:", event);
+          console.log("Événement d'authentification détecté dans useAuth:", event);
           
           // Mettre à jour l'état de session immédiatement
           setSession(newSession);
@@ -246,13 +240,7 @@ export function useAuth() {
           
           // Actions spécifiques selon l'événement
           if (event === "SIGNED_IN") {
-            // Stocker la session mise à jour
-            if (newSession) {
-              localStorage.setItem('auth_session', JSON.stringify(newSession));
-              sessionStorage.setItem('is_authenticated', 'true');
-            }
-            
-            // Invalider les requêtes pour forcer un rechargement des données
+            // Réinitialiser complètement le cache pour forcer un rechargement des données
             invalidateAllCaches();
             
             // Vérifier si l'utilisateur vient de vérifier son email
@@ -275,7 +263,7 @@ export function useAuth() {
               }
             }
           } else if (event === "USER_UPDATED") {
-            // Invalider les requêtes pour rafraîchir les données
+            // Réinitialiser complètement le cache pour forcer un rechargement des données
             invalidateAllCaches();
             
             // Gérer la confirmation de changement d'email
@@ -313,9 +301,7 @@ export function useAuth() {
               }
             }
           } else if (event === "SIGNED_OUT") {
-            // Nettoyer le stockage local
-            sessionStorage.removeItem('is_authenticated');
-            localStorage.removeItem('auth_session');
+            // Réinitialiser complètement le cache
             invalidateAllCaches();
             
             // Éviter les redirections multiples
@@ -340,8 +326,6 @@ export function useAuth() {
       if (data.session) {
         setSession(data.session);
         setUser(data.session.user || null);
-        localStorage.setItem('auth_session', JSON.stringify(data.session));
-        sessionStorage.setItem('is_authenticated', 'true');
       }
       
       // Marquer comme chargé et initialisé après la vérification initiale

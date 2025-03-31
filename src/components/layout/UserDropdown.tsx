@@ -14,6 +14,7 @@ import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "next-themes";
 import { useAuthContext } from "@/context/AuthProvider";
+import { useEffect, useState } from "react";
 
 interface UserDropdownProps {
   collapsed: boolean;
@@ -31,12 +32,57 @@ export const UserDropdown = ({
   const queryClient = useQueryClient();
   
   const { logout } = useAuthContext();
+  const [localProfile, setLocalProfile] = useState<Profile | undefined>(profile);
+  
+  // Mettre à jour le profil local quand les props changent
+  useEffect(() => {
+    if (profile && profile.id !== localProfile?.id) {
+      setLocalProfile(profile);
+    }
+  }, [profile]);
+  
+  // Force à refetch le profil actuel
+  useEffect(() => {
+    // Récupérer le profil actuel depuis le serveur
+    const getCurrentProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        console.log("UserDropdown - Récupération du profil pour:", user.email);
+        
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+          
+        if (error) {
+          console.error("Erreur lors de la récupération du profil:", error);
+          return;
+        }
+        
+        if (data) {
+          setLocalProfile({
+            ...data,
+            email: user.email
+          } as Profile);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération du profil:", error);
+      }
+    };
+    
+    getCurrentProfile();
+  }, []);
 
   const handleLogout = async () => {
     try {
       // Invalider explicitement les caches avant la déconnexion
       queryClient.invalidateQueries({ queryKey: ["current-user"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      queryClient.invalidateQueries({ queryKey: ["profile-avatar"] });
       
       await logout();
     } catch (error) {
@@ -66,12 +112,12 @@ export const UserDropdown = ({
                   "transition-all duration-300",
                   isMobile && collapsed ? "h-9 w-9" : collapsed ? "h-10 w-10" : "h-12 w-12"
                 )}>
-                  <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
+                  <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
                   <AvatarFallback>
-                    {(profile?.full_name || "?")[0]?.toUpperCase()}
+                    {(localProfile?.full_name || "?")[0]?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                {profile?.profile_type === "pro" && (
+                {localProfile?.profile_type === "pro" && (
                   <Badge 
                     className={cn(
                       "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
@@ -84,8 +130,8 @@ export const UserDropdown = ({
               {!collapsed && (
                 <div className="flex items-center justify-between flex-1">
                   <div className="flex flex-col items-start">
-                    <span className="font-medium text-sm truncate max-w-[120px]">{profile?.full_name || "Utilisateur"}</span>
-                    <span className="text-xs text-muted-foreground truncate max-w-[120px]">{profile?.email}</span>
+                    <span className="font-medium text-sm truncate max-w-[120px]">{localProfile?.full_name || "Utilisateur"}</span>
+                    <span className="text-xs text-muted-foreground truncate max-w-[120px]">{localProfile?.email}</span>
                   </div>
                   <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
                 </div>
@@ -97,20 +143,20 @@ export const UserDropdown = ({
           <div className="flex items-center gap-3 p-2 border-b">
             <div className="relative">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
+                <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
                 <AvatarFallback>
-                  {(profile?.full_name || "?")[0]?.toUpperCase()}
+                  {(localProfile?.full_name || "?")[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {profile?.profile_type === "pro" && (
+              {localProfile?.profile_type === "pro" && (
                 <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
                   Pro
                 </Badge>
               )}
             </div>
             <div className="flex flex-col">
-              <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
-              <span className="text-xs text-muted-foreground">{profile?.email}</span>
+              <span className="font-medium text-sm">{localProfile?.full_name || "Utilisateur"}</span>
+              <span className="text-xs text-muted-foreground">{localProfile?.email}</span>
             </div>
           </div>
        

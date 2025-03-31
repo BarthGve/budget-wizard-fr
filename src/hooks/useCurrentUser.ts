@@ -6,27 +6,22 @@ export const useCurrentUser = () => {
   const { data: currentUser, isLoading, error } = useQuery({
     queryKey: ["current-user"], // Clé standardisée
     queryFn: async () => {
-      // Vérifier d'abord dans sessionStorage si on est authentifié
-      const isAuthenticatedInSession = sessionStorage.getItem('is_authenticated') === 'true';
-      
-      // Si on n'est pas authentifié selon sessionStorage, on vérifie avec Supabase
+      // Utiliser une approche plus directe pour obtenir l'utilisateur courant
       const { data: { user }, error } = await supabase.auth.getUser();
       
-      // Mettre à jour sessionStorage avec l'état d'authentification réel
-      if (user) {
-        sessionStorage.setItem('is_authenticated', 'true');
-      } else {
-        sessionStorage.removeItem('is_authenticated');
+      if (error) {
+        console.error("Erreur lors de la récupération de l'utilisateur:", error);
+        throw error;
       }
       
-      if (error) throw error;
       if (!user) throw new Error("Non authentifié");
       return user;
     },
-    staleTime: 1000 * 30, // Réduit à 30 secondes
+    staleTime: 0, // Forcer un rafraîchissement à chaque utilisation
     retry: 1,
-    // Utiliser les données en cache en cas d'erreur lors du rechargement
-    placeholderData: undefined
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   return { 
