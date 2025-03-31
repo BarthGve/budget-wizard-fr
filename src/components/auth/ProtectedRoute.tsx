@@ -4,6 +4,7 @@ import { usePagePermissions } from "@/hooks/usePagePermissions";
 import StyledLoader from "../ui/StyledLoader";
 import { memo, useRef, useEffect } from "react";
 import { useAuthContext } from "@/context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ interface ProtectedRouteProps {
 // Optimisation avec memo pour éviter les re-renders inutiles
 export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { canAccessPage, isAdmin } = usePagePermissions();
   const hasRedirectedRef = useRef(false);
   
@@ -25,13 +27,11 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
       console.log("Admin détecté dans ProtectedRoute - Redirection vers /admin");
       if (!hasRedirectedRef.current) {
         hasRedirectedRef.current = true;
-        // Le setTimeout évite les problèmes potentiels de navigation pendant le rendu
-        setTimeout(() => {
-          window.location.href = '/admin';
-        }, 0);
+        // Utiliser navigate avec replace pour éviter l'empilement dans l'historique
+        navigate('/admin', { replace: true });
       }
     }
-  }, [isAdmin, location.pathname]);
+  }, [isAdmin, location.pathname, navigate]);
 
   // Afficher un loader pendant la vérification
   if (loading) {

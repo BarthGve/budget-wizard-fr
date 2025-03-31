@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -98,18 +97,18 @@ export function useAuth() {
           throw adminError;
         }
         
-        // Redirection conditionnelle selon le statut admin
+        // Redirection conditionnelle selon le statut admin - utiliser replace pour éviter l'empilement
         if (isAdmin) {
           console.log("Utilisateur admin détecté - Redirection vers /admin");
-          navigate("/admin");
+          navigate("/admin", { replace: true });
         } else {
           console.log("Utilisateur standard - Redirection vers /dashboard");
-          navigate("/dashboard");
+          navigate("/dashboard", { replace: true });
         }
       } catch (adminCheckError) {
         console.error("Échec de la vérification du rôle admin:", adminCheckError);
         // En cas d'erreur dans la vérification du rôle, rediriger vers le dashboard par défaut
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       }
       
       return data;
@@ -181,7 +180,7 @@ export function useAuth() {
       
       toast.success("Déconnexion réussie");
       
-      // Rediriger vers la page d'accueil
+      // Rediriger vers la page d'accueil avec replace: true
       navigate("/", { replace: true });
       
       // Réinitialiser le drapeau de navigation après un délai
@@ -287,7 +286,7 @@ export function useAuth() {
                 if (!navigationInProgress.current) {
                   navigationInProgress.current = true;
                   
-                  // Redirection conditionnelle selon le statut admin
+                  // Redirection conditionnelle selon le statut admin - avec replace: true
                   if (isAdmin) {
                     console.log("Utilisateur admin détecté dans onAuthStateChange - Redirection vers /admin");
                     navigate("/admin", { replace: true });
@@ -317,7 +316,7 @@ export function useAuth() {
               // Cette partie sera exécutée uniquement si la vérification du rôle admin ci-dessus n'a pas déjà déclenché de navigation
               if (!navigationInProgress.current) {
                 navigationInProgress.current = true;
-                navigate("/dashboard");
+                navigate("/dashboard", { replace: true });
                 
                 // Réinitialiser le drapeau après un délai
                 if (redirectTimeoutRef.current) {
@@ -387,7 +386,7 @@ export function useAuth() {
         }
       );
 
-      // Récupérer la session initiale
+      // Récupérer la session initiale de façon prioritaire
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         setSession(data.session);

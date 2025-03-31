@@ -46,11 +46,17 @@ export const useUserData = () => {
     staleTime: 0, // Forcer un rafraîchissement à chaque utilisation
   });
 
-  // Vérification du rôle admin
+  // Vérification du rôle admin - prioritaire et mise en cache optimisée
   const { data: isAdmin } = useQuery({
     queryKey: ["isAdmin", currentUser?.id],
     queryFn: async () => {
       if (!currentUser) return false;
+
+      // Récupérer le statut admin depuis le cache si disponible
+      const cachedIsAdmin = queryClient.getQueryData(["isAdmin", currentUser.id]);
+      if (cachedIsAdmin !== undefined) {
+        return cachedIsAdmin;
+      }
 
       const { data, error } = await supabase.rpc('has_role', {
         user_id: currentUser.id,
@@ -61,7 +67,8 @@ export const useUserData = () => {
       return data;
     },
     enabled: !!currentUser,
-    staleTime: 0, // Forcer un rafraîchissement à chaque utilisation
+    staleTime: 60000, // Cache de 1 minute pour réduire les appels
+    cacheTime: 120000, // Conserver en cache pendant 2 minutes
   });
 
   return {

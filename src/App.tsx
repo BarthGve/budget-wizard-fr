@@ -43,7 +43,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 // Import des pages d'administration
 import Admin from "./pages/Admin";
 import AdminFeedbacks from "./pages/admin/Feedbacks";
-import AdminUsers from "./pages/admin/Users"; // Ajout de l'import
+import AdminUsers from "./pages/admin/Users";
 import Changelog from "./pages/Changelog";
 import { ChangelogPage } from "./components/changelog/ChangelogPage";
 
@@ -196,6 +196,13 @@ function App() {
                 <Route path="/admin/feedbacks" element={
                   <ProtectedRoute requireAdmin={true}>
                     <AdminFeedbacks />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Ajout de la route manquante pour la gestion des utilisateurs */}
+                <Route path="/admin/users" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <AdminUsers />
                   </ProtectedRoute>
                 } />
                 
