@@ -68,7 +68,7 @@ export const useUserData = () => {
     },
     enabled: !!currentUser,
     staleTime: 60000, // Cache de 1 minute pour réduire les appels
-    cacheTime: 120000, // Conserver en cache pendant 2 minutes
+    gcTime: 120000, // Conserver en cache pendant 2 minutes (remplace cacheTime)
   });
 
   return {
