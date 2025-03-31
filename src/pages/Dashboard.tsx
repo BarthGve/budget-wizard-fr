@@ -10,7 +10,6 @@ import { useContributors } from "@/hooks/useContributors";
 import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useExpenseStats } from "@/hooks/useExpenseStats";
 
 const Dashboard = () => {
   // Configurer les écouteurs de mises à jour en temps réel
@@ -25,21 +24,6 @@ const Dashboard = () => {
     },
     refetchOnWindowFocus: false,
   });
-
-  // Définir la vue par défaut
-  const currentView = "monthly";
-
-  // Récupérer les données des dépenses
-  const { 
-    expensesTotal,
-    fuelExpensesTotal,
-    fuelExpensesCount,
-    fuelVolume,
-    activeFuelExpensesTotal,
-    activeFuelExpensesCount,
-    activeFuelVolume,
-    hasActiveVehicles
-  } = useExpenseStats(currentView);
 
   // Données du tableau de bord
   const { dashboardData, refetchDashboard } = useDashboardQueries(user?.id);
@@ -62,6 +46,9 @@ const Dashboard = () => {
     contributorShares, 
     expenseShares 
   } = useContributors(dashboardData?.contributors || [], expenses);
+
+  // Définir la vue par défaut
+  const currentView = "monthly";
 
   // Animation variants
   const containerVariants = {
@@ -103,12 +90,6 @@ const Dashboard = () => {
           recurringExpenses={typedRecurringExpenses}
           monthlySavings={dashboardData.monthlySavings || []}
           currentView={currentView}
-          fuelExpensesTotal={fuelExpensesTotal}
-          fuelExpensesCount={fuelExpensesCount}
-          fuelVolume={fuelVolume}
-          activeFuelExpensesTotal={activeFuelExpensesTotal}
-          activeFuelExpensesCount={activeFuelExpensesCount}
-          activeFuelVolume={activeFuelVolume}
         />
       </motion.div>
     </TooltipProvider>

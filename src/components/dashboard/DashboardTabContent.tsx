@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
@@ -56,10 +55,6 @@ interface DashboardTabContentProps {
   fuelExpensesTotal?: number;
   fuelExpensesCount?: number;
   fuelVolume?: number;
-  // Nouvelles props pour les dépenses carburant des véhicules actifs
-  activeFuelExpensesTotal?: number;
-  activeFuelExpensesCount?: number;
-  activeFuelVolume?: number;
 }
 
 const containerVariants = {
@@ -88,9 +83,6 @@ export const DashboardTabContent = ({
   fuelExpensesTotal = 0,
   fuelExpensesCount = 0,
   fuelVolume = 0,
-  activeFuelExpensesTotal = 0,
-  activeFuelExpensesCount = 0,
-  activeFuelVolume = 0,
 }: DashboardTabContentProps) => {
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -133,9 +125,6 @@ export const DashboardTabContent = ({
         totalFuelExpenses={fuelExpensesTotal}
         fuelVolume={fuelVolume}
         fuelExpensesCount={fuelExpensesCount}
-        activeFuelExpensesTotal={activeFuelExpensesTotal}
-        activeFuelExpensesCount={activeFuelExpensesCount}
-        activeFuelVolume={activeFuelVolume}
         profile={profile}
         hasActiveVehicles={hasActiveVehicles}
         dashboardPreferences={dashboardPrefs}

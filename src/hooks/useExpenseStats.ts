@@ -84,12 +84,13 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
 
   const hasActiveVehicles = activeVehicles && activeVehicles.length > 0;
 
-  // Récupérer les dépenses carburant pour tous les véhicules (actifs et vendus)
-  const { data: allFuelExpenses, isLoading: isAllFuelLoading } = useQuery({
-    queryKey: ["all-fuel-expenses", viewMode, firstDayStr, lastDayStr],
+  // Récupérer les dépenses carburant pour la période sélectionnée
+  const { data: fuelExpenses, isLoading: isFuelLoading } = useQuery({
+    queryKey: ["period-fuel-expenses", viewMode, firstDayStr, lastDayStr],
     queryFn: async () => {
       if (!currentUser?.id) return { total: 0, count: 0, volume: 0 };
       
+      // Modification pour inclure les véhicules vendus (status: 'vendu')
       const { data, error } = await supabase
         .from("vehicle_expenses")
         .select("amount, fuel_volume, vehicles!inner(profile_id, status)")
@@ -100,7 +101,7 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
         .lte("date", lastDayStr);
 
       if (error) {
-        console.error("Error fetching all fuel expenses:", error);
+        console.error("Error fetching fuel expenses:", error);
         return { total: 0, count: 0, volume: 0 };
       }
 
@@ -116,58 +117,17 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly" = "monthly") => {
       };
     },
     enabled: !!currentUser?.id,
-    staleTime: 1000 * 10,
-    refetchOnWindowFocus: true,
-  });
-
-  // Récupérer les dépenses carburant pour les véhicules ACTIFS uniquement
-  const { data: activeFuelExpenses, isLoading: isActiveFuelLoading } = useQuery({
-    queryKey: ["active-fuel-expenses", viewMode, firstDayStr, lastDayStr],
-    queryFn: async () => {
-      if (!currentUser?.id) return { total: 0, count: 0, volume: 0 };
-      
-      const { data, error } = await supabase
-        .from("vehicle_expenses")
-        .select("amount, fuel_volume, vehicles!inner(profile_id, status)")
-        .eq("vehicles.profile_id", currentUser.id)
-        .eq("vehicles.status", "actif") // Uniquement les véhicules actifs
-        .eq("expense_type", "carburant")
-        .gte("date", firstDayStr)
-        .lte("date", lastDayStr);
-
-      if (error) {
-        console.error("Error fetching active fuel expenses:", error);
-        return { total: 0, count: 0, volume: 0 };
-      }
-
-      const total = data.reduce((sum, expense) => sum + Number(expense.amount), 0);
-      const volume = data.reduce((sum, expense) => sum + Number(expense.fuel_volume || 0), 0);
-      
-      console.log(`Total dépenses carburant ${periodLabel} (véhicules ACTIFS uniquement): ${total}€ (${data.length} dépenses)`);
-      
-      return { 
-        total, 
-        count: data.length,
-        volume
-      };
-    },
-    enabled: !!currentUser?.id,
-    staleTime: 1000 * 10,
+    staleTime: 1000 * 10, // 10 secondes pour une réactivité accrue
     refetchOnWindowFocus: true,
   });
 
   return {
     expensesTotal,
-    // Données pour tous les véhicules (actifs et vendus)
-    fuelExpensesTotal: allFuelExpenses?.total || 0,
-    fuelExpensesCount: allFuelExpenses?.count || 0,
-    fuelVolume: allFuelExpenses?.volume || 0,
-    // Données pour les véhicules actifs uniquement
-    activeFuelExpensesTotal: activeFuelExpenses?.total || 0,
-    activeFuelExpensesCount: activeFuelExpenses?.count || 0,
-    activeFuelVolume: activeFuelExpenses?.volume || 0,
-    isLoading: isExpensesLoading || isAllFuelLoading || isActiveFuelLoading || isVehiclesLoading,
+    fuelExpensesTotal: fuelExpenses?.total || 0,
+    fuelExpensesCount: fuelExpenses?.count || 0,
+    fuelVolume: fuelExpenses?.volume || 0,
+    isLoading: isExpensesLoading || isFuelLoading || isVehiclesLoading,
     periodLabel: viewMode === "monthly" ? "mensuel" : "annuel",
-    hasActiveVehicles
+    hasActiveVehicles // Nouvelle propriété
   };
 };

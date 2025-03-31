@@ -23,9 +23,6 @@ interface ExpenseStatsWrapperProps {
   totalFuelExpenses: number;
   fuelVolume: number;
   fuelExpensesCount: number;
-  activeFuelExpensesTotal: number;
-  activeFuelExpensesCount: number;
-  activeFuelVolume: number;
   profile: any;
   hasActiveVehicles: boolean;
   dashboardPreferences: DashboardPreferences;
@@ -40,9 +37,6 @@ export const ExpenseStatsWrapper = ({
   totalFuelExpenses,
   fuelVolume,
   fuelExpensesCount,
-  activeFuelExpensesTotal,
-  activeFuelExpensesCount,
-  activeFuelVolume,
   profile,
   hasActiveVehicles,
   dashboardPreferences
@@ -57,9 +51,6 @@ export const ExpenseStatsWrapper = ({
         totalFuelExpenses={totalFuelExpenses}
         fuelVolume={fuelVolume}
         fuelExpensesCount={fuelExpensesCount}
-        activeFuelExpensesTotal={activeFuelExpensesTotal}
-        activeFuelExpensesCount={activeFuelExpensesCount}
-        activeFuelVolume={activeFuelVolume}
         profile={profile}
         hasActiveVehicles={hasActiveVehicles}
       />
