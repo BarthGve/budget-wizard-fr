@@ -1,14 +1,19 @@
 
 import { useMemo } from "react";
+import { calculateTotalRevenue } from "@/utils/dashboardCalculations";
 
 /**
  * Hook pour effectuer les calculs financiers du tableau de bord
  */
 export function useExpenseCalculations(
   monthlySavings = [],
-  recurringExpenses = []
+  recurringExpenses = [],
+  contributors = []
 ) {
   return useMemo(() => {
+    // Calculer les revenus à partir des contributeurs
+    const revenue = calculateTotalRevenue(contributors);
+    
     // Calculer les économies totales
     const savings = monthlySavings?.reduce((sum, saving) => sum + saving.amount, 0) || 0;
     
@@ -20,9 +25,6 @@ export function useExpenseCalculations(
       ?.filter(expense => expense.periodicity === "monthly")
       .reduce((sum, expense) => sum + expense.amount, 0) || 0;
     
-    // Estimer les revenus (simplifié pour l'exemple)
-    const revenue = expenses + savings + 500; // Ajouter une marge fictive
-    
     // Calculer le solde
     const balance = revenue - expenses - savings;
     
@@ -33,5 +35,5 @@ export function useExpenseCalculations(
       revenue,
       balance
     };
-  }, [monthlySavings, recurringExpenses]);
+  }, [monthlySavings, recurringExpenses, contributors]);
 }

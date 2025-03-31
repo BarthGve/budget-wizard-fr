@@ -35,10 +35,11 @@ const Dashboard = () => {
     }
   }, [user?.id, refetchDashboard]);
 
-  // Calculs des dépenses
+  // Calculs des dépenses en passant les contributeurs comme paramètre
   const { revenue, expenses, savings, balance, savingsGoal } = useExpenseCalculations(
     dashboardData?.monthlySavings,
-    dashboardData?.recurringExpenses
+    dashboardData?.recurringExpenses,
+    dashboardData?.contributors
   );
 
   // Données des contributeurs
