@@ -14,8 +14,13 @@ import { ChangelogDeleteDialog } from "./ChangelogDeleteDialog";
 import { ChangelogEntry } from "./types";
 import { fetchChangelogEntries } from "@/services/changelog";
 
-export const ChangelogPage = () => {
-  const { isAdmin } = usePagePermissions();
+interface ChangelogPageProps {
+  isAdmin?: boolean;
+}
+
+export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
+  const { isAdmin: userIsAdmin } = usePagePermissions();
+  const isAdminView = isAdmin || userIsAdmin;
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -77,10 +82,10 @@ export const ChangelogPage = () => {
   };
 
   const content = (
-    <div className={`${isAdmin ? "" : "min-h-screen bg-gradient-to-br from-primary/5 via-background to-background"}`}>
-      {!isAdmin && <Navbar />}
-      <div className={`container mx-auto px-4 py-8 ${!isAdmin ? "pt-32" : ""}`}>
-        <ChangelogHeader isAdmin={isAdmin} onCreateNew={handleCreate} />
+    <div className={`${isAdminView ? "" : "min-h-screen bg-gradient-to-br from-primary/5 via-background to-background"}`}>
+      {!isAdminView && <Navbar />}
+      <div className={`container mx-auto px-4 py-8 ${!isAdminView ? "pt-32" : ""}`}>
+        <ChangelogHeader isAdmin={isAdminView} onCreateNew={handleCreate} />
         
         <ChangelogFilters 
           search={search} 
@@ -92,7 +97,7 @@ export const ChangelogPage = () => {
         <ChangelogContent 
           entries={filteredEntries} 
           isLoading={isLoading} 
-          isAdmin={isAdmin}
+          isAdmin={isAdminView}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
@@ -112,7 +117,7 @@ export const ChangelogPage = () => {
     </div>
   );
 
-  if (isAdmin) {
+  if (isAdminView && !isAdmin) {
     return <DashboardLayout>{content}</DashboardLayout>;
   }
 

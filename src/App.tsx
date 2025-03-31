@@ -40,6 +40,11 @@ import Stocks from "./pages/Stocks";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
 
+// Import des pages d'administration
+import Admin from "./pages/Admin";
+import AdminFeedbacks from "./pages/admin/Feedbacks";
+import Changelog from "./pages/Changelog";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -76,6 +81,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/email-verification" element={<EmailVerification />} />
+                <Route path="/changelog" element={<Changelog />} />
                 
                 {/* Routes protégées avec layout dashboard */}
                 <Route path="/dashboard" element={
@@ -128,7 +134,7 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Nouvelle route pour le détail d'un détaillant */}
+                {/* Route pour le détail d'un détaillant */}
                 <Route path="/expenses/retailer/:id" element={
                   <ProtectedRoute>
                     <DashboardLayout>
@@ -177,11 +183,32 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Ajouter la route pour le détail d'une propriété */}
+                {/* Route pour le détail d'une propriété */}
                 <Route path="/properties/:id" element={
                   <ProtectedRoute>
                     <DashboardLayout>
                       <PropertyDetail />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                {/* Routes d'administration */}
+                <Route path="/admin" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <Admin />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/admin/feedbacks" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <AdminFeedbacks />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/admin/changelog" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <DashboardLayout>
+                      <ChangelogPage isAdmin={true} />
                     </DashboardLayout>
                   </ProtectedRoute>
                 } />

@@ -55,6 +55,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     return <Navigate to="/admin" replace />;
   }
 
+  // Si on requiert un admin mais que l'utilisateur n'est pas admin
   if (requireAdmin && !isAdmin) {
     hasRedirectedRef.current = true;
     return <Navigate to="/dashboard" replace />;
@@ -67,7 +68,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
 
   // Gestion spéciale pour les routes de détail des propriétés
   if (location.pathname.startsWith('/properties/')) {
-    // Si c'est la page principale des propriétés ou si l'utilisateur peut accéder à /properties
+    // Si l'utilisateur peut accéder à /properties
     const canAccessProperties = canAccessPage('/properties');
     if (canAccessProperties) {
       return <>{children}</>;
@@ -81,6 +82,11 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     if (canAccessExpenses) {
       return <>{children}</>;
     }
+  }
+
+  // Gestion spéciale pour les routes admin
+  if (location.pathname.startsWith('/admin') && isAdmin) {
+    return <>{children}</>;
   }
 
   // Vérifier les permissions pour les autres routes
