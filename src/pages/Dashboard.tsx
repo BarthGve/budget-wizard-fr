@@ -11,8 +11,13 @@ import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header/DashboardHeader";
+import { useState } from "react";
 
 const Dashboard = () => {
+  // État pour gérer le mode d'affichage (mensuel/annuel)
+  const [currentView, setCurrentView] = useState<"monthly" | "yearly">("monthly");
+  
   // Configurer les écouteurs de mises à jour en temps réel
   useRealtimeListeners();
 
@@ -36,7 +41,7 @@ const Dashboard = () => {
     fuelExpensesCount, 
     fuelVolume,
     hasActiveVehicles 
-  } = useExpenseStats("monthly");
+  } = useExpenseStats(currentView);
 
   // Rafraîchir les données lorsque le composant est monté
   useEffect(() => {
@@ -58,8 +63,14 @@ const Dashboard = () => {
     expenseShares 
   } = useContributors(dashboardData?.contributors || [], expenses);
 
-  // Définir la vue par défaut
-  const currentView = "monthly";
+  // Obtenir le nom du mois actuel
+  const getCurrentMonthName = () => {
+    const months = [
+      "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+      "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+    ];
+    return months[new Date().getMonth()];
+  };
 
   // Animation variants
   const containerVariants = {
@@ -89,6 +100,13 @@ const Dashboard = () => {
         animate="visible"
         variants={containerVariants}
       >
+        {/* Ajouter l'en-tête du tableau de bord */}
+        <DashboardHeader 
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          currentMonthName={getCurrentMonthName()}
+        />
+        
         <DashboardTabContent
           revenue={revenue}
           expenses={expenses}
