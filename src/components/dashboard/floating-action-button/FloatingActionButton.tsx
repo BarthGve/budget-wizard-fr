@@ -9,7 +9,8 @@ import { RetailersList } from "./RetailersList";
 import { ExpenseDialogs } from "./ExpenseDialogs";
 
 /**
- * Bouton d'action flottant qui s'affiche sur mobile pour ajouter des dépenses rapidement
+ * Bouton d'action flottant avec design inspiré d'Apple
+ * Utilise un effet de glassmorphism et des animations fluides
  */
 export const FloatingActionButton = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -50,7 +51,7 @@ export const FloatingActionButton = () => {
 
   return (
     <>
-      <div className="fixed right-4 bottom-10 z-50 flex flex-col-reverse items-end space-y-reverse space-y-2">
+      <div className="fixed right-5 bottom-8 z-50 flex flex-col-reverse items-end space-y-reverse space-y-3">
         <AnimatePresence>
           {isMenuOpen && !showVehiclesList && !showRetailersList && (
             <ActionMenu

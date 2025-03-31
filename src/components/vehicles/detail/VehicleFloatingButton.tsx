@@ -1,17 +1,11 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { 
-  PlusCircle, 
-  Car, 
-  FileUp, 
-  CreditCard,
-  ChevronUp,
-  X
-} from "lucide-react";
+import { Car, FileUp, CreditCard, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { AddVehicleExpenseDialog } from "@/components/vehicles/expenses/AddVehicleExpenseDialog";
 import { useVehicleDetail } from "@/hooks/useVehicleDetail";
 
@@ -33,20 +27,20 @@ export const VehicleFloatingButton = ({ vehicleId }: VehicleFloatingButtonProps)
   
   // Animation variants pour les boutons
   const buttonVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.8 },
+    hidden: { opacity: 0, y: 10, scale: 0.8 },
     visible: { 
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         type: "spring",
-        stiffness: 300,
-        damping: 20,
+        stiffness: 400,
+        damping: 25,
       }
     },
     exit: { 
       opacity: 0, 
-      y: 20, 
+      y: 10, 
       scale: 0.8,
       transition: { duration: 0.2 }
     }
@@ -58,8 +52,8 @@ export const VehicleFloatingButton = ({ vehicleId }: VehicleFloatingButtonProps)
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.1
+        staggerChildren: 0.08,
+        delayChildren: 0.05
       }
     },
     exit: { 
@@ -83,7 +77,7 @@ export const VehicleFloatingButton = ({ vehicleId }: VehicleFloatingButtonProps)
 
   return (
     <>
-      <div className="fixed right-4 bottom-20 z-50 flex flex-col-reverse items-end space-y-reverse space-y-2">
+      <div className="fixed right-5 bottom-8 z-50 flex flex-col-reverse items-end space-y-reverse space-y-3">
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -94,46 +88,72 @@ export const VehicleFloatingButton = ({ vehicleId }: VehicleFloatingButtonProps)
               exit="exit"
             >
               <motion.div variants={buttonVariants}>
-                <div className="flex items-center gap-2">
-                  <span className="bg-white dark:bg-gray-800 text-sm font-medium px-2 py-1 rounded-lg shadow-md">
+                <motion.div 
+                  className="flex items-center gap-3"
+                  whileHover={{ x: -5 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <span className="backdrop-blur-xl bg-white/80 dark:bg-slate-800/80 text-sm font-medium px-4 py-2 rounded-full shadow-md border border-white/20 dark:border-gray-700/30">
                     Ajouter une dépense
                   </span>
-                  <Button
-                    onClick={handleAddExpense}
-                    className="h-12 w-12 rounded-full bg-green-500 hover:bg-green-600 shadow-lg"
-                  >
-                    <CreditCard className="h-5 w-5" />
-                  </Button>
-                </div>
+                  <motion.div whileTap={{ scale: 0.95 }}>
+                    <Button
+                      onClick={handleAddExpense}
+                      className="h-12 w-12 rounded-full backdrop-blur-md bg-green-500/90 hover:bg-green-500 shadow-lg border border-green-400/20"
+                    >
+                      <CreditCard className="h-5 w-5 text-white" />
+                    </Button>
+                  </motion.div>
+                </motion.div>
               </motion.div>
               
               <motion.div variants={buttonVariants}>
-                <div className="flex items-center gap-2">
-                  <span className="bg-white dark:bg-gray-800 text-sm font-medium px-2 py-1 rounded-lg shadow-md">
+                <motion.div 
+                  className="flex items-center gap-3"
+                  whileHover={{ x: -5 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <span className="backdrop-blur-xl bg-white/80 dark:bg-slate-800/80 text-sm font-medium px-4 py-2 rounded-full shadow-md border border-white/20 dark:border-gray-700/30">
                     Ajouter un document
                   </span>
-                  <Button
-                    onClick={handleAddDocument}
-                    className="h-12 w-12 rounded-full bg-blue-500 hover:bg-blue-600 shadow-lg"
-                  >
-                    <FileUp className="h-5 w-5" />
-                  </Button>
-                </div>
+                  <motion.div whileTap={{ scale: 0.95 }}>
+                    <Button
+                      onClick={handleAddDocument}
+                      className="h-12 w-12 rounded-full backdrop-blur-md bg-blue-500/90 hover:bg-blue-500 shadow-lg border border-blue-400/20"
+                    >
+                      <FileUp className="h-5 w-5 text-white" />
+                    </Button>
+                  </motion.div>
+                </motion.div>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
         
-        <Button 
-          onClick={() => setIsOpen(!isOpen)}
-          className={cn(
-            "h-14 w-14 rounded-full shadow-xl",
-            "bg-primary hover:bg-primary/90 dark:bg-primary dark:hover:bg-primary/90",
-            "transition-all duration-300 ease-in-out transform",
-          )}
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
-          {isOpen ? <X className="h-7 w-7" /> : <Car className="h-7 w-7" />}
-        </Button>
+          <Button 
+            onClick={() => setIsOpen(!isOpen)}
+            className={cn(
+              "h-14 w-14 rounded-full backdrop-blur-md shadow-lg",
+              "bg-white/80 dark:bg-slate-800/80 border border-white/20 dark:border-gray-700/30",
+              "hover:bg-white/90 dark:hover:bg-slate-800/90",
+              "transition-all duration-300 ease-in-out",
+            )}
+            style={{ 
+              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.15)"
+            }}
+          >
+            {isOpen ? (
+              <X className="h-6 w-6 text-gray-800 dark:text-gray-200" />
+            ) : (
+              <Car className="h-6 w-6 text-gray-800 dark:text-gray-200" />
+            )}
+          </Button>
+        </motion.div>
       </div>
       
       {/* Dialogue de dépense */}

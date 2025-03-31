@@ -32,6 +32,7 @@ const menuVariants = {
     }
   }
 };
+
 const itemVariants = {
   hidden: {
     opacity: 0,
@@ -49,6 +50,7 @@ const itemVariants = {
     }
   }
 };
+
 interface ActionMenuProps {
   isProUser: boolean;
   handleAddFuelExpenseClick: () => void;
@@ -56,29 +58,50 @@ interface ActionMenuProps {
 }
 
 /**
- * Menu des actions principales
+ * Menu des actions principales avec style Apple (glassmorphism)
  */
 export const ActionMenu = ({
   isProUser,
   handleAddFuelExpenseClick,
   handleAddRetailerExpense
 }: ActionMenuProps) => {
-  return <motion.div className="flex flex-col items-end gap-2" variants={menuVariants} initial="hidden" animate="visible" exit="exit">
-      {/* Suppression de la condition isProUser pour rendre le bouton accessible à tous les utilisateurs */}
-      <motion.div variants={itemVariants} className="flex items-center gap-2">
-          <span className="bg-white dark:bg-gray-800 text-sm font-medium px-2 py-1 rounded-lg shadow-md">Dépense véhicule</span>
-          <Button size="sm" className="h-12 w-12 rounded-full bg-blue-500 hover:bg-blue-600 shadow-lg" onClick={handleAddFuelExpenseClick}>
-           <CarFront className="h5 w-5"/>
+  return (
+    <motion.div 
+      className="flex flex-col items-end gap-3" 
+      variants={menuVariants} 
+      initial="hidden" 
+      animate="visible" 
+      exit="exit"
+    >
+      <motion.div variants={itemVariants} className="flex items-center gap-3">
+        <span className="backdrop-blur-xl bg-white/80 dark:bg-slate-800/80 text-sm font-medium px-4 py-2 rounded-full shadow-md border border-white/20 dark:border-gray-700/30">
+          Dépense véhicule
+        </span>
+        <motion.div whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 400 }}>
+          <Button 
+            size="sm" 
+            className="h-12 w-12 rounded-full backdrop-blur-md bg-blue-500/90 hover:bg-blue-500 shadow-lg border border-blue-400/20"
+            onClick={handleAddFuelExpenseClick}
+          >
+            <CarFront className="h-5 w-5 text-white" />
           </Button>
+        </motion.div>
       </motion.div>
       
-      <motion.div variants={itemVariants} className="flex items-center gap-2">
-        <span className="bg-white dark:bg-gray-800 text-sm font-medium px-2 py-1 rounded-lg shadow-md">
+      <motion.div variants={itemVariants} className="flex items-center gap-3">
+        <span className="backdrop-blur-xl bg-white/80 dark:bg-slate-800/80 text-sm font-medium px-4 py-2 rounded-full shadow-md border border-white/20 dark:border-gray-700/30">
           Dépense enseigne
         </span>
-        <Button size="sm" className="h-12 w-12 rounded-full bg-purple-500 hover:bg-purple-600 shadow-lg" onClick={handleAddRetailerExpense}>
-          <Store className="h-5 w-5" />
-        </Button>
+        <motion.div whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 400 }}>
+          <Button 
+            size="sm" 
+            className="h-12 w-12 rounded-full backdrop-blur-md bg-purple-500/90 hover:bg-purple-500 shadow-lg border border-purple-400/20"
+            onClick={handleAddRetailerExpense}
+          >
+            <Store className="h-5 w-5 text-white" />
+          </Button>
+        </motion.div>
       </motion.div>
-    </motion.div>;
+    </motion.div>
+  );
 };
