@@ -269,12 +269,52 @@ export function useAuth() {
             // Réinitialiser complètement le cache pour forcer un rechargement des données
             invalidateAllCaches();
             
+            // Vérifier si l'utilisateur est un admin et rediriger correctement
+            if (newSession?.user) {
+              try {
+                console.log("Vérification du rôle administrateur après SIGNED_IN pour", newSession.user.email);
+                const { data: isAdmin, error: adminError } = await supabase.rpc('has_role', {
+                  user_id: newSession.user.id,
+                  role: 'admin'
+                });
+                
+                if (adminError) {
+                  console.error("Erreur lors de la vérification du rôle admin:", adminError);
+                  return;
+                }
+                
+                // Éviter les redirections multiples
+                if (!navigationInProgress.current) {
+                  navigationInProgress.current = true;
+                  
+                  // Redirection conditionnelle selon le statut admin
+                  if (isAdmin) {
+                    console.log("Utilisateur admin détecté dans onAuthStateChange - Redirection vers /admin");
+                    navigate("/admin", { replace: true });
+                  } else if (location.pathname === "/login") {
+                    console.log("Utilisateur standard dans onAuthStateChange - Redirection vers /dashboard");
+                    navigate("/dashboard", { replace: true });
+                  }
+                  
+                  // Réinitialiser le drapeau après un délai
+                  if (redirectTimeoutRef.current) {
+                    clearTimeout(redirectTimeoutRef.current);
+                  }
+                  redirectTimeoutRef.current = window.setTimeout(() => {
+                    navigationInProgress.current = false;
+                  }, 300);
+                }
+              } catch (error) {
+                console.error("Erreur lors de la vérification du rôle admin dans onAuthStateChange:", error);
+              }
+            }
+            
             // Vérifier si l'utilisateur vient de vérifier son email
             const justVerified = localStorage.getItem("justVerified") === "true";
             if (location.pathname === "/login" && justVerified) {
               localStorage.removeItem("justVerified");
               
-              // Éviter les redirections multiples
+              // Cette partie sera exécutée uniquement si la vérification du rôle admin ci-dessus n'a pas déjà déclenché de navigation
               if (!navigationInProgress.current) {
                 navigationInProgress.current = true;
                 navigate("/dashboard");
@@ -352,6 +392,26 @@ export function useAuth() {
       if (data.session) {
         setSession(data.session);
         setUser(data.session.user || null);
+        
+        // Vérifier si l'utilisateur est admin lors du chargement initial
+        try {
+          const { data: isAdmin, error: adminError } = await supabase.rpc('has_role', {
+            user_id: data.session.user.id,
+            role: 'admin'
+          });
+          
+          if (!adminError && isAdmin) {
+            console.log("Admin détecté lors du chargement initial - Vérification du chemin actuel:", location.pathname);
+            
+            // Si l'admin est sur la page dashboard ou la racine, le rediriger vers /admin
+            if (location.pathname === '/dashboard' || location.pathname === '/') {
+              console.log("Redirection admin vers /admin depuis le chargement initial");
+              navigate("/admin", { replace: true });
+            }
+          }
+        } catch (error) {
+          console.error("Erreur lors de la vérification initiale du rôle admin:", error);
+        }
       }
       
       // Marquer comme chargé et initialisé après la vérification initiale

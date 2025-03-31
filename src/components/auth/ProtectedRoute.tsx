@@ -2,7 +2,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import StyledLoader from "../ui/StyledLoader";
-import { memo, useRef } from "react";
+import { memo, useRef, useEffect } from "react";
 import { useAuthContext } from "@/context/AuthProvider";
 
 interface ProtectedRouteProps {
@@ -19,6 +19,20 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   // Utiliser le contexte d'authentification au lieu de la requête directe
   const { isAuthenticated, loading } = useAuthContext();
   
+  // Effet pour détecter les admins et les rediriger si nécessaire
+  useEffect(() => {
+    if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
+      console.log("Admin détecté dans ProtectedRoute - Redirection vers /admin");
+      if (!hasRedirectedRef.current) {
+        hasRedirectedRef.current = true;
+        // Le setTimeout évite les problèmes potentiels de navigation pendant le rendu
+        setTimeout(() => {
+          window.location.href = '/admin';
+        }, 0);
+      }
+    }
+  }, [isAdmin, location.pathname]);
+
   // Afficher un loader pendant la vérification
   if (loading) {
     return (
