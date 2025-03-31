@@ -40,7 +40,8 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
         <SidebarContent 
           collapsed={collapsed} 
           isAdmin={!!isAdmin} 
-          userId={currentUser?.id} 
+          userId={currentUser?.id}
+          onItemClick={handleSidebarLinkClick}
         />
         
         {/* Footer avec contrôles du thème et utilisateur */}

@@ -32,6 +32,7 @@ interface NavigationMenuProps {
   collapsed: boolean;
   isAdmin: boolean;
   userId?: string;
+  onItemClick?: () => void;
 }
 
 // Définir les menus en dehors du composant
@@ -54,7 +55,7 @@ const userMenu: MenuItem[] = [
   { title: "Véhicules", icon: Car, path: "/vehicles" },
 ];
 
-export const NavigationMenu = ({ collapsed, isAdmin, userId }: NavigationMenuProps) => {
+export const NavigationMenu = ({ collapsed, isAdmin, userId, onItemClick }: NavigationMenuProps) => {
   const location = useLocation();
   const { canAccessPage } = usePagePermissions();
   const { pendingCount } = usePendingFeedbacks(isAdmin);
@@ -83,6 +84,7 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId }: NavigationMenuPro
                   isActive && "bg-gray-200 text-gray-900 hover:bg-gray-200/90 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-800/90"
                 )}
                 end
+                onClick={onItemClick} // Ferme la sidebar quand un lien est cliqué
               >
                 <div className="relative">
                   <item.icon className={cn(
