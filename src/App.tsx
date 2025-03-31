@@ -53,9 +53,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="theme">
         <Toaster richColors position="top-center" />
-        <AuthProvider>
-          <AuthWrapper>
-            <Router>
+        {/* Router est maintenant placé AVANT AuthProvider */}
+        <Router>
+          <AuthProvider>
+            <AuthWrapper>
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<Login />} />
@@ -69,7 +70,9 @@ function App() {
                   path="/dashboard" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout />
+                      <DashboardLayout>
+                        <UserSettings />
+                      </DashboardLayout>
                     </ProtectedRoute>
                   }
                 >
@@ -98,9 +101,9 @@ function App() {
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </Router>
-          </AuthWrapper>
-        </AuthProvider>
+            </AuthWrapper>
+          </AuthProvider>
+        </Router>
       </ThemeProvider>
     </QueryClientProvider>
   );
