@@ -10,7 +10,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 
 // Pages d'authentification et publiques
-import HomePage from "./pages/Index";
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -53,12 +53,13 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="theme">
         <Toaster richColors position="top-center" />
-        {/* Router est maintenant placé AVANT AuthProvider */}
+        {/* Router est placé AVANT AuthProvider pour résoudre le problème d'utilisation de useNavigate */}
         <Router>
           <AuthProvider>
             <AuthWrapper>
               <Routes>
-                <Route path="/" element={<HomePage />} />
+                {/* Pages publiques */}
+                <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
