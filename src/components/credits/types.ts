@@ -9,6 +9,9 @@ export interface Credit {
   date_premiere_mensualite: string;
   statut: "actif" | "remboursé" | "dépassé";
   created_at: string;
+  vehicle_id?: string | null;
+  vehicle_expense_type?: string | null;
+  auto_generate_vehicle_expense?: boolean;
 }
 
 export const ALL_STATUS = "all_status";
