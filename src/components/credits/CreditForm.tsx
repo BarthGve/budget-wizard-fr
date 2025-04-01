@@ -12,7 +12,6 @@ import { AssociateVehicleField } from "./form-fields/AssociateVehicleField";
 import { VehicleField } from "./form-fields/VehicleField";
 import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
 import { AutoGenerateExpenseField } from "./form-fields/AutoGenerateExpenseField";
-import { useEffect } from "react";
 
 interface CreditFormProps {
   credit?: Credit;
@@ -46,7 +45,7 @@ export function CreditForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-full overflow-x-hidden p-2">
+      <form onSubmit={form.handleSubmit(data => onSubmit(data))} className="space-y-4 max-w-full overflow-x-hidden p-2">
         <NameField form={form} />
         <DomainField form={form} />
         <AmountField form={form} />

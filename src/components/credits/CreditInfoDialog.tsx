@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Credit } from "./types";
 import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
@@ -8,7 +7,6 @@ import { CreditProgressBar } from "./CreditProgressBar";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, CreditCardIcon, PiggyBankIcon, CarIcon } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useEffect, useState } from "react";
 import { useVehicle } from "@/hooks/queries/useVehicle";
 
 interface CreditInfoDialogProps {
@@ -24,57 +22,43 @@ export const CreditInfoDialog = ({
   onOpenChange, 
   colorScheme = "purple" 
 }: CreditInfoDialogProps) => {
-  // Récupérer les détails du véhicule si associé
   const { data: vehicle } = useVehicle(credit.vehicle_id || "", {
     enabled: !!credit.vehicle_id && open
   });
   
-  // Détecter si nous sommes sur tablette
   const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
   
-  // Calcul de la progression
   const startDate = new Date(credit.date_premiere_mensualite);
   const endDate = new Date(credit.date_derniere_mensualite);
   const currentDate = new Date();
   
-  // Calculer le nombre total de mois entre le début et la fin
-  const totalMonths = differenceInMonths(endDate, startDate) + 1; // +1 car on compte la mensualité du jour de début
-  
-  // Calcul du nombre exact de mensualités payées
+  const totalMonths = differenceInMonths(endDate, startDate) + 1;
   let completedMonths = 0;
   
-  // Vérifier si on est avant la première échéance
   if (isBefore(currentDate, startDate)) {
     completedMonths = 0;
   } else {
-    // Compter chaque mensualité une par une
     let paymentDate = new Date(startDate);
     
     while (isBefore(paymentDate, currentDate) || isSameDay(paymentDate, currentDate)) {
       completedMonths++;
       
-      // Si on atteint la date de fin, on s'arrête
       if (isSameDay(paymentDate, endDate)) {
         break;
       }
       
-      // Passer à la prochaine mensualité
       paymentDate = addMonths(paymentDate, 1);
     }
   }
   
-  // Limiter le nombre de mensualités au total des mensualités
   completedMonths = Math.min(completedMonths, totalMonths);
   
-  // Calculer le pourcentage de progression basé sur les mensualités payées
   const progressPercentage = Math.min(100, Math.max(0, (completedMonths / totalMonths) * 100));
-
-  // Calculer le montant total et le montant déjà remboursé
+  
   const montantTotal = totalMonths * credit.montant_mensualite;
   const montantRembourse = completedMonths * credit.montant_mensualite;
   const montantRestant = montantTotal - montantRembourse;
 
-  // Sélection des couleurs en fonction du scheme choisi
   const colors = {
     purple: {
       gradientFrom: "from-purple-500",
@@ -110,7 +94,6 @@ export const CreditInfoDialog = ({
   
   const currentColors = colors[colorScheme];
 
-  // Fonction pour obtenir le libellé du type de dépense
   const getExpenseTypeLabel = () => {
     if (!credit.vehicle_expense_type) return null;
     
@@ -143,7 +126,6 @@ export const CreditInfoDialog = ({
         "sm:max-w-[550px] overflow-hidden",
         isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto"
       )}>
-        {/* Background gradient subtil */}
         <div className={cn(
           "absolute inset-0 pointer-events-none opacity-10 bg-gradient-to-br",
           currentColors.gradientFrom,
@@ -162,7 +144,6 @@ export const CreditInfoDialog = ({
         </DialogHeader>
         
         <div className="space-y-6 py-4 relative z-10">
-          {/* En-tête avec logo et infos principales */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               {credit.logo_url ? (
@@ -198,7 +179,6 @@ export const CreditInfoDialog = ({
               </div>
             </div>
             
-            {/* Badge du montant total */}
             <div className={cn(
               "rounded-full px-4 py-2 text-sm font-medium",
               "border shadow-sm",
@@ -209,7 +189,6 @@ export const CreditInfoDialog = ({
             </div>
           </div>
 
-          {/* Section des dates */}
           <div className={cn(
             "rounded-xl p-4 border grid grid-cols-2 gap-4",
             currentColors.cardBg,
@@ -245,7 +224,6 @@ export const CreditInfoDialog = ({
             </div>
           </div>
 
-          {/* Section progression */}
           <div className="space-y-4">
             <h3 className="font-medium text-base">Progression du remboursement</h3>
             
@@ -257,7 +235,6 @@ export const CreditInfoDialog = ({
               colorScheme={colorScheme}
             />
             
-            {/* Carte de détails des montants */}
             <div className={cn(
               "rounded-xl p-4 border",
               currentColors.cardBg,
@@ -294,7 +271,6 @@ export const CreditInfoDialog = ({
             </div>
           </div>
           
-          {/* Section Véhicule associé */}
           {credit.vehicle_id && vehicle && (
             <div className={cn(
               "rounded-xl p-4 border",
