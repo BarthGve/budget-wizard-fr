@@ -2,16 +2,17 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
+import { FormValues } from "../hooks/useCreditForm";
 
 interface NameFieldProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FormValues>;
 }
 
 export const NameField = ({ form }: NameFieldProps) => {
   return (
     <FormField
       control={form.control}
-      name="name"
+      name="nom_credit"
       render={({ field }) => (
         <FormItem>
           <FormLabel>Nom du crédit</FormLabel>

@@ -2,16 +2,17 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
+import { FormValues } from "../hooks/useCreditForm";
 
 interface MonthsCountFieldProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FormValues>;
 }
 
 export const MonthsCountField = ({ form }: MonthsCountFieldProps) => {
   return (
     <FormField
       control={form.control}
-      name="monthsCount"
+      name="months_count"
       render={({ field }) => (
         <FormItem className="flex flex-col">
           <FormLabel>Nombre de mensualités</FormLabel>
@@ -23,7 +24,7 @@ export const MonthsCountField = ({ form }: MonthsCountFieldProps) => {
               {...field}
               onChange={(e) => {
                 const value = e.target.value;
-                field.onChange(value ? value : "");
+                field.onChange(value ? parseInt(value, 10) : "");
               }}
               className="border-gray-300 focus:border-gray-400 focus-visible:ring-gray-200"
             />

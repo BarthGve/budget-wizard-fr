@@ -148,51 +148,8 @@ export type Database = {
           },
         ]
       }
-      credit_expense_logs: {
-        Row: {
-          credit_id: string
-          generation_date: string
-          id: string
-          notes: string | null
-          status: string
-          vehicle_expense_id: string | null
-        }
-        Insert: {
-          credit_id: string
-          generation_date?: string
-          id?: string
-          notes?: string | null
-          status?: string
-          vehicle_expense_id?: string | null
-        }
-        Update: {
-          credit_id?: string
-          generation_date?: string
-          id?: string
-          notes?: string | null
-          status?: string
-          vehicle_expense_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "credit_expense_logs_credit_id_fkey"
-            columns: ["credit_id"]
-            isOneToOne: false
-            referencedRelation: "credits"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "credit_expense_logs_vehicle_expense_id_fkey"
-            columns: ["vehicle_expense_id"]
-            isOneToOne: false
-            referencedRelation: "vehicle_expenses"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       credits: {
         Row: {
-          auto_generate_vehicle_expense: boolean | null
           created_at: string
           date_derniere_mensualite: string
           date_premiere_mensualite: string | null
@@ -204,11 +161,8 @@ export type Database = {
           profile_id: string
           statut: Database["public"]["Enums"]["credit_status"]
           updated_at: string
-          vehicle_expense_type: string | null
-          vehicle_id: string | null
         }
         Insert: {
-          auto_generate_vehicle_expense?: boolean | null
           created_at?: string
           date_derniere_mensualite: string
           date_premiere_mensualite?: string | null
@@ -220,11 +174,8 @@ export type Database = {
           profile_id: string
           statut?: Database["public"]["Enums"]["credit_status"]
           updated_at?: string
-          vehicle_expense_type?: string | null
-          vehicle_id?: string | null
         }
         Update: {
-          auto_generate_vehicle_expense?: boolean | null
           created_at?: string
           date_derniere_mensualite?: string
           date_premiere_mensualite?: string | null
@@ -236,8 +187,6 @@ export type Database = {
           profile_id?: string
           statut?: Database["public"]["Enums"]["credit_status"]
           updated_at?: string
-          vehicle_expense_type?: string | null
-          vehicle_id?: string | null
         }
         Relationships: [
           {
@@ -245,13 +194,6 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "credits_vehicle_id_fkey"
-            columns: ["vehicle_id"]
-            isOneToOne: false
-            referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
         ]
@@ -1367,10 +1309,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      check_and_generate_vehicle_expenses: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
       check_expired_credits: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1403,22 +1341,10 @@ export type Database = {
         }
         Returns: undefined
       }
-      export_financial_stats: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
-        Returns: Json
-      }
       force_verify_user: {
         Args: {
           target_user_id: string
         }
-        Returns: undefined
-      }
-      generate_vehicle_expenses_from_credits: {
-        Args: Record<PropertyKey, never>
         Returns: undefined
       }
       generate_vehicle_expenses_from_recurring: {
@@ -1434,30 +1360,6 @@ export type Database = {
           total_mensualites_remboursees: number
         }[]
       }
-      get_expense_distribution: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
-        Returns: Json
-      }
-      get_financial_stats: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
-        Returns: Json
-      }
-      get_financial_trends: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
-        Returns: Json
-      }
       get_non_admin_user_emails: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1467,14 +1369,6 @@ export type Database = {
       get_total_users: {
         Args: Record<PropertyKey, never>
         Returns: number
-      }
-      get_user_segmentation: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
-        Returns: Json
       }
       get_user_stats: {
         Args: Record<PropertyKey, never>
