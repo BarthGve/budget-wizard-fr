@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -82,7 +83,7 @@ const Admin = () => {
       title: "Statistiques financières", 
       icon: <BarChart className="h-5 w-5" />, 
       description: "Analyser les données financières globales",
-      action: () => {}
+      action: () => navigate("/admin/financial-stats")
     },
     { 
       title: "Base de données", 

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -46,6 +47,7 @@ import AdminUsers from "./pages/admin/Users";
 import AdminPermissions from "./pages/admin/Permissions";
 import Changelog from "./pages/Changelog";
 import { ChangelogPage } from "./components/changelog/ChangelogPage";
+import FinancialStats from "./pages/admin/FinancialStats";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -216,6 +218,13 @@ function App() {
                     <DashboardLayout>
                       <ChangelogPage isAdmin={true} />
                     </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                {/* Nouvelle route pour les statistiques financières */}
+                <Route path="/admin/financial-stats" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <FinancialStats />
                   </ProtectedRoute>
                 } />
                 
