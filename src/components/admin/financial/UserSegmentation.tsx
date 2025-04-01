@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery } from "@tanstack/react-query";
@@ -36,12 +37,12 @@ export default function UserSegmentation({ period, startDate, endDate }: UserSeg
 
       if (error) throw error;
       // Conversion sécurisée avec as
-      return data as SegmentationData[];
+      return data as unknown as SegmentationData[];
     },
   });
 
   if (isLoading) return <Card>Chargement...</Card>;
-  if (error) return <Card>Erreur: {error.message}</Card>;
+  if (error) return <Card>Erreur: {(error as Error).message}</Card>;
 
   return (
     <Card>

@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { DateRangePicker } from "@/components/ui/date-range-picker"
+import { DateRangePicker } from "@/components/admin/financial/DateRangePicker";
 import { format } from 'date-fns';
 
 // Définition des types pour les données
@@ -14,8 +15,8 @@ interface ExpenseData {
 
 interface ExpenseDistributionProps {
   period: 'monthly' | 'quarterly' | 'yearly';
-  startDate: Date | undefined;
-  endDate: Date | undefined;
+  startDate: string;
+  endDate: string;
 }
 
 export default function ExpenseDistribution({ period, startDate, endDate }: ExpenseDistributionProps) {
@@ -23,8 +24,8 @@ export default function ExpenseDistribution({ period, startDate, endDate }: Expe
     from: Date | undefined;
     to: Date | undefined;
   } | undefined>({
-    from: startDate,
-    to: endDate,
+    from: startDate ? new Date(startDate) : undefined,
+    to: endDate ? new Date(endDate) : undefined,
   });
 
   const { data, isLoading, error } = useQuery({
@@ -38,17 +39,17 @@ export default function ExpenseDistribution({ period, startDate, endDate }: Expe
 
       if (error) throw error;
       // Conversion sécurisée avec as
-      return data as ExpenseData;
+      return data as unknown as ExpenseData[];
     },
   });
 
   if (isLoading) return <p>Chargement...</p>;
-  if (error) return <p>Erreur: {error.message}</p>;
+  if (error) return <p>Erreur: {(error as Error).message}</p>;
 
   // Préparer les données pour le graphique
-  const chartData = data ? Object.entries(data).map(([category, total_amount]) => ({
-    category,
-    total_amount: Number(total_amount),
+  const chartData = data ? data.map(item => ({
+    category: item.category,
+    total_amount: Number(item.total_amount),
   })) : [];
 
   return (
@@ -67,7 +68,7 @@ export default function ExpenseDistribution({ period, startDate, endDate }: Expe
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="category" />
             <YAxis />
-            <Tooltip formatter={(value) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value)} />
+            <Tooltip formatter={(value) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(Number(value))} />
             <Legend />
             <Bar dataKey="total_amount" fill="#8884d8" />
           </BarChart>

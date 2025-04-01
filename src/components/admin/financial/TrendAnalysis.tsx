@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format';
@@ -31,12 +32,12 @@ export default function TrendAnalysis({ period, startDate, endDate }: TrendAnaly
 
       if (error) throw error;
       // Conversion sécurisée avec as
-      return data as TrendData[];
+      return data as unknown as TrendData[];
     },
   });
 
   if (isLoading) return <div>Chargement...</div>;
-  if (error) return <div>Erreur: {error.message}</div>;
+  if (error) return <div>Erreur: {(error as Error).message}</div>;
 
   const chartData = data?.map(item => ({
     date: item.date,

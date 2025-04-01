@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRangePicker } from "@/components/admin/financial/DateRangePicker";
 import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,13 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from 'date-fns';
@@ -22,7 +16,7 @@ import { FinancialOverview } from '@/components/admin/financial/FinancialOvervie
 import ExpenseDistribution from '@/components/admin/financial/ExpenseDistribution';
 import TrendAnalysis from '@/components/admin/financial/TrendAnalysis';
 import UserSegmentation from '@/components/admin/financial/UserSegmentation';
-import { FinancialStats } from '@/types/supabase-rpc';
+import { FinancialStats as FinancialStatsType } from '@/types/supabase-rpc';
 
 export default function FinancialStats() {
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
@@ -45,7 +39,7 @@ export default function FinancialStats() {
 
       if (error) throw error;
       // Conversion sécurisée avec as
-      return data as FinancialStats;
+      return data as FinancialStatsType;
     },
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -83,7 +77,10 @@ export default function FinancialStats() {
               <DropdownMenuItem onClick={() => setSelectedPeriod("yearly")}>Annuel</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <DateRangePicker date={dateRange} onDateChange={setDateRange} />
+          <DateRangePicker
+            value={dateRange}
+            onChange={setDateRange}
+          />
         </div>
       </div>
 
@@ -95,10 +92,10 @@ export default function FinancialStats() {
         <>
           <FinancialOverview stats={statsData} />
           <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-            <ExpenseDistribution period={selectedPeriod} startDate={startDate} endDate={endDate} />
-            <TrendAnalysis period={selectedPeriod} startDate={startDate} endDate={endDate} />
+            <ExpenseDistribution period={selectedPeriod} startDate={startDate || ""} endDate={endDate || ""} />
+            <TrendAnalysis period={selectedPeriod} startDate={startDate || ""} endDate={endDate || ""} />
           </div>
-          <UserSegmentation period={selectedPeriod} startDate={startDate} endDate={endDate} />
+          <UserSegmentation period={selectedPeriod} startDate={startDate || ""} endDate={endDate || ""} />
         </>
       ) : (
         <div>Aucune donnée disponible pour la période sélectionnée.</div>
