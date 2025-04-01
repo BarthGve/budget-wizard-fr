@@ -4,9 +4,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { DateRange } from 'react-day-picker';
 
 type DateRangePickerProps = {
   value: { start?: Date; end?: Date };
@@ -17,22 +17,18 @@ export const DateRangePicker = ({ value, onChange }: DateRangePickerProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState<{ start?: Date; end?: Date }>(value);
 
-  // Gestion de la sélection d'une date
-  const handleSelect = (date: Date) => {
-    // Si aucune date n'est sélectionnée ou les deux dates sont sélectionnées, commencer une nouvelle sélection
-    if (!internalValue.start || (internalValue.start && internalValue.end)) {
-      setInternalValue({ start: date, end: undefined });
-      return;
+  // Formater l'affichage de la plage de dates
+  const formatDateRange = () => {
+    if (value.start && value.end) {
+      return `${format(value.start, 'dd/MM/yyyy', { locale: fr })} - ${format(value.end, 'dd/MM/yyyy', { locale: fr })}`;
     }
-
-    // Si la date sélectionnée est avant la date de début, la définir comme nouvelle date de début
-    if (date < internalValue.start) {
-      setInternalValue({ start: date, end: internalValue.start });
-      return;
+    if (value.start) {
+      return `À partir du ${format(value.start, 'dd/MM/yyyy', { locale: fr })}`;
     }
-
-    // Sinon, définir la date de fin
-    setInternalValue({ start: internalValue.start, end: date });
+    if (value.end) {
+      return `Jusqu'au ${format(value.end, 'dd/MM/yyyy', { locale: fr })}`;
+    }
+    return 'Sélectionner des dates';
   };
 
   // Appliquer les changements
@@ -47,20 +43,6 @@ export const DateRangePicker = ({ value, onChange }: DateRangePickerProps) => {
     setInternalValue(newValue);
     onChange(newValue);
     setIsOpen(false);
-  };
-
-  // Formater l'affichage de la plage de dates
-  const formatDateRange = () => {
-    if (value.start && value.end) {
-      return `${format(value.start, 'dd/MM/yyyy', { locale: fr })} - ${format(value.end, 'dd/MM/yyyy', { locale: fr })}`;
-    }
-    if (value.start) {
-      return `À partir du ${format(value.start, 'dd/MM/yyyy', { locale: fr })}`;
-    }
-    if (value.end) {
-      return `Jusqu'au ${format(value.end, 'dd/MM/yyyy', { locale: fr })}`;
-    }
-    return 'Sélectionner des dates';
   };
 
   return (
@@ -79,7 +61,7 @@ export const DateRangePicker = ({ value, onChange }: DateRangePickerProps) => {
               from: internalValue.start || undefined, 
               to: internalValue.end || undefined 
             }}
-            onSelect={range => {
+            onSelect={(range: DateRange | undefined) => {
               setInternalValue({ 
                 start: range?.from, 
                 end: range?.to

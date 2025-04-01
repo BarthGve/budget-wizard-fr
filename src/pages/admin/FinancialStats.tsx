@@ -18,6 +18,17 @@ import { toast } from "sonner";
 // Types des périodes disponibles
 type TimePeriod = "all" | "year" | "quarter" | "month";
 
+// Type pour les statistiques financières
+interface FinancialStats {
+  total_expenses: number;
+  total_savings: number;
+  total_investments: number;
+  active_credits: number;
+  avg_monthly_expense: number;
+  avg_savings_rate: number;
+  expense_distribution?: { name: string; value: number }[];
+}
+
 const FinancialStats = () => {
   const [dateRange, setDateRange] = useState<{start?: Date; end?: Date}>({});
   const [activePeriod, setActivePeriod] = useState<TimePeriod>("month");
@@ -55,7 +66,7 @@ const FinancialStats = () => {
       
       if (error) throw error;
       
-      return data || {
+      return data as FinancialStats || {
         total_expenses: 0,
         total_savings: 0,
         total_investments: 0,
@@ -83,9 +94,10 @@ const FinancialStats = () => {
       if (error) throw error;
       
       // Conversion en CSV
-      if (data && data.length > 0) {
-        const headers = Object.keys(data[0]).join(',');
-        const rows = data.map(row => Object.values(row).join(','));
+      const exportData = data as any[];
+      if (exportData && exportData.length > 0) {
+        const headers = Object.keys(exportData[0]).join(',');
+        const rows = exportData.map(row => Object.values(row).join(','));
         const csv = [headers, ...rows].join('\n');
         
         // Création du fichier à télécharger

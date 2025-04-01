@@ -1341,6 +1341,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      export_financial_stats: {
+        Args: {
+          period?: string
+          start_date?: string
+          end_date?: string
+        }
+        Returns: Json
+      }
       force_verify_user: {
         Args: {
           target_user_id: string
@@ -1360,6 +1368,30 @@ export type Database = {
           total_mensualites_remboursees: number
         }[]
       }
+      get_expense_distribution: {
+        Args: {
+          period?: string
+          start_date?: string
+          end_date?: string
+        }
+        Returns: Json
+      }
+      get_financial_stats: {
+        Args: {
+          period?: string
+          start_date?: string
+          end_date?: string
+        }
+        Returns: Json
+      }
+      get_financial_trends: {
+        Args: {
+          period?: string
+          start_date?: string
+          end_date?: string
+        }
+        Returns: Json
+      }
       get_non_admin_user_emails: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1369,6 +1401,14 @@ export type Database = {
       get_total_users: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      get_user_segmentation: {
+        Args: {
+          period?: string
+          start_date?: string
+          end_date?: string
+        }
+        Returns: Json
       }
       get_user_stats: {
         Args: Record<PropertyKey, never>

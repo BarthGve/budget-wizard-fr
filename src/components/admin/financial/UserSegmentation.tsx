@@ -30,6 +30,21 @@ interface UserSegmentationProps {
   dateRange: { start?: Date; end?: Date };
 }
 
+// Type pour les données de segmentation utilisateur
+interface SegmentationData {
+  profileData: { name: string; value: number }[];
+  incomeDistribution: { range: string; count: number }[];
+  userTableData: {
+    id: string;
+    type: string;
+    epargne: number;
+    depenses: number;
+    credits: number;
+    investissements: string;
+    properties: number;
+  }[];
+}
+
 export const UserSegmentation = ({ period, dateRange }: UserSegmentationProps) => {
   // Récupération des données de segmentation utilisateur
   const { data, isLoading, error } = useQuery({
@@ -49,7 +64,11 @@ export const UserSegmentation = ({ period, dateRange }: UserSegmentationProps) =
       
       if (error) throw error;
       
-      return data || [];
+      return data as SegmentationData || {
+        profileData: [],
+        incomeDistribution: [],
+        userTableData: []
+      };
     },
     refetchOnWindowFocus: false
   });
@@ -141,6 +160,26 @@ export const UserSegmentation = ({ period, dateRange }: UserSegmentationProps) =
       properties: 1
     }
   ];
+
+  // Composant personnalisé pour le tooltip
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border rounded-lg shadow-lg">
+          {payload.map((p: any, index: number) => (
+            <div key={index} className="flex items-center gap-2 text-sm">
+              <div 
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: p.fill }}
+              />
+              <span>{p.name}: {p.value}{p.unit || ''}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-8">

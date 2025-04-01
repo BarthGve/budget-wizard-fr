@@ -6,9 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   ChartContainer,
   ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent
+  ChartLegendContent
 } from '@/components/ui/chart';
 import { 
   BarChart, 
@@ -17,7 +15,8 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer
+  ResponsiveContainer,
+  TooltipProps
 } from 'recharts';
 import StyledLoader from '@/components/ui/StyledLoader';
 import { formatCurrency } from '@/utils/format';
@@ -26,6 +25,20 @@ import { formatCurrency } from '@/utils/format';
 interface ExpenseDistributionProps {
   period: string;
   dateRange: { start?: Date; end?: Date };
+}
+
+// Type pour les données de distribution des dépenses
+interface ExpenseData {
+  monthlyData: {
+    name: string;
+    expenses: number;
+    recurring: number;
+    other: number;
+  }[];
+  userExpenseData: {
+    name: string;
+    expenses: number;
+  }[];
 }
 
 export const ExpenseDistribution = ({ period, dateRange }: ExpenseDistributionProps) => {
@@ -47,7 +60,7 @@ export const ExpenseDistribution = ({ period, dateRange }: ExpenseDistributionPr
       
       if (error) throw error;
       
-      return data || [];
+      return data as ExpenseData || { monthlyData: [], userExpenseData: [] };
     },
     refetchOnWindowFocus: false
   });
@@ -113,6 +126,26 @@ export const ExpenseDistribution = ({ period, dateRange }: ExpenseDistributionPr
     { name: 'Utilisateur 10', expenses: 1200 },
   ];
 
+  // Composant personnalisé pour le tooltip
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border rounded-lg shadow-lg">
+          {payload.map((p, index) => (
+            <div key={index} className="flex items-center gap-2 text-sm">
+              <div 
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: p.color }}
+              />
+              <span>{p.name}: {formatCurrency(p.value as number)}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="space-y-8">
       {/* Graphique des dépenses mensuelles */}
@@ -129,26 +162,7 @@ export const ExpenseDistribution = ({ period, dateRange }: ExpenseDistributionPr
                 <YAxis 
                   tickFormatter={(value) => `${value} €`} 
                 />
-                <Tooltip 
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <ChartTooltipContent>
-                          {payload.map((p, index) => (
-                            <div key={index} className="flex items-center gap-2">
-                              <div 
-                                className="w-3 h-3 rounded-full" 
-                                style={{ backgroundColor: p.color }}
-                              />
-                              <span>{p.name}: {formatCurrency(p.value as number)}</span>
-                            </div>
-                          ))}
-                        </ChartTooltipContent>
-                      );
-                    }
-                    return null;
-                  }}
-                />
+                <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="expenses" stackId="a" fill={chartConfig.expenses.color} name="Total" />
                 <Bar dataKey="recurring" stackId="b" fill={chartConfig.recurring.color} name="Récurrentes" />
                 <Bar dataKey="other" stackId="b" fill={chartConfig.other.color} name="Autres" />
@@ -177,7 +191,7 @@ export const ExpenseDistribution = ({ period, dateRange }: ExpenseDistributionPr
                 <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                 <XAxis type="number" tickFormatter={(value) => `${value} €`} />
                 <YAxis type="category" dataKey="name" width={120} />
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <Tooltip content={<CustomTooltip />} />
                 <Bar 
                   dataKey="expenses" 
                   fill={chartConfig.expenses.color} 

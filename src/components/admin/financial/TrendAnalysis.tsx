@@ -6,9 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   ChartContainer,
   ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent
+  ChartLegendContent
 } from '@/components/ui/chart';
 import { 
   LineChart, 
@@ -18,7 +16,7 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  Legend
+  TooltipProps
 } from 'recharts';
 import StyledLoader from '@/components/ui/StyledLoader';
 import { formatCurrency } from '@/utils/format';
@@ -27,6 +25,15 @@ import { formatCurrency } from '@/utils/format';
 interface TrendAnalysisProps {
   period: string;
   dateRange: { start?: Date; end?: Date };
+}
+
+// Type pour les données de tendances
+interface TrendData {
+  date: string;
+  expenses: number;
+  savings: number;
+  investments: number;
+  creditPayments: number;
 }
 
 export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
@@ -48,7 +55,7 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
       
       if (error) throw error;
       
-      return data || [];
+      return data as TrendData[] || [];
     },
     refetchOnWindowFocus: false
   });
@@ -170,6 +177,27 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
     return `${monthNames[parseInt(month) - 1]}`;
   };
 
+  // Composant personnalisé pour le tooltip
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border rounded-lg shadow-lg">
+          <p className="font-medium mb-2">{formatXAxis(label)} 2023</p>
+          {payload.map((p, index) => (
+            <div key={index} className="flex items-center gap-2 text-sm">
+              <div 
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: p.color }}
+              />
+              <span>{p.name}: {formatCurrency(p.value as number)}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="space-y-8">
       {/* Graphique des tendances financières */}
@@ -189,27 +217,7 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
                 <YAxis 
                   tickFormatter={(value) => `${value} €`}
                 />
-                <Tooltip 
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <ChartTooltipContent>
-                          <div className="font-medium mb-2">{formatXAxis(label)} 2023</div>
-                          {payload.map((p, index) => (
-                            <div key={index} className="flex items-center gap-2">
-                              <div 
-                                className="w-3 h-3 rounded-full" 
-                                style={{ backgroundColor: p.color }}
-                              />
-                              <span>{p.name}: {formatCurrency(p.value as number)}</span>
-                            </div>
-                          ))}
-                        </ChartTooltipContent>
-                      );
-                    }
-                    return null;
-                  }}
-                />
+                <Tooltip content={<CustomTooltip />} />
                 <Line 
                   type="monotone" 
                   dataKey="expenses" 
