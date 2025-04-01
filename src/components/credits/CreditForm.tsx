@@ -1,7 +1,7 @@
 
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { useCreditForm as useBaseCreditForm } from "./hooks/useCreditForm";
+import { useCreditForm, CreditFormValues } from "./hooks/useCreditForm";
 import { NameField } from "./form-fields/NameField";
 import { DomainField } from "./form-fields/DomainField";
 import { AmountField } from "./form-fields/AmountField";
@@ -16,10 +16,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { addMonths } from "date-fns";
-import { toast } from "sonner";
 
 // Types de dépenses disponibles pour les véhicules
 const expenseTypes = [
@@ -30,7 +26,7 @@ const expenseTypes = [
   { id: "autres", name: "Autres charges" }
 ];
 
-// Schéma de validation étendu pour inclure les champs de véhicule
+// Schéma de validation pour le formulaire
 const creditFormSchema = z.object({
   name: z.string().min(1, "Le nom est obligatoire"),
   domain: z.string().min(1, "Le domaine est obligatoire"),
@@ -44,7 +40,7 @@ const creditFormSchema = z.object({
 });
 
 // Type pour les valeurs du formulaire
-export type CreditFormValues = z.infer<typeof creditFormSchema>;
+type FormValues = z.infer<typeof creditFormSchema>;
 
 interface CreditFormProps {
   credit?: Credit;
@@ -59,8 +55,8 @@ export function CreditForm({
   onCancel,
   colorScheme = "purple",
 }: CreditFormProps) {
-  // Utilisation directe de useForm plutôt que useCreditForm
-  const form = useForm<CreditFormValues>({
+  // Utiliser directement useForm pour avoir un contrôle complet
+  const form = useForm<FormValues>({
     resolver: zodResolver(creditFormSchema),
     defaultValues: credit
       ? {
@@ -92,71 +88,17 @@ export function CreditForm({
   });
 
   // Mutation pour l'ajout ou la mise à jour d'un crédit
-  const { mutate: submitCredit, isPending } = useMutation({
-    mutationFn: async (values: CreditFormValues) => {
-      const amount = parseFloat(values.amount);
-      const monthsCount = parseInt(values.monthsCount, 10);
-      const lastPaymentDate = addMonths(values.firstPaymentDate, monthsCount);
-
-      // Données à sauvegarder dans la base de données
-      const creditData = {
-        nom_credit: values.name,
-        nom_domaine: values.domain,
-        montant_mensualite: amount,
-        date_premiere_mensualite: values.firstPaymentDate.toISOString().split("T")[0],
-        date_derniere_mensualite: lastPaymentDate.toISOString().split("T")[0],
-        // Nouveaux champs pour l'association avec un véhicule
-        vehicle_id: values.associate_with_vehicle ? values.vehicle_id : null,
-        vehicle_expense_type: values.associate_with_vehicle ? values.vehicle_expense_type : null,
-        auto_generate_vehicle_expense: 
-          values.associate_with_vehicle && 
-          values.vehicle_id && 
-          values.vehicle_expense_type && 
-          values.auto_generate_vehicle_expense
-          ? true 
-          : false,
-      };
-
-      if (credit) {
-        // Mise à jour d'un crédit existant
-        const { data, error } = await supabase
-          .from("credits")
-          .update(creditData)
-          .eq("id", credit.id);
-
-        if (error) throw error;
-        return data;
-      } else {
-        // Ajout d'un nouveau crédit
-        const { data, error } = await supabase
-          .from("credits")
-          .insert([creditData]);
-
-        if (error) throw error;
-        return data;
-      }
-    },
-    onSuccess: () => {
-      toast.success(
-        credit
-          ? "Le crédit a été mis à jour avec succès"
-          : "Le crédit a été ajouté avec succès"
-      );
-      onSuccess();
-    },
-    onError: (error) => {
-      console.error("Erreur:", error);
-      toast.error(
-        `Une erreur est survenue: ${
-          error instanceof Error ? error.message : "Erreur inconnue"
-        }`
-      );
-    },
-  });
+  const { mutate: submitCredit, isPending } = useCreditForm({ credit, onSuccess }).form.formState;
 
   // Gestion de la soumission du formulaire
-  const onSubmit = (values: CreditFormValues) => {
-    submitCredit(values);
+  const onSubmit = (values: FormValues) => {
+    const amount = parseFloat(values.amount);
+    const monthsCount = parseInt(values.monthsCount, 10);
+    const lastPaymentDate = new Date(values.firstPaymentDate);
+    lastPaymentDate.setMonth(lastPaymentDate.getMonth() + monthsCount);
+
+    // Soumettre directement via useCreditForm
+    useCreditForm({ credit, onSuccess }).onSubmit(values);
   };
 
   // Effet pour gérer les dépendances des champs de véhicule
@@ -238,7 +180,11 @@ export function CreditForm({
           <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">
             Annuler
           </Button>
-          <Button type="submit" className={`${buttonColors[colorScheme]} rounded-lg px-[16px] py-0 my-0 text-white`}>
+          <Button 
+            type="submit" 
+            disabled={isPending}
+            className={`${buttonColors[colorScheme]} rounded-lg px-[16px] py-0 my-0 text-white`}
+          >
             {credit ? "Mettre à jour" : "Ajouter"}
           </Button>
         </div>

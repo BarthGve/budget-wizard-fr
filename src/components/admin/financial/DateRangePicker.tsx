@@ -9,16 +9,18 @@ import { fr } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
 
 type DateRangePickerProps = {
-  value: { start?: Date; end?: Date };
-  onChange: (value: { start?: Date; end?: Date }) => void;
+  value: { start?: Date; end?: Date } | undefined;
+  onChange: (value: { start?: Date; end?: Date } | undefined) => void;
 };
 
 export const DateRangePicker = ({ value, onChange }: DateRangePickerProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [internalValue, setInternalValue] = React.useState<{ start?: Date; end?: Date }>(value);
+  const [internalValue, setInternalValue] = React.useState<{ start?: Date; end?: Date } | undefined>(value);
 
   // Formater l'affichage de la plage de dates
   const formatDateRange = () => {
+    if (!value) return 'Sélectionner des dates';
+    
     if (value.start && value.end) {
       return `${format(value.start, 'dd/MM/yyyy', { locale: fr })} - ${format(value.end, 'dd/MM/yyyy', { locale: fr })}`;
     }
@@ -58,8 +60,8 @@ export const DateRangePicker = ({ value, onChange }: DateRangePickerProps) => {
           <Calendar
             mode="range"
             selected={{ 
-              from: internalValue.start || undefined, 
-              to: internalValue.end || undefined 
+              from: internalValue?.start || undefined, 
+              to: internalValue?.end || undefined 
             }}
             onSelect={(range: DateRange | undefined) => {
               setInternalValue({ 
@@ -69,7 +71,7 @@ export const DateRangePicker = ({ value, onChange }: DateRangePickerProps) => {
             }}
             numberOfMonths={1}
             locale={fr}
-            className="rounded-md border"
+            className="rounded-md border pointer-events-auto" // Ajout de pointer-events-auto
           />
           <div className="flex justify-end space-x-2">
             <Button variant="outline" size="sm" onClick={handleClear}>

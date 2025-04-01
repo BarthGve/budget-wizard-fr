@@ -15,10 +15,10 @@ const creditFormSchema = z.object({
   amount: z.string().min(1, "Le montant est obligatoire"),
   firstPaymentDate: z.date(),
   monthsCount: z.string().min(1, "Le nombre de mensualités est obligatoire"),
-  associate_with_vehicle: z.boolean().default(false).optional(),
+  associate_with_vehicle: z.boolean().default(false),
   vehicle_id: z.string().nullable().optional(),
   vehicle_expense_type: z.string().nullable().optional(),
-  auto_generate_vehicle_expense: z.boolean().default(false).optional(),
+  auto_generate_vehicle_expense: z.boolean().default(false),
 });
 
 // Type pour les valeurs du formulaire
@@ -98,10 +98,13 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
         if (error) throw error;
         return data;
       } else {
-        // Ajout d'un nouveau crédit
+        // Ajout d'un nouveau crédit - ajouter profile_id
         const { data, error } = await supabase
           .from("credits")
-          .insert([creditData]);
+          .insert([{
+            ...creditData,
+            profile_id: await getCurrentProfileId(),
+          }]);
 
         if (error) throw error;
         return data;
@@ -124,6 +127,12 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       );
     },
   });
+
+  // Fonction pour obtenir l'ID du profil courant
+  const getCurrentProfileId = async (): Promise<string> => {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.user?.id || '';
+  };
 
   // Gestion de la soumission du formulaire
   const onSubmit = (values: CreditFormValues) => {

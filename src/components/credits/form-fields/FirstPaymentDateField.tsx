@@ -4,11 +4,10 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { format, parse, isValid } from "date-fns";
 import { fr } from "date-fns/locale";
 import { UseFormReturn } from "react-hook-form";
-import { FormValues } from "../hooks/useCreditForm";
 import { Input } from "@/components/ui/input";
 
 interface FirstPaymentDateFieldProps {
-  form: UseFormReturn<FormValues>;
+  form: UseFormReturn<any>;
 }
 
 export function FirstPaymentDateField({ form }: FirstPaymentDateFieldProps) {
@@ -17,11 +16,11 @@ export function FirstPaymentDateField({ form }: FirstPaymentDateFieldProps) {
   return (
     <FormField
       control={form.control}
-      name="date_premiere_mensualite"
+      name="firstPaymentDate"
       render={({ field }) => {
         // Initialiser l'entrée manuelle avec la valeur actuelle si elle existe
         const formattedValue = field.value 
-          ? format(new Date(field.value), "dd/MM/yyyy") 
+          ? format(new Date(field.value), "dd/MM/yyyy", { locale: fr }) 
           : "";
         
         // Permet de définir l'entrée au premier rendu
@@ -37,7 +36,7 @@ export function FirstPaymentDateField({ form }: FirstPaymentDateFieldProps) {
             const parsedDate = parse(input, "dd/MM/yyyy", new Date());
             
             if (isValid(parsedDate)) {
-              field.onChange(format(parsedDate, "yyyy-MM-dd"));
+              field.onChange(parsedDate);
               return;
             }
           }

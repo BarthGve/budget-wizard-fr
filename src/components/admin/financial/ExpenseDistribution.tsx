@@ -58,7 +58,7 @@ export default function ExpenseDistribution({ period, startDate, endDate }: Expe
         <CardTitle>Répartition des dépenses par catégorie</CardTitle>
         <CardDescription>Analyse de la répartition des dépenses par catégorie sur une période donnée.</CardDescription>
         <DateRangePicker
-          onDateChange={setSelectedDates}
+          onChange={setSelectedDates}
           value={selectedDates}
         />
       </CardHeader>

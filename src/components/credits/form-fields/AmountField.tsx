@@ -2,17 +2,16 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
-import { FormValues } from "../hooks/useCreditForm";
 
 interface AmountFieldProps {
-  form: UseFormReturn<FormValues>;
+  form: UseFormReturn<any>;
 }
 
 export const AmountField = ({ form }: AmountFieldProps) => {
   return (
     <FormField
       control={form.control}
-      name="montant_mensualite"
+      name="amount"
       render={({ field }) => (
         <FormItem>
           <FormLabel>Montant mensuel (€)</FormLabel>
