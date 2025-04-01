@@ -18,12 +18,16 @@ export const useUpdateCategory = (onSuccess?: () => void) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recurring-expense-categories"] });
-      toast.success("Catégorie mise à jour avec succès");
+      toast.success("Catégorie mise à jour avec succès", {
+        position: "bottom-right"
+      });
       if (onSuccess) onSuccess();
     },
     onError: (error: any) => {
       console.error("Error updating category:", error);
-      toast.error(error.message || "Erreur lors de la mise à jour de la catégorie");
+      toast.error(error.message || "Erreur lors de la mise à jour de la catégorie", {
+        position: "bottom-right"
+      });
     },
   });
 

@@ -27,17 +27,18 @@ export const useRealtimeUpdates = (refetch: () => void) => {
           console.log('Contributeurs modifiés depuis DashboardLayout, invalidation des requêtes');
           queryClient.invalidateQueries({ 
             queryKey: ['dashboard-data'],
-            refetchType: 'all'
+            refetchType: 'active'
           });
           
           queryClient.invalidateQueries({ 
             queryKey: ['contributors'],
-            refetchType: 'all'
+            refetchType: 'active'
           });
 
+          // Utiliser un délai légèrement plus long pour assurer que les requêtes soient invalidées
           setTimeout(() => {
             refetch();
-          }, 300);
+          }, 500);
         }
       )
       .subscribe((status) => {
