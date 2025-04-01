@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Credit } from "./types";
 import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
@@ -5,8 +6,10 @@ import { fr } from "date-fns/locale";
 import { formatCurrency } from "@/utils/format";
 import { CreditProgressBar } from "./CreditProgressBar";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, CreditCardIcon, PiggyBankIcon } from "lucide-react";
+import { CalendarIcon, CreditCardIcon, PiggyBankIcon, CarIcon } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useEffect, useState } from "react";
+import { useVehicle } from "@/hooks/queries/useVehicle";
 
 interface CreditInfoDialogProps {
   credit: Credit;
@@ -21,6 +24,11 @@ export const CreditInfoDialog = ({
   onOpenChange, 
   colorScheme = "purple" 
 }: CreditInfoDialogProps) => {
+  // Récupérer les détails du véhicule si associé
+  const { data: vehicle } = useVehicle(credit.vehicle_id || "", {
+    enabled: !!credit.vehicle_id && open
+  });
+  
   // Détecter si nous sommes sur tablette
   const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
   
@@ -101,6 +109,33 @@ export const CreditInfoDialog = ({
   };
   
   const currentColors = colors[colorScheme];
+
+  // Fonction pour obtenir le libellé du type de dépense
+  const getExpenseTypeLabel = () => {
+    if (!credit.vehicle_expense_type) return null;
+    
+    const expenseType = credit.vehicle_expense_type;
+    switch (expenseType) {
+      case "carburant":
+        return "Carburant";
+      case "entretien":
+        return "Entretien";
+      case "reparation":
+        return "Réparation";
+      case "assurance":
+        return "Assurance";
+      case "parking":
+        return "Parking";
+      case "peage":
+        return "Péage";
+      case "financement":
+        return "Financement";
+      case "autre":
+        return "Autre";
+      default:
+        return expenseType;
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -258,6 +293,46 @@ export const CreditInfoDialog = ({
               </div>
             </div>
           </div>
+          
+          {/* Section Véhicule associé */}
+          {credit.vehicle_id && vehicle && (
+            <div className={cn(
+              "rounded-xl p-4 border",
+              currentColors.cardBg,
+              currentColors.border
+            )}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className={cn(
+                  "p-2 rounded-lg",
+                  currentColors.iconBg
+                )}>
+                  <CarIcon className="w-4 h-4" />
+                </div>
+                <h4 className="font-medium">Véhicule associé</h4>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">Véhicule</p>
+                  <p className="font-medium">{vehicle.name}</p>
+                </div>
+                
+                {credit.vehicle_expense_type && (
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">Type de dépense</p>
+                    <p className="font-medium">{getExpenseTypeLabel()}</p>
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">Génération automatique</p>
+                  <p className="font-medium">
+                    {credit.auto_generate_vehicle_expense ? "Activée" : "Désactivée"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

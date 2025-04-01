@@ -4,6 +4,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "../hooks/useCreditForm";
 import { expenseTypes } from "@/components/vehicles/expenses/form/ExpenseTypeField";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { HelpCircle } from "lucide-react";
 
 interface ExpenseTypeFieldProps {
   form: UseFormReturn<FormValues>;
@@ -20,7 +22,23 @@ export const ExpenseTypeField = ({ form }: ExpenseTypeFieldProps) => {
       name="vehicle_expense_type"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Type de dépense véhicule</FormLabel>
+          <div className="flex items-center gap-2">
+            <FormLabel>Type de dépense véhicule</FormLabel>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button type="button" className="text-muted-foreground hover:text-foreground">
+                  <HelpCircle className="h-4 w-4" />
+                  <span className="sr-only">Aide</span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 text-sm">
+                <p>
+                  Sélectionnez un type de dépense pour catégoriser les dépenses 
+                  générées automatiquement pour ce crédit.
+                </p>
+              </PopoverContent>
+            </Popover>
+          </div>
           <Select 
             onValueChange={(value) => {
               field.onChange(value === "no-type" ? null : value);
