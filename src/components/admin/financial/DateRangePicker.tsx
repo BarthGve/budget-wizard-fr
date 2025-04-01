@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
 
-type DateRangePickerProps = {
+export type DateRangePickerProps = {
   value: { start?: Date; end?: Date } | undefined;
   onChange: (value: { start?: Date; end?: Date } | undefined) => void;
 };
@@ -71,7 +71,7 @@ export const DateRangePicker = ({ value, onChange }: DateRangePickerProps) => {
             }}
             numberOfMonths={1}
             locale={fr}
-            className="rounded-md border pointer-events-auto" // Ajout de pointer-events-auto
+            className="rounded-md border pointer-events-auto"
           />
           <div className="flex justify-end space-x-2">
             <Button variant="outline" size="sm" onClick={handleClear}>

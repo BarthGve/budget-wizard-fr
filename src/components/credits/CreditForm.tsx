@@ -1,7 +1,7 @@
 
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { useCreditForm, CreditFormValues } from "./hooks/useCreditForm";
+import { useCreditForm } from "./hooks/useCreditForm";
 import { NameField } from "./form-fields/NameField";
 import { DomainField } from "./form-fields/DomainField";
 import { AmountField } from "./form-fields/AmountField";
@@ -13,9 +13,6 @@ import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
 import { AutoGenerateField } from "./form-fields/AutoGenerateField";
 import { Credit } from "./types";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
 // Types de dépenses disponibles pour les véhicules
 const expenseTypes = [
@@ -25,22 +22,6 @@ const expenseTypes = [
   { id: "credit", name: "Crédit / Financement" },
   { id: "autres", name: "Autres charges" }
 ];
-
-// Schéma de validation pour le formulaire
-const creditFormSchema = z.object({
-  name: z.string().min(1, "Le nom est obligatoire"),
-  domain: z.string().min(1, "Le domaine est obligatoire"),
-  amount: z.string().min(1, "Le montant est obligatoire"),
-  firstPaymentDate: z.date(),
-  monthsCount: z.string().min(1, "Le nombre de mensualités est obligatoire"),
-  associate_with_vehicle: z.boolean().default(false),
-  vehicle_id: z.string().nullable().optional(),
-  vehicle_expense_type: z.string().nullable().optional(),
-  auto_generate_vehicle_expense: z.boolean().default(false),
-});
-
-// Type pour les valeurs du formulaire
-type FormValues = z.infer<typeof creditFormSchema>;
 
 interface CreditFormProps {
   credit?: Credit;
@@ -55,51 +36,11 @@ export function CreditForm({
   onCancel,
   colorScheme = "purple",
 }: CreditFormProps) {
-  // Utiliser directement useForm pour avoir un contrôle complet
-  const form = useForm<FormValues>({
-    resolver: zodResolver(creditFormSchema),
-    defaultValues: credit
-      ? {
-          name: credit.nom_credit,
-          domain: credit.nom_domaine,
-          amount: credit.montant_mensualite.toString(),
-          firstPaymentDate: new Date(credit.date_premiere_mensualite),
-          monthsCount: (
-            (new Date(credit.date_derniere_mensualite).getTime() -
-              new Date(credit.date_premiere_mensualite).getTime()) /
-              (1000 * 60 * 60 * 24 * 30.5)
-          ).toFixed(0),
-          associate_with_vehicle: !!credit.vehicle_id,
-          vehicle_id: credit.vehicle_id || null,
-          vehicle_expense_type: credit.vehicle_expense_type || null,
-          auto_generate_vehicle_expense: credit.auto_generate_vehicle_expense || false,
-        }
-      : {
-          name: "",
-          domain: "",
-          amount: "",
-          firstPaymentDate: new Date(),
-          monthsCount: "",
-          associate_with_vehicle: false,
-          vehicle_id: null,
-          vehicle_expense_type: null,
-          auto_generate_vehicle_expense: false,
-        },
+  // Utiliser le hook personnalisé useCreditForm
+  const { form, onSubmit, isPending } = useCreditForm({ 
+    credit, 
+    onSuccess 
   });
-
-  // Mutation pour l'ajout ou la mise à jour d'un crédit
-  const { mutate: submitCredit, isPending } = useCreditForm({ credit, onSuccess }).form.formState;
-
-  // Gestion de la soumission du formulaire
-  const onSubmit = (values: FormValues) => {
-    const amount = parseFloat(values.amount);
-    const monthsCount = parseInt(values.monthsCount, 10);
-    const lastPaymentDate = new Date(values.firstPaymentDate);
-    lastPaymentDate.setMonth(lastPaymentDate.getMonth() + monthsCount);
-
-    // Soumettre directement via useCreditForm
-    useCreditForm({ credit, onSuccess }).onSubmit(values);
-  };
 
   // Effet pour gérer les dépendances des champs de véhicule
   useEffect(() => {

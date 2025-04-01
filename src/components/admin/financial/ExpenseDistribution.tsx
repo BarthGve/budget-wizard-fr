@@ -21,9 +21,9 @@ interface ExpenseDistributionProps {
 
 export default function ExpenseDistribution({ period, startDate, endDate }: ExpenseDistributionProps) {
   const [selectedDates, setSelectedDates] = React.useState<{
-    start: Date | undefined;
-    end: Date | undefined;
-  } | undefined>({
+    start?: Date;
+    end?: Date;
+  }>({
     start: startDate ? new Date(startDate) : undefined,
     end: endDate ? new Date(endDate) : undefined,
   });
@@ -52,13 +52,20 @@ export default function ExpenseDistribution({ period, startDate, endDate }: Expe
     total_amount: Number(item.total_amount),
   })) : [];
 
+  // Création d'une fonction de gestionnaire pour convertir les types
+  const handleDateChange = (value: { start?: Date; end?: Date } | undefined) => {
+    if (value) {
+      setSelectedDates(value);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Répartition des dépenses par catégorie</CardTitle>
         <CardDescription>Analyse de la répartition des dépenses par catégorie sur une période donnée.</CardDescription>
         <DateRangePicker
-          onChange={setSelectedDates}
+          onChange={handleDateChange}
           value={selectedDates}
         />
       </CardHeader>

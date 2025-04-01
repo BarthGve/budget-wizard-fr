@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { addMonths } from "date-fns";
+import { addMonths, format } from "date-fns";
 import { toast } from "sonner";
 
 // Schéma de validation pour le formulaire
@@ -22,7 +22,7 @@ const creditFormSchema = z.object({
 });
 
 // Type pour les valeurs du formulaire
-export type CreditFormValues = z.infer<typeof creditFormSchema>;
+export type FormValues = z.infer<typeof creditFormSchema>;
 
 interface UseCreditFormProps {
   credit?: Credit;
@@ -31,7 +31,7 @@ interface UseCreditFormProps {
 
 export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
   // Initialisation du formulaire avec les valeurs du crédit si disponible
-  const form = useForm<CreditFormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(creditFormSchema),
     defaultValues: credit
       ? {
@@ -63,19 +63,23 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
   });
 
   // Mutation pour l'ajout ou la mise à jour d'un crédit
-  const { mutate: submitCredit, isPending } = useMutation({
-    mutationFn: async (values: CreditFormValues) => {
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (values: FormValues) => {
       const amount = parseFloat(values.amount);
       const monthsCount = parseInt(values.monthsCount, 10);
       const lastPaymentDate = addMonths(values.firstPaymentDate, monthsCount);
+
+      // Générer l'URL du logo à partir du domaine
+      const logo_url = `https://logo.clearbit.com/${values.domain.trim().toLowerCase()}`;
 
       // Données à sauvegarder dans la base de données
       const creditData = {
         nom_credit: values.name,
         nom_domaine: values.domain,
         montant_mensualite: amount,
-        date_premiere_mensualite: values.firstPaymentDate.toISOString().split("T")[0],
-        date_derniere_mensualite: lastPaymentDate.toISOString().split("T")[0],
+        date_premiere_mensualite: format(values.firstPaymentDate, 'yyyy-MM-dd'),
+        date_derniere_mensualite: format(lastPaymentDate, 'yyyy-MM-dd'),
+        logo_url,
         // Nouveaux champs pour l'association avec un véhicule
         vehicle_id: values.associate_with_vehicle ? values.vehicle_id : null,
         vehicle_expense_type: values.associate_with_vehicle ? values.vehicle_expense_type : null,
@@ -90,24 +94,30 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
 
       if (credit) {
         // Mise à jour d'un crédit existant
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("credits")
           .update(creditData)
           .eq("id", credit.id);
 
         if (error) throw error;
-        return data;
+        return creditData;
       } else {
         // Ajout d'un nouveau crédit - ajouter profile_id
-        const { data, error } = await supabase
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          throw new Error("Non authentifié");
+        }
+        
+        const { error } = await supabase
           .from("credits")
           .insert([{
             ...creditData,
-            profile_id: await getCurrentProfileId(),
+            profile_id: user.id,
           }]);
 
         if (error) throw error;
-        return data;
+        return creditData;
       }
     },
     onSuccess: () => {
@@ -128,20 +138,14 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
     },
   });
 
-  // Fonction pour obtenir l'ID du profil courant
-  const getCurrentProfileId = async (): Promise<string> => {
-    const { data } = await supabase.auth.getSession();
-    return data.session?.user?.id || '';
-  };
-
   // Gestion de la soumission du formulaire
-  const onSubmit = (values: CreditFormValues) => {
-    submitCredit(values);
+  const handleSubmit = (values: FormValues) => {
+    mutate(values);
   };
 
   return {
     form,
-    onSubmit,
+    onSubmit: handleSubmit,
     isPending,
   };
 };

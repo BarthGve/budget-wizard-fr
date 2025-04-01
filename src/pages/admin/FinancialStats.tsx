@@ -45,6 +45,13 @@ export default function FinancialStats() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  // Gestionnaire pour les changements de plage de dates
+  const handleDateRangeChange = (value: { start?: Date; end?: Date } | undefined) => {
+    if (value) {
+      setDateRange(value);
+    }
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8 flex items-center justify-between">
@@ -79,7 +86,7 @@ export default function FinancialStats() {
           </DropdownMenu>
           <DateRangePicker
             value={dateRange}
-            onChange={setDateRange}
+            onChange={handleDateRangeChange}
           />
         </div>
       </div>
