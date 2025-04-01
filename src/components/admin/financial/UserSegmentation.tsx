@@ -54,7 +54,8 @@ export const UserSegmentation = ({ period, dateRange }: UserSegmentationProps) =
         } as SegmentationData;
       }
       
-      return data as SegmentationData;
+      // Conversion explicite du JSON retourné en SegmentationData
+      return data.result as SegmentationData;
     },
     refetchOnWindowFocus: false
   });

@@ -47,7 +47,8 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
         return [] as TrendData[];
       }
       
-      return data as TrendData[];
+      // Conversion explicite du JSON retourné en tableau de TrendData
+      return data.trends as TrendData[];
     },
     refetchOnWindowFocus: false
   });

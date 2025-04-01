@@ -57,7 +57,7 @@ const FinancialStats = () => {
       if (error) throw error;
       
       // Assurer que les données ont le bon format
-      const result: FinancialStatsType = data || {
+      const result: FinancialStatsType = data?.result || {
         total_expenses: 0,
         total_savings: 0,
         total_investments: 0,
@@ -88,7 +88,7 @@ const FinancialStats = () => {
       if (error) throw error;
       
       // Conversion en CSV
-      const exportData = data as any[];
+      const exportData = data?.data as any[];
       if (exportData && Array.isArray(exportData) && exportData.length > 0) {
         const headers = Object.keys(exportData[0]).join(',');
         const rows = exportData.map(row => Object.values(row).join(','));

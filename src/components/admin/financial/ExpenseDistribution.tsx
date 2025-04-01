@@ -51,7 +51,8 @@ export const ExpenseDistribution = ({ period, dateRange }: ExpenseDistributionPr
         } as ExpenseData;
       }
       
-      return data as ExpenseData;
+      // Conversion explicite du JSON retourné en ExpenseData
+      return data.result as ExpenseData;
     },
     refetchOnWindowFocus: false
   });
