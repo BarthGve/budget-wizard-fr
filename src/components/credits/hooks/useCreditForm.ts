@@ -151,6 +151,6 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
 
   return {
     form,
-    onSubmit: form.handleSubmit(onSubmit),
+    onSubmit,
   };
 };

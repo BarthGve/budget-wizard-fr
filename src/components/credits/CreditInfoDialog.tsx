@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Credit } from "./types";
 import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
@@ -290,7 +291,7 @@ export const CreditInfoDialog = ({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">Véhicule</p>
-                  <p className="font-medium">{vehicle.name}</p>
+                  <p className="font-medium">{vehicle.brand} {vehicle.model || ''} ({vehicle.registration_number})</p>
                 </div>
                 
                 {credit.vehicle_expense_type && (

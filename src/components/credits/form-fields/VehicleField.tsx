@@ -12,7 +12,7 @@ interface VehicleFieldProps {
 export function VehicleField({ form }: VehicleFieldProps) {
   // Récupérer la liste des véhicules actifs
   const { data: vehicles, isLoading } = useVehicles();
-  const activeVehicles = vehicles?.filter(v => v.status === "active") || [];
+  const activeVehicles = vehicles?.filter(v => v.status === "actif") || [];
   
   return (
     <FormField
@@ -39,7 +39,7 @@ export function VehicleField({ form }: VehicleFieldProps) {
             <SelectContent>
               {activeVehicles.map((vehicle) => (
                 <SelectItem key={vehicle.id} value={vehicle.id}>
-                  {vehicle.name}
+                  {vehicle.brand} {vehicle.model || ''} ({vehicle.registration_number})
                 </SelectItem>
               ))}
               {activeVehicles.length === 0 && (
