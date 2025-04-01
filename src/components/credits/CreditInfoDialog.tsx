@@ -119,7 +119,7 @@ export const CreditInfoDialog = ({
         
         <DialogHeader className="relative z-10">
           <DialogTitle className={cn(
-            "text-2xl font-bold flex items-center gap-2",
+            "text-2xl font-bold flex items-center gap-2 mt-4",
             currentColors.titleText
           )}>
             {credit.nom_credit}
