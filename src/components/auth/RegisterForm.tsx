@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuthContext } from "@/context/AuthProvider";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 interface RegisterFormProps {
   onSubmit?: () => void;
@@ -19,6 +20,7 @@ export const RegisterForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   
   const { register: registerUser } = useAuthContext();
 
@@ -43,8 +45,14 @@ export const RegisterForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Éviter les soumissions multiples
+    if (isLoading || isSubmitted) {
+      return;
+    }
+    
     setFormError(null);
     setIsLoading(true);
+    setIsSubmitted(true);
     
     try {
       await registerUser({
@@ -56,6 +64,7 @@ export const RegisterForm = () => {
       navigate("/email-verification");
     } catch (error: any) {
       setFormError(error.message || "Erreur lors de l'inscription");
+      setIsSubmitted(false);
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +85,7 @@ export const RegisterForm = () => {
             id="name" 
             placeholder="Votre prénom"
             {...form.register("name")}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitted}
           />
         </div>
         <div className="space-y-2">
@@ -86,7 +95,7 @@ export const RegisterForm = () => {
             type="email" 
             placeholder="vous@exemple.com"
             {...form.register("email")}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitted}
           />
         </div>
         <div className="space-y-2">
@@ -95,7 +104,7 @@ export const RegisterForm = () => {
             id="password" 
             type="password"
             {...form.register("password")}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitted}
           />
         </div>
         <div className="space-y-2">
@@ -104,12 +113,12 @@ export const RegisterForm = () => {
             id="confirmPassword" 
             type="password"
             {...form.register("confirmPassword")}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitted}
           />
         </div>
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Inscription en cours..." : "S'inscrire"}
-        </Button>
+        <LoadingButton type="submit" className="w-full" loading={isLoading} disabled={isLoading || isSubmitted}>
+          S'inscrire
+        </LoadingButton>
       </form>
     </>
   );

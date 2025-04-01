@@ -18,6 +18,10 @@ export interface LoginCredentials {
   password: string;
 }
 
+// Utilisation d'un Set pour stocker les emails en cours d'inscription
+// afin d'éviter les appels multiples pour le même email
+const registrationsInProgress = new Set<string>();
+
 /**
  * Envoie une notification à l'administrateur concernant le nouvel utilisateur
  */
@@ -45,6 +49,9 @@ const notifyAdmin = async (name: string, email: string) => {
   } catch (error) {
     // On ne fait que logger l'erreur pour ne pas impacter l'expérience utilisateur
     console.error("Échec de l'envoi de notification admin:", error);
+  } finally {
+    // Nettoyer le registre des inscriptions en cours
+    registrationsInProgress.delete(email);
   }
 };
 
@@ -54,6 +61,15 @@ const notifyAdmin = async (name: string, email: string) => {
  */
 export const registerUser = async (credentials: RegisterCredentials) => {
   console.log("Inscription utilisateur:", { email: credentials.email });
+  
+  // Vérifier si une inscription est déjà en cours pour cet email
+  if (registrationsInProgress.has(credentials.email)) {
+    console.warn("Inscription déjà en cours pour:", credentials.email);
+    throw new Error("Une inscription est déjà en cours pour cet email");
+  }
+  
+  // Marquer cet email comme étant en cours d'inscription
+  registrationsInProgress.add(credentials.email);
   
   try {
     // Étape 1: Créer l'utilisateur dans auth.users
@@ -69,6 +85,8 @@ export const registerUser = async (credentials: RegisterCredentials) => {
 
     if (error) {
       console.error("Erreur lors de la création de l'utilisateur:", error);
+      registrationsInProgress.delete(credentials.email); // Nettoyer en cas d'erreur
+      
       if (error.message.includes("User already registered")) {
         throw new Error("Un compte existe déjà avec cet email");
       } else {
@@ -77,6 +95,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     }
     
     if (!data || !data.user) {
+      registrationsInProgress.delete(credentials.email); // Nettoyer en cas d'erreur
       throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
     }
     
@@ -144,6 +163,8 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     return data;
   } catch (error: any) {
     console.error("Erreur finale lors de l'inscription:", error);
+    // Nettoyer en cas d'erreur
+    registrationsInProgress.delete(credentials.email);
     throw error;
   }
 };
