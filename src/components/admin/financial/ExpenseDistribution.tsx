@@ -51,8 +51,16 @@ export const ExpenseDistribution = ({ period, dateRange }: ExpenseDistributionPr
         } as ExpenseData;
       }
       
-      // Conversion explicite du JSON retourné en ExpenseData
-      return data.result as ExpenseData;
+      // Vérifier si data est un objet et s'il contient une propriété result
+      if (typeof data === 'object' && data !== null && 'result' in data) {
+        return data.result as ExpenseData;
+      }
+      
+      // Si data n'a pas le format attendu, retourner des données par défaut
+      return {
+        monthlyData: [],
+        userExpenseData: []
+      } as ExpenseData;
     },
     refetchOnWindowFocus: false
   });

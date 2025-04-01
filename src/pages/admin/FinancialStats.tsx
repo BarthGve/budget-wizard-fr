@@ -57,7 +57,25 @@ const FinancialStats = () => {
       if (error) throw error;
       
       // Assurer que les données ont le bon format
-      const result: FinancialStatsType = data?.result || {
+      if (!data) {
+        return {
+          total_expenses: 0,
+          total_savings: 0,
+          total_investments: 0,
+          active_credits: 0,
+          avg_monthly_expense: 0,
+          avg_savings_rate: 0,
+          expense_distribution: []
+        } as FinancialStatsType;
+      }
+      
+      // Vérification du type retourné et extraction de la propriété result
+      if (typeof data === 'object' && data !== null && 'result' in data) {
+        return data.result as FinancialStatsType;
+      }
+      
+      // Si data n'a pas le format attendu, retourner des données par défaut
+      return {
         total_expenses: 0,
         total_savings: 0,
         total_investments: 0,
@@ -65,9 +83,7 @@ const FinancialStats = () => {
         avg_monthly_expense: 0,
         avg_savings_rate: 0,
         expense_distribution: []
-      };
-      
-      return result;
+      } as FinancialStatsType;
     },
     refetchOnWindowFocus: false
   });
@@ -87,8 +103,13 @@ const FinancialStats = () => {
       
       if (error) throw error;
       
+      // Vérification que data est un objet contenant la propriété data
+      let exportData: any[] = [];
+      if (typeof data === 'object' && data !== null && 'data' in data) {
+        exportData = data.data as any[];
+      }
+      
       // Conversion en CSV
-      const exportData = data?.data as any[];
       if (exportData && Array.isArray(exportData) && exportData.length > 0) {
         const headers = Object.keys(exportData[0]).join(',');
         const rows = exportData.map(row => Object.values(row).join(','));

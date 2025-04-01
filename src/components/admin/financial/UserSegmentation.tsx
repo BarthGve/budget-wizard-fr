@@ -54,8 +54,17 @@ export const UserSegmentation = ({ period, dateRange }: UserSegmentationProps) =
         } as SegmentationData;
       }
       
-      // Conversion explicite du JSON retourné en SegmentationData
-      return data.result as SegmentationData;
+      // Vérifier si data est un objet et s'il contient une propriété result
+      if (typeof data === 'object' && data !== null && 'result' in data) {
+        return data.result as SegmentationData;
+      }
+      
+      // Si data n'a pas le format attendu, retourner des données par défaut
+      return {
+        profileData: [],
+        incomeDistribution: [],
+        userTableData: []
+      } as SegmentationData;
     },
     refetchOnWindowFocus: false
   });

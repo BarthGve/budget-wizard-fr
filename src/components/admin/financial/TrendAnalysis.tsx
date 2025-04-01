@@ -47,8 +47,13 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
         return [] as TrendData[];
       }
       
-      // Conversion explicite du JSON retourné en tableau de TrendData
-      return data.trends as TrendData[];
+      // Vérifier si data est un objet et s'il contient une propriété trends
+      if (typeof data === 'object' && data !== null && 'trends' in data) {
+        return data.trends as TrendData[];
+      }
+      
+      // Si data n'a pas le format attendu, retourner un tableau vide
+      return [] as TrendData[];
     },
     refetchOnWindowFocus: false
   });
