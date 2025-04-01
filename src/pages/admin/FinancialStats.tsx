@@ -14,20 +14,10 @@ import { TrendAnalysis } from "@/components/admin/financial/TrendAnalysis";
 import { Download } from "lucide-react";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { toast } from "sonner";
+import { FinancialStats as FinancialStatsType } from '@/types/supabase-rpc';
 
 // Types des périodes disponibles
 type TimePeriod = "all" | "year" | "quarter" | "month";
-
-// Type pour les statistiques financières
-interface FinancialStats {
-  total_expenses: number;
-  total_savings: number;
-  total_investments: number;
-  active_credits: number;
-  avg_monthly_expense: number;
-  avg_savings_rate: number;
-  expense_distribution?: { name: string; value: number }[];
-}
 
 const FinancialStats = () => {
   const [dateRange, setDateRange] = useState<{start?: Date; end?: Date}>({});
@@ -66,14 +56,18 @@ const FinancialStats = () => {
       
       if (error) throw error;
       
-      return data as FinancialStats || {
+      // Assurer que les données ont le bon format
+      const result: FinancialStatsType = data || {
         total_expenses: 0,
         total_savings: 0,
         total_investments: 0,
         active_credits: 0,
         avg_monthly_expense: 0,
-        avg_savings_rate: 0
+        avg_savings_rate: 0,
+        expense_distribution: []
       };
+      
+      return result;
     },
     refetchOnWindowFocus: false
   });
@@ -95,7 +89,7 @@ const FinancialStats = () => {
       
       // Conversion en CSV
       const exportData = data as any[];
-      if (exportData && exportData.length > 0) {
+      if (exportData && Array.isArray(exportData) && exportData.length > 0) {
         const headers = Object.keys(exportData[0]).join(',');
         const rows = exportData.map(row => Object.values(row).join(','));
         const csv = [headers, ...rows].join('\n');
@@ -207,7 +201,7 @@ const FinancialStats = () => {
           </div>
           
           <TabsContent value="overview">
-            <FinancialOverview stats={globalStats} />
+            <FinancialOverview stats={globalStats as FinancialStatsType} />
           </TabsContent>
           
           <TabsContent value="trends">

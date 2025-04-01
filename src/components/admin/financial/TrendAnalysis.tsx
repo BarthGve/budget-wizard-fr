@@ -4,11 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent
-} from '@/components/ui/chart';
-import { 
   LineChart, 
   Line, 
   XAxis, 
@@ -20,20 +15,12 @@ import {
 } from 'recharts';
 import StyledLoader from '@/components/ui/StyledLoader';
 import { formatCurrency } from '@/utils/format';
+import { TrendData } from '@/types/supabase-rpc';
 
 // Type des propriétés
 interface TrendAnalysisProps {
   period: string;
   dateRange: { start?: Date; end?: Date };
-}
-
-// Type pour les données de tendances
-interface TrendData {
-  date: string;
-  expenses: number;
-  savings: number;
-  investments: number;
-  creditPayments: number;
 }
 
 export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
@@ -55,7 +42,12 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
       
       if (error) throw error;
       
-      return data as TrendData[] || [];
+      // Si data est null ou undefined, renvoyer des données par défaut
+      if (!data) {
+        return [] as TrendData[];
+      }
+      
+      return data as TrendData[];
     },
     refetchOnWindowFocus: false
   });
@@ -82,8 +74,8 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
     );
   }
   
-  // Données simulées pour le graphique des tendances
-  const trendData = [
+  // Données simulées pour le graphique des tendances si aucune donnée n'est disponible
+  const trendData = data && data.length > 0 ? data : [
     { 
       date: '2023-01', 
       expenses: 1200, 
@@ -126,55 +118,26 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
       investments: 370, 
       creditPayments: 400 
     },
-    { 
-      date: '2023-07', 
-      expenses: 1550, 
-      savings: 680, 
-      investments: 390, 
-      creditPayments: 400 
-    },
-    { 
-      date: '2023-08', 
-      expenses: 1600, 
-      savings: 700, 
-      investments: 400, 
-      creditPayments: 400 
-    },
-    { 
-      date: '2023-09', 
-      expenses: 1500, 
-      savings: 720, 
-      investments: 420, 
-      creditPayments: 400 
-    },
-    { 
-      date: '2023-10', 
-      expenses: 1400, 
-      savings: 750, 
-      investments: 450, 
-      creditPayments: 400 
-    },
-    { 
-      date: '2023-11', 
-      expenses: 1350, 
-      savings: 770, 
-      investments: 470, 
-      creditPayments: 400 
-    },
-    { 
-      date: '2023-12', 
-      expenses: 1700, 
-      savings: 700, 
-      investments: 500, 
-      creditPayments: 400 
-    },
   ];
   
   // Formatage des dates pour l'affichage
   const formatXAxis = (dateString: string) => {
-    const [year, month] = dateString.split('-');
-    const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
-    return `${monthNames[parseInt(month) - 1]}`;
+    if (!dateString) return '';
+    
+    // Pour les dates de format YYYY-MM
+    if (dateString.length === 7) {
+      const [year, month] = dateString.split('-');
+      const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+      return `${monthNames[parseInt(month) - 1]}`;
+    }
+    
+    // Pour les dates de format YYYY-MM-DD
+    if (dateString.length === 10) {
+      const [year, month, day] = dateString.split('-');
+      return `${day}/${month}`;
+    }
+    
+    return dateString;
   };
 
   // Composant personnalisé pour le tooltip
@@ -206,7 +169,7 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
           <CardTitle>Évolution des indicateurs financiers</CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-96">
+          <div className="h-96">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -250,10 +213,25 @@ export const TrendAnalysis = ({ period, dateRange }: TrendAnalysisProps) => {
                 />
               </LineChart>
             </ResponsiveContainer>
-            <ChartLegend>
-              <ChartLegendContent />
-            </ChartLegend>
-          </ChartContainer>
+            <div className="mt-4 flex flex-wrap justify-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: chartConfig.expenses.color }} />
+                <span className="text-sm">Dépenses</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: chartConfig.savings.color }} />
+                <span className="text-sm">Épargne</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: chartConfig.investments.color }} />
+                <span className="text-sm">Investissements</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: chartConfig.creditPayments.color }} />
+                <span className="text-sm">Remb. crédits</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
       

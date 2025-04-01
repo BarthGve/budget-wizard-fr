@@ -15,35 +15,30 @@ import {
   ResponsiveContainer,
   Tooltip
 } from 'recharts';
+import { FinancialStats } from '@/types/supabase-rpc';
 
-// Type pour les statistiques financières globales
-type FinancialStats = {
-  total_expenses: number;
-  total_savings: number;
-  total_investments: number;
-  active_credits: number;
-  avg_monthly_expense: number;
-  avg_savings_rate: number;
-  expense_distribution?: { name: string; value: number }[];
-};
+// Couleurs pour le graphique en camembert
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A67ADB'];
 
 // Props du composant
 interface FinancialOverviewProps {
   stats: FinancialStats;
 }
 
-// Couleurs pour le graphique en camembert
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A67ADB'];
-
 export const FinancialOverview = ({ stats }: FinancialOverviewProps) => {
-  // Données pour le graphique de répartition des dépenses
-  const pieData = stats.expense_distribution || [
+  // Données par défaut pour le graphique en cas d'absence de données
+  const defaultPieData = [
     { name: 'Charges récurrentes', value: 35 },
     { name: 'Alimentation', value: 25 },
     { name: 'Transport', value: 15 },
     { name: 'Loisirs', value: 15 },
     { name: 'Autres', value: 10 }
   ];
+  
+  // Données pour le graphique de répartition des dépenses
+  const pieData = stats.expense_distribution && stats.expense_distribution.length > 0 
+    ? stats.expense_distribution 
+    : defaultPieData;
   
   // Configuration du chart
   const chartConfig = {
@@ -121,7 +116,7 @@ export const FinancialOverview = ({ stats }: FinancialOverviewProps) => {
             <CardDescription>Ventilation par catégorie</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            <ChartContainer config={chartConfig} className="h-80">
+            <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -146,15 +141,18 @@ export const FinancialOverview = ({ stats }: FinancialOverviewProps) => {
                   />
                 </PieChart>
               </ResponsiveContainer>
-              <ChartLegend>
-                <ChartLegendContent
-                  payload={pieData.map((entry, index) => ({
-                    value: entry.name,
-                    color: COLORS[index % COLORS.length]
-                  }))}
-                />
-              </ChartLegend>
-            </ChartContainer>
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                {pieData.map((entry, index) => (
+                  <div key={`legend-${index}`} className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }} 
+                    />
+                    <span className="text-xs">{entry.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
