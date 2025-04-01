@@ -87,7 +87,7 @@ export function CreditForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="space-y-4 max-w-full overflow-x-hidden p-2">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-full overflow-x-hidden p-2">
         <NameField form={form} />
         <DomainField form={form} />
         <AmountField form={form} />
