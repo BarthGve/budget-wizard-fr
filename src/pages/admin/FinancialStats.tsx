@@ -19,14 +19,14 @@ import UserSegmentation from '@/components/admin/financial/UserSegmentation';
 import { FinancialStats as FinancialStatsType } from '@/types/supabase-rpc';
 
 export default function FinancialStats() {
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
-    from: new Date(new Date().getFullYear(), 0, 1),
-    to: new Date(),
+  const [dateRange, setDateRange] = useState<{ start?: Date; end?: Date }>({
+    start: new Date(new Date().getFullYear(), 0, 1),
+    end: new Date(),
   });
   const [selectedPeriod, setSelectedPeriod] = useState<"monthly" | "quarterly" | "yearly">("monthly");
 
-  const startDate = dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : null;
-  const endDate = dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : null;
+  const startDate = dateRange.start ? format(dateRange.start, 'yyyy-MM-dd') : null;
+  const endDate = dateRange.end ? format(dateRange.end, 'yyyy-MM-dd') : null;
 
   const { data: statsData, isLoading, error } = useQuery({
     queryKey: ["financial-stats", selectedPeriod, startDate, endDate],
@@ -39,7 +39,7 @@ export default function FinancialStats() {
 
       if (error) throw error;
       // Conversion sécurisée avec as
-      return data as FinancialStatsType;
+      return data as unknown as FinancialStatsType;
     },
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5, // 5 minutes

@@ -21,11 +21,11 @@ interface ExpenseDistributionProps {
 
 export default function ExpenseDistribution({ period, startDate, endDate }: ExpenseDistributionProps) {
   const [selectedDates, setSelectedDates] = React.useState<{
-    from: Date | undefined;
-    to: Date | undefined;
+    start: Date | undefined;
+    end: Date | undefined;
   } | undefined>({
-    from: startDate ? new Date(startDate) : undefined,
-    to: endDate ? new Date(endDate) : undefined,
+    start: startDate ? new Date(startDate) : undefined,
+    end: endDate ? new Date(endDate) : undefined,
   });
 
   const { data, isLoading, error } = useQuery({
