@@ -76,7 +76,7 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
     },
   });
 
-  const onSubmit = async (values: FormValues) => {
+  const handleSubmit = async (values: FormValues) => {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -151,6 +151,6 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
 
   return {
     form,
-    onSubmit,
+    onSubmit: handleSubmit,
   };
 };
