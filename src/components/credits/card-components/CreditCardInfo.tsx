@@ -69,14 +69,7 @@ export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = f
           </h4>
         </div>
 
-        <div className={cn(
-          "text-sm mt-0.5",
-          isArchived 
-            ? "text-gray-400 dark:text-gray-500" 
-            : "text-gray-500 dark:text-gray-400"
-        )}>
-          {formatDate(credit.date_derniere_mensualite)}
-        </div>
+       
       </div>
     </div>
   );
