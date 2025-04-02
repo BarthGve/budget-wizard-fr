@@ -94,6 +94,21 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
             {totalAmount.toLocaleString("fr-FR")} €
           </p>
         </div>
+
+          <div>
+          <span className={cn(
+            "text-sm font-medium",
+            isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
+          )}>
+            Total ({formatDate(credit.date_derniere_mensualite)})
+          </span>
+          <p className={cn(
+            "font-semibold",
+            isArchived ? "text-gray-600 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"
+          )}>
+            {totalAmount.toLocaleString("fr-FR")} €
+          </p>
+        </div>
         
         <div className="flex flex-col">
           <div className="flex justify-between items-center">
