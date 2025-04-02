@@ -91,7 +91,7 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
     >
       <Card className={cn(
         "overflow-hidden transition-all duration-200 h-full relative",
-        "border shadow-sm",
+        "border shadow-lg",
         // Light mode
         "bg-white border-blue-100",
         // Dark mode
