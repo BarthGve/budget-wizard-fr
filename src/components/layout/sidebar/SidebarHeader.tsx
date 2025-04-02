@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { appConfig } from "@/config/app.config";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLatestVersion } from "@/hooks/useLatestVersion";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 interface SidebarHeaderProps {
   collapsed: boolean;
@@ -35,6 +36,11 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
             </span>
           </div>
         )}
+         {!isMobile && (
+        <div className="px-4 py-3 border-t border-border">
+          <ThemeToggle collapsed={collapsed} />
+        </div>
+      )}
       </div>
     </div>
   );
