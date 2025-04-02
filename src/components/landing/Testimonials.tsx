@@ -95,7 +95,7 @@ export const Testimonials = ({ testimonials }: TestimonialsProps) => {
               loop: true
             }}
           >
-            <CarouselContent>
+            <CarouselContent className="p-2">
               {testimonialsChunks.map((chunk, index) => (
                 <CarouselItem key={index} className="md:basis-full">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
