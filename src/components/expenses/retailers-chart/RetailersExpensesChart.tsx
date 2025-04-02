@@ -50,7 +50,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
   return (
     <Card className={cn(
       "overflow-hidden transition-all duration-200 relative h-full",
-      "border shadow-lg",
+      "border shadow-sm",
       // Light mode
       "bg-white border-blue-100",
       // Dark mode
@@ -58,12 +58,12 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
     )}>
       {/* Fond radial gradient */}
       <div className={cn(
-        "absolute inset-0 opacity-5",
-        // Light mode
-        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
-        // Dark mode
-        "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
-      )} />
+          "absolute inset-0 opacity-5",
+          // Light mode
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+          // Dark mode
+          "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+        )} />
       
       <CardHeader className="pb-2 pt-6 relative z-10">
         <div className="flex justify-between items-center">
