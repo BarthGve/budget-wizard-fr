@@ -37,9 +37,9 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
           </div>
         )}
          {!isMobile && (
-        <div className="px-4 py-3 border-t border-border">
+      
           <ThemeToggle collapsed={collapsed} />
-        </div>
+     
       )}
       </div>
     </div>
