@@ -40,6 +40,6 @@ export const ContributorsContent = ({
           ))}
         </div>
       </CardContent>
-    <div/>
+    </div>
   );
 };
