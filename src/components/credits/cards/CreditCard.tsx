@@ -77,12 +77,12 @@ export const CreditCard = ({
     <Card 
       className={cn(
         "overflow-hidden transition-all duration-200 h-full relative",
-        "border shadow-sm hover:shadow-md hover:translate-y-[-5px]",
+        "border shadow-sm ",
         // Light mode - garde le fond blanc
         "bg-white",
         "border-gray-100",
         // Dark mode - alignées avec les cards de graphiques
-        "dark:bg-gray-800/90 dark:hover:bg-gray-800/70 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50", 
+        "dark:bg-gray-800/90  dark:shadow-purple-800/30 ", 
         currentColors.darkBorder
       )}
     >
