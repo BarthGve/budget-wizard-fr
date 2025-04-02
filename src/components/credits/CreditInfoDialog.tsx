@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Credit } from "./types";
@@ -124,7 +123,6 @@ export const CreditInfoDialog = ({
     }
   };
 
-  // Contenu commun qui sera utilisé à la fois dans le Dialog et le Sheet
   const renderContent = () => (
     <>
       <div className={cn(
@@ -150,8 +148,7 @@ export const CreditInfoDialog = ({
             {credit.logo_url ? (
               <div className={cn(
                 "w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center",
-                "border shadow-sm",
-                currentColors.border,
+                "shadow-sm",
                 "bg-white dark:bg-gray-800"
               )}>
                 <img
@@ -182,45 +179,45 @@ export const CreditInfoDialog = ({
           
           <div className={cn(
             "rounded-full px-4 py-2 text-sm font-medium",
-            "border shadow-sm",
-            currentColors.iconBg,
-            currentColors.border
+            "shadow-sm",
+            currentColors.iconBg
           )}>
             {formatCurrency(montantTotal)}
           </div>
         </div>
 
         <div className={cn(
-          "rounded-xl p-4 border grid grid-cols-2 gap-4",
-          currentColors.cardBg,
-          currentColors.border
+          "rounded-xl p-4 bg-purple-50/70 dark:bg-purple-900/30",
+          isMobile ? "" : currentColors.border
         )}>
-          <div className="flex items-start space-x-3">
-            <div className={cn(
-              "p-2 rounded-lg mt-0.5",
-              currentColors.iconBg
-            )}>
-              <CalendarIcon className="w-4 h-4" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-start space-x-3">
+              <div className={cn(
+                "p-2 rounded-lg mt-0.5",
+                currentColors.iconBg
+              )}>
+                <CalendarIcon className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Première échéance</p>
+                <p className="font-medium">
+                  {format(new Date(credit.date_premiere_mensualite), 'dd MMMM yyyy', { locale: fr })}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Première échéance</p>
-              <p className="font-medium">
-                {format(new Date(credit.date_premiere_mensualite), 'dd MMMM yyyy', { locale: fr })}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <div className={cn(
-              "p-2 rounded-lg mt-0.5",
-              currentColors.iconBg
-            )}>
-              <CalendarIcon className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Dernière échéance</p>
-              <p className="font-medium">
-                {format(new Date(credit.date_derniere_mensualite), 'dd MMMM yyyy', { locale: fr })}
-              </p>
+            <div className="flex items-start space-x-3">
+              <div className={cn(
+                "p-2 rounded-lg mt-0.5",
+                currentColors.iconBg
+              )}>
+                <CalendarIcon className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Dernière échéance</p>
+                <p className="font-medium">
+                  {format(new Date(credit.date_derniere_mensualite), 'dd MMMM yyyy', { locale: fr })}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -237,9 +234,8 @@ export const CreditInfoDialog = ({
           />
           
           <div className={cn(
-            "rounded-xl p-4 border",
-            currentColors.cardBg,
-            currentColors.border
+            "rounded-xl p-4 bg-purple-50/70 dark:bg-purple-900/30",
+            isMobile ? "" : currentColors.border
           )}>
             <div className="flex items-center gap-3 mb-3">
               <div className={cn(
@@ -274,9 +270,8 @@ export const CreditInfoDialog = ({
         
         {credit.vehicle_id && vehicle && (
           <div className={cn(
-            "rounded-xl p-4 border",
-            currentColors.cardBg,
-            currentColors.border
+            "rounded-xl p-4 bg-purple-50/70 dark:bg-purple-900/30",
+            isMobile ? "" : currentColors.border
           )}>
             <div className="flex items-center gap-3 mb-3">
               <div className={cn(
@@ -321,10 +316,11 @@ export const CreditInfoDialog = ({
           side="bottom"
           className={cn(
             "rounded-t-xl",
-            "border-t shadow-lg",
+            "shadow-lg",
             "max-h-[90vh] overflow-y-auto",
-            "dark:bg-gray-900",
-            "pb-safe"
+            "bg-[#f5f0ff] dark:bg-gray-900",
+            "pb-safe",
+            "p-4"
           )}
         >
           <div className={cn(
