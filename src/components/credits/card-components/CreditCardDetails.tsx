@@ -64,7 +64,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
       transition={{ delay: index * 0.08 + 0.2, duration: 0.3 }}
       className="flex flex-col p-4 flex-1"
     >
-      <div className="grid grid-cols-3 gap-4 items-center">
+      <div className="grid grid-cols-3 gap-2 items-center">
         <div>
           <span className={cn(
             "text-sm font-medium",
