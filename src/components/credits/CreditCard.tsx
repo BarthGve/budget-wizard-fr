@@ -44,12 +44,12 @@ export const CreditCard = ({ credit, index, onCreditDeleted, isArchived = false 
           "overflow-hidden transition-all duration-200",
           // Light mode - style différent pour les crédits archivés
           isArchived 
-            ? "bg-gray-50 border border-gray-200 shadow-sm hover:shadow-md"
-            : "bg-white border border-purple-100 shadow-sm hover:shadow-md",
+            ? "bg-gray-50 border border-gray-200 shadow-sm "
+            : "bg-white border border-purple-100 shadow-sm ",
           // Dark mode - alignées avec les cards de graphiques
           isArchived
             ? "dark:bg-gray-800/70 dark:border-gray-700/40 dark:hover:border-gray-700/60"
-            : "dark:bg-gray-800/90 dark:border-purple-800/40 dark:hover:border-purple-700/60 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50"
+            : "dark:bg-gray-800/90 dark:border-purple-800/40  dark:shadow-purple-800/30 "
         )}
       >
         {isMobile ? (
