@@ -25,9 +25,11 @@ export const useChartColorPalette = () => {
     return barColors[index % barColors.length];
   };
 
+  // Ajout de isDarkMode à l'objet retourné
   return {
     barColors,
     axisColor,
-    getBarColor
+    getBarColor,
+    isDarkMode
   };
 };
