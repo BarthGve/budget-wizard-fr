@@ -318,7 +318,7 @@ export const CreditInfoDialog = ({
             "rounded-t-xl",
             "shadow-lg",
             "max-h-[90vh] overflow-y-auto",
-            "bg-purple-100 dark:bg-gray-900",
+            "bg-purple-200 dark:bg-gray-900",
             "pb-safe",
             "p-4"
           )}
