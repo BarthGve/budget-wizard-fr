@@ -152,7 +152,7 @@ const Expenses = memo(function Expenses() {
             {/* Carte de moyenne mensuelle/annuelle avec le même design - sans effet hover */}
             <Card className={cn(
               "overflow-hidden transition-all duration-200 h-full relative",
-              "border shadow-sm",
+              "border shadow-lg",
               // Light mode
               "bg-white border-blue-100",
               // Dark mode
