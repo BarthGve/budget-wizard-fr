@@ -10,7 +10,7 @@ const Navbar = () => {
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   return (
-    <nav className="fixed top-0 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] max-w-7xl z-50 mt-2 sm:mt-4 rounded-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-950/70 border shadow-sm">
+    <nav className="fixed top-0 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] max-w-7xl z-50 mt-2 sm:mt-4 rounded-2xl backdrop-blur-sm bg-white/70 dark:bg-gray-950/70 border shadow-lg">
       <div className="container mx-auto px-2 sm:px-6">
         <div className="flex items-center justify-between h-12 sm:h-16">
           <Link to="/" className="flex items-center gap-1 sm:gap-2">
