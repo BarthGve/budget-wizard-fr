@@ -19,6 +19,9 @@ export const CustomTooltip = ({ active, payload, label, viewMode }: CustomToolti
   const isYearlyViewMode = viewMode === "yearly";
   const isMonthlyInYearViewMode = viewMode === "monthly-in-year";
   
+  // Récupérer le montant total depuis les données
+  const totalAmount = payload[0]?.payload?.totalAmount || 0;
+  
   const getFormattedLabel = () => {
     if (isMonthlyViewMode) {
       return `${payload[0]?.payload?.retailerName || ""}`;
@@ -40,6 +43,15 @@ export const CustomTooltip = ({ active, payload, label, viewMode }: CustomToolti
         {getFormattedLabel()}
       </p>
       
+      {/* Afficher le montant total pour les vues annuelle et mensuelle */}
+      {(isYearlyViewMode || isMonthlyInYearViewMode) && (
+        <div className="pb-1 mb-1 border-b border-gray-200 dark:border-gray-700">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            Total: <span className="font-medium">{formatCurrency(totalAmount)}</span>
+          </p>
+        </div>
+      )}
+      
       {isMonthlyViewMode ? (
         <div className="flex items-center gap-2">
           <div className="h-2.5 w-2.5 rounded-full bg-blue-500" />
@@ -49,14 +61,19 @@ export const CustomTooltip = ({ active, payload, label, viewMode }: CustomToolti
         </div>
       ) : (
         <div className="space-y-1.5">
-          {payload.map((entry, index) => (
-            <div key={`item-${index}`} className="flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                {entry.name}: <span className="font-medium">{formatCurrency(entry.value || 0)}</span>
-              </p>
-            </div>
-          ))}
+          {payload.map((entry, index) => {
+            // Ne pas inclure totalAmount dans la liste
+            if (entry.dataKey === 'totalAmount') return null;
+            
+            return (
+              <div key={`item-${index}`} className="flex items-center gap-2">
+                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {entry.name}: <span className="font-medium">{formatCurrency(entry.value || 0)}</span>
+                </p>
+              </div>
+            );
+          }).filter(Boolean)}
         </div>
       )}
     </div>
