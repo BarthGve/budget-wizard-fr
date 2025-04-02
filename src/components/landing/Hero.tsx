@@ -64,7 +64,7 @@ export const Hero = ({
           className="flex flex-wrap gap-3 sm:gap-4 justify-center"
         >
           <Link to="/register">
-            <Button size="lg" className="gap-1 rounded-full">
+            <Button size="lg" className="gap-1 rounded-full shadow-lg">
               {registerButtonText}
             </Button>
           </Link>
