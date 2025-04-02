@@ -50,7 +50,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
   return (
     <Card className={cn(
       "overflow-hidden transition-all duration-200 relative h-full",
-      "border shadow-sm",
+      "border shadow-lg",
       // Light mode
       "bg-white border-blue-100",
       // Dark mode
