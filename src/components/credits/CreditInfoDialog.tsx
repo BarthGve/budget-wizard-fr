@@ -328,7 +328,7 @@ export const CreditInfoDialog = ({
           )}
         >
           <div className={cn(
-            "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
+            "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto",
             "bg-gray-300 dark:bg-gray-600 rounded-full"
           )} />
           
