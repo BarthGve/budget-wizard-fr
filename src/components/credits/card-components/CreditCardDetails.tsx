@@ -100,13 +100,13 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
             "text-sm font-medium",
             isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
           )}>
-            Total ({formatDate(credit.date_derniere_mensualite)})
+            Dernière échéance 
           </span>
           <p className={cn(
             "font-semibold",
             isArchived ? "text-gray-600 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"
           )}>
-            {totalAmount.toLocaleString("fr-FR")} €
+           {formatDate(credit.date_derniere_mensualite)}
           </p>
         </div>
         
