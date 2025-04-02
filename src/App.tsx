@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -61,6 +62,35 @@ function App() {
 
   useEffect(() => {
     setMounted(true);
+    
+    // Debug pour vérifier l'état du thème au chargement
+    const currentTheme = localStorage.getItem('theme');
+    console.log("Theme initial:", currentTheme);
+    
+    // Forcer une mise à jour des classes pour appliquer le thème
+    const applyThemeClass = () => {
+      const theme = localStorage.getItem('theme');
+      const isDark = theme === 'dark' || 
+                    (theme === 'system' && 
+                     window.matchMedia('(prefers-color-scheme: dark)').matches);
+      
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+    
+    applyThemeClass();
+    
+    // Réappliquer à chaque changement de préférence système
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = () => {
+      applyThemeClass();
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   if (!mounted) {
@@ -69,7 +99,12 @@ function App() {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="theme">
+      <ThemeProvider 
+        attribute="class" 
+        defaultTheme="system" 
+        enableSystem 
+        disableTransitionOnChange
+      >
         <Toaster richColors position="top-center" />
         <Router>
           <AuthProvider>

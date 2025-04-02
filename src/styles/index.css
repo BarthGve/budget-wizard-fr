@@ -2,6 +2,9 @@
 /* Base styles et variables */
 @import './base.css';
 
+/* Thème */
+@import './theme.css';
+
 /* Composants */
 @import './components.css';
 

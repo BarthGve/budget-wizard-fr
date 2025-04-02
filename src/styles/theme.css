@@ -1,0 +1,21 @@
+
+/* Styles spécifiques pour le mode sombre et clair */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  
+  .dark {
+    color-scheme: dark;
+  }
+  
+  /* Force le rafraîchissement du contexte de rendu pour appliquer correctement les couleurs */
+  html.theme-updated {
+    animation: theme-transition 0.1s;
+  }
+  
+  @keyframes theme-transition {
+    0% { opacity: 0.99; }
+    100% { opacity: 1; }
+  }
+}

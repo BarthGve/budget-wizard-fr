@@ -1,8 +1,7 @@
 
 import { useNavigate } from "react-router-dom";
-import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag, Sun, Moon, Monitor } from "lucide-react";
+import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Sun, Moon, Monitor } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -28,11 +27,17 @@ export const UserDropdown = ({
   const navigate = useNavigate();
   const { isAdmin } = usePagePermissions();
   const isMobile = useIsMobile();
-  const { setTheme, theme } = useTheme();
+  const { setTheme } = useTheme();
   const queryClient = useQueryClient();
   
   const { logout } = useAuthContext();
   const [localProfile, setLocalProfile] = useState<Profile | undefined>(profile);
+  const [mounted, setMounted] = useState(false);
+  
+  // Assurer que le composant est monté côté client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // Mettre à jour le profil local quand les props changent
   useEffect(() => {
@@ -89,6 +94,25 @@ export const UserDropdown = ({
       console.error("Logout error:", error);
     }
   };
+
+  // Fonction pour appliquer le thème avec une animation de transition
+  const applyTheme = (newTheme: string) => {
+    setTheme(newTheme);
+    
+    // Ajouter une classe pour forcer le rafraîchissement du rendu
+    document.documentElement.classList.add('theme-updated');
+    
+    // Supprimer la classe après l'animation
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-updated');
+    }, 100);
+    
+    console.log("Thème appliqué:", newTheme);
+  };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className={cn(
@@ -174,15 +198,15 @@ export const UserDropdown = ({
 
           {isMobile && (
             <>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("light")}>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("light")}>
                 <Sun className="mr-2 h-4 w-4" />
                 <span>Thème clair</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("dark")}>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("dark")}>
                 <Moon className="mr-2 h-4 w-4" />
                 <span>Thème sombre</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("system")}>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("system")}>
                 <Monitor className="mr-2 h-4 w-4" />
                 <span>Thème système</span>
               </DropdownMenuItem>
