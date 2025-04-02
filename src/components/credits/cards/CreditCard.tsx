@@ -77,7 +77,7 @@ export const CreditCard = ({
     <Card 
       className={cn(
         "overflow-hidden transition-all duration-200 h-full relative",
-        "border shadow-sm ",
+        "border shadow-lg ",
         // Light mode - garde le fond blanc
         "bg-white",
         "border-gray-100",
