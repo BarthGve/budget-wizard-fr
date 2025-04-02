@@ -18,7 +18,7 @@ export const ContributorsContent = ({
   onDelete 
 }: ContributorsContentProps) => {
   return (
-    <div bg="transparent" border="none">
+    <>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>Listing</CardTitle>
