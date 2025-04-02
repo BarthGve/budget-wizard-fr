@@ -36,10 +36,7 @@ export const CreditCard = ({ credit, index, onCreditDeleted, isArchived = false 
         damping: 15,
         delay: index * 0.08,
       }}
-      whileHover={{
-        scale: isMobile ? 1 : 1.01,
-        transition: { duration: 0.2 }
-      }}
+   
       className="transform-gpu"
     >
       <Card
