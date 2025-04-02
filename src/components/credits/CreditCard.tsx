@@ -20,7 +20,28 @@ export const CreditCard = ({ credit, index, onCreditDeleted, isArchived = false 
   const isMobile = useMediaQuery("(max-width: 639px)");
   
   return (
-  
+    <motion.div
+      key={credit.id}
+      initial={{ 
+        opacity: 0,
+        y: 20,
+      }}
+      animate={{ 
+        opacity: 1, 
+        y: 0,
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        delay: index * 0.08,
+      }}
+      whileHover={{
+        scale: isMobile ? 1 : 1.01,
+        transition: { duration: 0.2 }
+      }}
+      className="transform-gpu"
+    >
       <Card
         className={cn(
           "overflow-hidden transition-all duration-200",
@@ -74,6 +95,6 @@ export const CreditCard = ({ credit, index, onCreditDeleted, isArchived = false 
           </div>
         )}
       </Card>
-    
+    </motion.div>
   );
 };

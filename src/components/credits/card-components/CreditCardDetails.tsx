@@ -58,8 +58,13 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
   const progressText = isArchived ? "100%" : `${Math.round(progress)}%`;
 
   return (
-  
-      <div className="grid grid-cols-4 gap-2 items-center">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: index * 0.08 + 0.2, duration: 0.3 }}
+      className="flex flex-col p-4 flex-1"
+    >
+      <div className="grid grid-cols-3 gap-4 items-center">
         <div>
           <span className={cn(
             "text-sm font-medium",
@@ -80,7 +85,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
             "text-sm font-medium",
             isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
           )}>
-            Total 
+            Total ({formatDate(credit.date_derniere_mensualite)})
           </span>
           <p className={cn(
             "font-semibold",
@@ -89,23 +94,8 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
             {totalAmount.toLocaleString("fr-FR")} €
           </p>
         </div>
-
-          <div>
-          <span className={cn(
-            "text-sm font-medium",
-            isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
-          )}>
-            Dernière échéance 
-          </span>
-          <p className={cn(
-            "font-semibold",
-            isArchived ? "text-gray-600 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"
-          )}>
-           {formatDate(credit.date_derniere_mensualite)}
-          </p>
-        </div>
         
-        <div >
+        <div className="flex flex-col">
           <div className="flex justify-between items-center">
             <span className={cn(
               "text-xs",
@@ -141,6 +131,6 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
           </TooltipProvider>
         </div>
       </div>
-    
+    </motion.div>
   );
 };
