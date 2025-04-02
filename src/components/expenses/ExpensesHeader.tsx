@@ -85,8 +85,8 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
                 checked={viewMode === 'yearly'} 
                 onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
                 className={cn(
-                  "data-[state=checked]:bg-purple-500",
-                  "dark:data-[state=checked]:bg-purple-600"
+                  "data-[state=checked]:bg-blue-500",
+                  "dark:data-[state=checked]:bg-blue-600"
                 )}
               />
               <Label 
