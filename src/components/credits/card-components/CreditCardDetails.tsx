@@ -1,80 +1,143 @@
 
 import { Credit } from "../types";
+import { motion } from "framer-motion";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { CreditProgressBar } from "../CreditProgressBar";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface CreditCardDetailsProps {
   credit: Credit;
   index: number;
+  isArchived?: boolean;
 }
 
-export const CreditCardDetails = ({ credit, index }: CreditCardDetailsProps) => {
+export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditCardDetailsProps) => {
+  const calculateProgress = () => {
+    // Pour les crédits remboursés, le progrès est de 100%
+    if (credit.statut === "remboursé" || isArchived) {
+      return 100;
+    }
+
+    const startDate = new Date(credit.date_premiere_mensualite);
+    const endDate = new Date(credit.date_derniere_mensualite);
+    const today = new Date();
+
+    // Si le crédit n'a pas encore commencé
+    if (today < startDate) {
+      return 0;
+    }
+
+    const totalDuration = endDate.getTime() - startDate.getTime();
+    const elapsedDuration = today.getTime() - startDate.getTime();
+
+    return Math.min(100, Math.max(0, (elapsedDuration / totalDuration) * 100));
+  };
+
+  // Calculer le montant total du crédit
+  const calculateTotalAmount = () => {
+    const startDate = new Date(credit.date_premiere_mensualite);
+    const endDate = new Date(credit.date_derniere_mensualite);
+    
+    // Calculer le nombre de mois entre les deux dates
+    const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+      (endDate.getMonth() - startDate.getMonth()) + 1;
+    
+    return months * credit.montant_mensualite;
+  };
+
+  const totalAmount = calculateTotalAmount();
+  const progress = calculateProgress();
+  const progressText = isArchived ? "Remboursé à 100%" : `${Math.round(progress)}% remboursé`;
+
+  // Formatage de date en français
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return format(date, "d MMMM yyyy", { locale: fr });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
   return (
-    <div className="grid grid-cols-3 gap-6 flex-1 py-2 px-4">
-      <div className="flex flex-col">
-        <span className={cn(
-          "text-sm",
-          // Light mode
-          "text-gray-500",
-          // Dark mode
-          "dark:text-gray-400"
-        )}>
-          Mensualité
-        </span>
-        <h4 className={cn(
-          "font-medium",
-          // Light mode
-          "text-gray-800",
-          // Dark mode
-          "dark:text-gray-200"
-        )}>
-          {credit.montant_mensualite
-            ? credit.montant_mensualite.toLocaleString("fr-FR") + " €"
-            : "N/A"}
-        </h4>
-      </div>
-
-      <div className="flex flex-col">
-        <span className={cn(
-          "text-sm",
-          // Light mode
-          "text-gray-500",
-          // Dark mode
-          "dark:text-gray-400"
-        )}>
-          Dernière échéance
-        </span>
-        <span className={cn(
-          "font-medium",
-          // Light mode
-          "text-gray-800",
-          // Dark mode
-          "dark:text-gray-200"
-        )}>
-          {credit.date_derniere_mensualite
-            ? new Date(credit.date_derniere_mensualite).toLocaleDateString("fr-FR")
-            : "N/A"}
-        </span>
-      </div>
-
-      <div className="flex flex-col">
-        <span className={cn(
-          "text-sm",
-          // Light mode
-          "text-gray-500",
-          // Dark mode
-          "dark:text-gray-400"
-        )}>
-          Progression
-        </span>
-        <div className="w-full mt-1">
-          <CreditProgressBar 
-            dateDebut={credit.date_premiere_mensualite}
-            dateFin={credit.date_derniere_mensualite}
-            montantMensuel={credit.montant_mensualite}
-          />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: index * 0.08 + 0.2, duration: 0.3 }}
+      className="flex flex-col p-4 flex-1"
+    >
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <span className={cn(
+            "text-sm font-medium",
+            isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
+          )}>
+            Mensualité
+          </span>
+          <p className={cn(
+            "font-semibold",
+            isArchived ? "text-gray-600 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"
+          )}>
+            {credit.montant_mensualite.toLocaleString("fr-FR")} €
+          </p>
+        </div>
+        
+        <div>
+          <span className={cn(
+            "text-sm font-medium",
+            isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
+          )}>
+            Total
+          </span>
+          <p className={cn(
+            "font-semibold",
+            isArchived ? "text-gray-600 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"
+          )}>
+            {totalAmount.toLocaleString("fr-FR")} €
+          </p>
+        </div>
+        
+        <div>
+          <span className={cn(
+            "text-sm font-medium",
+            isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
+          )}>
+            Dernière échéance
+          </span>
+          <p className={cn(
+            "font-semibold text-xs md:text-sm truncate",
+            isArchived ? "text-gray-600 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"
+          )}>
+            {formatDate(credit.date_derniere_mensualite)}
+          </p>
         </div>
       </div>
-    </div>
+      
+      <div className="mt-3">
+        <div className="flex justify-between items-center mb-1">
+          <span className={cn(
+            "text-xs",
+            isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
+          )}>
+            {progressText}
+          </span>
+        </div>
+        <Progress 
+          value={progress} 
+          className={cn(
+            "h-2",
+            isArchived 
+              ? "bg-gray-200 dark:bg-gray-700" 
+              : "bg-purple-100 dark:bg-purple-900/30"
+          )}
+          indicatorClassName={cn(
+            isArchived
+              ? "bg-green-500 dark:bg-green-600"
+              : "bg-purple-600 dark:bg-purple-500"
+          )}
+        />
+      </div>
+    </motion.div>
   );
 };

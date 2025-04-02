@@ -1,70 +1,111 @@
 
 import { Credit } from "../types";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Check } from "lucide-react";
 
 interface CreditCardInfoProps {
   credit: Credit;
   index: number;
   isMobile?: boolean;
+  isArchived?: boolean;
 }
 
-export const CreditCardInfo = ({ credit, index, isMobile = false }: CreditCardInfoProps) => {
+export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = false }: CreditCardInfoProps) => {
+  // Fonction pour formater la date en français
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return format(date, "MMMM yyyy", { locale: fr });
+  };
+
   return (
-    <div 
-      className={cn(
-        "flex items-center cursor-pointer rounded-md",
-        !isMobile && "gap-4 md:w-1/3 p-2 transition-colors",
-        !isMobile && "hover:bg-purple-50/70 dark:hover:bg-purple-900/20"
-      )}
-    >
-      {credit.logo_url ? (
-        <div className={cn(
-          "rounded-lg flex items-center justify-center overflow-hidden",
-          isMobile ? "w-8 h-8" : "w-10 h-10",
-          // Light mode
-          "bg-white border border-purple-100 shadow-sm",
-          // Dark mode
-          "dark:bg-gray-800 dark:border-purple-800/40"
-        )}>
-          <img
-            src={credit.logo_url}
-            alt={credit.nom_credit}
-            className="w-full h-full object-contain"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/placeholder.svg";
-            }}
-          />
+    <div className="flex items-center p-4 md:w-64">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: index * 0.08 + 0.1, duration: 0.2 }}
+        className="mr-4 flex-shrink-0"
+      >
+        {credit.logo_url ? (
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-white shadow-sm">
+            <img
+              src={credit.logo_url}
+              alt={credit.nom_domaine}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          <div className={cn(
+            "w-10 h-10 rounded-full flex items-center justify-center",
+            // Couleur différente pour les crédits archivés
+            isArchived 
+              ? "bg-gray-200 dark:bg-gray-700" 
+              : "bg-purple-100 dark:bg-purple-900/40",
+            // Texte
+            isArchived 
+              ? "text-gray-500 dark:text-gray-400" 
+              : "text-purple-700 dark:text-purple-300"
+          )}>
+            <span className="text-lg font-semibold">
+              {credit.nom_credit.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )}
+      </motion.div>
+
+      <div className="flex flex-col">
+        <div className="flex items-center">
+          <h4 className={cn(
+            "font-semibold",
+            // Couleur différente pour les crédits archivés
+            isArchived 
+              ? "text-gray-600 dark:text-gray-400" 
+              : "text-gray-800 dark:text-gray-200"
+          )}>
+            {credit.nom_credit}
+          </h4>
+
+          {!isMobile && (
+            <Badge
+              variant="outline"
+              className={cn(
+                "ml-2 text-xs capitalize",
+                isArchived 
+                  ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700/40" 
+                  : "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-700/40"
+              )}
+            >
+              {isArchived && <Check className="w-3 h-3 mr-1" />}
+              {statusLabels[credit.statut]}
+            </Badge>
+          )}
         </div>
-      ) : (
+
         <div className={cn(
-          "rounded-lg flex items-center justify-center",
-          isMobile ? "w-8 h-8" : "w-10 h-10",
-          // Light mode
-          "bg-purple-100 text-purple-600",
-          // Dark mode
-          "dark:bg-purple-900/30 dark:text-purple-400"
+          "text-sm mt-0.5",
+          isArchived 
+            ? "text-gray-400 dark:text-gray-500" 
+            : "text-gray-500 dark:text-gray-400"
         )}>
-          <svg xmlns="http://www.w3.org/2000/svg" className={isMobile ? "h-4 w-4" : "h-5 w-5"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="2" y="5" width="20" height="14" rx="2" />
-            <line x1="2" y1="10" x2="22" y2="10" />
-          </svg>
+          {credit.nom_domaine}
+          {!isMobile && (
+            <>
+              <span className="mx-1">•</span>
+              <span>
+                {isArchived 
+                  ? `Remboursé en ${formatDate(credit.date_derniere_mensualite)}` 
+                  : `Jusqu'au ${formatDate(credit.date_derniere_mensualite)}`}
+              </span>
+            </>
+          )}
         </div>
-      )}
-  
-      <h4 className={cn(
-        "font-medium",
-        isMobile ? "text-sm ml-2" : "text-base",
-        // Light mode
-        "text-gray-800",
-        // Dark mode
-        "dark:text-gray-200"
-      )}>
-        {isMobile 
-          ? (credit.nom_credit.length > 15 
-              ? credit.nom_credit.substring(0, 15) + "..." 
-              : credit.nom_credit)
-          : credit.nom_credit}
-      </h4>
+      </div>
     </div>
   );
 };
+
+// Import nécessaire pour statusLabels
+const { statusLabels } = require("../types");

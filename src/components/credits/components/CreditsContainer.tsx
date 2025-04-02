@@ -1,9 +1,11 @@
+
 import { memo } from "react";
 import { motion } from "framer-motion";
 import { Credit } from "../types";
 import { CreditSummaryCards } from "../CreditSummaryCards";
 import { CreditsHeader } from "./CreditsHeader";
 import { ActiveCreditsSection } from "./ActiveCreditsSection";
+import { ArchivedCreditsSection } from "./ArchivedCreditsSection";
 
 interface CreditsContainerProps {
   credits: Credit[];
@@ -105,6 +107,11 @@ export const CreditsContainer = memo(({
         <ActiveCreditsSection 
           credits={credits}
           onCreditDeleted={onCreditDeleted}
+        />
+        
+        <ArchivedCreditsSection 
+          credits={credits} 
+          onCreditDeleted={onCreditDeleted} 
         />
       </div>
     </motion.div>
