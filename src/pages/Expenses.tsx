@@ -1,3 +1,4 @@
+
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
 import { useState, memo, useMemo } from "react";
@@ -137,22 +138,25 @@ const Expenses = memo(function Expenses() {
         <motion.div variants={itemVariants} className="flex flex-col lg:flex-row gap-6 mt-8 mb-8">
           {/* Carte de total des dépenses (1/3 sur grands écrans, pleine largeur sur mobile) */}
           <motion.div variants={itemVariants} className="w-full lg:w-1/3 grid grid-cols-1 gap-4">
-            <YearlyTotalCard 
-              key={`total-card-${currentYearTotal}`}
-              currentYearTotal={currentYearTotal} 
-              previousYearTotal={lastYearTotal} 
-              expenses={expenses || []} 
-              viewMode={viewMode}
-            />
+            {/* Supprimer l'effet whileHover pour cette carte */}
+            <motion.div>
+              <YearlyTotalCard 
+                key={`total-card-${currentYearTotal}`}
+                currentYearTotal={currentYearTotal} 
+                previousYearTotal={lastYearTotal} 
+                expenses={expenses || []} 
+                viewMode={viewMode}
+              />
+            </motion.div>
             
-            {/* Carte de moyenne mensuelle/annuelle avec le même design */}
+            {/* Carte de moyenne mensuelle/annuelle avec le même design - sans effet hover */}
             <Card className={cn(
               "overflow-hidden transition-all duration-200 h-full relative",
-              "border shadow-sm hover:shadow-md",
+              "border shadow-sm",
               // Light mode
               "bg-white border-blue-100",
               // Dark mode
-              "dark:bg-gray-800/90 dark:hover:bg-blue-900/20 dark:border-blue-800/50"
+              "dark:bg-gray-800/90 dark:border-blue-800/50"
             )}>
               {/* Fond radial gradient */}
               <div className={cn(

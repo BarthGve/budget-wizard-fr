@@ -1,41 +1,64 @@
 
 import React from "react";
 import { formatCurrency } from "@/utils/format";
+import { cn } from "@/lib/utils";
 
 interface CustomTooltipProps {
   active?: boolean;
   payload?: any[];
   label?: string;
-  viewMode: 'monthly' | 'yearly';
+  viewMode: "monthly" | "yearly" | "monthly-in-year";
 }
 
-/**
- * Composant de tooltip personnalisé pour les graphiques
- */
 export const CustomTooltip = ({ active, payload, label, viewMode }: CustomTooltipProps) => {
-  if (active && payload && payload.length) {
-    if (viewMode === 'monthly') {
-      return (
-        <div className="bg-background border border-border p-2 rounded-md shadow-md">
-          <p className="font-medium">{label}</p>
-          <p className="text-sm">
-            Total: {formatCurrency(payload[0].value)}
+  if (!active || !payload || payload.length === 0) {
+    return null;
+  }
+
+  const isMonthlyViewMode = viewMode === "monthly";
+  const isYearlyViewMode = viewMode === "yearly";
+  const isMonthlyInYearViewMode = viewMode === "monthly-in-year";
+  
+  const getFormattedLabel = () => {
+    if (isMonthlyViewMode) {
+      return `${payload[0]?.payload?.retailerName || ""}`;
+    } else if (isYearlyViewMode) {
+      return `Année ${label}`;
+    } else if (isMonthlyInYearViewMode) {
+      return `${label} ${new Date().getFullYear()}`;
+    }
+    return label;
+  };
+
+  return (
+    <div className={cn(
+      "bg-white dark:bg-gray-800 border dark:border-gray-700",
+      "p-3 rounded-lg shadow-lg min-w-[180px]",
+      "flex flex-col gap-2"
+    )}>
+      <p className="font-medium text-gray-700 dark:text-gray-300">
+        {getFormattedLabel()}
+      </p>
+      
+      {isMonthlyViewMode ? (
+        <div className="flex items-center gap-2">
+          <div className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            <span className="font-medium">{formatCurrency(payload[0]?.value || 0)}</span>
           </p>
         </div>
-      );
-    } else {
-      return (
-        <div className="bg-background border border-border p-2 rounded-md shadow-md">
-          <p className="font-medium">Année {label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={`item-${index}`} className="text-sm">
-              <span style={{ color: entry.color }}>{entry.name}: </span>
-              {formatCurrency(entry.value)}
-            </p>
+      ) : (
+        <div className="space-y-1.5">
+          {payload.map((entry, index) => (
+            <div key={`item-${index}`} className="flex items-center gap-2">
+              <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                {entry.name}: <span className="font-medium">{formatCurrency(entry.value || 0)}</span>
+              </p>
+            </div>
           ))}
         </div>
-      );
-    }
-  }
-  return null;
+      )}
+    </div>
+  );
 };

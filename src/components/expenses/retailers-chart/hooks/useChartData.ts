@@ -1,7 +1,7 @@
 
 import { useMemo } from "react";
 import { Expense } from "@/types/expense";
-import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval, getYear } from "date-fns";
+import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval, getYear, isThisYear } from "date-fns";
 
 interface RetailerExpense {
   retailerId: string;
@@ -20,7 +20,8 @@ interface RetailerInfo {
 export const useChartData = (
   expenses: Expense[],
   retailers: RetailerInfo[],
-  viewMode: 'monthly' | 'yearly'
+  viewMode: 'monthly' | 'yearly',
+  yearlyViewMode: 'yearly-totals' | 'monthly-in-year' = 'yearly-totals'
 ) => {
   // ---- MODE MENSUEL : DÉPENSES PAR ENSEIGNE DU MOIS COURANT ----
   const retailerExpenses = useMemo(() => {
@@ -65,71 +66,126 @@ export const useChartData = (
   // ---- MODE ANNUEL : DÉPENSES ANNUELLES EMPILÉES ----
   const yearlyData = useMemo(() => {
     if (viewMode === 'yearly') {
-      // Regrouper les dépenses par année et par enseigne
-      const yearlyExpensesByRetailer: Record<string, Record<string, number>> = {};
-      
-      expenses.forEach(expense => {
-        const expenseDate = parseISO(expense.date);
-        const year = getYear(expenseDate).toString();
-        const retailerId = expense.retailer_id;
-        const retailer = retailers.find(r => r.id === retailerId);
-        const retailerName = retailer?.name || "Inconnu";
+      if (yearlyViewMode === 'yearly-totals') {
+        // Regrouper les dépenses par année et par enseigne (comportement actuel)
+        const yearlyExpensesByRetailer: Record<string, Record<string, number>> = {};
         
-        if (!yearlyExpensesByRetailer[year]) {
-          yearlyExpensesByRetailer[year] = {};
-        }
-        
-        if (!yearlyExpensesByRetailer[year][retailerName]) {
-          yearlyExpensesByRetailer[year][retailerName] = 0;
-        }
-        
-        yearlyExpensesByRetailer[year][retailerName] += expense.amount;
-      });
-      
-      // Transformer les données pour le graphique empilé
-      return Object.entries(yearlyExpensesByRetailer)
-        .map(([year, retailers]) => ({
-          year,
-          ...retailers
-        }))
-        .sort((a, b) => {
-          // Conversion explicite des chaînes en nombres pour la comparaison
-          const yearA = parseInt(a.year, 10);
-          const yearB = parseInt(b.year, 10);
-          return yearA - yearB;
+        expenses.forEach(expense => {
+          const expenseDate = parseISO(expense.date);
+          const year = getYear(expenseDate).toString();
+          const retailerId = expense.retailer_id;
+          const retailer = retailers.find(r => r.id === retailerId);
+          const retailerName = retailer?.name || "Inconnu";
+          
+          if (!yearlyExpensesByRetailer[year]) {
+            yearlyExpensesByRetailer[year] = {};
+          }
+          
+          if (!yearlyExpensesByRetailer[year][retailerName]) {
+            yearlyExpensesByRetailer[year][retailerName] = 0;
+          }
+          
+          yearlyExpensesByRetailer[year][retailerName] += expense.amount;
         });
+        
+        // Transformer les données pour le graphique empilé
+        return Object.entries(yearlyExpensesByRetailer)
+          .map(([year, retailers]) => ({
+            year,
+            ...retailers
+          }))
+          .sort((a, b) => {
+            const yearA = parseInt(a.year, 10);
+            const yearB = parseInt(b.year, 10);
+            return yearA - yearB;
+          });
+      } else {
+        // Nouvelle vue: dépenses mensuelles pour l'année en cours
+        const currentYear = new Date().getFullYear();
+        const monthsData = Array.from({ length: 12 }, (_, i) => {
+          const monthName = new Date(currentYear, i, 1).toLocaleDateString('fr-FR', { month: 'short' });
+          return { 
+            month: monthName, 
+            index: i,
+            // On initialise un objet vide qui contiendra les montants par enseigne
+            ...retailers.reduce((acc, retailer) => ({ ...acc, [retailer.name]: 0 }), {})
+          };
+        });
+
+        // On ajoute les dépenses de l'année en cours au mois correspondant
+        expenses.forEach(expense => {
+          const expenseDate = parseISO(expense.date);
+          if (getYear(expenseDate) === currentYear) {
+            const month = expenseDate.getMonth();
+            const retailer = retailers.find(r => r.id === expense.retailer_id);
+            const retailerName = retailer?.name || "Inconnu";
+            
+            if (typeof monthsData[month][retailerName] === 'number') {
+              monthsData[month][retailerName] += expense.amount;
+            } else {
+              monthsData[month][retailerName] = expense.amount;
+            }
+          }
+        });
+
+        return monthsData;
+      }
     }
     
     return [];
-  }, [expenses, retailers, viewMode]);
+  }, [expenses, retailers, viewMode, yearlyViewMode]);
 
   // Déterminer les 5 principales enseignes pour la vue annuelle
   const topRetailers = useMemo(() => {
     if (viewMode === 'yearly') {
-      // Calculer le total des dépenses par enseigne sur toutes les années
-      const totalByRetailer: Record<string, number> = {};
-      
-      yearlyData.forEach(yearData => {
-        Object.entries(yearData).forEach(([key, value]) => {
-          if (key !== 'year') {
-            if (!totalByRetailer[key]) {
-              totalByRetailer[key] = 0;
+      if (yearlyViewMode === 'yearly-totals') {
+        // Calcul des 5 principales enseignes (pour la vue totaux annuels)
+        const totalByRetailer: Record<string, number> = {};
+        
+        yearlyData.forEach(yearData => {
+          Object.entries(yearData).forEach(([key, value]) => {
+            if (key !== 'year' && key !== 'month' && key !== 'index') {
+              if (!totalByRetailer[key]) {
+                totalByRetailer[key] = 0;
+              }
+              totalByRetailer[key] += Number(value);
             }
-            // Conversion explicite en nombre avant l'addition
-            totalByRetailer[key] += Number(value);
-          }
+          });
         });
-      });
-      
-      // Trier et retourner les 5 principales enseignes
-      return Object.entries(totalByRetailer)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5)
-        .map(([name]) => name);
+        
+        return Object.entries(totalByRetailer)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .map(([name]) => name);
+      } else {
+        // Pour la vue mensuelle en année courante, on prend les 5 principales enseignes de l'année
+        const thisYearExpenses = expenses.filter(expense => {
+          const expenseDate = parseISO(expense.date);
+          return isThisYear(expenseDate);
+        });
+        
+        const retailerTotals: Record<string, number> = {};
+        
+        thisYearExpenses.forEach(expense => {
+          const retailer = retailers.find(r => r.id === expense.retailer_id);
+          const retailerName = retailer?.name || "Inconnu";
+          
+          if (!retailerTotals[retailerName]) {
+            retailerTotals[retailerName] = 0;
+          }
+          
+          retailerTotals[retailerName] += expense.amount;
+        });
+        
+        return Object.entries(retailerTotals)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .map(([name]) => name);
+      }
     }
     
     return [];
-  }, [yearlyData, viewMode]);
+  }, [expenses, retailers, viewMode, yearlyData, yearlyViewMode]);
 
   return {
     retailerExpenses,
