@@ -320,7 +320,7 @@ export const CreditInfoDialog = ({
         <SheetContent
           side="bottom"
           className={cn(
-            "px-5 py-4 rounded-t-xl",
+            "rounded-t-xl",
             "border-t shadow-lg",
             "max-h-[90vh] overflow-y-auto",
             "dark:bg-gray-900",
