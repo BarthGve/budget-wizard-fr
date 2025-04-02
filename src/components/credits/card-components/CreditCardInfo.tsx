@@ -2,7 +2,6 @@
 import { Credit } from "../types";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Check } from "lucide-react";
@@ -68,21 +67,6 @@ export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = f
           )}>
             {credit.nom_credit}
           </h4>
-
-          {!isMobile && (
-            <Badge
-              variant="outline"
-              className={cn(
-                "ml-2 text-xs capitalize",
-                isArchived 
-                  ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700/40" 
-                  : "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-700/40"
-              )}
-            >
-              {isArchived && <Check className="w-3 h-3 mr-1" />}
-              {statusLabels[credit.statut]}
-            </Badge>
-          )}
         </div>
 
         <div className={cn(
@@ -91,17 +75,7 @@ export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = f
             ? "text-gray-400 dark:text-gray-500" 
             : "text-gray-500 dark:text-gray-400"
         )}>
-          {credit.nom_domaine}
-          {!isMobile && (
-            <>
-              <span className="mx-1">•</span>
-              <span>
-                {isArchived 
-                  ? `Remboursé en ${formatDate(credit.date_derniere_mensualite)}` 
-                  : `Jusqu'au ${formatDate(credit.date_derniere_mensualite)}`}
-              </span>
-            </>
-          )}
+          {formatDate(credit.date_derniere_mensualite)}
         </div>
       </div>
     </div>

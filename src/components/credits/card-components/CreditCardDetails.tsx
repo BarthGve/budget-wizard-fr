@@ -48,17 +48,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
 
   const totalAmount = calculateTotalAmount();
   const progress = calculateProgress();
-  const progressText = isArchived ? "Remboursé à 100%" : `${Math.round(progress)}% remboursé`;
-
-  // Formatage de date en français
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return format(date, "d MMMM yyyy", { locale: fr });
-    } catch (e) {
-      return dateString;
-    }
-  };
+  const progressText = isArchived ? "100%" : `${Math.round(progress)}%`;
 
   return (
     <motion.div
@@ -67,7 +57,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
       transition={{ delay: index * 0.08 + 0.2, duration: 0.3 }}
       className="flex flex-col p-4 flex-1"
     >
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 items-center">
         <div>
           <span className={cn(
             "text-sm font-medium",
@@ -98,45 +88,30 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
           </p>
         </div>
         
-        <div>
-          <span className={cn(
-            "text-sm font-medium",
-            isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
-          )}>
-            Dernière échéance
-          </span>
-          <p className={cn(
-            "font-semibold text-xs md:text-sm truncate",
-            isArchived ? "text-gray-600 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"
-          )}>
-            {formatDate(credit.date_derniere_mensualite)}
-          </p>
+        <div className="flex flex-col">
+          <div className="flex justify-between items-center">
+            <span className={cn(
+              "text-xs",
+              isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
+            )}>
+              {progressText}
+            </span>
+          </div>
+          <Progress 
+            value={progress} 
+            className={cn(
+              "h-2 mt-1",
+              isArchived 
+                ? "bg-gray-200 dark:bg-gray-700" 
+                : "bg-purple-100 dark:bg-purple-900/30"
+            )}
+            indicatorClassName={cn(
+              isArchived
+                ? "bg-green-500 dark:bg-green-600"
+                : "bg-purple-600 dark:bg-purple-500"
+            )}
+          />
         </div>
-      </div>
-      
-      <div className="mt-3">
-        <div className="flex justify-between items-center mb-1">
-          <span className={cn(
-            "text-xs",
-            isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
-          )}>
-            {progressText}
-          </span>
-        </div>
-        <Progress 
-          value={progress} 
-          className={cn(
-            "h-2",
-            isArchived 
-              ? "bg-gray-200 dark:bg-gray-700" 
-              : "bg-purple-100 dark:bg-purple-900/30"
-          )}
-          indicatorClassName={cn(
-            isArchived
-              ? "bg-green-500 dark:bg-green-600"
-              : "bg-purple-600 dark:bg-purple-500"
-          )}
-        />
       </div>
     </motion.div>
   );
