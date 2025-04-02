@@ -1,11 +1,11 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Expense } from "@/types/expense";
-import { BarChart3, ChevronLeft, ChevronRight, Calendar, CalendarRange } from "lucide-react";
+import { BarChart3, CalendarRange, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 import { EmptyState } from "./components/EmptyState";
@@ -115,19 +115,12 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                 </Label>
               </div>
               
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setYearlyViewMode('monthly-in-year')}
-                className={cn(
-                  "flex items-center px-0 py-0 border-0",
-                  yearlyViewMode === 'yearly-totals' 
-                    ? "bg-transparent text-gray-400 dark:text-gray-500" 
-                    : "bg-blue-600 text-white rounded-full w-6 h-6 min-w-6 dark:bg-blue-500"
-                )}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <Switch
+                id="yearly-view-mode"
+                checked={yearlyViewMode === 'monthly-in-year'}
+                onCheckedChange={(checked) => setYearlyViewMode(checked ? 'monthly-in-year' : 'yearly-totals')}
+                className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
+              />
               
               <div className="flex items-center space-x-2 px-3">
                 <Label 
