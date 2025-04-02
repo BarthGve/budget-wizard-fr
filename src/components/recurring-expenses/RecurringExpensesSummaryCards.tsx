@@ -101,7 +101,7 @@ export const RecurringExpensesSummaryCards = ({
             className={cn(
               "overflow-hidden transition-all duration-200 cursor-pointer h-full relative",
               // Base styling
-              "border shadow-sm hover:shadow-md",
+              "border shadow-lg hover:shadow-xl",
               // Selected state
               selectedPeriod === period && "ring-2 ring-blue-500 dark:ring-blue-400",
               // Light mode
