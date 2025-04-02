@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Check } from "lucide-react";
+import { statusLabels } from "../types";
 
 interface CreditCardInfoProps {
   credit: Credit;
@@ -106,6 +107,3 @@ export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = f
     </div>
   );
 };
-
-// Import nécessaire pour statusLabels
-const { statusLabels } = require("../types");
