@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CreditCardDetailsProps {
   credit: Credit;
@@ -46,6 +47,12 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
     return months * credit.montant_mensualite;
   };
 
+  // Formater la date en français
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return format(date, "MMMM yyyy", { locale: fr });
+  };
+
   const totalAmount = calculateTotalAmount();
   const progress = calculateProgress();
   const progressText = isArchived ? "100%" : `${Math.round(progress)}%`;
@@ -78,7 +85,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
             "text-sm font-medium",
             isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
           )}>
-            Total
+            Total ({formatDate(credit.date_derniere_mensualite)})
           </span>
           <p className={cn(
             "font-semibold",
@@ -97,20 +104,31 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
               {progressText}
             </span>
           </div>
-          <Progress 
-            value={progress} 
-            className={cn(
-              "h-2 mt-1",
-              isArchived 
-                ? "bg-gray-200 dark:bg-gray-700" 
-                : "bg-purple-100 dark:bg-purple-900/30"
-            )}
-            indicatorClassName={cn(
-              isArchived
-                ? "bg-green-500 dark:bg-green-600"
-                : "bg-purple-600 dark:bg-purple-500"
-            )}
-          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="w-full">
+                <Progress 
+                  value={progress} 
+                  className={cn(
+                    "h-2 mt-1",
+                    isArchived 
+                      ? "bg-gray-200 dark:bg-gray-700" 
+                      : "bg-purple-100 dark:bg-purple-900/30"
+                  )}
+                  indicatorClassName={cn(
+                    isArchived
+                      ? "bg-green-500 dark:bg-green-600"
+                      : "bg-purple-600 dark:bg-purple-500"
+                  )}
+                />
+              </TooltipTrigger>
+              <TooltipContent className="space-y-2">
+                <p>Progression : {Math.round(progress)}%</p>
+                <p>Montant remboursé : {Math.round(totalAmount * progress / 100).toLocaleString("fr-FR")} €</p>
+                <p>Montant restant : {Math.round(totalAmount * (1 - progress / 100)).toLocaleString("fr-FR")} €</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
     </motion.div>
