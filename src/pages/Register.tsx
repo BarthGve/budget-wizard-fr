@@ -7,7 +7,7 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
 const Register = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors mb-4 inline-flex items-center">
             <ArrowLeft className="mr-2 h-4 w-4" />
