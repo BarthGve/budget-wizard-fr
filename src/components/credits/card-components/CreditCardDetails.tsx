@@ -85,7 +85,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
             "text-sm font-medium",
             isArchived ? "text-gray-400 dark:text-gray-500" : "text-gray-500 dark:text-gray-400"
           )}>
-            Total ({formatDate(credit.date_derniere_mensualite)})
+            Total 
           </span>
           <p className={cn(
             "font-semibold",
@@ -110,7 +110,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
           </p>
         </div>
         
-        <div className="flex flex-col">
+        <div >
           <div className="flex justify-between items-center">
             <span className={cn(
               "text-xs",
