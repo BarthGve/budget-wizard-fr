@@ -1,12 +1,13 @@
+
 import { useState } from "react";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
-import { ShoppingBasket } from "lucide-react";
+import { ShoppingBasket, Calendar, BarChart3, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { Button } from "@/components/ui/button";
 
 interface ExpensesHeaderProps {
   viewMode: 'monthly' | 'yearly';
@@ -74,27 +75,61 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
           isMobile ? "justify-between w-full" : "gap-8"
         )}>
           <motion.div 
-            className="flex items-center p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-inner"
+            className="flex items-center p-1 bg-blue-50 rounded-full border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/60"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
           >
             <div className="flex items-center space-x-2 px-3">
-              <Switch 
-                id="view-mode" 
-                checked={viewMode === 'yearly'} 
-                onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
-                className={cn(
-                  "data-[state=checked]:bg-purple-500",
-                  "dark:data-[state=checked]:bg-purple-600"
-                )}
-              />
+              <Calendar className={cn(
+                "h-4 w-4",
+                viewMode === 'monthly' 
+                  ? "text-blue-600 dark:text-blue-300" 
+                  : "text-gray-400 dark:text-gray-500"
+              )} />
               <Label 
                 htmlFor="view-mode"
-                className="text-gray-700 dark:text-gray-300 font-medium"
+                className={cn(
+                  viewMode === 'monthly' 
+                    ? "text-blue-600 font-medium dark:text-blue-300" 
+                    : "text-gray-400 dark:text-gray-500"
+                )}
               >
-                Vue annuelle
+                Mensuel
               </Label>
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setViewMode(viewMode === 'monthly' ? 'yearly' : 'monthly')}
+              className={cn(
+                "flex items-center px-0 py-0 border-0",
+                viewMode === 'yearly'
+                  ? "bg-transparent text-gray-400 dark:text-gray-500" 
+                  : "bg-blue-600 text-white rounded-full w-6 h-6 min-w-6 dark:bg-blue-500"
+              )}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            
+            <div className="flex items-center space-x-2 px-3">
+              <Label 
+                htmlFor="view-mode"
+                className={cn(
+                  viewMode === 'yearly' 
+                    ? "text-blue-600 font-medium dark:text-blue-300" 
+                    : "text-gray-400 dark:text-gray-500"
+                )}
+              >
+                Annuel
+              </Label>
+              <BarChart3 className={cn(
+                "h-4 w-4",
+                viewMode === 'yearly' 
+                  ? "text-blue-600 dark:text-blue-300" 
+                  : "text-gray-400 dark:text-gray-500"
+              )} />
             </div>
           </motion.div>
           <AddExpenseDialog 
