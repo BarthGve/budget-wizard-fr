@@ -100,7 +100,7 @@ export const VehiclesContainer = () => {
           "bg-white dark:bg-gray-900/50",
           "border border-gray-200 dark:border-gray-800",
           "rounded-xl overflow-hidden",
-          "shadow-sm"
+          "shadow-lg"
         )}
         style={{
           boxShadow: isDarkMode
