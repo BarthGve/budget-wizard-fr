@@ -15,7 +15,7 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
   const { latestVersion } = useLatestVersion();
 
   return (
-    <div className="sticky top-0 z-10 bg-background p-4 border-b rounded-r-xl border-border">
+    <div className="sticky top-0 z-10 bg-background p-2 border-b rounded-r-xl border-border">
       <div className="flex flex-col mb-1">
         <div className="flex items-center">
           <h1
@@ -30,7 +30,7 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
           </h1>
         </div>
         {!collapsed && (
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2 mb-2">
             <span className="text-xs text-muted-foreground">
               v{latestVersion || appConfig.version}
             </span>
