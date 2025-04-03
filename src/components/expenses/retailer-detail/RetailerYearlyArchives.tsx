@@ -97,7 +97,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
 
   return (
     <Card className={cn(
-      "border shadow-sm overflow-hidden rounded-lg",
+      "border shadow-lg overflow-hidden rounded-lg",
       "bg-white dark:bg-gray-800/90", 
       "border-gray-100 dark:border-gray-700/50"
     )}>
