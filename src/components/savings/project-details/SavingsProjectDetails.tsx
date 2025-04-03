@@ -109,10 +109,7 @@ export const SavingsProjectDetails = ({ project, onClose }: SavingsProjectDetail
                 <Progress 
                   value={progressValue} 
                   className="h-1.5 bg-green-100 dark:bg-green-800/30"
-                  // Green progress bar
-                  style={{
-                    "--progress-foreground": "rgb(22 163 74)"
-                  } as React.CSSProperties}
+                  indicatorClassName="bg-green-600 dark:bg-green-500"
                 />
                 <div className="flex justify-between text-xs text-green-600/70 dark:text-green-500/70">
                   <span>{formatCurrency(savedAmount)}</span>
