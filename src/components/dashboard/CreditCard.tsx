@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard as CreditCardIcon, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
@@ -27,7 +27,6 @@ export const CreditCard = ({
 }: CreditCardProps) => {
   const navigate = useNavigate();
   
-  // Récupérer les crédits pour calculer le montant annuel précis
   const { data: credits = [] } = useQuery({
     queryKey: ["credits-for-dashboard"],
     queryFn: async () => {
@@ -48,31 +47,24 @@ export const CreditCard = ({
       
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
   
-  // Calculer le montant total des mensualités en fonction de la vue
   const totalAmount = useMemo(() => {
     if (currentView === "monthly") {
       return totalMensualites;
     } else {
-      // Pour la vue annuelle, calculer le montant en tenant compte des crédits qui se terminent pendant l'année
       const currentYear = new Date().getFullYear();
-      const lastDayOfYear = new Date(currentYear, 11, 31); // 31 décembre de l'année en cours
+      const lastDayOfYear = new Date(currentYear, 11, 31);
       const today = new Date();
       
       return credits.reduce((total, credit) => {
         const derniereMensualite = new Date(credit.date_derniere_mensualite);
         
-        // Si le crédit se termine cette année
         if (derniereMensualite.getFullYear() === currentYear) {
-          // Calculer combien de mois restants dans l'année pour ce crédit
-          // Nombre de mois entre aujourd'hui et dernière mensualité (inclus le mois courant)
           const moisRestants = (derniereMensualite.getMonth() - today.getMonth()) + 1;
-          // Ajouter le montant des mensualités restantes
           return total + (credit.montant_mensualite * Math.max(0, moisRestants));
         } else if (derniereMensualite > lastDayOfYear) {
-          // Si le crédit continue après cette année, ajouter le montant pour tous les mois restants de l'année
           const moisRestants = 12 - today.getMonth();
           return total + (credit.montant_mensualite * moisRestants);
         }
@@ -82,12 +74,10 @@ export const CreditCard = ({
     }
   }, [totalMensualites, credits, currentView]);
   
-  // Calculer le taux d'endettement en fonction de la vue (mensuel ou annuel)
   const tauxEndettement = useMemo(() => {
     if (currentView === "monthly") {
       return totalRevenue > 0 ? (totalMensualites / totalRevenue) * 100 : 0;
     } else {
-      // Pour la vue annuelle, calculer le taux sur la base du revenu annuel
       const revenuAnnuel = totalRevenue * 12;
       return revenuAnnuel > 0 ? (totalAmount / revenuAnnuel) * 100 : 0;
     }
@@ -100,9 +90,9 @@ export const CreditCard = ({
   };
   
   const getStatusIcon = (taux: number) => {
-    if (taux < 30) return <CheckCircle className="h-4 w-4 text-white" />;
-    if (taux < 40) return <Info className="h-4 w-4 text-amber-500 dark:text-amber-400" />;
-    return <AlertCircle className="h-4 w-4 text-red-500 dark:text-red-400" />;
+    if (taux < 30) return <CheckCircle className="h-3.5 w-3.5 text-white" />;
+    if (taux < 40) return <Info className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />;
+    return <AlertCircle className="h-3.5 w-3.5 text-red-500 dark:text-red-400" />;
   };
   
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
@@ -112,43 +102,40 @@ export const CreditCard = ({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      whileHover={{ y: -3 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ y: -3, scale: 1.01 }}
     >
       <Card
         className={cn(
-          "backdrop-blur-sm cursor-pointer transition-all duration-300",
-          // Light mode styles
-          "bg-gradient-to-br from-white to-purple-50 shadow-lg border border-purple-100 hover:shadow-xl",
-          // Dark mode styles - alignées avec les cards de graphiques
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-purple-950 dark:border-purple-900/30 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50"
+          "backdrop-blur-lg cursor-pointer transition-all duration-300",
+          "bg-gradient-to-br from-background/90 to-purple-50/90 shadow-md hover:shadow-lg border-purple-100/50",
+          "dark:bg-gradient-to-br dark:from-gray-900/90 dark:to-purple-950/90 dark:border-purple-800/20 dark:shadow-purple-900/20"
         )}
         onClick={() => navigate("/credits")}
       >
-        <CardHeader className="py-4">
-          <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-medium flex items-center gap-2">
               <div className={cn(
-                "p-2 rounded-full",
-                "bg-purple-100 text-purple-600", // Light mode
-                "dark:bg-purple-900/40 dark:text-purple-400" // Dark mode
+                "p-1.5 rounded-lg",
+                "bg-purple-100 text-purple-600",
+                "dark:bg-purple-900/50 dark:text-purple-300"
               )}>
-                <CreditCardIcon className="h-5 w-5" />
+                <CreditCardIcon className="h-4 w-4" />
               </div>
               <span className="text-gray-800 dark:text-white">Crédits</span>
             </CardTitle>
             <Badge 
               variant={getBadgeVariant(tauxEndettement)} 
               className={cn(
-                "bg-purple-500 px-3 py-1 flex items-center gap-1",
-                // Améliorer la visibilité des badges en dark mode
+                "bg-purple-500 px-2 py-0.5 flex items-center gap-1",
                 "dark:bg-opacity-90 dark:font-medium"
               )}
             >
-              {getStatusIcon(tauxEndettement)}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center cursor-pointer">
+                  <div className="flex items-center gap-1 cursor-pointer">
+                    {getStatusIcon(tauxEndettement)}
                     <span className="text-xs">{Math.round(tauxEndettement)}%</span>
                   </div>
                 </TooltipTrigger>
@@ -161,41 +148,33 @@ export const CreditCard = ({
               </Tooltip>
             </Badge>
           </div>
-          <CardDescription className={cn(
-            "text-gray-500",
-            "dark:text-gray-400"
-          )}>
-            {currentView === "monthly" 
-              ? `Total dû en ${currentMonthName}` 
-              : `Total dû en ${currentYear}`}
-          </CardDescription>
         </CardHeader>
-        <CardContent className="pb-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <motion.div
-                className="relative"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <motion.p 
-                  className={cn(
-                    "text-xl font-bold leading-none",
-                    "text-gray-800", // Light mode
-                    "dark:text-purple-100" // Dark mode - légèrement teinté de violet pour l'effet visuel
-                  )}
-                  initial={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-                >
-                  {Math.round(totalAmount).toLocaleString('fr-FR')} €
-                </motion.p>
-                
-                {/* Effet de lueur subtil - visible uniquement en dark mode */}
-                <div className="absolute -inset-1 bg-purple-500/10 blur-md rounded-full opacity-0 dark:opacity-60" />
-              </motion.div>
-            </div>
+        <CardContent>
+          <div className="relative">
+            <motion.p 
+              className={cn(
+                "font-bold text-2xl",
+                "text-gray-800",
+                "dark:text-purple-50"
+              )}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 100 }}
+            >
+              {Math.round(totalAmount).toLocaleString('fr-FR')} €
+            </motion.p>
+            
+            <div className="absolute -inset-1 bg-purple-500/10 blur-md rounded-full opacity-0 dark:opacity-40" />
+            
+            <p className={cn(
+              "text-xs mt-1",
+              "text-gray-500",
+              "dark:text-gray-400"
+            )}>
+              {currentView === "monthly" 
+                ? `Total dû en ${currentMonthName}` 
+                : `Total dû en ${currentYear}`}
+            </p>
           </div>
         </CardContent>
       </Card>
