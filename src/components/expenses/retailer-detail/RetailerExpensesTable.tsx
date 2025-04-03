@@ -162,7 +162,7 @@ export function RetailerExpensesTable({
     if (isLoading) {
       return (
         <Card className={cn(
-          "border shadow-sm overflow-hidden relative",
+          "border shadow-lg overflow-hidden relative",
           currentColors.lightCardBg, currentColors.lightBorder,
           currentColors.darkCardBg, currentColors.darkBorder
         )}>
