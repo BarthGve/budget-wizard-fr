@@ -8,13 +8,14 @@ import { VehicleExpenseStats } from "@/components/vehicles/expenses/VehicleExpen
 import { motion } from "framer-motion";
 import { VehicleMonthlyExpensesChart } from "./expenses-chart/VehicleMonthlyExpensesChart";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CalendarClock, FileIcon, ClipboardList, Info } from "lucide-react";
+import { AlertCircle, CalendarClock, FileIcon, ClipboardList, Info, BarChart } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useRef, useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { VehicleDocumentsTab } from "../documents/VehicleDocumentsTab";
+import { VehicleStatisticsTab } from "../statistics/VehicleStatisticsTab";
 import { Card } from "@/components/ui/card";
 import { useTheme } from "next-themes";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -59,6 +60,7 @@ export const VehicleDetailTabs = ({
   
   const detailsRef = useRef<HTMLDivElement>(null);
   const expensesRef = useRef<HTMLDivElement>(null);
+  const statisticsRef = useRef<HTMLDivElement>(null);
   const documentsRef = useRef<HTMLDivElement>(null);
   
   const isVehicleSold = vehicle.status === 'vendu';
@@ -208,6 +210,16 @@ export const VehicleDetailTabs = ({
         </motion.div>
       </div>
       
+      <div ref={statisticsRef} id="statistics" className={cn("p-3 pt-0", activeTab !== "statistics" && "hidden")}>
+        <motion.div 
+          variants={itemVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <VehicleStatisticsTab vehicleId={vehicle.id} />
+        </motion.div>
+      </div>
+      
       <div ref={documentsRef} id="documents" className={cn("p-3 pt-0", activeTab !== "documents" && "hidden")}>
         <VehicleDocumentsTab vehicleId={vehicle.id} />
       </div>
@@ -249,6 +261,18 @@ export const VehicleDetailTabs = ({
               Dépenses
             </TabsTrigger>
           )}
+          <TabsTrigger 
+            value="statistics"
+            className={cn(
+              "flex-1 max-w-[200px] rounded-none border-b-2 border-transparent py-3 px-4",
+              "data-[state=active]:border-b-primary data-[state=active]:bg-white data-[state=active]:shadow-none",
+              "dark:data-[state=active]:bg-gray-800 dark:text-gray-300",
+              "flex items-center gap-1.5"
+            )}
+          >
+            <BarChart className="w-4 h-4" />
+            Statistiques
+          </TabsTrigger>
           <TabsTrigger 
             value="documents"
             className={cn(
@@ -330,6 +354,10 @@ export const VehicleDetailTabs = ({
             </motion.div>
           </TabsContent>
         )}
+        
+        <TabsContent value="statistics" className="p-6">
+          <VehicleStatisticsTab vehicleId={vehicle.id} />
+        </TabsContent>
 
         <TabsContent value="documents" className="p-6">
           <VehicleDocumentsTab vehicleId={vehicle.id} />

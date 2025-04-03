@@ -33,7 +33,7 @@ const VehicleDetail = () => {
   const { previewLogoUrl, isLogoValid, isCheckingLogo } = useVehicleBrandLogo(vehicle?.brand || "");
   
   // Gestion du swipe pour changer de section sur mobile
-  const sectionOrder = ["details", ...(canAccessExpenses ? ["expenses"] : []), "documents"];
+  const sectionOrder = ["details", ...(canAccessExpenses ? ["expenses"] : []), "statistics", "documents"];
   
   const handleSwipeLeft = () => {
     const currentIndex = sectionOrder.indexOf(activeSection);
