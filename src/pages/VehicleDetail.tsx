@@ -96,7 +96,7 @@ const VehicleDetail = () => {
       )}
       
       <motion.div 
-        className="space-y-6 pt-16"
+        className="space-y-6 "
         initial="hidden"
         animate="visible"
         variants={containerVariants}
