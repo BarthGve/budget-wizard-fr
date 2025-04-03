@@ -19,12 +19,16 @@ export const useAddCategory = (onSuccess?: () => void) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recurring-expense-categories"] });
-      toast.success("Catégorie ajoutée avec succès");
+      toast.success("Catégorie ajoutée avec succès", {
+        position: "bottom-right"
+      });
       if (onSuccess) onSuccess();
     },
     onError: (error: any) => {
       console.error("Error adding category:", error);
-      toast.error(error.message || "Erreur lors de l'ajout de la catégorie");
+      toast.error(error.message || "Erreur lors de l'ajout de la catégorie", {
+        position: "bottom-right"
+      });
     },
   });
 

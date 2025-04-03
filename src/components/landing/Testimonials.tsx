@@ -80,7 +80,7 @@ export const Testimonials = ({ testimonials }: TestimonialsProps) => {
 
   return (
     <div className="container mx-auto px-4 py-24">
-      <div className="relative p-8 rounded-3xl overflow-hidden bg-gradient-to-b from-primary/5 to-transparent border border-primary/20">
+      <div className="relative p-8 rounded-3xl overflow-hidden bg-gradient-to-b from-primary/5 to-transparent border border-primary/20 shadow-lg">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-20" />
         <div className="relative">
           <h2 className="text-3xl font-bold text-center mb-12">
@@ -95,7 +95,7 @@ export const Testimonials = ({ testimonials }: TestimonialsProps) => {
               loop: true
             }}
           >
-            <CarouselContent>
+            <CarouselContent className="p-2">
               {testimonialsChunks.map((chunk, index) => (
                 <CarouselItem key={index} className="md:basis-full">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

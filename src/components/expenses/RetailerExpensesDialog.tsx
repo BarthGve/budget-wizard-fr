@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EditExpenseDialog } from "./EditExpenseDialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface RetailerExpensesDialogProps {
   retailer: {
@@ -45,6 +46,7 @@ export function RetailerExpensesDialog({
   const [selectedExpense, setSelectedExpense] = useState<string | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
   const itemsPerPage = 5;
   
   const totalPages = Math.ceil(expenses.length / itemsPerPage);
@@ -63,6 +65,22 @@ export function RetailerExpensesDialog({
         .eq('id', expenseId);
 
       if (error) throw error;
+
+      // Invalidation des requêtes pour forcer le rafraîchissement
+      queryClient.invalidateQueries({ 
+        queryKey: ["expenses"],
+        exact: false
+      });
+      
+      queryClient.invalidateQueries({ 
+        queryKey: ["retailer-expenses", retailer.id],
+        exact: false
+      });
+      
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard-data"],
+        exact: false
+      });
 
       toast.success("Dépense supprimée avec succès");
       onExpenseUpdated();
@@ -119,7 +137,7 @@ export function RetailerExpensesDialog({
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[200px]">
+                        <DropdownMenuContent align="end" className="w-[200px] bg-white dark:bg-gray-800">
                           <DropdownMenuItem 
                             onClick={() => {
                               setSelectedExpense(expense.id);

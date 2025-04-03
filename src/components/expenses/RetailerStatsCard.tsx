@@ -72,9 +72,9 @@ export function RetailerStatsCard({
     <Card className={cn(
       "border overflow-hidden transition-all duration-200",
       // Light mode base
-      "bg-white hover:shadow-md",
+      "bg-white shadow-lg",
       // Dark mode base 
-      "dark:bg-gray-800/90 dark:hover:bg-opacity-95 dark:border-gray-700/50",
+      "dark:bg-gray-800/90  dark:border-gray-700/50",
       className
     )}>
       <div className="p-5">

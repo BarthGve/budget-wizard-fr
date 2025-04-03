@@ -47,7 +47,7 @@ export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) 
     >
       <Card className={cn(
         "w-full relative overflow-hidden",
-        "border shadow-sm",
+        "border shadow-lg",
         // Light mode
         "bg-white border-blue-100",
         // Dark mode

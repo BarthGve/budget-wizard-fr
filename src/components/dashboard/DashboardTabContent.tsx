@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
@@ -55,6 +56,7 @@ interface DashboardTabContentProps {
   fuelExpensesTotal?: number;
   fuelExpensesCount?: number;
   fuelVolume?: number;
+  hasActiveVehicles?: boolean;
 }
 
 const containerVariants = {
@@ -83,11 +85,12 @@ export const DashboardTabContent = ({
   fuelExpensesTotal = 0,
   fuelExpensesCount = 0,
   fuelVolume = 0,
+  hasActiveVehicles = false,
 }: DashboardTabContentProps) => {
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   
-  const { expensesTotal, hasActiveVehicles } = useExpenseStats(currentView);
+  const { expensesTotal } = useExpenseStats(currentView);
   const { data: credits = [] } = useCreditsFetcher();
   const { totalMensualites } = useCreditStats({ credits, firstDayOfMonth });
   const mappedContributors = useContributorMapper({ contributors });

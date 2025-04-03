@@ -1,5 +1,4 @@
 
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -9,6 +8,7 @@ import { MarketDataSection } from "@/components/stocks/MarketDataSection";
 import { InvestmentsSummary } from "@/components/stocks/InvestmentsSummary";
 import { AssetsSection } from "@/components/stocks/AssetsSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { WithTooltipProvider } from "@/components/providers/TooltipProviders";
 
 // Process investment data to calculate yearly totals, current year total, etc.
 const processInvestmentData = (investmentHistory: any[] | undefined) => {
@@ -128,7 +128,7 @@ const StocksPage = () => {
   };
 
   return (
-    <DashboardLayout>
+    <WithTooltipProvider>
       <motion.div 
         className="space-y-6 mt-4"
         initial="hidden"
@@ -168,7 +168,7 @@ const StocksPage = () => {
           </TabsContent>
         </Tabs>
       </motion.div>
-    </DashboardLayout>
+    </WithTooltipProvider>
   );
 };
 

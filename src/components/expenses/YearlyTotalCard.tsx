@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TrendingDown, TrendingUp, PieChart } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -87,15 +88,14 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      whileHover={{ y: -5, transition: { duration: 0.2 } }}
     >
       <Card className={cn(
         "overflow-hidden transition-all duration-200 h-full relative",
-        "border shadow-sm hover:shadow-md",
+        "border shadow-lg",
         // Light mode
         "bg-white border-blue-100",
         // Dark mode
-        "dark:bg-gray-800/90 dark:hover:bg-blue-900/20 dark:border-blue-800/50"
+        "dark:bg-gray-800/90 dark:border-blue-800/50"
       )}>
         {/* Fond radial gradient */}
         <div className={cn(

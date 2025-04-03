@@ -45,10 +45,30 @@ export const useAuthStateListener = () => {
           // Vérifier si l'utilisateur vient de vérifier son email
           const justVerified = localStorage.getItem("justVerified") === "true";
           
-          // Invalidation simple des caches pertinents
-          queryClient.invalidateQueries({ queryKey: ["auth"] });
-          queryClient.invalidateQueries({ queryKey: ["current-user"] });
-          queryClient.invalidateQueries({ queryKey: ["profile"] });
+          // Forcer un nettoyage complet du cache
+          console.log("Forcer la réinitialisation du cache React Query pour le changement d'utilisateur");
+          queryClient.clear();
+          
+          // Invalidation explicite des caches liés à l'utilisateur et au profil
+          const keysToInvalidate = [
+            "auth", 
+            "current-user", 
+            "profile", 
+            "user-profile",
+            "profile-avatar",
+            "isAdmin", 
+            "contributors", 
+            "expenses",
+            "recurring-expenses",
+            "recurring-expense-categories",
+            "credits",
+            "credits-monthly-stats",
+            "savings"
+          ];
+          
+          keysToInvalidate.forEach(key => {
+            queryClient.invalidateQueries({ queryKey: [key] });
+          });
           
           // Si l'utilisateur est déjà sur la page de login et vient juste de vérifier son email,
           // on le redirige vers le dashboard
@@ -77,10 +97,9 @@ export const useAuthStateListener = () => {
           if (session?.user?.email) {
             console.log("Email mis à jour:", session.user.email);
             
-            // Invalider les requêtes pour rafraîchir les données
-            queryClient.invalidateQueries({ queryKey: ["auth"] });
-            queryClient.invalidateQueries({ queryKey: ["current-user"] });
-            queryClient.invalidateQueries({ queryKey: ["profile"] });
+            // Forcer un nettoyage complet du cache
+            console.log("Forcer la réinitialisation du cache React Query pour la mise à jour utilisateur");
+            queryClient.clear();
             
             // Vérifier si le changement provient d'un lien de changement d'email
             // en regardant soit le hash, soit les paramètres d'URL, soit le localStorage
@@ -125,23 +144,9 @@ export const useAuthStateListener = () => {
             if (navigationInProgress.current) return;
             navigationInProgress.current = true;
             
-            // Invalidation simple des caches pertinents
-            const keysToInvalidate = [
-              "auth", 
-              "current-user", 
-              "profile", 
-              "contributors", 
-              "expenses", 
-              "recurring-expenses",
-              "recurring-expense-categories",
-              "credits",
-              "credits-monthly-stats",
-              "savings"
-            ];
-            
-            keysToInvalidate.forEach(key => {
-              queryClient.invalidateQueries({ queryKey: [key] });
-            });
+            // Forcer un nettoyage complet du cache
+            console.log("Forcer la réinitialisation du cache React Query pour la déconnexion");
+            queryClient.clear();
             
             // Utiliser navigate avec replace pour éviter d'ajouter à l'historique
             navigate("/", { replace: true });

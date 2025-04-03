@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -15,7 +15,7 @@ import { memo } from "react";
 const MemoizedSidebar = memo(Sidebar);
 
 interface DashboardLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {

@@ -42,7 +42,7 @@ export const renderCustomizedStackBar = (topRetailers: string[]) => (props: any)
   const isTopBar = retailerIndex === 0;
   
   // Appliquer le radius uniquement à la barre du haut de la pile
-  const radius = isTopBar ? [4, 4, 0, 0] as [number, number, number, number] : 0;
+  const radius = isTopBar ? [0, 0, 0, 0] as [number, number, number, number] : 0;
   
   return (
     <Rectangle

@@ -8,24 +8,33 @@ import { AmountField } from "./form-fields/AmountField";
 import { FirstPaymentDateField } from "./form-fields/FirstPaymentDateField";
 import { MonthsCountField } from "./form-fields/MonthsCountField";
 import { Credit } from "./types";
+import { AssociateVehicleField } from "./form-fields/AssociateVehicleField";
+import { VehicleField } from "./form-fields/VehicleField";
+import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
+import { AutoGenerateExpenseField } from "./form-fields/AutoGenerateExpenseField";
 
 interface CreditFormProps {
   credit?: Credit;
   onSuccess: () => void;
   onCancel: () => void;
-  colorScheme?: "purple" | "green" | "blue"; // Ajout de cette propriété
+  colorScheme?: "purple" | "green" | "blue";
 }
 
 export function CreditForm({
   credit,
   onSuccess,
   onCancel,
-  colorScheme = "purple", // Valeur par défaut
+  colorScheme = "purple",
 }: CreditFormProps) {
   const { form, onSubmit } = useCreditForm({
     credit,
     onSuccess
   });
+  
+  // Regarder le champ associate_with_vehicle pour afficher les champs associés
+  const associateWithVehicle = form.watch("associate_with_vehicle");
+  const vehicleId = form.watch("vehicle_id");
+  const vehicleExpenseType = form.watch("vehicle_expense_type");
 
   // Couleurs du bouton en fonction du colorScheme
   const buttonColors = {
@@ -36,7 +45,7 @@ export function CreditForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="space-y-4 max-w-full overflow-x-hidden p-2">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-full overflow-x-hidden p-2">
         <NameField form={form} />
         <DomainField form={form} />
         <AmountField form={form} />
@@ -44,8 +53,31 @@ export function CreditForm({
           <FirstPaymentDateField form={form} />
           <MonthsCountField form={form} />
         </div>
+        
+        {/* Partie association véhicule */}
+        <div className="mt-6 pt-4 border-t border-border">
+          <AssociateVehicleField form={form} />
+          
+          {/* Afficher ces champs uniquement si l'association est activée */}
+          {associateWithVehicle && (
+            <div className="space-y-4 mt-4">
+              <VehicleField form={form} />
+              
+              {vehicleId && (
+                <>
+                  <ExpenseTypeField form={form} />
+                  
+                  {/* Afficher le champ de génération auto si un type est sélectionné */}
+                  {vehicleId && vehicleExpenseType && vehicleExpenseType !== "no-type" && (
+                    <AutoGenerateExpenseField form={form} />
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
-        <div className="flex justify-end space-x-2">
+        <div className="flex justify-end space-x-2 mt-6">
           <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 hover:border-gray-400">
             Annuler
           </Button>

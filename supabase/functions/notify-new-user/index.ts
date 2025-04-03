@@ -20,6 +20,10 @@ interface NewUserNotificationRequest {
   signupDate: string;
 }
 
+// Cache pour éviter l'envoi de notifications en double pour le même email
+const notificationCache = new Map<string, number>();
+const CACHE_EXPIRY = 60 * 1000; // 60 secondes
+
 const handler = async (req: Request): Promise<Response> => {
   // Gérer les requêtes CORS preflight
   if (req.method === "OPTIONS") {
@@ -32,6 +36,24 @@ const handler = async (req: Request): Promise<Response> => {
     const { userName, userEmail, signupDate }: NewUserNotificationRequest = await req.json();
     
     console.log(`Détails d'inscription: Nom: ${userName}, Email: ${userEmail}, Date: ${signupDate}`);
+
+    // Vérifier si une notification a déjà été envoyée récemment pour cet email
+    const lastNotification = notificationCache.get(userEmail);
+    const now = Date.now();
+    
+    if (lastNotification && now - lastNotification < CACHE_EXPIRY) {
+      console.log(`Email déjà notifié récemment pour: ${userEmail} - ignoré`);
+      return new Response(JSON.stringify({ success: true, status: "already_notified" }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    }
+    
+    // Enregistrer cette notification dans le cache
+    notificationCache.set(userEmail, now);
 
     // Récupérer les IDs des administrateurs depuis la fonction RPC
     console.log("Appel de la fonction list_admins...");

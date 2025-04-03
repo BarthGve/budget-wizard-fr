@@ -135,7 +135,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     <motion.div variants={itemVariants}>
       <Card className={cn(
         "w-full relative overflow-hidden",
-        "border shadow-sm",
+        "border shadow-lg",
         // Light mode
         "bg-white border-blue-100",
         // Dark mode

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuthContext } from "@/context/AuthProvider";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -17,9 +17,10 @@ const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [sessionActive, setSessionActive] = useState(false);
+  
+  const { updatePassword } = useAuthContext();
 
   useEffect(() => {
-    // Vérifier que l'utilisateur arrive bien avec un token de réinitialisation
     const checkResetSession = async () => {
       setIsCheckingSession(true);
       console.log("Vérification de la session utilisateur pour la réinitialisation");
@@ -28,7 +29,6 @@ const ResetPassword = () => {
       console.log("Hash:", location.hash);
       
       try {
-        // On vérifie si un hash de type Supabase est présent dans l'URL
         const hasSupabaseHash = location.hash && 
           (location.hash.includes('#access_token=') || 
            location.hash.includes('#error=') || 
@@ -36,8 +36,6 @@ const ResetPassword = () => {
         
         console.log("Hash Supabase détecté:", hasSupabaseHash);
         
-        // Récupérer la session actuelle
-        // Cela déclenchera automatiquement le traitement du hash par Supabase
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         console.log("Session initiale:", sessionData?.session ? "Session présente" : "Pas de session active");
         
@@ -46,7 +44,6 @@ const ResetPassword = () => {
           throw sessionError;
         }
 
-        // Vérifier si nous avons déjà une session valide
         if (sessionData.session) {
           console.log("Session valide déjà présente, l'utilisateur peut réinitialiser son mot de passe");
           setSessionActive(true);
@@ -54,15 +51,11 @@ const ResetPassword = () => {
           return;
         }
         
-        // Si pas de session mais hash présent, essayer d'établir une session
         if (hasSupabaseHash) {
           console.log("Hash détecté, tentative d'établissement de session via setSession");
           
-          // On force Supabase à traiter le hash et établir une session si valide
-          // (bien que getSession devrait déjà avoir fait cela)
           await supabase.auth.getSession();
           
-          // Vérifier si nous avons maintenant une session valide
           const { data: refreshedSession, error: refreshError } = await supabase.auth.getSession();
           console.log("Session après tentative d'établissement:", refreshedSession?.session ? "Session établie" : "Échec d'établissement de session");
           
@@ -106,9 +99,6 @@ const ResetPassword = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    console.log("Tentative de mise à jour du mot de passe");
-
-    // Validation des mots de passe
     if (password !== confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas");
       setIsLoading(false);
@@ -122,51 +112,31 @@ const ResetPassword = () => {
     }
 
     try {
-      // Vérifier d'abord que nous avons toujours une session valide
       const { data: sessionData } = await supabase.auth.getSession();
       
       if (!sessionData.session) {
-        console.error("Session perdue avant la mise à jour du mot de passe");
         toast.error("Votre session a expiré. Veuillez recommencer le processus de réinitialisation.");
         navigate("/forgot-password");
         return;
       }
       
-      console.log("Session valide confirmée avant mise à jour du mot de passe");
+      const success = await updatePassword(password);
       
-      // Appel à l'API Supabase pour mettre à jour le mot de passe
-      const { data, error } = await supabase.auth.updateUser({
-        password: password
-      });
-
-      console.log("Réponse de mise à jour du mot de passe:", { 
-        succès: !!data && !error, 
-        erreur: error ? true : false 
-      });
-
-      if (error) {
-        console.error("Erreur détaillée:", error);
-        throw error;
+      if (success) {
+        toast.success("Mot de passe mis à jour avec succès");
+        
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       }
-
-      toast.success("Mot de passe mis à jour avec succès");
-      console.log("Redirection vers la page de connexion");
-      
-      // Redirection vers la page de connexion après 2 secondes
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
     } catch (error: any) {
       console.error("Erreur lors de la mise à jour du mot de passe:", error);
-      toast.error(
-        error.message || "Erreur lors de la mise à jour du mot de passe"
-      );
+      toast.error(error.message || "Erreur lors de la mise à jour du mot de passe");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Afficher un message de chargement pendant la vérification de la session
   if (isCheckingSession) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">
@@ -177,7 +147,6 @@ const ResetPassword = () => {
     );
   }
 
-  // Afficher un message d'erreur si la session n'est pas valide
   if (!sessionActive) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex items-center justify-center p-4">

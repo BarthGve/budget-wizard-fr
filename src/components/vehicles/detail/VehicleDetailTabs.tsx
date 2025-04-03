@@ -1,3 +1,4 @@
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Vehicle } from "@/types/vehicle";
 import { VehicleGeneralInfo } from "./VehicleGeneralInfo";
@@ -91,18 +92,20 @@ export const VehicleDetailTabs = ({
     }
   };
 
+  // Mise à jour de cette fonction pour utiliser notre nouvelle fonction unifiée
   const handleGenerateExpensesFromRecurring = async () => {
     try {
       setIsGenerating(true);
       
+      // Utilisation de la nouvelle fonction qui gère à la fois les charges récurrentes et les crédits
       const { data, error } = await supabase
-        .rpc('generate_vehicle_expenses_from_recurring');
+        .rpc('check_and_generate_vehicle_expenses');
       
       if (error) throw error;
       
       toast({
         title: "Génération effectuée",
-        description: "Les dépenses liées aux charges récurrentes ont été générées",
+        description: "Les dépenses périodiques (charges récurrentes et crédits) ont été générées",
         variant: "default"
       });
       
@@ -163,15 +166,15 @@ export const VehicleDetailTabs = ({
                     variant="outline"
                   >
                     <CalendarClock className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                    Générer les dépenses récurrentes
+                    Générer les dépenses périodiques
                   </Button>
                 </DrawerTrigger>
                 <DrawerContent>
                   <DrawerHeader>
-                    <DrawerTitle>Générer les dépenses</DrawerTitle>
+                    <DrawerTitle>Générer les dépenses périodiques</DrawerTitle>
                   </DrawerHeader>
                   <div className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
-                    Cette action va générer toutes les dépenses associées aux charges récurrentes pour ce véhicule. Voulez-vous continuer ?
+                    Cette action va générer toutes les dépenses associées aux charges récurrentes et aux crédits liés à ce véhicule. Voulez-vous continuer ?
                   </div>
                   <DrawerFooter>
                     <Button
@@ -307,7 +310,7 @@ export const VehicleDetailTabs = ({
                       disabled={isGenerating}
                     >
                       <CalendarClock className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                      {isGenerating ? "Génération en cours..." : "Générer les dépenses des charges récurrentes"}
+                      {isGenerating ? "Génération en cours..." : "Générer les dépenses périodiques"}
                     </Button>
                   </motion.div>
                 )}

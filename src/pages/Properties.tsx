@@ -1,5 +1,4 @@
 
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -8,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PropertiesHeader } from "@/components/properties/PropertiesHeader";
 import { PropertyContent } from "@/components/properties/PropertyContent";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const Properties = () => {
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ const Properties = () => {
   };
 
   return (
-    <DashboardLayout>
+    <TooltipProvider>
       <motion.div 
         className="grid gap-6 mt-4"
         initial="hidden"
@@ -69,7 +69,7 @@ const Properties = () => {
         <PropertiesHeader />
         <PropertyContent properties={properties} isLoading={isLoading} />
       </motion.div>
-    </DashboardLayout>
+    </TooltipProvider>
   );
 };
 

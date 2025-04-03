@@ -54,13 +54,13 @@ export function RetailerStats({
       animate="visible"
     >
       {/* Carte des dépenses mensuelles */}
-      <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+      <motion.div variants={itemVariants}>
         <RetailerStatsCard
           title="Dépenses du mois"
           amount={monthlyTotal}
           count={monthlyCount}
           label="achats ce mois-ci"
-          className="border shadow-sm overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10"
+          className="border shadow-lg overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10"
           previousAmount={previousMonthTotal}
           icon={<Calendar className="h-5 w-5 text-blue-500 dark:text-blue-300" />}
           colorScheme="blue"
@@ -68,13 +68,13 @@ export function RetailerStats({
       </motion.div>
       
       {/* Carte des dépenses annuelles */}
-      <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+      <motion.div variants={itemVariants} >
         <RetailerStatsCard
           title="Dépenses de l'année"
           amount={yearlyTotal}
           count={yearlyCount}
           label="achats cette année"
-          className="border shadow-sm overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10"
+          className="border shadow-lg overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10"
           previousAmount={previousYearTotal}
           icon={<Wallet className="h-5 w-5 text-purple-500 dark:text-purple-300" />}
           colorScheme="purple"
@@ -82,13 +82,13 @@ export function RetailerStats({
       </motion.div>
       
       {/* Carte de la moyenne mensuelle */}
-      <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+      <motion.div variants={itemVariants} >
         <RetailerStatsCard
           title="Moyenne mensuelle"
           amount={monthlyAverage}
           count={monthlyAverageCount}
           label="achats par mois"
-          className="border shadow-sm overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10"
+          className="border shadow-lg overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10"
           icon={<Calculator className="h-5 w-5 text-amber-500 dark:text-amber-300" />}
           colorScheme="amber"
         />

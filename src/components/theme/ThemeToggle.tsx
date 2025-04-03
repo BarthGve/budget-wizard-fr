@@ -1,6 +1,7 @@
 
 import { Moon, Sun, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,8 +17,32 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ collapsed }: ThemeToggleProps) {
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
+
+  // Assure que le composant est monté côté client pour éviter les incohérences SSR
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Fonction pour appliquer le thème avec une animation de transition
+  const applyTheme = (newTheme: string) => {
+    setTheme(newTheme);
+    
+    // Ajouter une classe pour forcer le rafraîchissement du rendu
+    document.documentElement.classList.add('theme-updated');
+    
+    // Supprimer la classe après l'animation
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-updated');
+    }, 100);
+  };
+
+  // Ne rend rien jusqu'à ce que le composant soit monté pour éviter les incohérences d'affichage
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <DropdownMenu>
@@ -38,15 +63,15 @@ export function ThemeToggle({ collapsed }: ThemeToggleProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={isMobile ? "end" : "end"}>
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => applyTheme("light")}>
           <Sun className="mr-2 h-4 w-4" />
           <span>Clair</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => applyTheme("dark")}>
           <Moon className="mr-2 h-4 w-4" />
           <span>Sombre</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => applyTheme("system")}>
           <Monitor className="mr-2 h-4 w-4" />
           <span>Système</span>
         </DropdownMenuItem>

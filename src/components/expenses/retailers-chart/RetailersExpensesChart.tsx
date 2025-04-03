@@ -3,12 +3,15 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Expense } from "@/types/expense";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, CalendarRange, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 import { EmptyState } from "./components/EmptyState";
 import { MonthlyBarChart } from "./components/MonthlyBarChart";
 import { YearlyBarChart } from "./components/YearlyBarChart";
+import { CurrentYearMonthlyChart } from "./components/CurrentYearMonthlyChart";
 import { useChartData } from "./hooks/useChartData";
 
 interface RetailersExpensesChartProps {
@@ -22,17 +25,19 @@ interface RetailersExpensesChartProps {
 
 export function RetailersExpensesChart({ expenses, retailers, viewMode }: RetailersExpensesChartProps) {
   const [dataVersion, setDataVersion] = useState(0);
+  const [yearlyViewMode, setYearlyViewMode] = useState<'yearly-totals' | 'monthly-in-year'>('yearly-totals');
 
   // Mettre à jour la version des données quand les dépenses ou le mode de visualisation changent
   useEffect(() => {
     setDataVersion(prev => prev + 1);
-  }, [expenses, viewMode]);
+  }, [expenses, viewMode, yearlyViewMode]);
 
   // Utiliser notre hook personnalisé pour préparer les données
   const { retailerExpenses, yearlyData, topRetailers, hasData } = useChartData(
     expenses,
     retailers,
-    viewMode
+    viewMode,
+    yearlyViewMode
   );
 
   // Si pas de données, afficher un message
@@ -40,14 +45,16 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
     return <EmptyState viewMode={viewMode} />;
   }
 
+  const currentYear = new Date().getFullYear();
+
   return (
     <Card className={cn(
       "overflow-hidden transition-all duration-200 relative h-full",
-      "border shadow-sm hover:shadow-md",
+      "border shadow-lg",
       // Light mode
       "bg-white border-blue-100",
       // Dark mode
-      "dark:bg-gray-800/90 dark:hover:bg-blue-900/20 dark:border-blue-800/50"
+      "dark:bg-gray-800/90 dark:border-blue-800/50"
     )}>
       {/* Fond radial gradient */}
       <div className={cn(
@@ -80,15 +87,67 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
             )}>
               {viewMode === 'monthly' 
                 ? "Dépenses par enseigne (mois en cours)" 
-                : "Dépenses annuelles par enseigne"}
+                : yearlyViewMode === 'yearly-totals'
+                  ? "Dépenses annuelles par enseigne"
+                  : `Dépenses mensuelles par enseigne (${currentYear})`}
             </CardTitle>
           </div>
+          
+          {/* Switch pour alterner entre les deux modes de vue annuelle (seulement affiché en mode annuel) */}
+          {viewMode === 'yearly' && (
+            <div className="flex items-center p-1 bg-blue-50 rounded-full border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/60">
+              <div className="flex items-center space-x-2 px-3">
+                <CalendarRange className={cn(
+                  "h-4 w-4",
+                  yearlyViewMode === 'yearly-totals' 
+                    ? "text-blue-600 dark:text-blue-300" 
+                    : "text-gray-400 dark:text-gray-500"
+                )} />
+                <Label 
+                  htmlFor="yearly-view-mode" 
+                  className={cn(
+                    yearlyViewMode === 'yearly-totals' 
+                      ? "text-blue-600 font-medium dark:text-blue-300" 
+                      : "text-gray-400 dark:text-gray-500"
+                  )}
+                >
+                  Par année
+                </Label>
+              </div>
+              
+              <Switch
+                id="yearly-view-mode"
+                checked={yearlyViewMode === 'monthly-in-year'}
+                onCheckedChange={(checked) => setYearlyViewMode(checked ? 'monthly-in-year' : 'yearly-totals')}
+                className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
+              />
+              
+              <div className="flex items-center space-x-2 px-3">
+                <Label 
+                  htmlFor="yearly-view-mode" 
+                  className={cn(
+                    yearlyViewMode === 'monthly-in-year' 
+                      ? "text-blue-600 font-medium dark:text-blue-300" 
+                      : "text-gray-400 dark:text-gray-500"
+                  )}
+                >
+                  Par mois
+                </Label>
+                <Calendar className={cn(
+                  "h-4 w-4",
+                  yearlyViewMode === 'monthly-in-year' 
+                    ? "text-blue-600 dark:text-blue-300" 
+                    : "text-gray-400 dark:text-gray-500"
+                )} />
+              </div>
+            </div>
+          )}
         </div>
       </CardHeader>
       <CardContent className="pt-1 pb-6 relative z-10 flex items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.div
-            key={dataVersion}
+            key={`${viewMode}-${yearlyViewMode}-${dataVersion}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -97,8 +156,10 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
           >
             {viewMode === 'monthly' ? (
               <MonthlyBarChart retailerExpenses={retailerExpenses} />
-            ) : (
+            ) : yearlyViewMode === 'yearly-totals' ? (
               <YearlyBarChart yearlyData={yearlyData} topRetailers={topRetailers} />
+            ) : (
+              <CurrentYearMonthlyChart monthlyData={yearlyData} topRetailers={topRetailers} />
             )}
           </motion.div>
         </AnimatePresence>

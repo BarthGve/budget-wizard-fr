@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Credit } from "../types";
 import { addMonths, format, isFuture, addDays } from "date-fns";
 
-export const formSchema = z.object({
+const formSchema = z.object({
   nom_credit: z.string().min(1, "Le nom est requis"),
   nom_domaine: z.string().min(1, "Le domaine est requis"),
   montant_mensualite: z.string().min(1, "Le montant est requis").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Le montant doit être un nombre positif"),
@@ -17,6 +17,11 @@ export const formSchema = z.object({
     z.number().min(1, "Le nombre de mensualités doit être au moins 1"),
     z.string().min(1, "Le nombre de mensualités est requis").refine(val => !isNaN(Number(val)) && Number(val) > 0, "Le nombre de mensualités doit être un nombre positif")
   ]).transform(val => typeof val === 'string' ? parseInt(val, 10) : val),
+  // Nouveaux champs pour l'association à un véhicule
+  associate_with_vehicle: z.boolean().default(false).optional(),
+  vehicle_id: z.string().nullable().optional(),
+  vehicle_expense_type: z.string().nullable().optional(),
+  auto_generate_vehicle_expense: z.boolean().default(false).optional(),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -53,6 +58,8 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
     initialMonthsCount = count; // Set as number instead of string
   }
 
+  const hasVehicle = credit?.vehicle_id ? true : false;
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,10 +68,15 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
       montant_mensualite: credit?.montant_mensualite?.toString() || "",
       date_premiere_mensualite: credit?.date_premiere_mensualite || "",
       months_count: initialMonthsCount || 0, // Use number instead of string
+      // Nouveaux champs pour l'association à un véhicule
+      associate_with_vehicle: hasVehicle,
+      vehicle_id: credit?.vehicle_id || null,
+      vehicle_expense_type: credit?.vehicle_expense_type || null,
+      auto_generate_vehicle_expense: credit?.auto_generate_vehicle_expense || false,
     },
   });
 
-  const onSubmit = async (values: FormValues) => {
+  const handleSubmit = async (values: FormValues) => {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -99,6 +111,10 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
         date_derniere_mensualite: formattedLastPaymentDate,
         logo_url,
         profile_id: user.id,
+        // Nouveaux champs pour l'association à un véhicule
+        vehicle_id: values.associate_with_vehicle ? values.vehicle_id : null,
+        vehicle_expense_type: values.associate_with_vehicle ? values.vehicle_expense_type : null,
+        auto_generate_vehicle_expense: values.associate_with_vehicle && values.auto_generate_vehicle_expense ? true : false,
       };
 
       if (credit) {
@@ -135,6 +151,6 @@ export const useCreditForm = ({ credit, onSuccess }: UseCreditFormProps) => {
 
   return {
     form,
-    onSubmit: form.handleSubmit(onSubmit),
+    onSubmit: handleSubmit,
   };
 };

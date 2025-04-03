@@ -14,9 +14,10 @@ import { useQueryClient } from "@tanstack/react-query";
 interface CreditActionsProps {
   credit: Credit;
   onCreditDeleted: () => void;
+  isArchived?: boolean;
 }
 
-export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) => {
+export const CreditActions = ({ credit, onCreditDeleted, isArchived = false }: CreditActionsProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showInfoDialog, setShowInfoDialog] = useState(false);
@@ -63,7 +64,17 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
     <>
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="h-8 w-8" type="button">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className={cn(
+              "h-8 w-8",
+              isArchived 
+                ? "border-gray-200 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800" 
+                : ""
+            )}
+            type="button"
+          >
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -72,10 +83,14 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
             <Info className="mr-2 h-4 w-4" />
             Détail
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleEditClick} className="cursor-pointer">
-            <SquarePen className="mr-2 h-4 w-4" />
-            Modifier
-          </DropdownMenuItem>
+          
+          {!isArchived && (
+            <DropdownMenuItem onClick={handleEditClick} className="cursor-pointer">
+              <SquarePen className="mr-2 h-4 w-4" />
+              Modifier
+            </DropdownMenuItem>
+          )}
+          
           <DropdownMenuItem 
             className="text-destructive cursor-pointer"
             onClick={handleDeleteClick}
@@ -86,11 +101,13 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <CreditDialog 
-        credit={credit}
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
-      />
+      {!isArchived && (
+        <CreditDialog 
+          credit={credit}
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+        />
+      )}
 
       <CreditInfoDialog
         credit={credit}
@@ -101,9 +118,11 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer le crédit</AlertDialogTitle>
+            <AlertDialogTitle>
+              {isArchived ? "Supprimer ce crédit archivé" : "Supprimer le crédit"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer ce crédit ? Cette action ne peut pas être annulée.
+              Êtes-vous sûr de vouloir supprimer {isArchived ? "ce crédit archivé" : "ce crédit"} ? Cette action ne peut pas être annulée.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -121,3 +140,6 @@ export const CreditActions = ({ credit, onCreditDeleted }: CreditActionsProps) =
     </>
   );
 };
+
+// Import nécessaire pour cn
+import { cn } from "@/lib/utils";

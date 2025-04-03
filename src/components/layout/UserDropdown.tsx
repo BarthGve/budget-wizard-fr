@@ -1,8 +1,7 @@
 
 import { useNavigate } from "react-router-dom";
-import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Star, Tag, Sun, Moon, Monitor } from "lucide-react";
+import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Sun, Moon, Monitor } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -13,6 +12,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "next-themes";
+import { useAuthContext } from "@/context/AuthProvider";
+import { useEffect, useState } from "react";
 
 interface UserDropdownProps {
   collapsed: boolean;
@@ -24,26 +25,94 @@ export const UserDropdown = ({
   profile
 }: UserDropdownProps) => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { isAdmin } = usePagePermissions();
   const isMobile = useIsMobile();
-  const { setTheme, theme } = useTheme();
+  const { setTheme } = useTheme();
+  const queryClient = useQueryClient();
+  
+  const { logout } = useAuthContext();
+  const [localProfile, setLocalProfile] = useState<Profile | undefined>(profile);
+  const [mounted, setMounted] = useState(false);
+  
+  // Assurer que le composant est monté côté client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Mettre à jour le profil local quand les props changent
+  useEffect(() => {
+    if (profile && profile.id !== localProfile?.id) {
+      setLocalProfile(profile);
+    }
+  }, [profile]);
+  
+  // Force à refetch le profil actuel
+  useEffect(() => {
+    // Récupérer le profil actuel depuis le serveur
+    const getCurrentProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        console.log("UserDropdown - Récupération du profil pour:", user.email);
+        
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+          
+        if (error) {
+          console.error("Erreur lors de la récupération du profil:", error);
+          return;
+        }
+        
+        if (data) {
+          setLocalProfile({
+            ...data,
+            email: user.email
+          } as Profile);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération du profil:", error);
+      }
+    };
+    
+    getCurrentProfile();
+  }, []);
 
   const handleLogout = async () => {
     try {
-      // Vider le cache avant la déconnexion pour garantir un état propre
-      queryClient.clear();
+      // Invalider explicitement les caches avant la déconnexion
+      queryClient.invalidateQueries({ queryKey: ["current-user"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      queryClient.invalidateQueries({ queryKey: ["profile-avatar"] });
       
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      toast.success("Déconnexion réussie");
-      navigate("/");
-    } catch (error: any) {
-      toast.error("Erreur lors de la déconnexion");
+      await logout();
+    } catch (error) {
       console.error("Logout error:", error);
     }
   };
+
+  // Fonction pour appliquer le thème avec une animation de transition
+  const applyTheme = (newTheme: string) => {
+    setTheme(newTheme);
+    
+    // Ajouter une classe pour forcer le rafraîchissement du rendu
+    document.documentElement.classList.add('theme-updated');
+    
+    // Supprimer la classe après l'animation
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-updated');
+    }, 100);
+    
+    console.log("Thème appliqué:", newTheme);
+  };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className={cn(
@@ -56,42 +125,37 @@ export const UserDropdown = ({
             variant="ghost" 
             className={cn(
               "w-full h-auto",
-              // Si collapsed, on centre le contenu, sinon on garde l'alignement à gauche
               collapsed ? "justify-center p-0" : "justify-start p-2"
             )}>
             <div className={cn(
               "flex items-center w-full",
-              // Si collapsed, on supprime le gap et on centre
               collapsed ? "justify-center" : "gap-3"
             )}>
               <div className="relative">
                 <Avatar className={cn(
                   "transition-all duration-300",
-                  // Ajuster la taille de l'avatar pour mobile
                   isMobile && collapsed ? "h-9 w-9" : collapsed ? "h-10 w-10" : "h-12 w-12"
                 )}>
-                  <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
+                  <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
                   <AvatarFallback>
-                    {(profile?.full_name || "?")[0]?.toUpperCase()}
+                    {(localProfile?.full_name || "?")[0]?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                {profile?.profile_type === "pro" && (
+                {localProfile?.profile_type === "pro" && (
                   <Badge 
                     className={cn(
                       "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
-                      // Si collapsed, on peut ajuster la taille du badge
                       collapsed ? "scale-90" : ""
                     )}>
                     Pro
                   </Badge>
                 )}
               </div>
-              {/* Le reste du contenu qui n'apparaît que quand non collapsed */}
               {!collapsed && (
                 <div className="flex items-center justify-between flex-1">
                   <div className="flex flex-col items-start">
-                    <span className="font-medium text-sm truncate max-w-[120px]">{profile?.full_name || "Utilisateur"}</span>
-                    <span className="text-xs text-muted-foreground truncate max-w-[120px]">{profile?.email}</span>
+                    <span className="font-medium text-sm truncate max-w-[120px]">{localProfile?.full_name || "Utilisateur"}</span>
+                    <span className="text-xs text-muted-foreground truncate max-w-[120px]">{localProfile?.email}</span>
                   </div>
                   <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
                 </div>
@@ -103,20 +167,20 @@ export const UserDropdown = ({
           <div className="flex items-center gap-3 p-2 border-b">
             <div className="relative">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
+                <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
                 <AvatarFallback>
-                  {(profile?.full_name || "?")[0]?.toUpperCase()}
+                  {(localProfile?.full_name || "?")[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {profile?.profile_type === "pro" && (
+              {localProfile?.profile_type === "pro" && (
                 <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
                   Pro
                 </Badge>
               )}
             </div>
             <div className="flex flex-col">
-              <span className="font-medium text-sm">{profile?.full_name || "Utilisateur"}</span>
-              <span className="text-xs text-muted-foreground">{profile?.email}</span>
+              <span className="font-medium text-sm">{localProfile?.full_name || "Utilisateur"}</span>
+              <span className="text-xs text-muted-foreground">{localProfile?.email}</span>
             </div>
           </div>
        
@@ -132,18 +196,17 @@ export const UserDropdown = ({
             </DropdownMenuItem>
           )}
 
-          {/* Option de thème uniquement visible sur mobile */}
           {isMobile && (
             <>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("light")}>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("light")}>
                 <Sun className="mr-2 h-4 w-4" />
                 <span>Thème clair</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("dark")}>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("dark")}>
                 <Moon className="mr-2 h-4 w-4" />
                 <span>Thème sombre</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("system")}>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("system")}>
                 <Monitor className="mr-2 h-4 w-4" />
                 <span>Thème système</span>
               </DropdownMenuItem>

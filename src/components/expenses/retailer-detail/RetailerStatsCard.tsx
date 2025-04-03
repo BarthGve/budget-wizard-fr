@@ -30,7 +30,7 @@ export function RetailerStatsCard({
 
   return (
     <Card className={cn(
-      "p-6 overflow-hidden border shadow-md transition-all duration-200",
+      "p-6 overflow-hidden border shadow-lg transition-all duration-200",
       className
     )}>
       {/* En-tête avec titre */}

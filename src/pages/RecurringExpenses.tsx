@@ -1,5 +1,4 @@
 
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -69,18 +68,16 @@ const RecurringExpenses = memo(function RecurringExpenses() {
   }, [queryClient]);
 
   if (isLoading) {
-    return <DashboardLayout><StyledLoader /></DashboardLayout>;
+    return <StyledLoader />;
   }
 
   return (
-    <DashboardLayout>
-      <div className="w-full max-w-full px-0 sm:px-2">
-        <RecurringExpensesContainer 
-          recurringExpenses={recurringExpenses || []} 
-          onDeleteExpense={handleDeleteExpense} 
-        />
-      </div>
-    </DashboardLayout>
+    <div className="w-full max-w-full px-0 sm:px-2">
+      <RecurringExpensesContainer 
+        recurringExpenses={recurringExpenses || []} 
+        onDeleteExpense={handleDeleteExpense} 
+      />
+    </div>
   );
 });
 

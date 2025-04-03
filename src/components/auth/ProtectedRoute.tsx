@@ -1,9 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+
 import { Navigate, useLocation } from "react-router-dom";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import StyledLoader from "../ui/StyledLoader";
-import { memo, useRef, useState, useEffect } from "react";
+import { memo, useRef, useEffect } from "react";
+import { useAuthContext } from "@/context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,58 +14,27 @@ interface ProtectedRouteProps {
 // Optimisation avec memo pour éviter les re-renders inutiles
 export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { canAccessPage, isAdmin } = usePagePermissions();
   const hasRedirectedRef = useRef(false);
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
   
-  // Vérifier dans sessionStorage si on est déjà authentifié
-  const cachedAuthState = sessionStorage.getItem('is_authenticated') === 'true';
+  // Utiliser le contexte d'authentification au lieu de la requête directe
+  const { isAuthenticated, loading } = useAuthContext();
   
-  // Configuration optimisée de la requête d'authentification
-  const { data: authData, isLoading, error } = useQuery({
-    queryKey: ["auth", location.pathname],
-    queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (!user) return { isAuthenticated: false };
-
-      const { data: isAdmin, error } = await supabase.rpc('has_role', {
-        user_id: user.id,
-        role: 'admin'
-      });
-
-      // Mettre à jour sessionStorage avec l'état d'authentification
-      sessionStorage.setItem('is_authenticated', 'true');
-
-      return { 
-        isAuthenticated: true,
-        isAdmin
-      };
-    },
-    staleTime: 1000 * 60 * 10, // 10 minutes pour réduire les vérifications fréquentes
-    refetchOnWindowFocus: false,
-    refetchInterval: false,
-    refetchOnMount: true,
-    refetchOnReconnect: false, // Désactiver le refetch à la reconnexion
-    retry: 1,
-    // Remplacer keepPreviousData par placeholderData qui est l'équivalent dans React Query v5+
-    placeholderData: cachedAuthState ? () => ({ isAuthenticated: true, isAdmin: false }) : undefined,
-    // Si cachedAuthState est true, on initialise avec une valeur par défaut pour éviter le flash de chargement
-    initialData: cachedAuthState ? { isAuthenticated: true, isAdmin: false } : undefined,
-  });
-
-  // Si le chargement prend plus de 5 secondes, on considère qu'il y a un problème
+  // Effet pour détecter les admins et les rediriger si nécessaire
   useEffect(() => {
-    if (isLoading) {
-      const timer = setTimeout(() => {
-        setLoadingTimeout(true);
-      }, 5000);
-      
-      return () => clearTimeout(timer);
+    if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
+      console.log("Admin détecté dans ProtectedRoute - Redirection vers /admin");
+      if (!hasRedirectedRef.current) {
+        hasRedirectedRef.current = true;
+        // Utiliser navigate avec replace pour éviter l'empilement dans l'historique
+        navigate('/admin', { replace: true });
+      }
     }
-  }, [isLoading]);
+  }, [isAdmin, location.pathname, navigate]);
 
-  // Si le chargement a pris trop de temps, on utilise les données en cache ou on redirige
-  if (isLoading && !loadingTimeout) {
+  // Afficher un loader pendant la vérification
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <StyledLoader/>
@@ -72,22 +42,12 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     );
   }
 
-  // Si le chargement a expiré mais qu'on a un état en cache, on utilise l'état en cache
-  if (loadingTimeout && cachedAuthState) {
-    return <>{children}</>;
-  }
-  
-  // Si le chargement a expiré et qu'on n'a pas d'état en cache, on redirige
-  if (loadingTimeout && !cachedAuthState) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
   // Éviter les redirections en boucle
   if (hasRedirectedRef.current) {
     return <>{children}</>;
   }
 
-  if (!authData?.isAuthenticated) {
+  if (!isAuthenticated) {
     // Ne pas rediriger vers login si on est sur la page changelog publique
     if (location.pathname === '/changelog') {
       return <>{children}</>;
@@ -103,12 +63,14 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   // Liste des routes toujours accessibles une fois connecté
   const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
   
-  // Rediriger les admins vers /admin s'ils arrivent sur /dashboard
-  if (authData.isAdmin && location.pathname === '/dashboard') {
+  // IMPORTANT: Rediriger les admins vers /admin s'ils arrivent sur /dashboard ou sur la racine du site
+  if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
+    console.log("Admin détecté - Redirection vers /admin");
     hasRedirectedRef.current = true;
     return <Navigate to="/admin" replace />;
   }
 
+  // Si on requiert un admin mais que l'utilisateur n'est pas admin
   if (requireAdmin && !isAdmin) {
     hasRedirectedRef.current = true;
     return <Navigate to="/dashboard" replace />;
@@ -121,7 +83,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
 
   // Gestion spéciale pour les routes de détail des propriétés
   if (location.pathname.startsWith('/properties/')) {
-    // Si c'est la page principale des propriétés ou si l'utilisateur peut accéder à /properties
+    // Si l'utilisateur peut accéder à /properties
     const canAccessProperties = canAccessPage('/properties');
     if (canAccessProperties) {
       return <>{children}</>;
@@ -135,6 +97,11 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     if (canAccessExpenses) {
       return <>{children}</>;
     }
+  }
+
+  // Gestion spéciale pour les routes admin
+  if (location.pathname.startsWith('/admin') && isAdmin) {
+    return <>{children}</>;
   }
 
   // Vérifier les permissions pour les autres routes

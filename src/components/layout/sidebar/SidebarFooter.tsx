@@ -15,13 +15,7 @@ export const SidebarFooter = ({ collapsed, profile }: SidebarFooterProps) => {
 
   return (
     <>
-      {/* ThemeToggle uniquement pour desktop */}
-      {!isMobile && (
-        <div className="px-4 py-3 border-t border-border">
-          <ThemeToggle collapsed={collapsed} />
-        </div>
-      )}
-      
+ 
       {/* User dropdown fixé en bas avec espacement amélioré */}
       <div className={cn(
         "sticky bottom-0 bg-background border-t border-border py-2"

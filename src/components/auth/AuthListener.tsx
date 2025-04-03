@@ -36,11 +36,6 @@ export const AuthListener = () => {
           
           // Store initial auth state
           previousAuthState.current = !!session;
-          
-          // Marquer comme authentifié dans sessionStorage pour éviter les rechargements
-          if (session) {
-            sessionStorage.setItem('is_authenticated', 'true');
-          }
           return;
         }
 
@@ -59,10 +54,11 @@ export const AuthListener = () => {
           // Vérifier si l'utilisateur vient de vérifier son email
           const justVerified = localStorage.getItem("justVerified") === "true";
           
-          // Invalidation simple des caches pertinents
+          // Invalidation de TOUS les caches liés à l'utilisateur
           queryClient.invalidateQueries({ queryKey: ["auth"] });
           queryClient.invalidateQueries({ queryKey: ["current-user"] });
           queryClient.invalidateQueries({ queryKey: ["profile"] });
+          queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
           
           // Si l'utilisateur est déjà sur la page de login et vient juste de vérifier son email,
           // on le redirige vers le dashboard
@@ -93,10 +89,11 @@ export const AuthListener = () => {
           if (session?.user?.email) {
             console.log("Email mis à jour:", session.user.email);
             
-            // Invalider les requêtes pour rafraîchir les données
+            // Invalider TOUTES les requêtes pour rafraîchir les données
             queryClient.invalidateQueries({ queryKey: ["auth"] });
             queryClient.invalidateQueries({ queryKey: ["current-user"] });
             queryClient.invalidateQueries({ queryKey: ["profile"] });
+            queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
             
             // Vérifier si le changement provient d'un lien de changement d'email
             // en regardant soit le hash, soit les paramètres d'URL, soit le localStorage
@@ -145,11 +142,12 @@ export const AuthListener = () => {
             if (navigationInProgress.current) return;
             navigationInProgress.current = true;
             
-            // Invalidation simple des caches pertinents
+            // Invalidation de TOUS les caches
             const keysToInvalidate = [
               "auth", 
               "current-user", 
               "profile", 
+              "isAdmin",
               "contributors", 
               "expenses", 
               "recurring-expenses",
