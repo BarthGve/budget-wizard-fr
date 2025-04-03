@@ -15,7 +15,7 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
   const { latestVersion } = useLatestVersion();
 
   return (
-    <div className="sticky top-0 z-10 bg-background p-2 border-b rounded-r-xl border-border">
+    <div className="sticky top-0 z-10 bg-background p-3 border-b rounded-r-xl border-border">
       <div className="flex flex-col mb-1">
         <div className="flex items-center">
           <h1
