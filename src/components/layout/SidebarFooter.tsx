@@ -1,6 +1,8 @@
 
-import { UserDropdown } from "../UserDropdown";
+import React from 'react';
+import { UserDropdown } from "./UserDropdown";
 import { Profile } from "@/types/profile";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface SidebarFooterProps {
@@ -9,15 +11,18 @@ interface SidebarFooterProps {
   isLoading?: boolean;
 }
 
-export const SidebarFooter = ({ 
+export const SidebarFooter: React.FC<SidebarFooterProps> = ({ 
   collapsed, 
   profile,
   isLoading = false
-}: SidebarFooterProps) => {
+}) => {
   return (
     <div className="mt-auto border-t">
       <div className="flex flex-col">
-    
+        {/* Contrôle du thème */}
+        <div className={`p-3 flex ${collapsed ? 'justify-center' : 'justify-end'}`}>
+          <ThemeToggle collapsed={collapsed} />
+        </div>
         
         {/* Menu utilisateur avec gestion de l'état de chargement */}
         {isLoading ? (

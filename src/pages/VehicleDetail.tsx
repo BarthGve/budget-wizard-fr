@@ -33,7 +33,7 @@ const VehicleDetail = () => {
   const { previewLogoUrl, isLogoValid, isCheckingLogo } = useVehicleBrandLogo(vehicle?.brand || "");
   
   // Gestion du swipe pour changer de section sur mobile
-  const sectionOrder = ["details", ...(canAccessExpenses ? ["expenses"] : []), "documents"];
+  const sectionOrder = ["details", ...(canAccessExpenses ? ["expenses"] : []), "statistics", "documents"];
   
   const handleSwipeLeft = () => {
     const currentIndex = sectionOrder.indexOf(activeSection);
@@ -96,7 +96,7 @@ const VehicleDetail = () => {
       )}
       
       <motion.div 
-        className="space-y-6 pt-16"
+        className="space-y-6 "
         initial="hidden"
         animate="visible"
         variants={containerVariants}

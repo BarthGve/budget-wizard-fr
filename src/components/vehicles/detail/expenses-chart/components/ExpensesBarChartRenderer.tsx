@@ -66,7 +66,7 @@ export const ExpensesBarChartRenderer = ({
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={chartData}
-            margin={{ top: 20, right: 20, left: 10, bottom: 30 }}
+            margin={{ top: 20, right: 20, left: 10, bottom: 20 }}
             style={{ background: backgroundColor }}
           >
             <defs>
@@ -97,16 +97,14 @@ export const ExpensesBarChartRenderer = ({
               tickLine={false}
               stroke={axisColor}
               fontSize={12}
-              tickMargin={10}
-              dy={10}
+             
             />
             <YAxis 
               axisLine={false}
               tickLine={false}
               stroke={axisColor}
               fontSize={12}
-              tickFormatter={(value) => formatCurrency(value, 0)}
-              tickMargin={10}
+             
             />
             <Tooltip 
               wrapperStyle={{ 

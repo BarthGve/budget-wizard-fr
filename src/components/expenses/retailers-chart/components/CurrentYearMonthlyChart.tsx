@@ -1,7 +1,8 @@
 
 import React from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { CustomTooltip } from "./CustomTooltip";
+import { renderCustomizedStackBar } from "./CustomBars";
 import { useChartColorPalette } from "../utils/colors";
 import { formatCurrency } from "@/utils/format";
 
@@ -12,7 +13,6 @@ interface CurrentYearMonthlyChartProps {
 
 export const CurrentYearMonthlyChart = ({ monthlyData, topRetailers }: CurrentYearMonthlyChartProps) => {
   const { axisColor, getBarColor } = useChartColorPalette();
-  const currentYear = new Date().getFullYear();
 
   // Calcul du montant total pour chaque mois (pour le tooltip)
   const dataWithTotals = monthlyData.map(monthData => {
@@ -21,6 +21,15 @@ export const CurrentYearMonthlyChart = ({ monthlyData, topRetailers }: CurrentYe
     }, 0);
     return { ...monthData, totalAmount: total };
   });
+
+  // Fonction spéciale pour déterminer la couleur d'une enseigne
+  // La catégorie "Autres" aura toujours une couleur grise
+  const getRetailerColor = (retailer: string, index: number) => {
+    if (retailer === "Autres") {
+      return "rgba(160, 160, 160, 0.8)"; // Gris pour "Autres"
+    }
+    return getBarColor(index);
+  };
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -34,9 +43,8 @@ export const CurrentYearMonthlyChart = ({ monthlyData, topRetailers }: CurrentYe
           dataKey="month"
           axisLine={false}
           tickLine={false}
-          stroke={axisColor}
-          fontSize={12}
-          tickMargin={10}
+          tick={{ fill: axisColor, fontSize: 12 }}
+          dy={10}
         />
         <YAxis 
           axisLine={false}
@@ -48,7 +56,19 @@ export const CurrentYearMonthlyChart = ({ monthlyData, topRetailers }: CurrentYe
         
         <Tooltip 
           content={<CustomTooltip viewMode="monthly-in-year" />} 
-          cursor={{ fill: 'rgba(180, 180, 180, 0.1)' }}
+          cursor={{ 
+            fill: 'rgba(180, 180, 180, 0.1)'
+          }}
+        />
+        
+        <Legend 
+          wrapperStyle={{ 
+            paddingTop: 15,
+            fontSize: 12, 
+            opacity: 0.9
+          }}
+          iconSize={10}
+          iconType="circle"
         />
         
         {topRetailers.map((retailer, index) => (
@@ -56,8 +76,8 @@ export const CurrentYearMonthlyChart = ({ monthlyData, topRetailers }: CurrentYe
             key={retailer}
             dataKey={retailer}
             stackId="a"
-            fill={getBarColor(index)}
-            radius={[0, 0, 0, 0]}
+            fill={getRetailerColor(retailer, index)}
+            shape={renderCustomizedStackBar(topRetailers)}
             maxBarSize={60}
             animationDuration={1000}
             animationEasing="ease-out"

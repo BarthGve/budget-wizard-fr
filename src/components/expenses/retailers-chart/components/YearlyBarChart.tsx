@@ -22,6 +22,15 @@ export const YearlyBarChart = ({ yearlyData, topRetailers }: YearlyBarChartProps
     return { ...yearData, totalAmount: total };
   });
 
+  // Fonction spéciale pour déterminer la couleur d'une enseigne
+  // La catégorie "Autres" aura toujours une couleur grise
+  const getRetailerColor = (retailer: string, index: number) => {
+    if (retailer === "Autres") {
+      return "rgba(160, 160, 160, 0.8)"; // Gris pour "Autres"
+    }
+    return getBarColor(index);
+  };
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
@@ -67,7 +76,7 @@ export const YearlyBarChart = ({ yearlyData, topRetailers }: YearlyBarChartProps
             key={retailer}
             dataKey={retailer}
             stackId="a"
-            fill={getBarColor(index)}
+            fill={getRetailerColor(retailer, index)}
             shape={renderCustomizedStackBar(topRetailers)}
             maxBarSize={80}
             animationDuration={1000}

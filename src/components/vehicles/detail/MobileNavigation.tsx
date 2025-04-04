@@ -1,7 +1,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Info, FileIcon, ClipboardList, ChevronLeft } from "lucide-react";
+import { Info, FileIcon, ClipboardList, ChevronLeft, BarChart } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -69,6 +69,16 @@ export const MobileNavigation = ({
               <span className="text-xs">Dépenses</span>
             </Button>
           )}
+          
+          <Button
+            variant={activeSection === "statistics" ? "default" : "ghost"}
+            size="sm"
+            className={cn("flex items-center gap-1.5 flex-1", activeSection !== "statistics" && "text-gray-600 dark:text-gray-400")}
+            onClick={() => onSectionChange("statistics")}
+          >
+            <BarChart className="h-4 w-4" />
+            <span className="text-xs">Stats</span>
+          </Button>
           
           <Button
             variant={activeSection === "documents" ? "default" : "ghost"}

@@ -1,14 +1,12 @@
 
 import { useNavigate } from "react-router-dom";
 import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Sun, Moon, Monitor } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Profile } from "@/types/profile";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useQueryClient } from "@tanstack/react-query";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "next-themes";
@@ -28,7 +26,6 @@ export const UserDropdown = ({
   const { isAdmin } = usePagePermissions();
   const isMobile = useIsMobile();
   const { setTheme } = useTheme();
-  const queryClient = useQueryClient();
   
   const { logout } = useAuthContext();
   const [localProfile, setLocalProfile] = useState<Profile | undefined>(profile);
@@ -41,57 +38,18 @@ export const UserDropdown = ({
   
   // Mettre à jour le profil local quand les props changent
   useEffect(() => {
-    if (profile && profile.id !== localProfile?.id) {
+    if (profile && (!localProfile || profile.id !== localProfile.id)) {
+      console.log("UserDropdown - Mise à jour du profil:", profile.email);
       setLocalProfile(profile);
     }
-  }, [profile]);
-  
-  // Force à refetch le profil actuel
-  useEffect(() => {
-    // Récupérer le profil actuel depuis le serveur
-    const getCurrentProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-        
-        console.log("UserDropdown - Récupération du profil pour:", user.email);
-        
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-          
-        if (error) {
-          console.error("Erreur lors de la récupération du profil:", error);
-          return;
-        }
-        
-        if (data) {
-          setLocalProfile({
-            ...data,
-            email: user.email
-          } as Profile);
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération du profil:", error);
-      }
-    };
-    
-    getCurrentProfile();
-  }, []);
+  }, [profile, localProfile]);
 
   const handleLogout = async () => {
     try {
-      // Invalider explicitement les caches avant la déconnexion
-      queryClient.invalidateQueries({ queryKey: ["current-user"] });
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-      queryClient.invalidateQueries({ queryKey: ["profile-avatar"] });
-      
+      console.log("Déconnexion...");
       await logout();
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error("Erreur de déconnexion:", error);
     }
   };
 
@@ -112,6 +70,21 @@ export const UserDropdown = ({
 
   if (!mounted) {
     return null;
+  }
+
+  // Si pas de profil, afficher un bouton de connexion
+  if (!localProfile) {
+    return (
+      <div className="p-4">
+        <Button 
+          variant="outline" 
+          className="w-full" 
+          onClick={() => navigate("/login")}
+        >
+          Se connecter
+        </Button>
+      </div>
+    );
   }
 
   return (
