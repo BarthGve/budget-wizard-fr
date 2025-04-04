@@ -55,7 +55,7 @@ export const CurrentYearMonthlyChart = ({ monthlyData, topRetailers }: CurrentYe
         />
         
         <Tooltip 
-          content={<CustomTooltip viewMode="currentYear" />} 
+          content={<CustomTooltip viewMode="monthly-in-year" />} 
           cursor={{ 
             fill: 'rgba(180, 180, 180, 0.1)'
           }}
