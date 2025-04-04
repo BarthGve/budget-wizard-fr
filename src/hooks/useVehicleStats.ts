@@ -244,35 +244,56 @@ export const useVehicleStats = (vehicleId: string) => {
       return { currentMileage: 0, yearStart: 0, yearProgress: 0 };
     }
 
-    // Récupérer les entrées avec kilométrage, triées par date
-    const mileageExpenses = expenses
-      .filter(expense => expense.mileage !== null && expense.mileage !== undefined)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    
-    if (mileageExpenses.length === 0) {
-      return { currentMileage: 0, yearStart: 0, yearProgress: 0 };
-    }
-    
-    // Récupérer le dernier kilométrage enregistré
-    const currentMileage = mileageExpenses[mileageExpenses.length - 1].mileage!;
-    
-    // Calculer le kilométrage au début de l'année
+    // On récupère l'année courante pour filtrer les dépenses
     const currentYear = new Date().getFullYear();
     const startOfYear = new Date(currentYear, 0, 1);
     
-    let yearStart = 0;
+    // Trier toutes les dépenses par date (plus récentes en premier)
+    const sortedExpenses = [...expenses].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
     
-    // Trouver la dernière entrée avant le début de l'année
-    const entriesBeforeYear = mileageExpenses.filter(
+    // Filtrer les dépenses de l'année en cours
+    const currentYearExpenses = sortedExpenses.filter(
+      expense => new Date(expense.date) >= startOfYear
+    );
+    
+    // Trouver la dépense la plus récente de l'année courante avec un kilométrage
+    let currentMileage = 0;
+    const latestExpenseWithMileage = currentYearExpenses.find(
+      expense => expense.mileage !== null && expense.mileage !== undefined
+    );
+    
+    if (latestExpenseWithMileage) {
+      // Si on a trouvé une dépense avec kilométrage dans l'année courante
+      currentMileage = latestExpenseWithMileage.mileage!;
+    } else {
+      // Sinon, chercher dans les dépenses des années précédentes
+      const previousExpenseWithMileage = sortedExpenses.find(
+        expense => expense.mileage !== null && expense.mileage !== undefined
+      );
+      
+      currentMileage = previousExpenseWithMileage ? previousExpenseWithMileage.mileage! : 0;
+    }
+    
+    // Calculer le kilométrage au début de l'année
+    // Filtrer les dépenses avant le début de l'année, triées de la plus récente à la plus ancienne
+    const expensesBeforeYear = sortedExpenses.filter(
       expense => new Date(expense.date) < startOfYear
     );
     
-    if (entriesBeforeYear.length > 0) {
-      // Prendre le dernier kilométrage avant le début de l'année
-      yearStart = entriesBeforeYear[entriesBeforeYear.length - 1].mileage!;
-    } else if (mileageExpenses.length > 0) {
-      // Si pas d'entrée avant le début de l'année, prendre le premier kilométrage disponible
-      yearStart = mileageExpenses[0].mileage!;
+    // Trouver la dernière dépense avec kilométrage avant le début de l'année
+    let yearStart = 0;
+    const lastExpenseBeforeYear = expensesBeforeYear.find(
+      expense => expense.mileage !== null && expense.mileage !== undefined
+    );
+    
+    if (lastExpenseBeforeYear) {
+      yearStart = lastExpenseBeforeYear.mileage!;
+    } else if (currentMileage > 0) {
+      // Si pas d'entrée avant le début de l'année mais qu'on a un kilométrage actuel,
+      // on utilise ce kilométrage pour éviter des valeurs négatives
+      yearStart = currentMileage;
     }
     
     // Calculer la progression de l'année (en pourcentage)
