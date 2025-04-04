@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { VehicleExpense } from "@/types/vehicle";
 import { useEffect, useMemo, useState } from "react";
+import { useVehicle } from "./queries/useVehicle";
 
 interface VehicleExpenseWithMileage extends VehicleExpense {
   previous_mileage?: number;
@@ -31,6 +32,9 @@ interface VehicleStats {
 
 export const useVehicleStats = (vehicleId: string) => {
   const [mileageLimit, setMileageLimit] = useState(15000); // Valeur par défaut
+  
+  // Récupérer les informations du véhicule pour avoir la date d'acquisition
+  const { data: vehicle } = useVehicle(vehicleId);
 
   // Récupérer les dépenses
   const { data: expenses, isLoading } = useQuery({
@@ -248,6 +252,10 @@ export const useVehicleStats = (vehicleId: string) => {
     const currentYear = new Date().getFullYear();
     const startOfYear = new Date(currentYear, 0, 1);
     
+    // Date d'acquisition du véhicule
+    const acquisitionDate = vehicle ? new Date(vehicle.acquisition_date) : null;
+    const wasAcquiredBeforeYearStart = acquisitionDate && acquisitionDate < startOfYear;
+    
     // Trier toutes les dépenses par date (plus récentes en premier)
     const sortedExpenses = [...expenses].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -289,11 +297,14 @@ export const useVehicleStats = (vehicleId: string) => {
     );
     
     if (lastExpenseBeforeYear) {
+      // Si on a une dépense avec kilométrage avant le début de l'année
       yearStart = lastExpenseBeforeYear.mileage!;
-    } else if (currentMileage > 0) {
-      // Si pas d'entrée avant le début de l'année mais qu'on a un kilométrage actuel,
-      // on utilise ce kilométrage pour éviter des valeurs négatives
-      yearStart = currentMileage;
+    } else if (!wasAcquiredBeforeYearStart) {
+      // Si le véhicule a été acquis après le début de l'année, on utilise 0
+      yearStart = 0;
+    } else {
+      // Pour les autres cas, on prend 0 pour éviter des calculs négatifs
+      yearStart = 0;
     }
     
     // Calculer la progression de l'année (en pourcentage)
@@ -309,7 +320,7 @@ export const useVehicleStats = (vehicleId: string) => {
       yearStart,
       yearProgress
     };
-  }, [expenses]);
+  }, [expenses, vehicle]);
 
   // Préparation des données pour le graphique de répartition des dépenses
   const expenseDistribution = useMemo(() => {
