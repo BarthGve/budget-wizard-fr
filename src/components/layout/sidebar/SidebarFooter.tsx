@@ -1,37 +1,27 @@
 
-import { UserDropdown } from "../UserDropdown";
 import { Profile } from "@/types/profile";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { Skeleton } from "@/components/ui/skeleton";
+import { UserDropdown } from "@/components/layout/UserDropdown";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface SidebarFooterProps {
   collapsed: boolean;
   profile?: Profile;
-  isLoading?: boolean;
 }
 
-export const SidebarFooter = ({ 
-  collapsed, 
-  profile,
-  isLoading = false
-}: SidebarFooterProps) => {
+export const SidebarFooter = ({ collapsed, profile }: SidebarFooterProps) => {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="mt-auto border-t">
-      <div className="flex flex-col">
-        {/* Contrôle du thème */}
-        <div className={`p-3 flex ${collapsed ? 'justify-center' : 'justify-end'}`}>
-          <ThemeToggle collapsed={collapsed} />
-        </div>
-        
-        {/* Menu utilisateur avec gestion de l'état de chargement */}
-        {isLoading ? (
-          <div className={`p-4 ${collapsed ? 'flex justify-center' : ''}`}>
-            <Skeleton className={`h-10 ${collapsed ? 'w-10 rounded-full' : 'w-full rounded-md'}`} />
-          </div>
-        ) : (
-          <UserDropdown collapsed={collapsed} profile={profile} />
-        )}
+    <>
+ 
+      {/* User dropdown fixé en bas avec espacement amélioré */}
+      <div className={cn(
+        "sticky bottom-0 bg-background border-t border-border py-2"
+      )}>
+        <UserDropdown collapsed={collapsed} profile={profile} />
       </div>
-    </div>
+    </>
   );
 };
