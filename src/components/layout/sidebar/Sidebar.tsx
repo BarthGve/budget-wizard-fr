@@ -6,6 +6,7 @@ import { SidebarFooter } from "./SidebarFooter";
 import { SidebarToggle } from "./SidebarToggle";
 import { useSidebar } from "./useSidebar";
 import { useUserData } from "./useUserData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SidebarProps {
   className?: string;
@@ -15,7 +16,7 @@ interface SidebarProps {
 export const Sidebar = ({ className, onClose }: SidebarProps) => {
   // Hooks personnalisés pour la gestion de la sidebar
   const { collapsed, setCollapsed, sidebarRef, isMobile, handleLinkClick } = useSidebar();
-  const { currentUser, profile, isAdmin } = useUserData();
+  const { currentUser, profile, isAdmin, isLoading } = useUserData();
   
   // Gestion du clic sur les liens dans la sidebar
   const handleSidebarLinkClick = () => {
@@ -45,7 +46,11 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
         />
         
         {/* Footer avec contrôles du thème et utilisateur */}
-        <SidebarFooter collapsed={collapsed} profile={profile} />
+        <SidebarFooter 
+          collapsed={collapsed} 
+          profile={profile} 
+          isLoading={isLoading}
+        />
       </div>
   
       {/* Bouton pour réduire/agrandir la sidebar (seulement sur desktop) */}
