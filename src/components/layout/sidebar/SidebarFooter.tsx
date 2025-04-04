@@ -20,7 +20,7 @@ export const SidebarFooter = ({
       <div className="flex flex-col">
         {/* Contrôle du thème */}
         <div className={`p-3 flex ${collapsed ? 'justify-center' : 'justify-end'}`}>
-          <ThemeToggle variant="ghost" size="sm" collapsed={collapsed} />
+          <ThemeToggle collapsed={collapsed} />
         </div>
         
         {/* Menu utilisateur avec gestion de l'état de chargement */}
