@@ -7,6 +7,7 @@ import { SidebarToggle } from "./SidebarToggle";
 import { useSidebar } from "./useSidebar";
 import { useUserData } from "./useUserData";
 import { Skeleton } from "@/components/ui/skeleton";
+import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
 
 interface SidebarProps {
   className?: string;
@@ -22,6 +23,15 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
   const handleSidebarLinkClick = () => {
     handleLinkClick(onClose);
   };
+
+  // Assurer que le profil a les bonnes structures de données
+  const processedProfile = profile ? {
+    ...profile,
+    // Convertir dashboard_preferences si nécessaire
+    dashboard_preferences: profile.dashboard_preferences ? 
+      mergeDashboardPreferences(profile.dashboard_preferences) : 
+      null
+  } : undefined;
 
   return (
     <aside
@@ -48,7 +58,7 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
         {/* Footer avec contrôles du thème et utilisateur */}
         <SidebarFooter 
           collapsed={collapsed} 
-          profile={profile} 
+          profile={processedProfile} 
           isLoading={isLoading}
         />
       </div>

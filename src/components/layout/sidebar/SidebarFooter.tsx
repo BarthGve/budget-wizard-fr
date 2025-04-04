@@ -1,7 +1,7 @@
 
 import { UserDropdown } from "../UserDropdown";
 import { Profile } from "@/types/profile";
-import { ThemeToggle } from "../ThemeToggle";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface SidebarFooterProps {
