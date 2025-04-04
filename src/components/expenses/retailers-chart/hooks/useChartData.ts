@@ -57,7 +57,7 @@ export const useChartData = (
       // Convertir l'objet en tableau et trier par montant total (décroissant)
       return Object.values(expensesByRetailer)
         .sort((a, b) => b.totalAmount - a.totalAmount)
-        .slice(0, 10); // Limiter aux 10 premiers pour une meilleure lisibilité
+        .slice(0, 15); // Augmenter le nombre d'enseignes affichées de 10 à 15
     }
     
     return [];
@@ -90,9 +90,9 @@ export const useChartData = (
         
         // Transformer les données pour le graphique empilé
         return Object.entries(yearlyExpensesByRetailer)
-          .map(([year, retailers]) => ({
+          .map(([year, categories]) => ({
             year,
-            ...retailers
+            ...categories
           }))
           .sort((a, b) => {
             const yearA = parseInt(a.year, 10);
@@ -135,11 +135,11 @@ export const useChartData = (
     return [];
   }, [expenses, retailers, viewMode, yearlyViewMode]);
 
-  // Déterminer les 5 principales enseignes pour la vue annuelle
+  // Déterminer les principales enseignes et créer une catégorie "Autres" pour la vue annuelle
   const topRetailers = useMemo(() => {
     if (viewMode === 'yearly') {
       if (yearlyViewMode === 'yearly-totals') {
-        // Calcul des 5 principales enseignes (pour la vue totaux annuels)
+        // Calcul des principales enseignes (pour la vue totaux annuels)
         const totalByRetailer: Record<string, number> = {};
         
         yearlyData.forEach(yearData => {
@@ -153,12 +153,36 @@ export const useChartData = (
           });
         });
         
-        return Object.entries(totalByRetailer)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 5)
-          .map(([name]) => name);
+        // On trie les enseignes par montant total décroissant
+        const sortedRetailers = Object.entries(totalByRetailer)
+          .sort((a, b) => b[1] - a[1]);
+        
+        // On garde les 10 principales enseignes (au lieu de 5)
+        const top10 = sortedRetailers.slice(0, 10).map(([name]) => name);
+        
+        // On ajoute une catégorie "Autres" si nécessaire
+        if (sortedRetailers.length > 10) {
+          // Agréger les montants des autres enseignes dans chaque année
+          yearlyData.forEach(yearData => {
+            let otherAmount = 0;
+            Object.entries(yearData).forEach(([key, value]) => {
+              if (key !== 'year' && key !== 'month' && key !== 'index' && !top10.includes(key)) {
+                otherAmount += Number(value);
+                delete yearData[key]; // Supprimer l'enseigne individuelle
+              }
+            });
+            // Ajouter la catégorie "Autres" si son montant est > 0
+            if (otherAmount > 0) {
+              yearData["Autres"] = otherAmount;
+            }
+          });
+          
+          return [...top10, "Autres"];
+        }
+        
+        return top10;
       } else {
-        // Pour la vue mensuelle en année courante, on prend les 5 principales enseignes de l'année
+        // Pour la vue mensuelle en année courante
         const thisYearExpenses = expenses.filter(expense => {
           const expenseDate = parseISO(expense.date);
           return isThisYear(expenseDate);
@@ -177,10 +201,45 @@ export const useChartData = (
           retailerTotals[retailerName] += expense.amount;
         });
         
-        return Object.entries(retailerTotals)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 5)
-          .map(([name]) => name);
+        // On trie les enseignes par montant total décroissant
+        const sortedRetailers = Object.entries(retailerTotals)
+          .sort((a, b) => b[1] - a[1]);
+        
+        // On garde les 10 principales enseignes (au lieu de 5)
+        const top10 = sortedRetailers.slice(0, 10).map(([name]) => name);
+        
+        // On ajoute une catégorie "Autres" si nécessaire
+        if (sortedRetailers.length > 10) {
+          // On calcule le total des "autres" enseignes
+          let otherTotal = 0;
+          sortedRetailers.slice(10).forEach(([_, amount]) => {
+            otherTotal += amount;
+          });
+          
+          // On ajoute les "autres" à chaque mois dans les données
+          yearlyData.forEach(monthData => {
+            // Calculer la proportion pour ce mois
+            const monthTotal = Object.entries(monthData)
+              .filter(([key, _]) => key !== 'month' && key !== 'index' && !top10.includes(key))
+              .reduce((sum, [_, value]) => sum + Number(value), 0);
+            
+            // Supprimer les enseignes non principales
+            Object.keys(monthData).forEach(key => {
+              if (key !== 'month' && key !== 'index' && !top10.includes(key)) {
+                delete monthData[key];
+              }
+            });
+            
+            // Ajouter la catégorie "Autres" si son montant est > 0
+            if (monthTotal > 0) {
+              monthData["Autres"] = monthTotal;
+            }
+          });
+          
+          return [...top10, "Autres"];
+        }
+        
+        return top10;
       }
     }
     
