@@ -11,7 +11,7 @@ interface AnimatedContainerProps {
 /**
  * Conteneur avec animation pour les composants de charges récurrentes
  */
-export const AnimatedContainer = ({ children, className = "space-y-6 mx-auto px-4 mt-4" }: AnimatedContainerProps) => {
+export const AnimatedContainer = ({ children }: AnimatedContainerProps) => {
   return (
     <motion.div 
       className={className}
