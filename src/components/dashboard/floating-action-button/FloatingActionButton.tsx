@@ -7,7 +7,6 @@ import { ActionMenu } from "./ActionMenu";
 import { VehiclesList } from "./VehiclesList";
 import { RetailersList } from "./RetailersList";
 import { ExpenseDialogs } from "./ExpenseDialogs";
-import { useLocation } from "react-router-dom";
 
 /**
  * Bouton d'action flottant avec design inspiré d'Apple
@@ -15,12 +14,6 @@ import { useLocation } from "react-router-dom";
  */
 export const FloatingActionButton = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const location = useLocation();
-  
-  // Vérifier si nous sommes sur une page de détail de véhicule
-  const isVehicleDetailPage = location.pathname.includes('/vehicles/') && 
-                             !location.pathname.endsWith('/vehicles');
-  
   const {
     // États
     isMenuOpen,
@@ -53,8 +46,8 @@ export const FloatingActionButton = () => {
     setShowVehiclesList
   } = useFloatingActionButton();
 
-  // Ne pas afficher sur desktop ou sur les pages de détail de véhicule
-  if (!isMobile || isVehicleDetailPage) return null;
+  // Ne pas afficher sur desktop
+  if (!isMobile) return null;
 
   return (
     <>

@@ -16,7 +16,6 @@ import { MobileNavigation } from "@/components/vehicles/detail/MobileNavigation"
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSwipe } from "@/hooks/use-swipe";
 import { WithTooltipProvider } from "@/components/providers/TooltipProviders";
-import { VehicleFloatingButton } from "@/components/vehicles/detail/VehicleFloatingButton";
 
 const VehicleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -97,7 +96,7 @@ const VehicleDetail = () => {
       )}
       
       <motion.div 
-        className="space-y-6 vehicle-detail-content pt-20"
+        className="space-y-6 vehicle-detail-content pt-16"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -118,9 +117,6 @@ const VehicleDetail = () => {
           onSectionChange={setActiveSection}
         />
       </motion.div>
-
-      {/* Bouton flottant spécifique aux véhicules */}
-      {vehicle && id && <VehicleFloatingButton vehicleId={id} />}
 
       <VehicleEditDialog
         isOpen={isEditDialogOpen}
