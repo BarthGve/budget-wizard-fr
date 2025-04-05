@@ -28,7 +28,7 @@ export const DashboardContent = ({
     <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!isAdmin && !isMobile && (
         <div className={cn(
-          "fixed z-40 right-10  top-4"
+          "fixed z-40 right-10 top-4"
         )}>
           <GlobalBalanceCard 
             balance={globalBalance} 
@@ -40,11 +40,10 @@ export const DashboardContent = ({
       {!isAdmin && isMobile && (
         <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
           <DrawerTrigger asChild>
-
             <Button 
               size="sm" 
               variant="outline" 
-              className="fixed h-14 w-14  z-40 left-5 bottom-40 ios-top-safe rounded-full shadow-md"
+              className="fixed h-14 w-14 z-40 left-5 bottom-40 ios-top-safe rounded-full shadow-md"
             >
               <BadgeEuro className="h-12 w-12" />
             </Button>
