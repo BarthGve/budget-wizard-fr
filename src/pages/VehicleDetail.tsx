@@ -96,7 +96,7 @@ const VehicleDetail = () => {
       )}
       
       <motion.div 
-        className="space-y-6 vehicle-detail-content pt-16"
+        className="space-y-6 vehicle-detail-content pt-20"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -116,6 +116,9 @@ const VehicleDetail = () => {
           activeSection={activeSection}
           onSectionChange={setActiveSection}
         />
+
+        {/* Zone de sécurité en bas pour éviter que les boutons flottants ne masquent le contenu */}
+        {isMobile && <div className="h-24 ios-bottom-safe floating-button-zone" />}
       </motion.div>
 
       <VehicleEditDialog

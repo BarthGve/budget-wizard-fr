@@ -36,7 +36,7 @@ export const MobileNavigation = ({
 
   return (
     <div className={cn(
-      "fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900",
+      "fixed top-0 left-0 right-0 z-40 bg-white dark:bg-gray-900",
       "border-b border-gray-200 dark:border-gray-800",
       "shadow-sm ios-top-safe mt-1"
     )}>

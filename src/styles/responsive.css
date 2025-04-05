@@ -42,6 +42,11 @@
   .swipeable-tabs {
     @apply touch-pan-x;
   }
+
+  /* Zone de sécurité pour éviter que les boutons flottants ne se chevauchent */
+  .floating-button-zone {
+    @apply pb-24;
+  }
 }
 
 /* Optimisations pour les safe areas sur iOS */

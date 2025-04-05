@@ -51,7 +51,7 @@ export const FloatingActionButton = () => {
 
   return (
     <>
-      <div className="fixed right-5 bottom-8 z-50 flex flex-col-reverse items-end space-y-reverse space-y-3">
+      <div className="fixed right-5 bottom-28 z-50 flex flex-col-reverse items-end space-y-reverse space-y-3">
         <AnimatePresence>
           {isMenuOpen && !showVehiclesList && !showRetailersList && (
             <ActionMenu
