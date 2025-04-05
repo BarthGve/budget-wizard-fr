@@ -40,10 +40,11 @@ export const DashboardContent = ({
       {!isAdmin && isMobile && (
         <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
           <DrawerTrigger asChild>
+
             <Button 
               size="sm" 
               variant="outline" 
-              className="fixed z-40 right-20 bottom-20 ios-top-safe rounded-full shadow-md"
+              className="fixed h-14 w-14  z-40 right-20 bottom-20 ios-top-safe rounded-full shadow-md"
             >
               <BadgeEuro className="h-12 w-12" />
             </Button>
