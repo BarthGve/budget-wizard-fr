@@ -35,12 +35,12 @@ export const useProfileFetcher = () => {
               data.dashboard_preferences = JSON.parse(data.dashboard_preferences);
             }
             
-            // Toujours fusionner avec les préférences par défaut pour garantir la structure complète
+            // Fusionner avec les préférences par défaut pour garantir la structure complète
+            // Attention: avec un casting pour gérer le problème de type
             const mergedPreferences = mergeDashboardPreferences(data.dashboard_preferences);
             
-            // Assigner directement l'objet fusionné à la propriété dashboard_preferences
-            // C'est ici que nous résolvons l'erreur de type
-            data.dashboard_preferences = mergedPreferences;
+            // Conserver l'objet en tant que Json avec un casting explicite
+            data.dashboard_preferences = mergedPreferences as any;
           } catch (e) {
             console.error("Erreur lors du parsing des préférences du tableau de bord:", e);
             // En cas d'erreur, définir les préférences à null pour utiliser les valeurs par défaut
