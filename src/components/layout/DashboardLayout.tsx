@@ -1,15 +1,14 @@
 
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useEffect } from "react";
 import { MobileSidebarToggle } from "./dashboard/MobileSidebarToggle";
-import { MobileSidebarOverlay } from "./dashboard/MobileSidebarOverlay";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { useDashboardPageData } from "./dashboard/useDashboardData";
 import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
 import { memo } from "react";
+import { ModernMobileSidebar } from "./dashboard/ModernMobileSidebar";
 
 // Optimisation avec mémorisation pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
@@ -42,24 +41,25 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  const handleOverlayClick = () => {
-    if (isMobile && showMobileSidebar) {
-      setShowMobileSidebar(false);
-    }
-  };
-
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
-      {/* Overlay pour fermer la sidebar sur mobile */}
-      <MobileSidebarOverlay 
-        showMobileSidebar={showMobileSidebar} 
-        onOverlayClick={handleOverlayClick} 
-      />
+      {/* Sidebar Desktop - visible uniquement sur ordinateur */}
+      {!isMobile && (
+        <div className="z-50">
+          <MemoizedSidebar />
+        </div>
+      )}
       
-      {/* Sidebar - visible conditionnellement sur mobile */}
-      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}>
-        <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
-      </div>
+      {/* Sidebar Mobile Moderne (flottante) */}
+      {isMobile && (
+        <ModernMobileSidebar 
+          isOpen={showMobileSidebar}
+          onOpenChange={setShowMobileSidebar}
+          userId={userProfile?.id}
+          isAdmin={userProfile?.isAdmin}
+          profile={userProfile}
+        />
+      )}
 
       {/* Bouton de basculement de la sidebar sur mobile */}
       {isMobile && (
