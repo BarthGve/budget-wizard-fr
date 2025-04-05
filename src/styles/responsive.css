@@ -21,7 +21,7 @@
 /* Optimisations pour la page détail véhicule */
 @media (max-width: 768px) {
   .vehicle-detail-content {
-    @apply pt-16; /* Ajouter de l'espace en haut pour la navigation fixe */
+    @apply pt-20; /* Augmenté l'espace en haut pour la navigation fixe */
   }
   
   .vehicle-detail-section {
