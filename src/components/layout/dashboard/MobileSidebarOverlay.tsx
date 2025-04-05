@@ -1,6 +1,5 @@
 
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface MobileSidebarOverlayProps {
   showMobileSidebar: boolean;
@@ -12,20 +11,16 @@ export const MobileSidebarOverlay = ({
   showMobileSidebar, 
   onOverlayClick 
 }: MobileSidebarOverlayProps) => {
+  if (!showMobileSidebar) return null;
+  
   return (
-    <AnimatePresence>
-      {showMobileSidebar && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className={cn(
-            "fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
-          )}
-          onClick={onOverlayClick}
-        />
+    <div 
+      className={cn(
+        "fixed inset-0 bg-black/50 z-40",
+        showMobileSidebar ? "opacity-100" : "opacity-0 pointer-events-none",
+        "transition-opacity duration-300"
       )}
-    </AnimatePresence>
+      onClick={onOverlayClick}
+    />
   );
 };

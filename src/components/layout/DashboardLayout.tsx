@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect } from "react";
 import { MobileSidebarToggle } from "./dashboard/MobileSidebarToggle";
-import { MobileSidebarSheet } from "./dashboard/MobileSidebarSheet";
+import { MobileSidebarOverlay } from "./dashboard/MobileSidebarOverlay";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { useDashboardPageData } from "./dashboard/useDashboardData";
 import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
@@ -42,32 +42,28 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  const handleOpenChange = (open: boolean) => {
-    setShowMobileSidebar(open);
+  const handleOverlayClick = () => {
+    if (isMobile && showMobileSidebar) {
+      setShowMobileSidebar(false);
+    }
   };
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
-      {/* Version desktop de la sidebar */}
-      {!isMobile && (
-        <div className="z-50">
-          <MemoizedSidebar />
-        </div>
-      )}
+      {/* Overlay pour fermer la sidebar sur mobile */}
+      <MobileSidebarOverlay 
+        showMobileSidebar={showMobileSidebar} 
+        onOverlayClick={handleOverlayClick} 
+      />
+      
+      {/* Sidebar - visible conditionnellement sur mobile */}
+      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}>
+        <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
+      </div>
 
-      {/* Version mobile avec Sheet */}
+      {/* Bouton de basculement de la sidebar sur mobile */}
       {isMobile && (
-        <>
-          <MobileSidebarSheet 
-            open={showMobileSidebar} 
-            onOpenChange={handleOpenChange} 
-          />
-          
-          <MobileSidebarToggle 
-            toggleSidebar={toggleSidebar}
-            className="left-5 top-5" 
-          />
-        </>
+        <MobileSidebarToggle toggleSidebar={toggleSidebar} />
       )}
 
       {/* Contenu principal */}
