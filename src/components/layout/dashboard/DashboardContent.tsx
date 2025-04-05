@@ -28,7 +28,7 @@ export const DashboardContent = ({
     <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!isAdmin && !isMobile && (
         <div className={cn(
-          "fixed z-40 right-6 top-4"
+          "fixed z-40 right-10 top-4"
         )}>
           <GlobalBalanceCard 
             balance={globalBalance} 
@@ -43,7 +43,7 @@ export const DashboardContent = ({
             <Button 
               size="sm" 
               variant="outline" 
-              className="fixed z-40 right-4 top-20 ios-top-safe rounded-full shadow-md"
+              className="fixed h-14 w-14 z-40 left-5 bottom-40 ios-top-safe rounded-full shadow-md"
             >
               <BadgeEuro className="h-12 w-12" />
             </Button>
@@ -71,7 +71,7 @@ export const DashboardContent = ({
       {/* Bouton d'action flottant sur mobile uniquement */}
       {isMobile && <FloatingActionButton />}
 
-      {isMobile && <div className="h-20 ios-bottom-safe floating-button-zone" />}
+      {isMobile && <div className="h-10 ios-bottom-safe floating-button-zone" />}
     </main>
   ), [isAdmin, isMobile, globalBalance, children, openDrawer]);
 

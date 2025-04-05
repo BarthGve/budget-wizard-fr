@@ -6,6 +6,8 @@ import { memo, useCallback } from "react";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { RecurringExpensesContainer } from "@/components/recurring-expenses/RecurringExpensesContainer";
 import { RecurringExpense } from "@/components/recurring-expenses/types";
+import { RecurringExpensesHeader } from "@/components/recurring-expenses/RecurringExpensesHeader";
+import { motion } from "framer-motion";
 
 // Utilisation de memo pour éviter les re-renders inutiles
 const RecurringExpenses = memo(function RecurringExpenses() {
@@ -71,13 +73,30 @@ const RecurringExpenses = memo(function RecurringExpenses() {
     return <StyledLoader />;
   }
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { delay: 0.1, duration: 0.5 }
+    }
+  };
+
   return (
-    <div className="w-full max-w-full px-0 sm:px-2">
-      <RecurringExpensesContainer 
-        recurringExpenses={recurringExpenses || []} 
-        onDeleteExpense={handleDeleteExpense} 
-      />
-    </div>
+    <motion.div 
+      className="page-container" 
+      initial="hidden" 
+      animate="visible" 
+      variants={containerVariants}
+    >
+    
+      <div className="section-container">
+        <RecurringExpensesContainer 
+          recurringExpenses={recurringExpenses || []} 
+          onDeleteExpense={handleDeleteExpense} 
+        />
+      </div>
+    </motion.div>
   );
 });
 

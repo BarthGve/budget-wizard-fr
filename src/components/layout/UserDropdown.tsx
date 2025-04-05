@@ -169,22 +169,7 @@ export const UserDropdown = ({
             </DropdownMenuItem>
           )}
 
-          {isMobile && (
-            <>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("light")}>
-                <Sun className="mr-2 h-4 w-4" />
-                <span>Thème clair</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("dark")}>
-                <Moon className="mr-2 h-4 w-4" />
-                <span>Thème sombre</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("system")}>
-                <Monitor className="mr-2 h-4 w-4" />
-                <span>Thème système</span>
-              </DropdownMenuItem>
-            </>
-          )}
+         
 
           <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />

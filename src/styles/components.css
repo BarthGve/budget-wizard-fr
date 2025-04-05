@@ -34,4 +34,17 @@
   .changelog-header-gradient {
     @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
   }
+
+  /* Classes standardisées pour les pages */
+  .page-container {
+    @apply container px-4 py-6 mx-auto space-y-6;
+  }
+  
+  .section-container {
+    @apply space-y-6;
+  }
+  
+  .page-header {
+    @apply flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6;
+  }
 }

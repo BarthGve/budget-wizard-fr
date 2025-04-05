@@ -74,7 +74,7 @@ export const DashboardHeader = memo(({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       className={cn(
-        "pb-4 mb-2",
+        "pb-4 mb-4",
       )}
     >
       <div className={cn(

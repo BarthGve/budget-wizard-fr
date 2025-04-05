@@ -31,6 +31,7 @@ export const MonthlyExpensesCard = ({
       animate={{ opacity: 1, y: 0 }} 
       transition={{ duration: 0.4 }} 
       whileHover={{ y: -3 }}
+      className="h-full"
     >
       <Card 
         className={cn(
