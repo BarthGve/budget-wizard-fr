@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { Credit } from "@/components/credits/types";
-import { Profile } from "@/types/profile";
 
 // Hook pour la récupération et le calcul des données du dashboard
 export const useDashboardPageData = () => {
@@ -49,22 +48,9 @@ export const useDashboardPageData = () => {
         role: 'admin'
       });
 
-      // S'assurer que les préférences du tableau de bord sont bien formatées
-      if (profile && profile.dashboard_preferences) {
-        try {
-          // Si les préférences sont stockées sous forme de chaîne, les parser
-          if (typeof profile.dashboard_preferences === 'string') {
-            profile.dashboard_preferences = JSON.parse(profile.dashboard_preferences);
-          }
-        } catch (e) {
-          console.error("Erreur lors du parsing des préférences:", e);
-          profile.dashboard_preferences = null;
-        }
-      }
-
       return { 
         ...profile, 
-        isAdmin 
+        isAdmin
       };
     },
     staleTime: 1000 * 30,

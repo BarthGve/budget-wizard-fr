@@ -95,7 +95,7 @@ const Dashboard = () => {
   return (
     <TooltipProvider>
       <motion.div 
-        className="page-container"
+        className="container px-4 py-6 mx-auto"
         initial="hidden"
         animate="visible"
         variants={containerVariants}

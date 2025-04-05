@@ -52,8 +52,8 @@ const Properties = () => {
     visible: {
       opacity: 1,
       transition: {
-        delay: 0.1,
-        duration: 0.5
+        staggerChildren: 0.1,
+        delayChildren: 0.1
       }
     }
   };
@@ -61,7 +61,7 @@ const Properties = () => {
   return (
     <TooltipProvider>
       <motion.div 
-        className="page-container"
+        className="grid gap-6 mt-4"
         initial="hidden"
         animate="visible"
         variants={containerVariants}

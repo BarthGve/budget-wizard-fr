@@ -28,45 +28,33 @@ export const defaultDashboardPreferences: DashboardPreferences = {
 
 /**
  * Fusionne les préférences utilisateur avec les préférences par défaut
- * Cette fonction garantit que le résultat est de type DashboardPreferences
  * 
  * @param userPrefs Préférences définies par l'utilisateur (peut être de n'importe quel type)
- * @returns Préférences fusionnées de type DashboardPreferences
+ * @returns Préférences fusionnées
  */
 export const mergeDashboardPreferences = (
   userPrefs: any
 ): DashboardPreferences => {
   try {
     // Vérification renforcée que userPrefs est un objet valide
+    // et n'est pas null, undefined ou une chaîne JSON non parsée
     if (userPrefs && typeof userPrefs === 'object') {
-      // Créer une copie explicite des préférences par défaut
-      const mergedPreferences: DashboardPreferences = { ...defaultDashboardPreferences };
-      
-      // Parcourir les clés valides et copier seulement les valeurs booléennes
-      Object.keys(defaultDashboardPreferences).forEach(key => {
-        // Vérifier si la propriété existe dans userPrefs
-        if (key in userPrefs && typeof userPrefs[key] === 'boolean') {
-          // Utiliser type assertion pour assurer TypeScript que la clé est valide
-          (mergedPreferences as any)[key] = userPrefs[key];
-        }
-      });
-      
-      return mergedPreferences;
+      // Utiliser Object.assign pour fusionner les objets
+      return Object.assign({}, defaultDashboardPreferences, userPrefs);
     } else if (typeof userPrefs === 'string') {
       // Tenter de parser si c'est une chaîne JSON
       try {
         const parsed = JSON.parse(userPrefs);
-        return mergeDashboardPreferences(parsed); // Appel récursif avec l'objet parsé
+        if (parsed && typeof parsed === 'object') {
+          return Object.assign({}, defaultDashboardPreferences, parsed);
+        }
       } catch (parseError) {
         console.error("Erreur lors du parsing des préférences JSON:", parseError);
       }
     }
-    
-    // Si aucune conversion n'a fonctionné, retourner les préférences par défaut
-    console.log("Utilisation des préférences par défaut pour le tableau de bord");
-    return { ...defaultDashboardPreferences };
+    return defaultDashboardPreferences;
   } catch (error) {
     console.error("Erreur lors de la fusion des préférences:", error);
-    return { ...defaultDashboardPreferences };
+    return defaultDashboardPreferences;
   }
 };

@@ -38,7 +38,7 @@ export const Hero = ({
   };
 
   return (
-    <section className="relative pt-20 md:pt-32 lg:pt-32 px-4 md:px-6 mx-auto max-w-7xl">
+    <section className="relative pt-20 md:pt-24 lg:pt-32 px-4 md:px-6 mx-auto max-w-7xl">
       <motion.div 
         className="flex flex-col items-center text-center"
         initial="hidden"
