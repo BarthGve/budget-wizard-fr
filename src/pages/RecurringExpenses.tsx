@@ -89,7 +89,7 @@ const RecurringExpenses = memo(function RecurringExpenses() {
       animate="visible" 
       variants={containerVariants}
     >
-      <RecurringExpensesHeader />
+    
       <div className="section-container">
         <RecurringExpensesContainer 
           recurringExpenses={recurringExpenses || []} 
