@@ -55,7 +55,7 @@ export const MobileNavigation = ({
             onClick={() => onSectionChange("details")}
           >
             <Info className="h-4 w-4" />
-            <span className="text-xs">Détails</span>
+          
           </Button>
           
           {canAccessExpenses && (
@@ -66,7 +66,7 @@ export const MobileNavigation = ({
               onClick={() => onSectionChange("expenses")}
             >
               <ClipboardList className="h-4 w-4" />
-              <span className="text-xs">Dépenses</span>
+         
             </Button>
           )}
           
@@ -77,7 +77,7 @@ export const MobileNavigation = ({
             onClick={() => onSectionChange("statistics")}
           >
             <BarChart className="h-4 w-4" />
-            <span className="text-xs">Stats</span>
+          
           </Button>
           
           <Button
@@ -87,7 +87,7 @@ export const MobileNavigation = ({
             onClick={() => onSectionChange("documents")}
           >
             <FileIcon className="h-4 w-4" />
-            <span className="text-xs">Documents</span>
+        
           </Button>
         </TabsList>
       </Tabs>
