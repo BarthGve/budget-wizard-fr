@@ -129,7 +129,7 @@ const Savings = () => {
   return (
     <WithTooltipProvider>
       <motion.div 
-        className="space-y-4 mt-2 overflow-hidden flex flex-col w-full max-w-full px-2 md:px-4"
+        className="space-y-4  overflow-hidden flex flex-col w-full max-w-full "
         initial="hidden"
         animate="visible"
         variants={containerVariants}
