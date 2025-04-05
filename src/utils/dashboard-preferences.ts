@@ -28,16 +28,16 @@ export const defaultDashboardPreferences: DashboardPreferences = {
 
 /**
  * Fusionne les préférences utilisateur avec les préférences par défaut
+ * Cette fonction convertit explicitement Json en DashboardPreferences
  * 
  * @param userPrefs Préférences définies par l'utilisateur (peut être de n'importe quel type)
- * @returns Préférences fusionnées
+ * @returns Préférences fusionnées de type DashboardPreferences
  */
 export const mergeDashboardPreferences = (
   userPrefs: any
 ): DashboardPreferences => {
   try {
     // Vérification renforcée que userPrefs est un objet valide
-    // et n'est pas null, undefined ou une chaîne JSON non parsée
     if (userPrefs && typeof userPrefs === 'object') {
       // Utiliser Object.assign pour fusionner les objets
       return Object.assign({}, defaultDashboardPreferences, userPrefs);
@@ -52,6 +52,9 @@ export const mergeDashboardPreferences = (
         console.error("Erreur lors du parsing des préférences JSON:", parseError);
       }
     }
+    
+    // Si aucune conversion n'a fonctionné, retourner les préférences par défaut
+    console.log("Utilisation des préférences par défaut pour le tableau de bord");
     return defaultDashboardPreferences;
   } catch (error) {
     console.error("Erreur lors de la fusion des préférences:", error);

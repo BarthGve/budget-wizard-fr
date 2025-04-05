@@ -9,6 +9,8 @@ import { useDashboardPageData } from "./dashboard/useDashboardData";
 import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
 import { memo } from "react";
 import { ModernMobileSidebar } from "./dashboard/ModernMobileSidebar";
+import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
+import { Profile } from "@/types/profile";
 
 // Optimisation avec mémorisation pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
@@ -36,6 +38,16 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return () => clearTimeout(timeoutId);
   }, [refetch]);
 
+  // Transformation du profil pour assurer la compatibilité des types
+  const formattedProfile: Profile | undefined = userProfile
+    ? {
+        ...userProfile,
+        dashboard_preferences: userProfile.dashboard_preferences 
+          ? mergeDashboardPreferences(userProfile.dashboard_preferences) 
+          : null
+      }
+    : undefined;
+
   // Fonctions de gestion de la sidebar mobile
   const toggleSidebar = () => {
     setShowMobileSidebar(!showMobileSidebar);
@@ -55,9 +67,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <ModernMobileSidebar 
           isOpen={showMobileSidebar}
           onOpenChange={setShowMobileSidebar}
-          userId={userProfile?.id}
+          userId={formattedProfile?.id}
           isAdmin={userProfile?.isAdmin}
-          profile={userProfile}
+          profile={formattedProfile}
         />
       )}
 

@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Profile } from "@/types/profile";
+import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
 
 /**
  * Hook qui récupère le profil utilisateur courant
@@ -24,17 +25,23 @@ export const useProfileFetcher = () => {
         return null;
       }
 
-      // Vérification et transformation des préférences si nécessaire
-      if (data && data.dashboard_preferences) {
-        try {
-          // Si les préférences sont stockées en tant que chaîne, les parser
-          if (typeof data.dashboard_preferences === 'string') {
-            data.dashboard_preferences = JSON.parse(data.dashboard_preferences);
+      // Traitement spécifique des préférences du tableau de bord
+      if (data) {
+        // Conversion explicite des préférences JSON en objet DashboardPreferences
+        if (data.dashboard_preferences) {
+          try {
+            // Si les préférences sont stockées en tant que chaîne, les parser
+            if (typeof data.dashboard_preferences === 'string') {
+              data.dashboard_preferences = JSON.parse(data.dashboard_preferences);
+            }
+            
+            // Toujours fusionner avec les préférences par défaut pour garantir la structure complète
+            data.dashboard_preferences = mergeDashboardPreferences(data.dashboard_preferences);
+          } catch (e) {
+            console.error("Erreur lors du parsing des préférences du tableau de bord:", e);
+            // En cas d'erreur, définir les préférences à null pour utiliser les valeurs par défaut
+            data.dashboard_preferences = null;
           }
-        } catch (e) {
-          console.error("Erreur lors du parsing des préférences du tableau de bord:", e);
-          // En cas d'erreur, définir les préférences à null pour utiliser les valeurs par défaut
-          data.dashboard_preferences = null;
         }
       }
 
