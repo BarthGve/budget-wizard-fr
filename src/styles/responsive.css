@@ -21,7 +21,7 @@
 /* Optimisations pour la page détail véhicule */
 @media (max-width: 768px) {
   .vehicle-detail-content {
-    @apply pt-16; /* Ajouter de l'espace en haut pour la navigation fixe */
+    @apply pt-20; /* Augmenté l'espace en haut pour la navigation fixe */
   }
   
   .vehicle-detail-section {
@@ -42,6 +42,32 @@
   .swipeable-tabs {
     @apply touch-pan-x;
   }
+
+  /* Zone de sécurité pour éviter que les boutons flottants ne se chevauchent */
+  .floating-button-zone {
+    @apply pb-24;
+  }
+  
+  /* Styles pour la sidebar mobile moderne */
+  .sheet-content-left {
+    @apply overflow-y-auto scrollbar-none;
+  }
+  
+  /* Animation d'entrée pour la sidebar */
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out forwards;
+  }
 }
 
 /* Optimisations pour les safe areas sur iOS */
@@ -51,6 +77,10 @@
 
 .ios-bottom-safe {
   padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 /* Polir l'apparence des onglets sur mobile */

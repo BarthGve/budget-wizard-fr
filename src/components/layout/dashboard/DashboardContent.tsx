@@ -1,3 +1,4 @@
+
 import { ReactNode, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -42,7 +43,7 @@ export const DashboardContent = ({
             <Button 
               size="sm" 
               variant="outline" 
-              className="fixed z-40 right-4 top-4 ios-top-safe rounded-full shadow-md"
+              className="fixed z-40 right-4 top-20 ios-top-safe rounded-full shadow-md"
             >
               <BadgeEuro className="h-12 w-12" />
             </Button>
@@ -60,7 +61,7 @@ export const DashboardContent = ({
 
       <div className={cn(
         "flex-1 container mx-auto p-6 overflow-auto relative",
-        isMobile ? "ios-top-safe pt-24" : "pt-20"
+        isMobile ? "ios-top-safe pt-14" : "pt-20"
       )}>
         <div className="page-transition">
           {children}
@@ -70,7 +71,7 @@ export const DashboardContent = ({
       {/* Bouton d'action flottant sur mobile uniquement */}
       {isMobile && <FloatingActionButton />}
 
-      {isMobile && <div className="h-16 ios-bottom-safe" />}
+      {isMobile && <div className="h-20 ios-bottom-safe floating-button-zone" />}
     </main>
   ), [isAdmin, isMobile, globalBalance, children, openDrawer]);
 
