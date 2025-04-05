@@ -72,7 +72,7 @@ const RecurringExpenses = memo(function RecurringExpenses() {
   }
 
   return (
-    <div className="w-full max-w-full ">
+    <div className="w-full max-w-full px-0 sm:px-2">
       <RecurringExpensesContainer 
         recurringExpenses={recurringExpenses || []} 
         onDeleteExpense={handleDeleteExpense} 
