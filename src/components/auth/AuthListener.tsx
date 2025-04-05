@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -161,17 +160,9 @@ export const AuthListener = () => {
               queryClient.invalidateQueries({ queryKey: [key] });
             });
             
-            // Utiliser navigate avec replace pour éviter d'ajouter à l'historique
-            // et garantir le comportement SPA
-            navigate("/", { replace: true });
-            
-            // Réinitialiser le drapeau après un délai pour permettre la navigation complète
-            if (redirectTimeoutRef.current) {
-              clearTimeout(redirectTimeoutRef.current);
-            }
-            redirectTimeoutRef.current = window.setTimeout(() => {
-              navigationInProgress.current = false;
-            }, 300);
+            // MODIFICATION: Au lieu d'utiliser navigate, forcer un rechargement complet
+            // Cela résout le problème des liens qui ne fonctionnent plus
+            window.location.href = "/";
             
           } catch (error) {
             console.error("Error during sign out handling:", error);
