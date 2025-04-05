@@ -43,7 +43,7 @@ export const DashboardContent = ({
             <Button 
               size="sm" 
               variant="outline" 
-              className="fixed z-40 right-4 bottom-20 ios-top-safe rounded-full shadow-md"
+              className="fixed z-40 right-20 bottom-20 ios-top-safe rounded-full shadow-md"
             >
               <BadgeEuro className="h-12 w-12" />
             </Button>
