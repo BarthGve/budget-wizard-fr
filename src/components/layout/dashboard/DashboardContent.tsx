@@ -71,7 +71,7 @@ export const DashboardContent = ({
       {/* Bouton d'action flottant sur mobile uniquement */}
       {isMobile && <FloatingActionButton />}
 
-      {isMobile && <div className="h-20 ios-bottom-safe floating-button-zone" />}
+      {isMobile && <div className="h-10 ios-bottom-safe floating-button-zone" />}
     </main>
   ), [isAdmin, isMobile, globalBalance, children, openDrawer]);
 
