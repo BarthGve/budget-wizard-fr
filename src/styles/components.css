@@ -34,4 +34,13 @@
   .changelog-header-gradient {
     @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
   }
+
+  /* Sidebar moderne pour mobile */
+  .mobile-sidebar-floating {
+    @apply shadow-lg rounded-r-2xl border-0 backdrop-blur-md;
+  }
+  
+  .mobile-sidebar-toggle {
+    @apply shadow-lg rounded-full backdrop-blur-sm transition-all hover:scale-105 active:scale-95;
+  }
 }

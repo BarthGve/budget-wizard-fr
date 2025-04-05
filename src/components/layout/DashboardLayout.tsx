@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect } from "react";
 import { MobileSidebarToggle } from "./dashboard/MobileSidebarToggle";
-import { MobileSidebarOverlay } from "./dashboard/MobileSidebarOverlay";
+import { MobileSidebarSheet } from "./dashboard/MobileSidebarSheet";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { useDashboardPageData } from "./dashboard/useDashboardData";
 import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
@@ -42,28 +42,32 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setShowMobileSidebar(!showMobileSidebar);
   };
 
-  const handleOverlayClick = () => {
-    if (isMobile && showMobileSidebar) {
-      setShowMobileSidebar(false);
-    }
+  const handleOpenChange = (open: boolean) => {
+    setShowMobileSidebar(open);
   };
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
-      {/* Overlay pour fermer la sidebar sur mobile */}
-      <MobileSidebarOverlay 
-        showMobileSidebar={showMobileSidebar} 
-        onOverlayClick={handleOverlayClick} 
-      />
-      
-      {/* Sidebar - visible conditionnellement sur mobile */}
-      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}>
-        <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
-      </div>
+      {/* Version desktop de la sidebar */}
+      {!isMobile && (
+        <div className="z-50">
+          <MemoizedSidebar />
+        </div>
+      )}
 
-      {/* Bouton de basculement de la sidebar sur mobile */}
+      {/* Version mobile avec Sheet */}
       {isMobile && (
-        <MobileSidebarToggle toggleSidebar={toggleSidebar} />
+        <>
+          <MobileSidebarSheet 
+            open={showMobileSidebar} 
+            onOpenChange={handleOpenChange} 
+          />
+          
+          <MobileSidebarToggle 
+            toggleSidebar={toggleSidebar}
+            className="left-5 bottom-5" 
+          />
+        </>
       )}
 
       {/* Contenu principal */}
