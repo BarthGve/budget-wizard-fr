@@ -180,9 +180,16 @@ export function useAuth() {
       
       toast.success("Déconnexion réussie");
       
-      // Au lieu d'utiliser navigate, forcer un rechargement complet de la page
-      // Cela garantit que tous les écouteurs d'événements sont réinitialisés
-      window.location.href = "/";
+      // Rediriger vers la page d'accueil avec replace: true
+      navigate("/", { replace: true });
+      
+      // Réinitialiser le drapeau de navigation après un délai
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+      redirectTimeoutRef.current = window.setTimeout(() => {
+        navigationInProgress.current = false;
+      }, 300);
       
     } catch (error: any) {
       console.error("Erreur lors de la déconnexion:", error);
@@ -190,7 +197,7 @@ export function useAuth() {
     } finally {
       setLoading(false);
     }
-  }, [invalidateAllCaches]);
+  }, [navigate, invalidateAllCaches]);
 
   // Récupération du mot de passe
   const resetPassword = useCallback(async (email: string) => {

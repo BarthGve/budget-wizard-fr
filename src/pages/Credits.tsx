@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { Credit } from "@/components/credits/types";
 import { CreditsContainer } from "@/components/credits/components/CreditsContainer";
-import { motion } from "framer-motion";
 
 const Credits = memo(function Credits() {
   const navigate = useNavigate();
@@ -112,31 +111,12 @@ const Credits = memo(function Credits() {
     return <StyledLoader />;
   }
   
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delay: 0.1,
-        duration: 0.5
-      }
-    }
-  };
-  
   return (
-    <motion.div
-      className="page-container"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <CreditsContainer 
-        credits={credits}
-        monthlyStats={monthlyStats}
-        onCreditDeleted={handleCreditDeleted}
-      />
-    </motion.div>
+    <CreditsContainer 
+      credits={credits}
+      monthlyStats={monthlyStats}
+      onCreditDeleted={handleCreditDeleted}
+    />
   );
 });
 

@@ -118,7 +118,7 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId, onItemClick }: Navi
         
         {/* Ajout du composant FeedbackDialog juste après les liens de navigation */}
         {!isAdmin && (
-          <li className="mt-2 p-2">
+          <li className="mt-2">
             <FeedbackDialog collapsed={collapsed} />
           </li>
         )}

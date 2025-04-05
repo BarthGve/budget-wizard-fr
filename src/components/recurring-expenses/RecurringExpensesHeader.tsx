@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Plus, ClipboardList } from "lucide-react";
 import { motion } from "framer-motion";
@@ -12,7 +11,7 @@ export const RecurringExpensesHeader = () => {
   
   return (
     <motion.div 
-      className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"
+      className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ 
