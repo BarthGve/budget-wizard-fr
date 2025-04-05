@@ -65,7 +65,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           
           <MobileSidebarToggle 
             toggleSidebar={toggleSidebar}
-            className="left-5 bottom-5" 
+            className="left-5 top-5" 
           />
         </>
       )}
