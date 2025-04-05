@@ -1,5 +1,5 @@
 
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetOverlay } from "@/components/ui/sheet";
 import { Sidebar } from "../sidebar";
 
 interface MobileSidebarSheetProps {
@@ -10,10 +10,10 @@ interface MobileSidebarSheetProps {
 export const MobileSidebarSheet = ({ open, onOpenChange }: MobileSidebarSheetProps) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
+      {/* Utilisation de la classe appropriée sur SheetContent, sans overlayClassName */}
       <SheetContent 
         side="left" 
         className="p-0 border-r shadow-xl w-4/5 max-w-[280px] sm:max-w-[320px]"
-        overlayClassName="backdrop-blur-sm"
       >
         <div className="h-full overflow-hidden">
           <Sidebar onClose={() => onOpenChange(false)} />
