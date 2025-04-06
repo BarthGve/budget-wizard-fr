@@ -6,20 +6,33 @@ import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent"
 import { useDashboardQueries } from "@/hooks/useDashboardQueries";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { useDashboardViewCalculations } from "@/hooks/useDashboardViewCalculations";
+import { useContributors } from "@/hooks/useContributors";
 import { motion } from "framer-motion";
+import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header/DashboardHeader";
 import { useState } from "react";
-import { useAuthContext } from "@/hooks/useAuthContext";
 
 const Dashboard = () => {
   // État pour gérer le mode d'affichage (mensuel/annuel)
   const [currentView, setCurrentView] = useState<"monthly" | "yearly">("monthly");
-  const { user } = useAuthContext();
   
+  // Configurer les écouteurs de mises à jour en temps réel
+  useRealtimeListeners();
+
+  // Récupérer l'ID utilisateur
+  const { data: { user } = {} } = useQuery({
+    queryKey: ['auth-user'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getUser();
+      return data;
+    },
+    refetchOnWindowFocus: false,
+  });
+
   // Données du tableau de bord
-  const { dashboardData, refetchDashboard, isLoading, error } = useDashboardQueries(user?.id);
+  const { dashboardData, refetchDashboard } = useDashboardQueries(user?.id);
 
   // Récupérer les statistiques des dépenses, y compris les dépenses carburant
   const { 
@@ -33,7 +46,6 @@ const Dashboard = () => {
   // Rafraîchir les données lorsque le composant est monté
   useEffect(() => {
     if (user?.id) {
-      console.log("Rafraîchissement des données du dashboard au montage");
       refetchDashboard();
     }
   }, [user?.id, refetchDashboard]);
@@ -75,28 +87,9 @@ const Dashboard = () => {
     }
   };
 
-  // Afficher un loader pendant le chargement ou en cas d'erreur
-  if (isLoading || !dashboardData || !user) {
+  // Afficher un loader pendant le chargement
+  if (!dashboardData || !user) {
     return <StyledLoader />;
-  }
-  
-  // Gérer les cas d'erreur
-  if (error) {
-    console.error("Erreur dans le dashboard:", error);
-    return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h2 className="text-xl font-semibold text-red-500 mb-2">Erreur de chargement</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          Une erreur est survenue lors du chargement de vos données.
-        </p>
-        <button 
-          className="px-4 py-2 bg-primary text-white rounded-md"
-          onClick={() => refetchDashboard()}
-        >
-          Réessayer
-        </button>
-      </div>
-    );
   }
 
   return (

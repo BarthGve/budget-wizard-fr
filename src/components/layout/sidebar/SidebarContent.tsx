@@ -1,138 +1,58 @@
 
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { SidebarNavigation } from "./SidebarNavigation";
-import { SidebarFooter } from "./SidebarFooter";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { SidebarLogo } from "./SidebarLogo";
+import { NavigationMenu } from "@/components/layout/NavigationMenu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle } from "lucide-react";
 import { useUserData } from "./useUserData";
-import { Profile } from "@/types/profile";
-import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
 
-// Définir les dimensions de la sidebar
-const EXPANDED_WIDTH = "240px";
-const COLLAPSED_WIDTH = "70px";
-
-export interface SidebarContentProps {
-  onClose?: () => void;
-  isAdmin?: boolean;
+interface SidebarContentProps {
+  collapsed: boolean;
+  isAdmin: boolean;
   userId?: string;
   onItemClick?: () => void;
 }
 
-// Composant principal du contenu de la sidebar
-export const SidebarContent = ({ onClose, isAdmin, userId, onItemClick }: SidebarContentProps) => {
-  const [collapsed, setCollapsed] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { profile, isLoading } = useUserData();
+export const SidebarContent = ({ collapsed, isAdmin, userId, onItemClick }: SidebarContentProps) => {
+  // Utilisation du hook useUserData pour vérifier l'état du chargement des données
+  const { isLoading, currentUser, refreshUserData } = useUserData();
   
-  console.log("SidebarContent rendering, profile:", profile ? "loaded" : "not loaded");
-
-  // Fonction pour basculer l'état de la sidebar
-  const toggleSidebar = () => {
-    setCollapsed(!collapsed);
-  };
-
-  // Effet pour fermer la sidebar sur mobile quand la route change
-  useEffect(() => {
-    if (onClose) {
-      console.log("Route changée, fermeture de la sidebar mobile");
-      onClose();
-    }
-  }, [location.pathname, onClose]);
-
-  // Fonction pour gérer le clic sur un élément de navigation
-  const handleNavItemClick = () => {
-    console.log("Élément de navigation cliqué");
-    if (onItemClick) {
-      onItemClick();
-    }
-    
-    // Fermer également la sidebar sur mobile
-    if (onClose) {
-      console.log("Fermeture de la sidebar après clic sur élément");
-      onClose();
-    }
-  };
-
-  // Préparer une valeur de profil par défaut pour éviter les erreurs
-  const defaultProfile: Profile = {
-    id: "",
-    email: "",
-    full_name: "",
-    avatar_url: null,
-    updated_at: null,
-    color_palette: null,
-    encryption_enabled: null,
-    profile_type: "basic",
-    savings_goal_percentage: null,
-    dashboard_preferences: null
-  };
-
-  // Transformer le profil pour s'assurer que dashboard_preferences est du bon type
-  let transformedProfile: Profile | undefined;
-  
-  if (profile) {
-    let dashboard_prefs = null;
-    
-    // Vérifier si dashboard_preferences existe et le convertir si nécessaire
-    if (profile.dashboard_preferences) {
-      try {
-        dashboard_prefs = typeof profile.dashboard_preferences === 'string' 
-          ? JSON.parse(profile.dashboard_preferences) 
-          : mergeDashboardPreferences(profile.dashboard_preferences);
-      } catch (e) {
-        console.error("Erreur lors de la conversion des préférences:", e);
-        dashboard_prefs = null;
-      }
-    }
-    
-    transformedProfile = {
-      ...profile,
-      dashboard_preferences: dashboard_prefs
-    };
-  } else {
-    transformedProfile = defaultProfile;
+  // Affichage d'un état de chargement
+  if (isLoading) {
+    return (
+      <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center p-4 space-y-4 opacity-70">
+        <Skeleton className="h-8 w-3/4" />
+        <Skeleton className="h-8 w-3/4" />
+        <Skeleton className="h-8 w-3/4" />
+        <Skeleton className="h-8 w-3/4" />
+        <Skeleton className="h-8 w-3/4" />
+      </div>
+    );
   }
-
-  return (
-    <div
-      className={cn(
-        "h-full flex flex-col bg-background border-r transition-all duration-300",
-        collapsed ? "w-[70px]" : "w-[240px]"
-      )}
-      style={{ width: collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH }}
-    >
-      {/* Logo et titre */}
-      <div className="p-4 border-b flex items-center justify-between">
-        <SidebarLogo collapsed={collapsed} />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7"
-          onClick={toggleSidebar}
+  
+  // Affichage d'un message d'erreur et d'un bouton pour réessayer
+  if (!currentUser) {
+    return (
+      <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center p-4 text-center">
+        <AlertCircle className="h-8 w-8 text-amber-500 mb-2" />
+        <p className="text-sm text-muted-foreground mb-3">Impossible de charger le menu</p>
+        <button 
+          onClick={() => refreshUserData()}
+          className="text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-md transition-colors"
         >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
-        </Button>
+          Réessayer
+        </button>
       </div>
-
-      {/* Navigation */}
-      <div className="flex-1 overflow-y-auto">
-        <SidebarNavigation 
-          collapsed={collapsed} 
-          onItemClick={handleNavItemClick}
-        />
-      </div>
-
-      {/* Pied de page avec profil utilisateur */}
-      <SidebarFooter collapsed={collapsed} profile={transformedProfile} isLoading={isLoading} />
+    );
+  }
+  
+  return (
+    <div className="flex-1 overflow-y-auto flex flex-col">
+      {/* Menu de navigation */}
+      <NavigationMenu 
+        collapsed={collapsed} 
+        isAdmin={isAdmin}
+        userId={userId || currentUser.id}
+        onItemClick={onItemClick}
+      />
     </div>
   );
 };

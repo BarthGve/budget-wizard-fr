@@ -1,15 +1,15 @@
 
-import { useState, ReactNode, useEffect } from "react";
+import { useState, ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect } from "react";
 import { MobileSidebarToggle } from "./dashboard/MobileSidebarToggle";
 import { MobileSidebarOverlay } from "./dashboard/MobileSidebarOverlay";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { useDashboardPageData } from "./dashboard/useDashboardData";
+import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
 import { memo } from "react";
-import { MobileUserMenuToggle } from "./dashboard/MobileUserMenuToggle";
-import { Profile } from "@/types/profile";
 
 // Optimisation avec mémorisation pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
@@ -23,13 +23,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   
   // Récupérer les données du dashboard
-  const { userProfile, globalBalance, refetch, isLoading } = useDashboardPageData();
+  const { userProfile, globalBalance, refetch } = useDashboardPageData();
   
+  // Configurer les écouteurs de mise à jour en temps réel
+  useRealtimeUpdates(refetch);
+
   // Effet pour déclencher une actualisation après le chargement initial
   useEffect(() => {
-    console.log("DashboardLayout monté");
-    
-    // Assurer que les données sont chargées une fois le composant monté
     const timeoutId = setTimeout(() => {
       refetch();
     }, 300);
@@ -39,25 +39,14 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   // Fonctions de gestion de la sidebar mobile
   const toggleSidebar = () => {
-    console.log("toggleSidebar appelé, état actuel:", showMobileSidebar);
-    setShowMobileSidebar(prevState => !prevState);
+    setShowMobileSidebar(!showMobileSidebar);
   };
 
   const handleOverlayClick = () => {
-    console.log("Overlay cliqué, fermeture de la sidebar");
-    setShowMobileSidebar(false);
+    if (isMobile && showMobileSidebar) {
+      setShowMobileSidebar(false);
+    }
   };
-
-  // Fonction pour fermer la sidebar
-  const closeSidebar = () => {
-    console.log("Fermeture de la sidebar");
-    setShowMobileSidebar(false);
-  };
-
-  // Log pour le débogage
-  useEffect(() => {
-    console.log("Nouvelle valeur de showMobileSidebar:", showMobileSidebar);
-  }, [showMobileSidebar]);
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
@@ -68,28 +57,19 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       />
       
       {/* Sidebar - visible conditionnellement sur mobile */}
-      <div 
-        className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}
-        data-testid="sidebar-container"
-      >
-        <MemoizedSidebar onClose={closeSidebar} />
+      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}>
+        <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
       </div>
 
       {/* Bouton de basculement de la sidebar sur mobile */}
       {isMobile && (
         <MobileSidebarToggle toggleSidebar={toggleSidebar} />
       )}
-      
-      {/* Bouton du menu utilisateur sur mobile */}
-      {isMobile && userProfile && (
-        <MobileUserMenuToggle profile={userProfile as Profile} isLoading={isLoading} />
-      )}
 
       {/* Contenu principal */}
       <DashboardContent 
         globalBalance={globalBalance} 
         isAdmin={userProfile?.isAdmin}
-        isLoading={isLoading}
       >
         {children}
       </DashboardContent>
