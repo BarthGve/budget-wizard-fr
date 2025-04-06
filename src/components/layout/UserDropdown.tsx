@@ -91,8 +91,8 @@ export const UserDropdown = ({
 
   return (
     <div className={cn(
-      "p-2", 
-      isMobile ? "shadow-none" : ""
+       
+      isMobile ? "shadow-none" : "p-3 sm:p-2"
     )}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
