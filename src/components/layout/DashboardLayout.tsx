@@ -10,7 +10,6 @@ import { DashboardContent } from "./dashboard/DashboardContent";
 import { useDashboardPageData } from "./dashboard/useDashboardData";
 import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
 import { memo } from "react";
-import { MobileUserButton } from "./sidebar/MobileUserButton";
 
 // Optimisation avec mémorisation pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
@@ -65,11 +64,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Bouton de basculement de la sidebar sur mobile */}
       {isMobile && (
         <MobileSidebarToggle toggleSidebar={toggleSidebar} />
-      )}
-
-      {/* Bouton d'accès au profil utilisateur sur mobile */}
-      {isMobile && (
-        <MobileUserButton profile={userProfile} />
       )}
 
       {/* Contenu principal */}
