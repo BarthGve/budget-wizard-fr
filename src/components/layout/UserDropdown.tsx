@@ -141,19 +141,7 @@ export const UserDropdown = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-background/95 backdrop-blur-sm z-[99]">
           <div className="flex items-center gap-3 p-2 border-b">
-            <div className="relative">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
-                <AvatarFallback>
-                  {(localProfile?.full_name || "?")[0]?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {localProfile?.profile_type === "pro" && (
-                <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
-                  Pro
-                </Badge>
-              )}
-            </div>
+           
             <div className="flex flex-col">
               <span className="font-medium text-sm">{localProfile?.full_name || "Utilisateur"}</span>
               <span className="text-xs text-muted-foreground">{localProfile?.email}</span>
@@ -172,23 +160,7 @@ export const UserDropdown = ({
             </DropdownMenuItem>
           )}
 
-          {isMobile && (
-            <>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("light")}>
-                <Sun className="mr-2 h-4 w-4" />
-                <span>Thème clair</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("dark")}>
-                <Moon className="mr-2 h-4 w-4" />
-                <span>Thème sombre</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("system")}>
-                <Monitor className="mr-2 h-4 w-4" />
-                <span>Thème système</span>
-              </DropdownMenuItem>
-            </>
-          )}
-
+          
           <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Se déconnecter</span>
