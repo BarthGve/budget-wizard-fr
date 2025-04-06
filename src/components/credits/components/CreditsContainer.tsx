@@ -81,7 +81,7 @@ export const CreditsContainer = memo(({
 
   return (
     <motion.div 
-      className="space-y-6 mt-4"
+      className="space-y-6 container px-4 py-6 mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
