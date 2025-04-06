@@ -34,4 +34,25 @@
   .changelog-header-gradient {
     @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
   }
+
+  /* Mobile User Button Animation */
+  .mobile-user-button {
+    @apply fixed bottom-4 right-4 h-12 w-12 rounded-full shadow-lg z-50 transition-all duration-300;
+  }
+  
+  .mobile-user-button-pulse {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(var(--primary), 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(var(--primary), 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(var(--primary), 0);
+    }
+  }
 }
