@@ -91,7 +91,7 @@ export const UserDropdown = ({
 
   return (
     <div className={cn(
-       
+      "p-2", 
       isMobile ? "shadow-none" : "p-3 sm:p-2"
     )}>
       <DropdownMenu>
@@ -100,8 +100,8 @@ export const UserDropdown = ({
             variant="ghost" 
             className={cn(
               "w-full h-auto",
-              collapsed && isMobile ? "justify-center p-2 rounded-full" : 
-              collapsed ? "justify-center p-0" : "justify-start p-2"
+              collapsed && isMobile ? "justify-center p-0 rounded-full" : 
+              collapsed ? "justify-center p-0" : "justify-start p-0"
             )}>
             <div className={cn(
               "flex items-center w-full",
@@ -172,22 +172,7 @@ export const UserDropdown = ({
             </DropdownMenuItem>
           )}
 
-          {isMobile && (
-            <>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("light")}>
-                <Sun className="mr-2 h-4 w-4" />
-                <span>Thème clair</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("dark")}>
-                <Moon className="mr-2 h-4 w-4" />
-                <span>Thème sombre</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("system")}>
-                <Monitor className="mr-2 h-4 w-4" />
-                <span>Thème système</span>
-              </DropdownMenuItem>
-            </>
-          )}
+          
 
           <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
