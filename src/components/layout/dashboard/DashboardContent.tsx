@@ -27,7 +27,7 @@ export const DashboardContent = ({
     <main className="flex-1 flex flex-col h-screen touch-scroll">
       {!isAdmin && !isMobile && (
         <div className={cn(
-          "fixed z-40 right-6 top-4"
+          "fixed z-40 right-12 top-4"
         )}>
           <GlobalBalanceCard 
             balance={globalBalance} 
