@@ -1,5 +1,4 @@
 
-import React from "react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -7,21 +6,25 @@ interface SidebarLogoProps {
   collapsed: boolean;
 }
 
-export const SidebarLogo: React.FC<SidebarLogoProps> = ({ collapsed }) => {
+export const SidebarLogo = ({ collapsed }: SidebarLogoProps) => {
   return (
-    <Link to="/dashboard" className="flex items-center gap-2">
+    <Link 
+      to="/dashboard" 
+      className={cn(
+        "flex items-center",
+        collapsed ? "justify-center" : "justify-start" 
+      )}
+    >
+      {/* Logo - affiché que le logo soit réduit ou non */}
       <img
-        src="/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.avif"
+        src="/lovable-uploads/icone_lovable.jpeg"
         alt="Logo"
-        className="h-8 w-8"
+        className="w-6 h-6 rounded-md"
       />
+      
+      {/* Texte - affiché uniquement quand la sidebar n'est pas réduite */}
       {!collapsed && (
-        <span className={cn(
-          "font-semibold text-lg transition-opacity",
-          collapsed ? "opacity-0 hidden" : "opacity-100"
-        )}>
-          Budget Wizard
-        </span>
+        <span className="ml-2 font-semibold text-primary">FinanceManager</span>
       )}
     </Link>
   );

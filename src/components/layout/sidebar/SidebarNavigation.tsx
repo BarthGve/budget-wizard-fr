@@ -75,10 +75,10 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   collapsed,
   onItemClick
 }) => {
-  const { canAccessPage } = usePagePermissions();
+  const { canAccessPage, isAdmin, isBasicProfile } = usePagePermissions();
   
   // Récupérer les éléments de navigation filtrés selon les permissions
-  const navItems = getNavItems(false).filter(item => {
+  const navItems = getNavItems(!!isAdmin).filter(item => {
     // Vérifier l'accès à la page
     return canAccessPage(item.path);
   });

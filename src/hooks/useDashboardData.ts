@@ -1,4 +1,5 @@
-import { useAuth } from "@/hooks/useAuth";
+
+import { useAuthContext } from "@/hooks/useAuthContext";
 import { useDashboardQueries } from "./useDashboardQueries";
 import { useRealtimeListeners } from "./useRealtimeListeners";
 import { useCallback, useEffect, useRef } from "react";
@@ -9,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
  * Centralise la logique de récupération et de mise à jour des données
  */
 export const useDashboardData = () => {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const queryClient = useQueryClient();
   const initialLoadDoneRef = useRef(false);
   

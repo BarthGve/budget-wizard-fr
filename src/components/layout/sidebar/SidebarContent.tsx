@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SidebarLogo } from "./SidebarLogo";
 import { useUserData } from "./useUserData";
+import { DashboardPreferences, Profile } from "@/types/profile";
+import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
 
 // Définir les dimensions de la sidebar
 const EXPANDED_WIDTH = "240px";
@@ -46,6 +48,14 @@ export const SidebarContent = ({ onClose, isAdmin, userId, onItemClick }: Sideba
     }
   };
 
+  // Transformer le profil pour s'assurer que dashboard_preferences est du bon type
+  const transformedProfile: Profile | undefined = profile ? {
+    ...profile,
+    dashboard_preferences: profile.dashboard_preferences 
+      ? mergeDashboardPreferences(profile.dashboard_preferences)
+      : null
+  } : undefined;
+
   return (
     <div
       className={cn(
@@ -80,10 +90,7 @@ export const SidebarContent = ({ onClose, isAdmin, userId, onItemClick }: Sideba
       </div>
 
       {/* Pied de page avec profil utilisateur */}
-      <SidebarFooter collapsed={collapsed} profile={profile && {
-        ...profile,
-        dashboard_preferences: profile.dashboard_preferences || null
-      }} isLoading={isLoading} />
+      <SidebarFooter collapsed={collapsed} profile={transformedProfile} isLoading={isLoading} />
     </div>
   );
 };

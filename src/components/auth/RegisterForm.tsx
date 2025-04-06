@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useAuthContext } from "@/context/AuthProvider";
+import { useAuthContext } from "@/hooks/useAuthContext";
 import { LoadingButton } from "@/components/ui/loading-button";
 
 interface RegisterFormProps {
@@ -56,7 +56,7 @@ export const RegisterForm = () => {
     
     try {
       await registerUser({
-        name: values.name,
+        full_name: values.name,
         email: values.email,
         password: values.password,
       });
