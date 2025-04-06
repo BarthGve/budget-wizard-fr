@@ -88,8 +88,8 @@ export const VehiclesContainer = () => {
       initial="hidden"
       animate="visible"
       className={cn(
-        "max-w-7xl mx-auto",
-        "space-y-8"
+        "container px-4 py-6 mx-auto",
+        "space-y-6"
       )}
     >
       <VehiclesHeader />
