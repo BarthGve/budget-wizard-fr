@@ -40,17 +40,17 @@ export const ProfileForm = ({
   onResendVerification,
   isMobile = false
 }: ProfileFormProps) => {
-  // Pas besoin d'un état local pour fullName car il est maintenant passé en props
-
-  // Utiliser useEffect pour synchroniser le fullName avec les props
+  // Utiliser useEffect pour synchroniser le fullName avec les props uniquement au montage initial
+  // ou quand le profil change significativement (pas à chaque changement de nom)
   useEffect(() => {
     console.log("ProfileForm: profile mis à jour", profile?.full_name);
-    // Ne mettre à jour que si le profil existe et que fullName est différent
-    if (profile?.full_name && profile.full_name !== fullName) {
-      console.log("ProfileForm: mise à jour du nom de", fullName, "à", profile.full_name);
+    // Ne mettre à jour que si le profil existe, que fullName est vide ou undefined,
+    // ou si c'est le chargement initial (premier rendu)
+    if (profile?.full_name && (!fullName || fullName === "")) {
+      console.log("ProfileForm: initialisation du nom à", profile.full_name);
       setFullName(profile.full_name);
     }
-  }, [profile, setFullName, fullName]);
+  }, [profile, setFullName]);
 
   const handleLocalSubmit = async (e: React.FormEvent) => {
     console.log("Soumission du formulaire avec le nom:", fullName);
