@@ -92,11 +92,52 @@ export const UserDropdown = ({
   return (
     <div className={cn(
       "p-2", 
-      isMobile ? "shadow-none" : "p-3 sm:p-2"
+      isMobile ? "shadow-none" : "p-2 sm:p-1"
     )}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          
+          <Button 
+            variant="ghost" 
+            className={cn(
+              "w-full h-auto",
+              collapsed && isMobile ? "justify-center p-2 rounded-full" : 
+              collapsed ? "justify-center p-0" : "justify-start p-2"
+            )}>
+            <div className={cn(
+              "flex items-center w-full",
+              collapsed ? "justify-center" : "gap-3"
+            )}>
+              <div className="relative">
+                <Avatar className={cn(
+                  "transition-all duration-300 border-2 border-background",
+                  isMobile && collapsed ? "h-9 w-9" : collapsed ? "h-10 w-10" : "h-12 w-12"
+                )}>
+                  <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
+                  <AvatarFallback>
+                    {(localProfile?.full_name || "?")[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                {localProfile?.profile_type === "pro" && (
+                  <Badge 
+                    className={cn(
+                      "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
+                      collapsed ? "scale-90" : ""
+                    )}>
+                    Pro
+                  </Badge>
+                )}
+              </div>
+              {!collapsed && (
+                <div className="flex items-center justify-between flex-1">
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium text-sm truncate max-w-[120px]">{localProfile?.full_name || "Utilisateur"}</span>
+                    <span className="text-xs text-muted-foreground truncate max-w-[120px]">{localProfile?.email}</span>
+                  </div>
+                  <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-background/95 backdrop-blur-sm z-[99]">
           <div className="flex items-center gap-3 p-2 border-b">
