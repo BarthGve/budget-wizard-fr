@@ -17,6 +17,8 @@ interface ProfileFormProps {
   previewUrl: string | null;
   setPreviewUrl: (url: string | null) => void;
   isUpdating: boolean;
+  fullName: string; 
+  setFullName: (name: string) => void;
   onSubmit: (e: React.FormEvent) => Promise<void>;
   onEmailChangeClick: () => void;
   onResendVerification: () => void;
@@ -31,20 +33,24 @@ export const ProfileForm = ({
   previewUrl,
   setPreviewUrl,
   isUpdating,
+  fullName,
+  setFullName,
   onSubmit,
   onEmailChangeClick,
   onResendVerification,
   isMobile = false
 }: ProfileFormProps) => {
-  const [fullName, setFullName] = useState(profile?.full_name || "");
+  // Pas besoin d'un état local pour fullName car il est maintenant passé en props
 
-  // Mettre à jour fullName quand profile change
+  // Utiliser useEffect pour synchroniser le fullName avec les props
   useEffect(() => {
     console.log("ProfileForm: profile mis à jour", profile?.full_name);
-    if (profile?.full_name) {
+    // Ne mettre à jour que si le profil existe et que fullName est différent
+    if (profile?.full_name && profile.full_name !== fullName) {
+      console.log("ProfileForm: mise à jour du nom de", fullName, "à", profile.full_name);
       setFullName(profile.full_name);
     }
-  }, [profile]);
+  }, [profile, setFullName, fullName]);
 
   const handleLocalSubmit = async (e: React.FormEvent) => {
     console.log("Soumission du formulaire avec le nom:", fullName);

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,13 +75,16 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       if (updateError) throw updateError;
 
       console.log("Invalidation du cache React Query pour les clés liées au profil");
+      // Invalidation de toutes les requêtes liées au profil
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
       await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       await queryClient.invalidateQueries({ queryKey: ["current-user"] });
       
+      // Forcer un nouveau fetch immédiat
       await queryClient.refetchQueries({ 
         queryKey: ["profile"],
-        exact: true
+        exact: true,
+        type: 'active'
       });
       
       toast.success("Profil mis à jour avec succès", {
@@ -139,12 +143,15 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       navigate("/email-verification?type=emailChange");
       
       toast.success(
-        "Un email de vérification a été envoyé à votre nouvelle adresse. Veuillez vérifier votre boîte mail pour confirmer le changement."
+        "Un email de vérification a été envoyé à votre nouvelle adresse. Veuillez vérifier votre boîte mail pour confirmer le changement.",
+        { duration: 5000 }
       );
       
     } catch (error: any) {
       console.error("Error updating email:", error);
-      toast.error(error.message || "Erreur lors de la mise à jour de l'email");
+      toast.error(error.message || "Erreur lors de la mise à jour de l'email", {
+        duration: 3000
+      });
     } finally {
       setIsUpdatingEmail(false);
     }
@@ -171,13 +178,19 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
         
         localStorage.setItem("verificationEmail", userData.user.new_email);
         navigate("/email-verification?type=emailChange");
-        toast.success("Email de vérification renvoyé avec succès");
+        toast.success("Email de vérification renvoyé avec succès", {
+          duration: 3000
+        });
       } else {
-        toast.error("Aucun changement d'email en attente");
+        toast.error("Aucun changement d'email en attente", {
+          duration: 3000
+        });
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des informations de l'utilisateur:", error);
-      toast.error("Impossible de renvoyer l'email de vérification");
+      toast.error("Impossible de renvoyer l'email de vérification", {
+        duration: 3000
+      });
     }
   };
 

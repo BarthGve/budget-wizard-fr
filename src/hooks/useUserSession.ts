@@ -1,3 +1,4 @@
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCallback, useEffect } from "react";
@@ -24,15 +25,16 @@ export const useUserSession = () => {
       }
       
       // Invalider explicitement toutes les requêtes liées à l'utilisateur
-      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
-      await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-      await queryClient.invalidateQueries({ queryKey: ["profile"] });
-      await queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+      queryClient.invalidateQueries({ queryKey: ["current-user"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
       
       // Forcer un rafraîchissement immédiat des données
       await queryClient.refetchQueries({ 
         queryKey: ["profile"],
-        exact: true
+        exact: true,
+        type: 'active'
       });
       
       console.log("useUserSession: Données utilisateur rafraîchies avec succès");
@@ -68,7 +70,7 @@ export const useUserSession = () => {
       return user;
     },
     retry: 2,
-    staleTime: 0, // Réduire pour toujours récupérer les données récentes
+    staleTime: 0, // Toujours récupérer les données récentes
   });
 
   // Récupération du profil utilisateur dépendant de currentUser
@@ -105,7 +107,7 @@ export const useUserSession = () => {
     },
     enabled: !!currentUser,
     retry: 2,
-    staleTime: 0, // Réduire pour toujours récupérer les données récentes
+    staleTime: 0,
   });
 
   // Vérification du rôle admin
@@ -150,10 +152,14 @@ export const useUserSession = () => {
       (event, session) => {
         console.log("useUserSession: Événement d'authentification détecté:", event);
         
-        // Utiliser setTimeout pour éviter les deadlocks
-        setTimeout(() => {
-          refreshUserData();
-        }, 0);
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+          console.log("useUserSession: Événement nécessitant un rafraîchissement des données");
+          
+          // Utiliser setTimeout pour éviter les deadlocks
+          setTimeout(() => {
+            refreshUserData();
+          }, 50);
+        }
       }
     );
 
@@ -166,7 +172,7 @@ export const useUserSession = () => {
   return {
     currentUser,
     profile,
-    isAdmin: false, // Conservons la valeur par défaut ou implémentons la requête isAdmin
+    isAdmin,
     isLoading: isUserLoading || isProfileLoading || isAdminLoading,
     error: userError || profileError,
     refreshUserData,

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -131,6 +131,8 @@ export const ProfileSettings = () => {
             previewUrl={previewUrl} 
             setPreviewUrl={setPreviewUrl} 
             isUpdating={isUpdating} 
+            fullName={fullName}
+            setFullName={setFullName}
             onSubmit={onSubmit} 
             onEmailChangeClick={() => setShowEmailDialog(true)} 
             onResendVerification={handleResendVerification}
