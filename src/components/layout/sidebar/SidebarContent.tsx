@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { SidebarNavigation } from "./SidebarNavigation";
-import { SidebarFooter } from "../SidebarFooter";
+import { SidebarFooter } from "./SidebarFooter";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SidebarLogo } from "./SidebarLogo";
 import { useUserData } from "./useUserData";
-import { DashboardPreferences, Profile } from "@/types/profile";
+import { Profile } from "@/types/profile";
 import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
 
 // Définir les dimensions de la sidebar
@@ -56,16 +56,12 @@ export const SidebarContent = ({ onClose, isAdmin, userId, onItemClick }: Sideba
     email: "",
     full_name: "",
     avatar_url: null,
-    created_at: null,
     updated_at: null,
     color_palette: null,
     encryption_enabled: null,
-    has_added_data: false,
-    isAdmin: false,
-    profile_settings: null,
-    welcome_completed: false,
-    dashboard_preferences: null,
-    subscription_tier: "basic"
+    profile_type: "basic",
+    savings_goal_percentage: null,
+    dashboard_preferences: null
   };
 
   // Transformer le profil pour s'assurer que dashboard_preferences est du bon type
