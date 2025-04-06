@@ -11,6 +11,7 @@ import { useDashboardPageData } from "./dashboard/useDashboardData";
 import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
 import { memo } from "react";
 import { MobileUserMenu } from "./dashboard/MobileUserMenu";
+import { Profile } from "@/types/profile"; // Ajout de l'import manquant
 
 // Optimisation avec mémorisation pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
