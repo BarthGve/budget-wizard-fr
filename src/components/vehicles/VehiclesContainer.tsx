@@ -59,26 +59,12 @@ export const VehiclesContainer = () => {
     }
   };
   
-  // Animation variants
+  // Animation simplifiée
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.4
-      }
+      transition: { duration: 0.4 }
     }
   };
 
@@ -94,8 +80,7 @@ export const VehiclesContainer = () => {
     >
       <VehiclesHeader />
       
-      <motion.div
-        variants={itemVariants}
+      <div
         className={cn(
           "bg-white dark:bg-gray-900/50",
           "border border-gray-200 dark:border-gray-800",
@@ -116,7 +101,7 @@ export const VehiclesContainer = () => {
             onDelete={handleDeleteClick}
           />
         </div>
-      </motion.div>
+      </div>
       
       {/* Dialog de modification */}
       <VehicleEditDialog
