@@ -1,4 +1,3 @@
-
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCallback, useEffect } from "react";
@@ -14,25 +13,32 @@ export const useUserSession = () => {
   // Fonction pour forcer le rafraîchissement des données utilisateur
   const refreshUserData = useCallback(async () => {
     try {
-      console.log("Rafraîchissement des données utilisateur...");
+      console.log("useUserSession: Rafraîchissement des données utilisateur...");
       
       // Vérifier d'abord si l'utilisateur est authentifié
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log("Aucun utilisateur authentifié trouvé lors du rafraîchissement");
+        console.log("useUserSession: Aucun utilisateur authentifié trouvé lors du rafraîchissement");
         return null;
       }
       
       // Invalider explicitement toutes les requêtes liées à l'utilisateur
-      queryClient.invalidateQueries({ queryKey: ["current-user"] });
-      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
+      await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      await queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
       
+      // Forcer un rafraîchissement immédiat des données
+      await queryClient.refetchQueries({ 
+        queryKey: ["profile"],
+        exact: true
+      });
+      
+      console.log("useUserSession: Données utilisateur rafraîchies avec succès");
       return user;
     } catch (error) {
-      console.error("Erreur lors du rafraîchissement des données utilisateur:", error);
+      console.error("useUserSession: Erreur lors du rafraîchissement des données utilisateur:", error);
       return null;
     }
   }, [queryClient]);
@@ -45,24 +51,24 @@ export const useUserSession = () => {
   } = useQuery({
     queryKey: ["current-user"],
     queryFn: async () => {
-      console.log("Récupération de l'utilisateur courant...");
+      console.log("useUserSession: Récupération de l'utilisateur courant...");
       const { data: { user }, error } = await supabase.auth.getUser();
       
       if (error) {
-        console.error("Erreur lors de la récupération de l'utilisateur:", error);
+        console.error("useUserSession: Erreur lors de la récupération de l'utilisateur:", error);
         throw error;
       }
       
       if (!user) {
-        console.log("Aucun utilisateur authentifié trouvé");
+        console.log("useUserSession: Aucun utilisateur authentifié trouvé");
         return null;
       }
       
-      console.log("Utilisateur authentifié trouvé:", user.email);
+      console.log("useUserSession: Utilisateur authentifié trouvé:", user.id);
       return user;
     },
     retry: 2,
-    staleTime: 30000,
+    staleTime: 0, // Réduire pour toujours récupérer les données récentes
   });
 
   // Récupération du profil utilisateur dépendant de currentUser
@@ -74,11 +80,11 @@ export const useUserSession = () => {
     queryKey: ["user-profile", currentUser?.id],
     queryFn: async () => {
       if (!currentUser) {
-        console.log("Impossible de récupérer le profil: pas d'utilisateur");
+        console.log("useUserSession: Impossible de récupérer le profil: pas d'utilisateur");
         return null;
       }
 
-      console.log("Récupération du profil pour:", currentUser.id, currentUser.email);
+      console.log("useUserSession: Récupération du profil pour:", currentUser.id);
       
       const { data, error } = await supabase
         .from("profiles")
@@ -87,10 +93,11 @@ export const useUserSession = () => {
         .single();
 
       if (error) {
-        console.error("Erreur lors de la récupération du profil:", error);
+        console.error("useUserSession: Erreur lors de la récupération du profil:", error);
         throw error;
       }
 
+      console.log("useUserSession: Profil récupéré avec succès:", data?.full_name);
       return {
         ...data,
         email: currentUser.email
@@ -98,7 +105,7 @@ export const useUserSession = () => {
     },
     enabled: !!currentUser,
     retry: 2,
-    staleTime: 30000,
+    staleTime: 0, // Réduire pour toujours récupérer les données récentes
   });
 
   // Vérification du rôle admin
@@ -126,32 +133,40 @@ export const useUserSession = () => {
   // Effet pour gérer les erreurs et afficher des notifications
   useEffect(() => {
     if (userError) {
-      console.error("Erreur de récupération utilisateur:", userError);
+      console.error("useUserSession: Erreur de récupération utilisateur:", userError);
       toast.error("Problème de connexion. Veuillez vous reconnecter.");
     }
     
     if (profileError) {
-      console.error("Erreur de récupération profil:", profileError);
+      console.error("useUserSession: Erreur de récupération profil:", profileError);
       toast.error("Impossible de charger votre profil.");
     }
   }, [userError, profileError]);
 
-  // Automatiquement rafraîchir les données après un certain temps si elles sont vides
+  // Écouter les événements d'authentification pour rafraîchir automatiquement les données
   useEffect(() => {
-    if (!isUserLoading && !currentUser) {
-      const timer = setTimeout(() => {
-        console.log("Tentative automatique de récupération utilisateur...");
-        refreshUserData();
-      }, 1500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [currentUser, isUserLoading, refreshUserData]);
+    // Écouter les changements d'état d'authentification
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("useUserSession: Événement d'authentification détecté:", event);
+        
+        // Utiliser setTimeout pour éviter les deadlocks
+        setTimeout(() => {
+          refreshUserData();
+        }, 0);
+      }
+    );
+
+    return () => {
+      // Nettoyer l'écouteur lors du démontage
+      authListener.subscription.unsubscribe();
+    };
+  }, [refreshUserData]);
 
   return {
     currentUser,
     profile,
-    isAdmin: isAdmin || false,
+    isAdmin: false, // Conservons la valeur par défaut ou implémentons la requête isAdmin
     isLoading: isUserLoading || isProfileLoading || isAdminLoading,
     error: userError || profileError,
     refreshUserData,

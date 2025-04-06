@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ProfileAvatarUpload } from "./ProfileAvatarUpload";
 import { EmailChangeAlert } from "./EmailChangeAlert";
-import { Mail, Upload } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Profile } from "@/types/profile";
 import { User } from "@supabase/supabase-js";
 
@@ -40,13 +40,19 @@ export const ProfileForm = ({
 
   // Mettre à jour fullName quand profile change
   useEffect(() => {
+    console.log("ProfileForm: profile mis à jour", profile?.full_name);
     if (profile?.full_name) {
       setFullName(profile.full_name);
     }
   }, [profile]);
 
+  const handleLocalSubmit = async (e: React.FormEvent) => {
+    console.log("Soumission du formulaire avec le nom:", fullName);
+    await onSubmit(e);
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={handleLocalSubmit} className="space-y-6">
       <ProfileAvatarUpload 
         profile={profile} 
         previewUrl={previewUrl} 
@@ -63,7 +69,10 @@ export const ProfileForm = ({
           <Input 
             id="name" 
             value={fullName} 
-            onChange={e => setFullName(e.target.value)} 
+            onChange={e => {
+              console.log("Changement du nom:", e.target.value);
+              setFullName(e.target.value);
+            }} 
             placeholder="John Doe" 
             className={isMobile ? "h-12 text-base" : ""}
           />

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,11 +17,13 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
 
   const handleProfileUpdate = async (e: React.FormEvent, fullName: string) => {
     e.preventDefault();
+    console.log("Début de mise à jour du profil avec le nom:", fullName);
     setIsUpdating(true);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
+      console.log("Utilisateur authentifié:", user.id);
 
       let avatarUrl = profile?.avatar_url;
       if (avatarFile) {
@@ -56,6 +57,11 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
         avatarUrl = publicUrl;
       }
 
+      console.log("Mise à jour du profil avec les données:", {
+        full_name: fullName,
+        avatar_url: avatarUrl
+      });
+
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
@@ -67,8 +73,19 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
 
       if (updateError) throw updateError;
 
+      console.log("Invalidation du cache React Query pour les clés liées au profil");
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
-      toast.success("Profil mis à jour avec succès");
+      await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
+      
+      await queryClient.refetchQueries({ 
+        queryKey: ["profile"],
+        exact: true
+      });
+      
+      toast.success("Profil mis à jour avec succès", {
+        duration: 3000
+      });
       
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
@@ -77,9 +94,12 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       setAvatarFile(null);
     } catch (error: any) {
       console.error("Error updating profile:", error);
-      toast.error(error.message || "Erreur lors de la mise à jour du profil");
+      toast.error(error.message || "Erreur lors de la mise à jour du profil", {
+        duration: 3000
+      });
     } finally {
       setIsUpdating(false);
+      console.log("Fin de la mise à jour du profil");
     }
   };
 
@@ -87,11 +107,9 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
     setIsUpdatingEmail(true);
     
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
       
-      // Vérifier le mot de passe avant de procéder
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: user.email || "",
         password: values.password,
@@ -103,11 +121,8 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
 
       console.log("Demande de changement d'email de", user.email, "vers", values.email);
       
-      // Stocker le nouvel email pour la page de vérification
       localStorage.setItem("verificationEmail", values.email);
       
-      // Utiliser la syntaxe correcte pour updateUser
-      // Documentation: https://supabase.com/docs/reference/javascript/auth-updateuser
       const redirectTo = `${window.location.origin}/email-verification?type=emailChange`;
       
       const { data, error } = await supabase.auth.updateUser(
@@ -119,10 +134,8 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
       
       console.log("Réponse de updateUser:", data);
 
-      // Réinitialiser et fermer la modal
       setShowEmailDialog(false);
       
-      // Rediriger vers la page de vérification d'email
       navigate("/email-verification?type=emailChange");
       
       toast.success(
@@ -139,14 +152,11 @@ export const useProfileUpdate = (profile: Profile | undefined) => {
 
   const handleResendVerification = async () => {
     try {
-      // Récupérer l'utilisateur courant avec await pour résoudre la promesse
       const { data: userData } = await supabase.auth.getUser();
       
-      // Vérifier si un nouvel email est en attente
       if (userData.user?.new_email) {
         console.log("Nouvel email en attente de vérification:", userData.user.new_email);
         
-        // Renvoyer l'email de vérification uniquement à la nouvelle adresse
         const redirectTo = `${window.location.origin}/email-verification?type=emailChange`;
         
         const { error } = await supabase.auth.resend({
