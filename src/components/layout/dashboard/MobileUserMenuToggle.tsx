@@ -8,19 +8,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, UserCircle2, Sun, Moon, Monitor } from "lucide-react";
-import { useAuthContext } from "@/context/AuthProvider";
+import { useAuthContext } from "@/hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { Profile } from "@/types/profile";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MobileUserMenuToggleProps {
   profile?: Profile;
+  isLoading?: boolean;
 }
 
 // Composant pour le bouton d'accès au menu utilisateur sur mobile
-export const MobileUserMenuToggle = ({ profile }: MobileUserMenuToggleProps) => {
+export const MobileUserMenuToggle = ({ profile, isLoading = false }: MobileUserMenuToggleProps) => {
   const navigate = useNavigate();
   const { logout } = useAuthContext();
   const { setTheme } = useTheme();
@@ -48,6 +50,15 @@ export const MobileUserMenuToggle = ({ profile }: MobileUserMenuToggleProps) => 
       console.error("Erreur de déconnexion:", error);
     }
   };
+
+  // Afficher un état de chargement pendant que les données sont récupérées
+  if (isLoading) {
+    return (
+      <div className="fixed right-4 top-4 z-50 rounded-full shadow-lg bg-background hover:bg-accent ios-top-safe w-10 h-10 flex items-center justify-center">
+        <Skeleton className="h-9 w-9 rounded-full" />
+      </div>
+    );
+  }
 
   // Si pas de profil, ne pas afficher le bouton
   if (!profile) {

@@ -5,21 +5,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { Credit } from "@/components/credits/types";
+import { useAuthContext } from "@/hooks/useAuthContext";
 
 // Hook pour la récupération et le calcul des données du dashboard
 export const useDashboardPageData = () => {
-  const { contributors, recurringExpenses, monthlySavings, refetch } = useDashboardData();
+  const { user } = useAuthContext();
+  const { contributors, recurringExpenses, monthlySavings, refetch, isLoading: isDashboardLoading } = useDashboardData();
 
   // Récupérer les crédits
-  const { data: credits } = useQuery({
-    queryKey: ["credits"],
+  const { data: credits, isLoading: isCreditsLoading } = useQuery({
+    queryKey: ["credits", user?.id],
     queryFn: async () => {
+      if (!user?.id) return [];
+      
+      console.log("Récupération des crédits pour l'utilisateur:", user.id);
       const { data, error } = await supabase
         .from("credits")
-        .select("*");
+        .select("*")
+        .eq("profile_id", user.id);
 
       if (error) {
-        console.error("Error fetching credits:", error);
+        console.error("Erreur lors de la récupération des crédits:", error);
         return [];
       }
 
@@ -27,16 +33,17 @@ export const useDashboardPageData = () => {
     },
     staleTime: 1000 * 30,
     refetchOnWindowFocus: true,
-    refetchOnReconnect: true
+    refetchOnReconnect: true,
+    enabled: !!user?.id
   });
 
   // Récupérer le profil utilisateur
-  const { data: userProfile } = useQuery({
-    queryKey: ["userProfile"],
+  const { data: userProfile, isLoading: isProfileLoading } = useQuery({
+    queryKey: ["userProfile", user?.id],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
+      if (!user?.id) return null;
+      
+      console.log("Récupération du profil pour l'utilisateur:", user.id);
       const { data: profile } = await supabase
         .from("profiles")
         .select("*")
@@ -55,7 +62,8 @@ export const useDashboardPageData = () => {
     },
     staleTime: 1000 * 30,
     refetchOnWindowFocus: true,
-    refetchOnReconnect: true
+    refetchOnReconnect: true,
+    enabled: !!user?.id
   });
 
   // Calculer les totaux
@@ -70,9 +78,13 @@ export const useDashboardPageData = () => {
     [totalRevenue, recurringExpenses, monthlySavings, credits]
   );
 
+  // Déterminer si les données sont en cours de chargement
+  const isLoading = isDashboardLoading || isCreditsLoading || isProfileLoading;
+
   return {
     userProfile,
     globalBalance,
+    isLoading,
     refetch
   };
 };

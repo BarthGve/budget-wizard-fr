@@ -1,14 +1,12 @@
 
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useEffect } from "react";
 import { MobileSidebarToggle } from "./dashboard/MobileSidebarToggle";
 import { MobileSidebarOverlay } from "./dashboard/MobileSidebarOverlay";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { useDashboardPageData } from "./dashboard/useDashboardData";
-import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
 import { memo } from "react";
 import { MobileUserMenuToggle } from "./dashboard/MobileUserMenuToggle";
 import { Profile } from "@/types/profile";
@@ -25,13 +23,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   
   // Récupérer les données du dashboard
-  const { userProfile, globalBalance, refetch } = useDashboardPageData();
+  const { userProfile, globalBalance, refetch, isLoading } = useDashboardPageData();
   
-  // Configurer les écouteurs de mise à jour en temps réel
-  useRealtimeUpdates(refetch);
-
   // Effet pour déclencher une actualisation après le chargement initial
   useEffect(() => {
+    // Assurer que les données sont chargées une fois le composant monté
     const timeoutId = setTimeout(() => {
       refetch();
     }, 300);
@@ -70,13 +66,14 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       
       {/* Bouton du menu utilisateur sur mobile */}
       {isMobile && (
-        <MobileUserMenuToggle profile={userProfile as Profile} />
+        <MobileUserMenuToggle profile={userProfile as Profile} isLoading={isLoading} />
       )}
 
       {/* Contenu principal */}
       <DashboardContent 
         globalBalance={globalBalance} 
         isAdmin={userProfile?.isAdmin}
+        isLoading={isLoading}
       >
         {children}
       </DashboardContent>

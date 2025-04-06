@@ -4,11 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const useDashboardQueries = (userId: string | undefined) => {
-  const { data: dashboardData, refetch: refetchDashboard } = useQuery({
+  const { data: dashboardData, refetch: refetchDashboard, isLoading, error } = useQuery({
     queryKey: ["dashboard-data", userId],
     queryFn: async () => {
-      if (!userId) throw new Error("User ID requis");
+      if (!userId) {
+        console.log("Pas d'ID utilisateur fourni pour useDashboardQueries");
+        throw new Error("User ID requis");
+      }
 
+      console.log("Récupération des données du dashboard pour l'utilisateur:", userId);
+      
       try {
         // Requêtes parallèles pour optimiser le chargement
         const [
@@ -40,15 +45,28 @@ export const useDashboardQueries = (userId: string | undefined) => {
         ]);
 
         // Gestion centralisée des erreurs
-        if (contributorsError) throw contributorsError;
-        if (savingsError) throw savingsError;
-        if (profileError) throw profileError;
-        if (expensesError) throw expensesError;
+        if (contributorsError) {
+          console.error("Erreur contributors:", contributorsError);
+          throw contributorsError;
+        }
+        if (savingsError) {
+          console.error("Erreur savings:", savingsError);
+          throw savingsError;
+        }
+        if (profileError) {
+          console.error("Erreur profile:", profileError);
+          throw profileError;
+        }
+        if (expensesError) {
+          console.error("Erreur expenses:", expensesError);
+          throw expensesError;
+        }
 
-        console.log("Dashboard data fetched successfully:", { 
+        console.log("Données du dashboard récupérées avec succès:", { 
           contributorsCount: contributors?.length, 
           savingsCount: monthlySavings?.length,
-          expensesCount: recurringExpenses?.length
+          expensesCount: recurringExpenses?.length,
+          profile: profile ? "ok" : "non trouvé"
         });
 
         return {
@@ -58,27 +76,31 @@ export const useDashboardQueries = (userId: string | undefined) => {
           recurringExpenses: recurringExpenses || []
         };
       } catch (error: any) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("Erreur lors de la récupération des données du dashboard:", error);
         toast.error("Erreur lors du chargement des données: " + (error.message || "Erreur inconnue"));
         throw error;
       }
     },
     enabled: !!userId,
-    staleTime: 1000 * 15, // Réduire à 15 secondes pour actualiser plus souvent
-    gcTime: 1000 * 60 * 5, // Garde en cache pour 5 minutes après être devenu inactif
-    refetchOnWindowFocus: true, // Refetch quand la fenêtre prend le focus
-    refetchOnReconnect: true, // Refetch à la reconnexion
+    staleTime: 1000 * 15, // 15 secondes pour actualiser plus souvent
+    gcTime: 1000 * 60 * 5, // 5 minutes de cache
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     retry: (failureCount, error) => {
-      // Limiter les tentatives de reconnexion pour les erreurs critiques
+      console.log(`Tentative de reconnexion ${failureCount} après erreur:`, error);
+      
+      // Limiter les tentatives pour les erreurs critiques
       if (error instanceof Error && error.message.includes("réseau")) {
         return failureCount < 3;
       }
-      return failureCount < 2; // Augmenter les tentatives de reconnexion
+      return failureCount < 2;
     }
   });
 
   return {
     dashboardData,
-    refetchDashboard
+    refetchDashboard,
+    isLoading,
+    error
   };
 };
