@@ -16,7 +16,7 @@ const Contributors = memo(function Contributors() {
   }
   
   return (
-    <div className="grid gap-6 mt-4">
+    <div className="grid gap-6 container px-4 py-6 mx-auto">
       <ContributorsHeader />
       <Card className="shadow-lg">
         <ContributorsContent 
