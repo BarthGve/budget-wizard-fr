@@ -27,6 +27,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   
   // Effet pour déclencher une actualisation après le chargement initial
   useEffect(() => {
+    console.log("DashboardLayout mounted");
     // Assurer que les données sont chargées une fois le composant monté
     const timeoutId = setTimeout(() => {
       refetch();
@@ -37,10 +38,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   // Fonctions de gestion de la sidebar mobile
   const toggleSidebar = () => {
-    setShowMobileSidebar(!showMobileSidebar);
+    console.log("toggleSidebar called, current state:", showMobileSidebar);
+    setShowMobileSidebar(prevState => !prevState);
   };
 
   const handleOverlayClick = () => {
+    console.log("Overlay clicked");
     if (isMobile && showMobileSidebar) {
       setShowMobileSidebar(false);
     }
@@ -65,7 +68,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       )}
       
       {/* Bouton du menu utilisateur sur mobile */}
-      {isMobile && (
+      {isMobile && userProfile && (
         <MobileUserMenuToggle profile={userProfile as Profile} isLoading={isLoading} />
       )}
 

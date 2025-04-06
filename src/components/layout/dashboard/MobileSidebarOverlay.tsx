@@ -1,5 +1,6 @@
 
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 interface MobileSidebarOverlayProps {
   showMobileSidebar: boolean;
@@ -11,6 +12,11 @@ export const MobileSidebarOverlay = ({
   showMobileSidebar, 
   onOverlayClick 
 }: MobileSidebarOverlayProps) => {
+  // Effet pour enregistrer l'état de la sidebar
+  useEffect(() => {
+    console.log("MobileSidebarOverlay state:", showMobileSidebar);
+  }, [showMobileSidebar]);
+
   if (!showMobileSidebar) return null;
   
   return (
