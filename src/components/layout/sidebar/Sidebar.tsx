@@ -49,10 +49,10 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
   
         {/* Contenu principal avec navigation qui s'ajuste automatiquement */}
         <SidebarContent 
-          collapsed={collapsed} 
           isAdmin={!!isAdmin} 
           userId={currentUser?.id}
           onItemClick={handleSidebarLinkClick}
+          onClose={onClose}
         />
         
         {/* Footer avec contrôles du thème et utilisateur */}

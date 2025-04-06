@@ -13,12 +13,15 @@ import { useUserData } from "./useUserData";
 const EXPANDED_WIDTH = "240px";
 const COLLAPSED_WIDTH = "70px";
 
-interface SidebarContentProps {
+export interface SidebarContentProps {
   onClose?: () => void;
+  isAdmin?: boolean;
+  userId?: string;
+  onItemClick?: () => void;
 }
 
 // Composant principal du contenu de la sidebar
-export const SidebarContent = ({ onClose }: SidebarContentProps) => {
+export const SidebarContent = ({ onClose, isAdmin, userId, onItemClick }: SidebarContentProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,6 +38,13 @@ export const SidebarContent = ({ onClose }: SidebarContentProps) => {
       onClose();
     }
   }, [location.pathname, onClose]);
+
+  // Fonction pour gérer le clic sur un élément de navigation
+  const handleNavItemClick = () => {
+    if (onItemClick) {
+      onItemClick();
+    }
+  };
 
   return (
     <div
@@ -63,7 +73,10 @@ export const SidebarContent = ({ onClose }: SidebarContentProps) => {
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto">
-        <SidebarNavigation collapsed={collapsed} />
+        <SidebarNavigation 
+          collapsed={collapsed} 
+          onItemClick={handleNavItemClick}
+        />
       </div>
 
       {/* Pied de page avec profil utilisateur */}

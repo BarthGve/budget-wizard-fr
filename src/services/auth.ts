@@ -11,6 +11,7 @@ export interface RegisterCredentials {
   email: string;
   password: string;
   name: string;
+  full_name?: string; // Ajout pour compatibilité
 }
 
 export interface LoginCredentials {
@@ -72,13 +73,16 @@ export const registerUser = async (credentials: RegisterCredentials) => {
   registrationsInProgress.add(credentials.email);
   
   try {
+    // Assurer la compatibilité entre name et full_name
+    const fullName = credentials.full_name || credentials.name;
+    
     // Étape 1: Créer l'utilisateur dans auth.users
     const { data, error } = await supabase.auth.signUp({
       email: credentials.email,
       password: credentials.password,
       options: {
         data: { 
-          name: credentials.name,
+          name: fullName,
         }
       }
     });
@@ -113,7 +117,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
         .from('profiles')
         .insert([{ 
           id: data.user.id, 
-          full_name: credentials.name, 
+          full_name: fullName, 
           profile_type: 'basic' 
         }]);
         
@@ -137,7 +141,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
         .from('contributors')
         .insert([{
           profile_id: data.user.id,
-          name: credentials.name,
+          name: fullName,
           is_owner: true,
           total_contribution: 0,
           percentage_contribution: 0
@@ -158,7 +162,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     
     // Envoyer une notification à l'administrateur (en arrière-plan)
     // Cette opération ne bloque pas le processus d'inscription
-    notifyAdmin(credentials.name, credentials.email);
+    notifyAdmin(fullName, credentials.email);
     
     return data;
   } catch (error: any) {

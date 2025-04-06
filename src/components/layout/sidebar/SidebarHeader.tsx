@@ -1,46 +1,28 @@
 
-import { useEffect, useState } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { appConfig } from "@/config/app.config";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useLatestVersion } from "@/hooks/useLatestVersion";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 interface SidebarHeaderProps {
   collapsed: boolean;
 }
 
-export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
-  const isMobile = useIsMobile();
-  const { latestVersion } = useLatestVersion();
-
+export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ collapsed }) => {
   return (
-    <div className="sticky top-0 z-10 bg-background p-3 border-b rounded-r-xl border-border">
-      <div className="flex flex-col mb-1">
-        <div className="flex items-center">
-          <h1
-            className={cn(   
-              "font-bold text-foreground tracking-tight bg-clip-text text-transparent animate-fade-in transition-all duration-300",
-              "bg-gradient-to-r from-indigo-400/90 via-purple-400/90 to-pink-400/85",
-              "dark:from-indigo-300 dark:via-purple-300 dark:to-pink-300",
-              collapsed ? "text-sm" : "text-xl"
-            )}
-          >
-            {collapsed ? appConfig.initiales : appConfig.name}
-          </h1>
-        </div>
+    <div className={cn(
+      "p-4 border-b",
+      collapsed ? "flex justify-center" : ""
+    )}>
+      <div className="flex items-center">
+        <img
+          src="/lovable-uploads/9f7c5b9f-f126-45eb-8e10-1a3c1de218a6.avif"
+          alt="Logo"
+          className="h-8 w-8"
+        />
         {!collapsed && (
-          <div className="flex items-baseline gap-2 mb-2">
-            <span className="text-xs text-muted-foreground">
-              v{latestVersion || appConfig.version}
-            </span>
-          </div>
+          <span className="ml-2 font-semibold text-lg transition-opacity">
+            Budget Wizard
+          </span>
         )}
-         {!isMobile && (
-      
-          <ThemeToggle collapsed={collapsed} />
-     
-      )}
       </div>
     </div>
   );
