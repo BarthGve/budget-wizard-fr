@@ -6,7 +6,6 @@ import { SidebarFooter } from "./SidebarFooter";
 import { SidebarToggle } from "./SidebarToggle";
 import { useSidebar } from "./useSidebar";
 import { useUserData } from "./useUserData";
-import { Skeleton } from "@/components/ui/skeleton";
 import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
 
 interface SidebarProps {

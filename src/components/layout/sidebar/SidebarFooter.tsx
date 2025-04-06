@@ -2,6 +2,7 @@
 import { UserDropdown } from "../UserDropdown";
 import { Profile } from "@/types/profile";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 interface SidebarFooterProps {
   collapsed: boolean;
@@ -17,7 +18,10 @@ export const SidebarFooter = ({
   return (
     <div className="mt-auto border-t">
       <div className="flex flex-col">
-    
+        {/* Contrôle du thème */}
+        <div className={`p-3 flex ${collapsed ? 'justify-center' : 'justify-end'}`}>
+          <ThemeToggle collapsed={collapsed} />
+        </div>
         
         {/* Menu utilisateur avec gestion de l'état de chargement */}
         {isLoading ? (

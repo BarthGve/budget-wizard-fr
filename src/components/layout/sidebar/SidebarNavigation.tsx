@@ -1,6 +1,6 @@
 
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
   Home, 
@@ -13,7 +13,6 @@ import {
   Car
 } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { Profile } from "@/types/profile";
 
 interface SidebarNavigationProps {
   collapsed: boolean;
@@ -76,6 +75,7 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   onItemClick
 }) => {
   const { canAccessPage, isAdmin, isBasicProfile } = usePagePermissions();
+  const location = useLocation();
   
   // Récupérer les éléments de navigation filtrés selon les permissions
   const navItems = getNavItems(!!isAdmin).filter(item => {
@@ -85,25 +85,36 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
 
   return (
     <nav className="space-y-1 px-2 py-4">
-      {navItems.map((item) => (
-        <NavLink
-          key={item.path}
-          to={item.path}
-          onClick={onItemClick}
-          className={({ isActive }) =>
-            cn(
-              "flex items-center py-2 px-3 rounded-md text-sm transition-colors",
-              collapsed ? "justify-center" : "justify-start",
-              isActive
-                ? "bg-primary/10 text-primary font-medium"
-                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-            )
-          }
-        >
-          <item.icon className={cn("h-5 w-5", collapsed ? "mx-0" : "mr-2")} />
-          {!collapsed && <span>{item.name}</span>}
-        </NavLink>
-      ))}
+      {navItems.map((item) => {
+        // Déterminer si l'élément est actif (route actuelle)
+        const isActive = location.pathname.startsWith(item.path);
+        
+        return (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            onClick={onItemClick}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center py-2 px-3 rounded-md text-sm transition-colors",
+                collapsed ? "justify-center" : "justify-start",
+                isActive
+                  ? "bg-primary/10 text-primary font-medium"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )
+            }
+          >
+            <item.icon 
+              className={cn(
+                "h-5 w-5", 
+                collapsed ? "mx-0" : "mr-2",
+                isActive ? "text-primary" : "text-muted-foreground"
+              )} 
+            />
+            {!collapsed && <span>{item.name}</span>}
+          </NavLink>
+        );
+      })}
     </nav>
   );
 };
