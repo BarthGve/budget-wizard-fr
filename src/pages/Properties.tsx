@@ -61,7 +61,7 @@ const Properties = () => {
   return (
     <TooltipProvider>
       <motion.div 
-        className="grid gap-6 mt-4"
+        className="grid gap-6 container px-4 py-6 mx-auto"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
