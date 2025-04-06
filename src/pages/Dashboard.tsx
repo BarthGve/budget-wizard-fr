@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,12 +10,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header/DashboardHeader";
 import { useState } from "react";
-import { useAuthContext } from "@/hooks/useAuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 const Dashboard = () => {
   // État pour gérer le mode d'affichage (mensuel/annuel)
   const [currentView, setCurrentView] = useState<"monthly" | "yearly">("monthly");
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   
   // Données du tableau de bord
   const { dashboardData, refetchDashboard, isLoading, error } = useDashboardQueries(user?.id);

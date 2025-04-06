@@ -8,13 +8,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, UserCircle2, Sun, Moon, Monitor } from "lucide-react";
-import { useAuthContext } from "@/hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { Profile } from "@/types/profile";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/useAuth";
 
 interface MobileUserMenuToggleProps {
   profile?: Profile;
@@ -24,7 +24,7 @@ interface MobileUserMenuToggleProps {
 // Composant pour le bouton d'accès au menu utilisateur sur mobile
 export const MobileUserMenuToggle = ({ profile, isLoading = false }: MobileUserMenuToggleProps) => {
   const navigate = useNavigate();
-  const { logout } = useAuthContext();
+  const { logout } = useAuth();
   const { setTheme } = useTheme();
 
   // Fonction pour appliquer le thème avec une animation de transition

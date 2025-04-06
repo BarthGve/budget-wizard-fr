@@ -80,7 +80,10 @@ export const SidebarContent = ({ onClose, isAdmin, userId, onItemClick }: Sideba
       </div>
 
       {/* Pied de page avec profil utilisateur */}
-      <SidebarFooter collapsed={collapsed} profile={profile} isLoading={isLoading} />
+      <SidebarFooter collapsed={collapsed} profile={profile && {
+        ...profile,
+        dashboard_preferences: profile.dashboard_preferences || null
+      }} isLoading={isLoading} />
     </div>
   );
 };

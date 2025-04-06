@@ -1,132 +1,114 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Profile, ProfileType } from "@/types/profile";
+import { Profile } from "@/types/profile";
+import { useAuth } from "@/hooks/useAuth";
 
-interface PagePermission {
+export interface PagePermission {
   page_path: string;
-  page_name: string;
-  required_profile: ProfileType;
-  feature_permissions: {
-    [key: string]: {
-      required_profile: ProfileType;
-    };
-  };
+  features: Record<string, boolean>;
+  access_level: "all" | "pro" | "admin";
 }
 
 export const usePagePermissions = () => {
-  const { data: profile } = useQuery<Profile>({
-    queryKey: ["profile"],
+  const { user } = useAuth();
+  
+  // Obtenir le profil utilisateur
+  const { data: profile } = useQuery({
+    queryKey: ["user-profile", user?.id],
     queryFn: async () => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-
-      const { data, error } = await supabase
+      if (!user?.id) return null;
+      
+      const { data } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user?.id)
+        .eq("id", user.id)
         .single();
-
-      if (error) throw error;
-
-      return {
-        ...data,
-        email: user?.email
-      } as Profile;
+        
+      return data as Profile;
     },
+    enabled: !!user?.id
   });
-
-  const { data: permissions = [] } = useQuery<PagePermission[]>({
-    queryKey: ["pagePermissions"],
+  
+  // Vérifier si l'utilisateur est admin
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ["isAdmin", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("page_permissions")
-        .select("*");
-
-      if (error) throw error;
+      if (!user?.id) return false;
       
-      return data.map(permission => ({
-        ...permission,
-        feature_permissions: permission.feature_permissions as PagePermission['feature_permissions'] || {}
-      }));
-    },
-  });
-
-  const { data: isAdmin } = useQuery({
-    queryKey: ["isAdmin"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
-
-      const { data, error } = await supabase.rpc('has_role', {
+      const { data } = await supabase.rpc('has_role', {
         user_id: user.id,
         role: 'admin'
       });
-
-      if (error) throw error;
-      return data;
+      
+      return !!data;
+    },
+    enabled: !!user?.id
+  });
+  
+  // Vérifier si l'utilisateur a un profil basique
+  const isBasicProfile = !!(profile && profile.profile_type === "basic");
+  
+  // Obtenir les permissions des pages
+  const { data: permissions = [] } = useQuery({
+    queryKey: ["page-permissions"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("page_permissions")
+        .select("*");
+        
+      return (data || []) as PagePermission[];
     }
   });
-
-  const canAccessPage = (pagePath: string): boolean => {
-    if (!profile || !permissions) return false;
-    if (isAdmin) return true;
-
-    // Add debugging for the path being checked
-    console.log("Checking access for path:", pagePath);
-
-    // Special case for retailer detail pages
-    if (pagePath.startsWith('/expenses/retailer/')) {
-      console.log("Retailer detail page detected, checking expenses permissions");
-      // If user can access /expenses, they can access all retailer detail pages
-      return canAccessPage('/expenses');
-    }
-
-    // Special case for vehicle detail pages
-    if (pagePath.startsWith('/vehicles/')) {
-      console.log("Vehicle detail page detected, checking vehicles permissions");
-      // If user can access /vehicles, they can access all vehicle detail pages
-      return canAccessPage('/vehicles');
-    }
-
-    const pagePermission = permissions.find(p => p.page_path === pagePath);
-    if (!pagePermission) {
-      console.log("No permission found for path:", pagePath);
-      return false; // Si aucune permission n'est définie, on refuse l'accès
-    }
-
-    const hasAccess = pagePermission.required_profile === 'basic' || 
-           (pagePermission.required_profile === 'pro' && profile.profile_type === 'pro');
-    
-    console.log("Permission result:", hasAccess, "Required profile:", pagePermission.required_profile, "User profile:", profile.profile_type);
-    return hasAccess;
-  };
-
-  const canAccessFeature = (pagePath: string, featureKey: string): boolean => {
-    if (!profile || !permissions) return false;
+  
+  // Vérifier si l'utilisateur peut accéder à une page
+  const canAccessPage = (pagePath: string) => {
+    // Les admins ont accès à tout
     if (isAdmin) return true;
     
-    // Pour les projets d'épargne, autoriser l'accès à tous les utilisateurs
-    if (pagePath === '/savings' && featureKey === 'savings_projects') {
-      return true;
-    }
-    
-    // Pour les autres fonctionnalités
+    // Chercher les permissions pour cette page
     const pagePermission = permissions.find(p => p.page_path === pagePath);
-    if (!pagePermission) return false; // Si aucune permission n'est définie, on refuse l'accès
-
-    const featurePermission = pagePermission.feature_permissions?.[featureKey];
-    if (!featurePermission) return true; // Si aucune permission spécifique n'est définie, on autorise par défaut
- 
-    return featurePermission.required_profile === 'basic' ||
-           (featurePermission.required_profile === 'pro' && profile.profile_type === 'pro');
+    
+    // Si pas de permission définie, autoriser par défaut
+    if (!pagePermission) return true;
+    
+    // Vérifier le niveau d'accès requis
+    if (pagePermission.access_level === "all") return true;
+    if (pagePermission.access_level === "pro" && profile?.profile_type === "pro") return true;
+    if (pagePermission.access_level === "admin" && isAdmin) return true;
+    
+    return false;
+  };
+  
+  // Vérifier si l'utilisateur peut accéder à une fonctionnalité spécifique sur une page
+  const canAccessFeature = (pagePath: string, featureKey: string) => {
+    // Les admins ont accès à tout
+    if (isAdmin) return true;
+    
+    // Chercher les permissions pour cette page
+    const pagePermission = permissions.find(p => p.page_path === pagePath);
+    
+    // Si pas de permission définie pour la page ou la fonctionnalité, autoriser par défaut
+    if (!pagePermission || !pagePermission.features[featureKey]) return true;
+    
+    // Si la fonctionnalité nécessite un profil pro, vérifier le type de profil
+    if (pagePermission.features[featureKey] && profile?.profile_type === "pro") return true;
+    
+    return false;
   };
 
+  // Vérifier si l'utilisateur a accès à une page spécifique
+  const hasAccess = (pagePath: string) => {
+    return canAccessPage(pagePath);
+  };
+  
   return {
     profile,
     permissions,
     isAdmin,
+    isBasicProfile,
     canAccessPage,
-    canAccessFeature
+    canAccessFeature,
+    hasAccess
   };
 };

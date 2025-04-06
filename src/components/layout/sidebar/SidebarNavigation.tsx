@@ -13,6 +13,7 @@ import {
   Car
 } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
+import { Profile } from "@/types/profile";
 
 interface SidebarNavigationProps {
   collapsed: boolean;
@@ -74,16 +75,12 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   collapsed,
   onItemClick
 }) => {
-  const { hasAccess, isBasicProfile } = usePagePermissions();
+  const { canAccessPage } = usePagePermissions();
   
   // Récupérer les éléments de navigation filtrés selon les permissions
   const navItems = getNavItems(false).filter(item => {
-    // Filtrer les fonctionnalités Pro si l'utilisateur a un profil basique
-    if (item.requiresPro && isBasicProfile) {
-      return false;
-    }
     // Vérifier l'accès à la page
-    return hasAccess(item.path);
+    return canAccessPage(item.path);
   });
 
   return (

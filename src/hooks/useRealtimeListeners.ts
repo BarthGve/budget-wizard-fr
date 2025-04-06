@@ -2,14 +2,14 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuthContext } from "./useAuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * Hook pour configurer tous les écouteurs en temps réel nécessaires pour l'application
  * Centralise la logique des écouteurs pour éviter les duplications
  */
 export const useRealtimeListeners = () => {
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const channelRef = useRef<any>(null);
 
