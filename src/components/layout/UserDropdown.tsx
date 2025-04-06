@@ -16,11 +16,13 @@ import { useEffect, useState } from "react";
 interface UserDropdownProps {
   collapsed: boolean;
   profile?: Profile;
+  isLoading?: boolean;
 }
 
 export const UserDropdown = ({
   collapsed,
-  profile
+  profile,
+  isLoading = false
 }: UserDropdownProps) => {
   const navigate = useNavigate();
   const { isAdmin } = usePagePermissions();
@@ -89,8 +91,8 @@ export const UserDropdown = ({
 
   return (
     <div className={cn(
-      "p-3 sm:p-4", 
-      isMobile && "shadow-inner bg-background/95"
+      "p-2", 
+      isMobile ? "shadow-none" : "p-3 sm:p-4"
     )}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -98,6 +100,7 @@ export const UserDropdown = ({
             variant="ghost" 
             className={cn(
               "w-full h-auto",
+              collapsed && isMobile ? "justify-center p-2 rounded-full" : 
               collapsed ? "justify-center p-0" : "justify-start p-2"
             )}>
             <div className={cn(
@@ -106,7 +109,7 @@ export const UserDropdown = ({
             )}>
               <div className="relative">
                 <Avatar className={cn(
-                  "transition-all duration-300",
+                  "transition-all duration-300 border-2 border-background",
                   isMobile && collapsed ? "h-9 w-9" : collapsed ? "h-10 w-10" : "h-12 w-12"
                 )}>
                   <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
@@ -136,7 +139,7 @@ export const UserDropdown = ({
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" side={isMobile ? "top" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px]">
+        <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-background/95 backdrop-blur-sm z-[99]">
           <div className="flex items-center gap-3 p-2 border-b">
             <div className="relative">
               <Avatar className="h-12 w-12">

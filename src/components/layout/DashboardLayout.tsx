@@ -10,6 +10,7 @@ import { DashboardContent } from "./dashboard/DashboardContent";
 import { useDashboardPageData } from "./dashboard/useDashboardData";
 import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
 import { memo } from "react";
+import { MobileUserMenu } from "./dashboard/MobileUserMenu";
 
 // Optimisation avec mémorisation pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
@@ -60,6 +61,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}>
         <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
       </div>
+
+      {/* Menu utilisateur flottant sur mobile */}
+      <MobileUserMenu 
+        profile={userProfile} 
+        isLoading={!userProfile}
+      />
 
       {/* Bouton de basculement de la sidebar sur mobile */}
       {isMobile && (
