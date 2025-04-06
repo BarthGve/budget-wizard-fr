@@ -112,8 +112,7 @@ const Credits = memo(function Credits() {
   }
   
   return (
-    <CreditsContainer
-      className="container px-4 py-6 mx-auto"
+    <CreditsContainer 
       credits={credits}
       monthlyStats={monthlyStats}
       onCreditDeleted={handleCreditDeleted}
