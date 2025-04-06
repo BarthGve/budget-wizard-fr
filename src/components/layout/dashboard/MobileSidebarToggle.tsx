@@ -8,10 +8,9 @@ interface MobileSidebarToggleProps {
 
 // Composant pour le bouton de basculement de la sidebar sur mobile
 export const MobileSidebarToggle = ({ toggleSidebar }: MobileSidebarToggleProps) => {
-  console.log("Rendering MobileSidebarToggle, toggleSidebar function is defined:", !!toggleSidebar);
-  
+  // Fonction de gestion du clic avec journal pour déboguer
   const handleClick = () => {
-    console.log("MobileSidebarToggle clicked!");
+    console.log("MobileSidebarToggle - Bouton hamburger cliqué");
     toggleSidebar();
   };
 

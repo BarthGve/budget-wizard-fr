@@ -27,7 +27,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   
   // Effet pour déclencher une actualisation après le chargement initial
   useEffect(() => {
-    console.log("DashboardLayout mounted");
+    console.log("DashboardLayout monté");
+    
     // Assurer que les données sont chargées une fois le composant monté
     const timeoutId = setTimeout(() => {
       refetch();
@@ -38,16 +39,25 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   // Fonctions de gestion de la sidebar mobile
   const toggleSidebar = () => {
-    console.log("toggleSidebar called, current state:", showMobileSidebar);
+    console.log("toggleSidebar appelé, état actuel:", showMobileSidebar);
     setShowMobileSidebar(prevState => !prevState);
   };
 
   const handleOverlayClick = () => {
-    console.log("Overlay clicked");
-    if (isMobile && showMobileSidebar) {
-      setShowMobileSidebar(false);
-    }
+    console.log("Overlay cliqué, fermeture de la sidebar");
+    setShowMobileSidebar(false);
   };
+
+  // Fonction pour fermer la sidebar
+  const closeSidebar = () => {
+    console.log("Fermeture de la sidebar");
+    setShowMobileSidebar(false);
+  };
+
+  // Log pour le débogage
+  useEffect(() => {
+    console.log("Nouvelle valeur de showMobileSidebar:", showMobileSidebar);
+  }, [showMobileSidebar]);
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
@@ -58,8 +68,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       />
       
       {/* Sidebar - visible conditionnellement sur mobile */}
-      <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}>
-        <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
+      <div 
+        className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}
+        data-testid="sidebar-container"
+      >
+        <MemoizedSidebar onClose={closeSidebar} />
       </div>
 
       {/* Bouton de basculement de la sidebar sur mobile */}

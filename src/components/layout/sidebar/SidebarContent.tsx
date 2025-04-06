@@ -39,14 +39,22 @@ export const SidebarContent = ({ onClose, isAdmin, userId, onItemClick }: Sideba
   // Effet pour fermer la sidebar sur mobile quand la route change
   useEffect(() => {
     if (onClose) {
+      console.log("Route changée, fermeture de la sidebar mobile");
       onClose();
     }
   }, [location.pathname, onClose]);
 
   // Fonction pour gérer le clic sur un élément de navigation
   const handleNavItemClick = () => {
+    console.log("Élément de navigation cliqué");
     if (onItemClick) {
       onItemClick();
+    }
+    
+    // Fermer également la sidebar sur mobile
+    if (onClose) {
+      console.log("Fermeture de la sidebar après clic sur élément");
+      onClose();
     }
   };
 
