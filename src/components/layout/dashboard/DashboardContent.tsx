@@ -59,7 +59,7 @@ export const DashboardContent = ({
       )}
 
       <div className={cn(
-        "flex-1 container mx-auto px-4 py-6 overflow-auto relative",
+        "flex-1 container px-4 py-6 mx-auto overflow-auto relative",
         isMobile ? "ios-top-safe pt-24" : "pt-20"
       )}>
         <div className="page-transition">
