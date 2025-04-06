@@ -5,7 +5,7 @@ import { Profile } from "@/types/profile";
 import { cn } from "@/lib/utils";
 
 interface MobileUserMenuProps {
-  profile?: Profile;
+  profile?: Profile & { isAdmin?: boolean };
   isLoading?: boolean;
 }
 

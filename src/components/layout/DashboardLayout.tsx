@@ -64,7 +64,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* Menu utilisateur flottant sur mobile */}
       <MobileUserMenu 
-        profile={userProfile} 
+        profile={userProfile as Profile} 
         isLoading={!userProfile}
       />
 
