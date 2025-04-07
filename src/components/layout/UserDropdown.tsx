@@ -1,6 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
-import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Sun, Moon, Monitor, LogIn } from "lucide-react";
+import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Sun, Moon, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -77,13 +77,13 @@ export const UserDropdown = ({
   // Si pas de profil, afficher un bouton de connexion
   if (!localProfile) {
     return (
-      <div className="p-2">
+      <div className="p-4">
         <Button 
           variant="outline" 
           className="w-full" 
           onClick={() => navigate("/login")}
         >
-         <LogIn/>
+          Se connecter
         </Button>
       </div>
     );
@@ -110,7 +110,7 @@ export const UserDropdown = ({
               <div className="relative">
                 <Avatar className={cn(
                   "transition-all duration-300 border-2 border-background",
-                  isMobile && collapsed ? "h-9 w-9" : collapsed ? "h-10 w-10" : "h-12 w-12"
+                  isMobile && collapsed ? "h-12 w-12" : collapsed ? "h-10 w-10" : "h-12 w-12"
                 )}>
                   <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
                   <AvatarFallback>
@@ -141,19 +141,7 @@ export const UserDropdown = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-background/95 backdrop-blur-sm z-[99]">
           <div className="flex items-center gap-3 p-2 border-b">
-            <div className="relative">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
-                <AvatarFallback>
-                  {(localProfile?.full_name || "?")[0]?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {localProfile?.profile_type === "pro" && (
-                <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
-                  Pro
-                </Badge>
-              )}
-            </div>
+           
             <div className="flex flex-col">
               <span className="font-medium text-sm">{localProfile?.full_name || "Utilisateur"}</span>
               <span className="text-xs text-muted-foreground">{localProfile?.email}</span>
