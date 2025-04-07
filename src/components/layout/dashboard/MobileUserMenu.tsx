@@ -22,7 +22,7 @@ export const MobileUserMenu = ({
     <div 
       className={cn(
         "fixed top-4 right-4 z-50 ios-top-safe shadow-md rounded-full",
-        "bg-background/90 backdrop-blur-sm border"
+        "bg-background/90 backdrop-blur-sm "
       )}
     >
       <UserDropdown 
