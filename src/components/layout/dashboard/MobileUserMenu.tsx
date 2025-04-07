@@ -21,8 +21,8 @@ export const MobileUserMenu = ({
   return (
     <div 
       className={cn(
-        "fixed top-4 right-4 z-50 ios-top-safe shadow-md rounded-full",
-        "bg backdrop-blur-sm"
+        "fixed top-4 right-4 z-50 ios-top-safe rounded-full",
+        "bg"
       )}
     >
       <UserDropdown 
