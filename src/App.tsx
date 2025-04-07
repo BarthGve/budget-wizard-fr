@@ -105,7 +105,7 @@ function App() {
         enableSystem 
         disableTransitionOnChange
       >
-        <Toaster richColors position="top-center" />
+        <Toaster richColors position="bottom-center" />
         <Router>
           <AuthProvider>
             <AuthWrapper>
