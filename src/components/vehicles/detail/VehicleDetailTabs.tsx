@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Vehicle } from "@/types/vehicle";
 import { VehicleGeneralInfo } from "./VehicleGeneralInfo";
@@ -9,7 +8,7 @@ import { motion } from "framer-motion";
 import { VehicleMonthlyExpensesChart } from "./expenses-chart/VehicleMonthlyExpensesChart";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, CalendarClock, FileIcon, ClipboardList, Info, BarChart } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToastWrapper } from "@/hooks/useToastWrapper";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useRef, useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -42,7 +41,7 @@ export const VehicleDetailTabs = ({
   onSectionChange: externalOnSectionChange
 }: VehicleDetailTabsProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const { toast } = useToast();
+  const { toast } = useToastWrapper();
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const isMobile = useIsMobile();
@@ -94,12 +93,10 @@ export const VehicleDetailTabs = ({
     }
   };
 
-  // Mise à jour de cette fonction pour utiliser notre nouvelle fonction unifiée
   const handleGenerateExpensesFromRecurring = async () => {
     try {
       setIsGenerating(true);
       
-      // Utilisation de la nouvelle fonction qui gère à la fois les charges récurrentes et les crédits
       const { data, error } = await supabase
         .rpc('check_and_generate_vehicle_expenses');
       

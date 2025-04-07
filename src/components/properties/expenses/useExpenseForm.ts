@@ -1,6 +1,6 @@
 
 import { useForm } from "react-hook-form";
-import { useToastWrapper as useToast } from "@/hooks/useToastWrapper";
+import { useToastWrapper } from "@/hooks/useToastWrapper";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useEffect } from "react";
@@ -13,7 +13,7 @@ interface UseExpenseFormProps {
 }
 
 export function useExpenseForm({ propertyId, expense, onSuccess, onClose }: UseExpenseFormProps) {
-  const { toast } = useToast();
+  const { toast } = useToastWrapper();
   const form = useForm({
     defaultValues: {
       amount: "",

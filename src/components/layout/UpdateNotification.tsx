@@ -1,13 +1,13 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { useToastWrapper as useToast } from "@/hooks/useToastWrapper";
+import { useToastWrapper } from "@/hooks/useToastWrapper";
 import { updateServiceWorker } from '@/registerSW';
 import { RefreshCw } from 'lucide-react';
 
 export const UpdateNotification = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
-  const { toast } = useToast();
+  const { toast } = useToastWrapper();
 
   useEffect(() => {
     // Écouter l'événement déclenché lorsqu'une mise à jour est disponible
