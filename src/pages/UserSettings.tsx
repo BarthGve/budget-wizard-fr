@@ -34,7 +34,7 @@ const UserSettings = () => {
   }
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-4 md:space-y-6 px-4 py-6 mx-auto">
       <div className={isMobile ? "px-2" : ""}>
         <h2 className={`font-bold tracking-tight ${isMobile ? "text-2xl" : "text-3xl"}`}>
           Paramètres Du Compte
