@@ -5,7 +5,7 @@
  */
 import { toast as sonnerToast } from "sonner";
 import { toast as uiToast, useToast as useUIToast } from "@/hooks/use-toast";
-import { ToasterToast } from "@/components/ui/toast";
+import type { ToasterToast } from "@/hooks/use-toast"; // Importation corrigée du type depuis le bon fichier
 
 // Fonction pour déterminer si on doit afficher un toast basé sur le type
 const shouldShowToast = (type: "success" | "error" | "info" | "warning"): boolean => {
