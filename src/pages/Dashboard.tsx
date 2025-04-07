@@ -78,55 +78,72 @@ const Dashboard = () => {
     return months[new Date().getMonth()];
   };
 
-  // Animation variants
+  // Animation simplifiée
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
-      transition: { delay: 0.1, duration: 0.5 }
+      transition: { duration: 0.3 }
     }
   };
 
-  // Afficher un loader pendant le chargement
-  if (!dashboardData || !user) {
-    return <StyledLoader />;
-  }
+  // Ajouter une gestion des erreurs et un fallback
+  try {
+    // Afficher un loader pendant le chargement
+    if (!dashboardData || !user) {
+      return <StyledLoader />;
+    }
 
-  return (
-    <TooltipProvider>
-      <motion.div 
-        className="container px-4 py-6 mx-auto"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
-        {/* Ajouter l'en-tête du tableau de bord */}
-        <DashboardHeader 
-          currentView={currentView}
-          setCurrentView={setCurrentView}
-          currentMonthName={getCurrentMonthName()}
-        />
-        
-        <DashboardTabContent
-          revenue={revenue}
-          expenses={expenses}
-          savings={savings}
-          balance={balance}
-          savingsGoal={savingsGoal}
-          contributors={dashboardData.contributors || []}
-          contributorShares={contributorShares}
-          expenseShares={expenseShares}
-          recurringExpenses={recurringExpensesForChart || []}
-          monthlySavings={monthlySavingsForChart || []}
-          currentView={currentView}
-          fuelExpensesTotal={fuelExpensesTotal}
-          fuelExpensesCount={fuelExpensesCount}
-          fuelVolume={fuelVolume}
-          hasActiveVehicles={hasActiveVehicles}
-        />
-      </motion.div>
-    </TooltipProvider>
-  );
+    return (
+      <TooltipProvider>
+        <motion.div 
+          className="container px-4 py-6 mx-auto"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          {/* Ajouter l'en-tête du tableau de bord */}
+          <DashboardHeader 
+            currentView={currentView}
+            setCurrentView={setCurrentView}
+            currentMonthName={getCurrentMonthName()}
+          />
+          
+          <DashboardTabContent
+            revenue={revenue}
+            expenses={expenses}
+            savings={savings}
+            balance={balance}
+            savingsGoal={savingsGoal}
+            contributors={dashboardData.contributors || []}
+            contributorShares={contributorShares}
+            expenseShares={expenseShares}
+            recurringExpenses={recurringExpensesForChart || []}
+            monthlySavings={monthlySavingsForChart || []}
+            currentView={currentView}
+            fuelExpensesTotal={fuelExpensesTotal}
+            fuelExpensesCount={fuelExpensesCount}
+            fuelVolume={fuelVolume}
+            hasActiveVehicles={hasActiveVehicles}
+          />
+        </motion.div>
+      </TooltipProvider>
+    );
+  } catch (error) {
+    console.error("Erreur lors du rendu du tableau de bord:", error);
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h2 className="text-xl font-bold text-red-500 mb-2">Erreur de chargement</h2>
+        <p className="text-gray-600">Un problème est survenu lors du chargement du tableau de bord.</p>
+        <button 
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          onClick={() => window.location.reload()}
+        >
+          Actualiser la page
+        </button>
+      </div>
+    );
+  }
 };
 
 export default Dashboard;

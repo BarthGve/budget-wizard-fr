@@ -25,35 +25,10 @@ export const RevenueCard = ({
   const [displayedRevenue, setDisplayedRevenue] = useState(totalRevenue);
   const navigate = useNavigate();
 
-  // Mettre à jour le montant affiché lorsque totalRevenue change
+  // Mettre à jour directement sans animation complexe
   useEffect(() => {
-    if (totalRevenue !== displayedRevenue) {
-      // Animation simple d'interpolation numérique par centaine
-      const startValue = displayedRevenue;
-      const endValue = totalRevenue;
-      const duration = 800; // ms
-      const startTime = Date.now();
-
-      const animateValue = () => {
-        const now = Date.now();
-        const elapsed = now - startTime;
-        
-        if (elapsed >= duration) {
-          setDisplayedRevenue(endValue);
-          return;
-        }
-        
-        const progress = elapsed / duration;
-        // Calculer la valeur intermédiaire et arrondir par centaine
-        const rawValue = startValue + (endValue - startValue) * progress;
-        const currentValue = Math.round(rawValue / 100) * 100; // Arrondi à la centaine
-        setDisplayedRevenue(currentValue);
-        requestAnimationFrame(animateValue);
-      };
-      
-      requestAnimationFrame(animateValue);
-    }
-  }, [totalRevenue, displayedRevenue]);
+    setDisplayedRevenue(totalRevenue);
+  }, [totalRevenue]);
 
   // Utiliser le Hook navigate de React Router pour une navigation SPA
   const handleCardClick = () => {
@@ -62,9 +37,9 @@ export const RevenueCard = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
       whileHover={{ y: -3 }}
     >
       <Card 
@@ -72,7 +47,7 @@ export const RevenueCard = ({
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
           "bg-gradient-to-br from-background to-amber-50 shadow-lg border border-amber-100 hover:shadow-xl",
-          // Dark mode styles - alignées avec les cards de graphiques
+          // Dark mode styles
           "dark:bg-gradient-to-br dark:from-gray-900 dark:to-amber-950 dark:border-amber-900/30 dark:shadow-amber-800/30 dark:hover:shadow-amber-800/50"
         )}
         onClick={handleCardClick}
@@ -98,28 +73,15 @@ export const RevenueCard = ({
         <CardContent className="pb-4">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <motion.div
-                className="relative"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+              <p 
+                className={cn(
+                  "font-bold text-xl leading-none",
+                  "text-gray-800", // Light mode
+                  "dark:text-amber-100" // Dark mode
+                )}
               >
-                <motion.p 
-                  className={cn(
-                    "font-bold text-xl leading-none",
-                    "text-gray-800", // Light mode
-                    "dark:text-amber-100" // Dark mode - légèrement teinté d'ambre pour l'effet visuel
-                  )}
-                  initial={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-                >
-                  {displayedRevenue.toLocaleString('fr-FR')} €
-                </motion.p>
-                
-                {/* Effet de lueur sous le montant - visible uniquement en dark mode */}
-                <div className="absolute -inset-1 bg-amber-500/10 blur-md rounded-full opacity-0 dark:opacity-60" />
-              </motion.div>
+                {displayedRevenue.toLocaleString('fr-FR')} €
+              </p>
             </div>
           </div>
         </CardContent>

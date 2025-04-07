@@ -15,8 +15,8 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
   const { latestVersion } = useLatestVersion();
 
   return (
-    <div className="sticky top-0 z-10 bg-background p-3 border-b rounded-r-xl border-border">
-      <div className="flex flex-col mb-1">
+    <div className="sticky top-0 z-10 bg-background px-3 pt-3 border-b rounded-r-xl border-border">
+      <div className="flex flex-col">
         <div className="flex items-center">
           <h1
             className={cn(   
@@ -30,17 +30,17 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
           </h1>
         </div>
         {!collapsed && (
-          <div className="flex items-baseline gap-2 mb-2">
+          <div className="flex items-baseline gap-2">
             <span className="text-xs text-muted-foreground">
               v{latestVersion || appConfig.version}
             </span>
           </div>
         )}
-         {!isMobile && (
+        
       
           <ThemeToggle collapsed={collapsed} />
      
-      )}
+    
       </div>
     </div>
   );

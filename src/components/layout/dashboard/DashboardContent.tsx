@@ -42,7 +42,7 @@ export const DashboardContent = ({
             <Button 
               size="sm" 
               variant="outline" 
-              className=" h-12 w-12 fixed z-40 right-4 top-4 ios-top-safe rounded-full shadow-md"
+              className=" h-12 w-12 fixed z-40 right-6 bottom-20 ios-top-safe rounded-full shadow-md"
             >
               <BadgeEuro className="h-12 w-12" />
             </Button>
@@ -59,7 +59,7 @@ export const DashboardContent = ({
       )}
 
       <div className={cn(
-        "flex-1 container mx-auto p-6 overflow-auto relative",
+        "flex-1 container mx-auto px-4 py-6 overflow-auto relative",
         isMobile ? "ios-top-safe pt-24" : "pt-20"
       )}>
         <div className="page-transition">

@@ -16,11 +16,13 @@ import { useEffect, useState } from "react";
 interface UserDropdownProps {
   collapsed: boolean;
   profile?: Profile;
+  isLoading?: boolean;
 }
 
 export const UserDropdown = ({
   collapsed,
-  profile
+  profile,
+  isLoading = false
 }: UserDropdownProps) => {
   const navigate = useNavigate();
   const { isAdmin } = usePagePermissions();
@@ -89,8 +91,8 @@ export const UserDropdown = ({
 
   return (
     <div className={cn(
-      "p-3 sm:p-4", 
-      isMobile && "shadow-inner bg-background/95"
+      "p-2", 
+      isMobile ? "shadow-none" : "p-3 sm:p-2"
     )}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -98,7 +100,8 @@ export const UserDropdown = ({
             variant="ghost" 
             className={cn(
               "w-full h-auto",
-              collapsed ? "justify-center p-0" : "justify-start p-2"
+              collapsed && isMobile ? "justify-center p-0 rounded-full" : 
+              collapsed ? "justify-center p-0" : "justify-start p-0"
             )}>
             <div className={cn(
               "flex items-center w-full",
@@ -106,8 +109,8 @@ export const UserDropdown = ({
             )}>
               <div className="relative">
                 <Avatar className={cn(
-                  "transition-all duration-300",
-                  isMobile && collapsed ? "h-9 w-9" : collapsed ? "h-10 w-10" : "h-12 w-12"
+                  "transition-all duration-300 border-2 border-background",
+                  isMobile && collapsed ? "h-12 w-12" : collapsed ? "h-10 w-10" : "h-12 w-12"
                 )}>
                   <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
                   <AvatarFallback>
@@ -136,21 +139,9 @@ export const UserDropdown = ({
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" side={isMobile ? "top" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px]">
+        <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-background/95 backdrop-blur-sm z-[99]">
           <div className="flex items-center gap-3 p-2 border-b">
-            <div className="relative">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
-                <AvatarFallback>
-                  {(localProfile?.full_name || "?")[0]?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {localProfile?.profile_type === "pro" && (
-                <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm">
-                  Pro
-                </Badge>
-              )}
-            </div>
+           
             <div className="flex flex-col">
               <span className="font-medium text-sm">{localProfile?.full_name || "Utilisateur"}</span>
               <span className="text-xs text-muted-foreground">{localProfile?.email}</span>
@@ -169,22 +160,7 @@ export const UserDropdown = ({
             </DropdownMenuItem>
           )}
 
-          {isMobile && (
-            <>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("light")}>
-                <Sun className="mr-2 h-4 w-4" />
-                <span>Thème clair</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("dark")}>
-                <Moon className="mr-2 h-4 w-4" />
-                <span>Thème sombre</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => applyTheme("system")}>
-                <Monitor className="mr-2 h-4 w-4" />
-                <span>Thème système</span>
-              </DropdownMenuItem>
-            </>
-          )}
+          
 
           <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />

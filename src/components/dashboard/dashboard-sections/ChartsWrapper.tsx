@@ -4,17 +4,12 @@ import { DashboardChartsSection } from "../dashboard-tab/DashboardChartsSection"
 import { DashboardPreferences } from "@/types/profile";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-// Animation variants
+// Animation simplifiée
 const sectionVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0 },
   visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15
-    }
+    opacity: 1,
+    transition: { duration: 0.4 }
   }
 };
 
@@ -54,10 +49,15 @@ export const ChartsWrapper = ({
 }: ChartsWrapperProps) => {
   const isMobileScreen = useMediaQuery("(max-width: 768px)");
 
+  // Ne pas rendre sur mobile ou si les préférences sont désactivées
   if (isMobileScreen || !dashboardPreferences.show_charts) return null;
 
   return (
-    <motion.div variants={sectionVariants}>
+    <motion.div 
+      variants={sectionVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <DashboardChartsSection 
         expenses={expenses}
         savings={savings}

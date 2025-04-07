@@ -59,14 +59,12 @@ interface DashboardTabContentProps {
   hasActiveVehicles?: boolean;
 }
 
+// Animation simplifiée
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1
-    }
+    transition: { duration: 0.4 }
   }
 };
 
@@ -98,57 +96,68 @@ export const DashboardTabContent = ({
   
   const { dashboardPrefs = defaultDashboardPreferences } = useDashboardPreferencesResolver(profile);
 
-  return (
-    <motion.div 
-      className="space-y-8 max-w-full"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <DashboardCardsSection 
-        revenue={revenue}
-        expenses={expenses}
-        totalMensualites={totalMensualites}
-        savings={savings}
-        savingsGoal={savingsGoal}
-        contributorShares={contributorShares}
-        recurringExpenses={recurringExpenses.map(expense => ({
-          amount: expense.amount,
-          debit_day: expense.debit_day,
-          debit_month: expense.debit_month,
-          periodicity: expense.periodicity
-        }))}
-        currentView={currentView}
-        dashboardPreferences={dashboardPrefs}
-      />
-      
-      <ExpenseStatsWrapper 
-        totalExpenses={expensesTotal}
-        viewMode={currentView}
-        totalFuelExpenses={fuelExpensesTotal}
-        fuelVolume={fuelVolume}
-        fuelExpensesCount={fuelExpensesCount}
-        profile={profile}
-        hasActiveVehicles={hasActiveVehicles}
-        dashboardPreferences={dashboardPrefs}
-      />
-      
-      <ChartsWrapper 
-        expenses={expenses}
-        savings={savings}
-        totalMensualites={totalMensualites}
-        credits={credits}
-        recurringExpenses={recurringExpenses}
-        monthlySavings={monthlySavings}
-        dashboardPreferences={dashboardPrefs}
-      />
-      
-      <ContributorsWrapper 
-        contributors={mappedContributors}
-        expenses={expenses}
-        totalMensualites={totalMensualites}
-        dashboardPreferences={dashboardPrefs}
-      />
-    </motion.div>
-  );
+  // Gérer les erreurs potentielles
+  try {
+    return (
+      <motion.div 
+        className="space-y-8 max-w-full"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <DashboardCardsSection 
+          revenue={revenue}
+          expenses={expenses}
+          totalMensualites={totalMensualites}
+          savings={savings}
+          savingsGoal={savingsGoal}
+          contributorShares={contributorShares}
+          recurringExpenses={recurringExpenses.map(expense => ({
+            amount: expense.amount,
+            debit_day: expense.debit_day,
+            debit_month: expense.debit_month,
+            periodicity: expense.periodicity
+          }))}
+          currentView={currentView}
+          dashboardPreferences={dashboardPrefs}
+        />
+        
+        <ExpenseStatsWrapper 
+          totalExpenses={expensesTotal}
+          viewMode={currentView}
+          totalFuelExpenses={fuelExpensesTotal}
+          fuelVolume={fuelVolume}
+          fuelExpensesCount={fuelExpensesCount}
+          profile={profile}
+          hasActiveVehicles={hasActiveVehicles}
+          dashboardPreferences={dashboardPrefs}
+        />
+        
+        <ChartsWrapper 
+          expenses={expenses}
+          savings={savings}
+          totalMensualites={totalMensualites}
+          credits={credits}
+          recurringExpenses={recurringExpenses}
+          monthlySavings={monthlySavings}
+          dashboardPreferences={dashboardPrefs}
+        />
+        
+        <ContributorsWrapper 
+          contributors={mappedContributors}
+          expenses={expenses}
+          totalMensualites={totalMensualites}
+          dashboardPreferences={dashboardPrefs}
+        />
+      </motion.div>
+    );
+  } catch (error) {
+    console.error("Erreur dans DashboardTabContent:", error);
+    return (
+      <div className="p-6 border border-red-200 rounded-lg bg-red-50 dark:bg-red-900/10 dark:border-red-800/30">
+        <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-2">Impossible de charger le contenu</h3>
+        <p className="text-red-600 dark:text-red-400">Un problème est survenu lors du chargement des données du tableau de bord.</p>
+      </div>
+    );
+  }
 };

@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ProfileAvatarUpload } from "./ProfileAvatarUpload";
 import { EmailChangeAlert } from "./EmailChangeAlert";
-import { Mail, Upload } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Profile } from "@/types/profile";
 import { User } from "@supabase/supabase-js";
 
@@ -17,6 +17,8 @@ interface ProfileFormProps {
   previewUrl: string | null;
   setPreviewUrl: (url: string | null) => void;
   isUpdating: boolean;
+  fullName: string; 
+  setFullName: (name: string) => void;
   onSubmit: (e: React.FormEvent) => Promise<void>;
   onEmailChangeClick: () => void;
   onResendVerification: () => void;
@@ -31,22 +33,32 @@ export const ProfileForm = ({
   previewUrl,
   setPreviewUrl,
   isUpdating,
+  fullName,
+  setFullName,
   onSubmit,
   onEmailChangeClick,
   onResendVerification,
   isMobile = false
 }: ProfileFormProps) => {
-  const [fullName, setFullName] = useState(profile?.full_name || "");
-
-  // Mettre à jour fullName quand profile change
+  // Utiliser useEffect pour synchroniser le fullName avec les props uniquement au montage initial
+  // ou quand le profil change significativement (pas à chaque changement de nom)
   useEffect(() => {
-    if (profile?.full_name) {
+    console.log("ProfileForm: profile mis à jour", profile?.full_name);
+    // Ne mettre à jour que si le profil existe, que fullName est vide ou undefined,
+    // ou si c'est le chargement initial (premier rendu)
+    if (profile?.full_name && (!fullName || fullName === "")) {
+      console.log("ProfileForm: initialisation du nom à", profile.full_name);
       setFullName(profile.full_name);
     }
-  }, [profile]);
+  }, [profile, setFullName]);
+
+  const handleLocalSubmit = async (e: React.FormEvent) => {
+    console.log("Soumission du formulaire avec le nom:", fullName);
+    await onSubmit(e);
+  };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={handleLocalSubmit} className="space-y-6">
       <ProfileAvatarUpload 
         profile={profile} 
         previewUrl={previewUrl} 
@@ -63,7 +75,10 @@ export const ProfileForm = ({
           <Input 
             id="name" 
             value={fullName} 
-            onChange={e => setFullName(e.target.value)} 
+            onChange={e => {
+              console.log("Changement du nom:", e.target.value);
+              setFullName(e.target.value);
+            }} 
             placeholder="John Doe" 
             className={isMobile ? "h-12 text-base" : ""}
           />

@@ -1,16 +1,17 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-const BudgetLoader = () => {
+const StyledLoader = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full w-full min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center max-w-md">
-        {/* Titre animé */}
+        {/* Titre avec animation simplifiée */}
         <motion.div
           className="text-center mb-8"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-2xl font-bold text-purple-500 dark:text-purple-400">
@@ -21,17 +22,17 @@ const BudgetLoader = () => {
           </p>
         </motion.div>
 
-        {/* Conteneur pour les graphiques animés */}
+        {/* Conteneur pour les graphiques animés - animations simplifiées */}
         <div className="flex justify-center items-center gap-4 mb-8">
           {/* Graphique 1 - Violet (Crédits) */}
           <motion.div
             className="relative w-20 h-20"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
             <svg className="w-full h-full" viewBox="0 0 100 100">
-              <motion.circle
+              <circle
                 cx="50"
                 cy="50"
                 r="40"
@@ -48,13 +49,12 @@ const BudgetLoader = () => {
                 strokeWidth="12"
                 strokeDasharray="251.2"
                 initial={{ strokeDashoffset: 251.2 }}
-                animate={{ 
-                  strokeDashoffset: [251.2, 50, 150, 50, 251.2],
-                  transition: { 
-                    duration: 2.5, 
-                    repeat: Infinity,
-                    ease: "easeInOut" 
-                  }
+                animate={{ strokeDashoffset: 125 }}
+                transition={{ 
+                  duration: 1.5, 
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut" 
                 }}
               />
             </svg>
@@ -63,9 +63,9 @@ const BudgetLoader = () => {
           {/* Graphique 2 - Bleu (Charges) */}
           <motion.div
             className="relative w-20 h-20"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
             <svg className="w-full h-full" viewBox="0 0 100 100">
               <circle
@@ -85,14 +85,12 @@ const BudgetLoader = () => {
                 strokeWidth="12"
                 strokeDasharray="251.2"
                 initial={{ strokeDashoffset: 251.2 }}
-                animate={{ 
-                  strokeDashoffset: [251.2, 75, 175, 75, 251.2], 
-                  transition: { 
-                    duration: 2.5, 
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.1
-                  }
+                animate={{ strokeDashoffset: 75 }}
+                transition={{ 
+                  duration: 1.5, 
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut"
                 }}
               />
             </svg>
@@ -101,9 +99,9 @@ const BudgetLoader = () => {
           {/* Graphique 3 - Vert (Épargne) */}
           <motion.div
             className="relative w-20 h-20"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
             <svg className="w-full h-full" viewBox="0 0 100 100">
               <circle
@@ -123,33 +121,25 @@ const BudgetLoader = () => {
                 strokeWidth="12"
                 strokeDasharray="251.2"
                 initial={{ strokeDashoffset: 251.2 }}
-                animate={{ 
-                  strokeDashoffset: [251.2, 100, 200, 100, 251.2], 
-                  transition: { 
-                    duration: 2.5, 
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.2
-                  }
+                animate={{ strokeDashoffset: 125 }}
+                transition={{ 
+                  duration: 1.5, 
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut"
                 }}
               />
             </svg>
           </motion.div>
         </div>
 
-        {/* Points de chargement animés */}
-        <motion.div 
-          className="flex gap-2 mt-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.3 }}
-        >
+        {/* Points de chargement avec animations simplifiées */}
+        <div className="flex gap-2 mt-2">
           {[0, 1, 2].map((index) => (
             <motion.div
               key={index}
               className="w-2 h-2 rounded-full bg-purple-500 dark:bg-purple-400"
               animate={{
-                scale: [1, 1.5, 1],
                 opacity: [0.6, 1, 0.6],
               }}
               transition={{
@@ -160,10 +150,10 @@ const BudgetLoader = () => {
               }}
             />
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default BudgetLoader;
+export default StyledLoader;

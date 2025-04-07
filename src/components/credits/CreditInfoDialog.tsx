@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Credit } from "./types";
@@ -10,6 +11,7 @@ import { CalendarIcon, CreditCardIcon, PiggyBankIcon, CarIcon, X } from "lucide-
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useVehicle } from "@/hooks/queries/useVehicle";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface CreditInfoDialogProps {
   credit: Credit;
@@ -69,9 +71,14 @@ export const CreditInfoDialog = ({
       darkGradientFrom: "dark:from-purple-600",
       darkGradientTo: "dark:to-violet-500",
       iconBg: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300",
+      headingText: "text-purple-900 dark:text-purple-200",
+      descriptionText: "text-purple-700/80 dark:text-purple-300/80",
       cardBg: "bg-purple-50/50 dark:bg-purple-900/20",
+      lightBg: "from-white via-purple-50/40 to-purple-100/70",
+      darkBg: "dark:from-gray-900 dark:via-purple-950/20 dark:to-purple-900/30",
       titleText: "text-purple-900 dark:text-purple-200",
-      border: "border-purple-200 dark:border-purple-800/40"
+      border: "border-purple-200 dark:border-purple-800/40",
+      separator: "via-purple-200/60 dark:via-purple-800/30"
     },
     green: {
       gradientFrom: "from-green-500",
@@ -79,9 +86,14 @@ export const CreditInfoDialog = ({
       darkGradientFrom: "dark:from-green-600",
       darkGradientTo: "dark:to-emerald-500",
       iconBg: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-300",
+      headingText: "text-green-900 dark:text-green-200",
+      descriptionText: "text-green-700/80 dark:text-green-300/80",
       cardBg: "bg-green-50/50 dark:bg-green-900/20",
+      lightBg: "from-white via-green-50/40 to-green-100/70",
+      darkBg: "dark:from-gray-900 dark:via-green-950/20 dark:to-green-900/30",
       titleText: "text-green-900 dark:text-green-200",
-      border: "border-green-200 dark:border-green-800/40"
+      border: "border-green-200 dark:border-green-800/40",
+      separator: "via-green-200/60 dark:via-green-800/30"
     },
     blue: {
       gradientFrom: "from-blue-500",
@@ -89,9 +101,14 @@ export const CreditInfoDialog = ({
       darkGradientFrom: "dark:from-blue-600",
       darkGradientTo: "dark:to-sky-500", 
       iconBg: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300",
+      headingText: "text-blue-900 dark:text-blue-200",
+      descriptionText: "text-blue-700/80 dark:text-blue-300/80",
       cardBg: "bg-blue-50/50 dark:bg-blue-900/20",
+      lightBg: "from-white via-blue-50/40 to-blue-100/70",
+      darkBg: "dark:from-gray-900 dark:via-blue-950/20 dark:to-blue-900/30",
       titleText: "text-blue-900 dark:text-blue-200",
-      border: "border-blue-200 dark:border-blue-800/40"
+      border: "border-blue-200 dark:border-blue-800/40",
+      separator: "via-blue-200/60 dark:via-blue-800/30"
     }
   };
   
@@ -123,26 +140,54 @@ export const CreditInfoDialog = ({
     }
   };
 
+  // Contenu commun aux versions mobile et desktop
   const renderContent = () => (
-    <>
+    <div 
+      className={cn(
+        "relative flex flex-col pb-6 pt-5",
+        "bg-gradient-to-br",
+        currentColors.lightBg,
+        currentColors.darkBg
+      )}
+    >
+      {/* Background gradient */}
       <div className={cn(
-        "absolute inset-0 pointer-events-none opacity-10 bg-gradient-to-br",
+        "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-t-lg",
         currentColors.gradientFrom,
         currentColors.gradientTo,
         currentColors.darkGradientFrom,
         currentColors.darkGradientTo
       )} />
+
+      {/* Radial gradient */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-t-lg" />
       
-      <DialogHeader className="relative z-10">
-        <DialogTitle className={cn(
-          "text-2xl font-bold flex items-center gap-2 mt-4",
-          currentColors.titleText
-        )}>
-          {credit.nom_credit}
-        </DialogTitle>
+      {/* Dialog header */}
+      <DialogHeader className="relative z-10 mb-4 px-6">
+        <div className="flex items-center gap-3">
+          <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
+            <CreditCardIcon className="w-5 h-5" />
+          </div>
+          <DialogTitle className={cn("text-2xl font-bold", currentColors.headingText)}>
+            {credit.nom_credit}
+          </DialogTitle>
+        </div>
+        <div className="ml-[52px] mt-2">
+          <p className={cn("text-base", currentColors.descriptionText)}>
+            {credit.nom_domaine}
+          </p>
+        </div>
       </DialogHeader>
       
-      <div className="space-y-6 py-4 relative z-10">
+      {/* Ligne séparatrice stylée */}
+      <div className={cn(
+        "h-px w-full mb-6",
+        "bg-gradient-to-r from-transparent to-transparent",
+        currentColors.separator
+      )} />
+      
+      {/* Contenu du dialogue */}
+      <div className="space-y-6 py-4 relative z-10 px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             {credit.logo_url ? (
@@ -187,7 +232,8 @@ export const CreditInfoDialog = ({
         </div>
 
         <div className={cn(
-          "rounded-xl p-4 bg-purple-50/70 dark:bg-purple-900/30",
+          "rounded-xl p-4",
+          currentColors.cardBg,
           isMobile ? "" : currentColors.border
         )}>
           <div className="grid grid-cols-2 gap-4">
@@ -234,7 +280,8 @@ export const CreditInfoDialog = ({
           />
           
           <div className={cn(
-            "rounded-xl p-4 bg-purple-50/70 dark:bg-purple-900/30",
+            "rounded-xl p-4",
+            currentColors.cardBg,
             isMobile ? "" : currentColors.border
           )}>
             <div className="flex items-center gap-3 mb-3">
@@ -270,7 +317,8 @@ export const CreditInfoDialog = ({
         
         {credit.vehicle_id && vehicle && (
           <div className={cn(
-            "rounded-xl p-4 bg-purple-50/70 dark:bg-purple-900/30",
+            "rounded-xl p-4",
+            currentColors.cardBg,
             isMobile ? "" : currentColors.border
           )}>
             <div className="flex items-center gap-3 mb-3">
@@ -306,42 +354,61 @@ export const CreditInfoDialog = ({
           </div>
         )}
       </div>
-    </>
+      
+      {/* Decorative icon */}
+      <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
+        <CreditCardIcon className="w-full h-full" />
+      </div>
+    </div>
   );
 
+  // Version mobile avec Sheet
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="bottom"
           className={cn(
-            "rounded-t-xl",
-            "shadow-lg",
+            "px-0 py-0 rounded-t-xl",
+            "border-t shadow-lg",
+            currentColors.border,
             "max-h-[90vh] overflow-y-auto",
-            "bg-[#f5f0ff] dark:bg-gray-900",
-            "pb-safe",
-            "p-4"
+            "dark:bg-gray-900"
           )}
         >
           <div className={cn(
-            "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto",
+            "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
             "bg-gray-300 dark:bg-gray-600 rounded-full"
           )} />
           
-          <div className="relative">
-            {renderContent()}
-          </div>
+          {renderContent()}
         </SheetContent>
       </Sheet>
     );
   }
 
+  // Version desktop avec Dialog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn(
-        "sm:max-w-[550px] overflow-hidden",
-        isTablet && "sm:max-w-[85%] w-[85%] overflow-y-auto"
-      )}>
+      <DialogContent 
+        className={cn(
+          "sm:max-w-[650px] w-full p-0 shadow-lg rounded-lg border",
+          isTablet && "sm:max-w-[85%] w-[85%]",
+          currentColors.border,
+          "dark:bg-gray-900"
+        )}
+      >
+        {/* Bouton de fermeture */}
+        <DialogClose 
+          className={cn(
+            "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none z-20",
+            "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+          )}
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">Fermer</span>
+        </DialogClose>
+        
         {renderContent()}
       </DialogContent>
     </Dialog>
