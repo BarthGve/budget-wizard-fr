@@ -1,6 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
-import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Sun, Moon, Monitor } from "lucide-react";
+import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Sun, Moon, Monitor, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -77,13 +77,13 @@ export const UserDropdown = ({
   // Si pas de profil, afficher un bouton de connexion
   if (!localProfile) {
     return (
-      <div className="p-4">
+      <div className="p-2">
         <Button 
           variant="outline" 
           className="w-full" 
           onClick={() => navigate("/login")}
         >
-          Se connecter
+         <LogIn/>
         </Button>
       </div>
     );
