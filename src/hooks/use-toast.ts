@@ -190,3 +190,6 @@ function useToast() {
 }
 
 export { useToast, toast }
+
+// Exportation explicite du type
+export type { ToasterToast }
