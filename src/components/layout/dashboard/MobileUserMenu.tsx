@@ -1,7 +1,6 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { UserDropdown } from "../UserDropdown";
-
 import { Profile } from "@/types/profile";
 import { cn } from "@/lib/utils";
 
@@ -22,8 +21,8 @@ export const MobileUserMenu = ({
   return (
     <div 
       className={cn(
-        "fixed top-4 right-4 z-50 ios-top-safe shadow-md rounded-full",
-        "bg-background/90 backdrop-blur-sm border"
+        "fixed top-4 right-4 z-50 ios-top-safe"
+    
       )}
     >
       <UserDropdown 
