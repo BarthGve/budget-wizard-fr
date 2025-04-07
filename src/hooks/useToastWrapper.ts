@@ -4,8 +4,6 @@
  * Filtre les messages de succès et n'affiche que les erreurs
  */
 import { toast as sonnerToast } from "sonner";
-import { toast as uiToast, useToast as useUIToast } from "@/hooks/use-toast";
-import type { ToasterToast } from "@/hooks/use-toast"; // Importation corrigée du type depuis le bon fichier
 
 // Fonction pour déterminer si on doit afficher un toast basé sur le type
 const shouldShowToast = (type: "success" | "error" | "info" | "warning"): boolean => {
@@ -16,7 +14,7 @@ const shouldShowToast = (type: "success" | "error" | "info" | "warning"): boolea
 // API compatible avec Sonner
 // En rendant cette fonction callable directement
 const toast = Object.assign(
-  // Fonction principale (pour maintenir la compatibilité)
+  // Fonction principale
   (props: any) => {
     if (props?.variant === "destructive" || shouldShowToast("info")) {
       return sonnerToast(props);
@@ -70,35 +68,10 @@ const toast = Object.assign(
   }
 );
 
-// Hook compatible avec l'API Shadcn UI Toast
+// Hook compatible avec une API simplifiée
 export const useToastWrapper = () => {
-  const uiToastHook = useUIToast();
-  
   return {
-    ...uiToastHook,
-    toast: Object.assign(
-      // Fonction principale (pour maintenir la compatibilité)
-      (props: any) => {
-        if (props?.variant === "destructive" || shouldShowToast(props?.type || "info")) {
-          return uiToastHook.toast(props);
-        }
-        return { id: "", dismiss: () => {}, update: () => {} };
-      },
-      {
-        // On surcharge les fonctions spécifiques
-        error: (props: any) => {
-          return uiToastHook.toast({
-            ...props,
-            variant: "destructive"
-          });
-        },
-        
-        success: (props: any) => {
-          // Ne fait rien, succès désactivé
-          return { id: "", dismiss: () => {}, update: () => {} };
-        }
-      }
-    )
+    toast
   };
 };
 

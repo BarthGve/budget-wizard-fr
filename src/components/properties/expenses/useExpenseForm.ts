@@ -1,6 +1,6 @@
 
 import { useForm } from "react-hook-form";
-import { useToastWrapper } from "@/hooks/useToastWrapper";
+import { toast } from "@/hooks/useToastWrapper";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useEffect } from "react";
@@ -13,7 +13,6 @@ interface UseExpenseFormProps {
 }
 
 export function useExpenseForm({ propertyId, expense, onSuccess, onClose }: UseExpenseFormProps) {
-  const { toast } = useToastWrapper();
   const form = useForm({
     defaultValues: {
       amount: "",
@@ -38,11 +37,7 @@ export function useExpenseForm({ propertyId, expense, onSuccess, onClose }: UseE
     try {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour ajouter une dépense",
-          variant: "destructive",
-        });
+        toast.error("Vous devez être connecté pour ajouter une dépense");
         return;
       }
 
@@ -72,22 +67,14 @@ export function useExpenseForm({ propertyId, expense, onSuccess, onClose }: UseE
 
       if (error) throw error;
 
-      // Message de succès ne s'affichera plus
-      toast({
-        title: "Succès",
-        description: expense ? "La dépense a été modifiée" : "La dépense a été ajoutée",
-      });
-
+      // Message de succès ne s'affichera plus (pas besoin d'appeler toast.success)
+      
       onClose();
       form.reset();
       onSuccess();
     } catch (error) {
       console.error("Error adding/updating expense:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible d'ajouter/modifier la dépense",
-        variant: "destructive",
-      });
+      toast.error("Impossible d'ajouter/modifier la dépense");
     }
   };
 
