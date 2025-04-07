@@ -1,7 +1,6 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ExpenseForm } from "./ExpenseForm";
-import { toast } from "sonner";
+import { toast } from "@/hooks/useToastWrapper";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -61,7 +60,6 @@ export function EditExpenseDialog({
         exact: false
       });
 
-      toast.success("Dépense mise à jour avec succès");
       onExpenseUpdated();
     } catch (error) {
       console.error("Error in update operation:", error);

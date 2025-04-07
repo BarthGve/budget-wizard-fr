@@ -1,3 +1,4 @@
-import { useToast, toast } from "@/hooks/use-toast";
+
+import { useToastWrapper as useToast, toast } from "@/hooks/useToastWrapper";
 
 export { useToast, toast };

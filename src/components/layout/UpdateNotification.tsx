@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useToastWrapper as useToast } from "@/hooks/useToastWrapper";
 import { updateServiceWorker } from '@/registerSW';
 import { RefreshCw } from 'lucide-react';
 
@@ -52,4 +52,3 @@ export const UpdateNotification = () => {
   // Le composant ne rend rien visuellement, il gère uniquement les notifications
   return null;
 };
-

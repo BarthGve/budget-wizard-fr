@@ -1,6 +1,6 @@
 
 import { useForm } from "react-hook-form";
-import { useToast } from "@/hooks/use-toast";
+import { useToastWrapper as useToast } from "@/hooks/useToastWrapper";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useEffect } from "react";
@@ -72,6 +72,7 @@ export function useExpenseForm({ propertyId, expense, onSuccess, onClose }: UseE
 
       if (error) throw error;
 
+      // Message de succès ne s'affichera plus
       toast({
         title: "Succès",
         description: expense ? "La dépense a été modifiée" : "La dépense a été ajoutée",
