@@ -17,22 +17,28 @@ interface UserDropdownProps {
   collapsed: boolean;
   profile?: Profile;
   isLoading?: boolean;
+  isAuthenticated?: boolean;  // Nouvelle prop pour contrôler directement l'état d'authentification
 }
 
 export const UserDropdown = ({
   collapsed,
   profile,
-  isLoading = false
+  isLoading = false,
+  isAuthenticated: propIsAuthenticated  // L'état d'authentification peut être passé en prop
 }: UserDropdownProps) => {
   const navigate = useNavigate();
   const { isAdmin } = usePagePermissions();
   const isMobile = useIsMobile();
   const { setTheme } = useTheme();
   
-  const { logout, isAuthenticated } = useAuthContext();
+  // Obtenir l'état d'authentification du contexte si non fourni en prop
+  const { logout, isAuthenticated: contextIsAuthenticated } = useAuthContext();
   const [localProfile, setLocalProfile] = useState<Profile | undefined>(profile);
   const [mounted, setMounted] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
+  // Utiliser l'état d'authentification de la prop si fourni, sinon utiliser celui du contexte
+  const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : contextIsAuthenticated;
   
   // Assurer que le composant est monté côté client
   useEffect(() => {
@@ -71,15 +77,42 @@ export const UserDropdown = ({
     }
   };
 
-  // Si pas de profil, afficher un bouton de connexion
+  // Si pas monté, ne rien afficher
   if (!mounted) {
     return null;
   }
 
-  // Si pas de profil, afficher un bouton de connexion
-  if (!localProfile) {
+  // Si chargement en cours, afficher un état de chargement
+  if (isLoading) {
     return (
-      <div className="p-4">
+      <div className={cn("p-2", isMobile ? "shadow-none" : "p-3 sm:p-2")}>
+        <Button variant="ghost" className={cn(
+          "w-full h-auto",
+          collapsed && isMobile ? "justify-center p-0 rounded-full" : 
+          collapsed ? "justify-center p-0" : "justify-start p-0"
+        )}>
+          <div className={cn(
+            "flex items-center w-full",
+            collapsed ? "justify-center" : "gap-3"
+          )}>
+            <div className="relative">
+              <Avatar className={cn(
+                "transition-all duration-300 border-2 border-background animate-pulse",
+                isMobile && collapsed ? "h-12 w-12" : collapsed ? "h-10 w-10" : "h-12 w-12"
+              )}>
+                <AvatarFallback className="bg-gray-200 dark:bg-gray-700" />
+              </Avatar>
+            </div>
+          </div>
+        </Button>
+      </div>
+    );
+  }
+
+  // Si pas authentifié (en se basant sur la prop ou le contexte), afficher un bouton de connexion
+  if (!isAuthenticated) {
+    return (
+      <div className={cn("p-2", isMobile ? "shadow-none" : "p-3 sm:p-2")}>
         <Button 
           variant="outline" 
           className="w-full" 
@@ -91,6 +124,46 @@ export const UserDropdown = ({
     );
   }
 
+  // Si authentifié mais pas de profil, afficher un placeholder
+  if (isAuthenticated && !localProfile) {
+    return (
+      <div className={cn("p-2", isMobile ? "shadow-none" : "p-3 sm:p-2")}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className={cn(
+                "w-full h-auto",
+                collapsed && isMobile ? "justify-center p-0 rounded-full" : 
+                collapsed ? "justify-center p-0" : "justify-start p-0"
+              )}>
+              <div className={cn(
+                "flex items-center w-full",
+                collapsed ? "justify-center" : "gap-3"
+              )}>
+                <div className="relative">
+                  <Avatar className={cn(
+                    "transition-all duration-300 border-2 border-background",
+                    isMobile && collapsed ? "h-12 w-12" : collapsed ? "h-10 w-10" : "h-12 w-12"
+                  )}>
+                    <AvatarFallback>?</AvatarFallback>
+                  </Avatar>
+                </div>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-background/95 backdrop-blur-sm z-[99]">
+            <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>{isLoggingOut ? "Déconnexion en cours..." : "Se déconnecter"}</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  }
+
+  // Affichage normal avec le profil
   return (
     <div className={cn(
       "p-2", 

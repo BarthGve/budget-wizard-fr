@@ -2,16 +2,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Profile } from "@/types/profile";
+import { useAuthContext } from "@/context/AuthProvider";
 
 /**
  * Hook qui récupère le profil utilisateur courant
  */
 export const useProfileFetcher = () => {
+  const { user, isAuthenticated } = useAuthContext();
+  
   return useQuery({
     queryKey: ["current-profile"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      // Utiliser l'utilisateur du contexte d'authentification si disponible
+      if (!user || !isAuthenticated) {
+        console.log("ProfileFetcher: Aucun utilisateur authentifié");
+        return null;
+      }
+      
+      console.log("ProfileFetcher: Récupération du profil pour", user.id);
       
       const { data, error } = await supabase
         .from("profiles")
@@ -38,9 +46,18 @@ export const useProfileFetcher = () => {
         }
       }
 
+      // S'assurer que l'email est bien présent dans les données du profil
+      const profileData = data as Profile;
+      if (profileData && user.email && !profileData.hasOwnProperty('email')) {
+        profileData.email = user.email;
+      }
+
       // S'assurer que les données retournées sont conformes au type Profile
-      return data as Profile;
+      return profileData;
     },
-    staleTime: 1000 * 60 * 30, // 30 minutes
+    enabled: !!user && isAuthenticated, // N'exécuter que si l'utilisateur est authentifié
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 };

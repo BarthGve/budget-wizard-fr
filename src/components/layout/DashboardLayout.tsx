@@ -10,7 +10,8 @@ import { useDashboardPageData } from "./dashboard/useDashboardData";
 import { useRealtimeUpdates } from "./dashboard/useRealtimeUpdates";
 import { memo } from "react";
 import { MobileUserMenu } from "./dashboard/MobileUserMenu";
-import { Profile } from "@/types/profile"; // Ajout de l'import pour le type Profile
+import { Profile } from "@/types/profile"; 
+import { useAuthContext } from "@/context/AuthProvider";
 
 // Optimisation avec mémorisation pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
@@ -22,6 +23,7 @@ interface DashboardLayoutProps {
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isMobile = useIsMobile();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const { isAuthenticated } = useAuthContext();
   
   // Récupérer les données du dashboard
   const { userProfile, globalBalance, refetch } = useDashboardPageData();
@@ -65,10 +67,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
         </div>
 
-        {/* Menu utilisateur flottant sur mobile */}
+        {/* Menu utilisateur flottant sur mobile - passer isAuthenticated directement */}
         <MobileUserMenu 
           profile={userProfile as Profile} 
-          isLoading={!userProfile}
+          isLoading={!userProfile && isAuthenticated}
         />
 
         {/* Bouton de basculement de la sidebar sur mobile */}
