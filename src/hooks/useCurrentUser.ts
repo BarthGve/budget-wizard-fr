@@ -39,9 +39,9 @@ export const useCurrentUser = () => {
       return user;
     },
     enabled: isAuthenticated || !authLoading, // N'exécuter que si l'authentification est terminée
-    staleTime: 60000, // Réduit les rafraîchissements trop fréquents (1 minute)
+    staleTime: 30000, // Réduit à 30 secondes pour plus de réactivité
     retry: false, // Ne pas retenter en cas d'échec
-    refetchOnWindowFocus: false, // Ne pas rafraîchir à chaque focus de fenêtre
+    refetchOnWindowFocus: true, // Rafraîchir à chaque focus de fenêtre pour plus de réactivité
   });
 
   return { 

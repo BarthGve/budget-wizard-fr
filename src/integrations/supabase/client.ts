@@ -22,6 +22,9 @@ export const supabase = createClient<Database>(
         eventsPerSecond: 10
       }
     },
+    db: {
+      schema: 'public'
+    },
     global: {
       headers: {
         'X-Client-Info': 'BudgetWizard/1.0'
@@ -29,3 +32,10 @@ export const supabase = createClient<Database>(
     }
   }
 );
+
+// Activer la surveillance en temps réel pour la table des crédits
+supabase.from('credits')
+  .on('*', (payload) => {
+    console.log('Changement temps réel détecté dans la table credits:', payload);
+  })
+  .subscribe();
