@@ -33,9 +33,20 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Activer la surveillance en temps réel pour la table des crédits
-supabase.from('credits')
-  .on('*', (payload) => {
-    console.log('Changement temps réel détecté dans la table credits:', payload);
-  })
+// Configurer un canal temps réel pour la table des crédits
+const creditsChannel = supabase.channel('credits-changes')
+  .on(
+    'postgres_changes',
+    {
+      event: '*',
+      schema: 'public',
+      table: 'credits'
+    },
+    (payload) => {
+      console.log('Changement temps réel détecté dans la table credits:', payload);
+    }
+  )
   .subscribe();
+
+// Exporter le canal pour permettre un nettoyage futur si nécessaire
+export { creditsChannel };
