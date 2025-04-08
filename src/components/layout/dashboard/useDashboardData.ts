@@ -7,10 +7,12 @@ import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { Credit } from "@/components/credits/types";
 import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
 import { Profile } from "@/types/profile";
+import { useAuthContext } from "@/context/AuthProvider";
 
 // Hook pour la récupération et le calcul des données du dashboard
 export const useDashboardPageData = () => {
   const { contributors, recurringExpenses, monthlySavings, refetch } = useDashboardData();
+  const { user, isAuthenticated } = useAuthContext();
 
   // Récupérer les crédits
   const { data: credits } = useQuery({
@@ -29,16 +31,21 @@ export const useDashboardPageData = () => {
     },
     staleTime: 1000 * 30,
     refetchOnWindowFocus: true,
-    refetchOnReconnect: true
+    refetchOnReconnect: true,
+    enabled: isAuthenticated
   });
 
   // Récupérer le profil utilisateur
-  const { data: userProfile } = useQuery({
+  const { data: userProfile, isLoading: profileLoading } = useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!user || !isAuthenticated) {
+        console.log("useDashboardPageData: Pas d'utilisateur authentifié");
+        return null;
+      }
 
+      console.log("useDashboardPageData: Récupération du profil pour", user.id);
+      
       const { data: profile } = await supabase
         .from("profiles")
         .select("*")
@@ -64,6 +71,11 @@ export const useDashboardPageData = () => {
             profile.dashboard_preferences = null;
           }
         }
+        
+        // Ajouter l'email s'il est manquant
+        if (!profile.email && user.email) {
+          profile.email = user.email;
+        }
       }
 
       // Retourner le profil avec le statut admin
@@ -74,7 +86,8 @@ export const useDashboardPageData = () => {
     },
     staleTime: 1000 * 30,
     refetchOnWindowFocus: true,
-    refetchOnReconnect: true
+    refetchOnReconnect: true,
+    enabled: isAuthenticated && !!user
   });
 
   // Calculer les totaux
@@ -92,6 +105,7 @@ export const useDashboardPageData = () => {
   return {
     userProfile,
     globalBalance,
-    refetch
+    refetch,
+    isLoading: profileLoading
   };
 };

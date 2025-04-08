@@ -26,6 +26,8 @@ export const MobileUserMenu = ({
   
   // Utiliser soit le profil fourni en prop, soit le profil récupéré par le hook
   const profile = providedProfile || fetchedProfile;
+  
+  // Calculer l'état de chargement global
   const isLoading = isLoadingProp || authLoading || isProfileLoading;
   
   // S'assurer que nous avons un état d'initialisation cohérent
@@ -43,6 +45,7 @@ export const MobileUserMenu = ({
     }
   }, [initialized, isAuthenticated, user, profile, isProfileLoading, queryClient]);
   
+  // Ne rien afficher si nous ne sommes pas sur mobile
   if (!isMobile) return null;
   
   return (
@@ -55,6 +58,7 @@ export const MobileUserMenu = ({
         collapsed={true}
         profile={profile}
         isLoading={isLoading}
+        isAuthenticated={isAuthenticated}
       />
     </div>
   );
