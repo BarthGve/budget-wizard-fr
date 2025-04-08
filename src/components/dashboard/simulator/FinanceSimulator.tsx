@@ -180,7 +180,7 @@ const SimulatorContent = ({
         </div>
         <div className="flex justify-between">
           <span className="text-sm">Dépenses récurrentes:</span>
-          <span className="font-medium text-red-500">-{formatCurrency(data.expenses)} €</span>
+          <span className="font-medium text-red-500">-{formatCurrency(data.recurringExpenses)} €</span>
         </div>
         <div className="flex justify-between">
           <span className="text-sm">Crédits:</span>
