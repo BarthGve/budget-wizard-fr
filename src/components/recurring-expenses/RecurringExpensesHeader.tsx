@@ -48,7 +48,7 @@ export const RecurringExpensesHeader = () => {
             // Dark mode gradient (plus lumineux pour meilleure lisibilité)
             "dark:bg-gradient-to-r dark:from-blue-400 dark:via-blue-300 dark:to-indigo-400"
           )}>
-            Charges récurrentes
+            Charges
           </h1>
           <p className={cn(
             "text-sm mt-1",
