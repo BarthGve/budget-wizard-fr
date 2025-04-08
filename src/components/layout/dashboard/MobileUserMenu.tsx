@@ -1,8 +1,12 @@
 
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuthContext } from "@/context/AuthProvider";
 import { UserDropdown } from "../UserDropdown";
 import { Profile } from "@/types/profile";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useProfileFetcher } from "@/components/dashboard/dashboard-tab/ProfileFetcher";
 
 interface MobileUserMenuProps {
   profile?: Profile & { isAdmin?: boolean };
@@ -11,10 +15,33 @@ interface MobileUserMenuProps {
 
 // Composant pour le menu utilisateur flottant sur mobile
 export const MobileUserMenu = ({ 
-  profile,
-  isLoading = false
+  profile: providedProfile,
+  isLoading: isLoadingProp = false
 }: MobileUserMenuProps) => {
   const isMobile = useIsMobile();
+  const { isAuthenticated, loading: authLoading, user } = useAuthContext();
+  const [initialized, setInitialized] = useState(false);
+  const { data: fetchedProfile, isLoading: isProfileLoading } = useProfileFetcher();
+  const queryClient = useQueryClient();
+  
+  // Utiliser soit le profil fourni en prop, soit le profil récupéré par le hook
+  const profile = providedProfile || fetchedProfile;
+  const isLoading = isLoadingProp || authLoading || isProfileLoading;
+  
+  // S'assurer que nous avons un état d'initialisation cohérent
+  useEffect(() => {
+    if (!authLoading) {
+      setInitialized(true);
+    }
+  }, [authLoading]);
+
+  // Forcer un rafraîchissement du profil si l'utilisateur est authentifié mais que nous n'avons pas de profil
+  useEffect(() => {
+    if (initialized && isAuthenticated && user && !profile && !isProfileLoading) {
+      console.log("MobileUserMenu: Tentative de récupération forcée du profil");
+      queryClient.invalidateQueries({ queryKey: ["current-profile"] });
+    }
+  }, [initialized, isAuthenticated, user, profile, isProfileLoading, queryClient]);
   
   if (!isMobile) return null;
   
@@ -22,7 +49,6 @@ export const MobileUserMenu = ({
     <div 
       className={cn(
         "fixed top-4 right-4 z-50 ios-top-safe"
-    
       )}
     >
       <UserDropdown 

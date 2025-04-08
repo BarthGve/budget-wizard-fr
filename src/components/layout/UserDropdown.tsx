@@ -71,15 +71,42 @@ export const UserDropdown = ({
     }
   };
 
-  // Si pas de profil, afficher un bouton de connexion
+  // Si pas monté, ne rien afficher
   if (!mounted) {
     return null;
   }
 
-  // Si pas de profil, afficher un bouton de connexion
-  if (!localProfile) {
+  // Si chargement en cours, afficher un état de chargement
+  if (isLoading) {
     return (
-      <div className="p-4">
+      <div className={cn("p-2", isMobile ? "shadow-none" : "p-3 sm:p-2")}>
+        <Button variant="ghost" className={cn(
+          "w-full h-auto",
+          collapsed && isMobile ? "justify-center p-0 rounded-full" : 
+          collapsed ? "justify-center p-0" : "justify-start p-0"
+        )}>
+          <div className={cn(
+            "flex items-center w-full",
+            collapsed ? "justify-center" : "gap-3"
+          )}>
+            <div className="relative">
+              <Avatar className={cn(
+                "transition-all duration-300 border-2 border-background animate-pulse",
+                isMobile && collapsed ? "h-12 w-12" : collapsed ? "h-10 w-10" : "h-12 w-12"
+              )}>
+                <AvatarFallback className="bg-gray-200 dark:bg-gray-700" />
+              </Avatar>
+            </div>
+          </div>
+        </Button>
+      </div>
+    );
+  }
+
+  // Si pas de profil et pas en cours de chargement, afficher un bouton de connexion
+  if (!localProfile && !isAuthenticated) {
+    return (
+      <div className={cn("p-2", isMobile ? "shadow-none" : "p-3 sm:p-2")}>
         <Button 
           variant="outline" 
           className="w-full" 
@@ -91,6 +118,36 @@ export const UserDropdown = ({
     );
   }
 
+  // Si authentifié mais pas de profil, essayer d'utiliser les données d'authentification
+  if (isAuthenticated && !localProfile) {
+    return (
+      <div className={cn("p-2", isMobile ? "shadow-none" : "p-3 sm:p-2")}>
+        <Button 
+          variant="ghost" 
+          className={cn(
+            "w-full h-auto",
+            collapsed && isMobile ? "justify-center p-0 rounded-full" : 
+            collapsed ? "justify-center p-0" : "justify-start p-0"
+          )}>
+          <div className={cn(
+            "flex items-center w-full",
+            collapsed ? "justify-center" : "gap-3"
+          )}>
+            <div className="relative">
+              <Avatar className={cn(
+                "transition-all duration-300 border-2 border-background",
+                isMobile && collapsed ? "h-12 w-12" : collapsed ? "h-10 w-10" : "h-12 w-12"
+              )}>
+                <AvatarFallback>?</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+        </Button>
+      </div>
+    );
+  }
+
+  // Affichage normal avec le profil
   return (
     <div className={cn(
       "p-2", 
