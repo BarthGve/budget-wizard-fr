@@ -8,7 +8,6 @@ import { User, Session } from "@supabase/supabase-js";
 
 /**
  * Hook central pour gérer l'authentification
- * Combine les fonctionnalités de useAuthStateListener et AuthListener
  */
 export function useAuth() {
   // États d'authentification
@@ -25,32 +24,21 @@ export function useAuth() {
   // Références pour éviter les comportements indésirables
   const navigationInProgress = useRef(false);
   const redirectTimeoutRef = useRef<number | null>(null);
+  const authListenerActive = useRef(false);
+  const authInitialized = useRef(false);
+  
+  // Timer de sécurité pour éviter les blocages infinis sur le loader
+  const loaderSafetyTimeoutRef = useRef<number | null>(null);
 
-  // Fonction pour invalider tous les caches pertinents
-  const invalidateAllCaches = useCallback(() => {
-    console.log("Réinitialisation complète du cache React Query depuis useAuth");
-    queryClient.clear(); // Nettoyage complet du cache
+  // Fonction optimisée pour invalider les caches nécessaires seulement
+  const invalidateAuthCache = useCallback(() => {
+    console.log("Invalidation ciblée du cache d'authentification");
     
-    // Forcer l'invalidation des caches spécifiques pour garantir leur actualisation
-    const cachesToInvalidate = [
-      "auth", 
-      "current-user", 
-      "profile", 
-      "user-profile",
-      "profile-avatar",
-      "isAdmin",
-      "contributors", 
-      "expenses", 
-      "recurring-expenses",
-      "recurring-expense-categories",
-      "credits",
-      "credits-monthly-stats",
-      "savings"
-    ];
-    
-    cachesToInvalidate.forEach(key => {
-      queryClient.invalidateQueries({ queryKey: [key] });
-    });
+    // Invalider seulement les caches essentiels liés à l'authentification
+    queryClient.invalidateQueries({ queryKey: ["current-user"] });
+    queryClient.invalidateQueries({ queryKey: ["profile"] });
+    queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
   }, [queryClient]);
 
   // Connexion utilisateur
@@ -74,51 +62,96 @@ export function useAuth() {
         throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
       }
       
+      // Fournir un retour visuel immédiat
       toast.success("Connexion réussie!");
       
-      // Réinitialiser complètement le cache pour forcer un rechargement des données
-      invalidateAllCaches();
-      
-      // Stocker les données dans le état
+      // Mettre à jour l'état local immédiatement
       setUser(data.user);
       setSession(data.session);
       
-      // Vérifier si l'utilisateur est un administrateur avant de le rediriger
-      // Cette vérification doit être faite après la connexion et avant la redirection
-      try {
-        console.log("Vérification du rôle administrateur pour", data.user.email);
-        const { data: isAdmin, error: adminError } = await supabase.rpc('has_role', {
-          user_id: data.user.id,
-          role: 'admin'
-        });
-        
-        if (adminError) {
-          console.error("Erreur lors de la vérification du rôle admin:", adminError);
-          throw adminError;
-        }
-        
-        // Redirection conditionnelle selon le statut admin - utiliser replace pour éviter l'empilement
-        if (isAdmin) {
-          console.log("Utilisateur admin détecté - Redirection vers /admin");
-          navigate("/admin", { replace: true });
-        } else {
-          console.log("Utilisateur standard - Redirection vers /dashboard");
-          navigate("/dashboard", { replace: true });
-        }
-      } catch (adminCheckError) {
-        console.error("Échec de la vérification du rôle admin:", adminCheckError);
-        // En cas d'erreur dans la vérification du rôle, rediriger vers le dashboard par défaut
-        navigate("/dashboard", { replace: true });
+      // Activer un timer de sécurité pour déverrouiller en cas de blocage
+      if (loaderSafetyTimeoutRef.current) {
+        clearTimeout(loaderSafetyTimeoutRef.current);
       }
+      
+      loaderSafetyTimeoutRef.current = window.setTimeout(() => {
+        if (loading) {
+          console.log("Timer de sécurité activé - Forcer la fin du chargement");
+          setLoading(false);
+        }
+      }, 8000); // 8 secondes maximum de loader
       
       return data;
     } catch (error: any) {
       toast.error(error.message || "Erreur de connexion");
       throw error;
+    }
+  }, [loading]);
+
+  // Déconnexion utilisateur optimisée
+  const logout = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      // Éviter les navigations multiples
+      if (navigationInProgress.current) return;
+      navigationInProgress.current = true;
+      
+      // Déconnexion dans Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      // Réinitialiser l'état local immédiatement
+      setUser(null);
+      setSession(null);
+      
+      // Nettoyer le cache de manière sélective
+      invalidateAuthCache();
+      
+      toast.success("Déconnexion réussie");
+      
+      // Rediriger vers la page d'accueil avec replace: true
+      navigate("/", { replace: true });
+      
+      // Réinitialiser le drapeau de navigation après un délai
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+      redirectTimeoutRef.current = window.setTimeout(() => {
+        navigationInProgress.current = false;
+        setLoading(false);
+      }, 300);
+      
+    } catch (error: any) {
+      console.error("Erreur lors de la déconnexion:", error);
+      toast.error("Erreur lors de la déconnexion");
+      setLoading(false);
+    }
+  }, [navigate, invalidateAuthCache]);
+
+  // Récupération du mot de passe
+  const resetPassword = useCallback(async (email: string) => {
+    try {
+      setLoading(true);
+      const currentUrl = window.location.origin;
+      const redirectUrl = `${currentUrl}/reset-password`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl
+      });
+
+      if (error) throw error;
+      
+      toast.success("Un email de réinitialisation vous a été envoyé");
+      return true;
+    } catch (error: any) {
+      console.error("Erreur lors de la réinitialisation du mot de passe:", error);
+      toast.error("Une erreur s'est produite. Veuillez réessayer plus tard.");
+      return false;
     } finally {
       setLoading(false);
     }
-  }, [navigate, invalidateAllCaches]);
+  }, []);
 
   // Inscription utilisateur
   const register = useCallback(async (credentials: RegisterCredentials) => {
@@ -158,71 +191,6 @@ export function useAuth() {
     }
   }, []);
 
-  // Déconnexion utilisateur
-  const logout = useCallback(async () => {
-    try {
-      setLoading(true);
-      
-      // Éviter les navigations multiples
-      if (navigationInProgress.current) return;
-      navigationInProgress.current = true;
-      
-      // Réinitialiser complètement le cache avant la déconnexion
-      invalidateAllCaches();
-      
-      // Déconnexion dans Supabase
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      // Réinitialiser l'état local
-      setUser(null);
-      setSession(null);
-      
-      toast.success("Déconnexion réussie");
-      
-      // Rediriger vers la page d'accueil avec replace: true
-      navigate("/", { replace: true });
-      
-      // Réinitialiser le drapeau de navigation après un délai
-      if (redirectTimeoutRef.current) {
-        clearTimeout(redirectTimeoutRef.current);
-      }
-      redirectTimeoutRef.current = window.setTimeout(() => {
-        navigationInProgress.current = false;
-      }, 300);
-      
-    } catch (error: any) {
-      console.error("Erreur lors de la déconnexion:", error);
-      toast.error("Erreur lors de la déconnexion");
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate, invalidateAllCaches]);
-
-  // Récupération du mot de passe
-  const resetPassword = useCallback(async (email: string) => {
-    try {
-      setLoading(true);
-      const currentUrl = window.location.origin;
-      const redirectUrl = `${currentUrl}/reset-password`;
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl
-      });
-
-      if (error) throw error;
-      
-      toast.success("Un email de réinitialisation vous a été envoyé");
-      return true;
-    } catch (error: any) {
-      console.error("Erreur lors de la réinitialisation du mot de passe:", error);
-      toast.error("Une erreur s'est produite. Veuillez réessayer plus tard.");
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   // Mise à jour du mot de passe
   const updatePassword = useCallback(async (password: string) => {
     try {
@@ -245,245 +213,184 @@ export function useAuth() {
     }
   }, []);
 
-  // Écouteur pour les changements d'état d'authentification
+  // Écouteur unique pour les changements d'état d'authentification
   useEffect(() => {
-    const setupAuthListener = async () => {
-      // Configurer l'écouteur d'événements d'authentification
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        async (event, newSession) => {
-          console.log("Événement d'authentification détecté dans useAuth:", event);
+    if (authListenerActive.current) {
+      console.log("Écouteur d'authentification déjà actif, éviter la duplication");
+      return;
+    }
+    
+    console.log("Initialisation de l'écouteur d'authentification principal");
+    authListenerActive.current = true;
+    
+    // Configurer l'écouteur d'événements d'authentification de manière optimisée
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, newSession) => {
+        console.log("Événement d'authentification détecté:", event, newSession ? "session active" : "pas de session");
+        
+        // Désactiver le timer de sécurité s'il est en cours
+        if (loaderSafetyTimeoutRef.current) {
+          clearTimeout(loaderSafetyTimeoutRef.current);
+          loaderSafetyTimeoutRef.current = null;
+        }
+        
+        // Mettre à jour l'état de session immédiatement
+        setSession(newSession);
+        setUser(newSession?.user || null);
+        
+        // Marquer comme initialisé après le premier événement si ce n'est pas déjà fait
+        if (!initialized) {
+          setInitialized(true);
+          setLoading(false);
+        }
+        
+        // Actions spécifiques selon l'événement
+        if (event === "SIGNED_IN") {
+          console.log("Événement SIGNED_IN détecté - Traitement optimisé");
           
-          // Mettre à jour l'état de session immédiatement
-          setSession(newSession);
-          setUser(newSession?.user || null);
+          // Invalider seulement les caches nécessaires
+          invalidateAuthCache();
           
-          // Marquer comme initialisé après le premier événement
-          if (!initialized) {
-            setInitialized(true);
-            setLoading(false);
-          }
-          
-          // Actions spécifiques selon l'événement
-          if (event === "SIGNED_IN") {
-            // Réinitialiser complètement le cache pour forcer un rechargement des données
-            invalidateAllCaches();
-            
-            // Vérifier si l'utilisateur est un admin et rediriger correctement
+          // Autoriser les redirections seulement si elles ne sont pas déjà en cours
+          if (!navigationInProgress.current && !authInitialized.current) {
+            // Vérifier si l'utilisateur doit être redirigé selon son statut
             if (newSession?.user) {
               try {
-                console.log("Vérification du rôle administrateur après SIGNED_IN pour", newSession.user.email);
-                const { data: isAdmin, error: adminError } = await supabase.rpc('has_role', {
+                const { data: isAdmin } = await supabase.rpc('has_role', {
                   user_id: newSession.user.id,
                   role: 'admin'
                 });
                 
-                if (adminError) {
-                  console.error("Erreur lors de la vérification du rôle admin:", adminError);
-                  return;
-                }
+                navigationInProgress.current = true;
                 
-                // Éviter les redirections multiples
-                if (!navigationInProgress.current) {
-                  navigationInProgress.current = true;
-                  
-                  // Redirection conditionnelle selon le statut admin - avec replace: true
-                  if (isAdmin) {
-                    console.log("Utilisateur admin détecté dans onAuthStateChange - Redirection vers /admin");
+                // Appliquer les redirections avec un délai pour éviter les conflits
+                setTimeout(() => {
+                  // Redirection conditionnelle selon le statut admin
+                  if (isAdmin && (location.pathname === "/login" || location.pathname === "/")) {
+                    console.log("Redirection admin vers /admin");
                     navigate("/admin", { replace: true });
                   } else if (location.pathname === "/login") {
-                    console.log("Utilisateur standard dans onAuthStateChange - Redirection vers /dashboard");
+                    console.log("Redirection utilisateur vers /dashboard");
                     navigate("/dashboard", { replace: true });
                   }
                   
-                  // Réinitialiser le drapeau après un délai
-                  if (redirectTimeoutRef.current) {
-                    clearTimeout(redirectTimeoutRef.current);
-                  }
-                  redirectTimeoutRef.current = window.setTimeout(() => {
+                  // Réinitialiser le statut de navigation
+                  setTimeout(() => {
                     navigationInProgress.current = false;
-                  }, 300);
-                }
-              } catch (error) {
-                console.error("Erreur lors de la vérification du rôle admin dans onAuthStateChange:", error);
-              }
-            }
-            
-            // Vérifier si l'utilisateur vient de vérifier son email
-            const justVerified = localStorage.getItem("justVerified") === "true";
-            if (location.pathname === "/login" && justVerified) {
-              localStorage.removeItem("justVerified");
-              
-              // Cette partie sera exécutée uniquement si la vérification du rôle admin ci-dessus n'a pas déjà déclenché de navigation
-              if (!navigationInProgress.current) {
-                navigationInProgress.current = true;
-                navigate("/dashboard", { replace: true });
-                
-                // Réinitialiser le drapeau après un délai
-                if (redirectTimeoutRef.current) {
-                  clearTimeout(redirectTimeoutRef.current);
-                }
-                redirectTimeoutRef.current = window.setTimeout(() => {
-                  navigationInProgress.current = false;
-                }, 300);
-              }
-            }
-          } else if (event === "USER_UPDATED") {
-            // Réinitialiser complètement le cache pour forcer un rechargement des données
-            invalidateAllCaches();
-            
-            // Gérer la confirmation de changement d'email
-            if (newSession?.user?.email) {
-              // Vérifier si le changement provient d'un lien de changement d'email
-              if (location.hash.includes("type=email_change") || 
-                  location.search.includes("type=emailChange") ||
-                  localStorage.getItem("verificationEmail")) {
-                  
-                // Nettoyer l'URL et le localStorage
-                if (window.history && window.history.replaceState) {
-                  window.history.replaceState({}, document.title, window.location.pathname);
-                }
-                localStorage.removeItem("verificationEmail");
-                
-                // Informer l'utilisateur
-                toast.success("Votre adresse email a été mise à jour avec succès");
-                
-                // Rediriger vers les paramètres utilisateur
-                if (!navigationInProgress.current) {
-                  navigationInProgress.current = true;
-                  
-                  if (redirectTimeoutRef.current) {
-                    clearTimeout(redirectTimeoutRef.current);
-                  }
-                  redirectTimeoutRef.current = window.setTimeout(() => {
-                    navigate("/user-settings");
-                    
-                    // Réinitialiser le drapeau après navigation
-                    setTimeout(() => {
-                      navigationInProgress.current = false;
-                    }, 300);
+                    setLoading(false);
                   }, 500);
-                }
+                }, 100);
+              } catch (error) {
+                console.error("Erreur lors de la vérification du statut admin:", error);
+                setLoading(false);
               }
             }
-          } else if (event === "SIGNED_OUT") {
-            // Réinitialiser complètement le cache
-            invalidateAllCaches();
-            
-            // Éviter les redirections multiples
-            if (!navigationInProgress.current && location.pathname !== "/") {
-              navigationInProgress.current = true;
-              navigate("/", { replace: true });
-              
-              // Réinitialiser le drapeau après un délai
-              if (redirectTimeoutRef.current) {
-                clearTimeout(redirectTimeoutRef.current);
-              }
-              redirectTimeoutRef.current = window.setTimeout(() => {
-                navigationInProgress.current = false;
-              }, 300);
-            }
+          } else {
+            // Si redirection en cours ou déjà initialisé, juste terminer le chargement
+            setLoading(false);
           }
-        }
-      );
-
-      // Récupérer la session initiale de façon prioritaire
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        setSession(data.session);
-        setUser(data.session.user || null);
-        
-        // Vérifier si l'utilisateur est admin lors du chargement initial
-        try {
-          const { data: isAdmin, error: adminError } = await supabase.rpc('has_role', {
-            user_id: data.session.user.id,
-            role: 'admin'
-          });
+        } else if (event === "USER_UPDATED") {
+          console.log("Événement USER_UPDATED détecté");
           
-          if (!adminError && isAdmin) {
-            console.log("Admin détecté lors du chargement initial - Vérification du chemin actuel:", location.pathname);
-            
-            // Si l'admin est sur la page dashboard ou la racine, le rediriger vers /admin
-            if (location.pathname === '/dashboard' || location.pathname === '/') {
-              console.log("Redirection admin vers /admin depuis le chargement initial");
-              navigate("/admin", { replace: true });
+          // Invalider seulement les caches nécessaires
+          invalidateAuthCache();
+          setLoading(false);
+          
+          // Traiter les mises à jour d'email
+          if (newSession?.user?.email && location.hash.includes("type=email_change")) {
+            // Nettoyer l'URL
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState({}, document.title, window.location.pathname);
             }
+            
+            // Informer l'utilisateur
+            toast.success("Votre adresse email a été mise à jour avec succès");
+            
+            // Redirection vers les paramètres utilisateur si besoin
+            if (!navigationInProgress.current) {
+              navigationInProgress.current = true;
+              
+              // Attendre un peu avant de rediriger pour éviter les collisions
+              setTimeout(() => {
+                navigate("/user-settings");
+                navigationInProgress.current = false;
+              }, 500);
+            }
+          } else {
+            setLoading(false);
           }
-        } catch (error) {
-          console.error("Erreur lors de la vérification initiale du rôle admin:", error);
+        } else if (event === "SIGNED_OUT") {
+          console.log("Événement SIGNED_OUT détecté");
+          
+          // Nettoyer l'état et le cache
+          invalidateAuthCache();
+          setLoading(false);
+          
+          // Redirection seulement si nécessaire et pas déjà en cours
+          if (!navigationInProgress.current && location.pathname !== "/") {
+            navigationInProgress.current = true;
+            navigate("/", { replace: true });
+            
+            // Réinitialiser le drapeau après un délai
+            setTimeout(() => {
+              navigationInProgress.current = false;
+            }, 300);
+          } else {
+            setLoading(false);
+          }
+        } else {
+          // Pour les autres événements, simplement arrêter le chargement
+          setLoading(false);
         }
       }
-      
-      // Marquer comme chargé et initialisé après la vérification initiale
-      setLoading(false);
-      setInitialized(true);
+    );
 
-      // Nettoyage lors du démontage
-      return () => {
-        if (subscription) {
-          subscription.unsubscribe();
-        }
-        
-        if (redirectTimeoutRef.current) {
-          clearTimeout(redirectTimeoutRef.current);
-        }
-      };
-    };
-    
-    setupAuthListener();
-  }, [navigate, location.pathname, location.hash, location.search, invalidateAllCaches]);
-
-  // Rafraîchissement automatique du token
-  useEffect(() => {
-    // Configuration du rafraîchissement périodique du token
-    const setupTokenRefresh = () => {
-      if (!session) return;
-      
-      // Calculer quand rafraîchir le token (30 min avant expiration)
-      const expiresAt = session.expires_at;
-      if (!expiresAt) return;
-      
-      const expiresAtMs = expiresAt * 1000;
-      const refreshAt = expiresAtMs - (30 * 60 * 1000); // 30 minutes avant expiration
-      const timeUntilRefresh = refreshAt - Date.now();
-      
-      if (timeUntilRefresh <= 0) {
-        // Rafraîchir immédiatement si le token expire dans moins de 30 minutes
-        refreshToken();
-        return;
-      }
-      
-      // Programmer le rafraîchissement du token
-      const refreshTimer = setTimeout(refreshToken, timeUntilRefresh);
-      
-      return () => clearTimeout(refreshTimer);
-    };
-    
-    const refreshToken = async () => {
-      try {
-        console.log("Rafraîchissement automatique du token...");
-        const { data, error } = await supabase.auth.refreshSession();
-        
-        if (error) {
-          console.error("Erreur lors du rafraîchissement du token:", error);
-          return;
-        }
+    // Récupérer la session initiale seulement si pas déjà initialisé
+    if (!authInitialized.current) {
+      supabase.auth.getSession().then(({ data }) => {
+        authInitialized.current = true;
         
         if (data.session) {
+          console.log("Session initiale trouvée");
           setSession(data.session);
           setUser(data.session.user || null);
-          localStorage.setItem('auth_session', JSON.stringify(data.session));
-          
-          // Programmer le prochain rafraîchissement
-          setupTokenRefresh();
         }
-      } catch (error) {
-        console.error("Erreur lors du rafraîchissement du token:", error);
+        
+        // Terminer le chargement initial
+        setLoading(false);
+        setInitialized(true);
+      });
+    }
+
+    // Nettoyage lors du démontage
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+        authListenerActive.current = false;
+      }
+      
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+      
+      if (loaderSafetyTimeoutRef.current) {
+        clearTimeout(loaderSafetyTimeoutRef.current);
       }
     };
-    
-    const cleanup = setupTokenRefresh();
-    return cleanup;
-  }, [session]);
+  }, [navigate, location.pathname, location.hash, invalidateAuthCache]);
+
+  // Ajouter un timer de sécurité global pour empêcher le blocage indéfini de l'écran de chargement
+  useEffect(() => {
+    // Si l'écran de chargement persiste plus de 10 secondes, le désactiver
+    if (loading) {
+      const safetyTimeout = setTimeout(() => {
+        console.log("Timer de sécurité global activé - Forcer la fin du chargement");
+        setLoading(false);
+      }, 10000);
+      
+      return () => clearTimeout(safetyTimeout);
+    }
+  }, [loading]);
 
   return {
     user,

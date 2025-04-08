@@ -34,6 +34,7 @@ export const useAuthContext = () => useContext(AuthContext);
 
 // Fournisseur du contexte d'authentification
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  // Utiliser le hook useAuth centralisé
   const auth = useAuth();
   
   return (

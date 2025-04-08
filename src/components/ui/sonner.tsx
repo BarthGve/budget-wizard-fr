@@ -21,10 +21,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-          // Amélioration de la visibilité des toasts d'erreur
+          success: "group-[.toast]:border-green-500/30 group-[.toast]:dark:border-green-500/30 group-[.toast]:bg-green-500/10",
           error: "group-[.toast]:border-destructive group-[.toast]:text-destructive-foreground group-[.toast]:dark:border-red-500/50 group-[.toast]:bg-destructive/10"
         },
-        duration: 2500, // Durée standard de 2.5 secondes pour la plupart des toasts
+        duration: 3500, // Durée plus longue pour mieux voir les notifications
       }}
       {...props}
     />

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,17 +11,21 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-interface LoginFormProps {
-  onSubmit?: () => void;
-}
-
 export const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [submitCount, setSubmitCount] = useState(0); // Pour éviter les doubles soumissions
   
-  const { login } = useAuthContext();
+  const { login, loading: authLoading } = useAuthContext();
+
+  // Si le contexte d'authentification est en chargement, on le reflète aussi dans le formulaire
+  useEffect(() => {
+    if (authLoading) {
+      setIsLoading(true);
+    }
+  }, [authLoading]);
 
   const formSchema = z.object({
     email: z.string().email({ message: "Adresse email invalide" }),
@@ -37,8 +41,15 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Protection contre les soumissions multiples
+    if (isLoading) return;
+    
     setFormError(null);
     setIsLoading(true);
+    
+    // Incrémenter le compteur de soumission
+    const currentSubmit = submitCount + 1;
+    setSubmitCount(currentSubmit);
     
     try {
       await login({
@@ -46,11 +57,16 @@ export const LoginForm = () => {
         password: values.password,
       });
       
-      const from = location.state?.from?.pathname || "/dashboard";
-      navigate(from, { replace: true });
+      // Si on est toujours sur la page après 5 secondes, essayer de rediriger manuellement
+      setTimeout(() => {
+        if (location.pathname === "/login" && currentSubmit === submitCount) {
+          console.log("Redirection manuelle après délai");
+          const from = location.state?.from?.pathname || "/dashboard";
+          navigate(from, { replace: true });
+        }
+      }, 5000);
     } catch (error: any) {
       setFormError(error.message || "Erreur lors de la connexion");
-    } finally {
       setIsLoading(false);
     }
   };
