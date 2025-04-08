@@ -25,16 +25,15 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        primary: {
-  DEFAULT: "#10b981", // emerald-500
-  foreground: "#FFFFFF",
-  hover: "#059669", // emerald-600
-},
-secondary: {
-  DEFAULT: "#3b82f6", // blue-500
-  foreground: "#FFFFFF",
-  hover: "#2563eb", // blue-600
-},
+         primary: {
+          DEFAULT: "#8B5CF6",
+          foreground: "#FFFFFF",
+          hover: "#7C3AED",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
