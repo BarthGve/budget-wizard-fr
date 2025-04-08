@@ -8,7 +8,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useCreditsFetcher } from "@/components/dashboard/dashboard-tab/CreditsFetcher";
 import { calculateYearlyExpenses, calculateMonthlyExpenses, calculateTotalSavings } from "@/utils/dashboardCalculations";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -280,7 +280,7 @@ export function BudgetSimulatorDialog({ open, onOpenChange }: BudgetSimulatorDia
                 
                 {results.availableAmount < 0 && (
                   <Alert className="mt-4 bg-red-100/80 dark:bg-red-900/30 border-red-300 dark:border-red-800/40">
-                    <InfoCircledIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
+                    <Info className="h-4 w-4 text-red-600 dark:text-red-400" />
                     <AlertDescription className="text-red-700 dark:text-red-400">
                       Attention, votre budget est négatif. Ajustez vos revenus ou réduisez votre objectif d'épargne.
                     </AlertDescription>
