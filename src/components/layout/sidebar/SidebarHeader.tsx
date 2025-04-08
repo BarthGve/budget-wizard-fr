@@ -30,7 +30,7 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
 </h1>
         </div>
         {!collapsed && (
- <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 w-fit">
+      <div className="mt-4 flex items-start gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30">
   <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
   <span className="text-xs font-medium text-primary dark:text-primary/90">
     {latestVersion || appConfig.version}
