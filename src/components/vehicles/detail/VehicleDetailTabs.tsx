@@ -41,7 +41,6 @@ export const VehicleDetailTabs = ({
   onSectionChange: externalOnSectionChange
 }: VehicleDetailTabsProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const { toast } = toast;
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const isMobile = useIsMobile();
