@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -92,7 +93,7 @@ export function useAuth() {
     }
   }, [location, navigate]);
 
-  // D��connexion utilisateur améliorée pour corriger le problème de déconnexion
+  // Fonction de déconnexion améliorée
   const logout = useCallback(async () => {
     try {
       // Vérifier si on est déjà en train de se déconnecter pour éviter les appels multiples
@@ -110,25 +111,27 @@ export function useAuth() {
       if (navigationInProgress.current) return;
       navigationInProgress.current = true;
       
-      // Nettoyer le cache AVANT la déconnexion pour éviter les conflits
-      console.log("Nettoyage du cache avant déconnexion");
-      await queryClient.resetQueries({ queryKey: ["current-user"] });
-      await queryClient.resetQueries({ queryKey: ["profile"] });
-      await queryClient.resetQueries({ queryKey: ["user-profile"] });
-      await queryClient.resetQueries({ queryKey: ["isAdmin"] });
-      
-      // Vider complètement le cache pour éviter toute persistance de données
-      await queryClient.clear();
-      
       // Réinitialiser l'état local AVANT d'appeler signOut pour éviter
       // les conflits avec les écouteurs d'événements
       console.log("Réinitialisation de l'état local avant signOut");
       setUser(null);
       setSession(null);
       
+      // Nettoyer le cache AVANT la déconnexion pour éviter les conflits
+      console.log("Nettoyage du cache avant déconnexion");
+      try {
+        // Méthode plus robuste pour vider le cache
+        await queryClient.cancelQueries();
+        queryClient.clear();
+      } catch (e) {
+        console.error("Erreur lors du nettoyage du cache:", e);
+      }
+      
       // Déconnexion dans Supabase avec attente explicite
       console.log("Appel à supabase.auth.signOut()");
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut({
+        scope: 'global' // Déconnexion complète sur tous les appareils
+      });
       
       if (error) {
         console.error("Erreur lors de la déconnexion Supabase:", error);
@@ -136,16 +139,32 @@ export function useAuth() {
       }
       
       // Ajouter un délai pour s'assurer que tout est bien nettoyé
-      console.log("Déconnexion réussie, attente avant la redirection...");
+      console.log("Déconnexion réussie, préparation de la redirection...");
       
-      // Utiliser une promesse pour garantir un délai minimum
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Vider explicitement le localStorage des tokens Supabase
+      try {
+        localStorage.removeItem('supabase.auth.token');
+        localStorage.removeItem('sb-ndgyijggnmslzosfprpi-auth-token');
+      } catch (e) {
+        console.error("Erreur lors du nettoyage du localStorage:", e);
+      }
       
       toast.success("Déconnexion réussie");
       
       // Rediriger vers la page d'accueil avec replace: true
       console.log("Redirection vers la page d'accueil");
-      navigate("/", { replace: true });
+      
+      // Utiliser une promesse pour garantir un délai minimum
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Assurer que la redirection se fait bien
+      try {
+        navigate("/", { replace: true });
+      } catch (e) {
+        console.error("Erreur lors de la redirection:", e);
+        // Fallback en cas d'erreur de navigation
+        window.location.href = "/";
+      }
       
       // Réinitialiser les drapeaux après un délai
       setTimeout(() => {
@@ -162,6 +181,11 @@ export function useAuth() {
       setLoading(false);
       navigationInProgress.current = false;
       loggingOutRef.current = false;
+      
+      // Fallback de sécurité en cas d'erreur persistante
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 500);
     }
   }, [navigate, queryClient]);
 

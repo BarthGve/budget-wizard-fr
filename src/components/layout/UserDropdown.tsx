@@ -71,21 +71,7 @@ export const UserDropdown = ({
     }
   };
 
-  // Fonction pour appliquer le thème avec une animation de transition
-  const applyTheme = (newTheme: string) => {
-    setTheme(newTheme);
-    
-    // Ajouter une classe pour forcer le rafraîchissement du rendu
-    document.documentElement.classList.add('theme-updated');
-    
-    // Supprimer la classe après l'animation
-    setTimeout(() => {
-      document.documentElement.classList.remove('theme-updated');
-    }, 100);
-    
-    console.log("Thème appliqué:", newTheme);
-  };
-
+  // Si pas de profil, afficher un bouton de connexion
   if (!mounted) {
     return null;
   }

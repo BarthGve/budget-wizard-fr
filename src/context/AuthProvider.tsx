@@ -53,8 +53,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       "loading:", auth.loading);
   }, [auth.isAuthenticated, auth.loading]);
   
+  // Valeur optimisée pour le contexte
+  const authValue = {
+    user: auth.user,
+    session: auth.session,
+    loading: auth.loading,
+    isAuthenticated: auth.isAuthenticated,
+    login: auth.login,
+    register: auth.register,
+    logout: auth.logout,
+    resetPassword: auth.resetPassword,
+    updatePassword: auth.updatePassword
+  };
+  
   return (
-    <AuthContext.Provider value={auth}>
+    <AuthContext.Provider value={authValue}>
       {children}
     </AuthContext.Provider>
   );
