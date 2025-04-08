@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
+import { useAuthContext } from "@/context/AuthProvider";
 
 /**
  * Hook centralisé pour la gestion des données utilisateur et de session
@@ -10,16 +11,15 @@ import { toast } from "sonner";
  */
 export const useUserSession = () => {
   const queryClient = useQueryClient();
+  const { user: authUser, isAuthenticated } = useAuthContext();
 
   // Fonction pour forcer le rafraîchissement des données utilisateur
   const refreshUserData = useCallback(async () => {
     try {
       console.log("useUserSession: Rafraîchissement des données utilisateur...");
       
-      // Vérifier d'abord si l'utilisateur est authentifié
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
+      // Vérifier si l'utilisateur est authentifié via le contexte d'authentification
+      if (!isAuthenticated || !authUser) {
         console.log("useUserSession: Aucun utilisateur authentifié trouvé lors du rafraîchissement");
         return null;
       }
@@ -38,14 +38,14 @@ export const useUserSession = () => {
       });
       
       console.log("useUserSession: Données utilisateur rafraîchies avec succès");
-      return user;
+      return authUser;
     } catch (error) {
       console.error("useUserSession: Erreur lors du rafraîchissement des données utilisateur:", error);
       return null;
     }
-  }, [queryClient]);
+  }, [queryClient, authUser, isAuthenticated]);
 
-  // Récupération de l'utilisateur courant
+  // Récupération de l'utilisateur courant depuis le contexte d'auth
   const { 
     data: currentUser, 
     isLoading: isUserLoading, 
@@ -54,6 +54,14 @@ export const useUserSession = () => {
     queryKey: ["current-user"],
     queryFn: async () => {
       console.log("useUserSession: Récupération de l'utilisateur courant...");
+      
+      // Utiliser directement l'utilisateur du contexte d'authentification s'il est disponible
+      if (authUser) {
+        console.log("useUserSession: Utilisateur récupéré depuis le contexte d'auth");
+        return authUser;
+      }
+      
+      // Fallback à la récupération via Supabase si nécessaire
       const { data: { user }, error } = await supabase.auth.getUser();
       
       if (error) {
@@ -71,6 +79,7 @@ export const useUserSession = () => {
     },
     retry: 2,
     staleTime: 0, // Toujours récupérer les données récentes
+    enabled: isAuthenticated // N'exécuter que si l'utilisateur est authentifié
   });
 
   // Récupération du profil utilisateur dépendant de currentUser
@@ -105,7 +114,7 @@ export const useUserSession = () => {
         email: currentUser.email
       };
     },
-    enabled: !!currentUser,
+    enabled: !!currentUser && isAuthenticated,
     retry: 2,
     staleTime: 0,
   });
@@ -127,7 +136,7 @@ export const useUserSession = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!currentUser,
+    enabled: !!currentUser && isAuthenticated,
     retry: 1,
     staleTime: 60000,
   });
@@ -145,30 +154,6 @@ export const useUserSession = () => {
     }
   }, [userError, profileError]);
 
-  // Écouter les événements d'authentification pour rafraîchir automatiquement les données
-  useEffect(() => {
-    // Écouter les changements d'état d'authentification
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log("useUserSession: Événement d'authentification détecté:", event);
-        
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-          console.log("useUserSession: Événement nécessitant un rafraîchissement des données");
-          
-          // Utiliser setTimeout pour éviter les deadlocks
-          setTimeout(() => {
-            refreshUserData();
-          }, 50);
-        }
-      }
-    );
-
-    return () => {
-      // Nettoyer l'écouteur lors du démontage
-      authListener.subscription.unsubscribe();
-    };
-  }, [refreshUserData]);
-
   return {
     currentUser,
     profile,
@@ -176,6 +161,6 @@ export const useUserSession = () => {
     isLoading: isUserLoading || isProfileLoading || isAdminLoading,
     error: userError || profileError,
     refreshUserData,
-    isAuthenticated: !!currentUser
+    isAuthenticated
   };
 };

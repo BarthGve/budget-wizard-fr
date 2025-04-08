@@ -1,5 +1,5 @@
 
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { User, Session } from '@supabase/supabase-js';
 import { LoginCredentials, RegisterCredentials } from "@/services/auth";
@@ -36,11 +36,22 @@ export const useAuthContext = () => useContext(AuthContext);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Utiliser le hook useAuth centralisé
   const auth = useAuth();
+  const [initiated, setInitiated] = useState(false);
+  
+  // Marquer le fournisseur comme initialisé après le premier rendu
+  useEffect(() => {
+    if (!initiated) {
+      console.log("AuthProvider initialisé");
+      setInitiated(true);
+    }
+  }, [initiated]);
   
   // Logs pour le débogage
-  console.log("AuthProvider - État d'authentification:", 
-    auth.isAuthenticated ? "authentifié" : "non authentifié", 
-    "loading:", auth.loading);
+  useEffect(() => {
+    console.log("AuthProvider - État d'authentification:", 
+      auth.isAuthenticated ? "authentifié" : "non authentifié", 
+      "loading:", auth.loading);
+  }, [auth.isAuthenticated, auth.loading]);
   
   return (
     <AuthContext.Provider value={auth}>

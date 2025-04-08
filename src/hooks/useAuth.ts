@@ -26,6 +26,7 @@ export function useAuth() {
   const redirectTimeoutRef = useRef<number | null>(null);
   const authListenerActive = useRef(false);
   const authInitialized = useRef(false);
+  const loggingOutRef = useRef(false);
   
   // Timer de sécurité pour éviter les blocages infinis sur le loader
   const loaderSafetyTimeoutRef = useRef<number | null>(null);
@@ -91,9 +92,17 @@ export function useAuth() {
     }
   }, [location, navigate]);
 
-  // Déconnexion utilisateur optimisée
+  // D��connexion utilisateur améliorée pour corriger le problème de déconnexion
   const logout = useCallback(async () => {
     try {
+      // Vérifier si on est déjà en train de se déconnecter pour éviter les appels multiples
+      if (loggingOutRef.current) {
+        console.log("Déconnexion déjà en cours, ignore l'appel");
+        return;
+      }
+      
+      // Marquer que la déconnexion est en cours
+      loggingOutRef.current = true;
       setLoading(true);
       console.log("Déconnexion en cours...");
       
@@ -101,38 +110,60 @@ export function useAuth() {
       if (navigationInProgress.current) return;
       navigationInProgress.current = true;
       
-      // Déconnexion dans Supabase
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // Nettoyer le cache AVANT la déconnexion pour éviter les conflits
+      console.log("Nettoyage du cache avant déconnexion");
+      await queryClient.resetQueries({ queryKey: ["current-user"] });
+      await queryClient.resetQueries({ queryKey: ["profile"] });
+      await queryClient.resetQueries({ queryKey: ["user-profile"] });
+      await queryClient.resetQueries({ queryKey: ["isAdmin"] });
       
-      // Réinitialiser l'état local immédiatement
+      // Vider complètement le cache pour éviter toute persistance de données
+      await queryClient.clear();
+      
+      // Réinitialiser l'état local AVANT d'appeler signOut pour éviter
+      // les conflits avec les écouteurs d'événements
+      console.log("Réinitialisation de l'état local avant signOut");
       setUser(null);
       setSession(null);
       
-      // Nettoyer le cache de manière sélective
-      invalidateAuthCache();
+      // Déconnexion dans Supabase avec attente explicite
+      console.log("Appel à supabase.auth.signOut()");
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Erreur lors de la déconnexion Supabase:", error);
+        throw error;
+      }
+      
+      // Ajouter un délai pour s'assurer que tout est bien nettoyé
+      console.log("Déconnexion réussie, attente avant la redirection...");
+      
+      // Utiliser une promesse pour garantir un délai minimum
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       toast.success("Déconnexion réussie");
       
       // Rediriger vers la page d'accueil avec replace: true
+      console.log("Redirection vers la page d'accueil");
       navigate("/", { replace: true });
       
-      // Réinitialiser le drapeau de navigation après un délai
-      if (redirectTimeoutRef.current) {
-        clearTimeout(redirectTimeoutRef.current);
-      }
-      redirectTimeoutRef.current = window.setTimeout(() => {
+      // Réinitialiser les drapeaux après un délai
+      setTimeout(() => {
         navigationInProgress.current = false;
+        loggingOutRef.current = false;
         setLoading(false);
+        console.log("Processus de déconnexion terminé");
       }, 300);
       
     } catch (error: any) {
-      console.error("Erreur lors de la déconnexion:", error);
+      console.error("Erreur détaillée lors de la déconnexion:", error);
       toast.error("Erreur lors de la déconnexion");
+      // En cas d'erreur, réinitialiser quand même les drapeaux
       setLoading(false);
       navigationInProgress.current = false;
+      loggingOutRef.current = false;
     }
-  }, [navigate, invalidateAuthCache]);
+  }, [navigate, queryClient]);
 
   // Récupération du mot de passe
   const resetPassword = useCallback(async (email: string) => {
@@ -218,7 +249,7 @@ export function useAuth() {
     }
   }, []);
 
-  // Écouteur unique pour les changements d'état d'authentification
+  // Écouteur unique pour les changements d'état d'authentification amélioré
   useEffect(() => {
     // Éviter les écouteurs multiples
     if (authListenerActive.current) {
@@ -287,7 +318,29 @@ export function useAuth() {
           }
         } else if (event === "SIGNED_OUT") {
           console.log("Événement SIGNED_OUT détecté");
+          
+          // S'assurer que toutes les données sont nettoyées lors d'une déconnexion
+          queryClient.clear();
+          
+          // Réinitialiser l'état local immédiatement
+          setUser(null);
+          setSession(null);
           setLoading(false);
+          
+          // Si on n'est pas déjà en train de naviguer et qu'on n'est pas sur la page d'accueil
+          if (!navigationInProgress.current && location.pathname !== "/") {
+            navigationInProgress.current = true;
+            
+            // Rediriger vers la page d'accueil
+            setTimeout(() => {
+              console.log("Redirection automatique vers / après SIGNED_OUT");
+              navigate("/", { replace: true });
+              
+              setTimeout(() => {
+                navigationInProgress.current = false;
+              }, 300);
+            }, 100);
+          }
         } else {
           setLoading(false);
         }
@@ -333,7 +386,7 @@ export function useAuth() {
         clearTimeout(loaderSafetyTimeoutRef.current);
       }
     };
-  }, [navigate, location.pathname, location.state, invalidateAuthCache, loading, initialized]);
+  }, [navigate, location.pathname, location.state, invalidateAuthCache, loading, initialized, queryClient]);
 
   return {
     user,
