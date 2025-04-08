@@ -199,5 +199,6 @@ export const loginUser = async (credentials: LoginCredentials) => {
   
   toast.success("Connexion réussie!");
   
+  // Retourner directement l'objet data qui contient user et session
   return data;
 };

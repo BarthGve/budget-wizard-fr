@@ -52,23 +52,19 @@ export function useAuth() {
       console.log("Tentative de connexion avec:", credentials.email);
       
       // Utiliser la fonction centralisée loginUser pour la cohérence
-      const { data, error } = await loginUser(credentials);
+      const response = await loginUser(credentials);
 
-      if (error) {
-        setLoading(false);
-        throw error;
-      }
-      
-      if (!data || !data.user) {
+      // Corriger l'accès aux propriétés en fonction du type de retour actuel
+      if (!response || !response.user) {
         setLoading(false);
         throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
       }
       
-      console.log("Connexion réussie pour:", data.user.email);
+      console.log("Connexion réussie pour:", response.user.email);
       
       // Mettre à jour l'état local immédiatement
-      setUser(data.user);
-      setSession(data.session);
+      setUser(response.user);
+      setSession(response.session);
       
       // Activer un timer de sécurité pour déverrouiller en cas de blocage
       if (loaderSafetyTimeoutRef.current) {
@@ -86,7 +82,7 @@ export function useAuth() {
         }
       }, 3000); // Réduit à 3 secondes pour une expérience plus fluide
       
-      return data;
+      return response;
     } catch (error: any) {
       console.error("Erreur de connexion:", error);
       toast.error(error.message || "Erreur de connexion");
