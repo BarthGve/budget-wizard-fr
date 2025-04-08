@@ -47,7 +47,7 @@ const userMenu: MenuItem[] = [
   { title: "Tableau de bord", icon: LayoutDashboard, path: "/dashboard" },
   { title: "Revenus", icon: Banknote, path: "/contributors" },
   { title: "Dépenses", icon: ShoppingBasket, path: "/expenses" },
-  { title: "Charges Récurrentes", icon: ClipboardList, path: "/recurring-expenses" },
+  { title: "Charges", icon: ClipboardList, path: "/recurring-expenses" },
   { title: "Crédits", icon: CreditCard, path: "/credits" },
   { title: "Épargne", icon: PiggyBank, path: "/savings" },
   { title: "Bourse", icon: TrendingUp, path: "/stocks" },

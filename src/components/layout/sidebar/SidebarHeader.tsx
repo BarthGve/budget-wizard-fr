@@ -18,23 +18,24 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
     <div className="sticky top-0 z-10 bg-background px-3 pt-3 border-b rounded-r-xl border-border">
       <div className="flex flex-col">
         <div className="flex items-center">
-          <h1
-            className={cn(   
-              "font-bold text-foreground tracking-tight bg-clip-text text-transparent animate-fade-in transition-all duration-300",
-              "bg-gradient-to-r from-indigo-400/90 via-purple-400/90 to-pink-400/85",
-              "dark:from-indigo-300 dark:via-purple-300 dark:to-pink-300",
-              collapsed ? "text-sm" : "text-xl"
-            )}
-          >
-            {collapsed ? appConfig.initiales : appConfig.name}
-          </h1>
+    <h1
+  className={cn(   
+    "font-semibold text-foreground tracking-tight animate-fade-in transition-all duration-300",
+    "text-primary",
+    "dark:text-primary/90",
+    collapsed ? "text-sm" : "text-xl"
+  )}
+>
+  {collapsed ? appConfig.initiales : appConfig.name}
+</h1>
         </div>
         {!collapsed && (
-          <div className="flex items-baseline gap-2">
-            <span className="text-xs text-muted-foreground">
-              v{latestVersion || appConfig.version}
-            </span>
-          </div>
+ <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 w-fit">
+  <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+  <span className="text-xs font-medium text-primary dark:text-primary/90">
+    {latestVersion || appConfig.version}
+  </span>
+</div>
         )}
         
       

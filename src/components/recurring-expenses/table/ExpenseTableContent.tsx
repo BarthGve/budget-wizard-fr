@@ -96,7 +96,7 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
                   "dark:text-blue-400"
                 )} />
               </div>
-              Liste des charges récurrentes
+              Listing
             </CardTitle>
             <CardDescription className={cn(
               "mt-1 text-sm",
