@@ -50,7 +50,7 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
           is_owner: contributor.is_owner,
         })),
         savingsGoalPercentage: profile.savings_goal_percentage || 0,
-        expenses: recurringExpenses,
+        expenses: totalExpenses,
         creditPayments: totalCreditPayments,
       });
     }
@@ -180,7 +180,7 @@ const SimulatorContent = ({
         </div>
         <div className="flex justify-between">
           <span className="text-sm">Dépenses récurrentes:</span>
-          <span className="font-medium text-red-500">-{formatCurrency(data.recurringExpenses)} €</span>
+          <span className="font-medium text-red-500">-{formatCurrency(data.expenses)} €</span>
         </div>
         <div className="flex justify-between">
           <span className="text-sm">Crédits:</span>
