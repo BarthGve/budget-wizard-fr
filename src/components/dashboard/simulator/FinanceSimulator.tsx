@@ -107,7 +107,7 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
         <Sheet open={open} onOpenChange={onOpenChange}>
           <SheetContent side="bottom" className="px-0 pb-0 rounded-t-xl h-[92vh] overflow-hidden border-t shadow-lg">
             <div className="absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2 bg-gray-300 dark:bg-gray-600 rounded-full" />
-            <div className="h-full overflow-y-auto pb-safe pt-4 px-4">
+            <div className="overflow-y-auto pb-safe pt-4 px-4">
               <DialogHeader>
                 <DialogTitle>Simulateur Financier</DialogTitle>
                 <DialogDescription>
