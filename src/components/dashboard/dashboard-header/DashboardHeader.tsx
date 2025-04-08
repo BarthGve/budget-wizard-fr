@@ -8,7 +8,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTranslation } from "react-i18next";
 import { SimulatorButton } from "../simulator/SimulatorButton";
 import { useIsMobile } from "@/hooks/use-mobile";
 
