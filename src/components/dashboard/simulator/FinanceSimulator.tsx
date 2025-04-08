@@ -182,9 +182,21 @@ const MobileFinanceSimulator = ({
         <div className="h-full overflow-y-auto pb-safe pt-4 px-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent dark:scrollbar-thumb-gray-700">
           <div className="px-4">
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
+           {/* Arrière-plan décoratif */}
+            <div className={cn(
+              "absolute inset-0",
+              "bg-gradient-to-b from-purple-50/70 to-white",
+              "dark:from-purple-950/20 dark:to-gray-900/60",
+              "pointer-events-none"
+            )}>
+              <div className={cn(
+                "absolute inset-0",
+                "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
+                "from-purple-100/40 via-purple-50/20 to-transparent",
+                "dark:from-purple-800/15 dark:via-purple-700/10 dark:to-transparent",
+                "opacity-60"
+              )} />
+            </div>
             >
               <DialogHeader>
                 <div className="flex items-center gap-3">
