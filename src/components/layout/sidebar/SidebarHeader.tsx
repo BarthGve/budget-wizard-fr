@@ -20,13 +20,10 @@ export const SidebarHeader = ({ collapsed }: SidebarHeaderProps) => {
         <div className="flex items-center">
       <h1
   className={cn(   
-    "font-bold tracking-tight bg-clip-text text-transparent animate-fade-in transition-all",
-    "bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500",
-    "dark:from-emerald-300 dark:via-cyan-300 dark:to-blue-400",
-    "drop-shadow-sm dark:drop-shadow-[0_0_2px_rgba(79,236,232,0.2)]",
-    collapsed 
-      ? "text-sm duration-200" 
-      : "text-xl lg:text-2xl duration-300 tracking-tighter"
+    "font-semibold text-foreground tracking-tight animate-fade-in transition-all duration-300",
+    "text-primary",
+    "dark:text-primary/90",
+    collapsed ? "text-sm" : "text-xl"
   )}
 >
   {collapsed ? appConfig.initiales : appConfig.name}
