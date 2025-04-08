@@ -1,7 +1,7 @@
 
 /**
  * Wrapper unifié pour les toasts dans l'application
- * Filtre les messages de succès et n'affiche que les erreurs
+ * Utilise exclusivement Sonner et filtre les messages de succès
  */
 import { toast as sonnerToast } from "sonner";
 
@@ -15,9 +15,9 @@ const shouldShowToast = (type: "success" | "error" | "info" | "warning"): boolea
 // En rendant cette fonction callable directement
 const toast = Object.assign(
   // Fonction principale
-  (props: any) => {
-    if (props?.variant === "destructive" || shouldShowToast("info")) {
-      return sonnerToast(props);
+  (message: string, options?: any) => {
+    if (options?.variant === "destructive" || shouldShowToast("info")) {
+      return sonnerToast(message, options);
     }
     return { id: "", dismiss: () => {}, update: () => {} };
   },

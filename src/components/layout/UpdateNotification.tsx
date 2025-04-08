@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "@/hooks/useToastWrapper";
 import { updateServiceWorker } from '@/registerSW';
 import { RefreshCw } from 'lucide-react';
 

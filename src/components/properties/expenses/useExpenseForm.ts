@@ -67,7 +67,7 @@ export function useExpenseForm({ propertyId, expense, onSuccess, onClose }: UseE
 
       if (error) throw error;
 
-      // Message de succès ne s'affichera plus (pas besoin d'appeler toast.success)
+      // Le toast success est déjà filtré par notre wrapper
       
       onClose();
       form.reset();

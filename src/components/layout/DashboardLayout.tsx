@@ -1,7 +1,6 @@
 
 import { useState, ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
-import { Toaster } from "@/components/ui/sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect } from "react";
 import { MobileSidebarToggle } from "./dashboard/MobileSidebarToggle";
@@ -84,9 +83,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         >
           {children}
         </DashboardContent>
-        
-        {/* Utilisation exclusive du Toaster de Sonner */}
-        <Toaster />
       </div>
     );
   } catch (error) {

@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/hooks/useToastWrapper";
 
 interface Expense {
   id: string;
@@ -136,7 +136,7 @@ export function useRetailerDetail(retailerId: string | undefined) {
         return;
       }
 
-      toast.success("Dépense supprimée avec succès");
+      // Le toast success est déjà filtré par notre wrapper
       refetchExpenses();
     } catch (error) {
       console.error("Error in delete operation:", error);

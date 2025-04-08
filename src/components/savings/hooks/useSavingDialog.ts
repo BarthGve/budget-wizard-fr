@@ -72,7 +72,7 @@ export const useSavingDialog = ({
         throw response.error;
       }
 
-      // Message de succès supprimé
+      // Le toast success est déjà filtré par notre wrapper
       
       if (onSavingAdded) {
         onSavingAdded();

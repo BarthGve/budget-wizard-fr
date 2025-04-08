@@ -11,6 +11,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      position="bottom-center"
       toastOptions={{
         classNames: {
           toast:
@@ -23,7 +24,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           // Amélioration de la visibilité des toasts d'erreur
           error: "group-[.toast]:border-destructive group-[.toast]:text-destructive-foreground group-[.toast]:dark:border-red-500/50 group-[.toast]:bg-destructive/10"
         },
-        duration: 2500, // Durée standard de 5 secondes pour la plupart des toasts
+        duration: 2500, // Durée standard de 2.5 secondes pour la plupart des toasts
       }}
       {...props}
     />

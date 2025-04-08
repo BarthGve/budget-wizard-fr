@@ -1349,22 +1349,15 @@ export type Database = {
     }
     Functions: {
       are_contribution_notifications_enabled: {
-        Args: {
-          admin_id: string
-        }
+        Args: { admin_id: string }
         Returns: boolean
       }
       can_access_page: {
-        Args: {
-          user_id: string
-          page_path: string
-        }
+        Args: { user_id: string; page_path: string }
         Returns: boolean
       }
       can_delete_account: {
-        Args: {
-          user_id_to_check: string
-        }
+        Args: { user_id_to_check: string }
         Returns: boolean
       }
       check_and_generate_vehicle_expenses: {
@@ -1384,9 +1377,7 @@ export type Database = {
         Returns: Json
       }
       create_password_reset_token: {
-        Args: {
-          user_email: string
-        }
+        Args: { user_email: string }
         Returns: {
           success: boolean
           message: string
@@ -1398,23 +1389,15 @@ export type Database = {
         Returns: undefined
       }
       delete_user: {
-        Args: {
-          user_id_to_delete: string
-        }
+        Args: { user_id_to_delete: string }
         Returns: undefined
       }
       export_financial_stats: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
+        Args: { period?: string; start_date?: string; end_date?: string }
         Returns: Json
       }
       force_verify_user: {
-        Args: {
-          target_user_id: string
-        }
+        Args: { target_user_id: string }
         Returns: undefined
       }
       generate_vehicle_expenses_from_credits: {
@@ -1426,36 +1409,22 @@ export type Database = {
         Returns: undefined
       }
       get_credits_stats_current_month: {
-        Args: {
-          p_profile_id: string
-        }
+        Args: { p_profile_id: string }
         Returns: {
           credits_rembourses_count: number
           total_mensualites_remboursees: number
         }[]
       }
       get_expense_distribution: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
+        Args: { period?: string; start_date?: string; end_date?: string }
         Returns: Json
       }
       get_financial_stats: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
+        Args: { period?: string; start_date?: string; end_date?: string }
         Returns: Json
       }
       get_financial_trends: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
+        Args: { period?: string; start_date?: string; end_date?: string }
         Returns: Json
       }
       get_non_admin_user_emails: {
@@ -1469,11 +1438,7 @@ export type Database = {
         Returns: number
       }
       get_user_segmentation: {
-        Args: {
-          period?: string
-          start_date?: string
-          end_date?: string
-        }
+        Args: { period?: string; start_date?: string; end_date?: string }
         Returns: Json
       }
       get_user_stats: {
@@ -1481,9 +1446,7 @@ export type Database = {
         Returns: Json
       }
       get_yearly_expenses_stats: {
-        Args: {
-          p_profile_id: string
-        }
+        Args: { p_profile_id: string }
         Returns: {
           year: number
           total_amount: number
@@ -1494,10 +1457,7 @@ export type Database = {
         Returns: undefined
       }
       has_role: {
-        Args: {
-          user_id: string
-          role: Database["public"]["Enums"]["app_role"]
-        }
+        Args: { user_id: string; role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
       list_admins: {
@@ -1507,10 +1467,7 @@ export type Database = {
         }[]
       }
       list_users: {
-        Args: {
-          page_number?: number
-          page_size?: number
-        }
+        Args: { page_number?: number; page_size?: number }
         Returns: {
           id: string
           email: string
@@ -1520,21 +1477,15 @@ export type Database = {
         }[]
       }
       register_edge_function: {
-        Args: {
-          function_name: string
-        }
+        Args: { function_name: string }
         Returns: undefined
       }
       retailer_has_expenses: {
-        Args: {
-          p_retailer_id: string
-        }
+        Args: { p_retailer_id: string }
         Returns: boolean
       }
       update_contributor_percentages: {
-        Args: {
-          profile_id_param: string
-        }
+        Args: { profile_id_param: string }
         Returns: undefined
       }
       update_user_profile: {
@@ -1545,9 +1496,7 @@ export type Database = {
         Returns: undefined
       }
       verify_reset_token: {
-        Args: {
-          reset_token: string
-        }
+        Args: { reset_token: string }
         Returns: {
           is_valid: boolean
           profile_id: string
@@ -1574,27 +1523,29 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type DefaultSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -1602,20 +1553,22 @@ export type Tables<
     : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -1623,20 +1576,22 @@ export type TablesInsert<
     : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -1644,21 +1599,23 @@ export type TablesUpdate<
     : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema["CompositeTypes"]
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof Database
@@ -1667,6 +1624,24 @@ export type CompositeTypes<
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
   ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      app_role: ["admin", "user"],
+      changelog_entry_type: ["new", "improvement", "bugfix"],
+      contribution_status: ["pending", "in_progress", "completed"],
+      credit_status: ["actif", "remboursé", "dépassé"],
+      feedback_status: ["pending", "read", "published"],
+      mode_planification_type: ["par_date", "par_mensualite"],
+      notification_status: ["non_lu", "lu"],
+      notification_type: ["credit_echeance", "autre"],
+      password_reset_token_status: ["active", "used", "expired"],
+      projet_epargne_status: ["actif", "en_attente", "dépassé"],
+      user_profile_type: ["basic", "pro"],
+    },
+  },
+} as const
