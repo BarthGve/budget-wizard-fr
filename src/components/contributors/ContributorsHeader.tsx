@@ -28,7 +28,7 @@ export const ContributorsHeader = () => {
             "dark:bg-gradient-to-br dark:from-amber-900/40 dark:to-yellow-800/30 dark:shadow-amber-900/10"
           )}
         >
-          <<Banknote /> className={cn(
+          <Banknote className={cn(
             "h-6 w-6",
             "text-amber-600",
             "dark:text-amber-400"
