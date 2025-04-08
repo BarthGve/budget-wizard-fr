@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { useSimulatorDataFetcher } from "./SimulatorDataFetcher";
 import { Skeleton } from "@/components/ui/skeleton";
+import { calculateMonthlyExpenses } from "@/utils/dashboardCalculations";
 
 interface FinanceSimulatorProps {
   open: boolean;
@@ -33,11 +34,8 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
   const { totalCreditPayments, isLoadingCredits } = useSimulatorDataFetcher();
   const [initialData, setInitialData] = useState<SimulatorData | null>(null);
 
-  // Calculer les dépenses récurrentes totales
-  const totalExpenses = recurringExpenses.reduce(
-    (sum, expense) => sum + expense.amount,
-    0
-  );
+  // Calculer les dépenses récurrentes uniquement pour le mois en cours
+  const currentMonthExpenses = calculateMonthlyExpenses(recurringExpenses);
 
   // Préparer les données initiales pour le simulateur
   useEffect(() => {
@@ -50,11 +48,11 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
           is_owner: contributor.is_owner,
         })),
         savingsGoalPercentage: profile.savings_goal_percentage || 0,
-        expenses: totalExpenses,
+        expenses: currentMonthExpenses,
         creditPayments: totalCreditPayments,
       });
     }
-  }, [contributors, profile, totalExpenses, totalCreditPayments, isLoadingCredits]);
+  }, [contributors, profile, currentMonthExpenses, totalCreditPayments, isLoadingCredits]);
 
   // Si les données ne sont pas encore prêtes, afficher un skeleton
   if (!initialData) {
