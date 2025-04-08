@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -8,7 +7,7 @@ import {
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 // Pages d'authentification et publiques
 import Landing from "./pages/Landing";
@@ -105,7 +104,7 @@ function App() {
         enableSystem 
         disableTransitionOnChange
       >
-        <Toaster richColors position="top-center" />
+        <Toaster />
         <Router>
           <AuthProvider>
             <AuthWrapper>

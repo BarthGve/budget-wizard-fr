@@ -7,21 +7,46 @@ import { useNavigate } from "react-router-dom";
 import StyledLoader from "@/components/ui/StyledLoader";
 import { Credit } from "@/components/credits/types";
 import { CreditsContainer } from "@/components/credits/components/CreditsContainer";
+import { useCreditsRealtimeListener } from "@/hooks/useCreditsRealtimeListener";
+import { useAuthContext } from "@/context/AuthProvider";
 
 const Credits = memo(function Credits() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAuthenticated, user } = useAuthContext();
+  
+  // Utiliser notre écouteur temps réel pour les crédits
+  useCreditsRealtimeListener();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/login');
-      }
-    };
-
-    checkAuth();
-  }, [navigate]);
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [navigate, isAuthenticated]);
+  
+  // Préchargement des données au montage du composant
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Précharger les données immédiatement
+      queryClient.prefetchQuery({
+        queryKey: ["credits"],
+        queryFn: async () => {
+          const { data, error } = await supabase
+            .from("credits")
+            .select("*")
+            .eq('profile_id', user.id)
+            .order('created_at', { ascending: false });
+          
+          if (error) {
+            console.error("Erreur lors du préchargement des crédits:", error);
+            return [];
+          }
+          
+          return data as Credit[];
+        }
+      });
+    }
+  }, [queryClient, isAuthenticated, user]);
   
   const {
     data: credits = [],
@@ -29,13 +54,12 @@ const Credits = memo(function Credits() {
   } = useQuery({
     queryKey: ["credits"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         toast.error("Vous devez être connecté pour voir vos crédits");
         throw new Error("Not authenticated");
       }
       
+      console.log("Credits.tsx: Récupération des crédits pour", user.id);
       const { data, error } = await supabase
         .from("credits")
         .select("*")
@@ -50,10 +74,10 @@ const Credits = memo(function Credits() {
       
       return data as Credit[];
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false,
-    refetchOnMount: true,
-    refetchOnReconnect: false
+    staleTime: 1000 * 15, // Harmonisé avec CreditsFetcher à 15 secondes
+    refetchOnWindowFocus: true, // Activer le rechargement lors du focus
+    refetchOnMount: true, // Exécuter à chaque montage
+    refetchOnReconnect: true
   });
   
   const {
@@ -65,10 +89,9 @@ const Credits = memo(function Credits() {
   } = useQuery({
     queryKey: ["credits-monthly-stats"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) throw new Error("Not authenticated");
       
+      console.log("Credits.tsx: Récupération des statistiques mensuelles");
       const { data, error } = await supabase
         .rpc('get_credits_stats_current_month', {
           p_profile_id: user.id
@@ -85,10 +108,11 @@ const Credits = memo(function Credits() {
         total_mensualites_remboursees: 0
       };
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false,
+    staleTime: 1000 * 15, // Harmonisé avec les autres requêtes
+    refetchOnWindowFocus: true,
     refetchOnMount: true,
-    refetchOnReconnect: false
+    refetchOnReconnect: true,
+    enabled: !!user // N'exécuter que si l'utilisateur est authentifié
   });
 
   const handleCreditDeleted = useCallback(() => {

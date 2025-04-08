@@ -29,9 +29,10 @@ export const UserDropdown = ({
   const isMobile = useIsMobile();
   const { setTheme } = useTheme();
   
-  const { logout } = useAuthContext();
+  const { logout, isAuthenticated } = useAuthContext();
   const [localProfile, setLocalProfile] = useState<Profile | undefined>(profile);
   const [mounted, setMounted] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   
   // Assurer que le composant est monté côté client
   useEffect(() => {
@@ -46,30 +47,31 @@ export const UserDropdown = ({
     }
   }, [profile, localProfile]);
 
-  const handleLogout = async () => {
+  const handleLogout = async (e: React.MouseEvent) => {
     try {
-      console.log("Déconnexion...");
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Éviter les clics multiples
+      if (isLoggingOut) {
+        console.log("Déconnexion déjà en cours, ignoré");
+        return;
+      }
+      
+      setIsLoggingOut(true);
+      console.log("UserDropdown: Démarrage de la déconnexion...");
+      
+      // Appel à la fonction de déconnexion du contexte d'authentification
       await logout();
+      
+      // La redirection sera gérée par le hook useAuth
     } catch (error) {
-      console.error("Erreur de déconnexion:", error);
+      console.error("UserDropdown: Erreur lors de la déconnexion:", error);
+      setIsLoggingOut(false);
     }
   };
 
-  // Fonction pour appliquer le thème avec une animation de transition
-  const applyTheme = (newTheme: string) => {
-    setTheme(newTheme);
-    
-    // Ajouter une classe pour forcer le rafraîchissement du rendu
-    document.documentElement.classList.add('theme-updated');
-    
-    // Supprimer la classe après l'animation
-    setTimeout(() => {
-      document.documentElement.classList.remove('theme-updated');
-    }, 100);
-    
-    console.log("Thème appliqué:", newTheme);
-  };
-
+  // Si pas de profil, afficher un bouton de connexion
   if (!mounted) {
     return null;
   }
@@ -160,11 +162,13 @@ export const UserDropdown = ({
             </DropdownMenuItem>
           )}
 
-          
-
-          <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
+          <DropdownMenuItem 
+            className="cursor-pointer text-destructive" 
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+          >
             <LogOut className="mr-2 h-4 w-4" />
-            <span>Se déconnecter</span>
+            <span>{isLoggingOut ? "Déconnexion en cours..." : "Se déconnecter"}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

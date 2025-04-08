@@ -1,7 +1,6 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { toast } from "@/hooks/useToastWrapper";
 
 export const useDeleteRetailer = () => {
   const queryClient = useQueryClient();
@@ -97,7 +96,7 @@ export const useDeleteRetailer = () => {
         });
       }, 100);
       
-      // Notification de succès
+      // Notification de succès supprimée
       toast.success("Enseigne supprimée avec succès");
     },
     onError: (error) => {

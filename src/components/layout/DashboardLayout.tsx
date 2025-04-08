@@ -1,7 +1,6 @@
 
 import { useState, ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
-import { Toaster } from "@/components/ui/toaster";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect } from "react";
 import { MobileSidebarToggle } from "./dashboard/MobileSidebarToggle";
@@ -84,8 +83,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         >
           {children}
         </DashboardContent>
-        
-        <Toaster />
       </div>
     );
   } catch (error) {

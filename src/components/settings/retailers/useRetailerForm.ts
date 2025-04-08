@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/useToastWrapper";
 import { supabase } from "@/integrations/supabase/client";
 import { Retailer, RetailerFormData } from "./types";
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,7 +41,6 @@ export const useRetailerForm = ({ retailer, onSuccess }: UseRetailerFormProps) =
           .eq("id", retailer.id);
 
         if (error) throw error;
-        toast.success("Enseigne mise à jour avec succès");
       } else {
         const { error } = await supabase
           .from("retailers")
@@ -53,10 +51,8 @@ export const useRetailerForm = ({ retailer, onSuccess }: UseRetailerFormProps) =
           });
 
         if (error) throw error;
-        toast.success("Enseigne ajoutée avec succès");
       }
 
-      // Invalider le cache pour forcer le rechargement des données
       await queryClient.invalidateQueries({ queryKey: ["retailers"] });
       onSuccess();
     } catch (error) {

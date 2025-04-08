@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/hooks/useToastWrapper";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const useFeedbackSubmit = () => {
@@ -43,8 +43,8 @@ export const useFeedbackSubmit = () => {
       }).select('id').single();
 
       if (error) throw error;
-
-      toast.success("Merci pour votre feedback !");
+      
+      // Message de succès supprimé (ne s'affichera plus)
       
       if (feedback) {
         await notifyAdmins(feedback.id);

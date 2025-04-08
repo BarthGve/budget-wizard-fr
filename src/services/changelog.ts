@@ -1,7 +1,6 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { ChangelogEntry, FormData } from "@/components/changelog/types";
-import { toast } from "sonner";
+import { toast } from "@/hooks/useToastWrapper";
 
 export async function fetchChangelogEntries() {
   const { data, error } = await supabase

@@ -1,13 +1,12 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/useToastWrapper";
 import { updateServiceWorker } from '@/registerSW';
 import { RefreshCw } from 'lucide-react';
 
 export const UpdateNotification = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     // Écouter l'événement déclenché lorsqu'une mise à jour est disponible
@@ -15,20 +14,17 @@ export const UpdateNotification = () => {
       setUpdateAvailable(true);
       
       // Afficher un toast pour informer l'utilisateur
-      toast({
-        title: "Mise à jour disponible",
+      toast("Mise à jour disponible", {
         description: "Une nouvelle version de l'application est disponible. Cliquez pour rafraîchir.",
-        action: (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleUpdateClick}
-            className="flex items-center gap-1"
-          >
-            <RefreshCw size={14} />
-            Mettre à jour
-          </Button>
-        ),
+        action: {
+          label: (
+            <div className="flex items-center gap-1">
+              <RefreshCw size={14} />
+              <span>Mettre à jour</span>
+            </div>
+          ),
+          onClick: handleUpdateClick
+        },
         duration: 0, // Le toast reste jusqu'à l'action de l'utilisateur
       });
     };
@@ -40,7 +36,7 @@ export const UpdateNotification = () => {
     return () => {
       window.removeEventListener('serviceWorkerUpdateAvailable', handleUpdateAvailable);
     };
-  }, [toast]);
+  }, []);
 
   // Gérer le clic sur le bouton de mise à jour
   const handleUpdateClick = () => {
@@ -52,4 +48,3 @@ export const UpdateNotification = () => {
   // Le composant ne rend rien visuellement, il gère uniquement les notifications
   return null;
 };
-

@@ -1,10 +1,9 @@
 
-import { ReactNode, useEffect } from "react";
-import { useAuthStateListener } from "@/hooks/useAuthStateListener";
-import { supabase } from "@/integrations/supabase/client";
+import { ReactNode, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { processAuthAction } from "@/utils/authActions";
+import { handlePostEmailVerification } from "@/utils/emailVerificationActions";
+import { useNavigate } from "react-router-dom";
 
 interface AuthWrapperProps {
   children: ReactNode;
@@ -12,41 +11,24 @@ interface AuthWrapperProps {
 
 export const AuthWrapper = ({ children }: AuthWrapperProps) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const processedRef = useRef(false);
 
-  // Écouter les changements d'état d'authentification
-  useAuthStateListener();
-
-  // Traiter les actions d'authentification dans l'URL
+  // Traiter les actions d'authentification dans l'URL et la vérification d'email
+  // Utiliser une référence pour éviter les appels multiples
   useEffect(() => {
-    processAuthAction();
-  }, []);
-
-  // Force le rechargement des données utilisateur au démarrage
-  useEffect(() => {
-    const loadInitialUserData = async () => {
+    if (!processedRef.current) {
+      console.log("AuthWrapper - Traitement des actions d'authentification");
+      processedRef.current = true;
+      
       try {
-        // Vérifier si l'utilisateur est déjà connecté
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (user) {
-          console.log("Utilisateur déjà connecté:", user.email);
-          
-          // Forcer l'invalidation des requêtes liées à l'utilisateur
-          queryClient.invalidateQueries({ queryKey: ["current-user"] });
-          queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-          queryClient.invalidateQueries({ queryKey: ["profile"] });
-          queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
-        } else {
-          console.log("Aucun utilisateur connecté au démarrage");
-        }
+        processAuthAction();
+        handlePostEmailVerification(navigate);
       } catch (error) {
-        console.error("Erreur lors du chargement initial:", error);
-        toast.error("Erreur de connexion au serveur");
+        console.error("Erreur lors du traitement des actions d'authentification:", error);
       }
-    };
-    
-    loadInitialUserData();
-  }, [queryClient]);
+    }
+  }, [navigate]);
 
   return <>{children}</>;
 };

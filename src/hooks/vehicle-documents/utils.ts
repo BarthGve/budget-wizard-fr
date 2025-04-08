@@ -1,5 +1,5 @@
 
-import { toast } from "sonner";
+import { toast } from "@/hooks/useToastWrapper";
 
 export const handleError = (error: any, defaultMessage: string) => {
   const errorMessage = error?.message || defaultMessage;
@@ -8,7 +8,7 @@ export const handleError = (error: any, defaultMessage: string) => {
 };
 
 export const showSuccess = (message: string) => {
-  toast.success(message);
+  // Ne montre plus de message, juste retourne le message
   return message;
 };
 

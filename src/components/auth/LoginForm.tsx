@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,18 +10,24 @@ import { useAuthContext } from "@/context/AuthProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-
-interface LoginFormProps {
-  onSubmit?: () => void;
-}
+import { LoadingButton } from "@/components/ui/loading-button";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   
-  const { login } = useAuthContext();
+  const { login, loading: authLoading, isAuthenticated } = useAuthContext();
+
+  // Rediriger si déjà authentifié
+  useEffect(() => {
+    if (isAuthenticated && !submitAttempted) {
+      console.log("Déjà authentifié, redirection vers dashboard");
+      const from = location.state?.from?.pathname || "/dashboard";
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location.state, submitAttempted]);
 
   const formSchema = z.object({
     email: z.string().email({ message: "Adresse email invalide" }),
@@ -37,21 +43,25 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Éviter les soumissions multiples
+    if (authLoading) return;
+    
     setFormError(null);
-    setIsLoading(true);
+    setSubmitAttempted(true);
     
     try {
+      console.log("Tentative de connexion...");
+      
       await login({
         email: values.email,
         password: values.password,
       });
       
-      const from = location.state?.from?.pathname || "/dashboard";
-      navigate(from, { replace: true });
+      // Login gère déjà la redirection
     } catch (error: any) {
+      console.error("Erreur dans le formulaire:", error);
       setFormError(error.message || "Erreur lors de la connexion");
-    } finally {
-      setIsLoading(false);
+      setSubmitAttempted(false);
     }
   };
 
@@ -72,8 +82,13 @@ export const LoginForm = () => {
             placeholder="vous@exemple.com"
             {...form.register("email")}
             required
-            disabled={isLoading}
+            disabled={authLoading}
           />
+          {form.formState.errors.email && (
+            <p className="text-sm text-destructive mt-1">
+              {form.formState.errors.email.message}
+            </p>
+          )}
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -90,12 +105,17 @@ export const LoginForm = () => {
             type="password"
             {...form.register("password")}
             required
-            disabled={isLoading}
+            disabled={authLoading}
           />
+          {form.formState.errors.password && (
+            <p className="text-sm text-destructive mt-1">
+              {form.formState.errors.password.message}
+            </p>
+          )}
         </div>
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Connexion en cours..." : "Se connecter"}
-        </Button>
+        <LoadingButton type="submit" className="w-full" loading={authLoading} disabled={authLoading}>
+          Se connecter
+        </LoadingButton>
       </form>
     </>
   );

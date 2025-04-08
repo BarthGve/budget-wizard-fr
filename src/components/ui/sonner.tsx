@@ -1,3 +1,4 @@
+
 import { useTheme } from "next-themes"
 import { Toaster as Sonner } from "sonner"
 
@@ -10,6 +11,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      position="bottom-center"
       toastOptions={{
         classNames: {
           toast:
@@ -19,7 +21,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          success: "group-[.toast]:border-green-500/30 group-[.toast]:dark:border-green-500/30 group-[.toast]:bg-green-500/10",
+          error: "group-[.toast]:border-destructive group-[.toast]:text-destructive-foreground group-[.toast]:dark:border-red-500/50 group-[.toast]:bg-destructive/10"
         },
+        duration: 3500, // Durée plus longue pour mieux voir les notifications
       }}
       {...props}
     />

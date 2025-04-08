@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/hooks/useToastWrapper";
 
 interface UseSavingDialogProps {
   saving?: {
@@ -72,7 +72,7 @@ export const useSavingDialog = ({
         throw response.error;
       }
 
-      toast.success(saving?.id ? "Épargne mise à jour" : "Épargne ajoutée");
+      // Le toast success est déjà filtré par notre wrapper
       
       if (onSavingAdded) {
         onSavingAdded();
