@@ -37,6 +37,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Utiliser le hook useAuth centralisé
   const auth = useAuth();
   
+  // Logs pour le débogage
+  console.log("AuthProvider - État d'authentification:", 
+    auth.isAuthenticated ? "authentifié" : "non authentifié", 
+    "loading:", auth.loading);
+  
   return (
     <AuthContext.Provider value={auth}>
       {children}

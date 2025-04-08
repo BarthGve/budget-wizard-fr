@@ -10,22 +10,24 @@ import { useAuthContext } from "@/context/AuthProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [submitCount, setSubmitCount] = useState(0); // Pour éviter les doubles soumissions
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   
-  const { login, loading: authLoading } = useAuthContext();
+  const { login, loading: authLoading, isAuthenticated } = useAuthContext();
 
-  // Si le contexte d'authentification est en chargement, on le reflète aussi dans le formulaire
+  // Rediriger si déjà authentifié
   useEffect(() => {
-    if (authLoading) {
-      setIsLoading(true);
+    if (isAuthenticated && !submitAttempted) {
+      console.log("Déjà authentifié, redirection vers dashboard");
+      const from = location.state?.from?.pathname || "/dashboard";
+      navigate(from, { replace: true });
     }
-  }, [authLoading]);
+  }, [isAuthenticated, navigate, location.state, submitAttempted]);
 
   const formSchema = z.object({
     email: z.string().email({ message: "Adresse email invalide" }),
@@ -41,33 +43,25 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Protection contre les soumissions multiples
-    if (isLoading) return;
+    // Éviter les soumissions multiples
+    if (authLoading) return;
     
     setFormError(null);
-    setIsLoading(true);
-    
-    // Incrémenter le compteur de soumission
-    const currentSubmit = submitCount + 1;
-    setSubmitCount(currentSubmit);
+    setSubmitAttempted(true);
     
     try {
+      console.log("Tentative de connexion...");
+      
       await login({
         email: values.email,
         password: values.password,
       });
       
-      // Si on est toujours sur la page après 5 secondes, essayer de rediriger manuellement
-      setTimeout(() => {
-        if (location.pathname === "/login" && currentSubmit === submitCount) {
-          console.log("Redirection manuelle après délai");
-          const from = location.state?.from?.pathname || "/dashboard";
-          navigate(from, { replace: true });
-        }
-      }, 5000);
+      // Login gère déjà la redirection
     } catch (error: any) {
+      console.error("Erreur dans le formulaire:", error);
       setFormError(error.message || "Erreur lors de la connexion");
-      setIsLoading(false);
+      setSubmitAttempted(false);
     }
   };
 
@@ -88,8 +82,13 @@ export const LoginForm = () => {
             placeholder="vous@exemple.com"
             {...form.register("email")}
             required
-            disabled={isLoading}
+            disabled={authLoading}
           />
+          {form.formState.errors.email && (
+            <p className="text-sm text-destructive mt-1">
+              {form.formState.errors.email.message}
+            </p>
+          )}
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -106,12 +105,17 @@ export const LoginForm = () => {
             type="password"
             {...form.register("password")}
             required
-            disabled={isLoading}
+            disabled={authLoading}
           />
+          {form.formState.errors.password && (
+            <p className="text-sm text-destructive mt-1">
+              {form.formState.errors.password.message}
+            </p>
+          )}
         </div>
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Connexion en cours..." : "Se connecter"}
-        </Button>
+        <LoadingButton type="submit" className="w-full" loading={authLoading} disabled={authLoading}>
+          Se connecter
+        </LoadingButton>
       </form>
     </>
   );

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
-import { LoginCredentials, RegisterCredentials } from "@/services/auth";
+import { LoginCredentials, RegisterCredentials, loginUser } from "@/services/auth";
 import { User, Session } from "@supabase/supabase-js";
 
 /**
@@ -36,34 +36,35 @@ export function useAuth() {
     
     // Invalider seulement les caches essentiels liés à l'authentification
     queryClient.invalidateQueries({ queryKey: ["current-user"] });
-    queryClient.invalidateQueries({ queryKey: ["profile"] });
-    queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-    queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+    
+    // Éviter d'invalider trop de caches pour réduire les risques de boucles
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+    }, 100);
   }, [queryClient]);
 
   // Connexion utilisateur
   const login = useCallback(async (credentials: LoginCredentials) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password,
-      });
+      console.log("Tentative de connexion avec:", credentials.email);
+      
+      // Utiliser la fonction centralisée loginUser pour la cohérence
+      const { data, error } = await loginUser(credentials);
 
       if (error) {
-        if (error.message.includes("Invalid login credentials")) {
-          throw new Error("Email ou mot de passe incorrect");
-        } else {
-          throw new Error(`Erreur de connexion: ${error.message}`);
-        }
+        setLoading(false);
+        throw error;
       }
       
       if (!data || !data.user) {
+        setLoading(false);
         throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
       }
       
-      // Fournir un retour visuel immédiat
-      toast.success("Connexion réussie!");
+      console.log("Connexion réussie pour:", data.user.email);
       
       // Mettre à jour l'état local immédiatement
       setUser(data.user);
@@ -75,23 +76,30 @@ export function useAuth() {
       }
       
       loaderSafetyTimeoutRef.current = window.setTimeout(() => {
-        if (loading) {
-          console.log("Timer de sécurité activé - Forcer la fin du chargement");
-          setLoading(false);
+        console.log("Timer de sécurité activé - Forcer la fin du chargement");
+        setLoading(false);
+        
+        // Forcer la navigation si nécessaire
+        const from = location.state?.from?.pathname || "/dashboard";
+        if (location.pathname === "/login") {
+          navigate(from, { replace: true });
         }
-      }, 8000); // 8 secondes maximum de loader
+      }, 3000); // Réduit à 3 secondes pour une expérience plus fluide
       
       return data;
     } catch (error: any) {
+      console.error("Erreur de connexion:", error);
       toast.error(error.message || "Erreur de connexion");
+      setLoading(false);
       throw error;
     }
-  }, [loading]);
+  }, [location, navigate]);
 
   // Déconnexion utilisateur optimisée
   const logout = useCallback(async () => {
     try {
       setLoading(true);
+      console.log("Déconnexion en cours...");
       
       // Éviter les navigations multiples
       if (navigationInProgress.current) return;
@@ -126,6 +134,7 @@ export function useAuth() {
       console.error("Erreur lors de la déconnexion:", error);
       toast.error("Erreur lors de la déconnexion");
       setLoading(false);
+      navigationInProgress.current = false;
     }
   }, [navigate, invalidateAuthCache]);
 
@@ -215,6 +224,7 @@ export function useAuth() {
 
   // Écouteur unique pour les changements d'état d'authentification
   useEffect(() => {
+    // Éviter les écouteurs multiples
     if (authListenerActive.current) {
       console.log("Écouteur d'authentification déjà actif, éviter la duplication");
       return;
@@ -223,9 +233,17 @@ export function useAuth() {
     console.log("Initialisation de l'écouteur d'authentification principal");
     authListenerActive.current = true;
     
+    // Sécurité: forcer la fin du chargement après 5 secondes quoi qu'il arrive
+    const safetyTimer = setTimeout(() => {
+      if (loading) {
+        console.log("Fin forcée du chargement après délai de sécurité");
+        setLoading(false);
+      }
+    }, 5000);
+    
     // Configurer l'écouteur d'événements d'authentification de manière optimisée
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
+      (event, newSession) => {
         console.log("Événement d'authentification détecté:", event, newSession ? "session active" : "pas de session");
         
         // Désactiver le timer de sécurité s'il est en cours
@@ -246,100 +264,35 @@ export function useAuth() {
         
         // Actions spécifiques selon l'événement
         if (event === "SIGNED_IN") {
-          console.log("Événement SIGNED_IN détecté - Traitement optimisé");
+          console.log("Événement SIGNED_IN détecté");
           
-          // Invalider seulement les caches nécessaires
-          invalidateAuthCache();
-          
-          // Autoriser les redirections seulement si elles ne sont pas déjà en cours
-          if (!navigationInProgress.current && !authInitialized.current) {
-            // Vérifier si l'utilisateur doit être redirigé selon son statut
-            if (newSession?.user) {
-              try {
-                const { data: isAdmin } = await supabase.rpc('has_role', {
-                  user_id: newSession.user.id,
-                  role: 'admin'
-                });
-                
-                navigationInProgress.current = true;
-                
-                // Appliquer les redirections avec un délai pour éviter les conflits
-                setTimeout(() => {
-                  // Redirection conditionnelle selon le statut admin
-                  if (isAdmin && (location.pathname === "/login" || location.pathname === "/")) {
-                    console.log("Redirection admin vers /admin");
-                    navigate("/admin", { replace: true });
-                  } else if (location.pathname === "/login") {
-                    console.log("Redirection utilisateur vers /dashboard");
-                    navigate("/dashboard", { replace: true });
-                  }
-                  
-                  // Réinitialiser le statut de navigation
-                  setTimeout(() => {
-                    navigationInProgress.current = false;
-                    setLoading(false);
-                  }, 500);
-                }, 100);
-              } catch (error) {
-                console.error("Erreur lors de la vérification du statut admin:", error);
-                setLoading(false);
-              }
-            }
-          } else {
-            // Si redirection en cours ou déjà initialisé, juste terminer le chargement
+          // Réduire les invalidations de cache
+          setTimeout(() => {
+            invalidateAuthCache();
             setLoading(false);
-          }
-        } else if (event === "USER_UPDATED") {
-          console.log("Événement USER_UPDATED détecté");
+          }, 100);
           
-          // Invalider seulement les caches nécessaires
-          invalidateAuthCache();
-          setLoading(false);
-          
-          // Traiter les mises à jour d'email
-          if (newSession?.user?.email && location.hash.includes("type=email_change")) {
-            // Nettoyer l'URL
-            if (window.history && window.history.replaceState) {
-              window.history.replaceState({}, document.title, window.location.pathname);
-            }
+          // Redirection uniquement si on est sur la page de login
+          if (location.pathname === "/login" && !navigationInProgress.current) {
+            navigationInProgress.current = true;
+            const from = location.state?.from?.pathname || "/dashboard";
             
-            // Informer l'utilisateur
-            toast.success("Votre adresse email a été mise à jour avec succès");
-            
-            // Redirection vers les paramètres utilisateur si besoin
-            if (!navigationInProgress.current) {
-              navigationInProgress.current = true;
+            // Différer la navigation pour éviter les conflits
+            setTimeout(() => {
+              console.log("Redirection depuis login vers:", from);
+              navigate(from, { replace: true });
               
-              // Attendre un peu avant de rediriger pour éviter les collisions
               setTimeout(() => {
-                navigate("/user-settings");
                 navigationInProgress.current = false;
-              }, 500);
-            }
+              }, 300);
+            }, 200);
           } else {
             setLoading(false);
           }
         } else if (event === "SIGNED_OUT") {
           console.log("Événement SIGNED_OUT détecté");
-          
-          // Nettoyer l'état et le cache
-          invalidateAuthCache();
           setLoading(false);
-          
-          // Redirection seulement si nécessaire et pas déjà en cours
-          if (!navigationInProgress.current && location.pathname !== "/") {
-            navigationInProgress.current = true;
-            navigate("/", { replace: true });
-            
-            // Réinitialiser le drapeau après un délai
-            setTimeout(() => {
-              navigationInProgress.current = false;
-            }, 300);
-          } else {
-            setLoading(false);
-          }
         } else {
-          // Pour les autres événements, simplement arrêter le chargement
           setLoading(false);
         }
       }
@@ -347,16 +300,21 @@ export function useAuth() {
 
     // Récupérer la session initiale seulement si pas déjà initialisé
     if (!authInitialized.current) {
+      authInitialized.current = true;
+      
       supabase.auth.getSession().then(({ data }) => {
-        authInitialized.current = true;
+        console.log("Session initiale:", data.session ? "présente" : "absente");
         
         if (data.session) {
-          console.log("Session initiale trouvée");
           setSession(data.session);
           setUser(data.session.user || null);
         }
         
         // Terminer le chargement initial
+        setLoading(false);
+        setInitialized(true);
+      }).catch(err => {
+        console.error("Erreur lors de la récupération de la session initiale:", err);
         setLoading(false);
         setInitialized(true);
       });
@@ -369,6 +327,8 @@ export function useAuth() {
         authListenerActive.current = false;
       }
       
+      clearTimeout(safetyTimer);
+      
       if (redirectTimeoutRef.current) {
         clearTimeout(redirectTimeoutRef.current);
       }
@@ -377,20 +337,7 @@ export function useAuth() {
         clearTimeout(loaderSafetyTimeoutRef.current);
       }
     };
-  }, [navigate, location.pathname, location.hash, invalidateAuthCache]);
-
-  // Ajouter un timer de sécurité global pour empêcher le blocage indéfini de l'écran de chargement
-  useEffect(() => {
-    // Si l'écran de chargement persiste plus de 10 secondes, le désactiver
-    if (loading) {
-      const safetyTimeout = setTimeout(() => {
-        console.log("Timer de sécurité global activé - Forcer la fin du chargement");
-        setLoading(false);
-      }, 10000);
-      
-      return () => clearTimeout(safetyTimeout);
-    }
-  }, [loading]);
+  }, [navigate, location.pathname, location.state, invalidateAuthCache, loading, initialized]);
 
   return {
     user,
