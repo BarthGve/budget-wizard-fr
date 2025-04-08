@@ -33,7 +33,7 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
   const { totalCreditPayments, isLoadingCredits } = useSimulatorDataFetcher();
   const [initialData, setInitialData] = useState<SimulatorData | null>(null);
 
-  // Calculer uniquement les dépenses récurrentes (charges) du tableau de bord
+  // Calculer les dépenses récurrentes totales
   const totalExpenses = recurringExpenses.reduce(
     (sum, expense) => sum + expense.amount,
     0
@@ -50,7 +50,7 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
           is_owner: contributor.is_owner,
         })),
         savingsGoalPercentage: profile.savings_goal_percentage || 0,
-        expenses: totalExpenses, // Utilise uniquement les dépenses récurrentes du tableau de bord
+        expenses: totalExpenses,
         creditPayments: totalCreditPayments,
       });
     }
