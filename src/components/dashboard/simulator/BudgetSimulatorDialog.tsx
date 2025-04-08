@@ -86,26 +86,14 @@ export function BudgetSimulatorDialog({ open, onOpenChange }: BudgetSimulatorDia
     // Calculer les dépenses mensuelles
     const monthlyExpenses = calculateMonthlyExpenses(recurringExpenses);
     
-    // Calculer le montant des crédits dus dans le mois courant
+    // Calculer le montant des crédits
     const now = new Date();
-    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    
-    // Filtrer les crédits actifs et calculer leur total mensuel
-    const totalCredits = credits
-      .filter(credit => {
-        // Vérifier si le crédit est actif
-        if (credit.statut !== 'actif') {
-          // Pour les crédits remboursés, vérifier s'ils ont été remboursés ce mois-ci
-          if (credit.statut === 'remboursé') {
-            const lastPaymentDate = new Date(credit.date_derniere_mensualite);
-            return lastPaymentDate >= firstDayOfMonth && lastPaymentDate <= lastDayOfMonth;
-          }
-          return false;
-        }
-        return true;
-      })
-      .reduce((sum, credit) => sum + credit.montant_mensualite, 0);
+    const totalCredits = credits.reduce((sum, credit) => {
+      if (credit.statut === 'actif') {
+        return sum + credit.montant_mensualite;
+      }
+      return sum;
+    }, 0);
     
     // Calculer le montant de l'épargne
     const savingsAmount = (totalIncome * values.savingsGoalPercentage) / 100;
@@ -254,9 +242,6 @@ export function BudgetSimulatorDialog({ open, onOpenChange }: BudgetSimulatorDia
                   </CardHeader>
                   <CardContent className="py-2 px-5">
                     <p className="text-2xl font-bold">{results.totalCredits.toFixed(2)}€</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Mensualités dues ce mois-ci
-                    </p>
                   </CardContent>
                 </Card>
                 
