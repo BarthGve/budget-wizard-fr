@@ -5,6 +5,7 @@ import { memo, useState, useEffect } from "react";
 import { LayoutDashboard } from "lucide-react"; 
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { BudgetSimulatorTrigger } from "../simulator/BudgetSimulatorTrigger";
 
 interface DashboardHeaderProps {
   currentView: "monthly" | "yearly";
@@ -119,71 +120,78 @@ export const DashboardHeader = memo(({
           </div>
         </div>
         
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, duration: 0.3 }}
-          className={isMobile ? "w-full" : ""}
-        >
-          <Tabs
-            defaultValue={currentView}
-            onValueChange={handleViewChange}
-            className={isMobile ? "w-full" : "w-[250px]"}
+        <div className={cn(
+          "flex items-center gap-4",
+          isMobile ? "w-full justify-between" : ""
+        )}>
+          <BudgetSimulatorTrigger />
+          
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+            className={isMobile ? "w-full" : ""}
           >
-            <TabsList 
-              className={cn(
-                "grid w-full grid-cols-2 p-1 rounded-full",
-                "bg-gray-100/80 shadow-inner", // Light mode
-                "dark:bg-gray-800/80 dark:border dark:border-gray-700/50" // Dark mode
-              )}
+            <Tabs
+              defaultValue={currentView}
+              onValueChange={handleViewChange}
+              className={isMobile ? "w-full" : "w-[250px]"}
             >
-              <motion.div
-                initial="inactive"
-                animate={currentView === "monthly" ? "active" : "inactive"}
-                whileHover="hover"
-                variants={tabVariants}
-                className="w-full"
+              <TabsList 
+                className={cn(
+                  "grid w-full grid-cols-2 p-1 rounded-full",
+                  "bg-gray-100/80 shadow-inner", // Light mode
+                  "dark:bg-gray-800/80 dark:border dark:border-gray-700/50" // Dark mode
+                )}
               >
-                <TabsTrigger 
-                  value="monthly" 
-                  className={cn(
-                    "w-full rounded-full font-medium z-10 py-2", 
-                    // Light mode - selected state
-                    "data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-md",
-                    // Dark mode - selected state
-                    "dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-purple-300 dark:data-[state=active]:shadow-purple-900/20 dark:data-[state=active]:border dark:data-[state=active]:border-purple-800/30",
-                    // Dark mode - normal state
-                    "dark:text-gray-300"
-                  )}
+                <motion.div
+                  initial="inactive"
+                  animate={currentView === "monthly" ? "active" : "inactive"}
+                  whileHover="hover"
+                  variants={tabVariants}
+                  className="w-full"
                 >
-                  Mensuel
-                </TabsTrigger>
-              </motion.div>
-              <motion.div
-                initial="inactive"
-                animate={currentView === "yearly" ? "active" : "inactive"}
-                whileHover="hover"
-                variants={tabVariants}
-                className="w-full"
-              >
-                <TabsTrigger 
-                  value="yearly" 
-                  className={cn(
-                    "w-full rounded-full font-medium z-10 py-2", 
-                    // Light mode - selected state
-                    "data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-md",
-                    // Dark mode - selected state
-                    "dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-purple-300 dark:data-[state=active]:shadow-purple-900/20 dark:data-[state=active]:border dark:data-[state=active]:border-purple-800/30",
-                    // Dark mode - normal state
-                    "dark:text-gray-300"
-                  )}
+                  <TabsTrigger 
+                    value="monthly" 
+                    className={cn(
+                      "w-full rounded-full font-medium z-10 py-2", 
+                      // Light mode - selected state
+                      "data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-md",
+                      // Dark mode - selected state
+                      "dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-purple-300 dark:data-[state=active]:shadow-purple-900/20 dark:data-[state=active]:border dark:data-[state=active]:border-purple-800/30",
+                      // Dark mode - normal state
+                      "dark:text-gray-300"
+                    )}
+                  >
+                    Mensuel
+                  </TabsTrigger>
+                </motion.div>
+                <motion.div
+                  initial="inactive"
+                  animate={currentView === "yearly" ? "active" : "inactive"}
+                  whileHover="hover"
+                  variants={tabVariants}
+                  className="w-full"
                 >
-                  Annuel
-                </TabsTrigger>
-              </motion.div>
-            </TabsList>
-          </Tabs>
-        </motion.div>
+                  <TabsTrigger 
+                    value="yearly" 
+                    className={cn(
+                      "w-full rounded-full font-medium z-10 py-2", 
+                      // Light mode - selected state
+                      "data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-md",
+                      // Dark mode - selected state
+                      "dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-purple-300 dark:data-[state=active]:shadow-purple-900/20 dark:data-[state=active]:border dark:data-[state=active]:border-purple-800/30",
+                      // Dark mode - normal state
+                      "dark:text-gray-300"
+                    )}
+                  >
+                    Annuel
+                  </TabsTrigger>
+                </motion.div>
+              </TabsList>
+            </Tabs>
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   );
