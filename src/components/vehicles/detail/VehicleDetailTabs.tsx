@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { VehicleMonthlyExpensesChart } from "./expenses-chart/VehicleMonthlyExpensesChart";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, CalendarClock, FileIcon, ClipboardList, Info, BarChart } from "lucide-react";
-import { useToastWrapper } from "@/hooks/useToastWrapper";
+import { toast } from "@/hooks/useToastWrapper";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useRef, useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -41,7 +41,7 @@ export const VehicleDetailTabs = ({
   onSectionChange: externalOnSectionChange
 }: VehicleDetailTabsProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const { toast } = useToastWrapper();
+  const { toast } = toast;
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const isMobile = useIsMobile();
@@ -102,10 +102,8 @@ export const VehicleDetailTabs = ({
       
       if (error) throw error;
       
-      toast({
-        title: "Génération effectuée",
-        description: "Les dépenses périodiques (charges récurrentes et crédits) ont été générées",
-        variant: "default"
+      toast.info("Génération effectuée", {
+        description: "Les dépenses périodiques (charges récurrentes et crédits) ont été générées"
       });
       
       setTimeout(() => {
@@ -114,11 +112,7 @@ export const VehicleDetailTabs = ({
       
     } catch (error) {
       console.error("Erreur lors de la génération des dépenses:", error);
-      toast({
-        title: "Erreur",
-        description: "Un problème est survenu lors de la génération des dépenses",
-        variant: "destructive"
-      });
+      toast.error("Un problème est survenu lors de la génération des dépenses");
     } finally {
       setIsGenerating(false);
     }
