@@ -76,22 +76,22 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
     <>
       <div className={cn(
         "absolute inset-0",
-        "bg-gradient-to-b from-purple-50/70 to-white",
-        "dark:from-purple-950/20 dark:to-gray-900/60",
+        "bg-gradient-to-b from-blue-50/70 to-white",
+        "dark:from-blue-950/20 dark:to-gray-900/60",
         "pointer-events-none"
       )}>
         <div className={cn(
           "absolute inset-0",
           "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
-          "from-purple-100/40 via-purple-50/20 to-transparent",
-          "dark:from-purple-800/15 dark:via-purple-700/10 dark:to-transparent",
+          "from-blue-100/40 via-blue-50/20 to-transparent",
+          "dark:from-blue-800/15 dark:via-blue-700/10 dark:to-transparent",
           "opacity-60"
         )} />
       </div>
       <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.025] z-0">
         <svg
           viewBox="0 0 100 100"
-          className="w-full h-full fill-purple-400 dark:fill-purple-600"
+          className="w-full h-full fill-blue-400 dark:fill-blue-600"
           style={{ mixBlendMode: isDarkMode ? "soft-light" : "overlay" }}
         >
           <circle cx={50} cy={50} r={50} />
@@ -182,32 +182,20 @@ const MobileFinanceSimulator = ({
         <div className="h-full overflow-y-auto pb-safe pt-4 px-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent dark:scrollbar-thumb-gray-700">
           <div className="px-4">
             <motion.div
-           {/* Arrière-plan décoratif */}
-            <div className={cn(
-              "absolute inset-0",
-              "bg-gradient-to-b from-purple-50/70 to-white",
-              "dark:from-purple-950/20 dark:to-gray-900/60",
-              "pointer-events-none"
-            )}>
-              <div className={cn(
-                "absolute inset-0",
-                "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
-                "from-purple-100/40 via-purple-50/20 to-transparent",
-                "dark:from-purple-800/15 dark:via-purple-700/10 dark:to-transparent",
-                "opacity-60"
-              )} />
-            </div>
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <DialogHeader>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
+                  <div className="p-2 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
                     <BarChart3 size={18} />
                   </div>
                   <div>
-                    <DialogTitle className="text-lg font-bold text-purple-900 dark:text-purple-200">
+                    <DialogTitle className="text-lg font-bold text-blue-900 dark:text-blue-200">
                       Simulateur Financier
                     </DialogTitle>
-                    <DialogDescription className="mt-1 text-sm text-purple-700/80 dark:text-purple-300/80 line-clamp-2">
+                    <DialogDescription className="mt-1 text-sm text-blue-700/80 dark:text-blue-300/80 line-clamp-2">
                       Simulez vos finances en ajustant vos revenus et votre objectif d'épargne.
                     </DialogDescription>
                   </div>
@@ -272,15 +260,15 @@ const DesktopFinanceSimulator = ({
             {/* Arrière-plan décoratif */}
             <div className={cn(
               "absolute inset-0",
-              "bg-gradient-to-b from-purple-50/70 to-white",
-              "dark:from-purple-950/20 dark:to-gray-900/60",
+              "bg-gradient-to-b from-blue-50/70 to-white",
+              "dark:from-blue-950/20 dark:to-gray-900/60",
               "pointer-events-none"
             )}>
               <div className={cn(
                 "absolute inset-0",
                 "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
-                "from-purple-100/40 via-purple-50/20 to-transparent",
-                "dark:from-purple-800/15 dark:via-purple-700/10 dark:to-transparent",
+                "from-blue-100/40 via-blue-50/20 to-transparent",
+                "dark:from-blue-800/15 dark:via-blue-700/10 dark:to-transparent",
                 "opacity-60"
               )} />
             </div>
@@ -308,14 +296,14 @@ const DesktopFinanceSimulator = ({
               >
                 <DialogHeader>
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
+                    <div className="p-2.5 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
                       <BarChart3 size={22} />
                     </div>
                     <div>
-                      <DialogTitle className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-200">
+                      <DialogTitle className="text-xl sm:text-2xl font-bold text-blue-900 dark:text-blue-200">
                         Simulateur Financier
                       </DialogTitle>
-                      <DialogDescription className="mt-1.5 text-base text-purple-700/80 dark:text-purple-300/80">
+                      <DialogDescription className="mt-1.5 text-base text-blue-700/80 dark:text-blue-300/80">
                         Simulez vos finances en ajustant vos revenus et votre objectif d'épargne.
                       </DialogDescription>
                     </div>
@@ -334,7 +322,7 @@ const DesktopFinanceSimulator = ({
             <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.025] z-0">
               <svg
                 viewBox="0 0 100 100"
-                className="w-full h-full fill-purple-400 dark:fill-purple-600"
+                className="w-full h-full fill-blue-400 dark:fill-blue-600"
                 style={{ mixBlendMode: isDarkMode ? "soft-light" : "overlay" }}
               >
                 <circle cx={50} cy={50} r={50} />
@@ -455,11 +443,11 @@ const SimulatorContent = ({
         </div>
       </div>
 
-      <DialogFooter>
+      <DialogFooter className="space-y-2">
         <Button variant="outline" onClick={onClose} disabled={isUpdating}>
           Annuler
         </Button>
-        <Button   className="bg-purple-500 hover:bg-purple-700 text-white" onClick={applyChanges} disabled={isUpdating}>
+        <Button   className="bg-blue-500 hover:bg-blue-700 text-white" onClick={applyChanges} disabled={isUpdating}>
           {isUpdating ? "Application en cours..." : "Appliquer ces modifications"}
         </Button>
       </DialogFooter>
