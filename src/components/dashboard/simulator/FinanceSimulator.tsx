@@ -50,7 +50,7 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
           is_owner: contributor.is_owner,
         })),
         savingsGoalPercentage: profile.savings_goal_percentage || 0,
-        expenses: totalExpenses,
+        expenses: recurringExpenses,
         creditPayments: totalCreditPayments,
       });
     }
