@@ -47,12 +47,13 @@ export const useProfileFetcher = () => {
       }
 
       // S'assurer que l'email est bien présent dans les données du profil
-      if (data && !data.email && user.email) {
-        data.email = user.email;
+      const profileData = data as Profile;
+      if (profileData && user.email && !profileData.hasOwnProperty('email')) {
+        profileData.email = user.email;
       }
 
       // S'assurer que les données retournées sont conformes au type Profile
-      return data as Profile;
+      return profileData;
     },
     enabled: !!user && isAuthenticated, // N'exécuter que si l'utilisateur est authentifié
     staleTime: 1000 * 60 * 5, // 5 minutes

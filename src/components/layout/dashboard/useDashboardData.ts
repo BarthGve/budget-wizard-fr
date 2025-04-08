@@ -72,9 +72,10 @@ export const useDashboardPageData = () => {
           }
         }
         
-        // Ajouter l'email s'il est manquant
-        if (!profile.email && user.email) {
-          profile.email = user.email;
+        // Ajouter l'email s'il est manquant et que l'utilisateur a un email
+        const typedProfile = profile as Profile;
+        if (user.email && !typedProfile.hasOwnProperty('email')) {
+          typedProfile.email = user.email;
         }
       }
 
