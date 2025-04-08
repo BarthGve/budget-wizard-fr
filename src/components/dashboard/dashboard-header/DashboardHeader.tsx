@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Calendar, ChevronDown } from "lucide-react";
+import { LayoutDashboard, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,22 +39,22 @@ export const DashboardHeader = ({
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
-            "bg-gradient-to-br from-purple-100 to-violet-50",
-            "dark:bg-gradient-to-br dark:from-purple-900/40 dark:to-violet-800/30 dark:shadow-purple-900/10"
+            "bg-gradient-to-br from-indigo-100 to-blue-50",
+            "dark:bg-gradient-to-br dark:from-indigo-900/40 dark:to-blue-800/30 dark:shadow-indigo-900/10"
           )}
         >
-          <Calendar className={cn(
+          <LayoutDashboard className={cn(
             "h-6 w-6",
-            "text-purple-600",
-            "dark:text-purple-400"
+            "text-indigo-600",
+            "dark:text-indigo-400"
           )} />
         </motion.div>
         
         <div>
           <h1 className={cn(
             "text-xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent",
-            "bg-gradient-to-r from-purple-500 via-violet-500 to-purple-400",
-            "dark:bg-gradient-to-r dark:from-purple-400 dark:via-violet-400 dark:to-purple-300"
+            "bg-gradient-to-r from-indigo-500 via-blue-500 to-indigo-400",
+            "dark:bg-gradient-to-r dark:from-indigo-400 dark:via-blue-400 dark:to-indigo-300"
           )}>
             {currentView === "monthly" ? `Tableau de bord - ${currentMonthName}` : "Tableau de bord annuel"}
           </h1>
@@ -80,13 +80,13 @@ export const DashboardHeader = ({
               size={isMobile ? "sm" : "default"} 
               className={cn(
                 "min-w-[110px] justify-between",
-                "bg-purple-50 border-purple-100 hover:bg-purple-100",
-                "dark:bg-purple-950/30 dark:border-purple-800/50 dark:hover:bg-purple-900/40"
+                "bg-indigo-50 border-indigo-100 hover:bg-indigo-100",
+                "dark:bg-indigo-950/30 dark:border-indigo-800/50 dark:hover:bg-indigo-900/40"
               )}
             >
-              <Calendar className="mr-2 h-4 w-4 text-purple-500 dark:text-purple-400" />
-              <span className="text-purple-700 dark:text-purple-300">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
-              <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-purple-500 dark:text-purple-400" />
+              <Calendar className="mr-2 h-4 w-4 text-indigo-500 dark:text-indigo-400" />
+              <span className="text-indigo-700 dark:text-indigo-300">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-indigo-500 dark:text-indigo-400" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
