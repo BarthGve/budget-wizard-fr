@@ -11,6 +11,12 @@
     <meta name="author" content="Budget Wizard team" />
     <meta property="og:image" content="/og-image.png" />
     
+    <!-- Balises de sécurité -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.gpteng.co https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://xwdrfdtgesrivifhmche.supabase.co https://api.mapbox.com; img-src 'self' data: blob: https://*.supabase.co; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none';" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
