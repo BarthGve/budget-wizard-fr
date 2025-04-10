@@ -23,6 +23,8 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   
   // Effet pour détecter les admins et les rediriger si nécessaire
   useEffect(() => {
+    // Ne rediriger vers /admin que si l'utilisateur est exactement sur /dashboard ou / 
+    // et ne pas rediriger s'il est déjà sur une sous-route de /admin
     if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
       console.log("Admin détecté dans ProtectedRoute - Redirection vers /admin");
       if (!hasRedirectedRef.current) {
@@ -64,6 +66,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
   
   // IMPORTANT: Rediriger les admins vers /admin s'ils arrivent sur /dashboard ou sur la racine du site
+  // Mais ne pas rediriger s'ils sont déjà sur une route /admin/...
   if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
     console.log("Admin détecté - Redirection vers /admin");
     hasRedirectedRef.current = true;
@@ -100,6 +103,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   }
 
   // Gestion spéciale pour les routes admin
+  // Permettre l'accès à toutes les sous-routes de /admin pour les administrateurs
   if (location.pathname.startsWith('/admin') && isAdmin) {
     return <>{children}</>;
   }
