@@ -70,6 +70,56 @@ export function useAuth() {
     }
   }, []);
 
+  // Fonction pour rediriger l'utilisateur en fonction de son statut admin
+  const redirectBasedOnAdminStatus = useCallback(async (userId: string, force = false) => {
+    // Si une navigation est déjà en cours et qu'on ne force pas, on ignore
+    if (navigationInProgress.current && !force) {
+      console.log("Navigation déjà en cours, redirection ignorée");
+      return;
+    }
+    
+    try {
+      // Marquer que la navigation est en cours
+      navigationInProgress.current = true;
+      
+      // Vérifier si l'utilisateur est administrateur
+      const isAdmin = await checkIfUserIsAdmin(userId);
+      
+      // Déterminer la route de redirection
+      let redirectTo = "/dashboard"; // Route par défaut
+      
+      if (isAdmin) {
+        console.log("Redirection admin activée - utilisateur est admin");
+        redirectTo = "/admin";
+      } else if (location.state?.from?.pathname) {
+        redirectTo = location.state.from.pathname;
+      }
+      
+      console.log(`Redirection utilisateur vers: ${redirectTo} (Admin: ${isAdmin})`);
+      
+      // Effectuer la redirection avec un délai minimal pour éviter les conflits
+      setTimeout(() => {
+        navigate(redirectTo, { replace: true });
+        
+        // Réinitialiser l'état de navigation après un délai
+        setTimeout(() => {
+          navigationInProgress.current = false;
+        }, 200);
+      }, 50);
+      
+    } catch (error) {
+      console.error("Erreur lors de la redirection basée sur le statut admin:", error);
+      navigationInProgress.current = false;
+      
+      // Redirection de secours vers dashboard en cas d'erreur
+      if (force) {
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 50);
+      }
+    }
+  }, [checkIfUserIsAdmin, location.state, navigate]);
+
   // Connexion utilisateur
   const login = useCallback(async (credentials: LoginCredentials) => {
     try {
@@ -91,9 +141,11 @@ export function useAuth() {
       setUser(response.user);
       setSession(response.session);
       
-      // Vérifier si l'utilisateur est administrateur avant de rediriger
-      const userId = response.user.id;
-      const isAdmin = await checkIfUserIsAdmin(userId);
+      // Rediriger l'utilisateur en fonction de son statut admin
+      // IMPORTANT: Forcer la redirection pour garantir qu'elle a lieu
+      if (location.pathname === "/login") {
+        await redirectBasedOnAdminStatus(response.user.id, true);
+      }
       
       // Activer un timer de sécurité pour déverrouiller en cas de blocage
       if (loaderSafetyTimeoutRef.current) {
@@ -103,25 +155,7 @@ export function useAuth() {
       loaderSafetyTimeoutRef.current = window.setTimeout(() => {
         console.log("Timer de sécurité activé - Forcer la fin du chargement");
         setLoading(false);
-        
-        // Forcer la navigation si nécessaire, en tenant compte du statut admin
-        if (location.pathname === "/login") {
-          const redirectTo = isAdmin ? "/admin" : (location.state?.from?.pathname || "/dashboard");
-          console.log("Redirection de secours vers:", redirectTo, "Admin:", isAdmin);
-          navigate(redirectTo, { replace: true });
-        }
       }, 3000); // Réduit à 3 secondes pour une expérience plus fluide
-      
-      // Rediriger en fonction du statut admin
-      if (location.pathname === "/login") {
-        const redirectTo = isAdmin ? "/admin" : (location.state?.from?.pathname || "/dashboard");
-        console.log("Redirection après connexion vers:", redirectTo, "Admin:", isAdmin);
-        
-        // Petit délai pour permettre à l'état d'être mis à jour
-        setTimeout(() => {
-          navigate(redirectTo, { replace: true });
-        }, 100);
-      }
       
       return response;
     } catch (error: any) {
@@ -130,7 +164,7 @@ export function useAuth() {
       setLoading(false);
       throw error;
     }
-  }, [location, navigate, checkIfUserIsAdmin]);
+  }, [location.pathname, redirectBasedOnAdminStatus]);
 
   // Fonction de déconnexion améliorée
   const logout = useCallback(async () => {
@@ -362,38 +396,9 @@ export function useAuth() {
             setLoading(false);
           }, 100);
           
-          // Vérifier si l'utilisateur est administrateur avant de rediriger
-          if (newSession?.user && location.pathname === "/login" && !navigationInProgress.current) {
-            navigationInProgress.current = true;
-            
-            try {
-              // Vérifier le statut d'administrateur
-              const isAdmin = await checkIfUserIsAdmin(newSession.user.id);
-              
-              // Rediriger en fonction du statut admin
-              const redirectTo = isAdmin 
-                ? "/admin" 
-                : (location.state?.from?.pathname || "/dashboard");
-              
-              console.log("Redirection après SIGNED_IN vers:", redirectTo, "Admin:", isAdmin);
-              
-              // Différer la navigation pour éviter les conflits
-              setTimeout(() => {
-                navigate(redirectTo, { replace: true });
-                
-                setTimeout(() => {
-                  navigationInProgress.current = false;
-                }, 300);
-              }, 200);
-            } catch (error) {
-              console.error("Erreur lors de la vérification admin:", error);
-              // Par défaut, aller au dashboard en cas d'erreur
-              setTimeout(() => {
-                const from = location.state?.from?.pathname || "/dashboard";
-                navigate(from, { replace: true });
-                navigationInProgress.current = false;
-              }, 200);
-            }
+          // Forcer la vérification admin et la redirection
+          if (newSession?.user && location.pathname === "/login") {
+            await redirectBasedOnAdminStatus(newSession.user.id, true);
           } else {
             setLoading(false);
           }
@@ -439,25 +444,23 @@ export function useAuth() {
           setSession(data.session);
           setUser(data.session.user || null);
           
-          // Vérifier si l'utilisateur est administrateur lors du chargement initial
-          // et rediriger si nécessaire (uniquement si sur dashboard ou racine)
-          if (data.session.user && (location.pathname === "/" || location.pathname === "/dashboard")) {
-            try {
-              const isAdmin = await checkIfUserIsAdmin(data.session.user.id);
-              if (isAdmin && !navigationInProgress.current) {
-                console.log("Admin détecté lors du chargement initial - Redirection vers /admin");
+          // Vérifier prioritairement si sur /dashboard et redirect vers /admin si admin
+          if (data.session.user && location.pathname === "/dashboard") {
+            const isAdmin = await checkIfUserIsAdmin(data.session.user.id);
+            
+            if (isAdmin) {
+              console.log("DÉTECTION PRIORITAIRE - Admin sur /dashboard - Redirection FORCÉE vers /admin");
+              if (!navigationInProgress.current) {
                 navigationInProgress.current = true;
                 
-                // Petit délai pour éviter les conflits
+                // Redirection immédiate avec délai minimal
                 setTimeout(() => {
                   navigate("/admin", { replace: true });
                   setTimeout(() => {
                     navigationInProgress.current = false;
-                  }, 300);
-                }, 200);
+                  }, 200);
+                }, 10);
               }
-            } catch (error) {
-              console.error("Erreur lors de la vérification admin initiale:", error);
             }
           }
         }
@@ -489,7 +492,7 @@ export function useAuth() {
         clearTimeout(loaderSafetyTimeoutRef.current);
       }
     };
-  }, [navigate, location.pathname, location.state, invalidateAuthCache, loading, initialized, queryClient, checkIfUserIsAdmin]);
+  }, [navigate, location.pathname, location.state, invalidateAuthCache, loading, initialized, queryClient, checkIfUserIsAdmin, redirectBasedOnAdminStatus]);
 
   return {
     user,
