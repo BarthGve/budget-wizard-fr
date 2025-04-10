@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -46,6 +47,9 @@ import AdminUsers from "./pages/admin/Users";
 import AdminPermissions from "./pages/admin/Permissions";
 import Changelog from "./pages/Changelog";
 import { ChangelogPage } from "./components/changelog/ChangelogPage";
+
+// Import de la page de test des notifications de crédits
+import TestCreditNotification from "./pages/admin/TestCreditNotification";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -249,6 +253,15 @@ function App() {
                   <ProtectedRoute requireAdmin={true}>
                     <DashboardLayout>
                       <ChangelogPage isAdmin={true} />
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                
+                {/* Nouvelle route pour la page de test des notifications de crédits */}
+                <Route path="/admin/test-credit-notification" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <DashboardLayout>
+                      <TestCreditNotification />
                     </DashboardLayout>
                   </ProtectedRoute>
                 } />
