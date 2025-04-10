@@ -25,7 +25,7 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   useEffect(() => {
     // Ne rediriger vers /admin que si l'utilisateur est exactement sur /dashboard ou / 
     // et ne pas rediriger s'il est déjà sur une sous-route de /admin
-    if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
+    if (isAdmin && !location.pathname.startsWith('/admin') && (location.pathname === '/dashboard' || location.pathname === '/')) {
       console.log("Admin détecté dans ProtectedRoute - Redirection vers /admin");
       if (!hasRedirectedRef.current) {
         hasRedirectedRef.current = true;
@@ -49,6 +49,9 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     return <>{children}</>;
   }
 
+  // Debug pour comprendre l'état actuel
+  console.log("ProtectedRoute - Path:", location.pathname, "Admin:", isAdmin, "Authenticated:", isAuthenticated);
+
   if (!isAuthenticated) {
     // Ne pas rediriger vers login si on est sur la page changelog publique
     if (location.pathname === '/changelog') {
@@ -65,8 +68,14 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   // Liste des routes toujours accessibles une fois connecté
   const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
   
+  // IMPORTANT: Gestion prioritaire pour les routes admin
+  // Si l'utilisateur est admin et accède à une route admin, autoriser l'accès immédiatement
+  if (location.pathname.startsWith('/admin') && isAdmin) {
+    console.log("Accès autorisé à la route admin:", location.pathname);
+    return <>{children}</>;
+  }
+  
   // IMPORTANT: Rediriger les admins vers /admin s'ils arrivent sur /dashboard ou sur la racine du site
-  // Mais ne pas rediriger s'ils sont déjà sur une route /admin/...
   if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
     console.log("Admin détecté - Redirection vers /admin");
     hasRedirectedRef.current = true;
@@ -100,12 +109,6 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     if (canAccessExpenses) {
       return <>{children}</>;
     }
-  }
-
-  // Gestion spéciale pour les routes admin
-  // Permettre l'accès à toutes les sous-routes de /admin pour les administrateurs
-  if (location.pathname.startsWith('/admin') && isAdmin) {
-    return <>{children}</>;
   }
 
   // Vérifier les permissions pour les autres routes
