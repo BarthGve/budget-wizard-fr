@@ -1,4 +1,5 @@
 
+
 import { Contributor } from "@/types/contributor";
 
 export const calculateContributorsPercentages = (
@@ -16,3 +17,4 @@ export const calculateContributorsPercentages = (
       100,
   }));
 };
+

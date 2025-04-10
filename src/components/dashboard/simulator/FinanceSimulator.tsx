@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -420,7 +421,7 @@ const SimulatorContent = ({
           <span className="font-medium">{formatCurrency(totalRevenue)} €</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-sm">Dépenses récurrentes:</span>
+          <span className="text-sm">Charges:</span>
           <span className="font-medium text-red-500">-{formatCurrency(data.expenses)} €</span>
         </div>
         <div className="flex justify-between">
@@ -473,3 +474,4 @@ function useMediaQuery(query: string) {
 
   return matches;
 }
+
