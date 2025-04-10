@@ -447,7 +447,7 @@ const SimulatorContent = ({
         <Button variant="outline" onClick={onClose} disabled={isUpdating}>
           Annuler
         </Button>
-        <Button   className="bg-purple-500 hover:bg-purple-700 text-white" onClick={applyChanges} disabled={isUpdating}>
+        <Button className="bg-purple-500 hover:bg-purple-700 text-white" onClick={applyChanges} disabled={isUpdating}>
           {isUpdating ? "Application en cours..." : "Appliquer ces modifications"}
         </Button>
       </DialogFooter>
