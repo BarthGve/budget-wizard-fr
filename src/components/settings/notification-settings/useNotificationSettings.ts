@@ -19,10 +19,13 @@ export const useNotificationSettings = (profile?: Profile | null) => {
   const [isFeedbackNotificationEnabled, setIsFeedbackNotificationEnabled] = useState<boolean>(
     profile?.notif_feedbacks !== false
   );
+  const [isCreditsNotificationEnabled, setIsCreditsNotificationEnabled] = useState<boolean>(
+    profile?.notif_credits !== false
+  );
   const [isUpdating, setIsUpdating] = useState(false);
 
   const updateNotificationSetting = async (
-    settingName: 'notif_inscriptions' | 'notif_changelog' | 'notif_feedbacks',
+    settingName: 'notif_inscriptions' | 'notif_changelog' | 'notif_feedbacks' | 'notif_credits',
     enabled: boolean, 
     successMessage: { enabled: string, disabled: string },
     setStateFn: (enabled: boolean) => void
@@ -86,13 +89,27 @@ export const useNotificationSettings = (profile?: Profile | null) => {
     );
   };
 
+  const handleCreditsNotificationToggle = async (enabled: boolean) => {
+    await updateNotificationSetting(
+      'notif_credits',
+      enabled,
+      {
+        enabled: "Notifications de crédits activées",
+        disabled: "Notifications de crédits désactivées"
+      },
+      setIsCreditsNotificationEnabled
+    );
+  };
+
   return {
     isSignupNotificationEnabled,
     isChangelogNotificationEnabled,
     isFeedbackNotificationEnabled,
+    isCreditsNotificationEnabled,
     isUpdating,
     handleSignupNotificationToggle,
     handleChangelogNotificationToggle,
-    handleFeedbackNotificationToggle
+    handleFeedbackNotificationToggle,
+    handleCreditsNotificationToggle
   };
 };

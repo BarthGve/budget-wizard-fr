@@ -24,6 +24,7 @@ export interface Profile {
   notif_inscriptions?: boolean;
   notif_changelog?: boolean;
   notif_feedbacks?: boolean;
+  notif_credits?: boolean;
   onboarding_completed?: boolean;
   dashboard_preferences?: DashboardPreferences | null;
 }
