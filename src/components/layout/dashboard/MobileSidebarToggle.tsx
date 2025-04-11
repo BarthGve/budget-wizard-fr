@@ -12,7 +12,7 @@ export const MobileSidebarToggle = ({ toggleSidebar }: MobileSidebarToggleProps)
 <Button
   variant="outline"
   onClick={toggleSidebar}
-  className="fixed left-5 bottom-2 z-50 rounded-full shadow-lg bg-background hover:bg-accent ios-top-safe w-14 h-14 border-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 flex items-center justify-center p-0"
+  className="fixed left-5 bottom-2 z-50 rounded-full shadow-lg bg-background  ios-top-safe w-14 h-14 border-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 flex items-center justify-center p-0"
   style={{
     boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
     display: "flex",
