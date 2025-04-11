@@ -39,22 +39,22 @@ export const DashboardHeader = ({
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
-            "bg-gradient-to-br from-purple-100 to-violet-50",
-            "dark:bg-gradient-to-br dark:from-purple-900/40 dark:to-violet-800/30 dark:shadow-purple-900/10"
+            "bg-gradient-to-br from-secondary-100 to-violet-50",
+            "dark:bg-gradient-to-br dark:from-secondary-900/40 dark:to-violet-800/30 dark:shadow-secondary-900/10"
           )}
         >
           <LayoutDashboard className={cn(
             "h-6 w-6",
-            "text-purple-600",
-            "dark:text-purple-400"
+            "text-secondary-600",
+            "dark:text-secondary-400"
           )} />
         </motion.div>
         
         <div>
           <h1 className={cn(
             "text-xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent",
-            "bg-gradient-to-r from-purple-500 via-violet-500 to-purple-400",
-            "dark:bg-gradient-to-r dark:from-purple-400 dark:via-violet-400 dark:to-purple-300"
+            "bg-gradient-to-r from-secondary-500 via-violet-500 to-secondary-400",
+            "dark:bg-gradient-to-r dark:from-secondary-400 dark:via-violet-400 dark:to-secondary-300"
           )}>
             {currentView === "monthly" ? `Tableau de bord - ${currentMonthName}` : "Tableau de bord annuel"}
           </h1>
@@ -81,12 +81,12 @@ export const DashboardHeader = ({
               className={cn(
                 "min-w-[110px] justify-between",
                 "bg-secondary-50 border-secondary-100 hover:bg-secondary-100",
-                "dark:bg-purple-950/30 dark:border-purple-800/50 dark:hover:bg-purple-900/40"
+                "dark:bg-secondary-950/30 dark:border-secondary-800/50 dark:hover:bg-secondary-900/40"
               )}
             >
-              <Calendar className="mr-2 h-4 w-4 text-purple-500 dark:text-purple-400" />
-              <span className="text-purple-700 dark:text-purple-300">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
-              <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-purple-500 dark:text-purple-400" />
+              <Calendar className="mr-2 h-4 w-4 text-secondary-500 dark:text-secondary-400" />
+              <span className="text-secondary-700 dark:text-secondary-300">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-secondary-500 dark:text-secondary-400" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
