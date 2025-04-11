@@ -30,7 +30,7 @@ const Navbar = () => {
       
       <div className="flex items-center gap-1 sm:gap-4">
         {!isMobile && (
-          <Link to="/changelog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link to="/changelog" className="text-sm  hover:text-primary transition-colors">
             Changelog
           </Link>
         )}
