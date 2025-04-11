@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Calendar,LayoutDashboard, ChevronDown } from "lucide-react";
+import { Calendar, LayoutDashboard, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,32 +37,16 @@ export const DashboardHeader = ({
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.3 }}
-          className={cn(
-            "p-2.5 rounded-lg shadow-sm mt-0.5",
-            "bg-violet-50",
-            
-          )}
+          className="p-3 rounded-xl shadow-sm bg-secondary/20 dark:bg-secondary/10 backdrop-blur-sm"
         >
-          <LayoutDashboard className={cn(
-            "h-6 w-6",
-            "text-secondary",
-      
-          )} />
+          <LayoutDashboard className="h-6 w-6 text-secondary dark:text-secondary/90" />
         </motion.div>
         
         <div>
-          <h1 className={cn(
-            "text-xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent",
-            "bg-gradient-to-r from-secondary via-violet-500 to-secondary",
-            "dark:bg-gradient-to-r dark:from-secondary dark:via-violet-400 dark:to-secondary-300"
-          )}>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-secondary dark:text-secondary/90">
             {currentView === "monthly" ? `Tableau de bord - ${currentMonthName}` : "Tableau de bord annuel"}
           </h1>
-          <p className={cn(
-            "text-sm mt-1",
-            "text-gray-500",
-            "dark:text-gray-400"
-          )}>
+          <p className="text-sm mt-1 text-muted-foreground">
             {currentView === "monthly" 
               ? "Vue mensuelle de vos finances" 
               : "Vue annuelle de vos finances"}
@@ -70,31 +54,34 @@ export const DashboardHeader = ({
         </div>
       </div>
       
-      <div className="flex items-center space-x-2 w-full sm:w-auto">
+      <div className="flex items-center space-x-3 w-full sm:w-auto">
         <SimulatorButton />
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
-              variant="secondary" 
+              variant="outline"
               size={isMobile ? "sm" : "default"} 
-              className={cn(
-                "min-w-[110px] justify-between",
-            
-              )}
+              className="min-w-[120px] justify-between border-secondary/20 hover:border-secondary/50 dark:border-secondary/30 dark:hover:border-secondary/70 transition-all"
             >
-              <Calendar className="mr-2 h-4 w-4 text-secondary-foreground " />
-              <span className="text-secondary-foreground ">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
-              <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-secondary" />
+              <Calendar className="mr-2 h-4 w-4 text-secondary dark:text-secondary/90" />
+              <span className="text-secondary-foreground dark:text-secondary-foreground/90">
+                {currentView === "monthly" ? "Mensuel" : "Annuel"}
+              </span>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-70 text-secondary dark:text-secondary/70" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[200px]">
+          <DropdownMenuContent align="end" className="w-[200px] border-secondary/20 dark:border-secondary/30">
             <DropdownMenuRadioGroup
               value={currentView}
               onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
             >
-              <DropdownMenuRadioItem value="monthly">Vue mensuelle</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="yearly">Vue annuelle</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="monthly" className="cursor-pointer hover:bg-secondary/10 dark:hover:bg-secondary/20 focus:bg-secondary/10 dark:focus:bg-secondary/20">
+                Vue mensuelle
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="yearly" className="cursor-pointer hover:bg-secondary/10 dark:hover:bg-secondary/20 focus:bg-secondary/10 dark:focus:bg-secondary/20">
+                Vue annuelle
+              </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
