@@ -26,7 +26,7 @@ export const SimulatorButton = () => {
   <Calculator className={cn(
     "mr-2", 
     isMobile ? "h-3 w-3" : "h-4 w-4",
-    "text-secondary-500 dark:text-secondary-400"
+    "text-secondary dark:text-secondary/40"
   )} />
   <span className="text-secondary-700 dark:text-secondary-300">Simulateur</span>
 </Button>
