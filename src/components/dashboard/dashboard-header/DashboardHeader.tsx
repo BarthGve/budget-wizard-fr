@@ -39,22 +39,22 @@ export const DashboardHeader = ({
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
-            "bg-gradient-to-br from-secondary-100 to-violet-50",
-            "dark:bg-gradient-to-br dark:from-secondary-900/40 dark:to-violet-800/30 dark:shadow-secondary-900/10"
+            "bg-gradient-to-br from-secondary to-violet-50",
+            "dark:bg-gradient-to-br dark:from-secondary dark:to-violet-800/30 dark:shadow-secondary",
           )}
         >
           <LayoutDashboard className={cn(
             "h-6 w-6",
-            "text-secondary-600",
-            "dark:text-secondary-400"
+            "text-secondary",
+      
           )} />
         </motion.div>
         
         <div>
           <h1 className={cn(
             "text-xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent",
-            "bg-gradient-to-r from-secondary-500 via-violet-500 to-secondary-400",
-            "dark:bg-gradient-to-r dark:from-secondary-400 dark:via-violet-400 dark:to-secondary-300"
+            "bg-gradient-to-r from-secondary via-violet-500 to-secondary",
+            "dark:bg-gradient-to-r dark:from-secondary dark:via-violet-400 dark:to-secondary-300"
           )}>
             {currentView === "monthly" ? `Tableau de bord - ${currentMonthName}` : "Tableau de bord annuel"}
           </h1>
@@ -80,8 +80,8 @@ export const DashboardHeader = ({
               size={isMobile ? "sm" : "default"} 
               className={cn(
                 "min-w-[110px] justify-between",
-                "bg-secondary-50 border-secondary-100 hover:bg-secondary-100",
-                "dark:bg-secondary-950/30 dark:border-secondary-800/50 dark:hover:bg-secondary-900/40"
+                "bg-secondary-50 border-secondary hover:bg-secondary-100",
+                "dark:bg-secondary-950/30 dark:border-secondary dark:hover:bg-secondary-900/40"
               )}
             >
               <Calendar className="mr-2 h-4 w-4 text-secondary-500 dark:text-secondary-400" />
