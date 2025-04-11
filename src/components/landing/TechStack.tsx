@@ -1,3 +1,16 @@
+
+import { appConfig } from "@/config/app.config";
+
+interface TechStackItem {
+  icon: string;
+  name: string;
+}
+
+interface TechStackProps {
+  technologies: TechStackItem[];
+  appVersion?: string;
+}
+
 export const TechStack = ({ technologies, appVersion }: TechStackProps) => {
   const currentYear = new Date().getFullYear();
 
