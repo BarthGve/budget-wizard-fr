@@ -130,8 +130,8 @@ export const CreditCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-secondary text-secondary", // Light mode
-                "dark:bg-secondary dark:text-secondary" // Dark mode
+                "bg-violet-100 text-secondary", // Light mode
+                "dark:bg-violet-900/40 dark:text-secondary" // Dark mode
               )}>
                 <CreditCardIcon className="h-5 w-5" />
               </div>
