@@ -55,37 +55,37 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   // Gérer les erreurs potentielles du layout
   try {
     return (
-      <div className="flex h-screen bg-gray-50 dark:bg-gray-900 ios-top-safe">
-        {/* Overlay pour fermer la sidebar sur mobile */}
-        <MobileSidebarOverlay 
-          showMobileSidebar={showMobileSidebar} 
-          onOverlayClick={handleOverlayClick} 
-        />
-        
-        {/* Sidebar - visible conditionnellement sur mobile */}
-        <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}>
-          <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
-        </div>
+      <div className="flex h-screen bg-background dark:bg-gray-950 ios-top-safe">
+  {/* Overlay pour fermer la sidebar sur mobile */}
+  <MobileSidebarOverlay 
+    showMobileSidebar={showMobileSidebar} 
+    onOverlayClick={handleOverlayClick} 
+  />
+  
+  {/* Sidebar - visible conditionnellement sur mobile */}
+  <div className={`${isMobile ? (showMobileSidebar ? 'block' : 'hidden') : 'block'} z-50`}>
+    <MemoizedSidebar onClose={() => setShowMobileSidebar(false)} />
+  </div>
 
-        {/* Menu utilisateur flottant sur mobile - passer isAuthenticated directement */}
-        <MobileUserMenu 
-          profile={userProfile as Profile} 
-          isLoading={!userProfile && isAuthenticated}
-        />
+  {/* Menu utilisateur flottant sur mobile - passer isAuthenticated directement */}
+  <MobileUserMenu 
+    profile={userProfile as Profile} 
+    isLoading={!userProfile && isAuthenticated}
+  />
 
-        {/* Bouton de basculement de la sidebar sur mobile */}
-        {isMobile && (
-          <MobileSidebarToggle toggleSidebar={toggleSidebar} />
-        )}
+  {/* Bouton de basculement de la sidebar sur mobile */}
+  {isMobile && (
+    <MobileSidebarToggle toggleSidebar={toggleSidebar} />
+  )}
 
-        {/* Contenu principal */}
-        <DashboardContent 
-          globalBalance={globalBalance} 
-          isAdmin={userProfile?.isAdmin}
-        >
-          {children}
-        </DashboardContent>
-      </div>
+  {/* Contenu principal */}
+  <DashboardContent 
+    globalBalance={globalBalance} 
+    isAdmin={userProfile?.isAdmin}
+  >
+    {children}
+  </DashboardContent>
+</div>
     );
   } catch (error) {
     console.error("Erreur dans le DashboardLayout:", error);
