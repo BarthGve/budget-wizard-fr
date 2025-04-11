@@ -80,7 +80,7 @@ export const DashboardHeader = ({
               size={isMobile ? "sm" : "default"} 
               className={cn(
                 "min-w-[110px] justify-between",
-                "bg-secondary  border-secondary",
+                " border-secondary",
             
               )}
             >
