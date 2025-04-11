@@ -53,8 +53,8 @@ export const DashboardHeader = ({
         <div>
           <h1 className={cn(
             "text-xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent",
-            "bg-gradient-to-r from-purple-500 via-violet-500 to-purple-400",
-            "dark:bg-gradient-to-r dark:from-purple-400 dark:via-violet-400 dark:to-purple-300"
+            "bg-gradient-to-r from-secondary-500 via-violet-500 to-purple-400",
+            "dark:bg-gradient-to-r dark:from-secondary-400 dark:via-violet-400 dark:to-purple-300"
           )}>
             {currentView === "monthly" ? `Tableau de bord - ${currentMonthName}` : "Tableau de bord annuel"}
           </h1>
@@ -80,8 +80,8 @@ export const DashboardHeader = ({
               size={isMobile ? "sm" : "default"} 
               className={cn(
                 "min-w-[110px] justify-between",
-                "bg-purple-50 border-purple-100 hover:bg-purple-100",
-                "dark:bg-purple-950/30 dark:border-purple-800/50 dark:hover:bg-purple-900/40"
+                "bg-secondary-50 border-secondary-100 hover:bg-secondary-100",
+                "dark:bg-scondary-950/30 dark:border-scondary-800/50 dark:hover:bg-secondary-900/40"
               )}
             >
               <Calendar className="mr-2 h-4 w-4 text-purple-500 dark:text-purple-400" />
