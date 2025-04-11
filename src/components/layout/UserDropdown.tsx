@@ -1,250 +1,89 @@
+"use client"
 
-import { useNavigate } from "react-router-dom";
-import { LogOut, Bell, UserCircle2, Settings2, ChevronsUpDown, Sun, Moon, Monitor } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Profile } from "@/types/profile";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { usePagePermissions } from "@/hooks/usePagePermissions";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useTheme } from "next-themes";
-import { useAuthContext } from "@/context/AuthProvider";
-import { useEffect, useState } from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { LogOut } from "lucide-react"
+import { User } from "next-auth"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { signOut } from "next-auth/react"
+import { Skeleton } from "@/components/ui/skeleton"
 
-interface UserDropdownProps {
-  collapsed: boolean;
-  profile?: Profile;
-  isLoading?: boolean;
-  isAuthenticated?: boolean;  // Nouvelle prop pour contrôler directement l'état d'authentification
+interface UserNavProps {
+  user?: Pick<User, "name" | "image" | "email">
+  isPro?: boolean
+  isLoading?: boolean
 }
 
-export const UserDropdown = ({
-  collapsed,
-  profile,
-  isLoading = false,
-  isAuthenticated: propIsAuthenticated  // L'état d'authentification peut être passé en prop
-}: UserDropdownProps) => {
-  const navigate = useNavigate();
-  const { isAdmin } = usePagePermissions();
-  const isMobile = useIsMobile();
-  const { setTheme } = useTheme();
-  
-  // Obtenir l'état d'authentification du contexte si non fourni en prop
-  const { logout, isAuthenticated: contextIsAuthenticated } = useAuthContext();
-  const [localProfile, setLocalProfile] = useState<Profile | undefined>(profile);
-  const [mounted, setMounted] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  
-  // Utiliser l'état d'authentification de la prop si fourni, sinon utiliser celui du contexte
-  const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : contextIsAuthenticated;
-  
-  // Assurer que le composant est monté côté client
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  // Mettre à jour le profil local quand les props changent
-  useEffect(() => {
-    if (profile && (!localProfile || profile.id !== localProfile.id)) {
-      console.log("UserDropdown - Mise à jour du profil:", profile.email);
-      setLocalProfile(profile);
-    }
-  }, [profile, localProfile]);
-
-  const handleLogout = async (e: React.MouseEvent) => {
-    try {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      // Éviter les clics multiples
-      if (isLoggingOut) {
-        console.log("Déconnexion déjà en cours, ignoré");
-        return;
-      }
-      
-      setIsLoggingOut(true);
-      console.log("UserDropdown: Démarrage de la déconnexion...");
-      
-      // Appel à la fonction de déconnexion du contexte d'authentification
-      await logout();
-      
-      // La redirection sera gérée par le hook useAuth
-    } catch (error) {
-      console.error("UserDropdown: Erreur lors de la déconnexion:", error);
-      setIsLoggingOut(false);
-    }
-  };
-
-  // Si pas monté, ne rien afficher
-  if (!mounted) {
-    return null;
-  }
-
-  // Si chargement en cours, afficher un état de chargement
-  if (isLoading) {
-    return (
-      <div className={cn("p-2", isMobile ? "shadow-none" : "p-3 sm:p-2")}>
-        <Button variant="ghost" className={cn(
-          "w-full h-auto",
-          collapsed && isMobile ? "justify-center p-0 rounded-full" : 
-          collapsed ? "justify-center p-0" : "justify-start p-0"
-        )}>
-          <div className={cn(
-            "flex items-center w-full",
-            collapsed ? "justify-center" : "gap-3"
-          )}>
-            <div className="relative">
-              <Avatar className={cn(
-                "transition-all duration-300 border-2 border-background animate-pulse",
-                isMobile && collapsed ? "h-12 w-12" : collapsed ? "h-10 w-10" : "h-12 w-12"
-              )}>
-                <AvatarFallback className="bg-gray-200 dark:bg-gray-700" />
-              </Avatar>
-            </div>
-          </div>
-        </Button>
-      </div>
-    );
-  }
-
-  // Si pas authentifié (en se basant sur la prop ou le contexte), afficher un bouton de connexion
-  if (!isAuthenticated) {
-    return (
-      <div className={cn("p-2", isMobile ? "shadow-none" : "p-3 sm:p-2")}>
-        <Button 
-          variant="outline" 
-          className="w-full" 
-          onClick={() => navigate("/login")}
-        >
-          Se connecter
-        </Button>
-      </div>
-    );
-  }
-
-  // Si authentifié mais pas de profil, afficher un placeholder
-  if (isAuthenticated && !localProfile) {
-    return (
-      <div className={cn("p-2", isMobile ? "shadow-none" : "p-3 sm:p-2")}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              className={cn(
-                "w-full h-auto",
-                collapsed && isMobile ? "justify-center p-0 rounded-full" : 
-                collapsed ? "justify-center p-0" : "justify-start p-0"
-              )}>
-              <div className={cn(
-                "flex items-center w-full",
-                collapsed ? "justify-center" : "gap-3"
-              )}>
-                <div className="relative">
-                  <Avatar className={cn(
-                    "transition-all duration-300 border-2 border-background",
-                    isMobile && collapsed ? "h-12 w-12" : collapsed ? "h-10 w-10" : "h-12 w-12"
-                  )}>
-                    <AvatarFallback>?</AvatarFallback>
-                  </Avatar>
-                </div>
-              </div>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-background/95 backdrop-blur-sm z-[99]">
-            <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>{isLoggingOut ? "Déconnexion en cours..." : "Se déconnecter"}</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  }
-
-  // Affichage normal avec le profil
+export function UserNav({ user, isPro = false, isLoading }: UserNavProps) {
   return (
-    <div className={cn(
-      "p-2", 
-      isMobile ? "shadow-none" : "p-3 sm:p-2"
-    )}>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost" 
-            className={cn(
-              "w-full h-auto",
-              collapsed && isMobile ? "justify-center p-0 rounded-full" : 
-              collapsed ? "justify-center p-0" : "justify-start p-0"
-            )}>
-            <div className={cn(
-              "flex items-center w-full",
-              collapsed ? "justify-center" : "gap-3"
-            )}>
-              <div className="relative">
-                <Avatar className={cn(
-                  "transition-all duration-300 border-2 border-background",
-                  isMobile && collapsed ? "h-12 w-12" : collapsed ? "h-10 w-10" : "h-12 w-12"
-                )}>
-                  <AvatarImage src={localProfile?.avatar_url || undefined} alt={localProfile?.full_name || "Avatar"} />
-                  <AvatarFallback>
-                    {(localProfile?.full_name || "?")[0]?.toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                {localProfile?.profile_type === "pro" && (
-                  <Badge 
-                    className={cn(
-                      "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
-                      collapsed ? "scale-90" : ""
-                    )}>
-                    Pro
-                  </Badge>
-                )}
-              </div>
-              {!collapsed && (
-                <div className="flex items-center justify-between flex-1">
-                  <div className="flex flex-col items-start">
-                    <span className="font-medium text-sm truncate max-w-[120px]">{localProfile?.full_name || "Utilisateur"}</span>
-                    <span className="text-xs text-muted-foreground truncate max-w-[120px]">{localProfile?.email}</span>
-                  </div>
-                  <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
-                </div>
-              )}
-            </div>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-background/95 backdrop-blur-sm z-[99]">
-          <div className="flex items-center gap-3 p-2 border-b">
-           
-            <div className="flex flex-col">
-              <span className="font-medium text-sm">{localProfile?.full_name || "Utilisateur"}</span>
-              <span className="text-xs text-muted-foreground">{localProfile?.email}</span>
-            </div>
-          </div>
-       
-          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/user-settings")}>
-            <UserCircle2 className="mr-2 h-4 w-4" />
-            <span>Mon compte</span>
-          </DropdownMenuItem>
-     
-          {isAdmin && (
-            <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/user-settings")}>
-              <Bell className="mr-2 h-4 w-4" />
-              <span>Notifications</span>
-            </DropdownMenuItem>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full hover:bg-rose-100 dark:hover:bg-rose-900/20 text-rose-900 dark:text-rose-100 focus-visible:ring-2 focus-visible:ring-rose-300 dark:focus-visible:ring-rose-700 transition-colors"
+        >
+          <Avatar className="h-8 w-8 border-2 border-rose-300 dark:border-rose-700">
+            <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
+            <AvatarFallback>
+              {user?.name?.[0] || "U"}
+            </AvatarFallback>
+          </Avatar>
+          {isPro && (
+            <Badge
+              className="absolute -right-2 -top-2 h-5 w-5 rounded-full p-0 bg-gradient-to-r from-rose-400 to-amber-300 text-white shadow-sm"
+              variant="default"
+            >
+              Pro
+            </Badge>
           )}
-
-          <DropdownMenuItem 
-            className="cursor-pointer text-destructive" 
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>{isLoggingOut ? "Déconnexion en cours..." : "Se déconnecter"}</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-};
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="w-[240px] bg-rose-50/90 dark:bg-rose-900/80 backdrop-blur-md border border-rose-200 dark:border-rose-700 shadow-xl rounded-xl z-[99]"
+        align="end"
+        forceMount
+      >
+        <DropdownMenuLabel className="font-normal text-rose-900 dark:text-rose-100">
+          <div className="flex flex-col space-y-1">
+            {isLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-2/3 bg-rose-200 dark:bg-rose-800 rounded" />
+                <Skeleton className="h-3 w-1/2 bg-rose-200 dark:bg-rose-800 rounded" />
+              </div>
+            ) : (
+              <>
+                <p className="text-sm font-medium leading-none">{user?.name}</p>
+                <p className="text-xs leading-none text-rose-700 dark:text-rose-300 truncate">
+                  {user?.email}
+                </p>
+              </>
+            )}
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-rose-200 dark:bg-rose-700" />
+        <DropdownMenuItem
+          onSelect={(event) => {
+            event.preventDefault()
+            signOut({ callbackUrl: "/" })
+          }}
+          className="cursor-pointer text-rose-800 dark:text-rose-100 hover:bg-rose-100 dark:hover:bg-rose-800 transition-colors"
+        >
+          <LogOut className="mr-2 h-4 w-4 text-rose-600 dark:text-rose-300" />
+          <span>Déconnexion</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
