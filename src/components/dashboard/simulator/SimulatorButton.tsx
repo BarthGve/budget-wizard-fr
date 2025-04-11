@@ -18,7 +18,7 @@ export const SimulatorButton = () => {
   size={isMobile ? "sm" : "default"}
   className={cn(
     "min-w-[110px] justify-between",
-    "bg-secondary-50 border-secondary-100 hover:bg-secondary-100",
+    "bg-secondary/50 border-secondary-100 hover:bg-secondary-100",
     "dark:bg-secondary-950/30 dark:border-secondary-800/50 dark:hover:bg-secondary-900/40",
     isMobile && "text-xs"
   )}
