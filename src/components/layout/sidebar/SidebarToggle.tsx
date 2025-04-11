@@ -12,7 +12,7 @@ export const SidebarToggle = ({ collapsed, onClick }: SidebarToggleProps) => {
     <button
       onClick={onClick}
       className={cn(
-        "absolute -right-3 top-20 p-1.5 rounded-full bg-background border border-border hover:bg-accent transition-colors",
+        "absolute -right-3 top-20 p-1.5 rounded-full bg-background border border-border  transition-colors",
         "z-50 shadow-sm touch-manipulation"
       )}
       aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
