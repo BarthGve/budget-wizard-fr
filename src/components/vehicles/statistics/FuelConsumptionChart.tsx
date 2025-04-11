@@ -51,38 +51,48 @@ export const FuelConsumptionChart: React.FC<FuelConsumptionChartProps> = ({ data
   };
   
   return (
-    <div className="w-full h-[300px]">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={data}
-          margin={{ top: 5, right: 20, left: 5, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke={colors.gridLine} />
-          <XAxis 
-            dataKey="month" 
-            tick={{ fontSize: 12, fill: colors.text }}
-          />
-          <YAxis 
-            tick={{ fontSize: 12, fill: colors.text }}
-            label={{ 
-              value: '€/L', 
-              angle: -90, 
-              position: 'insideLeft',
-              style: { textAnchor: 'middle', fill: colors.text, fontSize: 12 }
-            }}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
-          <Line 
-            type="monotone" 
-            dataKey="price" 
-            name="Prix (€/L)"
-            stroke={colors.price} 
-            activeDot={{ r: 6 }}
-            strokeWidth={2}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="w-full">
+      <div className="text-sm text-muted-foreground mb-2 text-center">
+        Évolution du prix du carburant sur les 12 derniers mois
+      </div>
+      <div className="w-full h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={data}
+            margin={{ top: 5, right: 20, left: 5, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.gridLine} />
+            <XAxis 
+              dataKey="month" 
+              tick={{ fontSize: 12, fill: colors.text }}
+            />
+            <YAxis 
+              tick={{ fontSize: 12, fill: colors.text }}
+              label={{ 
+                value: '€/L', 
+                angle: -90, 
+                position: 'insideLeft',
+                style: { textAnchor: 'middle', fill: colors.text, fontSize: 12 }
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Line 
+              type="monotone" 
+              dataKey="price" 
+              name="Prix (€/L)"
+              stroke={colors.price} 
+              activeDot={{ r: 6 }}
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      {data.length === 0 && (
+        <div className="text-center text-muted-foreground mt-4">
+          Aucune donnée de carburant disponible sur les 12 derniers mois
+        </div>
+      )}
     </div>
   );
 };
