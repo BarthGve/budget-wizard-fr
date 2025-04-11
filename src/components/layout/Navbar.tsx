@@ -25,7 +25,7 @@ const Navbar = () => {
             transform: 'translateZ(0)'
           }}
         />
-        <span className="font-semibold text-primary-foreground text-sm sm:text-lg">{appConfig.name}</span>
+        <span className="font-semibold text-foreground text-sm sm:text-lg">{appConfig.name}</span>
       </Link>
       
       <div className="flex items-center gap-1 sm:gap-4">
@@ -35,7 +35,7 @@ const Navbar = () => {
           </Link>
         )}
         <Link to="/login">
-          <Button size={isMobile ? "sm" : "sm"} variant="ghost" className=" hover:bg-primary hover:text-foreground gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5">
+          <Button size={isMobile ? "sm" : "sm"} variant="ghost" className=" hover:bg-primary hover:text-primary-foreground gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5">
             <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             {isMobile ? "Connexion" : appConfig.landing.hero.buttons.login}
           </Button>
