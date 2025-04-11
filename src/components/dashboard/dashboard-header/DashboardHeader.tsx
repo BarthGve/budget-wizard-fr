@@ -39,8 +39,8 @@ export const DashboardHeader = ({
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
-            "bg-gradient-to-br from-secondary to-violet-50",
-            "dark:bg-gradient-to-br dark:from-secondary dark:to-violet-800/30 dark:shadow-secondary",
+            "bg-violet-50",
+            
           )}
         >
           <LayoutDashboard className={cn(
