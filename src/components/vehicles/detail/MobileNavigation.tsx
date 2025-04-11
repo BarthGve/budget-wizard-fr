@@ -26,11 +26,11 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-20 bg-white dark:bg-gray-900",
-        "p-2 border-b border-gray-200 dark:border-gray-800",
+        "py-2 border-b border-gray-200 dark:border-gray-800",
         "shadow-sm ios-top-safe flex flex-col"
       )}
     >
-      <div className="flex items-center justify-between px-3 py-2">
+      <div className="flex items-center justify-between px-3 ">
         <div className="flex items-center">
           <Button 
             variant="ghost" 
