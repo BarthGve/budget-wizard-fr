@@ -55,7 +55,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   // Gérer les erreurs potentielles du layout
   try {
     return (
-      <div className="flex h-screen bg-background dark:bg-gray-950 ios-top-safe">
+      <div className="flex h-screen bg-background  ios-top-safe">
   {/* Overlay pour fermer la sidebar sur mobile */}
   <MobileSidebarOverlay 
     showMobileSidebar={showMobileSidebar} 
