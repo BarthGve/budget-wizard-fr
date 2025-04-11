@@ -19,7 +19,7 @@ export const SimulatorButton = () => {
         className={cn(
           "min-w-[110px] justify-between",
           "bg-secondary-50 border-secondary-100 hover:bg-secondary-100",
-          "dark:bg-purple-950/30 dark:border-purple-800/50 dark:hover:bg-purple-900/40",
+          "dark:bg-secondary-950/30 dark:border-secondary-800/50 dark:hover:bg-secondary-900/40",
           isMobile ? "text-xs" : ""
         )}
       >
@@ -28,7 +28,7 @@ export const SimulatorButton = () => {
           isMobile ? "h-3 w-3" : "h-4 w-4",
           "text-secondary-500 dark:text-secondary-400"
         )} />
-        <span className="texte-secondary-700 dark:text-secondary-300">Simulateur</span>
+        <span className="text-secondary-700 dark:text-secondary-300">Simulateur</span>
       </Button>
       <FinanceSimulator open={open} onOpenChange={setOpen} />
     </>
