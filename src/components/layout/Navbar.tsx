@@ -35,7 +35,7 @@ const Navbar = () => {
           </Link>
         )}
         <Link to="/login">
-          <Button size={isMobile ? "sm" : "sm"} variant="ghost" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5">
+          <Button size={isMobile ? "sm" : "sm"} variant="ghost" className=" hover:text-primary gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5">
             <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             {isMobile ? "Connexion" : appConfig.landing.hero.buttons.login}
           </Button>
