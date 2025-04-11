@@ -80,7 +80,7 @@ export const DashboardHeader = ({
               size={isMobile ? "sm" : "default"} 
               className={cn(
                 "min-w-[110px] justify-between",
-                "bg-purple-50 border-purple-100 hover:bg-purple-100",
+                "bg-secondary-50 border-secondary-100 hover:bg-secondary-100",
                 "dark:bg-purple-950/30 dark:border-purple-800/50 dark:hover:bg-purple-900/40"
               )}
             >
