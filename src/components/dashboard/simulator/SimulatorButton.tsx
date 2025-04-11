@@ -19,7 +19,7 @@ export const SimulatorButton = () => {
   className={cn(
     "min-w-[110px] justify-between",
     "bg-secondary/10 border-secondary-100 hover:bg-secondary/20",
-    "dark:bg-secondary-950/30 dark:border-secondary-800/50 dark:hover:bg-secondary-900/40",
+    "dark: text-secondary-foreground bg-secondary-950/30 dark:border-secondary-800/50 dark:hover:bg-secondary-900/40",
     isMobile && "text-xs"
   )}
 >
