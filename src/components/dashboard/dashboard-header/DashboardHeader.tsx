@@ -123,4 +123,4 @@ export const DashboardHeader = ({
       </div>
     </motion.div>
   );
-};
+}
