@@ -24,23 +24,6 @@ export const DashboardHeader = ({
   currentMonthName,
 }: DashboardHeaderProps) => {
   const isMobile = useIsMobile();
-
-  const DashboardHeader = ({ 
-  currentView, 
-  setCurrentView, 
-  currentMonthName, 
-  isMobile 
-}) => {
-  // Animation variants for consistent animations
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
-  
-  const iconVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1 }
-  };
   
   return (
     <motion.div 
