@@ -83,8 +83,8 @@ export const DashboardHeader = ({
             
               )}
             >
-              <Calendar className="mr-2 h-4 w-4 text-secondary " />
-              <span className="text-secondary ">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
+              <Calendar className="mr-2 h-4 w-4 text-secondary-foreground " />
+              <span className="text-secondary-foreground ">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
               <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-secondary" />
             </Button>
           </DropdownMenuTrigger>
