@@ -80,13 +80,13 @@ export const DashboardHeader = ({
               size={isMobile ? "sm" : "default"} 
               className={cn(
                 "min-w-[110px] justify-between",
-                "bg-secondary-50 border-secondary hover:bg-secondary-100",
-                "dark:bg-secondary-950/30 dark:border-secondary dark:hover:bg-secondary-900/40"
+                "bg-secondary  border-secondary",
+            
               )}
             >
-              <Calendar className="mr-2 h-4 w-4 text-secondary-500 dark:text-secondary-400" />
-              <span className="text-secondary-700 dark:text-secondary-300">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
-              <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-secondary-500 dark:text-secondary-400" />
+              <Calendar className="mr-2 h-4 w-4 text-secondary " />
+              <span className="text-secondary ">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-secondary" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
