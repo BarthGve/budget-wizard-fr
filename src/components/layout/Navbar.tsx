@@ -25,7 +25,7 @@ const Navbar = () => {
             transform: 'translateZ(0)'
           }}
         />
-        <span className="font-semibold text-foreground text-sm sm:text-lg">{appConfig.name}</span>
+        <span className="font-semibold text-secondary text-sm sm:text-lg">{appConfig.name}</span>
       </Link>
       
       <div className="flex items-center gap-1 sm:gap-4">
