@@ -17,7 +17,7 @@ export const SimulatorButton = () => {
         variant="outline"
         size={isMobile ? "sm" : "default"}
         className={cn(
-          "min-w-[110px] justify-between",
+          "min-w-[110px] justify-between shadow-lg",
          
      
           isMobile ? "text-xs" : ""
