@@ -44,8 +44,8 @@ export const DashboardHeader = ({
         >
           <LayoutDashboard className={cn(
             "h-6 w-6",
-            "text-secondary-600",
-            "dark:text-secondary-400"
+            "text-secondary-600"
+ 
           )} />
         </motion.div>
         
