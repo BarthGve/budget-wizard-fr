@@ -1,52 +1,51 @@
 
-// Gestionnaires du cycle de vie du Service Worker
-import { CACHE_NAME, urlsToCache } from './cache-strategies.js';
-import { cleanupOldCaches } from './cache-management.js';
-
-/**
- * Gestionnaire pour l'événement d'installation
- * @param {Event} event - L'événement d'installation
- */
-const handleInstall = (event) => {
-  console.log('[ServiceWorker] Installation');
+// Gestion de l'installation du Service Worker
+export function handleInstall(event) {
+  console.log('[Service Worker] Installation');
+  // Cacher les ressources essentielles
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[ServiceWorker] Mise en cache des ressources essentielles');
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        // Force le service worker à devenir le service worker actif
-        return self.skipWaiting();
-      })
+    caches.open('static-v1').then(cache => {
+      return cache.addAll([
+        '/',
+        '/index.html',
+        '/manifest.json',
+        '/favicon.ico'
+      ]);
+    })
   );
-};
+}
 
-/**
- * Gestionnaire pour l'événement d'activation
- * @param {Event} event - L'événement d'activation
- */
-const handleActivate = (event) => {
-  console.log('[ServiceWorker] Activation');
+// Gestion de l'activation du Service Worker
+export function handleActivate(event) {
+  console.log('[Service Worker] Activation');
+  // Nettoyer les anciens caches
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.filter(cacheName => {
+          return cacheName.startsWith('static-') && cacheName !== 'static-v1';
+        }).map(cacheName => {
+          return caches.delete(cacheName);
+        })
+      );
+    })
+  );
+}
+
+// Gestion des messages envoyés au Service Worker
+export function handleMessage(event) {
+  console.log('[Service Worker] Message reçu:', event.data);
   
-  event.waitUntil(
-    cleanupOldCaches()
-      .then(() => {
-        console.log('[ServiceWorker] Service Worker activé et prêt à contrôler les clients');
-        // Demande au SW de prendre le contrôle immédiatement
-        return self.clients.claim();
-      })
-  );
-};
-
-/**
- * Gestionnaire pour l'événement message
- * @param {MessageEvent} event - L'événement message
- */
-const handleMessage = (event) => {
-  if (event.data.action === 'skipWaiting') {
+  // Gérer le message SKIP_WAITING pour activer immédiatement le nouveau SW
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[Service Worker] Skip waiting et activation immédiate');
     self.skipWaiting();
+    
+    // Notifier les clients que le SW a été mis à jour
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        client.postMessage({ type: 'SW_UPDATED' });
+      });
+    });
   }
-};
-
-export { handleInstall, handleActivate, handleMessage };
+}

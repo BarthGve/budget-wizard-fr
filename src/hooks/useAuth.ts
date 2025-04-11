@@ -47,6 +47,79 @@ export function useAuth() {
     }, 100);
   }, [queryClient]);
 
+  // Fonction pour vérifier si l'utilisateur est administrateur
+  const checkIfUserIsAdmin = useCallback(async (userId: string): Promise<boolean> => {
+    try {
+      console.log("Vérification du statut administrateur pour:", userId);
+      
+      const { data, error } = await supabase.rpc('has_role', {
+        user_id: userId,
+        role: 'admin'
+      });
+
+      if (error) {
+        console.error("Erreur lors de la vérification du statut admin:", error);
+        return false;
+      }
+      
+      console.log("Résultat de la vérification admin:", data);
+      return !!data;
+    } catch (error) {
+      console.error("Exception lors de la vérification du statut admin:", error);
+      return false;
+    }
+  }, []);
+
+  // Fonction pour rediriger l'utilisateur en fonction de son statut admin
+  const redirectBasedOnAdminStatus = useCallback(async (userId: string, force = false) => {
+    // Si une navigation est déjà en cours et qu'on ne force pas, on ignore
+    if (navigationInProgress.current && !force) {
+      console.log("Navigation déjà en cours, redirection ignorée");
+      return;
+    }
+    
+    try {
+      // Marquer que la navigation est en cours
+      navigationInProgress.current = true;
+      
+      // Vérifier si l'utilisateur est administrateur
+      const isAdmin = await checkIfUserIsAdmin(userId);
+      
+      // Déterminer la route de redirection
+      let redirectTo = "/dashboard"; // Route par défaut
+      
+      if (isAdmin) {
+        console.log("Redirection admin activée - utilisateur est admin");
+        redirectTo = "/admin";
+      } else if (location.state?.from?.pathname) {
+        redirectTo = location.state.from.pathname;
+      }
+      
+      console.log(`Redirection utilisateur vers: ${redirectTo} (Admin: ${isAdmin})`);
+      
+      // Effectuer la redirection avec un délai minimal pour éviter les conflits
+      setTimeout(() => {
+        navigate(redirectTo, { replace: true });
+        
+        // Réinitialiser l'état de navigation après un délai
+        setTimeout(() => {
+          navigationInProgress.current = false;
+        }, 200);
+      }, 50);
+      
+    } catch (error) {
+      console.error("Erreur lors de la redirection basée sur le statut admin:", error);
+      navigationInProgress.current = false;
+      
+      // Redirection de secours vers dashboard en cas d'erreur
+      if (force) {
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 50);
+      }
+    }
+  }, [checkIfUserIsAdmin, location.state, navigate]);
+
   // Connexion utilisateur
   const login = useCallback(async (credentials: LoginCredentials) => {
     try {
@@ -68,6 +141,12 @@ export function useAuth() {
       setUser(response.user);
       setSession(response.session);
       
+      // Rediriger l'utilisateur en fonction de son statut admin
+      // IMPORTANT: Forcer la redirection pour garantir qu'elle a lieu
+      if (location.pathname === "/login") {
+        await redirectBasedOnAdminStatus(response.user.id, true);
+      }
+      
       // Activer un timer de sécurité pour déverrouiller en cas de blocage
       if (loaderSafetyTimeoutRef.current) {
         clearTimeout(loaderSafetyTimeoutRef.current);
@@ -76,12 +155,6 @@ export function useAuth() {
       loaderSafetyTimeoutRef.current = window.setTimeout(() => {
         console.log("Timer de sécurité activé - Forcer la fin du chargement");
         setLoading(false);
-        
-        // Forcer la navigation si nécessaire
-        const from = location.state?.from?.pathname || "/dashboard";
-        if (location.pathname === "/login") {
-          navigate(from, { replace: true });
-        }
       }, 3000); // Réduit à 3 secondes pour une expérience plus fluide
       
       return response;
@@ -91,7 +164,7 @@ export function useAuth() {
       setLoading(false);
       throw error;
     }
-  }, [location, navigate]);
+  }, [location.pathname, redirectBasedOnAdminStatus]);
 
   // Fonction de déconnexion améliorée
   const logout = useCallback(async () => {
@@ -294,7 +367,7 @@ export function useAuth() {
     
     // Configurer l'écouteur d'événements d'authentification de manière optimisée
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
+      async (event, newSession) => {
         console.log("Événement d'authentification détecté:", event, newSession ? "session active" : "pas de session");
         
         // Désactiver le timer de sécurité s'il est en cours
@@ -323,20 +396,9 @@ export function useAuth() {
             setLoading(false);
           }, 100);
           
-          // Redirection uniquement si on est sur la page de login
-          if (location.pathname === "/login" && !navigationInProgress.current) {
-            navigationInProgress.current = true;
-            const from = location.state?.from?.pathname || "/dashboard";
-            
-            // Différer la navigation pour éviter les conflits
-            setTimeout(() => {
-              console.log("Redirection depuis login vers:", from);
-              navigate(from, { replace: true });
-              
-              setTimeout(() => {
-                navigationInProgress.current = false;
-              }, 300);
-            }, 200);
+          // Forcer la vérification admin et la redirection
+          if (newSession?.user && location.pathname === "/login") {
+            await redirectBasedOnAdminStatus(newSession.user.id, true);
           } else {
             setLoading(false);
           }
@@ -375,12 +437,32 @@ export function useAuth() {
     if (!authInitialized.current) {
       authInitialized.current = true;
       
-      supabase.auth.getSession().then(({ data }) => {
+      supabase.auth.getSession().then(async ({ data }) => {
         console.log("Session initiale:", data.session ? "présente" : "absente");
         
         if (data.session) {
           setSession(data.session);
           setUser(data.session.user || null);
+          
+          // Vérifier prioritairement si sur /dashboard et redirect vers /admin si admin
+          if (data.session.user && location.pathname === "/dashboard") {
+            const isAdmin = await checkIfUserIsAdmin(data.session.user.id);
+            
+            if (isAdmin) {
+              console.log("DÉTECTION PRIORITAIRE - Admin sur /dashboard - Redirection FORCÉE vers /admin");
+              if (!navigationInProgress.current) {
+                navigationInProgress.current = true;
+                
+                // Redirection immédiate avec délai minimal
+                setTimeout(() => {
+                  navigate("/admin", { replace: true });
+                  setTimeout(() => {
+                    navigationInProgress.current = false;
+                  }, 200);
+                }, 10);
+              }
+            }
+          }
         }
         
         // Terminer le chargement initial
@@ -410,7 +492,7 @@ export function useAuth() {
         clearTimeout(loaderSafetyTimeoutRef.current);
       }
     };
-  }, [navigate, location.pathname, location.state, invalidateAuthCache, loading, initialized, queryClient]);
+  }, [navigate, location.pathname, location.state, invalidateAuthCache, loading, initialized, queryClient, checkIfUserIsAdmin, redirectBasedOnAdminStatus]);
 
   return {
     user,

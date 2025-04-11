@@ -2,6 +2,7 @@
 import { NotificationCard } from "./NotificationCard";
 import { ChangelogNotification } from "./ChangelogNotification";
 import { AdminNotifications } from "./AdminNotifications";
+import { CreditsNotification } from "./CreditsNotification";
 import { useNotificationSettings } from "./useNotificationSettings";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 
@@ -11,10 +12,12 @@ export const NotificationSettings = () => {
     isSignupNotificationEnabled,
     isChangelogNotificationEnabled,
     isFeedbackNotificationEnabled,
+    isCreditsNotificationEnabled,
     isUpdating,
     handleSignupNotificationToggle,
     handleChangelogNotificationToggle,
-    handleFeedbackNotificationToggle
+    handleFeedbackNotificationToggle,
+    handleCreditsNotificationToggle
   } = useNotificationSettings(profile);
 
   return (
@@ -24,6 +27,13 @@ export const NotificationSettings = () => {
         isChangelogNotificationEnabled={isChangelogNotificationEnabled}
         isUpdating={isUpdating}
         onChangelogToggle={handleChangelogNotificationToggle}
+      />
+
+      {/* Notifications de crédits pour tous les utilisateurs */}
+      <CreditsNotification
+        isCreditsNotificationEnabled={isCreditsNotificationEnabled}
+        isUpdating={isUpdating}
+        onCreditsToggle={handleCreditsNotificationToggle}
       />
 
       {/* Notifications exclusives pour les administrateurs */}

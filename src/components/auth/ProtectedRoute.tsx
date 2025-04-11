@@ -23,15 +23,26 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
   
   // Effet pour détecter les admins et les rediriger si nécessaire
   useEffect(() => {
-    if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
-      console.log("Admin détecté dans ProtectedRoute - Redirection vers /admin");
-      if (!hasRedirectedRef.current) {
+    // IMPORTANT: Ne pas exécuter si une redirection est déjà en cours
+    if (hasRedirectedRef.current) return;
+    
+    // Vérification prioritaire pour les administrateurs
+    if (isAdmin && !loading) {
+      // Rediriger vers /admin si l'utilisateur est sur dashboard ou racine
+      if (!location.pathname.startsWith('/admin') && 
+          (location.pathname === '/dashboard' || location.pathname === '/')) {
+        console.log("Admin détecté dans ProtectedRoute - Redirection FORCÉE vers /admin");
         hasRedirectedRef.current = true;
-        // Utiliser navigate avec replace pour éviter l'empilement dans l'historique
-        navigate('/admin', { replace: true });
+        
+        // Utiliser setTimeout pour éviter les conflits avec d'autres navigations
+        setTimeout(() => {
+          navigate('/admin', { replace: true });
+        }, 50);
+        
+        return; // Sortir immédiatement après avoir déclenché la redirection
       }
     }
-  }, [isAdmin, location.pathname, navigate]);
+  }, [isAdmin, location.pathname, navigate, loading]);
 
   // Afficher un loader pendant la vérification
   if (loading) {
@@ -47,6 +58,10 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     return <>{children}</>;
   }
 
+  // Debug pour comprendre l'état actuel
+  console.log("ProtectedRoute - Path:", location.pathname, "Admin:", isAdmin, "Authenticated:", isAuthenticated);
+
+  // Vérification de l'authentification
   if (!isAuthenticated) {
     // Ne pas rediriger vers login si on est sur la page changelog publique
     if (location.pathname === '/changelog') {
@@ -60,12 +75,17 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Liste des routes toujours accessibles une fois connecté
-  const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
+  // IMPORTANT: Gestion prioritaire des routes admin
+  // Si on est sur une route admin mais qu'on n'est pas admin, rediriger vers dashboard
+  if (location.pathname.startsWith('/admin') && !isAdmin) {
+    hasRedirectedRef.current = true;
+    return <Navigate to="/dashboard" replace />;
+  }
   
-  // IMPORTANT: Rediriger les admins vers /admin s'ils arrivent sur /dashboard ou sur la racine du site
+  // IMPORTANT: Rediriger les admins vers /admin s'ils sont sur dashboard ou racine
+  // Cette vérification est redondante avec l'effet ci-dessus, mais sert de filet de sécurité
   if (isAdmin && (location.pathname === '/dashboard' || location.pathname === '/')) {
-    console.log("Admin détecté - Redirection vers /admin");
+    console.log("Admin détecté - Redirection SECONDAIRE vers /admin");
     hasRedirectedRef.current = true;
     return <Navigate to="/admin" replace />;
   }
@@ -76,6 +96,9 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     return <Navigate to="/dashboard" replace />;
   }
 
+  // Liste des routes toujours accessibles une fois connecté
+  const alwaysAccessibleRoutes = ['/user-settings', '/settings'];
+  
   // Permettre l'accès aux routes toujours accessibles
   if (alwaysAccessibleRoutes.includes(location.pathname)) {
     return <>{children}</>;
@@ -97,11 +120,6 @@ export const ProtectedRoute = memo(function ProtectedRoute({ children, requireAd
     if (canAccessExpenses) {
       return <>{children}</>;
     }
-  }
-
-  // Gestion spéciale pour les routes admin
-  if (location.pathname.startsWith('/admin') && isAdmin) {
-    return <>{children}</>;
   }
 
   // Vérifier les permissions pour les autres routes

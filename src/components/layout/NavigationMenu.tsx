@@ -13,6 +13,7 @@ import {
   ShoppingBasket,
   List,
   Car,
+  Bell
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
@@ -40,7 +41,9 @@ const adminMenu: MenuItem[] = [
   { title: "Tableau de bord", icon: LayoutDashboard, path: "/admin", matchPath: "^/admin$" },
   { title: "Gestion utilisateurs", icon: Users, path: "/admin/users", matchPath: "^/admin/users" },
   { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "^/admin/feedbacks" },
-  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog" }
+  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog" },
+  { title: "Test notification", icon: Bell, path: " /admin/test-credit-notification", matchPath: "^/admin/test-credit-notification" }
+ 
 ];
 
 const userMenu: MenuItem[] = [

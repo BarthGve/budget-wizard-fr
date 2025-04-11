@@ -557,6 +557,7 @@ export type Database = {
           full_name: string | null
           id: string
           notif_changelog: boolean | null
+          notif_credits: boolean | null
           notif_feedbacks: boolean | null
           notif_inscriptions: boolean | null
           onboarding_completed: boolean | null
@@ -572,6 +573,7 @@ export type Database = {
           full_name?: string | null
           id: string
           notif_changelog?: boolean | null
+          notif_credits?: boolean | null
           notif_feedbacks?: boolean | null
           notif_inscriptions?: boolean | null
           onboarding_completed?: boolean | null
@@ -587,6 +589,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           notif_changelog?: boolean | null
+          notif_credits?: boolean | null
           notif_feedbacks?: boolean | null
           notif_inscriptions?: boolean | null
           onboarding_completed?: boolean | null
@@ -1444,6 +1447,14 @@ export type Database = {
       get_user_stats: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      get_users_with_credit_notifications_enabled: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          email: string
+          profile_id: string
+          credits_count: number
+        }[]
       }
       get_yearly_expenses_stats: {
         Args: { p_profile_id: string }
