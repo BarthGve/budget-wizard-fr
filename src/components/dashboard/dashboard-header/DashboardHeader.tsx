@@ -39,7 +39,8 @@ export const DashboardHeader = ({
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
-             )}
+            "bg-secondary-100"
+          )}
         >
           <LayoutDashboard className={cn(
             "h-6 w-6",
