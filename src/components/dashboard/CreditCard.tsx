@@ -119,9 +119,9 @@ export const CreditCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-gradient-to-br from-white to-secondary-50 shadow-lg border border-secondary-100 hover:shadow-xl",
+          "bg-gradient-to-br from-white to-secondary shadow-lg border border-secondary hover:shadow-xl",
           // Dark mode styles - alignées avec les cards de graphiques
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-secondary-950 dark:border-secondary-900/30 dark:shadow-secondary-800/30 dark:hover:shadow-secondary-800/50"
+          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-secondary dark:border-secondary dark:shadow-secondary dark:hover:shadow-secondary"
         )}
         onClick={() => navigate("/credits")}
       >
@@ -130,8 +130,8 @@ export const CreditCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-secondary-100 text-secondary-600", // Light mode
-                "dark:bg-secondary-900/40 dark:text-secondary-400" // Dark mode
+                "bg-secondary text-secondary", // Light mode
+                "dark:bg-secondary dark:text-secondary" // Dark mode
               )}>
                 <CreditCardIcon className="h-5 w-5" />
               </div>
