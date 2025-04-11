@@ -119,9 +119,9 @@ export const CreditCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-gradient-to-br from-white to-violet-100 shadow-lg border border-secondary hover:shadow-xl",
+          "bg-gradient-to-br from-white to-purple-50 shadow-lg border border-purple-100 hover:shadow-xl",
           // Dark mode styles - alignées avec les cards de graphiques
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-secondary dark:border-secondary dark:shadow-secondary dark:hover:shadow-secondary"
+          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-purple-950 dark:border-purple-900/30 dark:shadow-purple-800/30 dark:hover:shadow-purple-800/50"
         )}
         onClick={() => navigate("/credits")}
       >
@@ -130,8 +130,8 @@ export const CreditCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-violet-100 text-secondary", // Light mode
-                "dark:bg-violet-900/40 dark:text-secondary" // Dark mode
+                "bg-purple-100 text-purple-600", // Light mode
+                "dark:bg-purple-900/40 dark:text-purple-400" // Dark mode
               )}>
                 <CreditCardIcon className="h-5 w-5" />
               </div>
@@ -140,7 +140,7 @@ export const CreditCard = ({
             <Badge 
               variant={getBadgeVariant(tauxEndettement)} 
               className={cn(
-                "bg-secondary-500 px-3 py-1 flex items-center gap-1",
+                "bg-purple-500 px-3 py-1 flex items-center gap-1",
                 // Améliorer la visibilité des badges en dark mode
                 "dark:bg-opacity-90 dark:font-medium"
               )}
@@ -183,7 +183,7 @@ export const CreditCard = ({
                   className={cn(
                     "text-xl font-bold leading-none",
                     "text-gray-800", // Light mode
-                    "dark:text-secondary-100" // Dark mode - légèrement teinté de violet pour l'effet visuel
+                    "dark:text-purple-100" // Dark mode - légèrement teinté de violet pour l'effet visuel
                   )}
                   initial={{ scale: 0.9 }}
                   animate={{ scale: 1 }}
@@ -193,7 +193,7 @@ export const CreditCard = ({
                 </motion.p>
                 
                 {/* Effet de lueur subtil - visible uniquement en dark mode */}
-                <div className="absolute -inset-1 bg-secondary-500/10 blur-md rounded-full opacity-0 dark:opacity-60" />
+                <div className="absolute -inset-1 bg-purple-500/10 blur-md rounded-full opacity-0 dark:opacity-60" />
               </motion.div>
             </div>
           </div>
