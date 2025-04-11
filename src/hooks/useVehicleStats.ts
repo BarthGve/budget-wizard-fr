@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { VehicleExpense } from "@/types/vehicle";
@@ -197,13 +196,12 @@ export const useVehicleStats = (vehicleId: string) => {
       return [];
     }
 
-    // Filtrer les pleins de carburant avec kilométrage et volume
+    // Filtrer les pleins de carburant avec volume
     const fuelExpenses = expenses.filter(
       (expense) => 
         expense.expense_type === "carburant" && 
         expense.fuel_volume && 
-        expense.fuel_volume > 0 && 
-        expense.mileage
+        expense.fuel_volume > 0
     );
 
     // Trier par date
@@ -221,31 +219,24 @@ export const useVehicleStats = (vehicleId: string) => {
       expense => new Date(expense.date) >= oneYearAgo
     );
 
-    // Créer les données pour le graphique
-    const consumptionData = [];
-    
-    for (let i = 1; i < rollingYearExpenses.length; i++) {
-      const current = rollingYearExpenses[i];
-      const previous = rollingYearExpenses[i - 1];
+    // Créer les données pour le graphique - Changement majeur ici:
+    // Maintenant, nous incluons tous les pleins de carburant, pas seulement ceux
+    // pour lesquels on peut calculer une distance parcourue
+    const consumptionData = rollingYearExpenses.map(expense => {
+      const volume = expense.fuel_volume!;
+      const price = expense.amount / volume;
       
-      // Si on a des kilométrages et que la distance est positive
-      if (current.mileage && previous.mileage && current.mileage > previous.mileage) {
-        const distance = current.mileage - previous.mileage;
-        const volume = current.fuel_volume!;
-        const price = current.amount / volume;
-        
-        const date = new Date(current.date);
-        const month = date.toLocaleDateString('fr-FR', { month: 'short' });
-        
-        consumptionData.push({
-          date: current.date,
-          month: `${month} ${date.getFullYear()}`,
-          price: parseFloat(price.toFixed(3)),
-          volume: volume,
-          mileage: current.mileage
-        });
-      }
-    }
+      const date = new Date(expense.date);
+      const month = date.toLocaleDateString('fr-FR', { month: 'short' });
+      
+      return {
+        date: expense.date,
+        month: `${month} ${date.getFullYear()}`,
+        price: parseFloat(price.toFixed(3)),
+        volume: volume,
+        mileage: expense.mileage
+      };
+    });
 
     return consumptionData;
   }, [expenses]);
