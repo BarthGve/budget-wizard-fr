@@ -40,46 +40,45 @@ export const DashboardHeader = ({
   const iconVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1 }
-    };
+  };
   
-    return (
+  return (
     <motion.div 
-      initial="hidden"
-      animate="visible"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      variants={containerVariants}
       className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
     >
-      {/* Left section with icon and title */}
       <div className="flex items-start gap-3">
         <motion.div
-          variants={iconVariants}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
-            "p-3 rounded-lg shadow-md",
-            "bg-secondary/15",
-            "dark:bg-secondary/20",
-            "ring-1 ring-secondary/10 dark:ring-secondary/30"
+            "p-2.5 rounded-lg shadow-sm mt-0.5",
+            "bg-violet-50",
+            
           )}
         >
           <LayoutDashboard className={cn(
-            "h-5 w-5",
-            "text-secondary-600 dark:text-secondary-400"
+            "h-6 w-6",
+            "text-secondary",
+      
           )} />
         </motion.div>
         
         <div>
           <h1 className={cn(
-            "text-xl sm:text-2xl font-bold tracking-tight",
-            "bg-clip-text text-transparent",
-            "bg-gradient-to-r from-secondary-600 via-secondary-500 to-secondary-700",
-            "dark:bg-gradient-to-r dark:from-secondary-400 dark:via-secondary-300 dark:to-secondary-500"
+            "text-xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent",
+            "bg-gradient-to-r from-secondary via-violet-500 to-secondary",
+            "dark:bg-gradient-to-r dark:from-secondary dark:via-violet-400 dark:to-secondary-300"
           )}>
             {currentView === "monthly" ? `Tableau de bord - ${currentMonthName}` : "Tableau de bord annuel"}
           </h1>
           <p className={cn(
             "text-sm mt-1",
-            "text-muted-foreground"
+            "text-gray-500",
+            "dark:text-gray-400"
           )}>
             {currentView === "monthly" 
               ? "Vue mensuelle de vos finances" 
@@ -88,26 +87,22 @@ export const DashboardHeader = ({
         </div>
       </div>
       
-      {/* Right section with buttons */}
-      <div className="flex items-center gap-3 w-full sm:w-auto">
+      <div className="flex items-center space-x-2 w-full sm:w-auto">
         <SimulatorButton />
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
-              variant="outline" 
+              variant="secondary" 
               size={isMobile ? "sm" : "default"} 
               className={cn(
                 "min-w-[110px] justify-between",
-                "bg-secondary/10 hover:bg-secondary/20",
-                "text-secondary-700 dark:text-secondary-300",
-                "border-secondary-200 dark:border-secondary-800",
-                "hover:border-secondary-300 dark:hover:border-secondary-700"
+            
               )}
             >
-              <Calendar className="mr-2 h-4 w-4" />
-              <span>{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
-              <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+              <Calendar className="mr-2 h-4 w-4 text-secondary-foreground " />
+              <span className="text-secondary-foreground ">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-secondary" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
@@ -115,12 +110,12 @@ export const DashboardHeader = ({
               value={currentView}
               onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
             >
-              <DropdownMenuRadioItem value="monthly" className="cursor-pointer">Vue mensuelle</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="yearly" className="cursor-pointer">Vue annuelle</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="monthly">Vue mensuelle</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="yearly">Vue annuelle</DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </motion.div>
   );
-}
+};
