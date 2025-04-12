@@ -17,14 +17,14 @@ interface CreditInfoDialogProps {
   credit: Credit;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  colorScheme?: "primary" | "quaternary" | "tertiary";
+  colorScheme?: "purple" | "green" | "blue";
 }
 
 export const CreditInfoDialog = ({ 
   credit, 
   open, 
   onOpenChange, 
-  colorScheme = "primary" 
+  colorScheme = "purple" 
 }: CreditInfoDialogProps) => {
   const { data: vehicle } = useVehicle(credit.vehicle_id || "", {
     enabled: !!credit.vehicle_id && open
@@ -65,50 +65,50 @@ export const CreditInfoDialog = ({
   const montantRestant = montantTotal - montantRembourse;
 
   const colors = {
-    primary: {
-      gradientFrom: "from-primary-500",
-      gradientTo: "to-primary-400",
-      darkGradientFrom: "dark:from-primary-600",
-      darkGradientTo: "dark:to-primary-500",
-      iconBg: "bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300",
-      headingText: "text-primary-900 dark:text-primary-200",
-      descriptionText: "text-primary-700/80 dark:text-primary-300/80",
-      cardBg: "bg-primary-50/50 dark:bg-primary-900/20",
-      lightBg: "from-white via-primary-50/40 to-primary-100/70",
-      darkBg: "dark:from-gray-900 dark:via-primary-950/20 dark:to-primary-900/30",
-      titleText: "text-primary-900 dark:text-primary-200",
-      border: "border-primary-200 dark:border-primary-800/40",
-      separator: "via-primary-200/60 dark:via-primary-800/30"
+    purple: {
+      gradientFrom: "from-purple-500",
+      gradientTo: "to-violet-400",
+      darkGradientFrom: "dark:from-purple-600",
+      darkGradientTo: "dark:to-violet-500",
+      iconBg: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300",
+      headingText: "text-purple-900 dark:text-purple-200",
+      descriptionText: "text-purple-700/80 dark:text-purple-300/80",
+      cardBg: "bg-purple-50/50 dark:bg-purple-900/20",
+      lightBg: "from-white via-purple-50/40 to-purple-100/70",
+      darkBg: "dark:from-gray-900 dark:via-purple-950/20 dark:to-purple-900/30",
+      titleText: "text-purple-900 dark:text-purple-200",
+      border: "border-purple-200 dark:border-purple-800/40",
+      separator: "via-purple-200/60 dark:via-purple-800/30"
     },
-    quaternary: {
-      gradientFrom: "from-quaternary-500",
+    green: {
+      gradientFrom: "from-green-500",
       gradientTo: "to-emerald-400",
-      darkGradientFrom: "dark:from-quaternary-600",
+      darkGradientFrom: "dark:from-green-600",
       darkGradientTo: "dark:to-emerald-500",
-      iconBg: "bg-quaternary-100 text-quaternary-600 dark:bg-quaternary-900/30 dark:text-quaternary-300",
-      headingText: "text-quaternary-900 dark:text-quaternary-200",
-      descriptionText: "text-quaternary-700/80 dark:text-quaternary-300/80",
-      cardBg: "bg-quaternary-50/50 dark:bg-quaternary-900/20",
-      lightBg: "from-white via-quaternary-50/40 to-quaternary-100/70",
-      darkBg: "dark:from-gray-900 dark:via-quaternary-950/20 dark:to-quaternary-900/30",
-      titleText: "text-quaternary-900 dark:text-quaternary-200",
-      border: "border-quaternary-200 dark:border-quaternary-800/40",
-      separator: "via-quaternary-200/60 dark:via-quaternary-800/30"
+      iconBg: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-300",
+      headingText: "text-green-900 dark:text-green-200",
+      descriptionText: "text-green-700/80 dark:text-green-300/80",
+      cardBg: "bg-green-50/50 dark:bg-green-900/20",
+      lightBg: "from-white via-green-50/40 to-green-100/70",
+      darkBg: "dark:from-gray-900 dark:via-green-950/20 dark:to-green-900/30",
+      titleText: "text-green-900 dark:text-green-200",
+      border: "border-green-200 dark:border-green-800/40",
+      separator: "via-green-200/60 dark:via-green-800/30"
     },
-    tertiary: {
-      gradientFrom: "from-tertiary-500",
+    blue: {
+      gradientFrom: "from-blue-500",
       gradientTo: "to-sky-400",
-      darkGradientFrom: "dark:from-tertiary-600",
+      darkGradientFrom: "dark:from-blue-600",
       darkGradientTo: "dark:to-sky-500", 
-      iconBg: "bg-tertiary-100 text-tertiary-600 dark:bg-tertiary-900/30 dark:text-tertiary-300",
-      headingText: "text-tertiary-900 dark:text-tertiary-200",
-      descriptionText: "text-tertiary-700/80 dark:text-tertiary-300/80",
-      cardBg: "bg-tertiary-50/50 dark:bg-tertiary-900/20",
-      lightBg: "from-white via-tertiary-50/40 to-tertiary-100/70",
-      darkBg: "dark:from-gray-900 dark:via-tertiary-950/20 dark:to-tertiary-900/30",
-      titleText: "text-tertiary-900 dark:text-tertiary-200",
-      border: "border-tertiary-200 dark:border-tertiary-800/40",
-      separator: "via-tertiary-200/60 dark:via-tertiary-800/30"
+      iconBg: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300",
+      headingText: "text-blue-900 dark:text-blue-200",
+      descriptionText: "text-blue-700/80 dark:text-blue-300/80",
+      cardBg: "bg-blue-50/50 dark:bg-blue-900/20",
+      lightBg: "from-white via-blue-50/40 to-blue-100/70",
+      darkBg: "dark:from-gray-900 dark:via-blue-950/20 dark:to-blue-900/30",
+      titleText: "text-blue-900 dark:text-blue-200",
+      border: "border-blue-200 dark:border-blue-800/40",
+      separator: "via-blue-200/60 dark:via-blue-800/30"
     }
   };
   
