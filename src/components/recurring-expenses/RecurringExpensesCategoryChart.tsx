@@ -110,21 +110,20 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     : periodicityLabels[chartPeriodicity];
 
   // Générer des couleurs pour les barres - maintenant en bleu pour la cohérence
-  const getBarColor = (index: number) => {
-    const baseColors = {
-      light: {
-        active: '#2563EB', // blue-600
-        inactive: '#60A5FA' // blue-400
-      },
-      dark: {
-        active: '#3B82F6', // blue-500
-        inactive: '#93C5FD' // blue-300
-      }
-    };
-    
-    const colors = isDarkMode ? baseColors.dark : baseColors.light;
-    return index === activeIndex ? colors.active : colors.inactive;
+const getBarColor = (index: number) => {
+  const baseColors = {
+    light: {
+      active: '#0EA5E9', // primary-500 (ex: sky-500)
+      inactive: '#7DD3FC' // primary-300
+    },
+    dark: {
+      active: '#38BDF8', // primary-400
+      inactive: '#7DD3FC' // primary-300
+    }
   };
+  const colors = isDarkMode ? baseColors.dark : baseColors.light;
+  return index === activeIndex ? colors.active : colors.inactive;
+};
 
   // Formater les pourcentages
   const formatPercentage = (value: number) => {
@@ -133,15 +132,13 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
 
   return (
     <motion.div variants={itemVariants}>
-      <Card className={cn(
-        "w-full relative overflow-hidden",
-        "border shadow-lg",
-        // Light mode
-        "bg-white border-blue-100",
-        // Dark mode
-        "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10",
-      "mb-6"
-      )}>
+ <Card className={cn(
+  "w-full relative overflow-hidden",
+  "border shadow-lg",
+  "bg-white border-primary/20",
+  "dark:bg-background dark:border-primary/30 dark:shadow-primary/10",
+  "mb-6"
+)}>
         <div className={cn(
           "absolute inset-0 opacity-5",
           // Light mode
@@ -152,13 +149,10 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
         
         <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
           <div>
-            <CardTitle className={cn(
-              "text-xl font-semibold flex items-center gap-2",
-              // Light mode
-              "text-blue-700",
-              // Dark mode
-              "dark:text-blue-300"
-            )}>
+       <CardTitle className={cn(
+  "text-xl font-semibold flex items-center gap-2",
+  "text-primary"
+)}>
               <div className={cn(
                 "p-1.5 rounded",
                 // Light mode
@@ -176,13 +170,11 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
               </div>
               Dépenses par catégorie
             </CardTitle>
-            <CardDescription className={cn(
-              "mt-1 text-sm",
-              // Light mode
-              "text-blue-600/80",
-              // Dark mode
-              "dark:text-blue-400/90"
-            )}>
+      <CardDescription className={cn(
+  "mt-1 text-sm",
+  "text-primary/80"
+)}>
+
               Répartition des charges {selectedPeriod ? periodicityLabels[selectedPeriod].toLowerCase() : chartPeriodicity === "monthly" ? "mensuelles" : chartPeriodicity === "quarterly" ? "trimestrielles" : "annuelles"}
               
               {vehicleExpenses.length > 0 && (
@@ -208,19 +200,13 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
             </CardDescription>
           </div>
           
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePeriodicityChange}
-            disabled={!!selectedPeriod}
-            className={cn(
-              "flex items-center gap-1 transition-colors font-medium",
-              // Light mode
-              "border-blue-200 hover:bg-blue-50 text-blue-700",
-              // Dark mode
-              "dark:border-blue-800 dark:hover:bg-blue-900/30 dark:text-blue-300"
-            )}
-          >
+        <Button
+  className={cn(
+    "flex items-center gap-1 transition-colors font-medium",
+    "border-primary/40 hover:bg-primary/10 text-primary",
+    "dark:border-primary/40 dark:hover:bg-primary/20 dark:text-primary"
+  )}
+>
             <ChevronLeft className="h-4 w-4" />
             {buttonText}
             <ChevronRight className="h-4 w-4" />
@@ -275,14 +261,13 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                           "Montant"
                         ]}
                         labelFormatter={(label) => `Catégorie: ${label}`}
-                        contentStyle={{
-                          backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                          border: isDarkMode ? '1px solid #1e40af' : '1px solid #bfdbfe',
-                          color: isDarkMode ? '#bfdbfe' : '#1e40af'
-                        }}
-                      />
+                     contentStyle={{
+  backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+  borderRadius: '8px',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+  border: isDarkMode ? '1px solid #0EA5E9' : '1px solid #0EA5E9',
+  color: isDarkMode ? '#7DD3FC' : '#0369A1'
+}}
                       <Bar 
                         dataKey="total" 
                         radius={[4, 4, 4, 4]}
@@ -301,13 +286,10 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className={cn(
-                    "h-full flex items-center justify-center",
-                    // Light mode
-                    "text-blue-500/70",
-                    // Dark mode
-                    "dark:text-blue-400/70"
-                  )}>
+             <div className={cn(
+  "h-full flex items-center justify-center",
+  "text-primary/70"
+)}>
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
