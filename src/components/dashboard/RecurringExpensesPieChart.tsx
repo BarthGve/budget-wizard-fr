@@ -24,18 +24,18 @@ interface CategoryTotal {
   amount: number;
 }
 
-// Palette de couleurs pour le mode clair
-const COLORS = ['#3b82f6', '#2563eb', '#1d4ed8', '#0ea5e9', '#0284c7', '#0369a1', '#38bdf8'];
+// Palette de couleurs pour le mode clair (couleur tertiaire)
+const COLORS = ['#7F56D9', '#6B21A8', '#4C1D95', '#9B4D96', '#A855F7', '#9333EA', '#6D28D9'];
 
 // Palette de couleurs pour le mode sombre - légèrement plus lumineuse
-const DARK_COLORS = ['#60a5fa', '#3b82f6', '#2563eb', '#38bdf8', '#0ea5e9', '#0284c7', '#7dd3fc'];
+const DARK_COLORS = ['#D6A0FF', '#9B4D96', '#7F56D9', '#A855F7', '#9333EA', '#6D28D9', '#D4A1FF'];
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-background/95 backdrop-blur-sm shadow-md border border-border rounded-lg p-2 text-sm dark:bg-gray-800/95 dark:border-gray-700">
         <p className="font-medium dark:text-white">{payload[0].name}</p>
-        <p className="font-semibold text-blue-600 dark:text-blue-300">{formatCurrency(payload[0].value)}</p>
+        <p className="font-semibold text-tertiary dark:text-tertiary">{formatCurrency(payload[0].value)}</p>
       </div>
     );
   }
@@ -92,8 +92,8 @@ export const RecurringExpensesPieChart = ({
           "cursor-pointer h-[320px] flex flex-col transition-all duration-300",
           // Light mode - fond blanc avec effet d'ombre élégant
           "bg-white border border-gray-200/60 shadow-lg hover:shadow-xl",
-          // Dark mode - fond adapté avec effet d'ombre bleuté
-          "dark:bg-gray-900/90 dark:border-blue-900/30 dark:shadow-blue-900/20 dark:hover:shadow-blue-800/30"
+          // Dark mode - fond adapté avec effet d'ombre
+          "dark:bg-gray-900/90 dark:border-tertiary/30 dark:shadow-tertiary/20 dark:hover:shadow-tertiary/30"
         )}
         onClick={() => navigate("/recurring-expenses")}
       >
@@ -102,8 +102,8 @@ export const RecurringExpensesPieChart = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-1.5 rounded-full",
-                "bg-blue-100 text-blue-600", // Light mode
-                "dark:bg-blue-900/40 dark:text-blue-300" // Dark mode
+                "bg-tertiary/20 text-tertiary", // Light mode
+                "dark:bg-tertiary/20 dark:text-tertiary" // Dark mode
               )}>
                 <Receipt className="h-4 w-4" />
               </div>
@@ -143,7 +143,7 @@ export const RecurringExpensesPieChart = ({
                               <tspan 
                                 x={viewBox.cx} 
                                 y={viewBox.cy - 5} 
-                                className="fill-current text-gray-900 dark:text-gray-100 text-xl font-bold"
+                                className="fill-current text-tertiary text-xl font-bold"
                               >
                                 {formatCurrency(totalExpenses)}
                               </tspan>
