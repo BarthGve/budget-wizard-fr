@@ -31,6 +31,17 @@ export default {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          50: "hsl(var(--secondary) / 0.95)",
+          100: "hsl(var(--secondary) / 0.9)",
+          200: "hsl(var(--secondary) / 0.8)",
+          300: "hsl(var(--secondary) / 0.7)",
+          400: "hsl(var(--secondary) / 0.6)",
+          500: "hsl(var(--secondary))",
+          600: "hsl(var(--secondary) / 0.85)",
+          700: "hsl(var(--secondary) / 0.7)",
+          800: "hsl(var(--secondary) / 0.5)",
+          900: "hsl(var(--secondary) / 0.4)",
+          950: "hsl(var(--secondary) / 0.3)",
         },
         tertiary: {
           DEFAULT: "hsl(var(--tertiary))",  // Ajout de la couleur bleue
