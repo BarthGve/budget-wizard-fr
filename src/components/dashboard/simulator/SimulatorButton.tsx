@@ -14,25 +14,26 @@ export const SimulatorButton = () => {
     <>
       <Button
   onClick={() => setOpen(true)}
-  variant="outline"
   size={isMobile ? "sm" : "default"}
   className={cn(
-    "min-w-[120px]",
-    "flex items-center justify-center gap-2",
-    "bg-primary/10 text-primary border-primary/30",
-    "hover:bg-primary/20 hover:border-primary/40",
-    "focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:outline-none",
-    "active:scale-[0.98] transition-all duration-150 ease-in-out",
-    isMobile ? "text-xs px-2 py-1" : "text-sm px-4 py-2 rounded-md"
+    "group flex items-center justify-center gap-2 rounded-lg",
+    "min-w-[140px] px-4 py-2 font-medium shadow-sm",
+    "bg-primary/10 text-primary border border-primary/20",
+    "hover:bg-primary/20 hover:border-primary/30",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+    "transition-all duration-150 ease-in-out",
+    "active:scale-[0.97]",
+    isMobile ? "text-xs" : "text-sm"
   )}
 >
   <Calculator
     className={cn(
-      isMobile ? "h-3 w-3" : "h-4 w-4",
+      "transition-transform duration-200 ease-in-out group-hover:rotate-6",
+      isMobile ? "w-3.5 h-3.5" : "w-4 h-4",
       "text-primary"
     )}
   />
-  <span>Simulateur</span>
+  <span>Simuler mon budget</span>
 </Button>
       <FinanceSimulator open={open} onOpenChange={setOpen} />
     </>
