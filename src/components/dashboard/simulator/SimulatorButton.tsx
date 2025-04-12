@@ -17,7 +17,7 @@ export const SimulatorButton = () => {
   size={isMobile ? "sm" : "default"}
   className={cn(
     "group flex items-center justify-center gap-2 rounded-lg",
-    "min-w-[140px] px-4 py-2 font-medium shadow-sm",
+    "min-w-[140px] px-4 py-2 font-medium shadow-lg",
     "bg-primary/10 text-primary border border-primary/20",
     "hover:bg-primary/20 hover:border-primary/30",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
