@@ -74,18 +74,28 @@ export const DashboardHeader = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
-              variant="outline" 
-              size={isMobile ? "sm" : "default"} 
-              className={cn(
-                "min-w-[110px] justify-between",
-                "bg-primary/10",
-              
-              )}
-            >
-              <Calendar className="mr-2 h-4 w-4 text-primary" />
-              <span className="text-primary">{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
-              <ChevronDown className="ml-2 h-4 w-4 opacity-50 text-primary"/>
-            </Button>
+  variant="outline" 
+  size={isMobile ? "sm" : "default"} 
+  className={cn(
+    "min-w-[120px]",
+    "flex items-center justify-between gap-2",
+    "bg-primary/10 text-primary border-primary/30",
+    "hover:bg-primary/20 hover:border-primary/40",
+    "focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:outline-none",
+    "active:scale-[0.98] transition-all duration-150 ease-in-out",
+    isMobile ? "text-xs px-2 py-1" : "text-sm px-4 py-2 rounded-md"
+  )}
+>
+  <Calendar className={cn(
+    "h-4 w-4 text-primary",
+    isMobile && "mr-1 h-3 w-3"
+  )} />
+  <span>{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
+  <ChevronDown className={cn(
+    "h-4 w-4 text-primary/70 ml-2",
+    isMobile && "h-3 w-3"
+  )} />
+</Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
             <DropdownMenuRadioGroup
