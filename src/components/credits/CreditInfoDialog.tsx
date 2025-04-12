@@ -24,7 +24,7 @@ export const CreditInfoDialog = ({
   credit, 
   open, 
   onOpenChange, 
-  colorScheme = "primary" 
+  colorScheme = "purple" 
 }: CreditInfoDialogProps) => {
   const { data: vehicle } = useVehicle(credit.vehicle_id || "", {
     enabled: !!credit.vehicle_id && open
