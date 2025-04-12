@@ -25,10 +25,10 @@ interface CategoryTotal {
 }
 
 // Palette de couleurs pour le mode clair (couleur tertiaire)
-const COLORS = ['#7F56D9', '#6B21A8', '#4C1D95', '#9B4D96', '#A855F7', '#9333EA', '#6D28D9'];
+const COLORS = ['#3b82f6', '#2563eb', '#1d4ed8', '#0ea5e9', '#0284c7', '#0369a1', '#38bdf8'];
 
 // Palette de couleurs pour le mode sombre - légèrement plus lumineuse
-const DARK_COLORS = ['#D6A0FF', '#9B4D96', '#7F56D9', '#A855F7', '#9333EA', '#6D28D9', '#D4A1FF'];
+const DARK_COLORS = ['#60a5fa', '#3b82f6', '#2563eb', '#38bdf8', '#0ea5e9', '#0284c7', '#7dd3fc'];
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
