@@ -48,7 +48,7 @@ export const TotalDebtCard = ({
         </div>
       }
       badgeText="reste à payer"
-      colorScheme="tertiary"
+      colorScheme="blue"
     />
   );
 };
