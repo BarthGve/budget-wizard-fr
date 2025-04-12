@@ -17,7 +17,7 @@ interface CreditCardProps {
   amount: number;
   subtitle: ReactNode;
   badgeText: string;
-  colorScheme: "primary" | "green" | "blue";
+  colorScheme: "primary" | "quaternary" | "tertiary";
   children?: ReactNode;
 }
 
@@ -28,7 +28,7 @@ export const CreditCard = ({
   amount,
   subtitle,
   badgeText,
-  colorScheme = "blue",
+  colorScheme = "tertiary",
   children
 }: CreditCardProps) => {
   // Couleurs pour la barre de progression en fonction du schéma
@@ -45,29 +45,29 @@ export const CreditCard = ({
       description: "text-primary-600/80 dark:text-primary-400/90",
       badge: "bg-primary-100 dark:bg-primary-800/40 text-primary-700 dark:text-primary-300",
     },
-    green: {
+    quaternary: {
       // Light mode
-      card: "bg-white border-green-100",
-      darkBorder: "dark:border-green-800/50",
-      gradient: "from-green-400 via-emerald-300 to-transparent",
-      darkGradient: "dark:from-green-400 dark:via-emerald-500 dark:to-transparent",
-      icon: "bg-green-100 text-green-700 dark:bg-green-800/40 dark:text-green-300",
-      title: "text-green-900 dark:text-green-300",
-      amount: "text-green-800 dark:text-green-200",
-      description: "text-green-600/80 dark:text-green-400/90",
-      badge: "bg-green-100 dark:bg-green-800/40 text-green-700 dark:text-green-300",
+      card: "bg-white border-quaternary-100",
+      darkBorder: "dark:border-quaternary-800/50",
+      gradient: "from-quaternary-400 via-emerald-300 to-transparent",
+      darkGradient: "dark:from-quaternary-400 dark:via-emerald-500 dark:to-transparent",
+      icon: "bg-quaternary-100 text-quaternary-700 dark:bg-quaternary-800/40 dark:text-quaternary-300",
+      title: "text-quaternary-900 dark:text-quaternary-300",
+      amount: "text-quaternary-800 dark:text-quaternary-200",
+      description: "text-quaternary-600/80 dark:text-quaternary-400/90",
+      badge: "bg-quaternary-100 dark:bg-quaternary-800/40 text-quaternary-700 dark:text-quaternary-300",
     },
-    blue: {
+    tertiary: {
       // Light mode
-      card: "bg-white border-blue-100",
-      darkBorder: "dark:border-blue-800/50",
-      gradient: "from-blue-400 via-sky-300 to-transparent",
-      darkGradient: "dark:from-blue-400 dark:via-sky-500 dark:to-transparent",
-      icon: "bg-blue-100 text-blue-700 dark:bg-blue-800/40 dark:text-blue-300",
-      title: "text-blue-900 dark:text-blue-300",
-      amount: "text-blue-800 dark:text-blue-200",
-      description: "text-blue-600/80 dark:text-blue-400/90",
-      badge: "bg-blue-100 dark:bg-blue-800/40 text-blue-700 dark:text-blue-300",
+      card: "bg-white border-tertiary-100",
+      darkBorder: "dark:border-tertiary-800/50",
+      gradient: "from-tertiary-400 via-sky-300 to-transparent",
+      darkGradient: "dark:from-tertiary-400 dark:via-sky-500 dark:to-transparent",
+      icon: "bg-tertiary-100 text-tertiary-700 dark:bg-tertiary-800/40 dark:text-tertiary-300",
+      title: "text-tertiary-900 dark:text-tertiary-300",
+      amount: "text-tertiary-800 dark:text-tertiary-200",
+      description: "text-tertiary-600/80 dark:text-tertiary-400/90",
+      badge: "bg-tertiary-100 dark:bg-tertiary-800/40 text-tertiary-700 dark:text-tertiary-300",
     }
   };
 
