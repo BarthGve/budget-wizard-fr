@@ -35,15 +35,15 @@ export const CreditCard = ({
   const colors = {
     primary: {
       // Light mode
-      card: "bg-white border-primary-100",
-      darkBorder: "dark:border-primary-800/50",
-      gradient: "from-primary-400 via-primary-300 to-transparent",
-      darkGradient: "dark:from-primary-400 dark:via-primary-500 dark:to-transparent",
-      icon: "bg-primary-100 text-primary-700 dark:bg-primary-800/40 dark:text-primary-300",
-      title: "text-primary-900 dark:text-primary-300",
-      amount: "text-primary-800 dark:text-primary-200",
-      description: "text-primary-600/80 dark:text-primary-400/90",
-      badge: "bg-primary-100 dark:bg-primary-800/40 text-primary-700 dark:text-primary-300",
+  card: "bg-white border border-primary dark:border-primary",
+  gradient: "from-primary via-primary to-transparent",
+  darkGradient: "dark:from-primary dark:via-primary dark:to-transparent",
+  icon: "bg-primary text-white dark:bg-primary dark:text-white",
+  title: "text-primary dark:text-primary",
+  amount: "text-primary dark:text-primary",
+  description: "text-primary/90 dark:text-primary/90",
+  badge: "bg-primary text-white dark:bg-primary dark:text-white"
+};
     },
     quaternary: {
       // Light mode
