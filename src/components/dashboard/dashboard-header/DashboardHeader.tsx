@@ -51,7 +51,7 @@ export const DashboardHeader = ({
         
         <div>
           <h1 className={cn(
-            "text-xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent",
+            "text-3xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent",
             "bg-gradient-to-r from-primary to-primary/50",
           
           )}>
