@@ -42,9 +42,9 @@ export const CreditDialog = memo(({
   const colors = {
     primary: {
       gradientFrom: "from-primary-500",
-      gradientTo: "to-violet-400", 
+      gradientTo: "to-primary-400", 
       darkGradientFrom: "dark:from-primary-600",
-      darkGradientTo: "dark:to-violet-500",
+      darkGradientTo: "dark:to-primary-500",
       iconBg: "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300",
       headingText: "text-primary-900 dark:text-primary-200",
       descriptionText: "text-primary-700/80 dark:text-primary-300/80",
