@@ -59,7 +59,7 @@ export const ExpensesCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-tertiary/10 shadow-lg border border-tertiary/20 hover:shadow-xl",
+             "shadow-lg border hover:shadow-xl",
           // Dark mode styles - alignées avec les cards de graphiques
           "dark:bg-tertiary/10 dark:border-tertiary/30 dark:shadow-tertiary/30 dark:hover:shadow-tertiary/50"
         )}

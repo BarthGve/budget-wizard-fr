@@ -118,7 +118,7 @@ export const CreditCard = ({
      <Card
   className={cn(
     "backdrop-blur-sm cursor-pointer transition-all duration-300",
-    "bg-primary/10 shadow-lg border border-primary/20 hover:shadow-xl",
+   "shadow-lg border hover:shadow-xl",
     "dark:bg-primary/10 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
   )}
   onClick={() => navigate("/credits")}

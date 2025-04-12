@@ -45,7 +45,7 @@ export const RevenueCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-quinary/10 shadow-lg border border-quinary/20 hover:shadow-xl",
+        "shadow-lg border hover:shadow-xl",
           // Dark mode styles
           "dark:bg-quinary/10 dark:border-quinary/30 dark:shadow-quinary/30 dark:hover:shadow-quinary/50"
         )}
