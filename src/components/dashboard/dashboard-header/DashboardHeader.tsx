@@ -101,7 +101,7 @@ export const DashboardHeader = ({
   <DropdownMenuContent
     align="end"
     className={cn(
-      "w-[200px] rounded-md border border-primary/20",
+      "w-[220px] rounded-md border border-primary/20",
       "bg-white shadow-lg dark:bg-gray-950 dark:border-gray-800",
       "focus:outline-none"
     )}
