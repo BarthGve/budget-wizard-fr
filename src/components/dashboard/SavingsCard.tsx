@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { PiggyBank, Info } from 'lucide-react';
@@ -38,37 +37,37 @@ export const SavingsCard = memo(({
     >
       <Card 
         className={cn(
-          "backdrop-blur-sm cursor-pointer transition-all duration-300",
-          // Light mode styles with quaternary  color
-          "bg-quaternary/10 shadow-lg border border-quaternary/20 hover:shadow-xl",
-          // Dark mode styles with quaternary  color
-          "dark:bg-quaternary /10 dark:border-quaternary/30 dark:shadow-quaternary/30 dark:hover:shadow-quaternary/50"
+          "backdrop-blur-lg cursor-pointer transition-all duration-300",
+          // Light mode styles with quaternary color
+          "bg-quaternary/5 shadow-xl border border-quaternary/10 hover:shadow-2xl",
+          // Dark mode styles with quaternary color
+          "dark:bg-quaternary/10 dark:border-quaternary/30 dark:shadow-quaternary/40 dark:hover:shadow-quaternary/60"
         )}
         onClick={() => navigate("/savings")}
       >
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-quaternary/20 text-quaternary ", // Apply quaternary  color for icon background
+                "bg-quaternary/20 text-quaternary ", // Apply quaternary color for icon background
                 "dark:bg-quaternary/20 dark:text-quaternary " // Dark mode variant
               )}>
                 <PiggyBank className="h-5 w-5" />
               </div>
-              <span className="dark:text-white">Epargne</span>
+              <span className="dark:text-white">Épargne</span>
             </CardTitle>
           </div>
-          <CardDescription className="dark:text-gray-400">Suivi d'objectif</CardDescription>
+          <CardDescription className="text-sm text-gray-600 dark:text-gray-400">Suivi d'objectif</CardDescription>
         </CardHeader>
         <CardContent className="pb-4">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <motion.p 
                 className={cn(
-                  "text-xl font-bold leading-none w-1/3",
-                  "text-gray-800", // Light mode text color
-                  "dark:text-quaternary " // Dark mode text color using quaternary 
+                  "text-2xl font-bold leading-none w-1/3",
+                  "text-gray-900", // Light mode text color
+                  "dark:text-quaternary" // Dark mode text color using quaternary
                 )}
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -89,24 +88,24 @@ export const SavingsCard = memo(({
                       value={progressPercentage} 
                       className={cn(
                         "h-2.5 rounded-full",
-                        "bg-quaternary/50", // Light mode progress background using quaternary 
-                        "dark:bg-quaternary/70" // Dark mode progress background using quaternary 
+                        "bg-quaternary/50", // Light mode progress background using quaternary
+                        "dark:bg-quaternary/70" // Dark mode progress background using quaternary
                       )}
                       indicatorClassName={cn(
-                        "bg-quaternary ", // Indicator color using quaternary 
-                        isGoalReached ? "dark:bg-quaternary/40" : "dark:bg-quaternary "
+                        "bg-quaternary", // Indicator color using quaternary
+                        isGoalReached ? "dark:bg-quaternary/40" : "dark:bg-quaternary"
                       )}
                     />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
                   <p className="flex items-center gap-1.5 dark:text-white font-medium">
-                    <Info className="h-4 w-4 text-quaternary  dark:text-quaternary " />
+                    <Info className="h-4 w-4 text-quaternary dark:text-quaternary" />
                     {Math.round(progressPercentage)}% de l'objectif atteint
                   </p>
                   <span className="dark:text-gray-300 mt-1 block">
                     {isGoalReached ? (
-                      <span className="font-medium text-quaternary  dark:text-quaternary ">
+                      <span className="font-medium text-quaternary dark:text-quaternary">
                         Objectif atteint ! (+{Math.abs(remainingAmount).toLocaleString('fr-FR')} €)
                       </span>
                     ) : (
