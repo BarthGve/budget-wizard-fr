@@ -26,11 +26,11 @@ export const ContributorAvatar = ({
   
   // Si c'est le propriétaire, on utilise des couleurs spécifiques pour le distinguer
   const bgColor = isOwner 
-    ? (isDarkTheme ? 'rgba(66, 153, 225, 0.3)' : 'rgba(66, 153, 225, 0.2)')  // Primary light background
+    ? (isDarkTheme ? 'rgba(234, 179, 8, 0.3)' : 'rgba(234, 179, 8, 0.2)')  // Quinary light background
     : avatarColors.background;
   
   const textColor = isOwner 
-    ? (isDarkTheme ? 'rgb(66, 153, 225)' : 'rgb(37, 99, 235)')  // Primary text color
+    ? (isDarkTheme ? 'rgb(234, 179, 8)' : 'rgb(156, 103, 2)')  // Quinary text color
     : avatarColors.text;
   
   // Tailles dynamiques basées sur le prop size
@@ -46,7 +46,7 @@ export const ContributorAvatar = ({
         sizeClasses[size],
         "ring-2 ring-offset-2",
         isOwner 
-          ? "ring-primary dark:ring-primary/50 ring-offset-white dark:ring-offset-gray-800"  // Primary ring for owner
+          ? "ring-quinary dark:ring-quinary/50 ring-offset-white dark:ring-offset-gray-800"  // Quinary ring for owner
           : "ring-transparent ring-offset-transparent",
         "transition-shadow hover:shadow-md",
         className
@@ -68,7 +68,7 @@ export const ContributorAvatar = ({
         className={cn(
           "font-medium",
           // Ajout d'une subtile animation de gradient pour les propriétaires
-          isOwner && "bg-gradient-to-tr from-primary/80 via-primary/60 to-primary/40"  // Primary gradient for owner
+          isOwner && "bg-gradient-to-tr from-quinary/80 via-quinary/60 to-quinary/40"  // Quinary gradient for owner
         )}
       >
         {initials}

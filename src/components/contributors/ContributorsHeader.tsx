@@ -22,15 +22,15 @@ export const ContributorsHeader = () => {
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
             // Light mode
-            "bg-gradient-to-br from-primary/20 to-primary/10",
+            "bg-gradient-to-br from-quinary/20 to-quinary/10",
             // Dark mode
-            "dark:bg-gradient-to-br dark:from-primary/40 dark:to-primary/30 dark:shadow-primary/10"
+            "dark:bg-gradient-to-br dark:from-quinary/40 dark:to-quinary/30 dark:shadow-quinary/10"
           )}
         >
           <Banknote className={cn(
             "h-6 w-6",
-            "text-primary",
-            "dark:text-primary"
+            "text-quinary",
+            "dark:text-quinary"
           )} />
         </motion.div>
         
@@ -38,9 +38,9 @@ export const ContributorsHeader = () => {
           <h1 className={cn(
             "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
             // Light mode gradient
-            "bg-gradient-to-r from-primary/80 via-primary/60 to-primary/40",
+            "bg-gradient-to-r from-quinary/80 via-quinary/60 to-quinary/40",
             // Dark mode gradient
-            "dark:bg-gradient-to-r dark:from-primary/60 dark:via-primary/50 dark:to-primary/30"
+            "dark:bg-gradient-to-r dark:from-quinary/60 dark:via-quinary/50 dark:to-quinary/30"
           )}>
             Revenus
           </h1>
