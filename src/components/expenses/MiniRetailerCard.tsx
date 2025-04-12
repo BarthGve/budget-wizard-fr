@@ -123,7 +123,7 @@ export function MiniRetailerCard({
             size="sm"
             className={cn(
               "flex-shrink-0 rounded-full h-7 w-7 p-0 ml-2",
-              "bg-tertiary text-tertiary hover:bg-tertiary/80", // Remplacement par tertiary
+              "bg-tertiary/10 text-tertiary hover:bg-tertiary/80", // Remplacement par tertiary
               "dark:bg-tertiary/30 dark:text-tertiary dark:hover:bg-tertiary/50" // Remplacement pour dark mode
             )}
             onClick={() => setAddDialogOpen(true)}
