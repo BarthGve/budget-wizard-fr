@@ -40,22 +40,22 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
             transition={{ delay: 0.2, duration: 0.3 }}
             className={cn(
               "p-2.5 rounded-lg shadow-sm mt-0.5",
-              "bg-gradient-to-br from-primary/20 to-primary/10", // Utilisation de primary
-              "dark:bg-gradient-to-br dark:from-primary/40 dark:to-primary/30 dark:shadow-primary/10"
+              "bg-gradient-to-br from-tertiary/20 to-tertiary/10", // Utilisation de tertiary
+              "dark:bg-gradient-to-br dark:from-tertiary/40 dark:to-tertiary/30 dark:shadow-tertiary/10"
             )}
           >
             <ShoppingBasket className={cn(
               "h-6 w-6",
-              "text-primary", // Utilisation de primary pour l'icône
-              "dark:text-primary"
+              "text-tertiary", // Utilisation de tertiary pour l'icône
+              "dark:text-tertiary"
             )} />
           </motion.div>
         
           <div>
             <h1 className={cn(
               "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
-              "bg-gradient-to-r from-primary via-primary/90 to-primary/70", // Gradient basé sur primary
-              "dark:bg-gradient-to-r dark:from-primary/60 dark:via-primary/50 dark:to-primary/40"
+              "bg-gradient-to-r from-tertiary via-tertiary/90 to-tertiary/70", // Gradient basé sur tertiary
+              "dark:bg-gradient-to-r dark:from-tertiary/60 dark:via-tertiary/50 dark:to-tertiary/40"
             )}>
               Dépenses
             </h1>
@@ -85,8 +85,8 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
                 checked={viewMode === 'yearly'} 
                 onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
                 className={cn(
-                  "data-[state=checked]:bg-primary", // Utilisation de primary pour l'état checked
-                  "dark:data-[state=checked]:bg-primary"
+                  "data-[state=checked]:bg-tertiary", // Utilisation de tertiary pour l'état checked
+                  "dark:data-[state=checked]:bg-tertiary"
                 )}
               />
               <Label 
