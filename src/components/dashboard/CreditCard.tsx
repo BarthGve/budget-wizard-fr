@@ -176,7 +176,7 @@ export const CreditCard = ({
           <motion.p 
             className={cn(
               "text-xl font-bold leading-none",
-              "text-primary dark:text-primary"
+             
             )}
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
