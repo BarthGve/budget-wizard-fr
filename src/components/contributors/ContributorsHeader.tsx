@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Banknote } from "lucide-react"; 
 import { cn } from "@/lib/utils";
@@ -23,15 +22,15 @@ export const ContributorsHeader = () => {
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
             // Light mode
-            "bg-gradient-to-br from-amber-100 to-yellow-50",
+            "bg-gradient-to-br from-primary/20 to-primary/10",
             // Dark mode
-            "dark:bg-gradient-to-br dark:from-amber-900/40 dark:to-yellow-800/30 dark:shadow-amber-900/10"
+            "dark:bg-gradient-to-br dark:from-primary/40 dark:to-primary/30 dark:shadow-primary/10"
           )}
         >
           <Banknote className={cn(
             "h-6 w-6",
-            "text-amber-600",
-            "dark:text-amber-400"
+            "text-primary",
+            "dark:text-primary"
           )} />
         </motion.div>
         
@@ -39,9 +38,9 @@ export const ContributorsHeader = () => {
           <h1 className={cn(
             "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
             // Light mode gradient
-            "bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-400",
+            "bg-gradient-to-r from-primary/80 via-primary/60 to-primary/40",
             // Dark mode gradient
-            "dark:bg-gradient-to-r dark:from-amber-400 dark:via-yellow-400 dark:to-orange-300"
+            "dark:bg-gradient-to-r dark:from-primary/60 dark:via-primary/50 dark:to-primary/30"
           )}>
             Revenus
           </h1>
