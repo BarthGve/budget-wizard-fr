@@ -23,9 +23,17 @@
     --input: 220 13% 91%;
     --ring: 220 13% 91%;
     --radius: 0.75rem;
-  }
+    --tertiary: 210 60% 40%;  /* Bleu */
+    --tertiary-foreground: 210 20% 98%;
+    --quaternary: 135 50% 40%; /* Vert */
+    --quaternary-foreground: 0 0% 98%;
+    --quinary: 45 100% 51%;   /* Jaune */
+    --quinary-foreground: 210 20% 98%;
+    --senary: 0 0% 50%;       /* Gris */
+    --senary-foreground: 0 0% 98%;
+}
 
-  .dark {
+.dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
@@ -45,7 +53,15 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
-  }
+    --tertiary: 210 60% 40%;  /* Bleu */
+    --tertiary-foreground: 210 20% 98%;
+    --quaternary: 135 50% 40%; /* Vert */
+    --quaternary-foreground: 0 0% 98%;
+    --quinary: 45 100% 51%;   /* Jaune */
+    --quinary-foreground: 210 20% 98%;
+    --senary: 0 0% 50%;       /* Gris */
+    --senary-foreground: 0 0% 98%;
+}
 
   * {
     @apply border-border;

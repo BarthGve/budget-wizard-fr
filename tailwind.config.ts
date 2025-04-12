@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -25,14 +24,29 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-         primary: {
+        primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-         
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        tertiary: {
+          DEFAULT: "hsl(var(--tertiary))",  // Ajout de la couleur bleue
+          foreground: "hsl(var(--tertiary-foreground))",
+        },
+        quaternary: {
+          DEFAULT: "hsl(var(--quaternary))", // Ajout de la couleur verte
+          foreground: "hsl(var(--quaternary-foreground))",
+        },
+        quinary: {
+          DEFAULT: "hsl(var(--quinary))",   // Ajout de la couleur jaune
+          foreground: "hsl(var(--quinary-foreground))",
+        },
+        senary: {
+          DEFAULT: "hsl(var(--senary))",     // Ajout de la couleur grise
+          foreground: "hsl(var(--senary-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
