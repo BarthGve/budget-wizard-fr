@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Credit } from "./types";
@@ -140,7 +139,6 @@ export const CreditInfoDialog = ({
     }
   };
 
-  // Contenu commun aux versions mobile et desktop
   const renderContent = () => (
     <div 
       className={cn(
@@ -150,7 +148,6 @@ export const CreditInfoDialog = ({
         currentColors.darkBg
       )}
     >
-      {/* Background gradient */}
       <div className={cn(
         "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-t-lg",
         currentColors.gradientFrom,
@@ -158,11 +155,9 @@ export const CreditInfoDialog = ({
         currentColors.darkGradientFrom,
         currentColors.darkGradientTo
       )} />
-
-      {/* Radial gradient */}
+      
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-t-lg" />
       
-      {/* Dialog header */}
       <DialogHeader className="relative z-10 mb-4 px-6">
         <div className="flex items-center gap-3">
           <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
@@ -179,14 +174,12 @@ export const CreditInfoDialog = ({
         </div>
       </DialogHeader>
       
-      {/* Ligne séparatrice stylée */}
       <div className={cn(
         "h-px w-full mb-6",
         "bg-gradient-to-r from-transparent to-transparent",
         currentColors.separator
       )} />
       
-      {/* Contenu du dialogue */}
       <div className="space-y-6 py-4 relative z-10 px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -355,14 +348,12 @@ export const CreditInfoDialog = ({
         )}
       </div>
       
-      {/* Decorative icon */}
       <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
         <CreditCardIcon className="w-full h-full" />
       </div>
     </div>
   );
 
-  // Version mobile avec Sheet
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
@@ -387,7 +378,6 @@ export const CreditInfoDialog = ({
     );
   }
 
-  // Version desktop avec Dialog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
@@ -398,7 +388,6 @@ export const CreditInfoDialog = ({
           "dark:bg-gray-900"
         )}
       >
-        {/* Bouton de fermeture */}
         <DialogClose 
           className={cn(
             "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none z-20",

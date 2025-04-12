@@ -1,4 +1,3 @@
-
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useRecurringExpenseForm } from "./hooks/useRecurringExpenseForm";
@@ -80,7 +79,6 @@ export function RecurringExpenseForm({
     }
   });
 
-  // Convertir les types de dépenses du format de ExpenseTypeField au format attendu
   const formattedExpenseTypes = expenseTypes.map(type => ({
     id: type.value,
     name: type.label
@@ -88,7 +86,6 @@ export function RecurringExpenseForm({
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      // Gestion de la périodicité
       if (name === "periodicity") {
         const periodicity = value.periodicity;
         if (periodicity === "monthly") {
@@ -98,16 +95,13 @@ export function RecurringExpenseForm({
         }
       }
 
-      // Gestion des champs liés au véhicule
       if (name === "vehicle_id") {
         if (!value.vehicle_id) {
-          // Réinitialiser les champs liés au véhicule
           form.setValue("vehicle_expense_type", null);
           form.setValue("auto_generate_vehicle_expense", false);
         }
       }
       
-      // Désactiver l'option auto-generate si le type n'est pas spécifié
       if (name === "vehicle_expense_type") {
         if (!value.vehicle_expense_type || value.vehicle_expense_type === "no-type") {
           form.setValue("auto_generate_vehicle_expense", false);
@@ -118,7 +112,6 @@ export function RecurringExpenseForm({
     return () => subscription.unsubscribe();
   }, [form]);
 
-  // Vérifie si l'association avec un véhicule est activée
   const associateWithVehicle = form.watch("associate_with_vehicle");
 
   return (
@@ -138,19 +131,16 @@ export function RecurringExpenseForm({
           )}
         </div>
 
-        {/* Section association avec un véhicule */}
         <div className={cn(
           "pt-2 border-t",
           isMobile && "pt-3 mt-3"
         )}>
           <AssociateVehicleField form={form} />
           
-          {/* Champs conditionnels qui s'affichent uniquement si l'association est activée */}
           {associateWithVehicle && (
             <div className={cn("mt-4 space-y-4", isMobile && "mt-3 space-y-3")}>
               <VehicleField form={form} />
               
-              {/* Champs supplémentaires qui s'affichent si un véhicule est sélectionné */}
               {form.watch("vehicle_id") && (
                 <>
                   <ExpenseTypeField form={form} expenseTypes={formattedExpenseTypes} />

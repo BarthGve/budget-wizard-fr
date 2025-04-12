@@ -33,19 +33,19 @@ export const CreditCard = ({
 }: CreditCardProps) => {
   // Couleurs pour la barre de progression en fonction du schéma
   const createColorSet = (color: string) => ({
-  card: `bg-white border border-${color} dark:border-${color}`,
-  icon: `bg-${color}/10 text-${color}`,
-  title: `text-${color}`,
-  amount: `text-${color}`,
-  description: "text-muted-foreground",
-  badge: `bg-${color}/30 text-${color}`,
-});
+    card: `bg-white border border-${color} dark:border-${color}`,
+    icon: `bg-${color}/10 text-${color}`,
+    title: `text-${color}`,
+    amount: `text-${color}`,
+    description: "text-muted-foreground",
+    badge: `bg-${color}/30 text-${color}`,
+  });
 
-const colors = {
-  primary: createColorSet("primary"),
-  quaternary: createColorSet("quaternary"),
-  tertiary: createColorSet("tertiary"),
-};
+  const colors = {
+    primary: createColorSet("primary"),
+    quaternary: createColorSet("quaternary"),
+    tertiary: createColorSet("tertiary"),
+  };
 
   const currentColors = colors[colorScheme];
 
@@ -58,8 +58,7 @@ const colors = {
         "bg-white",
         "border-gray-100",
         // Dark mode - alignées avec les cards de graphiques
-        "dark:bg-gray-800/90  dark:shadow-primary-800/30 ", 
-        currentColors.darkBorder
+        "dark:bg-gray-800/90 dark:shadow-primary-800/30"
       )}
     >
       {/* Fond radial gradient ultra-subtil */}

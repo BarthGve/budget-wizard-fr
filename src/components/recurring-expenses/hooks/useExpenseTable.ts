@@ -1,102 +1,160 @@
 
-import { useState } from "react";
-import { RecurringExpense, ALL_CATEGORIES } from "../types";
-import { filterExpenses, sortExpenses, paginateExpenses } from "../table/tableUtils";
+import { useState, useMemo, useCallback } from "react";
+import { RecurringExpense } from "../types";
+import { toast } from "sonner";
 
 export const useExpenseTable = (expenses: RecurringExpense[], onDeleteExpense: (id: string) => Promise<void>) => {
-  // État de recherche et de filtrage
+  // États pour la recherche et les filtres
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>(ALL_CATEGORIES);
+  const [categoryFilter, setCategoryFilter] = useState("all_categories");
   
-  // État de tri
-  const [sortField, setSortField] = useState<keyof RecurringExpense>("created_at");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  
-  // État de pagination  
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  // État pour la pagination
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   
-  // État des dialogues
-  const [expenseToDelete, setExpenseToDelete] = useState<RecurringExpense | null>(null);
-  const [selectedExpense, setSelectedExpense] = useState<RecurringExpense | null>(null);
+  // États pour le tri
+  const [sortField, setSortField] = useState("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  
+  // États pour les dialogues
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
-
-  // Extraire les catégories uniques
-  const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category)));
-
-  // Gérer le tri
-  const handleSort = (field: keyof RecurringExpense) => {
+  const [selectedExpense, setSelectedExpense] = useState<RecurringExpense | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<RecurringExpense | null>(null);
+  
+  // Mémoiser les catégories uniques
+  const uniqueCategories = useMemo(() => {
+    const categories: string[] = [];
+    expenses.forEach(expense => {
+      if (!categories.includes(expense.category)) {
+        categories.push(expense.category);
+      }
+    });
+    return categories.sort();
+  }, [expenses]);
+  
+  // Filtrer les dépenses en fonction de la recherche et des filtres
+  const filteredExpenses = useMemo(() => {
+    return expenses.filter(expense => {
+      // Filtre de recherche
+      const matchesSearch = expense.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Filtre de catégorie
+      const matchesCategory = categoryFilter === "all_categories" || 
+                             expense.category === categoryFilter;
+      
+      return matchesSearch && matchesCategory;
+    });
+  }, [expenses, searchTerm, categoryFilter]);
+  
+  // Trier les dépenses filtrées
+  const sortedExpenses = useMemo(() => {
+    return [...filteredExpenses].sort((a, b) => {
+      const fieldA = (a as any)[sortField];
+      const fieldB = (b as any)[sortField];
+      
+      if (fieldA < fieldB) return sortDirection === "asc" ? -1 : 1;
+      if (fieldA > fieldB) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [filteredExpenses, sortField, sortDirection]);
+  
+  // Calculer les dépenses pour la page actuelle
+  const paginatedExpenses = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return sortedExpenses.slice(startIndex, startIndex + itemsPerPage);
+  }, [sortedExpenses, currentPage, itemsPerPage]);
+  
+  // Calculer le nombre total de pages
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filteredExpenses.length / itemsPerPage));
+  }, [filteredExpenses.length, itemsPerPage]);
+  
+  // Gérer le changement de tri
+  const handleSort = useCallback((field: string) => {
     if (field === sortField) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
       setSortDirection("asc");
     }
-  };
-
-  // Gérer les actions sur les charges
-  const handleDeleteClick = (expense: RecurringExpense) => {
-    setExpenseToDelete(expense);
-  };
-
-  const handleEditClick = (expense: RecurringExpense) => {
-    setSelectedExpense(expense);
-    setShowEditDialog(true);
-  };
-
-  const handleViewDetails = (expense: RecurringExpense) => {
+  }, [sortField, sortDirection]);
+  
+  // Gérer le changement d'éléments par page
+  const handleItemsPerPageChange = useCallback((value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1); // Réinitialiser à la première page
+  }, []);
+  
+  // Gérer les actions sur les dépenses
+  const handleViewDetails = useCallback((expense: RecurringExpense) => {
     setSelectedExpense(expense);
     setShowDetailsDialog(true);
-  };
-
-  const handleItemsPerPageChange = (value: number) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
-  };
-
-  // Filtrer et trier les charges
-  const filteredExpenses = filterExpenses(expenses, searchTerm, categoryFilter, null, ALL_CATEGORIES, "");
-  const sortedExpenses = sortExpenses(filteredExpenses, sortField, sortDirection);
-  const totalPages = itemsPerPage === -1 ? 1 : Math.ceil(sortedExpenses.length / itemsPerPage);
-  const paginatedExpenses = paginateExpenses(sortedExpenses, currentPage, itemsPerPage);
-
+  }, []);
+  
+  const handleEditClick = useCallback((expense: RecurringExpense) => {
+    setSelectedExpense(expense);
+    setShowEditDialog(true);
+  }, []);
+  
+  const handleDeleteClick = useCallback((expense: RecurringExpense) => {
+    setExpenseToDelete(expense);
+  }, []);
+  
+  // Fonction pour supprimer une dépense
+  const handleDeleteExpense = useCallback(async () => {
+    if (!expenseToDelete) return;
+    
+    try {
+      await onDeleteExpense(expenseToDelete.id);
+      toast.success("Dépense supprimée avec succès");
+      setExpenseToDelete(null);
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+      toast.error("Erreur lors de la suppression de la dépense");
+    }
+  }, [expenseToDelete, onDeleteExpense]);
+  
   return {
     // États
     searchTerm,
     categoryFilter,
+    currentPage,
+    itemsPerPage,
     sortField,
     sortDirection,
-    itemsPerPage,
-    currentPage,
-    expenseToDelete,
-    selectedExpense,
     showEditDialog,
     showDetailsDialog,
-    uniqueCategories,
+    selectedExpense,
+    expenseToDelete,
     
     // Données calculées
+    uniqueCategories,
     filteredExpenses,
+    sortedExpenses,
     paginatedExpenses,
     totalPages,
-    allExpenses: expenses, // Exposer toutes les charges d'origine
+    allExpenses: expenses, // Ajouter toutes les dépenses pour l'accès depuis d'autres composants
     
     // Setters
     setSearchTerm,
     setCategoryFilter,
     setCurrentPage,
-    setExpenseToDelete,
+    setItemsPerPage,
+    setSortField,
+    setSortDirection,
     setShowEditDialog,
     setShowDetailsDialog,
+    setSelectedExpense,
+    setExpenseToDelete,
     
     // Handlers
     handleSort,
-    handleDeleteClick,
-    handleEditClick,
-    handleViewDetails,
     handleItemsPerPageChange,
-    
-    // Actions
+    handleViewDetails,
+    handleEditClick,
+    handleDeleteClick,
+    handleDeleteExpense,
     onDeleteExpense
   };
 };
