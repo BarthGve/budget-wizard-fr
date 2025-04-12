@@ -35,15 +35,15 @@ export const CreditsHeader = () => {
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
             // Light mode
-            "bg-gradient-to-br from-purple-100 to-purple-50",
+            "bg-gradient-to-br from-primary-100 to-primary-50",
             // Dark mode
-            "dark:bg-gradient-to-br dark:from-purple-900/40 dark:to-purple-800/30 dark:shadow-purple-900/10"
+            "dark:bg-gradient-to-br dark:from-primary-900/40 dark:to-primary-800/30 dark:shadow-primary-900/10"
           )}
         >
           <CreditCard className={cn(
             "h-6 w-6",
-            "text-purple-600",
-            "dark:text-purple-400"
+            "text-primary-600",
+            "dark:text-primary-400"
           )} />
         </motion.div>
         
@@ -51,9 +51,9 @@ export const CreditsHeader = () => {
           <h1 className={cn(
             "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
             // Light mode gradient
-            "bg-gradient-to-r from-purple-600 via-purple-500 to-violet-500",
+            "bg-gradient-to-r from-primary-600 via-primary-500 to-violet-500",
             // Dark mode gradient
-            "dark:bg-gradient-to-r dark:from-purple-400 dark:via-purple-300 dark:to-violet-400"
+            "dark:bg-gradient-to-r dark:from-primary-400 dark:via-primary-300 dark:to-violet-400"
           )}>
             Crédits
           </h1>
@@ -80,11 +80,11 @@ export const CreditsHeader = () => {
                 "h-10 px-4 border transition-all duration-200 rounded-md",
                 "hover:scale-[1.02] active:scale-[0.98]",
                 // Light mode
-                "bg-white border-purple-200 text-purple-600",
-                "hover:border-purple-300 hover:bg-purple-50/50 hover:text-purple-700",
+                "bg-white border-primary-200 text-primary-600",
+                "hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-700",
                 // Dark mode
-                "dark:bg-gray-800 dark:border-purple-800/60 dark:text-purple-400",
-                "dark:hover:bg-purple-900/20 dark:hover:border-purple-700 dark:hover:text-purple-300"
+                "dark:bg-gray-800 dark:border-primary-800/60 dark:text-primary-400",
+                "dark:hover:bg-primary-900/20 dark:hover:border-primary-700 dark:hover:text-primary-300"
               )}
               style={{
                 boxShadow: isDarkMode
@@ -96,9 +96,9 @@ export const CreditsHeader = () => {
                 <span className={cn(
                   "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
                   // Light mode
-                  "bg-purple-100/80 text-purple-600",
+                  "bg-primary-100/80 text-primary-600",
                   // Dark mode
-                  "dark:bg-purple-800/50 dark:text-purple-300"
+                  "dark:bg-primary-800/50 dark:text-primary-300"
                 )}>
                   <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
                 </span>
