@@ -39,8 +39,8 @@ export const CreditCard = ({
   icon: "bg-primary/10 text-primary",
   title: "text-primary ",
   amount: "text-primary ",
-  description: "text-primary-foreground dark:text-primary-foreground",
-  badge: "bg-primary text-white dark:bg-primary dark:text-white"
+  description: "text-foreground ",
+  badge: "bg-primary/30 text-white dark:bg-primary dark:text-white"
 
     },
     quaternary: {
