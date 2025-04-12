@@ -245,21 +245,21 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                     <Card 
                       className={cn(
                         "border shadow-sm overflow-hidden",
-                        "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10",
-                        "border-purple-100/60 dark:border-purple-800/30"
+                        "bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/10",
+                        "border-primary-100/60 dark:border-primary-800/30"
                       )}
                     >
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-xl text-purple-600 dark:text-purple-300 flex items-center gap-2">
-                          <Wallet className="w-4 h-4 opacity-80 text-purple-500 dark:text-purple-300" />
+                        <CardTitle className="text-xl text-primary-600 dark:text-primary-300 flex items-center gap-2">
+                          <Wallet className="w-4 h-4 opacity-80 text-primary-500 dark:text-primary-300" />
                           Achats mensuels moyens
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-xl font-bold text-purple-700 dark:text-purple-100">
+                        <p className="text-xl font-bold text-primary-700 dark:text-primary-100">
                           {formatCurrency(selectedYearData.total / 12)}
                         </p>
-                        <p className="text-sm text-purple-500 dark:text-purple-300 mt-1">
+                        <p className="text-sm text-primary-500 dark:text-primary-300 mt-1">
                           Moyenne par mois
                         </p>
                       </CardContent>
