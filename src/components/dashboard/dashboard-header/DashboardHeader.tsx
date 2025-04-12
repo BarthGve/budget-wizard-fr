@@ -71,42 +71,68 @@ export const DashboardHeader = ({
       <div className="flex items-center space-x-2 w-full sm:w-auto">
         <SimulatorButton />
         
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-  variant="outline" 
-  size={isMobile ? "sm" : "default"} 
-  className={cn(
-    "min-w-[120px]",
-    "flex items-center justify-between gap-2",
-    "bg-primary/10 text-primary border-primary/30",
-    "hover:bg-primary/20 hover:border-primary/40",
-    "focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:outline-none",
-    "active:scale-[0.98] transition-all duration-150 ease-in-out",
-    isMobile ? "text-xs px-2 py-1" : "text-sm px-4 py-2 rounded-md"
-  )}
->
-  <Calendar className={cn(
-    "h-4 w-4 text-primary",
-    isMobile && "mr-1 h-3 w-3"
-  )} />
-  <span>{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
-  <ChevronDown className={cn(
-    "h-4 w-4 text-primary/70 ml-2",
-    isMobile && "h-3 w-3"
-  )} />
-</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[200px]">
-            <DropdownMenuRadioGroup
-              value={currentView}
-              onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
-            >
-              <DropdownMenuRadioItem value="monthly">Vue mensuelle</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="yearly">Vue annuelle</DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+       <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button 
+      variant="outline" 
+      size={isMobile ? "sm" : "default"} 
+      className={cn(
+        "min-w-[110px] justify-between",
+        "bg-primary/10 hover:bg-primary/20",
+        "text-primary border-primary/20",
+        "transition-colors",
+        isMobile ? "text-xs px-2 py-1.5" : "px-3 py-2"
+      )}
+    >
+      <Calendar className={cn(
+        "mr-2",
+        isMobile ? "h-3 w-3" : "h-4 w-4",
+        "text-primary"
+      )} />
+      <span>{currentView === "monthly" ? "Mensuel" : "Annuel"}</span>
+      <ChevronDown className={cn(
+        "ml-2",
+        isMobile ? "h-3 w-3" : "h-4 w-4",
+        "opacity-50 text-primary"
+      )} />
+    </Button>
+  </DropdownMenuTrigger>
+
+  <DropdownMenuContent
+    align="end"
+    className={cn(
+      "w-[200px] rounded-md border border-primary/20",
+      "bg-white shadow-lg dark:bg-gray-950 dark:border-gray-800",
+      "focus:outline-none"
+    )}
+  >
+    <DropdownMenuRadioGroup
+      value={currentView}
+      onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
+    >
+      <DropdownMenuRadioItem
+        value="monthly"
+        className={cn(
+          "flex items-center gap-2 px-3 py-2 rounded-sm cursor-pointer",
+          "text-sm text-foreground hover:bg-primary/10",
+          "focus:bg-primary/20 focus:outline-none transition-colors"
+        )}
+      >
+        Vue mensuelle
+      </DropdownMenuRadioItem>
+      <DropdownMenuRadioItem
+        value="yearly"
+        className={cn(
+          "flex items-center gap-2 px-3 py-2 rounded-sm cursor-pointer",
+          "text-sm text-foreground hover:bg-primary/10",
+          "focus:bg-primary/20 focus:outline-none transition-colors"
+        )}
+      >
+        Vue annuelle
+      </DropdownMenuRadioItem>
+    </DropdownMenuRadioGroup>
+  </DropdownMenuContent>
+</DropdownMenu>
       </div>
     </motion.div>
   );
