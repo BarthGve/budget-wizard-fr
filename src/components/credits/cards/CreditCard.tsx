@@ -43,7 +43,7 @@ export const CreditCard = ({
   amount: "text-primary dark:text-primary",
   description: "text-primary/90 dark:text-primary/90",
   badge: "bg-primary text-white dark:bg-primary dark:text-white"
-};
+
     },
     quaternary: {
       // Light mode
