@@ -40,9 +40,9 @@ export const SavingsCard = memo(({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles with quaternary  color
-          "bg-quaternary /10 shadow-lg border border-quaternary /20 hover:shadow-xl",
+          "bg-quaternary/10 shadow-lg border border-quaternary/20 hover:shadow-xl",
           // Dark mode styles with quaternary  color
-          "dark:bg-quaternary /10 dark:border-quaternary /30 dark:shadow-quaternary /30 dark:hover:shadow-quaternary /50"
+          "dark:bg-quaternary /10 dark:border-quaternary/30 dark:shadow-quaternary/30 dark:hover:shadow-quaternary/50"
         )}
         onClick={() => navigate("/savings")}
       >
@@ -51,8 +51,8 @@ export const SavingsCard = memo(({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-quaternary /20 text-quaternary ", // Apply quaternary  color for icon background
-                "dark:bg-quaternary /20 dark:text-quaternary " // Dark mode variant
+                "bg-quaternary/20 text-quaternary ", // Apply quaternary  color for icon background
+                "dark:bg-quaternary/20 dark:text-quaternary " // Dark mode variant
               )}>
                 <PiggyBank className="h-5 w-5" />
               </div>
@@ -81,20 +81,20 @@ export const SavingsCard = memo(({
                 <TooltipTrigger asChild>
                   <div className="w-2/3 relative">
                     <div className={cn(
-                      "absolute inset-0 bg-quaternary /10 blur-sm rounded-full opacity-0 dark:opacity-60", 
-                      isGoalReached ? "dark:bg-quaternary /10" : "" // Change intensity based on goal
+                      "absolute inset-0 bg-quaternary/10 blur-sm rounded-full opacity-0 dark:opacity-60", 
+                      isGoalReached ? "dark:bg-quaternary/10" : "" // Change intensity based on goal
                     )} />
                     
                     <Progress 
                       value={progressPercentage} 
                       className={cn(
                         "h-2.5 rounded-full",
-                        "bg-quaternary /50", // Light mode progress background using quaternary 
-                        "dark:bg-quaternary /70" // Dark mode progress background using quaternary 
+                        "bg-quaternary/50", // Light mode progress background using quaternary 
+                        "dark:bg-quaternary/70" // Dark mode progress background using quaternary 
                       )}
                       indicatorClassName={cn(
                         "bg-quaternary ", // Indicator color using quaternary 
-                        isGoalReached ? "dark:bg-quaternary /40" : "dark:bg-quaternary "
+                        isGoalReached ? "dark:bg-quaternary/40" : "dark:bg-quaternary "
                       )}
                     />
                   </div>
