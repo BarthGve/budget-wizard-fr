@@ -42,3 +42,29 @@ export const formatDate = (date: Date | string): string => {
     year: 'numeric'
   }).format(date);
 };
+
+/**
+ * Formate un volume en litres avec une unité
+ * @param value - Volume à formater en litres
+ * @returns Chaîne formatée avec unité
+ */
+export const formatVolume = (value: number): string => {
+  return new Intl.NumberFormat('fr-FR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  }).format(value) + ' L';
+};
+
+/**
+ * Formate un prix par litre (pour le carburant)
+ * @param value - Prix par litre à formater
+ * @returns Chaîne formatée pour prix par litre
+ */
+export const formatPricePerLiter = (value: number): string => {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3
+  }).format(value) + '/L';
+};
