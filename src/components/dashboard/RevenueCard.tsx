@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Banknote } from 'lucide-react';
 import { useEffect, useState } from "react";
@@ -46,9 +45,9 @@ export const RevenueCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-gradient-to-br from-background to-amber-50 shadow-lg border border-amber-100 hover:shadow-xl",
+          "bg-primary/10 shadow-lg border border-primary/20 hover:shadow-xl",
           // Dark mode styles
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-amber-950 dark:border-amber-900/30 dark:shadow-amber-800/30 dark:hover:shadow-amber-800/50"
+          "dark:bg-primary/10 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
         )}
         onClick={handleCardClick}
       >
@@ -57,8 +56,8 @@ export const RevenueCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-amber-100 text-amber-600", // Light mode
-                "dark:bg-amber-900/40 dark:text-amber-400" // Dark mode
+                "bg-primary/20 text-primary", // Light mode
+                "dark:bg-primary/20 dark:text-primary" // Dark mode
               )}>
                 <Banknote className="h-5 w-5" />
               </div>
@@ -77,7 +76,7 @@ export const RevenueCard = ({
                 className={cn(
                   "font-bold text-xl leading-none",
                   "text-gray-800", // Light mode
-                  "dark:text-amber-100" // Dark mode
+                  "dark:text-primary" // Dark mode - couleur primary pour correspondre à l'effet voulu
                 )}
               >
                 {displayedRevenue.toLocaleString('fr-FR')} €
