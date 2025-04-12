@@ -25,8 +25,8 @@ export const ActiveCreditsSection = ({
       <h2 className={cn(
         "font-bold tracking-tight text-xl mb-4",
         // Même dégradé que le titre principal pour la cohérence
-        "bg-gradient-to-r from-purple-600 via-purple-500 to-violet-500 bg-clip-text text-transparent",
-        "dark:from-purple-400 dark:via-purple-400 dark:to-violet-400"
+        "bg-gradient-to-r from-primary-600 via-primary-500 to-primary-500 bg-clip-text text-transparent",
+        "dark:from-primary-400 dark:via-primary-400 dark:to-primary-400"
       )}>
         Crédits en cours
       </h2>
