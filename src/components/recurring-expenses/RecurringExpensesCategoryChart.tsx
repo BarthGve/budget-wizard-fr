@@ -149,13 +149,10 @@ const getBarColor = (index: number) => {
         
         <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
           <div>
-            <CardTitle className={cn(
-              "text-xl font-semibold flex items-center gap-2",
-              // Light mode
-              "text-blue-700",
-              // Dark mode
-              "dark:text-blue-300"
-            )}>
+         <CardTitle className={cn(
+  "text-xl font-semibold flex items-center gap-2",
+  "text-primary"
+)}>
               <div className={cn(
                 "p-1.5 rounded",
                 // Light mode
