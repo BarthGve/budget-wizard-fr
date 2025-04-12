@@ -34,4 +34,34 @@
   .changelog-header-gradient {
     @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
   }
+  
+  /* Dashboard Components */
+  .dashboard-header {
+    @apply bg-secondary-50/30 dark:bg-secondary-950/30 
+           backdrop-blur-[2px]
+           border border-secondary-100/50 dark:border-secondary-800/30
+           shadow-sm shadow-secondary-200/20 dark:shadow-secondary-900/10
+           rounded-xl p-4 sm:p-5;
+  }
+  
+  .dashboard-header-icon {
+    @apply bg-gradient-to-br from-secondary-100 to-secondary-50/70
+           dark:bg-gradient-to-br dark:from-secondary-800/40 dark:to-secondary-900/20
+           border border-secondary-200/50 dark:border-secondary-700/30
+           shadow-sm shadow-secondary-300/20 dark:shadow-secondary-900/20
+           p-2.5 rounded-lg;
+  }
+  
+  .dashboard-header-title {
+    @apply bg-gradient-to-r from-secondary-600 via-secondary-500 to-violet-500 
+           dark:bg-gradient-to-r dark:from-secondary-400 dark:via-secondary-300 dark:to-violet-400
+           bg-clip-text text-transparent;
+  }
+  
+  .dashboard-button {
+    @apply bg-secondary-50/80 hover:bg-secondary-100/90 border-secondary-200/50
+           dark:bg-secondary-900/40 dark:hover:bg-secondary-800/60 dark:border-secondary-700/40
+           shadow-sm shadow-secondary-200/10 dark:shadow-secondary-900/5
+           transition-all duration-200;
+  }
 }
