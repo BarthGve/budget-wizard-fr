@@ -26,8 +26,8 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
          primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#8B5CF6",
+          foreground: "#FFFFFF",
           hover: "#7C3AED",
         },
         secondary: {
