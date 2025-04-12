@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
@@ -27,10 +26,10 @@ export function RetailerHeader({ retailer, onAddExpense }: RetailerHeaderProps) 
           to={`/expenses/retailer/${retailer.id}`}
           className={cn(
             "text-lg font-medium transition-colors",
-            // Teinte bleue pour le nom de l'enseigne
-            "text-blue-700 hover:text-blue-600",
+            // Utilisation de tertiary pour le nom de l'enseigne
+            "text-tertiary hover:text-tertiary", // Remplace le bleu par tertiary
             // Dark mode
-            "dark:text-blue-300 dark:hover:text-blue-400"
+            "dark:text-tertiary dark:hover:text-tertiary" // Remplacement pour dark mode
           )}
         >
           {retailer.name}
@@ -42,10 +41,10 @@ export function RetailerHeader({ retailer, onAddExpense }: RetailerHeaderProps) 
         size="sm"
         className={cn(
           "rounded-full h-8 w-8 p-0",
-          // Nouvelles couleurs bleues pour le bouton
-          "bg-blue-100 text-blue-700 hover:bg-blue-200",
+          // Utilisation de tertiary pour le bouton
+          "bg-tertiary text-tertiary hover:bg-tertiary/80", // Remplacement des couleurs
           // Dark mode
-          "dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/50"
+          "dark:bg-tertiary/30 dark:text-tertiary dark:hover:bg-tertiary/50" // Remplacement pour dark mode
         )}
         onClick={onAddExpense}
       >
