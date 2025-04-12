@@ -28,7 +28,7 @@ interface RetailerExpensesTableProps {
   onEditExpense: (expense: Expense) => void;
   onDeleteExpense: (expenseId: string) => void;
   onViewDetails?: (expense: Expense) => void;
-  colorScheme?: "blue" | "purple" | "green";
+  colorScheme?: "tertiary" | "purple" | "green";
   currentYear?: number;
 }
 
@@ -38,7 +38,7 @@ export function RetailerExpensesTable({
   onEditExpense,
   onDeleteExpense,
   onViewDetails,
-  colorScheme = "blue",
+  colorScheme = "tertiary",
   currentYear = new Date().getFullYear()
 }: RetailerExpensesTableProps) {
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -52,33 +52,33 @@ export function RetailerExpensesTable({
   }, [expenses?.length]);
 
   const colors = {
-    blue: {
-      highlight: "bg-blue-50 dark:bg-blue-950/30",
-      hover: "hover:bg-blue-50/80 dark:hover:bg-blue-950/20",
-      accentText: "text-blue-700 dark:text-blue-400",
-      accentBg: "bg-blue-100 dark:bg-blue-900/40",
-      sortIcon: "text-blue-400 dark:text-blue-500",
-      badge: "border-blue-200 text-blue-700 dark:border-blue-800 dark:text-blue-400",
-      headerBg: "text-blue-900 dark:text-blue-300",
-      amountText: "text-blue-700 dark:text-blue-400",
-      gradientFrom: "from-blue-400",
-      gradientVia: "via-blue-300",
-      lightBorder: "border-blue-100",
-      darkBorder: "dark:border-blue-800/50",
+    tertiary: {
+      highlight: "bg-tertiary-50 dark:bg-tertiary-950/30",
+      hover: "hover:bg-tertiary-50/80 dark:hover:bg-tertiary-950/20",
+      accentText: "text-tertiary-700 dark:text-tertiary-400",
+      accentBg: "bg-tertiary-100 dark:bg-tertiary-900/40",
+      sortIcon: "text-tertiary-400 dark:text-tertiary-500",
+      badge: "border-tertiary-200 text-tertiary-700 dark:border-tertiary-800 dark:text-tertiary-400",
+      headerBg: "text-tertiary-900 dark:text-tertiary-300",
+      amountText: "text-tertiary-700 dark:text-tertiary-400",
+      gradientFrom: "from-tertiary-400",
+      gradientVia: "via-tertiary-300",
+      lightBorder: "border-tertiary-100",
+      darkBorder: "dark:border-tertiary-800/50",
       lightCardBg: "bg-white",
       darkCardBg: "dark:bg-gray-800/90",
-      cardHeaderText: "text-blue-700",
-      cardHeaderTextDark: "dark:text-blue-300",
-      cardDescText: "text-blue-600/80",
-      cardDescTextDark: "dark:text-blue-400/90",
-      iconBgLight: "bg-blue-100",
-      iconBgDark: "dark:bg-blue-800/40",
-      iconLight: "text-blue-600",
-      iconDark: "dark:text-blue-400",
-      counterBgLight: "bg-blue-100/70",
-      counterBgDark: "dark:bg-blue-900/30",
-      footerBgLight: "bg-blue-50/30",
-      footerBgDark: "dark:bg-blue-900/10"
+      cardHeaderText: "text-tertiary-700",
+      cardHeaderTextDark: "dark:text-tertiary-300",
+      cardDescText: "text-tertiary-600/80",
+      cardDescTextDark: "dark:text-tertiary-400/90",
+      iconBgLight: "bg-tertiary-100",
+      iconBgDark: "dark:bg-tertiary-800/40",
+      iconLight: "text-tertiary-600",
+      iconDark: "dark:text-tertiary-400",
+      counterBgLight: "bg-tertiary-100/70",
+      counterBgDark: "dark:bg-tertiary-900/30",
+      footerBgLight: "bg-tertiary-50/30",
+      footerBgDark: "dark:bg-tertiary-900/10"
     },
     purple: {
       highlight: "bg-purple-50 dark:bg-purple-950/30",
