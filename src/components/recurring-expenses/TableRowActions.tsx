@@ -68,11 +68,11 @@ export const TableRowActions = ({
                   className={cn(
                     "h-8 w-8 flex items-center justify-center rounded-md transition-colors",
                     // Light mode
-                    "hover:bg-blue-50 text-gray-500 hover:text-blue-600",
+                    "hover:bg-tertiary-50 text-gray-500 hover:text-tertiary-600",
                     // Dark mode
-                    "dark:hover:bg-blue-900/20 dark:text-gray-400 dark:hover:text-blue-400",
+                    "dark:hover:bg-tertiary-900/20 dark:text-gray-400 dark:hover:text-tertiary-400",
                     // Focus state
-                    "focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800/50"
+                    "focus:outline-none focus:ring-2 focus:ring-tertiary-200 dark:focus:ring-tertiary-800/50"
                   )}
                 >
                   <Eye size={16} />
@@ -101,11 +101,11 @@ export const TableRowActions = ({
                   className={cn(
                     "h-8 w-8 flex items-center justify-center rounded-md transition-colors",
                     // Light mode
-                    "hover:bg-blue-50 text-gray-500 hover:text-blue-600",
+                    "hover:bg-tertiary-50 text-gray-500 hover:text-tertiary-600",
                     // Dark mode
-                    "dark:hover:bg-blue-900/20 dark:text-gray-400 dark:hover:text-blue-400",
+                    "dark:hover:bg-tertiary-900/20 dark:text-gray-400 dark:hover:text-tertiary-400",
                     // Focus state
-                    "focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800/50"
+                    "focus:outline-none focus:ring-2 focus:ring-tertiary-200 dark:focus:ring-tertiary-800/50"
                   )}
                 >
                   <Edit size={16} />
@@ -212,7 +212,7 @@ export const ExpenseActionsDropdownEnhanced = ({
           // Dark mode
           "dark:hover:bg-gray-800 dark:text-gray-400",
           // Focus state
-          "focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800/50",
+          "focus:outline-none focus:ring-2 focus:ring-tertiary-200 dark:focus:ring-tertiary-800/50",
           // Active state
           isOpen && "bg-gray-100 dark:bg-gray-800"
         )}

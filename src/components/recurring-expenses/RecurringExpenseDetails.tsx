@@ -106,9 +106,9 @@ export const RecurringExpenseDetails = ({
       <div className={cn(
         "h-px w-full",
         // Light mode
-        "bg-gradient-to-r from-transparent via-blue-100 to-transparent",
+        "bg-gradient-to-r from-transparent via-tertiary-100 to-transparent",
         // Dark mode
-        "dark:from-transparent dark:via-blue-900/30 dark:to-transparent"
+        "dark:from-transparent dark:via-tertiary-900/30 dark:to-transparent"
       )} />
 
       {/* Contenu détaillé */}

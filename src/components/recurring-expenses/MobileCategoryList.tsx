@@ -66,52 +66,52 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
       <Card className={cn(
         "w-full relative overflow-hidden",
         "border shadow-sm",
-        "bg-white border-blue-100",
-        "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10",
+        "bg-white border-tertiary-100",
+        "dark:bg-gray-800/90 dark:border-tertiary-800/50 dark:shadow-tertiary-900/10",
         "mb-6"
       )}>
         <div className={cn(
           "absolute inset-0 opacity-5",
-          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
-          "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary-400 via-tertiary-300 to-transparent",
+          "dark:opacity-10 dark:from-tertiary-400 dark:via-tertiary-500 dark:to-transparent"
         )} />
         
         <CardHeader className="pb-2 relative z-10">
           <div className="flex items-center gap-2">
             <div className={cn(
               "p-1.5 rounded",
-              "bg-blue-100",
-              "dark:bg-blue-800/40"
+              "bg-tertiary-100",
+              "dark:bg-tertiary-800/40"
             )}>
               {selectedCategory ? (
                 <ArrowLeft 
                   className={cn(
                     "h-5 w-5 cursor-pointer",
-                    "text-blue-600",
-                    "dark:text-blue-400"
+                    "text-tertiary-600",
+                    "dark:text-tertiary-400"
                   )}
                   onClick={() => setSelectedCategory(null)}
                 />
               ) : (
                 <ListFilter className={cn(
                   "h-5 w-5",
-                  "text-blue-600",
-                  "dark:text-blue-400"
+                  "text-tertiary-600",
+                  "dark:text-tertiary-400"
                 )} />
               )}
             </div>
             <div>
               <CardTitle className={cn(
                 "text-lg font-semibold",
-                "text-blue-700",
-                "dark:text-blue-300"
+                "text-tertiary-700",
+                "dark:text-tertiary-300"
               )}>
                 {selectedCategory ? selectedCategory : "Charges par catégorie"}
               </CardTitle>
               <CardDescription className={cn(
                 "text-sm",
-                "text-blue-600/80",
-                "dark:text-blue-400/90"
+                "text-tertiary-600/80",
+                "dark:text-tertiary-400/90"
               )}>
                 {selectedCategory 
                   ? `${categoryExpenses.length} charge${categoryExpenses.length > 1 ? 's' : ''} ${periodLabel}`
@@ -132,8 +132,8 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
                     key={expense.id}
                     className={cn(
                       "flex items-center justify-between p-3 rounded-md",
-                      "border-l-4 border-blue-400 dark:border-blue-500",
-                      "bg-blue-50/50 dark:bg-blue-900/20"
+                      "border-l-4 border-tertiary-400 dark:border-tertiary-500",
+                      "bg-tertiary-50/50 dark:bg-tertiary-900/20"
                     )}
                   >
                     <div className="flex flex-col">
@@ -144,7 +144,7 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
                         {expense.debit_day ? `Débit: jour ${expense.debit_day}` : "Date de débit non définie"}
                       </span>
                     </div>
-                    <span className="font-mono font-semibold text-blue-600 dark:text-blue-300">
+                    <span className="font-mono font-semibold text-tertiary-600 dark:text-tertiary-300">
                       {formatCurrency(expense.amount)}
                     </span>
                   </li>
@@ -164,19 +164,19 @@ export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryL
                     key={item.category}
                     className={cn(
                       "flex items-center justify-between p-3 rounded-md",
-                      "border-l-4 border-blue-500 dark:border-blue-400",
-                      "bg-blue-50/50 dark:bg-blue-900/20",
-                      "cursor-pointer hover:bg-blue-100/50 dark:hover:bg-blue-800/30 transition-colors"
+                      "border-l-4 border-tertiary-500 dark:border-tertiary-400",
+                      "bg-tertiary-50/50 dark:bg-tertiary-900/20",
+                      "cursor-pointer hover:bg-tertiary-100/50 dark:hover:bg-tertiary-800/30 transition-colors"
                     )}
                     onClick={() => setSelectedCategory(item.category)}
                   >
                     <div className="flex items-center gap-2">
-                      <ChevronRight className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                      <ChevronRight className="h-4 w-4 text-tertiary-500 dark:text-tertiary-400" />
                       <span className="font-medium text-gray-800 dark:text-gray-200">
                         {item.category}
                       </span>
                     </div>
-                    <span className="font-mono font-semibold text-blue-600 dark:text-blue-300">
+                    <span className="font-mono font-semibold text-tertiary-600 dark:text-tertiary-300">
                       {formatCurrency(item.total)}
                     </span>
                   </li>

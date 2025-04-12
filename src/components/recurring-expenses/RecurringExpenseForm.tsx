@@ -179,7 +179,7 @@ export function RecurringExpenseForm({
           <Button 
             type="submit" 
             className={cn(
-              "bg-blue-600 hover:bg-blue-500 rounded-lg px-[16px] py-0 my-0 text-white",
+              "bg-tertiary-600 hover:bg-tertiary-500 rounded-lg px-[16px] py-0 my-0 text-white",
               isMobile && "text-sm h-9"
             )}
           >
