@@ -101,7 +101,7 @@ export const DashboardHeader = ({
   <DropdownMenuContent
     align="end"
     className={cn(
-      "w-[220px] rounded-md border border-primary/20",
+      "w-[200px] rounded-md border border-primary/20",
       "bg-white shadow-lg dark:bg-gray-950 dark:border-gray-800",
       "focus:outline-none"
     )}
@@ -110,26 +110,30 @@ export const DashboardHeader = ({
       value={currentView}
       onValueChange={(value) => setCurrentView(value as "monthly" | "yearly")}
     >
-      <DropdownMenuRadioItem
-        value="monthly"
-        className={cn(
-          "flex items-center gap-2 px-3 py-2 rounded-sm cursor-pointer",
-          "text-sm text-foreground hover:bg-primary/10",
-          "focus:bg-primary/20 focus:outline-none transition-colors"
-        )}
-      >
-        Vue mensuelle
-      </DropdownMenuRadioItem>
-      <DropdownMenuRadioItem
-        value="yearly"
-        className={cn(
-          "flex items-center gap-2 px-3 py-2 rounded-sm cursor-pointer",
-          "text-sm text-foreground hover:bg-primary/10",
-          "focus:bg-primary/20 focus:outline-none transition-colors"
-        )}
-      >
-        Vue annuelle
-      </DropdownMenuRadioItem>
+<DropdownMenuRadioItem
+  value="monthly"
+  className={cn(
+    "relative flex items-center gap-2 px-3 py-2 rounded-sm cursor-pointer",
+    "pl-8", // réserve de l’espace à gauche pour le bullet
+    "text-sm text-foreground hover:bg-primary/10",
+    "focus:bg-primary/20 focus:outline-none transition-colors"
+  )}
+>
+  <span className="absolute left-3 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border border-primary bg-background data-[state=checked]:bg-primary transition-colors" />
+  Vue mensuelle
+</DropdownMenuRadioItem>
+<DropdownMenuRadioItem
+  value="yearly"
+  className={cn(
+    "relative flex items-center gap-2 px-3 py-2 rounded-sm cursor-pointer",
+    "pl-8",
+    "text-sm text-foreground hover:bg-primary/10",
+    "focus:bg-primary/20 focus:outline-none transition-colors"
+  )}
+>
+  <span className="absolute left-3 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border border-primary bg-background data-[state=checked]:bg-primary transition-colors" />
+  Vue annuelle
+</DropdownMenuRadioItem>
     </DropdownMenuRadioGroup>
   </DropdownMenuContent>
 </DropdownMenu>
