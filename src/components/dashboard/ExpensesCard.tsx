@@ -59,9 +59,9 @@ export const ExpensesCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-gradient-to-br from-background to-tertiary-50 shadow-lg border border-tertiary-100 hover:shadow-xl",
+          "bg-primary/10 shadow-lg border border-primary/20 hover:shadow-xl",
           // Dark mode styles - alignées avec les cards de graphiques
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-tertiary-950 dark:border-tertiary-900/30 dark:shadow-tertiary-800/30 dark:hover:shadow-tertiary-800/50"
+          "dark:bg-primary/10 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
         )}
         onClick={() => navigate("/recurring-expenses")}
       >
@@ -70,8 +70,8 @@ export const ExpensesCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-tertiary-100 text-tertiary-600", // Light mode
-                "dark:bg-tertiary-900/40 dark:text-tertiary-400" // Dark mode
+                "bg-primary/20 text-primary", // Light mode
+                "dark:bg-primary/20 dark:text-primary" // Dark mode
               )}>
                 <ClipboardList className="h-5 w-5" />
               </div>
@@ -92,7 +92,7 @@ export const ExpensesCard = ({
                 className={cn(
                   "text-xl font-bold leading-none w-1/3",
                   "text-gray-800", // Light mode
-                  "dark:text-tertiary-100" // Dark mode
+                  "dark:text-primary" // Dark mode
                 )}
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -105,7 +105,7 @@ export const ExpensesCard = ({
                 <TooltipTrigger asChild>
                   <div className="w-2/3 relative">
                     <div className={cn(
-                      "absolute inset-0 bg-tertiary-500/10 dark:bg-tertiary-400/5 rounded-full blur-sm",
+                      "absolute inset-0 bg-primary/10 dark:bg-primary/5 rounded-full blur-sm",
                       "opacity-0 dark:opacity-100 transition-opacity"
                     )} />
                     <Progress 
@@ -113,25 +113,25 @@ export const ExpensesCard = ({
                       className={cn(
                         "h-2.5 rounded-full",
                         // Light mode - progress background
-                        "bg-tertiary-100/50",
+                        "bg-primary/50",
                         // Dark mode - progress background
-                        "dark:bg-tertiary-950/70"
+                        "dark:bg-primary/70"
                       )}
                       indicatorClassName={cn(
                         // Définit explicitement une couleur pour l'indicateur de progression
-                        "bg-tertiary-500", 
-                        "dark:bg-tertiary-400"
+                        "bg-primary", 
+                        "dark:bg-primary"
                       )}
                     />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
                   <p className="flex items-center gap-1.5 dark:text-white font-medium">
-                    <Info className="h-4 w-4 text-tertiary-500 dark:text-tertiary-400" />
+                    <Info className="h-4 w-4 text-primary dark:text-primary" />
                     {Math.round(progressPercentage)}% des charges payées
                   </p>
                   <span className="dark:text-gray-300 mt-1 block">
-                    Reste : <span className="font-medium text-tertiary-600 dark:text-tertiary-300">{Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
+                    Reste : <span className="font-medium text-primary dark:text-primary">{Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
                   </span>
                 </TooltipContent>
               </Tooltip>
