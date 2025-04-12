@@ -32,19 +32,43 @@ export const CreditCard = ({
   children
 }: CreditCardProps) => {
   // Couleurs pour la barre de progression en fonction du schéma
-  const createColorSet = (color: string) => ({
-    card: `bg-white border border-${color} dark:border-${color}`,
-    icon: `bg-${color}/10 text-${color}`,
-    title: `text-${color}`,
-    amount: `text-${color}`,
-    description: "text-muted-foreground",
-    badge: `bg-${color}/30 text-${color}`,
-  });
-
   const colors = {
-    primary: createColorSet("primary"),
-    quaternary: createColorSet("quaternary"),
-    tertiary: createColorSet("tertiary"),
+    primary: {
+      // Light mode
+  card: "bg-white border border-primary dark:border-primary",
+  gradient: "from-primary via-primary to-transparent",
+  darkGradient: "dark:from-primary dark:via-primary dark:to-transparent",
+  icon: "bg-primary text-white dark:bg-primary dark:text-white",
+  title: "text-primary dark:text-primary",
+  amount: "text-primary dark:text-primary",
+  description: "text-primary/90 dark:text-primary/90",
+  badge: "bg-primary text-white dark:bg-primary dark:text-white"
+};
+    },
+    quaternary: {
+      // Light mode
+      card: "bg-white border-quaternary-100",
+      darkBorder: "dark:border-quaternary-800/50",
+      gradient: "from-quaternary-400 via-emerald-300 to-transparent",
+      darkGradient: "dark:from-quaternary-400 dark:via-emerald-500 dark:to-transparent",
+      icon: "bg-quaternary-100 text-quaternary-700 dark:bg-quaternary-800/40 dark:text-quaternary-300",
+      title: "text-quaternary-900 dark:text-quaternary-300",
+      amount: "text-quaternary-800 dark:text-quaternary-200",
+      description: "text-quaternary-600/80 dark:text-quaternary-400/90",
+      badge: "bg-quaternary-100 dark:bg-quaternary-800/40 text-quaternary-700 dark:text-quaternary-300",
+    },
+    tertiary: {
+      // Light mode
+      card: "bg-white border-tertiary-100",
+      darkBorder: "dark:border-tertiary-800/50",
+      gradient: "from-tertiary-400 via-sky-300 to-transparent",
+      darkGradient: "dark:from-tertiary-400 dark:via-sky-500 dark:to-transparent",
+      icon: "bg-tertiary-100 text-tertiary-700 dark:bg-tertiary-800/40 dark:text-tertiary-300",
+      title: "text-tertiary-900 dark:text-tertiary-300",
+      amount: "text-tertiary-800 dark:text-tertiary-200",
+      description: "text-tertiary-600/80 dark:text-tertiary-400/90",
+      badge: "bg-tertiary-100 dark:bg-tertiary-800/40 text-tertiary-700 dark:text-tertiary-300",
+    }
   };
 
   const currentColors = colors[colorScheme];
@@ -58,7 +82,8 @@ export const CreditCard = ({
         "bg-white",
         "border-gray-100",
         // Dark mode - alignées avec les cards de graphiques
-        "dark:bg-gray-800/90 dark:shadow-primary-800/30"
+        "dark:bg-gray-800/90  dark:shadow-primary-800/30 ", 
+        currentColors.darkBorder
       )}
     >
       {/* Fond radial gradient ultra-subtil */}

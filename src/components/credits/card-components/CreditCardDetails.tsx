@@ -53,7 +53,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
             "font-semibold",
             isArchived ? "text-gray-600 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"
           )}>
-            {formatCurrency(credit.montant_mensualite)}
+            {formatCurrency(credit.montant_mensualite, 0)}
           </p>
         </div>
         
@@ -68,7 +68,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
             "font-semibold",
             isArchived ? "text-gray-600 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"
           )}>
-            {formatCurrency(totalAmount)}
+            {formatCurrency(totalAmount, 0)}
           </p>
         </div>
 
@@ -95,7 +95,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
               dateFin={credit.date_derniere_mensualite}
               montantMensuel={credit.montant_mensualite}
               withTooltip={true}
-              colorScheme={isArchived ? "quaternary" : "primary"}
+              colorScheme={isArchived ? "green" : "purple"}
               // Si le crédit est archivé, on force la progression à 100%
               value={isArchived || credit.statut === "remboursé" ? 100 : undefined}
             />

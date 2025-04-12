@@ -1,3 +1,4 @@
+
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
@@ -20,55 +21,73 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   
+  // État local pour le type de périodicité à afficher dans le graphique
   const [chartPeriodicity, setChartPeriodicity] = useState<"monthly" | "quarterly" | "yearly">("monthly");
+  // Trackons un ID de données pour l'animation
   const [dataVersion, setDataVersion] = useState(0);
+  // Hover state pour l'animation des barres
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
+  // Mettre à jour la version des données lorsque les dépenses changent pour déclencher l'animation
   useEffect(() => {
     setDataVersion(prev => prev + 1);
   }, [expenses, selectedPeriod]);
 
+  // Filtrer les dépenses en fonction de la période sélectionnée
   const filteredExpenses = useMemo(() => {
+    // Si une périodicité est déjà sélectionnée depuis l'extérieur, utiliser ces dépenses uniquement
     if (selectedPeriod) {
       return expenses.filter(expense => expense.periodicity === selectedPeriod);
     }
+    // Sinon filtrer selon la périodicité choisie dans le graphique lui-même
     return expenses.filter(expense => expense.periodicity === chartPeriodicity);
   }, [expenses, selectedPeriod, chartPeriodicity]);
 
+  // Extraire les dépenses liées aux véhicules
   const vehicleExpenses = useMemo(() => {
     return filteredExpenses.filter(expense => expense.vehicle_id !== null);
   }, [filteredExpenses]);
 
+  // Calculer les données par catégorie pour le graphique
   const chartData = useMemo(() => {
+    // Regrouper les dépenses par catégorie
     const categoryMap = new Map<string, number>();
+    
     filteredExpenses.forEach(expense => {
       const currentAmount = categoryMap.get(expense.category) || 0;
       categoryMap.set(expense.category, currentAmount + expense.amount);
     });
     
+    // Convertir en tableau pour Recharts et trier par montant (décroissant)
     return Array.from(categoryMap.entries())
       .map(([category, total]) => ({ category, total }))
       .sort((a, b) => b.total - a.total)
-      .slice(0, 7);
+      .slice(0, 7); // Limiter aux 7 principales catégories pour une meilleure lisibilité
   }, [filteredExpenses]);
 
+  // Calculer le total pour le pourcentage
   const totalAmount = useMemo(() => 
     chartData.reduce((sum, item) => sum + item.total, 0),
     [chartData]
   );
 
+  // Calculer le total des dépenses liées aux véhicules
   const totalVehicleExpenses = useMemo(() => 
     vehicleExpenses.reduce((sum, expense) => sum + expense.amount, 0),
     [vehicleExpenses]
   );
 
+  // Pourcentage des dépenses liées aux véhicules par rapport au total
   const vehicleExpensesPercentage = useMemo(() => 
     totalAmount > 0 ? (totalVehicleExpenses / totalAmount) * 100 : 0,
     [totalAmount, totalVehicleExpenses]
   );
 
+  // Gérer le changement de périodicité du graphique
   const handlePeriodicityChange = () => {
+    // Ne pas permettre de changer la périodicité du graphique si une est déjà sélectionnée
     if (selectedPeriod) return;
+    
     if (chartPeriodicity === "monthly") {
       setChartPeriodicity("quarterly");
     } else if (chartPeriodicity === "quarterly") {
@@ -78,26 +97,28 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     }
   };
 
+  // Labels de périodicité pour l'affichage
   const periodicityLabels = {
     monthly: "Mensuel",
     quarterly: "Trimestriel",
     yearly: "Annuel"
   };
 
+  // Déterminer le texte du bouton selon si la périodicité est contrainte par une sélection externe
   const buttonText = selectedPeriod 
     ? periodicityLabels[selectedPeriod] 
     : periodicityLabels[chartPeriodicity];
 
-  // Remplacement des couleurs bleues par tertiary avec opacités ou dégradés cohérents
+  // Générer des couleurs pour les barres - maintenant en bleu pour la cohérence
   const getBarColor = (index: number) => {
     const baseColors = {
       light: {
-        active: '#0284C7', // tertiary-600
-        inactive: '#67A6D6' // tertiary-400
+        active: '#2563EB', // blue-600
+        inactive: '#60A5FA' // blue-400
       },
       dark: {
-        active: '#0369A1', // tertiary-500
-        inactive: '#A3C8E1' // tertiary-300
+        active: '#3B82F6', // blue-500
+        inactive: '#93C5FD' // blue-300
       }
     };
     
@@ -105,6 +126,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     return index === activeIndex ? colors.active : colors.inactive;
   };
 
+  // Formater les pourcentages
   const formatPercentage = (value: number) => {
     return `${((value / totalAmount) * 100).toFixed(1)}%`;
   };
@@ -114,40 +136,52 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
       <Card className={cn(
         "w-full relative overflow-hidden",
         "border shadow-lg",
-        "bg-white border-tertiary-100",
-        "dark:bg-gray-800/90 dark:border-tertiary-800/50 dark:shadow-tertiary-900/10",
+        // Light mode
+        "bg-white border-blue-100",
+        // Dark mode
+        "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10",
       "mb-6"
       )}>
         <div className={cn(
           "absolute inset-0 opacity-5",
-          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary-400 via-tertiary-300 to-transparent",
-          "dark:opacity-10 dark:from-tertiary-400 dark:via-tertiary-500 dark:to-transparent"
+          // Light mode
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+          // Dark mode
+          "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
         )} />
         
         <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
           <div>
             <CardTitle className={cn(
               "text-xl font-semibold flex items-center gap-2",
-              "text-tertiary-700",
-              "dark:text-tertiary-300"
+              // Light mode
+              "text-blue-700",
+              // Dark mode
+              "dark:text-blue-300"
             )}>
               <div className={cn(
                 "p-1.5 rounded",
-                "bg-tertiary-100",
-                "dark:bg-tertiary-800/40"
+                // Light mode
+                "bg-blue-100",
+                // Dark mode
+                "dark:bg-blue-800/40"
               )}>
                 <BarChartIcon className={cn(
                   "h-5 w-5",
-                  "text-tertiary-600",
-                  "dark:text-tertiary-400"
+                  // Light mode
+                  "text-blue-600",
+                  // Dark mode
+                  "dark:text-blue-400"
                 )} />
               </div>
               Dépenses par catégorie
             </CardTitle>
             <CardDescription className={cn(
               "mt-1 text-sm",
-              "text-tertiary-600/80",
-              "dark:text-tertiary-400/90"
+              // Light mode
+              "text-blue-600/80",
+              // Dark mode
+              "dark:text-blue-400/90"
             )}>
               Répartition des charges {selectedPeriod ? periodicityLabels[selectedPeriod].toLowerCase() : chartPeriodicity === "monthly" ? "mensuelles" : chartPeriodicity === "quarterly" ? "trimestrielles" : "annuelles"}
               
@@ -157,7 +191,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                     <UITooltip>
                       <TooltipTrigger asChild>
                         <span className="inline-flex items-center cursor-help">
-                          <InfoIcon className="h-4 w-4 text-tertiary-500 dark:text-tertiary-400" />
+                          <InfoIcon className="h-4 w-4 text-blue-500 dark:text-blue-400" />
                         </span>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
@@ -181,8 +215,10 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
             disabled={!!selectedPeriod}
             className={cn(
               "flex items-center gap-1 transition-colors font-medium",
-              "border-tertiary-200 hover:bg-tertiary-50 text-tertiary-700",
-              "dark:border-tertiary-800 dark:hover:bg-tertiary-900/30 dark:text-tertiary-300"
+              // Light mode
+              "border-blue-200 hover:bg-blue-50 text-blue-700",
+              // Dark mode
+              "dark:border-blue-800 dark:hover:bg-blue-900/30 dark:text-blue-300"
             )}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -220,7 +256,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                         tickFormatter={(value) => formatCurrency(value)} 
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: isDarkMode ? '#A3C8E1' : '#0284C7' }}
+                        tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
                       />
                       <YAxis 
                         type="category" 
@@ -231,7 +267,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                         }
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: isDarkMode ? '#A3C8E1' : '#0284C7' }}
+                        tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
                       />
                       <Tooltip 
                         formatter={(value) => [
@@ -267,8 +303,10 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                 ) : (
                   <div className={cn(
                     "h-full flex items-center justify-center",
-                    "text-tertiary-500/70",
-                    "dark:text-tertiary-400/70"
+                    // Light mode
+                    "text-blue-500/70",
+                    // Dark mode
+                    "dark:text-blue-400/70"
                   )}>
                     <motion.div
                       initial={{ opacity: 0 }}

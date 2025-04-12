@@ -13,13 +13,6 @@ export interface RecurringExpense {
   vehicle_id: string | null;
   vehicle_expense_type: string | null;
   auto_generate_vehicle_expense: boolean;
-  // Champs supplémentaires optionnels pour la compatibilité
-  user_id?: string;
-  title?: string;
-  next_payment_date?: string;
-  property_id?: string;
-  updated_at?: string;
-  profile_id?: string;
 }
 
 export interface RecurringExpenseTableProps {

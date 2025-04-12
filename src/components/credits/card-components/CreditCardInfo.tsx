@@ -1,8 +1,11 @@
+
 import { Credit } from "../types";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Check } from "lucide-react";
+import { statusLabels } from "../types";
 
 interface CreditCardInfoProps {
   credit: Credit;
@@ -11,12 +14,8 @@ interface CreditCardInfoProps {
   isArchived?: boolean;
 }
 
-export const CreditCardInfo = ({
-  credit,
-  index,
-  isMobile = false,
-  isArchived = false,
-}: CreditCardInfoProps) => {
+export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = false }: CreditCardInfoProps) => {
+  // Fonction pour formater la date en français
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return format(date, "MMMM yyyy", { locale: fr });
@@ -39,17 +38,17 @@ export const CreditCardInfo = ({
             />
           </div>
         ) : (
-          <div
-            className={cn(
-              "w-10 h-10 rounded-full flex items-center justify-center",
-              isArchived
-                ? "bg-gray-200 dark:bg-gray-700"
-                : "bg-primary/10 dark:bg-primary/20",
-              isArchived
-                ? "text-gray-500 dark:text-gray-400"
-                : "text-primary"
-            )}
-          >
+          <div className={cn(
+            "w-10 h-10 rounded-full flex items-center justify-center",
+            // Couleur différente pour les crédits archivés
+            isArchived 
+              ? "bg-gray-200 dark:bg-gray-700" 
+              : "bg-purple-100 dark:bg-purple-900/40",
+            // Texte
+            isArchived 
+              ? "text-gray-500 dark:text-gray-400" 
+              : "text-purple-700 dark:text-purple-300"
+          )}>
             <span className="text-lg font-semibold">
               {credit.nom_credit.charAt(0).toUpperCase()}
             </span>
@@ -59,17 +58,18 @@ export const CreditCardInfo = ({
 
       <div className="flex flex-col">
         <div className="flex items-center">
-          <h4
-            className={cn(
-              "font-semibold",
-              isArchived
-                ? "text-gray-600 dark:text-gray-400"
-                : "text-gray-800 dark:text-gray-200"
-            )}
-          >
+          <h4 className={cn(
+            "font-semibold",
+            // Couleur différente pour les crédits archivés
+            isArchived 
+              ? "text-gray-600 dark:text-gray-400" 
+              : "text-gray-800 dark:text-gray-200"
+          )}>
             {credit.nom_credit}
           </h4>
         </div>
+
+       
       </div>
     </div>
   );

@@ -40,8 +40,7 @@ const RecurringExpenses = memo(function RecurringExpenses() {
         toast.error("Erreur lors du chargement des charges récurrentes");
         throw error;
       }
-      // Conversion explicite en type RecurringExpense[]
-      return data as unknown as RecurringExpense[];
+      return data as RecurringExpense[];
     },
     staleTime: 1000 * 60 * 5, // Cache data for 5 minutes to prevent unnecessary refetches
     refetchOnWindowFocus: false, // Disable refetching when window gains focus

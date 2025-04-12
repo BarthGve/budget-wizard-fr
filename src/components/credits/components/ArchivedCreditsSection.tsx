@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Credit } from "../types";
 import { CreditsList } from "../CreditsList";
@@ -20,10 +21,12 @@ export const ArchivedCreditsSection = ({
   const archivedCredits = credits.filter(credit => credit.statut === 'remboursé');
 
   if (archivedCredits.length === 0) {
-    return null;
+    return null; // Ne rien afficher s'il n'y a pas de crédits archivés
   }
 
+  // Calculer le montant total remboursé
   const totalAmountRepaid = archivedCredits.reduce((total, credit) => {
+    // Nombre total de mensualités
     const firstPaymentDate = new Date(credit.date_premiere_mensualite);
     const lastPaymentDate = new Date(credit.date_derniere_mensualite);
     const totalMonths = 
@@ -43,10 +46,15 @@ export const ArchivedCreditsSection = ({
       <div className="flex items-center justify-between mb-4">
         <h2 className={cn(
           "font-bold tracking-tight text-xl flex items-center gap-2",
-          "bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"
+          // Même dégradé que le titre principal pour la cohérence
+          "bg-gradient-to-r from-purple-600 via-purple-500 to-violet-500 bg-clip-text text-transparent",
+          "dark:from-purple-400 dark:via-purple-400 dark:to-violet-400"
         )}>
-          <div className="p-1 rounded bg-primary/10 dark:bg-primary/20">
-            <Archive className="h-4 w-4 text-primary dark:text-primary" />
+          <div className={cn(
+            "p-1 rounded",
+            "bg-purple-100 dark:bg-purple-800/40"
+          )}>
+            <Archive className="h-4 w-4 text-purple-600 dark:text-purple-400" />
           </div>
           Archives
         </h2>
@@ -57,7 +65,8 @@ export const ArchivedCreditsSection = ({
           onClick={() => setExpanded(!expanded)}
           className={cn(
             "flex items-center gap-1 text-sm font-medium",
-            "text-muted-foreground hover:text-primary"
+            "text-gray-500 hover:text-purple-600",
+            "dark:text-gray-400 dark:hover:text-purple-400"
           )}
         >
           {expanded ? (
@@ -83,9 +92,10 @@ export const ArchivedCreditsSection = ({
         >
           <div className={cn(
             "p-3 mb-3 rounded-md",
-            "bg-primary/5 border border-primary/20"
+            "bg-purple-50/80 border border-purple-100",
+            "dark:bg-purple-900/10 dark:border-purple-800/30"
           )}>
-            <span className="text-sm text-primary">
+            <span className="text-sm text-purple-700 dark:text-purple-400">
               Montant total remboursé : <strong>{totalAmountRepaid.toLocaleString('fr-FR')} €</strong>
             </span>
           </div>

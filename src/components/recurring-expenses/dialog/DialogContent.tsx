@@ -34,22 +34,6 @@ export const DialogContent = ({
     onOpenChange?.(false);
   };
 
-  // Adaptation pour la compatibilité avec RecurringExpenseForm
-  const formattedExpense = expense ? {
-    id: expense.id,
-    name: expense.name || "",
-    amount: expense.amount,
-    category: expense.category,
-    periodicity: expense.periodicity as "monthly" | "quarterly" | "yearly",
-    debit_day: expense.debit_day,
-    debit_month: expense.debit_month,
-    logo_url: expense.logo_url,
-    notes: expense.notes,
-    vehicle_id: expense.vehicle_id,
-    vehicle_expense_type: expense.vehicle_expense_type,
-    auto_generate_vehicle_expense: expense.auto_generate_vehicle_expense
-  } : undefined;
-
   // Contenu du formulaire avec animation
   const formContent = (
     <motion.div
@@ -59,7 +43,7 @@ export const DialogContent = ({
       transition={{ duration: 0.2 }}
     >
       <RecurringExpenseForm
-        expense={formattedExpense}
+        expense={expense}
         onSuccess={handleSuccess}
         onCancel={handleCancel}
         variant={isEditMode ? "edit" : "create"}
