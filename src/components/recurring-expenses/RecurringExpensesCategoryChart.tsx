@@ -149,10 +149,13 @@ const getBarColor = (index: number) => {
         
         <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
           <div>
-       <CardTitle className={cn(
-  "text-xl font-semibold flex items-center gap-2",
-  "text-primary"
-)}>
+            <CardTitle className={cn(
+              "text-xl font-semibold flex items-center gap-2",
+              // Light mode
+              "text-blue-700",
+              // Dark mode
+              "dark:text-blue-300"
+            )}>
               <div className={cn(
                 "p-1.5 rounded",
                 // Light mode
@@ -170,11 +173,13 @@ const getBarColor = (index: number) => {
               </div>
               Dépenses par catégorie
             </CardTitle>
-      <CardDescription className={cn(
-  "mt-1 text-sm",
-  "text-primary/80"
-)}>
-
+            <CardDescription className={cn(
+              "mt-1 text-sm",
+              // Light mode
+              "text-blue-600/80",
+              // Dark mode
+              "dark:text-blue-400/90"
+            )}>
               Répartition des charges {selectedPeriod ? periodicityLabels[selectedPeriod].toLowerCase() : chartPeriodicity === "monthly" ? "mensuelles" : chartPeriodicity === "quarterly" ? "trimestrielles" : "annuelles"}
               
               {vehicleExpenses.length > 0 && (
@@ -200,13 +205,19 @@ const getBarColor = (index: number) => {
             </CardDescription>
           </div>
           
-        <Button
-  className={cn(
-    "flex items-center gap-1 transition-colors font-medium",
-    "border-primary/40 hover:bg-primary/10 text-primary",
-    "dark:border-primary/40 dark:hover:bg-primary/20 dark:text-primary"
-  )}
->
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePeriodicityChange}
+            disabled={!!selectedPeriod}
+            className={cn(
+              "flex items-center gap-1 transition-colors font-medium",
+              // Light mode
+              "border-blue-200 hover:bg-blue-50 text-blue-700",
+              // Dark mode
+              "dark:border-blue-800 dark:hover:bg-blue-900/30 dark:text-blue-300"
+            )}
+          >
             <ChevronLeft className="h-4 w-4" />
             {buttonText}
             <ChevronRight className="h-4 w-4" />
@@ -261,13 +272,14 @@ const getBarColor = (index: number) => {
                           "Montant"
                         ]}
                         labelFormatter={(label) => `Catégorie: ${label}`}
-                     contentStyle={{
-  backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-  borderRadius: '8px',
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-  border: isDarkMode ? '1px solid #0EA5E9' : '1px solid #0EA5E9',
-  color: isDarkMode ? '#7DD3FC' : '#0369A1'
-}}
+                        contentStyle={{
+                          backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                          border: isDarkMode ? '1px solid #1e40af' : '1px solid #bfdbfe',
+                          color: isDarkMode ? '#bfdbfe' : '#1e40af'
+                        }}
+                      />
                       <Bar 
                         dataKey="total" 
                         radius={[4, 4, 4, 4]}
@@ -286,10 +298,13 @@ const getBarColor = (index: number) => {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-             <div className={cn(
-  "h-full flex items-center justify-center",
-  "text-primary/70"
-)}>
+                  <div className={cn(
+                    "h-full flex items-center justify-center",
+                    // Light mode
+                    "text-blue-500/70",
+                    // Dark mode
+                    "dark:text-blue-400/70"
+                  )}>
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
