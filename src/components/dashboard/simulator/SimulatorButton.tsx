@@ -26,9 +26,9 @@ export const SimulatorButton = () => {
         <Calculator className={cn(
           "mr-2", 
           isMobile ? "h-3 w-3" : "h-4 w-4",
-          "text-purple-500 dark:text-purple-400"
+          "bg-primary/10 text-primary
         )} />
-        <span className="text-purple-700 dark:text-purple-300">Simulateur</span>
+        <span className="text-primary">Simulateur</span>
       </Button>
       <FinanceSimulator open={open} onOpenChange={setOpen} />
     </>
