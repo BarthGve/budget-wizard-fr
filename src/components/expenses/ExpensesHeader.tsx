@@ -40,22 +40,22 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
             transition={{ delay: 0.2, duration: 0.3 }}
             className={cn(
               "p-2.5 rounded-lg shadow-sm mt-0.5",
-              "bg-gradient-to-br from-blue-100 to-cyan-50",
-              "dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-cyan-800/30 dark:shadow-blue-900/10"
+              "bg-gradient-to-br from-primary/20 to-primary/10", // Utilisation de primary
+              "dark:bg-gradient-to-br dark:from-primary/40 dark:to-primary/30 dark:shadow-primary/10"
             )}
           >
             <ShoppingBasket className={cn(
               "h-6 w-6",
-              "text-blue-600",
-              "dark:text-blue-400"
+              "text-primary", // Utilisation de primary pour l'icône
+              "dark:text-primary"
             )} />
           </motion.div>
         
           <div>
             <h1 className={cn(
               "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
-              "bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500",
-              "dark:bg-gradient-to-r dark:from-blue-400 dark:via-blue-300 dark:to-cyan-400"
+              "bg-gradient-to-r from-primary via-primary/90 to-primary/70", // Gradient basé sur primary
+              "dark:bg-gradient-to-r dark:from-primary/60 dark:via-primary/50 dark:to-primary/40"
             )}>
               Dépenses
             </h1>
@@ -85,8 +85,8 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
                 checked={viewMode === 'yearly'} 
                 onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
                 className={cn(
-                  "data-[state=checked]:bg-blue-500",
-                  "dark:data-[state=checked]:bg-blue-600"
+                  "data-[state=checked]:bg-primary", // Utilisation de primary pour l'état checked
+                  "dark:data-[state=checked]:bg-primary"
                 )}
               />
               <Label 
