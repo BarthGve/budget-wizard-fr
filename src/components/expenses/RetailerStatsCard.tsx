@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { cn } from "@/lib/utils";
@@ -33,7 +34,7 @@ export function RetailerStatsCard({
   // Styles basés sur le colorScheme
   const getColorStyles = () => {
     switch(colorScheme) {
-      case "primary":
+      case "purple":
         return {
           iconBg: "bg-primary-100 dark:bg-primary-900/30",
           iconText: "text-primary-600 dark:text-primary-300",
@@ -53,7 +54,7 @@ export function RetailerStatsCard({
           primaryText: "text-quinary-700 dark:text-quinary-200",
           secondaryText: "text-quinary-600/80 dark:text-quinary-300/80"
         };
-      default: // tertiary
+      default: // blue
         return {
           iconBg: "bg-tertiary-100 dark:bg-tertiary-900/30",
           iconText: "text-tertiary-600 dark:text-tertiary-300",
@@ -75,7 +76,7 @@ export function RetailerStatsCard({
       "bg-white shadow-lg",
       // Dark mode base 
       "dark:bg-gray-800/90  dark:border-gray-700/50",
-     
+      className
     )}>
       <div className="p-5">
         {/* En-tête avec titre et icône */}

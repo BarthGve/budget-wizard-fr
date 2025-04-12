@@ -11,6 +11,7 @@ import { TablePagination } from "./TablePagination";
 import { TableDialogs } from "./TableDialogs";
 import { useTheme } from "next-themes";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { RecurringExpense } from "../types";
 
 // Type pour les props du composant
 interface ExpenseTableContentProps {
@@ -157,7 +158,7 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
         )}>
           <Table>
             <TableHeader
-              sortField={sortField}
+              sortField={sortField as keyof RecurringExpense}
               sortDirection={sortDirection}
               onSort={handleSort}
             />

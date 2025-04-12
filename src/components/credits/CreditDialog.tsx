@@ -3,7 +3,7 @@ import { useState, memo, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { CreditForm } from "./CreditForm";
-import { Credit } from "./types";
+import { Credit, ColorScheme } from "./types";
 import { cn } from "@/lib/utils";
 import { CreditCardIcon, EditIcon, PlusCircleIcon, X } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -15,7 +15,7 @@ interface CreditDialogProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  colorScheme?: "purple" | "green" | "blue";
+  colorScheme?: ColorScheme;
 }
 
 export const CreditDialog = memo(({ 

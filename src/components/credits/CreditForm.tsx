@@ -7,7 +7,7 @@ import { DomainField } from "./form-fields/DomainField";
 import { AmountField } from "./form-fields/AmountField";
 import { FirstPaymentDateField } from "./form-fields/FirstPaymentDateField";
 import { MonthsCountField } from "./form-fields/MonthsCountField";
-import { Credit } from "./types";
+import { Credit, ColorScheme } from "./types";
 import { AssociateVehicleField } from "./form-fields/AssociateVehicleField";
 import { VehicleField } from "./form-fields/VehicleField";
 import { ExpenseTypeField } from "./form-fields/ExpenseTypeField";
@@ -17,7 +17,7 @@ interface CreditFormProps {
   credit?: Credit;
   onSuccess: () => void;
   onCancel: () => void;
-  colorScheme?: "purple" | "green" | "blue";
+  colorScheme?: ColorScheme;
 }
 
 export function CreditForm({

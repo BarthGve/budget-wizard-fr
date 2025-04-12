@@ -20,3 +20,7 @@ export const statusLabels = {
   remboursé: "Remboursé",
   dépassé: "Dépassé"
 };
+
+// Définir un type pour les schémas de couleurs cohérent dans toute l'application
+export type ColorScheme = "purple" | "green" | "blue";
+

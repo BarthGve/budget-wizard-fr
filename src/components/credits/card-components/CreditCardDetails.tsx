@@ -1,5 +1,5 @@
 
-import { Credit } from "../types";
+import { Credit, ColorScheme } from "../types";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";

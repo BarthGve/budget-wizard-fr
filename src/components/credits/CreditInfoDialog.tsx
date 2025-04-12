@@ -1,7 +1,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Credit } from "./types";
+import { Credit, ColorScheme } from "./types";
 import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
 import { fr } from "date-fns/locale";
 import { formatCurrency } from "@/utils/format";
@@ -17,7 +17,7 @@ interface CreditInfoDialogProps {
   credit: Credit;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  colorScheme?: "purple" | "green" | "blue";
+  colorScheme?: ColorScheme;
 }
 
 export const CreditInfoDialog = ({ 
