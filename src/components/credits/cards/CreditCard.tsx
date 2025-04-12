@@ -36,10 +36,10 @@ export const CreditCard = ({
     primary: {
       // Light mode
   card: "bg-white border border-primary dark:border-primary",
-  icon: "bg-primary/10 text-primary dark:bg-primary dark:text-white",
-  title: "text-primary dark:text-primary",
-  amount: "text-primary dark:text-primary",
-  description: "text-primary/90 dark:text-primary/90",
+  icon: "bg-primary/10 text-primary",
+  title: "text-primary ",
+  amount: "text-primary ",
+  description: "text-primary-foreground dark:text-primary-foreground",
   badge: "bg-primary text-white dark:bg-primary dark:text-white"
 
     },
