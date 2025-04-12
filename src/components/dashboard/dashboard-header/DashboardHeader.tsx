@@ -40,8 +40,8 @@ export const DashboardHeader = ({
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
           
-            "bg-gradient-to-br from-purple-100 to-violet-50",
-            "dark:bg-gradient-to-br dark:from-purple-900/40 dark:to-violet-800/30 dark:shadow-purple-900/10"
+            "bg-gradient-to-br from-primary-100 to-primary-50",
+         
           )}
         >
           <LayoutDashboard className={cn(
