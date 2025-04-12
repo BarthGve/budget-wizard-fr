@@ -133,7 +133,7 @@ export const CreditCard = ({
         )}>
           <CreditCardIcon className="h-5 w-5" />
         </div>
-        <span className="text-primary dark:text-primary">Crédits</span>
+        <span >Crédits</span>
       </CardTitle>
       <Badge 
         variant="default"
