@@ -39,10 +39,10 @@ export const SavingsCard = memo(({
       <Card 
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
-          // Light mode styles with primary color
-          "bg-primary/10 shadow-lg border border-primary/20 hover:shadow-xl",
-          // Dark mode styles with primary color
-          "dark:bg-primary/10 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
+          // Light mode styles with quaternary  color
+          "bg-quaternary /10 shadow-lg border border-quaternary /20 hover:shadow-xl",
+          // Dark mode styles with quaternary  color
+          "dark:bg-quaternary /10 dark:border-quaternary /30 dark:shadow-quaternary /30 dark:hover:shadow-quaternary /50"
         )}
         onClick={() => navigate("/savings")}
       >
@@ -51,8 +51,8 @@ export const SavingsCard = memo(({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-primary/20 text-primary", // Apply primary color for icon background
-                "dark:bg-primary/20 dark:text-primary" // Dark mode variant
+                "bg-quaternary /20 text-quaternary ", // Apply quaternary  color for icon background
+                "dark:bg-quaternary /20 dark:text-quaternary " // Dark mode variant
               )}>
                 <PiggyBank className="h-5 w-5" />
               </div>
@@ -68,7 +68,7 @@ export const SavingsCard = memo(({
                 className={cn(
                   "text-xl font-bold leading-none w-1/3",
                   "text-gray-800", // Light mode text color
-                  "dark:text-primary" // Dark mode text color using primary
+                  "dark:text-quaternary " // Dark mode text color using quaternary 
                 )}
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -81,32 +81,32 @@ export const SavingsCard = memo(({
                 <TooltipTrigger asChild>
                   <div className="w-2/3 relative">
                     <div className={cn(
-                      "absolute inset-0 bg-primary/10 blur-sm rounded-full opacity-0 dark:opacity-60", 
-                      isGoalReached ? "dark:bg-primary/10" : "" // Change intensity based on goal
+                      "absolute inset-0 bg-quaternary /10 blur-sm rounded-full opacity-0 dark:opacity-60", 
+                      isGoalReached ? "dark:bg-quaternary /10" : "" // Change intensity based on goal
                     )} />
                     
                     <Progress 
                       value={progressPercentage} 
                       className={cn(
                         "h-2.5 rounded-full",
-                        "bg-primary/50", // Light mode progress background using primary
-                        "dark:bg-primary/70" // Dark mode progress background using primary
+                        "bg-quaternary /50", // Light mode progress background using quaternary 
+                        "dark:bg-quaternary /70" // Dark mode progress background using quaternary 
                       )}
                       indicatorClassName={cn(
-                        "bg-primary", // Indicator color using primary
-                        isGoalReached ? "dark:bg-primary/40" : "dark:bg-primary"
+                        "bg-quaternary ", // Indicator color using quaternary 
+                        isGoalReached ? "dark:bg-quaternary /40" : "dark:bg-quaternary "
                       )}
                     />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
                   <p className="flex items-center gap-1.5 dark:text-white font-medium">
-                    <Info className="h-4 w-4 text-primary dark:text-primary" />
+                    <Info className="h-4 w-4 text-quaternary  dark:text-quaternary " />
                     {Math.round(progressPercentage)}% de l'objectif atteint
                   </p>
                   <span className="dark:text-gray-300 mt-1 block">
                     {isGoalReached ? (
-                      <span className="font-medium text-primary dark:text-primary">
+                      <span className="font-medium text-quaternary  dark:text-quaternary ">
                         Objectif atteint ! (+{Math.abs(remainingAmount).toLocaleString('fr-FR')} €)
                       </span>
                     ) : (
