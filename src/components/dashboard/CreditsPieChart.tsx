@@ -99,7 +99,7 @@ export const CreditsPieChart = ({
               )}>
                 <CreditCard className="h-4 w-4" />
               </div>
-              <span className="text-primary dark:text-primary">Crédits</span>
+              <span>Crédits</span>
             </CardTitle>
           </div>
           <CardDescription className="text-sm text-primary/80 dark:text-primary/70">Vue d'ensemble des mensualités</CardDescription>
