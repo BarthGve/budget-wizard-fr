@@ -45,27 +45,21 @@ export const CreditCard = ({
     },
     quaternary: {
       // Light mode
-      card: "bg-white border-quaternary-100",
-      darkBorder: "dark:border-quaternary-800/50",
-      gradient: "from-quaternary-400 via-emerald-300 to-transparent",
-      darkGradient: "dark:from-quaternary-400 dark:via-emerald-500 dark:to-transparent",
-      icon: "bg-quaternary-100 text-quaternary-700 dark:bg-quaternary-800/40 dark:text-quaternary-300",
-      title: "text-quaternary-900 dark:text-quaternary-300",
-      amount: "text-quaternary-800 dark:text-quaternary-200",
-      description: "text-quaternary-600/80 dark:text-quaternary-400/90",
-      badge: "bg-quaternary-100 dark:bg-quaternary-800/40 text-quaternary-700 dark:text-quaternary-300",
+      card: "bg-white border border-quaternary dark:border-quaternary",
+  icon: "bg-quaternary/10 text-quaternary",
+  title: "text-quaternary ",
+  amount: "text-quaternary ",
+  description: "text-foreground ",
+  badge: "bg-quaternary/30 text-quaternary"
     },
     tertiary: {
       // Light mode
-      card: "bg-white border-tertiary-100",
-      darkBorder: "dark:border-tertiary-800/50",
-      gradient: "from-tertiary-400 via-sky-300 to-transparent",
-      darkGradient: "dark:from-tertiary-400 dark:via-sky-500 dark:to-transparent",
-      icon: "bg-tertiary-100 text-tertiary-700 dark:bg-tertiary-800/40 dark:text-tertiary-300",
-      title: "text-tertiary-900 dark:text-tertiary-300",
-      amount: "text-tertiary-800 dark:text-tertiary-200",
-      description: "text-tertiary-600/80 dark:text-tertiary-400/90",
-      badge: "bg-tertiary-100 dark:bg-tertiary-800/40 text-tertiary-700 dark:text-tertiary-300",
+      card: "bg-white border border-tertiary dark:border-tertiary",
+  icon: "bg-tertiary/10 text-tertiary",
+  title: "texttertiary ",
+  amount: "text-tertiary ",
+  description: "text-foreground ",
+  badge: "bg-tertiary/30 text-tertiary"
     }
   };
 
