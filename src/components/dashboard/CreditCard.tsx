@@ -158,7 +158,7 @@ export const CreditCard = ({
         </Tooltip>
       </Badge>
     </div>
-    <CardDescription className="text-primary/80 dark:text-primary/70">
+    <CardDescription className= "text-gray-500 dark:text-gray-400">
       {currentView === "monthly" 
         ? `Total dû en ${currentMonthName}` 
         : `Total dû en ${currentYear}`}
