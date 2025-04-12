@@ -39,14 +39,14 @@ export const DashboardHeader = ({
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
+          
             "bg-gradient-to-br from-purple-100 to-violet-50",
             "dark:bg-gradient-to-br dark:from-purple-900/40 dark:to-violet-800/30 dark:shadow-purple-900/10"
           )}
         >
           <LayoutDashboard className={cn(
             "h-6 w-6",
-            "text-purple-600",
-            "dark:text-purple-400"
+           "bg-primary/10 text-primary"
           )} />
         </motion.div>
         
