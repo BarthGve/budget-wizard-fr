@@ -36,9 +36,7 @@ export const CreditCard = ({
     primary: {
       // Light mode
   card: "bg-white border border-primary dark:border-primary",
-  gradient: "from-primary/10 via-primary/30 to-transparent",
-  darkGradient: "dark:from-primary dark:via-primary dark:to-transparent",
-  icon: "bg-primary text-white dark:bg-primary dark:text-white",
+  icon: "bg-primary/10 text-white dark:bg-primary dark:text-white",
   title: "text-primary dark:text-primary",
   amount: "text-primary dark:text-primary",
   description: "text-primary/90 dark:text-primary/90",
