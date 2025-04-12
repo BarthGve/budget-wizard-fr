@@ -57,16 +57,16 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
     <Card className={cn(
       "border shadow-sm overflow-hidden relative w-full max-w-full",
       // Light mode
-      "bg-white border-blue-100",
+      "bg-white border-tertiary-100",
       // Dark mode
-      "dark:bg-gray-800/90 dark:border-blue-800/50"
+      "dark:bg-gray-800/90 dark:border-tertiary-800/50"
     )}>
       <div className={cn(
         "absolute inset-0 opacity-5",
         // Light mode
-        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary-400 via-tertiary-300 to-transparent",
         // Dark mode
-        "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+        "dark:opacity-10 dark:from-tertiary-400 dark:via-tertiary-500 dark:to-transparent"
       )} />
 
       <CardHeader className="relative z-10">
@@ -78,23 +78,23 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
             <CardTitle className={cn(
               "text-xl font-semibold flex items-center gap-2",
               // Light mode
-              "text-blue-700",
+              "text-tertiary-700",
               // Dark mode
-              "dark:text-blue-300"
+              "dark:text-tertiary-300"
             )}>
               <div className={cn(
                 "p-1.5 rounded",
                 // Light mode
-                "bg-blue-100",
+                "bg-tertiary-100",
                 // Dark mode
-                "dark:bg-blue-800/40"
+                "dark:bg-tertiary-800/40"
               )}>
                 <TableIcon className={cn(
                   "h-5 w-5",
                   // Light mode
-                  "text-blue-600",
+                  "text-tertiary-600",
                   // Dark mode
-                  "dark:text-blue-400"
+                  "dark:text-tertiary-400"
                 )} />
               </div>
               Listing
@@ -102,9 +102,9 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
             <CardDescription className={cn(
               "mt-1 text-sm",
               // Light mode
-              "text-blue-600/80",
+              "text-tertiary-600/80",
               // Dark mode
-              "dark:text-blue-400/90"
+              "dark:text-tertiary-400/90"
             )}>
               Consultez et gérez l'ensemble de vos dépenses récurrentes
             </CardDescription>
@@ -115,9 +115,9 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
             onChange={handleItemsPerPageChange}
             className={cn(
               // Light mode
-              "border-blue-200 bg-blue-50/50 text-blue-700",
+              "border-tertiary-200 bg-tertiary-50/50 text-tertiary-700",
               // Dark mode
-              "dark:border-blue-800/70 dark:bg-blue-900/20 dark:text-blue-300"
+              "dark:border-tertiary-800/70 dark:bg-tertiary-900/20 dark:text-tertiary-300"
             )}
           />
         </div>
@@ -137,9 +137,9 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
           <div className={cn(
             "text-sm px-2.5 py-1.5 rounded-md whitespace-nowrap",
             // Light mode
-            "bg-blue-100/70 text-blue-700",
+            "bg-tertiary-100/70 text-tertiary-700",
             // Dark mode
-            "dark:bg-blue-900/30 dark:text-blue-300",
+            "dark:bg-tertiary-900/30 dark:text-tertiary-300",
             // Mobile
             isMobile && "self-end"
           )}>
@@ -152,9 +152,9 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
         <div className={cn(
           "border-t border-b",
           // Light mode
-          "border-blue-100",
+          "border-tertiary-100",
           // Dark mode
-          "dark:border-blue-800/50"
+          "dark:border-tertiary-800/50"
         )}>
           <Table>
             <TableHeader
@@ -176,9 +176,9 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
         <CardFooter className={cn(
           "justify-center py-4 relative z-10",
           // Light mode
-          "bg-blue-50/30",
+          "bg-tertiary-50/30",
           // Dark mode
-          "dark:bg-blue-900/10"
+          "dark:bg-tertiary-900/10"
         )}>
           <TablePagination
             currentPage={currentPage}
