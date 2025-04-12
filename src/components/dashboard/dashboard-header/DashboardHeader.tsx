@@ -52,15 +52,14 @@ export const DashboardHeader = ({
         <div>
           <h1 className={cn(
             "text-xl sm:text-2xl font-bold tracking-tight bg-clip-text text-transparent",
-            "bg-gradient-to-r from-primary to-primary/80",
+            "bg-gradient-to-r from-primary to-primary/50",
           
           )}>
             {currentView === "monthly" ? `Tableau de bord - ${currentMonthName}` : "Tableau de bord annuel"}
           </h1>
           <p className={cn(
             "text-sm mt-1",
-            "text-gray-500",
-            "dark:text-gray-400"
+            "text-foreground"
           )}>
             {currentView === "monthly" 
               ? "Vue mensuelle de vos finances" 
