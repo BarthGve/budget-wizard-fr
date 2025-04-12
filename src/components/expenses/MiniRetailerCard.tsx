@@ -86,12 +86,12 @@ export function MiniRetailerCard({
           <div className="flex-grow min-w-0">
             <Link 
               to={`/expenses/retailer/${retailer.id}`}
-              className="text-sm font-medium text-blue-700 dark:text-blue-300 truncate block"
+              className="text-sm font-medium text-tertiary hover:text-tertiary" // Remplacement par tertiary
             >
               {retailer.name}
             </Link>
             <div className="flex items-center gap-1">
-              <span className="text-lg font-bold text-blue-700 dark:text-blue-200">
+              <span className="text-lg font-bold text-tertiary"> {/* Remplacement par tertiary */}
                 {formatCurrency(totalAmount)}
               </span>
               
@@ -123,8 +123,8 @@ export function MiniRetailerCard({
             size="sm"
             className={cn(
               "flex-shrink-0 rounded-full h-7 w-7 p-0 ml-2",
-              "bg-blue-100 text-blue-700 hover:bg-blue-200",
-              "dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/50"
+              "bg-tertiary text-tertiary hover:bg-tertiary/80", // Remplacement par tertiary
+              "dark:bg-tertiary/30 dark:text-tertiary dark:hover:bg-tertiary/50" // Remplacement pour dark mode
             )}
             onClick={() => setAddDialogOpen(true)}
           >
