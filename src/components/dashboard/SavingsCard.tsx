@@ -40,9 +40,9 @@ export const SavingsCard = memo(({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles with quaternary  color
-          "bg-quaternary/10 shadow-lg border border-quaternary/20 hover:shadow-xl",
+          "shadow-lg border border-quaternary hover:shadow-xl",
           // Dark mode styles with quaternary  color
-          "dark:bg-quaternary /10 dark:border-quaternary/30 dark:shadow-quaternary/30 dark:hover:shadow-quaternary/50"
+          " dark:border-quaternary/30 dark:shadow-quaternary/30 dark:hover:shadow-quaternary/50"
         )}
         onClick={() => navigate("/savings")}
       >
