@@ -16,13 +16,9 @@ interface CreditInfoDialogProps {
   credit: Credit;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
 
-  
-export const CreditInfoDialog = ({ 
-  credit, 
-  open, 
-  onOpenChange, 
-}: CreditInfoDialogProps) => {
+export const CreditInfoDialog = ({ credit, open, onOpenChange }: CreditInfoDialogProps) => {
   const { data: vehicle } = useVehicle(credit.vehicle_id || "", {
     enabled: !!credit.vehicle_id && open
   });
@@ -61,10 +57,10 @@ export const CreditInfoDialog = ({
   const montantRembourse = completedMonths * credit.montant_mensualite;
   const montantRestant = montantTotal - montantRembourse;
 
-  // Couleurs simplifiées
-  const primaryColor = "primary";
-
-  const currentColors = {
+  // Utilisation de la couleur "primary" uniquement
+  const primaryColor = {
+    gradientFrom: "from-primary-500",
+    gradientTo: "to-primary-400",
     iconBg: "bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300",
     headingText: "text-primary-900 dark:text-primary-200",
     descriptionText: "text-primary-700/80 dark:text-primary-300/80",
@@ -76,29 +72,20 @@ export const CreditInfoDialog = ({
     separator: "via-primary-200/60 dark:via-primary-800/30"
   };
 
+  // Fonction pour récupérer le label du type de dépense
   const getExpenseTypeLabel = () => {
     if (!credit.vehicle_expense_type) return null;
-    
     const expenseType = credit.vehicle_expense_type;
     switch (expenseType) {
-      case "carburant":
-        return "Carburant";
-      case "entretien":
-        return "Entretien";
-      case "reparation":
-        return "Réparation";
-      case "assurance":
-        return "Assurance";
-      case "parking":
-        return "Parking";
-      case "peage":
-        return "Péage";
-      case "financement":
-        return "Financement";
-      case "autre":
-        return "Autre";
-      default:
-        return expenseType;
+      case "carburant": return "Carburant";
+      case "entretien": return "Entretien";
+      case "reparation": return "Réparation";
+      case "assurance": return "Assurance";
+      case "parking": return "Parking";
+      case "peage": return "Péage";
+      case "financement": return "Financement";
+      case "autre": return "Autre";
+      default: return expenseType;
     }
   };
 
@@ -108,45 +95,44 @@ export const CreditInfoDialog = ({
       className={cn(
         "relative flex flex-col pb-6 pt-5",
         "bg-gradient-to-br",
-        currentColors.lightBg,
-        currentColors.darkBg
+        primaryColor.lightBg,
+        primaryColor.darkBg
       )}
     >
-      {/* Background gradient */}
+      {/* Gradient de fond */}
       <div className={cn(
         "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-t-lg",
-        currentColors.iconBg
+        primaryColor.gradientFrom,
+        primaryColor.gradientTo
       )} />
-
-      {/* Radial gradient */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-t-lg" />
       
-      {/* Dialog header */}
+      {/* Header du dialog */}
       <DialogHeader className="relative z-10 mb-4 px-6">
         <div className="flex items-center gap-3">
-          <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
+          <div className={cn("p-2.5 rounded-lg", primaryColor.iconBg)}>
             <CreditCardIcon className="w-5 h-5" />
           </div>
-          <DialogTitle className={cn("text-2xl font-bold", currentColors.headingText)}>
+          <DialogTitle className={cn("text-2xl font-bold", primaryColor.headingText)}>
             {credit.nom_credit}
           </DialogTitle>
         </div>
         <div className="ml-[52px] mt-2">
-          <p className={cn("text-base", currentColors.descriptionText)}>
+          <p className={cn("text-base", primaryColor.descriptionText)}>
             {credit.nom_domaine}
           </p>
         </div>
       </DialogHeader>
       
-      {/* Ligne séparatrice stylée */}
+      {/* Séparateur */}
       <div className={cn(
         "h-px w-full mb-6",
         "bg-gradient-to-r from-transparent to-transparent",
-        currentColors.separator
+        primaryColor.separator
       )} />
       
-      {/* Contenu du dialogue */}
+      {/* Contenu du dialog */}
       <div className="space-y-6 py-4 relative z-10 px-6">
+        {/* Informations sur le crédit */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             {credit.logo_url ? (
@@ -167,7 +153,7 @@ export const CreditInfoDialog = ({
             ) : (
               <div className={cn(
                 "w-14 h-14 rounded-xl flex items-center justify-center",
-                currentColors.iconBg
+                primaryColor.iconBg
               )}>
                 <CreditCardIcon className="w-7 h-7" />
               </div>
@@ -184,7 +170,7 @@ export const CreditInfoDialog = ({
           <div className={cn(
             "rounded-full px-4 py-2 text-sm font-medium",
             "shadow-sm",
-            currentColors.iconBg
+            primaryColor.iconBg
           )}>
             {formatCurrency(montantTotal)}
           </div>
@@ -192,14 +178,13 @@ export const CreditInfoDialog = ({
 
         <div className={cn(
           "rounded-xl p-4",
-          currentColors.cardBg,
-          isMobile ? "" : currentColors.border
+          primaryColor.cardBg
         )}>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-start space-x-3">
               <div className={cn(
                 "p-2 rounded-lg mt-0.5",
-                currentColors.iconBg
+                primaryColor.iconBg
               )}>
                 <CalendarIcon className="w-4 h-4" />
               </div>
@@ -213,7 +198,7 @@ export const CreditInfoDialog = ({
             <div className="flex items-start space-x-3">
               <div className={cn(
                 "p-2 rounded-lg mt-0.5",
-                currentColors.iconBg
+                primaryColor.iconBg
               )}>
                 <CalendarIcon className="w-4 h-4" />
               </div>
@@ -227,6 +212,7 @@ export const CreditInfoDialog = ({
           </div>
         </div>
 
+        {/* Progression du remboursement */}
         <div className="space-y-4">
           <h3 className="font-medium text-base">Progression du remboursement</h3>
           
@@ -235,18 +221,16 @@ export const CreditInfoDialog = ({
             dateFin={credit.date_derniere_mensualite} 
             montantMensuel={credit.montant_mensualite} 
             withTooltip={false}
-            colorScheme={primaryColor}
           />
           
           <div className={cn(
             "rounded-xl p-4",
-            currentColors.cardBg,
-            isMobile ? "" : currentColors.border
+            primaryColor.cardBg
           )}>
             <div className="flex items-center gap-3 mb-3">
               <div className={cn(
                 "p-2 rounded-lg",
-                currentColors.iconBg
+                primaryColor.iconBg
               )}>
                 <PiggyBankIcon className="w-4 h-4" />
               </div>
@@ -255,20 +239,20 @@ export const CreditInfoDialog = ({
             
             <div className="grid grid-cols-2 gap-x-4 gap-y-3">
               <div>
-                <p className="text-sm text-muted-foreground">Mensualités payées</p>
-                <p className="font-medium">{completedMonths} sur {totalMonths}</p>
+                <p className="text-sm text-muted-foreground">Montant total du crédit</p>
+                <p className="font-medium">{formatCurrency(montantTotal)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Progression</p>
-                <p className="font-medium">{progressPercentage.toFixed(1)}%</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Montant remboursé</p>
+                <p className="text-sm text-muted-foreground">Montant remboursé à ce jour</p>
                 <p className="font-medium">{formatCurrency(montantRembourse)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Montant restant</p>
                 <p className="font-medium">{formatCurrency(montantRestant)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Mensualité restante</p>
+                <p className="font-medium">{formatCurrency(credit.montant_mensualite)}</p>
               </div>
             </div>
           </div>
@@ -278,10 +262,21 @@ export const CreditInfoDialog = ({
   );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-hidden max-w-[900px] w-full">
-        {renderContent()}
-      </DialogContent>
+    <Dialog open={open} onOpenChange={onOpenChange} className="max-w-3xl">
+      {isMobile || isTablet ? (
+        <DialogContent>
+          {renderContent()}
+        </DialogContent>
+      ) : (
+        <Sheet>
+          <SheetContent className="max-w-[680px] p-4 sm:p-6 sm:py-8 sm:rounded-lg">
+            {renderContent()}
+          </SheetContent>
+        </Sheet>
+      )}
+      <DialogClose>
+        <X className="w-5 h-5 text-primary-700 dark:text-primary-300" />
+      </DialogClose>
     </Dialog>
   );
 };
