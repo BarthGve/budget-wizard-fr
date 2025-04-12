@@ -1,6 +1,6 @@
 
 import { Card } from "@/components/ui/card";
-import { formatCurrency } from "@/utils/format";
+import { formatCurrency, formatVolume, formatPricePerLiter } from "@/utils/format";
 import { cn } from "@/lib/utils";
 import { 
   Droplets, 

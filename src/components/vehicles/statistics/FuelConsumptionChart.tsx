@@ -37,7 +37,7 @@ export const FuelConsumptionChart: React.FC<FuelConsumptionChartProps> = ({ data
           <div className="space-y-1 text-sm">
             <div className="flex gap-2 items-center">
               <div style={{ backgroundColor: colors.price }} className="w-2 h-2 rounded-full"></div>
-              <div>Prix: <span className="font-medium">{formatCurrency(data.price)}/L</span></div>
+              <div>Prix: <span className="font-medium">{formatCurrency(data.price, 3)}/L</span></div>
             </div>
             <div className="pt-1 text-xs text-muted-foreground">
               {data.mileage && <div>Kilométrage: {data.mileage} km</div>}
