@@ -33,35 +33,35 @@ export function RetailerStatsCard({
   // Styles basés sur le colorScheme
   const getColorStyles = () => {
     switch(colorScheme) {
-      case "purple":
+      case "primary":
         return {
-          iconBg: "bg-purple-100 dark:bg-purple-900/30",
-          iconText: "text-purple-600 dark:text-purple-300",
-          title: "text-purple-700 dark:text-purple-300",
+          iconBg: "bg-primary-100 dark:bg-primary-900/30",
+          iconText: "text-primary-600 dark:text-primary-300",
+          title: "text-primary-700 dark:text-primary-300",
           increaseText: "text-red-500 dark:text-red-300",
           decreaseText: "text-green-500 dark:text-green-300",
-          primaryText: "text-purple-700 dark:text-purple-200",
-          secondaryText: "text-purple-600/80 dark:text-purple-300/80"
+          primaryText: "text-primary-700 dark:text-primary-200",
+          secondaryText: "text-primary-600/80 dark:text-primary-300/80"
         };
       case "amber":
         return {
-          iconBg: "bg-amber-100 dark:bg-amber-900/30", 
-          iconText: "text-amber-600 dark:text-amber-300",
-          title: "text-amber-700 dark:text-amber-300",
+          iconBg: "bg-quinary-100 dark:bg-quinary-900/30", 
+          iconText: "text-quinary-600 dark:text-quinary-300",
+          title: "text-quinary-700 dark:text-quinary-300",
           increaseText: "text-red-500 dark:text-red-300",
           decreaseText: "text-green-500 dark:text-green-300",
-          primaryText: "text-amber-700 dark:text-amber-200",
-          secondaryText: "text-amber-600/80 dark:text-amber-300/80"
+          primaryText: "text-quinary-700 dark:text-quinary-200",
+          secondaryText: "text-quinary-600/80 dark:text-quinary-300/80"
         };
-      default: // blue
+      default: // tertiary
         return {
-          iconBg: "bg-blue-100 dark:bg-blue-900/30",
-          iconText: "text-blue-600 dark:text-blue-300",
-          title: "text-blue-700 dark:text-blue-300",
+          iconBg: "bg-tertiary-100 dark:bg-tertiary-900/30",
+          iconText: "text-tertiary-600 dark:text-tertiary-300",
+          title: "text-tertiary-700 dark:text-tertiary-300",
           increaseText: "text-red-500 dark:text-red-300",
           decreaseText: "text-green-500 dark:text-green-300", 
-          primaryText: "text-blue-700 dark:text-blue-200",
-          secondaryText: "text-blue-600/80 dark:text-blue-300/80"
+          primaryText: "text-tertiary-700 dark:text-tertiary-200",
+          secondaryText: "text-tertiary-600/80 dark:text-tertiary-300/80"
         };
     }
   };
@@ -75,7 +75,7 @@ export function RetailerStatsCard({
       "bg-white shadow-lg",
       // Dark mode base 
       "dark:bg-gray-800/90  dark:border-gray-700/50",
-      className
+     
     )}>
       <div className="p-5">
         {/* En-tête avec titre et icône */}

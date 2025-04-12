@@ -17,14 +17,14 @@ interface CreditFormProps {
   credit?: Credit;
   onSuccess: () => void;
   onCancel: () => void;
-  colorScheme?: "primary" | "quaternary" | "tertiary";
+  colorScheme?: "purple" | "green" | "blue";
 }
 
 export function CreditForm({
   credit,
   onSuccess,
   onCancel,
-  colorScheme = "primary",
+  colorScheme = "purple",
 }: CreditFormProps) {
   const { form, onSubmit } = useCreditForm({
     credit,
@@ -38,9 +38,9 @@ export function CreditForm({
 
   // Couleurs du bouton en fonction du colorScheme
   const buttonColors = {
-    primary: "bg-primary-600 hover:bg-primary-500",
-    quaternary: "bg-quaternary-600 hover:bg-quaternary-500",
-    tertiary: "bg-tertiary-600 hover:bg-tertiary-500"
+    purple: "bg-violet-600 hover:bg-violet-500",
+    green: "bg-green-600 hover:bg-green-500",
+    blue: "bg-blue-600 hover:bg-blue-500"
   };
 
   return (
