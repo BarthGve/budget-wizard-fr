@@ -59,9 +59,9 @@ export const ExpensesCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-primary/10 shadow-lg border border-primary/20 hover:shadow-xl",
+          "bg-tertiary/10 shadow-lg border border-tertiary/20 hover:shadow-xl",
           // Dark mode styles - alignées avec les cards de graphiques
-          "dark:bg-primary/10 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
+          "dark:bg-tertiary/10 dark:border-tertiary/30 dark:shadow-tertiary/30 dark:hover:shadow-tertiary/50"
         )}
         onClick={() => navigate("/recurring-expenses")}
       >
@@ -70,8 +70,8 @@ export const ExpensesCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-primary/20 text-primary", // Light mode
-                "dark:bg-primary/20 dark:text-primary" // Dark mode
+                "bg-tertiary/20 text-tertiary", // Light mode
+                "dark:bg-tertiary/20 dark:text-tertiary" // Dark mode
               )}>
                 <ClipboardList className="h-5 w-5" />
               </div>
@@ -92,7 +92,7 @@ export const ExpensesCard = ({
                 className={cn(
                   "text-xl font-bold leading-none w-1/3",
                   "text-gray-800", // Light mode
-                  "dark:text-primary" // Dark mode
+                  "dark:text-tertiary" // Dark mode
                 )}
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -105,7 +105,7 @@ export const ExpensesCard = ({
                 <TooltipTrigger asChild>
                   <div className="w-2/3 relative">
                     <div className={cn(
-                      "absolute inset-0 bg-primary/10 dark:bg-primary/5 rounded-full blur-sm",
+                      "absolute inset-0 bg-tertiary/10 dark:bg-tertiary/5 rounded-full blur-sm",
                       "opacity-0 dark:opacity-100 transition-opacity"
                     )} />
                     <Progress 
@@ -113,25 +113,25 @@ export const ExpensesCard = ({
                       className={cn(
                         "h-2.5 rounded-full",
                         // Light mode - progress background
-                        "bg-primary/50",
+                        "bg-tertiary/50",
                         // Dark mode - progress background
-                        "dark:bg-primary/70"
+                        "dark:bg-tertiary/70"
                       )}
                       indicatorClassName={cn(
                         // Définit explicitement une couleur pour l'indicateur de progression
-                        "bg-primary", 
-                        "dark:bg-primary"
+                        "bg-tertiary", 
+                        "dark:bg-tertiary"
                       )}
                     />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
                   <p className="flex items-center gap-1.5 dark:text-white font-medium">
-                    <Info className="h-4 w-4 text-primary dark:text-primary" />
+                    <Info className="h-4 w-4 text-tertiary dark:text-tertiary" />
                     {Math.round(progressPercentage)}% des charges payées
                   </p>
                   <span className="dark:text-gray-300 mt-1 block">
-                    Reste : <span className="font-medium text-primary dark:text-primary">{Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
+                    Reste : <span className="font-medium text-tertiary dark:text-tertiary">{Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
                   </span>
                 </TooltipContent>
               </Tooltip>
