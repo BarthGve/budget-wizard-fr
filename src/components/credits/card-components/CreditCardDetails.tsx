@@ -95,7 +95,7 @@ export const CreditCardDetails = ({ credit, index, isArchived = false }: CreditC
               dateFin={credit.date_derniere_mensualite}
               montantMensuel={credit.montant_mensualite}
               withTooltip={true}
-              colorScheme={isArchived ? "green" : "purple"}
+              colorScheme={isArchived ? "quaternary" : "primary"}
               // Si le crédit est archivé, on force la progression à 100%
               value={isArchived || credit.statut === "remboursé" ? 100 : undefined}
             />
