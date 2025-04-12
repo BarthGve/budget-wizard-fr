@@ -12,51 +12,51 @@ interface RetailerHeaderProps {
     logo_url?: string;
   };
   onAddExpense: () => void;
-  colorScheme?: "blue" | "purple" | "green";
+  colorScheme?: "tertiary" | "primary" | "quaternary";
 }
 
 export function RetailerHeader({ 
   retailer, 
   onAddExpense, 
-  colorScheme = "blue" 
+  colorScheme = "tertiary" 
 }: RetailerHeaderProps) {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   
   // Configuration des couleurs selon le schéma choisi
   const colors = {
-    blue: {
-      gradientFrom: "from-blue-500",
+    tertiary: {
+      gradientFrom: "from-tertiary-500",
       gradientTo: "to-sky-400",
-      hoverFrom: "hover:from-blue-600",
+      hoverFrom: "hover:from-tertiary-600",
       hoverTo: "hover:to-sky-500",
-      backButton: "text-blue-700 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300",
-      titleText: "text-blue-950 dark:text-blue-100",
-      badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-      shadow: "shadow-blue-500/10",
-      logoBorder: "border-blue-200 dark:border-blue-800"
+      backButton: "text-tertiary-700 hover:text-tertiary-500 dark:text-tertiary-400 dark:hover:text-tertiary-300",
+      titleText: "text-tertiary-950 dark:text-tertiary-100",
+      badge: "bg-tertiary-100 text-tertiary-700 dark:bg-tertiary-900/30 dark:text-tertiary-300",
+      shadow: "shadow-tertiary-500/10",
+      logoBorder: "border-tertiary-200 dark:border-tertiary-800"
     },
-    purple: {
-      gradientFrom: "from-purple-500",
+    primary: {
+      gradientFrom: "from-primary-500",
       gradientTo: "to-violet-400",
-      hoverFrom: "hover:from-purple-600",
+      hoverFrom: "hover:from-primary-600",
       hoverTo: "hover:to-violet-500",
-      backButton: "text-purple-700 hover:text-purple-500 dark:text-purple-400 dark:hover:text-purple-300",
-      titleText: "text-purple-950 dark:text-purple-100",
-      badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
-      shadow: "shadow-purple-500/10",
-      logoBorder: "border-purple-200 dark:border-purple-800"
+      backButton: "text-primary-700 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300",
+      titleText: "text-primary-950 dark:text-primary-100",
+      badge: "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300",
+      shadow: "shadow-primary-500/10",
+      logoBorder: "border-primary-200 dark:border-primary-800"
     },
-    green: {
-      gradientFrom: "from-green-500",
+    quaternary: {
+      gradientFrom: "from-quaternary-500",
       gradientTo: "to-emerald-400",
-      hoverFrom: "hover:from-green-600",
+      hoverFrom: "hover:from-quaternary-600",
       hoverTo: "hover:to-emerald-500",
-      backButton: "text-green-700 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300",
-      titleText: "text-green-950 dark:text-green-100",
-      badge: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-      shadow: "shadow-green-500/10",
-      logoBorder: "border-green-200 dark:border-green-800"
+      backButton: "text-quaternary-700 hover:text-quaternary-500 dark:text-quaternary-400 dark:hover:text-quaternary-300",
+      titleText: "text-quaternary-950 dark:text-quaternary-100",
+      badge: "bg-quaternary-100 text-quaternary-700 dark:bg-quaternary-900/30 dark:text-quaternary-300",
+      shadow: "shadow-quaternary-500/10",
+      logoBorder: "border-quaternary-200 dark:border-quaternary-800"
     }
   };
 
@@ -145,11 +145,11 @@ export function RetailerHeader({
             "h-10 px-4 border transition-all duration-200 rounded-md",
             "hover:scale-[1.02] active:scale-[0.98]",
             // Light mode
-            "bg-white border-blue-200 text-blue-600",
-            "hover:border-blue-300 hover:bg-blue-50/50 hover:text-blue-700",
+            "bg-white border-tertiary-200 text-tertiary-600",
+            "hover:border-tertiary-300 hover:bg-tertiary-50/50 hover:text-tertiary-700",
             // Dark mode
-            "dark:bg-gray-800 dark:border-blue-800/60 dark:text-blue-400",
-            "dark:hover:bg-blue-900/20 dark:hover:border-blue-700 dark:hover:text-blue-300"
+            "dark:bg-gray-800 dark:border-tertiary-800/60 dark:text-tertiary-400",
+            "dark:hover:bg-tertiary-900/20 dark:hover:border-tertiary-700 dark:hover:text-tertiary-300"
           )}
           style={{
             boxShadow: isDarkMode
@@ -161,9 +161,9 @@ export function RetailerHeader({
             <span className={cn(
               "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
               // Light mode
-              "bg-blue-100/80 text-blue-600",
+              "bg-tertiary-100/80 text-tertiary-600",
               // Dark mode
-              "dark:bg-blue-800/50 dark:text-blue-300"
+              "dark:bg-tertiary-800/50 dark:text-tertiary-300"
             )}>
               <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
             </span>

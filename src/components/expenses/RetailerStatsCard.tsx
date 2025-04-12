@@ -11,7 +11,7 @@ interface RetailerStatsCardProps {
   className?: string;
   previousAmount?: number;  // Montant précédent pour calculer la variation
   icon?: React.ReactNode;
-  colorScheme?: "blue" | "purple" | "amber";
+  colorScheme?: "tertiary" | "primary" | "amber";
 }
 
 export function RetailerStatsCard({ 
@@ -22,7 +22,7 @@ export function RetailerStatsCard({
   className,
   previousAmount,
   icon,
-  colorScheme = "blue"
+  colorScheme = "tertiary"
 }: RetailerStatsCardProps) {
   const hasVariation = previousAmount !== undefined && previousAmount !== 0;
   const percentageChange = hasVariation
@@ -33,15 +33,15 @@ export function RetailerStatsCard({
   // Styles basés sur le colorScheme
   const getColorStyles = () => {
     switch(colorScheme) {
-      case "purple":
+      case "primary":
         return {
-          iconBg: "bg-purple-100 dark:bg-purple-900/30",
-          iconText: "text-purple-600 dark:text-purple-300",
-          title: "text-purple-700 dark:text-purple-300",
+          iconBg: "bg-primary-100 dark:bg-primary-900/30",
+          iconText: "text-primary-600 dark:text-primary-300",
+          title: "text-primary-700 dark:text-primary-300",
           increaseText: "text-red-500 dark:text-red-300",
-          decreaseText: "text-green-500 dark:text-green-300",
-          primaryText: "text-purple-700 dark:text-purple-200",
-          secondaryText: "text-purple-600/80 dark:text-purple-300/80"
+          decreaseText: "text-quaternary-500 dark:text-quaternary-300",
+          primaryText: "text-primary-700 dark:text-primary-200",
+          secondaryText: "text-primary-600/80 dark:text-primary-300/80"
         };
       case "amber":
         return {
@@ -49,19 +49,19 @@ export function RetailerStatsCard({
           iconText: "text-amber-600 dark:text-amber-300",
           title: "text-amber-700 dark:text-amber-300",
           increaseText: "text-red-500 dark:text-red-300",
-          decreaseText: "text-green-500 dark:text-green-300",
+          decreaseText: "text-quaternary-500 dark:text-quaternary-300",
           primaryText: "text-amber-700 dark:text-amber-200",
           secondaryText: "text-amber-600/80 dark:text-amber-300/80"
         };
-      default: // blue
+      default: // tertiary
         return {
-          iconBg: "bg-blue-100 dark:bg-blue-900/30",
-          iconText: "text-blue-600 dark:text-blue-300",
-          title: "text-blue-700 dark:text-blue-300",
+          iconBg: "bg-tertiary-100 dark:bg-tertiary-900/30",
+          iconText: "text-tertiary-600 dark:text-tertiary-300",
+          title: "text-tertiary-700 dark:text-tertiary-300",
           increaseText: "text-red-500 dark:text-red-300",
-          decreaseText: "text-green-500 dark:text-green-300", 
-          primaryText: "text-blue-700 dark:text-blue-200",
-          secondaryText: "text-blue-600/80 dark:text-blue-300/80"
+          decreaseText: "text-quaternary-500 dark:text-quaternary-300", 
+          primaryText: "text-tertiary-700 dark:text-tertiary-200",
+          secondaryText: "text-tertiary-600/80 dark:text-tertiary-300/80"
         };
     }
   };
@@ -111,8 +111,8 @@ export function RetailerStatsCard({
                   </div>
                 ) : (
                   <div className="flex items-center">
-                    <div className="p-1 rounded-full bg-green-100/80 dark:bg-green-900/30">
-                      <MoveDownRight className="h-3 w-3 text-green-500 dark:text-green-300" />
+                    <div className="p-1 rounded-full bg-quaternary-100/80 dark:bg-quaternary-900/30">
+                      <MoveDownRight className="h-3 w-3 text-quaternary-500 dark:text-quaternary-300" />
                     </div>
                     <span className={cn("text-sm ml-1", colors.decreaseText)}>
                       -{Math.abs(percentageChange).toFixed(1)}%

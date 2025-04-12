@@ -93,17 +93,17 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
         "overflow-hidden transition-all duration-200 h-full relative",
         "border shadow-lg",
         // Light mode
-        "bg-white border-blue-100",
+        "bg-white border-tertiary-100",
         // Dark mode
-        "dark:bg-gray-800/90 dark:border-blue-800/50"
+        "dark:bg-gray-800/90 dark:border-tertiary-800/50"
       )}>
         {/* Fond radial gradient */}
         <div className={cn(
           "absolute inset-0 opacity-5",
           // Light mode
-          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary-400 via-tertiary-300 to-transparent",
           // Dark mode
-          "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+          "dark:opacity-10 dark:from-tertiary-400 dark:via-tertiary-500 dark:to-transparent"
         )} />
         
         <CardHeader className="pb-2 pt-6 relative z-10">
@@ -111,9 +111,9 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
             <div className="flex items-center space-x-2">
               <div className={cn(
                 // Light mode
-                "bg-blue-100 text-blue-700",
+                "bg-tertiary-100 text-tertiary-700",
                 // Dark mode
-                "dark:bg-blue-800/40 dark:text-blue-300",
+                "dark:bg-tertiary-800/40 dark:text-tertiary-300",
                 // Common
                 "p-2 rounded-lg"
               )}>
@@ -122,9 +122,9 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
               <CardTitle className={cn(
                 "text-lg font-semibold",
                 // Light mode
-                "text-blue-700",
+                "text-tertiary-700",
                 // Dark mode
-                "dark:text-blue-300"
+                "dark:text-tertiary-300"
               )}>
                 Total des dépenses
               </CardTitle>
@@ -134,9 +134,9 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
           <CardDescription className={cn(
             "mt-2 text-sm",
             // Light mode
-            "text-blue-600/80",
+            "text-tertiary-600/80",
             // Dark mode
-            "dark:text-blue-400/90"
+            "dark:text-tertiary-400/90"
           )}>
             {periodLabel}
           </CardDescription>
@@ -149,9 +149,9 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
               className={cn(
                 "text-2xl font-bold",
                 // Light mode
-                "text-blue-700",
+                "text-tertiary-700",
                 // Dark mode
-                "dark:text-blue-300"
+                "dark:text-tertiary-300"
               )}
               initial={hasChanged ? { opacity: 0, y: totalAmount > prevAmount ? 20 : -20 } : false}
               animate={{ opacity: 1, y: 0 }}

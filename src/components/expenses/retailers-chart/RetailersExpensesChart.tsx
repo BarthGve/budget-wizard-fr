@@ -52,17 +52,17 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
       "overflow-hidden transition-all duration-200 relative h-full",
       "border shadow-lg",
       // Light mode
-      "bg-white border-blue-100",
+      "bg-white border-tertiary-100",
       // Dark mode
-      "dark:bg-gray-800/90 dark:border-blue-800/50"
+      "dark:bg-gray-800/90 dark:border-tertiary-800/50"
     )}>
       {/* Fond radial gradient */}
       <div className={cn(
         "absolute inset-0 opacity-5",
         // Light mode
-        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary-400 via-tertiary-300 to-transparent",
         // Dark mode
-        "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+        "dark:opacity-10 dark:from-tertiary-400 dark:via-tertiary-500 dark:to-transparent"
       )} />
       
       <CardHeader className="pb-2 pt-6 relative z-10">
@@ -70,9 +70,9 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
           <div className="flex items-center space-x-2">
             <div className={cn(
               // Light mode
-              "bg-blue-100 text-blue-700",
+              "bg-tertiary-100 text-tertiary-700",
               // Dark mode
-              "dark:bg-blue-800/40 dark:text-blue-300",
+              "dark:bg-tertiary-800/40 dark:text-tertiary-300",
               // Common
               "p-2 rounded-lg"
             )}>
@@ -81,9 +81,9 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
             <CardTitle className={cn(
               "text-lg font-semibold",
               // Light mode
-              "text-blue-700",
+              "text-tertiary-700",
               // Dark mode
-              "dark:text-blue-300"
+              "dark:text-tertiary-300"
             )}>
               {viewMode === 'monthly' 
                 ? "Dépenses par enseigne (mois en cours)" 
@@ -95,19 +95,19 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
           
           {/* Switch pour alterner entre les deux modes de vue annuelle (seulement affiché en mode annuel) */}
           {viewMode === 'yearly' && (
-            <div className="flex items-center p-1 bg-blue-50 rounded-full border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/60">
+            <div className="flex items-center p-1 bg-tertiary-50 rounded-full border border-tertiary-100 dark:bg-tertiary-900/20 dark:border-tertiary-800/60">
               <div className="flex items-center space-x-2 px-3">
                 <CalendarRange className={cn(
                   "h-4 w-4",
                   yearlyViewMode === 'yearly-totals' 
-                    ? "text-blue-600 dark:text-blue-300" 
+                    ? "text-tertiary-600 dark:text-tertiary-300" 
                     : "text-gray-400 dark:text-gray-500"
                 )} />
                 <Label 
                   htmlFor="yearly-view-mode" 
                   className={cn(
                     yearlyViewMode === 'yearly-totals' 
-                      ? "text-blue-600 font-medium dark:text-blue-300" 
+                      ? "text-tertiary-600 font-medium dark:text-tertiary-300" 
                       : "text-gray-400 dark:text-gray-500"
                   )}
                 >
@@ -119,7 +119,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                 id="yearly-view-mode"
                 checked={yearlyViewMode === 'monthly-in-year'}
                 onCheckedChange={(checked) => setYearlyViewMode(checked ? 'monthly-in-year' : 'yearly-totals')}
-                className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
+                className="data-[state=checked]:bg-tertiary-600 dark:data-[state=checked]:bg-tertiary-500"
               />
               
               <div className="flex items-center space-x-2 px-3">
@@ -127,7 +127,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                   htmlFor="yearly-view-mode" 
                   className={cn(
                     yearlyViewMode === 'monthly-in-year' 
-                      ? "text-blue-600 font-medium dark:text-blue-300" 
+                      ? "text-tertiary-600 font-medium dark:text-tertiary-300" 
                       : "text-gray-400 dark:text-gray-500"
                   )}
                 >
@@ -136,7 +136,7 @@ export function RetailersExpensesChart({ expenses, retailers, viewMode }: Retail
                 <Calendar className={cn(
                   "h-4 w-4",
                   yearlyViewMode === 'monthly-in-year' 
-                    ? "text-blue-600 dark:text-blue-300" 
+                    ? "text-tertiary-600 dark:text-tertiary-300" 
                     : "text-gray-400 dark:text-gray-500"
                 )} />
               </div>
