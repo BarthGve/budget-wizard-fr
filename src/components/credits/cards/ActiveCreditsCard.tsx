@@ -19,7 +19,7 @@ export const ActiveCreditsCard = ({
       amount={totalActiveMensualites}
       subtitle="Mensualités totales"
       badgeText="mensuels"
-      colorScheme="purple"
+      colorScheme="primary"
     />
   );
 };
