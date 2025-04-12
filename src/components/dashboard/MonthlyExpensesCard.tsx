@@ -35,9 +35,9 @@ export const MonthlyExpensesCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300 h-full",
           // Light mode styles
-          "bg-primary/10 shadow-lg border border-primary/20 hover:shadow-xl",
+          "bg-tertiary/10 shadow-lg border border-tertiary/20 hover:shadow-xl",
           // Dark mode styles
-          "dark:bg-primary/10 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
+          "dark:bg-tertiary/10 dark:border-tertiary/30 dark:shadow-tertiary/30 dark:hover:shadow-tertiary/50"
         )} 
         onClick={() => navigate("/expenses")}
       >
@@ -46,8 +46,8 @@ export const MonthlyExpensesCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-primary/20 text-primary",
-                "dark:bg-primary/20 dark:text-primary"
+                "bg-tertiary/20 text-tertiary",
+                "dark:bg-tertiary/20 dark:text-tertiary"
               )}>
                 <ShoppingBasket className="h-5 w-5" />
               </div>
@@ -67,7 +67,7 @@ export const MonthlyExpensesCard = ({
               className={cn(
                 "text-xl font-bold leading-none", 
                 "text-gray-800",
-                "dark:text-primary"
+                "dark:text-tertiary"
               )} 
               initial={{ scale: 0.9 }} 
               animate={{ scale: 1 }} 
