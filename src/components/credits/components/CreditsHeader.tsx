@@ -42,8 +42,7 @@ export const CreditsHeader = () => {
         >
           <CreditCard className={cn(
             "h-6 w-6",
-            "text-purple-600",
-            "dark:text-purple-400"
+          "bg-primary/10 text-primary"
           )} />
         </motion.div>
         
