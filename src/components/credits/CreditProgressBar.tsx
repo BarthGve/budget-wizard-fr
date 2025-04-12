@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils";
 
 // Couleurs pour la barre de progression en fonction du colorScheme
 const progressColors = {
-  primary: "bg-primary-600",
-  quaternary: "bg-quaternary-600",
-  tertiary: "bg-tertiary-600"
+  purple: "bg-violet-600",
+  green: "bg-green-600",
+  blue: "bg-blue-600"
 };
 
 interface CreditProgressBarProps {
@@ -17,7 +17,7 @@ interface CreditProgressBarProps {
   dateFin: string;
   montantMensuel: number;
   withTooltip?: boolean;
-  colorScheme?: "primary" | "quaternary" | "tertiary";
+  colorScheme?: "purple" | "green" | "blue";
   value?: number; // Pourcentage direct (0-100)
   amountPaid?: number; // Montant payé pour l'affichage du tooltip
   totalAmount?: number; // Montant total pour l'affichage du tooltip
@@ -28,7 +28,7 @@ export const CreditProgressBar = ({
   dateFin, 
   montantMensuel, 
   withTooltip = true,
-  colorScheme = "primary",
+  colorScheme = "purple",
   value, // Si fourni, utilisera cette valeur directement
   amountPaid,
   totalAmount
