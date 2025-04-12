@@ -14,7 +14,7 @@ const StyledLoader = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-2xl font-bold text-purple-500 dark:text-purple-400">
+          <h2 className="text-2xl font-bold text-primary-500 dark:text-primary-400">
             Chargement des données
           </h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
@@ -138,7 +138,7 @@ const StyledLoader = () => {
           {[0, 1, 2].map((index) => (
             <motion.div
               key={index}
-              className="w-2 h-2 rounded-full bg-purple-500 dark:bg-purple-400"
+              className="w-2 h-2 rounded-full bg-primary-500 dark:bg-primary-400"
               animate={{
                 opacity: [0.6, 1, 0.6],
               }}
