@@ -43,7 +43,7 @@ export function RetailerStatsCard({
           primaryText: "text-primary-700 dark:text-primary-200",
           secondaryText: "text-primary-600/80 dark:text-primary-300/80"
         };
-      case "amber":
+      case "quinary":
         return {
           iconBg: "bg-quinary-100 dark:bg-quinary-900/30", 
           iconText: "text-quinary-600 dark:text-quinary-300",
@@ -75,7 +75,7 @@ export function RetailerStatsCard({
       "bg-white shadow-lg",
       // Dark mode base 
       "dark:bg-gray-800/90  dark:border-gray-700/50",
-     
+      className
     )}>
       <div className="p-5">
         {/* En-tête avec titre et icône */}
