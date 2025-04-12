@@ -95,8 +95,8 @@ export function EditExpenseDialog({
             renderCustomActions={(isFormSubmitting) => (
               <button 
                 type="submit" 
-                className={`w-full mt-6 bg-tertiary-500 hover:bg-tertiary-600 text-white dark:bg-tertiary-600 dark:hover:bg-tertiary-500
-                transition-colors duration-200 shadow-sm focus-visible:ring-tertiary-500 py-2 px-4 rounded
+                className={`w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-500
+                transition-colors duration-200 shadow-sm focus-visible:ring-blue-500 py-2 px-4 rounded
                 ${isSubmitting ? "opacity-80 cursor-not-allowed" : ""}`}
                 disabled={isSubmitting}
               >

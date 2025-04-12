@@ -17,7 +17,7 @@ interface CreditCardProps {
   amount: number;
   subtitle: ReactNode;
   badgeText: string;
-  colorScheme: "primary" | "quaternary" | "tertiary";
+  colorScheme: "purple" | "green" | "blue";
   children?: ReactNode;
 }
 
@@ -28,46 +28,46 @@ export const CreditCard = ({
   amount,
   subtitle,
   badgeText,
-  colorScheme = "tertiary",
+  colorScheme = "blue",
   children
 }: CreditCardProps) => {
   // Couleurs pour la barre de progression en fonction du schéma
   const colors = {
-    primary: {
+    purple: {
       // Light mode
-      card: "bg-white border-primary-100",
-      darkBorder: "dark:border-primary-800/50",
-      gradient: "from-primary-400 via-primary-300 to-transparent",
-      darkGradient: "dark:from-primary-400 dark:via-primary-500 dark:to-transparent",
-      icon: "bg-primary-100 text-primary-700 dark:bg-primary-800/40 dark:text-primary-300",
-      title: "text-primary-900 dark:text-primary-300",
-      amount: "text-primary-800 dark:text-primary-200",
-      description: "text-primary-600/80 dark:text-primary-400/90",
-      badge: "bg-primary-100 dark:bg-primary-800/40 text-primary-700 dark:text-primary-300",
+      card: "bg-white border-purple-100",
+      darkBorder: "dark:border-purple-800/50",
+      gradient: "from-purple-400 via-violet-300 to-transparent",
+      darkGradient: "dark:from-purple-400 dark:via-violet-500 dark:to-transparent",
+      icon: "bg-purple-100 text-purple-700 dark:bg-purple-800/40 dark:text-purple-300",
+      title: "text-purple-900 dark:text-purple-300",
+      amount: "text-purple-800 dark:text-purple-200",
+      description: "text-purple-600/80 dark:text-purple-400/90",
+      badge: "bg-purple-100 dark:bg-purple-800/40 text-purple-700 dark:text-purple-300",
     },
-    quaternary: {
+    green: {
       // Light mode
-      card: "bg-white border-quaternary-100",
-      darkBorder: "dark:border-quaternary-800/50",
-      gradient: "from-quaternary-400 via-emerald-300 to-transparent",
-      darkGradient: "dark:from-quaternary-400 dark:via-emerald-500 dark:to-transparent",
-      icon: "bg-quaternary-100 text-quaternary-700 dark:bg-quaternary-800/40 dark:text-quaternary-300",
-      title: "text-quaternary-900 dark:text-quaternary-300",
-      amount: "text-quaternary-800 dark:text-quaternary-200",
-      description: "text-quaternary-600/80 dark:text-quaternary-400/90",
-      badge: "bg-quaternary-100 dark:bg-quaternary-800/40 text-quaternary-700 dark:text-quaternary-300",
+      card: "bg-white border-green-100",
+      darkBorder: "dark:border-green-800/50",
+      gradient: "from-green-400 via-emerald-300 to-transparent",
+      darkGradient: "dark:from-green-400 dark:via-emerald-500 dark:to-transparent",
+      icon: "bg-green-100 text-green-700 dark:bg-green-800/40 dark:text-green-300",
+      title: "text-green-900 dark:text-green-300",
+      amount: "text-green-800 dark:text-green-200",
+      description: "text-green-600/80 dark:text-green-400/90",
+      badge: "bg-green-100 dark:bg-green-800/40 text-green-700 dark:text-green-300",
     },
-    tertiary: {
+    blue: {
       // Light mode
-      card: "bg-white border-tertiary-100",
-      darkBorder: "dark:border-tertiary-800/50",
-      gradient: "from-tertiary-400 via-sky-300 to-transparent",
-      darkGradient: "dark:from-tertiary-400 dark:via-sky-500 dark:to-transparent",
-      icon: "bg-tertiary-100 text-tertiary-700 dark:bg-tertiary-800/40 dark:text-tertiary-300",
-      title: "text-tertiary-900 dark:text-tertiary-300",
-      amount: "text-tertiary-800 dark:text-tertiary-200",
-      description: "text-tertiary-600/80 dark:text-tertiary-400/90",
-      badge: "bg-tertiary-100 dark:bg-tertiary-800/40 text-tertiary-700 dark:text-tertiary-300",
+      card: "bg-white border-blue-100",
+      darkBorder: "dark:border-blue-800/50",
+      gradient: "from-blue-400 via-sky-300 to-transparent",
+      darkGradient: "dark:from-blue-400 dark:via-sky-500 dark:to-transparent",
+      icon: "bg-blue-100 text-blue-700 dark:bg-blue-800/40 dark:text-blue-300",
+      title: "text-blue-900 dark:text-blue-300",
+      amount: "text-blue-800 dark:text-blue-200",
+      description: "text-blue-600/80 dark:text-blue-400/90",
+      badge: "bg-blue-100 dark:bg-blue-800/40 text-blue-700 dark:text-blue-300",
     }
   };
 
@@ -82,7 +82,7 @@ export const CreditCard = ({
         "bg-white",
         "border-gray-100",
         // Dark mode - alignées avec les cards de graphiques
-        "dark:bg-gray-800/90  dark:shadow-primary-800/30 ", 
+        "dark:bg-gray-800/90  dark:shadow-purple-800/30 ", 
         currentColors.darkBorder
       )}
     >

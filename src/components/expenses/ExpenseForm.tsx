@@ -84,8 +84,8 @@ export function ExpenseForm({
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger className={cn(
-                      "border-gray-300 focus:border-tertiary-400 focus-visible:ring-tertiary-200",
-                      "dark:border-gray-700 dark:focus:border-tertiary-500 dark:focus-visible:ring-tertiary-900"
+                      "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200",
+                      "dark:border-gray-700 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
                     )}>
                       <SelectValue placeholder="Sélectionnez une enseigne" />
                     </SelectTrigger>
@@ -124,8 +124,8 @@ export function ExpenseForm({
                     placeholder="0.00" 
                     {...field} 
                     className={cn(
-                      "border-gray-300 focus:border-tertiary-400 focus-visible:ring-tertiary-200 pr-6",
-                      "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-tertiary-500 dark:focus-visible:ring-tertiary-900"
+                      "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200 pr-6",
+                      "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
                     )} 
                   />
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">€</span>
@@ -148,8 +148,8 @@ export function ExpenseForm({
                   {...field}
                   max={format(new Date(), "yyyy-MM-dd")}
                   className={cn(
-                    "border-gray-300 focus:border-tertiary-400 focus-visible:ring-tertiary-200",
-                    "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-tertiary-500 dark:focus-visible:ring-tertiary-900"
+                    "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200",
+                    "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
                   )}
                 />
               </FormControl>
@@ -168,8 +168,8 @@ export function ExpenseForm({
                   placeholder="Ajouter un commentaire..." 
                   {...field} 
                   className={cn(
-                    "border-gray-300 focus:border-tertiary-400 focus-visible:ring-tertiary-200 min-h-20 resize-none",
-                    "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-tertiary-500 dark:focus-visible:ring-tertiary-900"
+                    "border-gray-300 focus:border-blue-400 focus-visible:ring-blue-200 min-h-20 resize-none",
+                    "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200 dark:focus:border-blue-500 dark:focus-visible:ring-blue-900"
                   )} 
                 />
               </FormControl>
@@ -185,10 +185,10 @@ export function ExpenseForm({
             type="submit" 
             className={cn(
               "w-full mt-6",
-              "bg-tertiary-500 hover:bg-tertiary-600 text-white",
-              "dark:bg-tertiary-600 dark:hover:bg-tertiary-500",
+              "bg-blue-500 hover:bg-blue-600 text-white",
+              "dark:bg-blue-600 dark:hover:bg-blue-500",
               "transition-colors duration-200 shadow-sm",
-              "focus-visible:ring-tertiary-500",
+              "focus-visible:ring-blue-500",
               isSubmitting && "opacity-80 cursor-not-allowed",
               buttonClassName
             )}

@@ -31,7 +31,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     return (
       <div className="bg-background/95 backdrop-blur-sm shadow-md border border-border rounded-lg p-2 text-sm dark:bg-gray-800/95 dark:border-gray-700">
         <p className="font-medium dark:text-white">{payload[0].name}</p>
-        <p className="font-semibold text-quaternary-600 dark:text-quaternary-300">{formatCurrency(payload[0].value)}</p>
+        <p className="font-semibold text-green-600 dark:text-green-300">{formatCurrency(payload[0].value)}</p>
       </div>
     );
   }
@@ -83,7 +83,7 @@ export const SavingsPieChart = ({
           // Light mode - fond blanc avec effet d'ombre élégant
           "bg-white border border-gray-200/60 shadow-lg hover:shadow-xl",
           // Dark mode - fond adapté avec effet d'ombre verdâtre
-          "dark:bg-gray-900/90 dark:border-quaternary-900/30 dark:shadow-quaternary-900/20 dark:hover:shadow-quaternary-800/30"
+          "dark:bg-gray-900/90 dark:border-green-900/30 dark:shadow-green-900/20 dark:hover:shadow-green-800/30"
         )}
         onClick={() => navigate("/savings")}
       >
@@ -92,8 +92,8 @@ export const SavingsPieChart = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-1.5 rounded-full",
-                "bg-quaternary-100 text-quaternary-600", // Light mode
-                "dark:bg-quaternary-900/40 dark:text-quaternary-300" // Dark mode
+                "bg-green-100 text-green-600", // Light mode
+                "dark:bg-green-900/40 dark:text-green-300" // Dark mode
               )}>
                 <PiggyBank className="h-4 w-4" />
               </div>

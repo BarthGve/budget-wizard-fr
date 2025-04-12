@@ -17,17 +17,17 @@ export const EmptyState = ({ viewMode }: EmptyStateProps) => {
       "overflow-hidden transition-all duration-200 h-full relative",
       "border shadow-sm hover:shadow-md",
       // Light mode
-      "bg-white border-tertiary-100",
+      "bg-white border-blue-100",
       // Dark mode
-      "dark:bg-gray-800/90 dark:hover:bg-tertiary-900/20 dark:border-tertiary-800/50"
+      "dark:bg-gray-800/90 dark:hover:bg-blue-900/20 dark:border-blue-800/50"
     )}>
       {/* Fond radial gradient */}
       <div className={cn(
         "absolute inset-0 opacity-5",
         // Light mode
-        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary-400 via-tertiary-300 to-transparent",
+        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
         // Dark mode
-        "dark:opacity-10 dark:from-tertiary-400 dark:via-tertiary-500 dark:to-transparent"
+        "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
       )} />
       
       <CardHeader className="pb-2 pt-6 relative z-10">
@@ -35,9 +35,9 @@ export const EmptyState = ({ viewMode }: EmptyStateProps) => {
           <div className="flex items-center space-x-2">
             <div className={cn(
               // Light mode
-              "bg-tertiary-100 text-tertiary-700",
+              "bg-blue-100 text-blue-700",
               // Dark mode
-              "dark:bg-tertiary-800/40 dark:text-tertiary-300",
+              "dark:bg-blue-800/40 dark:text-blue-300",
               // Common
               "p-2 rounded-lg"
             )}>
@@ -46,9 +46,9 @@ export const EmptyState = ({ viewMode }: EmptyStateProps) => {
             <CardTitle className={cn(
               "text-lg font-semibold",
               // Light mode
-              "text-tertiary-700",
+              "text-blue-700",
               // Dark mode
-              "dark:text-tertiary-300"
+              "dark:text-blue-300"
             )}>
               {viewMode === 'monthly' 
                 ? "Dépenses par enseigne (mois en cours)" 

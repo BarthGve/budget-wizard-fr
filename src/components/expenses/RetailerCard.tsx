@@ -25,7 +25,7 @@ interface RetailerCardProps {
   }>;
   onExpenseUpdated: () => void;
   viewMode: "monthly" | "yearly";
-  colorScheme?: "tertiary" | "purple" | "amber";
+  colorScheme?: "blue" | "purple" | "amber";
 }
 
 export function RetailerCard({
@@ -33,7 +33,7 @@ export function RetailerCard({
   expenses,
   onExpenseUpdated,
   viewMode,
-  colorScheme = "tertiary",
+  colorScheme = "blue",
 }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -148,9 +148,9 @@ export function RetailerCard({
         };
       default:
         return {
-          cardBg: "bg-tertiary-100 dark:bg-tertiary-900/30",
-          textColor: "text-tertiary-600 dark:text-tertiary-300",
-          hoverBg: "hover:bg-tertiary-200 dark:hover:bg-tertiary-800",
+          cardBg: "bg-blue-100 dark:bg-blue-900/30",
+          textColor: "text-blue-600 dark:text-blue-300",
+          hoverBg: "hover:bg-blue-200 dark:hover:bg-blue-800",
         };
     }
   };
@@ -210,9 +210,9 @@ export function RetailerCard({
                 className={cn(
                   "text-lg font-medium transition-colors",
                   // Teinte bleue pour le nom de l'enseigne
-                  "text-tertiary-700 hover:text-tertiary-600",
+                  "text-blue-700 hover:text-blue-600",
                   // Dark mode
-                  "dark:text-tertiary-300 dark:hover:text-tertiary-400"
+                  "dark:text-blue-300 dark:hover:text-blue-400"
                 )}
               >
                 {retailer.name}
@@ -225,9 +225,9 @@ export function RetailerCard({
               className={cn(
                 "rounded-full h-8 w-8 p-0",
                 // Nouvelles couleurs bleues pour le bouton
-                "bg-tertiary-100 text-tertiary-700 hover:bg-tertiary-200",
+                "bg-blue-100 text-blue-700 hover:bg-blue-200",
                 // Dark mode
-                "dark:bg-tertiary-900/30 dark:text-tertiary-300 dark:hover:bg-tertiary-800/50"
+                "dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/50"
               )}
               onClick={() => setAddDialogOpen(true)}
             >
@@ -252,7 +252,7 @@ export function RetailerCard({
                     className={cn(
                       "text-2xl font-bold",
                       // Teinte bleue pour le montant
-                      "text-tertiary-700 dark:text-tertiary-200"
+                      "text-blue-700 dark:text-blue-200"
                     )}
                   >
                     {formatCurrency(totalCurrentPeriod)}

@@ -7,7 +7,7 @@ export const useChartColorPalette = () => {
   const isDarkMode = theme === "dark";
 
   const barColors = useMemo(() => [
-    isDarkMode ? "#3B82F6" : "#3B82F6", // tertiary-500
+    isDarkMode ? "#3B82F6" : "#3B82F6", // blue-500
     isDarkMode ? "#EC4899" : "#EC4899", // pink-500
     isDarkMode ? "#22C55E" : "#22C55E", // green-500
     isDarkMode ? "#F97316" : "#F97316", // orange-500
