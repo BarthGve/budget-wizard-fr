@@ -1,3 +1,4 @@
+
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
@@ -131,7 +132,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
   };
 
   return (
-    <motion.div variants={itemVariants}>
+    <div className="animate-fade-in">
       <Card className={cn(
         "w-full relative overflow-hidden",
         "border shadow-lg",
@@ -227,88 +228,92 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
         </CardHeader>
         
         <CardContent className="px-2 pb-6 relative z-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`chart-${dataVersion}-${selectedPeriod || chartPeriodicity}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="w-full"
-            >
-              <div className="h-[280px] w-full">
-                {chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={chartData}
-                      layout="vertical"
-                      margin={{ top: 15, right: 40, left: 20, bottom: 5 }}
-                      onMouseMove={(e) => {
-                        if (e.activeTooltipIndex !== undefined) {
-                          setActiveIndex(e.activeTooltipIndex);
-                        }
+          <div
+            key={`chart-${dataVersion}-${selectedPeriod || chartPeriodicity}`}
+            className="w-full opacity-0 animate-fade-in"
+          >
+            <div className="h-[280px] w-full">
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={chartData}
+                    layout="vertical"
+                    margin={{ top: 15, right: 40, left: 20, bottom: 5 }}
+                    onMouseMove={(e) => {
+                      if (e.activeTooltipIndex !== undefined) {
+                        setActiveIndex(e.activeTooltipIndex);
+                      }
+                    }}
+                    onMouseLeave={() => setActiveIndex(null)}
+                  >
+                    <XAxis 
+                      type="number" 
+                      tickFormatter={(value) => formatCurrency(value)} 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
+                    />
+                    <YAxis 
+                      type="category" 
+                      dataKey="category" 
+                      width={120}
+                      tickFormatter={(value) => 
+                        value.length > 15 ? `${value.substring(0, 15)}...` : value
+                      }
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
+                    />
+                    <Tooltip 
+                      formatter={(value) => [
+                        `${formatCurrency(Number(value))} (${formatPercentage(Number(value))})`, 
+                        "Montant"
+                      ]}
+                      labelFormatter={(label) => `Catégorie: ${label}`}
+                      contentStyle={{
+                        backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                        border: isDarkMode ? '1px solid #1e40af' : '1px solid #bfdbfe',
+                        color: isDarkMode ? '#bfdbfe' : '#1e40af'
                       }}
-                      onMouseLeave={() => setActiveIndex(null)}
+                    />
+                    <Bar 
+                      dataKey="total" 
+                      radius={[4, 4, 4, 4]}
+                      maxBarSize={30}
+                      animationDuration={1000}
+                      animationEasing="ease-out"
                     >
-                      <XAxis 
-                        type="number" 
-                        tickFormatter={(value) => formatCurrency(value)} 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
-                      />
-                      <YAxis 
-                        type="category" 
-                        dataKey="category" 
-                        width={120}
-                        tickFormatter={(value) => 
-                          value.length > 15 ? `${value.substring(0, 15)}...` : value
-                        }
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
-                      />
-                      <Tooltip 
-                        formatter={(value) => [
-                          `${formatCurrency(Number(value))} (${formatPercentage(Number(value))})`, 
-                          "Montant"
-                        ]}
-                        labelFormatter={(label) => `Catégorie: ${label}`}
-                        contentStyle={{
-                          backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                          border: isDarkMode ? '1px solid #1e40af' : '1px solid #bfdbfe',
-                          color: isDarkMode ? '#bfdbfe' : '#1e40af'
-                        }}
-                      />
-                      <Bar 
-                        dataKey="total" 
-                        radius={[4, 4, 4, 4]}
-                        maxBarSize={30}
-                        animationDuration={1000}
-                        animationEasing="ease-out"
-                      >
-                        {chartData.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={getBarColor(index)}
-                            className="transition-all duration-200"
-                          />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className={cn(
-                    "h-full flex items-center justify-center",
-                    // Light mode
-                    "text-tertiary-500/70",
-                    // Dark mode
-                    "dark:text-tertiary-400/70"
-                  )}>
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.3 }}
-                      className="text-center
+                      {chartData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={getBarColor(index)}
+                          className="transition-all duration-200"
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className={cn(
+                  "h-full flex items-center justify-center",
+                  // Light mode
+                  "text-tertiary-500/70",
+                  // Dark mode
+                  "dark:text-tertiary-400/70"
+                )}>
+                  <div
+                    className="text-center"
+                  >
+                    <p>Aucune donnée disponible pour cette période</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};

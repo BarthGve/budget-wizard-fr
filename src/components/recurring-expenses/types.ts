@@ -1,31 +1,18 @@
 
+// Types pour les dépenses récurrentes
 export interface RecurringExpense {
   id: string;
-  name: string;
+  user_id: string;
+  title: string;
   amount: number;
   category: string;
   periodicity: "monthly" | "quarterly" | "yearly";
-  debit_day: number;
-  debit_month: number | null;
+  next_payment_date: string;
   created_at: string;
-  logo_url?: string;
-  notes?: string;
+  updated_at: string;
   vehicle_id: string | null;
-  vehicle_expense_type: string | null;
-  auto_generate_vehicle_expense: boolean;
+  property_id: string | null;
+  payment_method: string | null;
+  description: string | null;
+  reminder_days: number | null;
 }
-
-export interface RecurringExpenseTableProps {
-  expenses: RecurringExpense[];
-  onDeleteExpense: (id: string) => Promise<void>;
-  allExpenses?: RecurringExpense[]; // Ajout de cette propriété
-}
-
-export const periodicityLabels = {
-  monthly: "Mensuelle",
-  quarterly: "Trimestrielle",
-  yearly: "Annuelle"
-};
-
-export const ALL_CATEGORIES = "all_categories";
-export const ALL_PERIODICITIES = "all_periodicities";
