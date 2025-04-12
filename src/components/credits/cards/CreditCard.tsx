@@ -32,36 +32,20 @@ export const CreditCard = ({
   children
 }: CreditCardProps) => {
   // Couleurs pour la barre de progression en fonction du schéma
-  const colors = {
-    primary: {
-      // Light mode
-  card: "bg-white border border-primary dark:border-primary",
-  icon: "bg-primary/10 text-primary",
-  title: "text-primary ",
-  amount: "text-primary ",
-  description: "text-foreground ",
-  badge: "bg-primary/30 text-primary"
+  const createColorSet = (color: string) => ({
+  card: `bg-white border border-${color} dark:border-${color}`,
+  icon: `bg-${color}/10 text-${color}`,
+  title: `text-${color}`,
+  amount: `text-${color}`,
+  description: "text-muted-foreground",
+  badge: `bg-${color}/30 text-${color}`,
+});
 
-    },
-    quaternary: {
-      // Light mode
-      card: "bg-white border border-quaternary dark:border-quaternary",
-  icon: "bg-quaternary/10 text-quaternary",
-  title: "text-quaternary ",
-  amount: "text-quaternary ",
-  description: "text-foreground ",
-  badge: "bg-quaternary/30 text-quaternary"
-    },
-    tertiary: {
-      // Light mode
-      card: "bg-white border border-tertiary dark:border-tertiary",
-  icon: "bg-tertiary/10 text-tertiary",
-  title: "texttertiary ",
-  amount: "text-tertiary ",
-  description: "text-foreground ",
-  badge: "bg-tertiary/30 text-tertiary"
-    }
-  };
+const colors = {
+  primary: createColorSet("primary"),
+  quaternary: createColorSet("quaternary"),
+  tertiary: createColorSet("tertiary"),
+};
 
   const currentColors = colors[colorScheme];
 
