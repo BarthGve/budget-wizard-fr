@@ -195,7 +195,7 @@ export const UserDropdown = ({
                 {localProfile?.profile_type === "pro" && (
                   <Badge 
                     className={cn(
-                      "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-rose-400 to-amber-300 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
+                      "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
                       collapsed ? "scale-90" : ""
                     )}>
                     Pro
@@ -214,7 +214,7 @@ export const UserDropdown = ({
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-rose-50/90 dark:bg-rose-900/80 backdrop-blur-md border border-rose-200 dark:border-rose-700 shadow-xl rounded-xl z-[99]">
+        <DropdownMenuContent align="end" side={isMobile ? "bottom" : "right"} sideOffset={isMobile ? 10 : 20} className="w-[240px] bg-background/95 backdrop-blur-sm z-[99]">
           <div className="flex items-center gap-3 p-2 border-b">
            
             <div className="flex flex-col">

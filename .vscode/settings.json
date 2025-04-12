@@ -2,7 +2,6 @@
     "githubPullRequests.ignoredPullRequestBranches": [
         "main",
         "dev",
-        "dev",
         "dev"
     ]
 }

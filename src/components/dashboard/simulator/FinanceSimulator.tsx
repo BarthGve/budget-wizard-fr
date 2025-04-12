@@ -77,8 +77,8 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
     <>
       <div className={cn(
         "absolute inset-0",
-        "bg-gradient-to-b from-secondary-50/70 to-white",
-        "dark:from-seconcary-950/20 dark:to-gray-900/60",
+        "bg-gradient-to-b from-purple-50/70 to-white",
+        "dark:from-purple-950/20 dark:to-gray-900/60",
         "pointer-events-none"
       )}>
         <div className={cn(
