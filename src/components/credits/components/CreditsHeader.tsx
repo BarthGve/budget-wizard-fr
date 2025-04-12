@@ -51,9 +51,9 @@ export const CreditsHeader = () => {
           <h1 className={cn(
             "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
             // Light mode gradient
-            "bg-gradient-to-r from-primary-600 via-primary-500 to-violet-500",
+            "bg-gradient-to-r from-primary-600 via-primary-500 to-primary-500",
             // Dark mode gradient
-            "dark:bg-gradient-to-r dark:from-primary-400 dark:via-primary-300 dark:to-violet-400"
+            "dark:bg-gradient-to-r dark:from-primary-400 dark:via-primary-300 dark:to-primary-400"
           )}>
             Crédits
           </h1>
