@@ -59,7 +59,7 @@ export const DashboardHeader = ({
           </h1>
           <p className={cn(
             "text-sm mt-1",
-            "text-foreground"
+            "text-muted-foreground"
           )}>
             {currentView === "monthly" 
               ? "Vue mensuelle de vos finances" 
