@@ -45,9 +45,9 @@ export const RevenueCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-primary/10 shadow-lg border border-primary/20 hover:shadow-xl",
+          "bg-quinary/10 shadow-lg border border-quinary/20 hover:shadow-xl",
           // Dark mode styles
-          "dark:bg-primary/10 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
+          "dark:bg-quinary/10 dark:border-quinary/30 dark:shadow-quinary/30 dark:hover:shadow-quinary/50"
         )}
         onClick={handleCardClick}
       >
@@ -56,8 +56,8 @@ export const RevenueCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-primary/20 text-primary", // Light mode
-                "dark:bg-primary/20 dark:text-primary" // Dark mode
+                "bg-quinary/20 text-quinary", // Light mode
+                "dark:bg-quinary/20 dark:text-quinary" // Dark mode
               )}>
                 <Banknote className="h-5 w-5" />
               </div>
@@ -76,7 +76,7 @@ export const RevenueCard = ({
                 className={cn(
                   "font-bold text-xl leading-none",
                   "text-gray-800", // Light mode
-                  "dark:text-primary" // Dark mode - couleur primary pour correspondre à l'effet voulu
+                  "dark:text-quinary" // Dark mode - couleur quinary pour correspondre à l'effet voulu
                 )}
               >
                 {displayedRevenue.toLocaleString('fr-FR')} €
