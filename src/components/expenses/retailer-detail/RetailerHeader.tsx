@@ -12,7 +12,7 @@ interface RetailerHeaderProps {
     logo_url?: string;
   };
   onAddExpense: () => void;
-  colorScheme?: "tertiary" | "primary" | "quaternary";
+  colorScheme?: "blue" | "purple" | "green";
 }
 
 export function RetailerHeader({ 
