@@ -14,7 +14,7 @@ import { defaultDashboardPreferences } from "@/utils/dashboard-preferences";
 
 interface DashboardTabContentProps {
   revenue: number;
-  expenses: number; // Nous n'utilisons plus cette valeur directement
+  expenses: number;
   savings: number;
   balance: number;
   savingsGoal: number;
@@ -70,7 +70,7 @@ const containerVariants = {
 
 export const DashboardTabContent = ({
   revenue,
-  expenses, // On garde pour des raisons de compatibilité, mais on n'utilise pas
+  expenses,
   savings,
   balance,
   savingsGoal,
@@ -88,7 +88,7 @@ export const DashboardTabContent = ({
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   
-  // Utiliser le hook useExpenseStats pour obtenir les statistiques de dépenses
+  // Utiliser le hook useExpenseStats pour obtenir les mêmes données que dans la page dépenses
   const { expensesTotal } = useExpenseStats(currentView);
   const { data: credits = [] } = useCreditsFetcher();
   const { totalMensualites } = useCreditStats({ credits, firstDayOfMonth });
@@ -108,7 +108,7 @@ export const DashboardTabContent = ({
       >
         <DashboardCardsSection 
           revenue={revenue}
-          expenses={expensesTotal} // Utiliser expensesTotal au lieu de expenses
+          expenses={expenses}
           totalMensualites={totalMensualites}
           savings={savings}
           savingsGoal={savingsGoal}
@@ -135,7 +135,7 @@ export const DashboardTabContent = ({
         />
         
         <ChartsWrapper 
-          expenses={expensesTotal} // Utiliser expensesTotal au lieu de expenses
+          expenses={expenses}
           savings={savings}
           totalMensualites={totalMensualites}
           credits={credits}
@@ -146,7 +146,7 @@ export const DashboardTabContent = ({
         
         <ContributorsWrapper 
           contributors={mappedContributors}
-          expenses={expensesTotal} // Utiliser expensesTotal au lieu de expenses
+          expenses={expenses}
           totalMensualites={totalMensualites}
           dashboardPreferences={dashboardPrefs}
         />
