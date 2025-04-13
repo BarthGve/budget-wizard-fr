@@ -3,9 +3,9 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { memo, useCallback } from "react";
-import StyledLoader from "@/components/ui/StyledLoader";
 import { RecurringExpensesContainer } from "@/components/recurring-expenses/RecurringExpensesContainer";
 import { RecurringExpense } from "@/components/recurring-expenses/types";
+import { RecurringExpensesSkeleton } from "@/components/recurring-expenses/skeletons/RecurringExpensesSkeleton";
 
 // Utilisation de memo pour éviter les re-renders inutiles
 const RecurringExpenses = memo(function RecurringExpenses() {
@@ -68,7 +68,7 @@ const RecurringExpenses = memo(function RecurringExpenses() {
   }, [queryClient]);
 
   if (isLoading) {
-    return <StyledLoader />;
+    return <RecurringExpensesSkeleton />;
   }
 
   return (

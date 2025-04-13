@@ -1,191 +1,126 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { RecurringExpense } from "./types";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { ChevronRight, ListFilter, ArrowLeft } from "lucide-react";
-import { formatCurrency } from "@/utils/format";
-import { itemVariants } from "./animations/AnimationVariants";
+import { MobileCategoryListSkeleton } from "./skeletons/MobileCategoryListSkeleton";
 
 interface MobileCategoryListProps {
   expenses: RecurringExpense[];
   selectedPeriod: "monthly" | "quarterly" | "yearly" | null;
+  isLoading?: boolean;
 }
 
-/**
- * Composant qui affiche une liste simple des catégories de charges avec leurs montants
- * pour les appareils mobiles, avec possibilité d'afficher le détail des charges par catégorie
- */
-export const MobileCategoryList = ({ expenses, selectedPeriod }: MobileCategoryListProps) => {
-  // État pour suivre la catégorie sélectionnée
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+export const MobileCategoryList = ({ 
+  expenses, 
+  selectedPeriod,
+  isLoading = false
+}: MobileCategoryListProps) => {
+  const [categorizedExpenses, setCategorizedExpenses] = useState<Record<string, number>>({});
   
-  // Déterminer la période effective à utiliser (mensuelle par défaut si aucune n'est sélectionnée)
-  const effectivePeriod = selectedPeriod || "monthly";
+  useEffect(() => {
+    if (!expenses) return;
+    
+    // Filtrer par période si nécessaire
+    const filteredExpenses = selectedPeriod 
+      ? expenses.filter(expense => expense.periodicity === selectedPeriod) 
+      : expenses;
+    
+    // Calculer les totaux par catégorie
+    const categories = filteredExpenses.reduce((acc, expense) => {
+      if (!expense.category) return acc;
+      
+      acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    setCategorizedExpenses(categories);
+  }, [expenses, selectedPeriod]);
   
-  // Filtrer les dépenses selon la période sélectionnée
-  const filteredExpenses = expenses.filter(expense => expense.periodicity === effectivePeriod);
-
-  // Regrouper les dépenses par catégorie et calculer les totaux
-  const categoriesMap = new Map<string, number>();
-  filteredExpenses.forEach(expense => {
-    const currentTotal = categoriesMap.get(expense.category) || 0;
-    categoriesMap.set(expense.category, currentTotal + expense.amount);
-  });
-
-  // Convertir la Map en tableau et trier par montant décroissant
-  const categoriesList = Array.from(categoriesMap.entries())
-    .map(([category, total]) => ({ category, total }))
-    .sort((a, b) => b.total - a.total);
-
-  // Périodicité à afficher dans l'interface
-  const periodLabel = 
-    effectivePeriod === "monthly" ? "mensuelles" : 
-    effectivePeriod === "quarterly" ? "trimestrielles" : 
-    "annuelles";
-
-  // Obtenir les dépenses de la catégorie sélectionnée en tenant compte de la période
-  const categoryExpenses = selectedCategory 
-    ? expenses.filter(expense => 
-        expense.category === selectedCategory && 
-        expense.periodicity === effectivePeriod
-      ).sort((a, b) => b.amount - a.amount)
-    : [];
-
-  // Debug
-  console.log("Période effective:", effectivePeriod);
-  console.log("Catégorie sélectionnée:", selectedCategory);
-  console.log("Nombre de dépenses trouvées:", categoryExpenses.length);
-  if (categoryExpenses.length > 0) {
-    console.log("Exemple de dépense:", categoryExpenses[0].name, categoryExpenses[0].periodicity);
+  if (isLoading) {
+    return <MobileCategoryListSkeleton />;
   }
-
-  return (
-    <motion.div variants={itemVariants}>
-      <Card className={cn(
-        "w-full relative overflow-hidden",
-        "border shadow-sm",
-        "bg-white border-tertiary-100",
-        "dark:bg-gray-800/90 dark:border-tertiary-800/50 dark:shadow-tertiary-900/10",
-        "mb-6"
-      )}>
   
-        
-        <CardHeader className="pb-2 relative z-10">
-          <div className="flex items-center gap-2">
-            <div className={cn(
-              "p-1.5 rounded",
-              "bg-tertiary-100",
-              "dark:bg-tertiary-800/40"
-            )}>
-              {selectedCategory ? (
-                <ArrowLeft 
-                  className={cn(
-                    "h-5 w-5 cursor-pointer",
-                    "text-tertiary-600",
-                    "dark:text-tertiary-400"
-                  )}
-                  onClick={() => setSelectedCategory(null)}
-                />
-              ) : (
-                <ListFilter className={cn(
-                  "h-5 w-5",
-                  "text-tertiary-600",
-                  "dark:text-tertiary-400"
-                )} />
-              )}
-            </div>
-            <div>
-              <CardTitle className={cn(
-                "text-lg font-semibold",
-                "text-tertiary-700",
-                "dark:text-tertiary-300"
-              )}>
-                {selectedCategory ? selectedCategory : "Charges par catégorie"}
-              </CardTitle>
-              <CardDescription className={cn(
-                "text-sm",
-                "text-tertiary-600/80",
-                "dark:text-tertiary-400/90"
-              )}>
-                {selectedCategory 
-                  ? `${categoryExpenses.length} charge${categoryExpenses.length > 1 ? 's' : ''} ${periodLabel}`
-                  : `Dépenses ${periodLabel} regroupées`
-                }
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="pt-0 pb-4 relative z-10">
-          {selectedCategory ? (
-            // Afficher la liste des charges pour la catégorie sélectionnée
-            <ul className="space-y-2 mt-2">
-              {categoryExpenses.length > 0 ? (
-                categoryExpenses.map((expense) => (
-                  <li 
-                    key={expense.id}
-                    className={cn(
-                      "flex items-center justify-between p-3 rounded-md",
-                      "border-l-4 border-tertiary-400 dark:border-tertiary-500",
-                      "bg-tertiary-50/50 dark:bg-tertiary-900/20"
-                    )}
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium text-gray-800 dark:text-gray-200">
-                        {expense.name}
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {expense.debit_day ? `Débit: jour ${expense.debit_day}` : "Date de débit non définie"}
-                      </span>
-                    </div>
-                    <span className="font-mono font-semibold text-tertiary-600 dark:text-tertiary-300">
-                      {formatCurrency(expense.amount)}
-                    </span>
-                  </li>
-                ))
-              ) : (
-                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                  Aucune charge dans cette catégorie pour la période {periodLabel}
-                </div>
-              )}
-            </ul>
-          ) : (
-            // Afficher la liste des catégories
-            <ul className="space-y-2 mt-2">
-              {categoriesList.length > 0 ? (
-                categoriesList.map((item) => (
-                  <li 
-                    key={item.category}
-                    className={cn(
-                      "flex items-center justify-between p-3 rounded-md",
-                      "border-l-4 border-tertiary-500 dark:border-tertiary-400",
-                      "bg-tertiary-50/50 dark:bg-tertiary-900/20",
-                      "cursor-pointer hover:bg-tertiary-100/50 dark:hover:bg-tertiary-800/30 transition-colors"
-                    )}
-                    onClick={() => setSelectedCategory(item.category)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <ChevronRight className="h-4 w-4 text-tertiary-500 dark:text-tertiary-400" />
-                      <span className="font-medium text-gray-800 dark:text-gray-200">
-                        {item.category}
-                      </span>
-                    </div>
-                    <span className="font-mono font-semibold text-tertiary-600 dark:text-tertiary-300">
-                      {formatCurrency(item.total)}
-                    </span>
-                  </li>
-                ))
-              ) : (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  Aucune donnée disponible pour cette période
-                </div>
-              )}
-            </ul>
-          )}
-        </CardContent>
+  // Si aucune dépense ou aucune catégorie
+  if (Object.keys(categorizedExpenses).length === 0) {
+    return (
+      <Card className="p-4 text-center my-4">
+        <p className="text-muted-foreground">
+          {selectedPeriod 
+            ? `Aucune charge ${selectedPeriod === 'monthly' ? 'mensuelle' : selectedPeriod === 'quarterly' ? 'trimestrielle' : 'annuelle'} trouvée.`
+            : "Aucune charge récurrente trouvée."}
+        </p>
       </Card>
+    );
+  }
+  
+  // Trier les catégories par montant décroissant
+  const sortedCategories = Object.entries(categorizedExpenses)
+    .sort(([, amountA], [, amountB]) => amountB - amountA);
+  
+  return (
+    <motion.div
+      className="space-y-4 my-4"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-sm font-medium">Répartition par catégorie</h3>
+        <span className="text-xs text-muted-foreground">
+          {sortedCategories.length} {sortedCategories.length > 1 ? 'catégories' : 'catégorie'}
+        </span>
+      </div>
+      
+      {sortedCategories.map(([category, amount], index) => (
+        <Card key={category} className="overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-full bg-${index % 2 === 0 ? 'tertiary' : 'secondary'}-100 dark:bg-${index % 2 === 0 ? 'tertiary' : 'secondary'}-900/30`}>
+                  <span className="text-lg">{getCategoryEmoji(category)}</span>
+                </div>
+                <div>
+                  <h4 className="font-medium">{category}</h4>
+                  <p className="text-xs text-muted-foreground">
+                    {getExpensesCount(expenses, category, selectedPeriod)} charge{getExpensesCount(expenses, category, selectedPeriod) > 1 ? 's' : ''}
+                  </p>
+                </div>
+              </div>
+              <p className="font-semibold">{amount.toLocaleString('fr-FR')} €</p>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </motion.div>
   );
 };
+
+// Fonction utilitaire pour obtenir un emoji par catégorie
+function getCategoryEmoji(category: string): string {
+  const lowerCategory = category.toLowerCase();
+  
+  if (lowerCategory.includes('maison') || lowerCategory.includes('logement')) return '🏠';
+  if (lowerCategory.includes('voiture') || lowerCategory.includes('transport')) return '🚗';
+  if (lowerCategory.includes('assurance')) return '🛡️';
+  if (lowerCategory.includes('santé')) return '🏥';
+  if (lowerCategory.includes('alimentation') || lowerCategory.includes('courses')) return '🛒';
+  if (lowerCategory.includes('loisir')) return '🎮';
+  if (lowerCategory.includes('abonnement')) return '📱';
+  if (lowerCategory.includes('énergie') || lowerCategory.includes('électricité')) return '⚡';
+  if (lowerCategory.includes('eau')) return '💧';
+  if (lowerCategory.includes('internet') || lowerCategory.includes('telecom')) return '📶';
+  if (lowerCategory.includes('impôt')) return '📊';
+  if (lowerCategory.includes('enfant') || lowerCategory.includes('école')) return '👨‍👩‍👧‍👦';
+  
+  return '💰'; // Emoji par défaut
+}
+
+// Fonction pour compter le nombre de dépenses par catégorie
+function getExpensesCount(expenses: RecurringExpense[], category: string, selectedPeriod: "monthly" | "quarterly" | "yearly" | null): number {
+  const filteredExpenses = selectedPeriod 
+    ? expenses.filter(e => e.periodicity === selectedPeriod && e.category === category)
+    : expenses.filter(e => e.category === category);
+  
+  return filteredExpenses.length;
+}
