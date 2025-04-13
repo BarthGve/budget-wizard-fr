@@ -86,7 +86,7 @@ export function MiniRetailerCard({
           <div className="flex-grow min-w-0">
             <Link 
               to={`/expenses/retailer/${retailer.id}`}
-              className="text-sm font-medium text-tertiary hover:text-tertiary" // Remplacement par tertiary
+              className="text-sm font-medium hover:text-tertiary" // Remplacement par tertiary
             >
               {retailer.name}
             </Link>

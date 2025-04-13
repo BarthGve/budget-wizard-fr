@@ -17,6 +17,7 @@ interface ExpenseSectionsProps {
   selectedPeriod: "monthly" | "quarterly" | "yearly" | null;
   setSelectedPeriod: (period: "monthly" | "quarterly" | "yearly" | null) => void;
   cardsRef: MutableRefObject<HTMLDivElement | null>;
+  isLoading?: boolean;
 }
 
 /**
@@ -27,7 +28,8 @@ export const ExpenseSections = ({
   onDeleteExpense,
   selectedPeriod,
   setSelectedPeriod,
-  cardsRef
+  cardsRef,
+  isLoading = false
 }: ExpenseSectionsProps) => {
   // Calculer les totaux par périodicité
   const monthlyTotal = recurringExpenses?.filter(expense => expense.periodicity === "monthly").reduce((sum, expense) => sum + expense.amount, 0) || 0;
@@ -64,7 +66,8 @@ export const ExpenseSections = ({
       {isMobile ? (
         <MobileCategoryList 
           expenses={recurringExpenses}
-          selectedPeriod={selectedPeriod} 
+          selectedPeriod={selectedPeriod}
+          isLoading={isLoading}
         />
       ) : (
         <RecurringExpensesCategoryChart 

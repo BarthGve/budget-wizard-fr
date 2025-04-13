@@ -114,7 +114,7 @@ export const CreditCard = ({
             </div>
             <CardTitle className={cn(
               "text-lg font-semibold",
-              currentColors.title
+          
             )}>
               {title}
             </CardTitle>
@@ -132,8 +132,7 @@ export const CreditCard = ({
       <CardContent className="pt-1 pb-6 relative z-10">
         <p className={cn(
           "text-2xl font-bold",
-          // Utilisation de la couleur amount dédiée pour le montant
-          currentColors.amount
+       
         )}>
           {amount.toLocaleString('fr-FR')} €
         </p>

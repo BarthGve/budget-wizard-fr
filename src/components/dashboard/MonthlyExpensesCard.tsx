@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
@@ -19,10 +20,11 @@ export const MonthlyExpensesCard = ({
     month: 'long'
   });
   
-  const titleText = viewMode === "monthly" ? "Dépenses" : "Dépenses annuelles";
+  // Titre et description adaptés en fonction du mode de vue
+  const titleText = viewMode === "monthly" ? "Total des dépenses" : "Total des dépenses";
   const descriptionText = viewMode === "monthly" 
-    ? `Total du mois de ${currentMonthName}` 
-    : `Total de l'année ${new Date().getFullYear()}`;
+    ? `Mois de ${currentMonthName}` 
+    : `Année ${new Date().getFullYear()}`;
 
   return (
     <motion.div 

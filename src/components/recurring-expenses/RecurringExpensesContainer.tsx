@@ -7,11 +7,13 @@ import { usePeriodicityFilter } from "./hooks/usePeriodicityFilter";
 interface RecurringExpensesContainerProps {
   recurringExpenses: RecurringExpense[];
   onDeleteExpense: (id: string) => Promise<void>;
+  isLoading?: boolean;
 }
 
 export const RecurringExpensesContainer = ({
   recurringExpenses,
-  onDeleteExpense
+  onDeleteExpense,
+  isLoading = false
 }: RecurringExpensesContainerProps) => {
   const { selectedPeriod, setSelectedPeriod, cardsRef } = usePeriodicityFilter();
 
@@ -24,6 +26,7 @@ export const RecurringExpensesContainer = ({
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
           cardsRef={cardsRef}
+          isLoading={isLoading}
         />
       </div>
     </AnimatedContainer>

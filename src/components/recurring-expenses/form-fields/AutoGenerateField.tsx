@@ -68,6 +68,10 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
                   }
                 }}
                 disabled={isDisabled}
+                  className={cn(
+                  "data-[state=checked]:bg-tertiary", 
+                  "dark:data-[state=checked]:bg-tertiary"
+                )}
               />
             </FormControl>
             <TooltipProvider>

@@ -144,12 +144,8 @@ export function RetailerCard({
           "dark:bg-gray-800/90 dark:hover:bg-gray-800/70 dark:border-gray-700/50"
         )}
       >
-        {/* Fond radial gradient ultra-subtil */}
-        <div className={cn(
-          "absolute inset-0",
-          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
-          "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
-        )} />
+     
+     
         
         <div className="p-5 relative z-10">
           <div className="flex items-center justify-between mb-4">
@@ -180,8 +176,7 @@ export function RetailerCard({
                 to={`/expenses/retailer/${retailer.id}`}
                 className={cn(
                   "text-lg font-medium transition-colors",
-                  "text-blue-700 hover:text-blue-600",
-                  "dark:text-blue-300 dark:hover:text-blue-400"
+               
                 )}
               >
                 {retailer.name}
@@ -218,7 +213,7 @@ export function RetailerCard({
                     transition={{ duration: 0.3 }}
                     className={cn(
                       "text-2xl font-bold",
-                      "text-blue-700 dark:text-blue-200"
+                   
                     )}
                   >
                     {formatCurrency(totalCurrentPeriod)}

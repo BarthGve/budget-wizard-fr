@@ -114,10 +114,8 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
               </div>
               <CardTitle className={cn(
                 "text-lg font-semibold",
-                // Light mode
-                "text-tertiary-700",
-                // Dark mode
-                "dark:text-tertiary-300"
+               
+           
               )}>
                 Total des dépenses
               </CardTitle>
@@ -141,10 +139,6 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
               key={`total-${totalAmount}`}
               className={cn(
                 "text-2xl font-bold",
-                // Light mode
-                "text-tertiary-700",
-                // Dark mode
-                "dark:text-tertiary-300"
               )}
               initial={hasChanged ? { opacity: 0, y: totalAmount > prevAmount ? 20 : -20 } : false}
               animate={{ opacity: 1, y: 0 }}

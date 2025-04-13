@@ -175,7 +175,10 @@ export const CreditCard = ({
         >
           <motion.p 
             className={cn(
-              "text-xl font-bold leading-none",
+           
+                  "font-bold text-xl leading-none",
+                  "text-gray-800", // Light mode
+                  "dark:text-primary" // Dark mode - couleur quinary pour correspondre à l'effet voulu            
              
             )}
             initial={{ scale: 0.9 }}

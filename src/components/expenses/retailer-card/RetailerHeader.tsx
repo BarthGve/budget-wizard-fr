@@ -28,11 +28,8 @@ export function RetailerHeader({ retailer, onAddExpense }: RetailerHeaderProps) 
         <Link 
           to={`/expenses/retailer/${retailer.id}`}
           className={cn(
-            "text-lg font-medium transition-colors",
-            // Utilisation de tertiary pour le nom de l'enseigne
-            "text-tertiary hover:text-tertiary", // Remplace le bleu par tertiary
-            // Dark mode
-            "dark:text-tertiary dark:hover:text-tertiary" // Remplacement pour dark mode
+            "text-lg font-medium",
+           
           )}
         >
           {retailer.name}
