@@ -56,20 +56,23 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
           </div>
           <div className="flex flex-col items-end gap-1">
             <FormControl>
-          <Switch
-  checked={field.value || false}
-  onCheckedChange={(checked) => {
-    // Utiliser null quand désactivé pour éviter les problèmes de types
-    field.onChange(checked);
-    
-    // Désactiver automatiquement si les conditions ne sont pas remplies
-    if (isDisabled && checked) {
-      field.onChange(false);
-    }
-  }}
-  disabled={isDisabled}
-  className="data-[state=checked]:bg-tertiary-600 data-[state=checked]:border-tertiary-700"
-/>
+              <Switch
+                checked={field.value || false}
+                onCheckedChange={(checked) => {
+                  // Utiliser null quand désactivé pour éviter les problèmes de types
+                  field.onChange(checked);
+                  
+                  // Désactiver automatiquement si les conditions ne sont pas remplies
+                  if (isDisabled && checked) {
+                    field.onChange(false);
+                  }
+                }}
+                disabled={isDisabled}
+                  className={cn(
+                  "data-[state=checked]:bg-tertiary", 
+                  "dark:data-[state=checked]:bg-tertiary"
+                )}
+              />
             </FormControl>
             <TooltipProvider>
               <Tooltip>
