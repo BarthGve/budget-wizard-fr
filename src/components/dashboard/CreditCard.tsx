@@ -175,6 +175,8 @@ export const CreditCard = ({
         >
           <motion.p 
             className={cn(
+               <p 
+                className={cn(
                   "font-bold text-xl leading-none",
                   "text-gray-800", // Light mode
                   "dark:text-primary" // Dark mode - couleur primary pour correspondre à l'effet voulu
