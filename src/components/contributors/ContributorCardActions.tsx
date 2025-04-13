@@ -38,7 +38,7 @@ export const ContributorCardActions = ({
         className={cn(
           "w-[180px] p-1.5",
           // Light mode
-          "border-amber-100",
+          "border-quinary-100",
           // Dark mode
           "dark:border-gray-700 dark:bg-gray-800"
         )}
@@ -57,19 +57,19 @@ export const ContributorCardActions = ({
           className={cn(
             "cursor-pointer flex items-center py-2 px-3 rounded-md transition-colors",
             // Light mode
-            "hover:bg-amber-50 focus:bg-amber-50 data-[highlighted]:bg-amber-50",
-            "hover:text-amber-700 focus:text-amber-700",
+            "hover:bg-quinary-50 focus:bg-quinary-50 data-[highlighted]:bg-quinary-50",
+            "hover:text-quinary-700 focus:text-quinary-700",
             // Dark mode
-            "dark:hover:bg-amber-900/20 dark:focus:bg-amber-900/20 dark:data-[highlighted]:bg-amber-900/20",
-            "dark:hover:text-amber-300 dark:focus:text-amber-300"
+            "dark:hover:bg-quinary-900/20 dark:focus:bg-quinary-900/20 dark:data-[highlighted]:bg-quinary-900/20",
+            "dark:hover:text-quinary-300 dark:focus:text-quinary-300"
           )}
         >
           <div className={cn(
             "mr-2 p-1 rounded-md",
             // Light mode
-            "bg-amber-100 text-amber-600",
+            "bg-quinary-100 text-quinary-600",
             // Dark mode
-            "dark:bg-amber-900/30 dark:text-amber-400"
+            "dark:bg-quinary-900/30 dark:text-quinary-400"
           )}>
             <Pencil className="h-3.5 w-3.5" strokeWidth={2} />
           </div>
@@ -81,7 +81,7 @@ export const ContributorCardActions = ({
             <DropdownMenuSeparator className={cn(
               "my-1.5 h-px",
               // Light mode
-              "bg-amber-100/70",
+              "bg-quinary-100/70",
               // Dark mode
               "dark:bg-gray-700"
             )} />
