@@ -68,24 +68,11 @@ export const NewSavingDialog = memo(({
         {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
         <SheetContent 
           side="bottom"
-          className={cn(
-            "px-0 py-0 rounded-t-xl",
-            "border-t shadow-lg",
-            "border-quaternary-100/70",
-            "dark:border-quaternary-800/20",
-            "max-h-[90vh] overflow-y-auto",
-            "dark:bg-gray-900",
-            "bg-gradient-to-br",
-            "from-quaternary-50",
-            "to-quaternary-100",
-            "dark:from-quaternary-950",
-            "dark:to-quaternary-900"
-          )}
+          className="px-0 py-0 rounded-t-xl border-t shadow-lg border-green-100/70 dark:border-green-800/20 
+                    max-h-[90vh] overflow-y-auto dark:bg-gray-900 bg-gradient-to-br from-green-50 
+                    to-green-100 dark:from-green-950 dark:to-green-900"
         >
-          <div className={cn(
-            "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
-            "bg-gray-300 dark:bg-gray-600 rounded-full"
-          )} />
+          <div className="absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2 bg-gray-300 dark:bg-gray-600 rounded-full" />
           <div className="pt-5">
             <NewSavingDialogContent
               saving={saving}
@@ -99,7 +86,6 @@ export const NewSavingDialog = memo(({
               onDescriptionChange={setDescription}
               onSave={handleSaveSaving}
               onCancel={() => onOpenChange?.(false)}
-              colorScheme="quaternary"
             />
           </div>
         </SheetContent>
@@ -112,17 +98,9 @@ export const NewSavingDialog = memo(({
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent 
-        className={cn(
-          getDialogWidth(),
-          "p-0 border-0 shadow-lg rounded-lg overflow-hidden",
-          "border-quaternary-100/70",
-          "dark:border-quaternary-800/20",
-          "bg-gradient-to-br",
-          "from-quaternary-50",
-          "to-quaternary-100",
-          "dark:from-quaternary-950",
-          "dark:to-quaternary-900"
-        )}
+        className={`${getDialogWidth()} p-0 border-0 shadow-lg rounded-lg overflow-hidden 
+                   border-green-100/70 dark:border-green-800/20 bg-gradient-to-br from-green-50 
+                   to-green-100 dark:from-green-950 dark:to-green-900`}
       >
         <NewSavingDialogContent
           saving={saving}
@@ -136,7 +114,6 @@ export const NewSavingDialog = memo(({
           onDescriptionChange={setDescription}
           onSave={handleSaveSaving}
           onCancel={() => onOpenChange?.(false)}
-          colorScheme="quaternary"
         />
       </DialogContent>
     </Dialog>
