@@ -20,6 +20,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 const Expenses = memo(function Expenses() {
   const { retailers } = useRetailers();
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
+  const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
   
   const { expenses, isLoading, handleExpenseUpdated } = useExpensesData();
   
@@ -128,7 +129,9 @@ const Expenses = memo(function Expenses() {
         <ExpensesHeader 
           viewMode={viewMode} 
           setViewMode={setViewMode} 
-          onExpenseAdded={handleExpenseUpdated} 
+          onExpenseAdded={handleExpenseUpdated}
+          displayMode={displayMode}
+          setDisplayMode={setDisplayMode}
         />
         <motion.div variants={itemVariants}>
           <CreateRetailerBanner />
@@ -240,9 +243,10 @@ const Expenses = memo(function Expenses() {
         </motion.div>
         
         <RetailersGrid 
-          expensesByRetailer={expensesByRetailer || []} 
+          expensesByRetailer={expensesByRetailer || []}
           onExpenseUpdated={handleExpenseUpdated}
-          viewMode={viewMode} 
+          viewMode={viewMode}
+          displayMode={displayMode}
         />
       </motion.div>
     </motion.div>

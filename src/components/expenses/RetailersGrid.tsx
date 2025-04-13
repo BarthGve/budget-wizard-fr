@@ -1,7 +1,9 @@
 
 import { RetailerCard } from "./RetailerCard";
+import { MiniRetailerCard } from "./MiniRetailerCard";
 import { useEffect, useState } from "react";
 import { RetailerCardSkeleton } from "./skeletons/RetailerCardSkeleton";
+import { cn } from "@/lib/utils";
 
 export interface Retailer {
   id: string;
@@ -31,6 +33,7 @@ interface RetailersGridProps {
   
   onExpenseUpdated: () => void;
   viewMode: "monthly" | "yearly";
+  displayMode?: "grid" | "list";
   isLoading?: boolean;
 }
 
@@ -40,6 +43,7 @@ export function RetailersGrid({
   expensesByRetailer,
   onExpenseUpdated,
   viewMode,
+  displayMode = "grid",
   isLoading = false,
 }: RetailersGridProps) {
   // État pour alterner les styles de couleur des cartes
@@ -73,18 +77,31 @@ export function RetailersGrid({
       </div>
     );
   }
-
+  
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className={cn(
+      displayMode === 'grid' 
+        ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" 
+        : "grid grid-cols-1 gap-3"
+    )}>
       {retailersData.map((item, index) => (
-        <RetailerCard
-          key={item.retailer.id}
-          retailer={item.retailer}
-          expenses={item.expenses || []}
-          onExpenseUpdated={onExpenseUpdated}
-          viewMode={viewMode}
-          colorScheme={colorSchemes[index]}
-        />
+        displayMode === 'grid' ? (
+          <RetailerCard
+            key={item.retailer.id}
+            retailer={item.retailer}
+            expenses={item.expenses || []}
+            onExpenseUpdated={onExpenseUpdated}
+            viewMode={viewMode}
+          />
+        ) : (
+          <MiniRetailerCard
+            key={item.retailer.id}
+            retailer={item.retailer}
+            expenses={item.expenses || []}
+            onExpenseUpdated={onExpenseUpdated}
+            viewMode={viewMode}
+          />
+        )
       ))}
     </div>
   );
