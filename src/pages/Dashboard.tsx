@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent";
 import { useDashboardQueries } from "@/hooks/useDashboardQueries";
-import StyledLoader from "@/components/ui/StyledLoader";
 import { useDashboardViewCalculations } from "@/hooks/useDashboardViewCalculations";
 import { useContributors } from "@/hooks/useContributors";
 import { motion } from "framer-motion";
@@ -13,6 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header/DashboardHeader";
 import { useState } from "react";
+import { DashboardSkeleton } from "@/components/dashboard/skeletons/DashboardSkeleton";
 
 const Dashboard = () => {
   // État pour gérer le mode d'affichage (mensuel/annuel)
@@ -22,7 +22,7 @@ const Dashboard = () => {
   useRealtimeListeners();
 
   // Récupérer l'ID utilisateur
-  const { data: { user } = {} } = useQuery({
+  const { data: { user } = {}, isLoading: isUserLoading } = useQuery({
     queryKey: ['auth-user'],
     queryFn: async () => {
       const { data } = await supabase.auth.getUser();
@@ -32,7 +32,7 @@ const Dashboard = () => {
   });
 
   // Données du tableau de bord
-  const { dashboardData, refetchDashboard } = useDashboardQueries(user?.id);
+  const { dashboardData, refetchDashboard, isLoading: isDashboardLoading } = useDashboardQueries(user?.id);
 
   // Récupérer les statistiques des dépenses, y compris les dépenses carburant
   const { 
@@ -40,7 +40,8 @@ const Dashboard = () => {
     fuelExpensesTotal, 
     fuelExpensesCount, 
     fuelVolume,
-    hasActiveVehicles 
+    hasActiveVehicles,
+    isLoading: isStatsLoading
   } = useExpenseStats(currentView);
 
   // Rafraîchir les données lorsque le composant est monté
@@ -87,13 +88,11 @@ const Dashboard = () => {
     }
   };
 
+  // Vérifier si les données sont en cours de chargement
+  const isLoading = isUserLoading || isDashboardLoading || isStatsLoading || !dashboardData;
+
   // Ajouter une gestion des erreurs et un fallback
   try {
-    // Afficher un loader pendant le chargement
-    if (!dashboardData || !user) {
-      return <StyledLoader />;
-    }
-
     return (
       <TooltipProvider>
         <motion.div 
@@ -109,23 +108,27 @@ const Dashboard = () => {
             currentMonthName={getCurrentMonthName()}
           />
           
-          <DashboardTabContent
-            revenue={revenue}
-            expenses={expenses}
-            savings={savings}
-            balance={balance}
-            savingsGoal={savingsGoal}
-            contributors={dashboardData.contributors || []}
-            contributorShares={contributorShares}
-            expenseShares={expenseShares}
-            recurringExpenses={recurringExpensesForChart || []}
-            monthlySavings={monthlySavingsForChart || []}
-            currentView={currentView}
-            fuelExpensesTotal={fuelExpensesTotal}
-            fuelExpensesCount={fuelExpensesCount}
-            fuelVolume={fuelVolume}
-            hasActiveVehicles={hasActiveVehicles}
-          />
+          {isLoading ? (
+            <DashboardSkeleton />
+          ) : (
+            <DashboardTabContent
+              revenue={revenue}
+              expenses={expenses}
+              savings={savings}
+              balance={balance}
+              savingsGoal={savingsGoal}
+              contributors={dashboardData.contributors || []}
+              contributorShares={contributorShares}
+              expenseShares={expenseShares}
+              recurringExpenses={recurringExpensesForChart || []}
+              monthlySavings={monthlySavingsForChart || []}
+              currentView={currentView}
+              fuelExpensesTotal={fuelExpensesTotal}
+              fuelExpensesCount={fuelExpensesCount}
+              fuelVolume={fuelVolume}
+              hasActiveVehicles={hasActiveVehicles}
+            />
+          )}
         </motion.div>
       </TooltipProvider>
     );

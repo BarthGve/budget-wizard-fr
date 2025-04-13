@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const useDashboardQueries = (userId: string | undefined) => {
-  const { data: dashboardData, refetch: refetchDashboard } = useQuery({
+  const { data: dashboardData, refetch: refetchDashboard, isLoading } = useQuery({
     queryKey: ["dashboard-data", userId],
     queryFn: async () => {
       if (!userId) throw new Error("User ID requis");
@@ -79,6 +79,7 @@ export const useDashboardQueries = (userId: string | undefined) => {
 
   return {
     dashboardData,
-    refetchDashboard
+    refetchDashboard,
+    isLoading
   };
 };

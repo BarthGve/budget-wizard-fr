@@ -1,160 +1,79 @@
 
-import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { LayoutGrid, LayoutList } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { RetailerCard } from "@/components/expenses/retailer-card/RetailerCard";
-import { MiniRetailerCard } from "@/components/expenses/MiniRetailerCard";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { RetailerCard } from "./RetailerCard";
+import { useEffect, useState } from "react";
+import { RetailerCardSkeleton } from "./skeletons/RetailerCardSkeleton";
 
 interface RetailersGridProps {
-  expensesByRetailer: Array<{
-    retailer: {
-      id: string;
-      name: string;
-      logo_url?: string;
-    };
-    expenses: Array<{
-      id: string;
-      date: string;
-      amount: number;
-      comment?: string;
-    }>;
+  retailers: Array<{
+    id: string;
+    name: string;
+    logo_url?: string;
+  }>;
+  expenses: Array<{
+    id: string;
+    date: string;
+    amount: number;
+    comment?: string;
+    retailer_id: string;
   }>;
   onExpenseUpdated: () => void;
-  viewMode: 'monthly' | 'yearly';
+  viewMode: "monthly" | "yearly";
+  isLoading?: boolean;
 }
 
-export const RetailersGrid = ({ expensesByRetailer, onExpenseUpdated, viewMode }: RetailersGridProps) => {
-  // Détection des appareils mobiles (moins de 768px)
-  const isMobile = useMediaQuery("(max-width: 768px)");
-  
-  // Définir le mode d'affichage par défaut en fonction de l'appareil
-  const [displayMode, setDisplayMode] = useState<'standard' | 'mini'>(
-    isMobile ? 'mini' : 'standard'
-  );
-  
-  // Mettre à jour le mode d'affichage lorsque la taille de l'écran change
+export function RetailersGrid({
+  retailers,
+  expenses,
+  onExpenseUpdated,
+  viewMode,
+  isLoading = false,
+}: RetailersGridProps) {
+  // État pour alterner les styles de couleur des cartes
+  const [colorSchemes, setColorSchemes] = useState<Array<"blue" | "purple" | "amber">>([]);
+
+  // Générer les schémas de couleur pour chaque retailer
   useEffect(() => {
-    setDisplayMode(isMobile ? 'mini' : 'standard');
-  }, [isMobile]);
-  
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
+    const schemes: Array<"blue" | "purple" | "amber"> = [];
+    const colorOptions: Array<"blue" | "purple" | "amber"> = ["blue", "purple", "amber"];
+    
+    retailers.forEach((_, index) => {
+      schemes.push(colorOptions[index % colorOptions.length]);
+    });
+    
+    setColorSchemes(schemes);
+  }, [retailers]);
+
+  // Regrouper les dépenses par retailer_id
+  const expensesByRetailer = expenses.reduce((acc, expense) => {
+    if (!acc[expense.retailer_id]) {
+      acc[expense.retailer_id] = [];
     }
-  };
-  
-  const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20,
-      scale: 0.95,
-      rotateX: 15
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      scale: 1,
-      rotateX: 0,
-      transition: { 
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    }
-  };
+    acc[expense.retailer_id].push(expense);
+    return acc;
+  }, {} as Record<string, typeof expenses>);
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {[...Array(8)].map((_, index) => (
+          <RetailerCardSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4 w-full max-w-full">
-      <div className="flex justify-end">
-        <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-lg inline-flex">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "h-8 w-8 p-0",
-              displayMode === 'standard' && "bg-white dark:bg-gray-700 shadow-sm"
-            )}
-            onClick={() => setDisplayMode('standard')}
-          >
-            <LayoutGrid className="h-4 w-4" />
-            <span className="sr-only">Affichage standard</span>
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "h-8 w-8 p-0",
-              displayMode === 'mini' && "bg-white dark:bg-gray-700 shadow-sm"
-            )}
-            onClick={() => setDisplayMode('mini')}
-          >
-            <LayoutList className="h-4 w-4" />
-            <span className="sr-only">Affichage compact</span>
-          </Button>
-        </div>
-      </div>
-      
-      <motion.div 
-        className={cn(
-          displayMode === 'standard' 
-            ? "grid gap-4" 
-            : "grid gap-3",
-          // Responsive grid pour mobile et desktop
-          isMobile
-            ? "grid-cols-1"
-            : (displayMode === 'standard' 
-                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
-                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5")
-        )}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {expensesByRetailer?.map(({retailer, expenses: retailerExpenses}, index) => 
-          <motion.div 
-            key={`${retailer.id}-${retailerExpenses.reduce((sum, exp) => sum + exp.amount, 0)}`}
-            variants={itemVariants}
-            custom={index}
-            whileHover={{
-              scale: displayMode === 'standard' ? 1.02 : 1.01,
-              rotateX: displayMode === 'standard' ? 2 : 0,
-              boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-              z: 20,
-              transition: { duration: 0.2 }
-            }}
-            className="w-full"
-            style={{
-              transformStyle: "preserve-3d",
-              perspective: "1000px"
-            }}
-          >
-            {displayMode === 'standard' ? (
-              <RetailerCard 
-                retailer={retailer} 
-                expenses={retailerExpenses} 
-                onExpenseUpdated={onExpenseUpdated} 
-                viewMode={viewMode} 
-              />
-            ) : (
-              <MiniRetailerCard
-                retailer={retailer}
-                expenses={retailerExpenses}
-                onExpenseUpdated={onExpenseUpdated}
-                viewMode={viewMode}
-              />
-            )}
-          </motion.div>
-        )}
-      </motion.div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {retailers.map((retailer, index) => (
+        <RetailerCard
+          key={retailer.id}
+          retailer={retailer}
+          expenses={expensesByRetailer[retailer.id] || []}
+          onExpenseUpdated={onExpenseUpdated}
+          viewMode={viewMode}
+          colorScheme={colorSchemes[index]}
+        />
+      ))}
     </div>
   );
-};
+}
