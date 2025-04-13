@@ -42,23 +42,23 @@ export const NewSavingDialogContent = ({
   return (
     <div 
       ref={contentRef}
-      className="relative flex flex-col pb-6 p-6 rounded-lg w-full h-full bg-gradient-to-br from-white via-green-50/40 to-green-100/70 dark:from-gray-900 dark:via-green-950/20 dark:to-green-900/30"
+      className="relative flex flex-col pb-6 p-6 rounded-lg w-full h-full bg-gradient-to-br from-white via-quaternary-50/40 to-quaternary-100/70 dark:from-gray-900 dark:via-quaternary-950/20 dark:to-quaternary-900/30"
     >
-      <div className="absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg from-green-500 to-emerald-400 dark:from-green-600 dark:to-emerald-500" />
+      <div className="absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg from-quaternary-500 to-emerald-400 dark:from-quaternary-600 dark:to-emerald-500" />
 
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
       
       <DialogHeader className="relative z-10 mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+          <div className="p-2.5 rounded-lg bg-quaternary-100 text-quaternary-700 dark:bg-quaternary-900/30 dark:text-quaternary-300">
             {saving ? <EditIcon className="w-5 h-5" /> : <PlusCircleIcon className="w-5 h-5" />}
           </div>
-          <DialogTitle className="text-2xl font-bold text-green-900 dark:text-green-200">
+          <DialogTitle className="text-2xl font-bold text-quaternary-900 dark:text-quaternary-200">
             {saving ? "Modifier un versement" : "Ajouter un versement"}
           </DialogTitle>
         </div>
         <div className="ml-[52px] mt-2">
-          <DialogDescription className="text-base text-green-700/80 dark:text-green-300/80">
+          <DialogDescription className="text-base text-quaternary-700/80 dark:text-quaternary-300/80">
             {saving
               ? "Modifiez les informations de votre versement d'épargne."
               : "Ajoutez un nouveau versement mensuel facilement."}
@@ -88,7 +88,7 @@ export const NewSavingDialogContent = ({
           </Button>
           <Button 
             onClick={onSave}
-            className="text-white px-6 py-2 rounded-lg bg-green-600 hover:bg-green-500 dark:bg-green-700 dark:hover:bg-green-600"
+            className="text-white px-6 py-2 rounded-lg bg-quaternary-600 hover:bg-quaternary-500 dark:bg-quaternary-700 dark:hover:bg-quaternary-600"
           >
             {saving ? "Mettre à jour" : "Ajouter"}
           </Button>
