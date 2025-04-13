@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/format";
 import { startOfYear, endOfYear, subYears, startOfMonth, endOfMonth, subMonths } from "date-fns";
@@ -25,7 +24,6 @@ interface RetailerCardProps {
   }>;
   onExpenseUpdated: () => void;
   viewMode: "monthly" | "yearly";
-  colorScheme?: "blue" | "purple" | "amber";
 }
 
 export function RetailerCard({
@@ -33,7 +31,6 @@ export function RetailerCard({
   expenses,
   onExpenseUpdated,
   viewMode,
-  colorScheme = "blue",
 }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -131,32 +128,6 @@ export function RetailerCard({
     onExpenseUpdated();
   }, [onExpenseUpdated]);
 
-  // Détermine les couleurs du composant selon le colorScheme fourni
-  const getColorStyles = () => {
-    switch (colorScheme) {
-      case "purple":
-        return {
-          cardBg: "bg-purple-100 dark:bg-purple-900/30",
-          textColor: "text-purple-600 dark:text-purple-300",
-          hoverBg: "hover:bg-purple-200 dark:hover:bg-purple-800",
-        };
-      case "amber":
-        return {
-          cardBg: "bg-amber-100 dark:bg-amber-900/30",
-          textColor: "text-amber-600 dark:text-amber-300",
-          hoverBg: "hover:bg-amber-200 dark:hover:bg-amber-800",
-        };
-      default:
-        return {
-          cardBg: "bg-tertiary-100 dark:bg-tertiary-900/30",
-          textColor: "text-tertiay-600 dark:text-tertiary-300",
-          hoverBg: "hover:bg-tertiary-200 dark:hover:bg-tertiary-800",
-        };
-    }
-  };
-
-  const colors = getColorStyles();
-
   // Déterminer si le montant a augmenté ou diminué pour l'animation
   const hasIncreased = totalCurrentPeriod > prevTotal;
   const hasChanged = totalCurrentPeriod !== prevTotal && prevTotal !== 0;
@@ -209,9 +180,7 @@ export function RetailerCard({
                 to={`/expenses/retailer/${retailer.id}`}
                 className={cn(
                   "text-lg font-medium transition-colors",
-                  // Teinte bleue pour le nom de l'enseigne
                   "text-tertiary-700 hover:text-blue-600",
-                  // Dark mode
                   "dark:text-tertiary-300 dark:hover:text-tertiary-400"
                 )}
               >
@@ -224,9 +193,7 @@ export function RetailerCard({
               size="sm"
               className={cn(
                 "rounded-full h-8 w-8 p-0",
-                // Nouvelles couleurs bleues pour le bouton
                 "bg-blue-100 text-tertiary-700 hover:bg-tertiary-200",
-                // Dark mode
                 "dark:bg-tertiary-900/30 dark:text-tertiary-300 dark:hover:bg-tertiary-800/50"
               )}
               onClick={() => setAddDialogOpen(true)}
@@ -251,7 +218,6 @@ export function RetailerCard({
                     transition={{ duration: 0.3 }}
                     className={cn(
                       "text-2xl font-bold",
-                      // Teinte bleue pour le montant
                       "text-tertiary-700 dark:text-tertiary-200"
                     )}
                   >
@@ -267,9 +233,7 @@ export function RetailerCard({
               )}>
                 <div className={cn(
                   "p-1 rounded",
-                  // Light mode - background
                   isIncrease ? "bg-red-100" : "bg-green-100",
-                  // Dark mode - background
                   isIncrease ? "dark:bg-red-900/30" : "dark:bg-green-900/30",
                 )}>
                   {isIncrease ? (
@@ -287,9 +251,7 @@ export function RetailerCard({
                 
                 <span className={cn(
                   "font-medium", 
-                  // Light mode
                   isIncrease ? "text-red-600" : "text-green-600",
-                  // Dark mode
                   isIncrease ? "dark:text-red-300" : "dark:text-green-300"
                 )}>
                   {Math.abs(percentageChange).toFixed(1)}%
