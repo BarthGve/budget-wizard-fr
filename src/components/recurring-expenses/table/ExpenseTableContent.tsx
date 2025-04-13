@@ -166,10 +166,7 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
       {totalPages > 1 && (
         <CardFooter className={cn(
           "justify-center py-4 relative z-10",
-          // Light mode
-          "bg-tertiary-50/30",
-          // Dark mode
-          "dark:bg-tertiary-900/10"
+    
         )}>
           <TablePagination
             currentPage={currentPage}
