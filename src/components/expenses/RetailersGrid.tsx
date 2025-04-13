@@ -83,7 +83,7 @@ export function RetailersGrid({
       displayMode === 'grid' 
         ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" 
         : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3",
-      "py-4"
+      "py-8"
     )}>
       {retailersData.map((item, index) => (
         displayMode === 'grid' ? (
