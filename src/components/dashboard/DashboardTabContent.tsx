@@ -88,6 +88,7 @@ export const DashboardTabContent = ({
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   
+  // Utiliser le hook useExpenseStats pour obtenir les mêmes données que dans la page dépenses
   const { expensesTotal } = useExpenseStats(currentView);
   const { data: credits = [] } = useCreditsFetcher();
   const { totalMensualites } = useCreditStats({ credits, firstDayOfMonth });
