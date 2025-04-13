@@ -39,8 +39,8 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
-            "bg-gradient-to-br from-quaternary-100 to-green-50",
-            "dark:bg-gradient-to-br dark:from-quaternary-900/40 dark:to-green-800/30 dark:shadow-quaternary-900/10"
+            "bg-gradient-to-br from-quaternary-100 to-quaternary-50",
+            "dark:bg-gradient-to-br dark:from-quaternary-900/40 dark:to-quaternary-800/30 dark:shadow-quaternary-900/10"
           )}
         >
           <PiggyBank className={cn(
@@ -53,8 +53,8 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
         <div>
           <h1 className={cn(
             "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
-            "bg-gradient-to-r from-quaternary-500 via-green-500 to-teal-400",
-            "dark:bg-gradient-to-r dark:from-quaternary-400 dark:via-green-400 dark:to-teal-300"
+            "bg-gradient-to-r from-quaternary-500 via-quaternary-500 to-teal-400",
+            "dark:bg-gradient-to-r dark:from-quaternary-400 dark:via-quaternary-400 dark:to-teal-300"
           )}>
             Épargne
           </h1>
