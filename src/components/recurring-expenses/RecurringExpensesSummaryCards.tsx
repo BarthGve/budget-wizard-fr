@@ -134,10 +134,7 @@ export const RecurringExpensesSummaryCards = ({
                   </div>
                   <CardTitle className={cn(
                     "text-lg font-semibold",
-                    // Light mode
-                    "text-tertiary-700",
-                    // Dark mode
-                    "dark:text-tertiary-300"
+                
                   )}>
                     {title}
                   </CardTitle>
