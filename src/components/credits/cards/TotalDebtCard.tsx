@@ -39,7 +39,7 @@ export const TotalDebtCard = ({
               dateFin={new Date().toISOString()} 
               montantMensuel={0}
               withTooltip={true}
-              colorScheme="blue"
+              colorScheme="tertiary"
               value={progressPercentage}
               amountPaid={amountPaid}
               totalAmount={totalDebt}
@@ -48,7 +48,7 @@ export const TotalDebtCard = ({
         </div>
       }
       badgeText="reste à payer"
-      colorScheme="blue"
+      colorScheme="tertiary"
     />
   );
 };

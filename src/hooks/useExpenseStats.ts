@@ -2,6 +2,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
+import { Expense } from "@/types/expense";
+
+// Interface pour les dépenses de carburant qui contient fuel_volume
+interface FuelExpense extends Expense {
+  fuel_volume?: number;
+  expense_type: string;
+}
 
 export const useExpenseStats = (viewMode: "monthly" | "yearly") => {
   const now = new Date();
@@ -31,9 +38,9 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly") => {
 
         // Récupérer les dépenses de carburant
         const { data: fuelExpenses, error: fuelError } = await supabase
-          .from("expenses")
+          .from("vehicle_expenses")  // Utiliser la table vehicle_expenses pour les dépenses de carburant
           .select("*")
-          .eq("expense_type", "fuel")
+          .eq("expense_type", "carburant")
           .gte("date", startDate.toISOString())
           .lte("date", endDate.toISOString());
 
@@ -43,7 +50,7 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly") => {
         const { data: vehicles, error: vehiclesError } = await supabase
           .from("vehicles")
           .select("id")
-          .eq("active", true);
+          .eq("status", "actif");
 
         if (vehiclesError) throw vehiclesError;
 
@@ -66,9 +73,9 @@ export const useExpenseStats = (viewMode: "monthly" | "yearly") => {
   });
 
   const expensesTotal = expensesData?.expenses.reduce((sum, expense) => sum + (expense.amount || 0), 0) || 0;
-  const fuelExpensesTotal = expensesData?.fuelExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0) || 0;
+  const fuelExpensesTotal = expensesData?.fuelExpenses.reduce((sum, expense: any) => sum + (expense.amount || 0), 0) || 0;
   const fuelExpensesCount = expensesData?.fuelExpenses.length || 0;
-  const fuelVolume = expensesData?.fuelExpenses.reduce((sum, expense) => sum + (expense.fuel_volume || 0), 0) || 0;
+  const fuelVolume = expensesData?.fuelExpenses.reduce((sum, expense: any) => sum + (expense.fuel_volume || 0), 0) || 0;
   const hasActiveVehicles = expensesData?.hasActiveVehicles || false;
 
   return {
