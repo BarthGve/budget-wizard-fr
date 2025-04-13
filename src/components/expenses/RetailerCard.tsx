@@ -188,19 +188,19 @@ export function RetailerCard({
               </Link>
             </div>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "rounded-full h-8 w-8 p-0",
-                "bg-blue-100 text-tertiary-700 hover:bg-tertiary-200",
-                "dark:bg-tertiary-900/30 dark:text-tertiary-300 dark:hover:bg-tertiary-800/50"
-              )}
-              onClick={() => setAddDialogOpen(true)}
-            >
-              <PlusCircle className="h-4 w-4" />
-              <span className="sr-only">Ajouter une dépense pour {retailer.name}</span>
-            </Button>
+     <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "flex-shrink-0 rounded-full h-7 w-7 p-0 ml-2",
+              "bg-tertiary/10 text-tertiary hover:text-tertiary-foreground hover:bg-tertiary/80", // Remplacement par tertiary
+              "dark:bg-tertiary/30 dark:text-tertiary dark:hover:text-tertiary-foreground dark:hover:bg-tertiary/50" // Remplacement pour dark mode
+            )}
+            onClick={() => setAddDialogOpen(true)}
+          >
+            <PlusCircle className="h-3.5 w-3.5" />
+            <span className="sr-only">Ajouter une dépense pour {retailer.name}</span>
+          </Button>
           </div>
           
           <div className="space-y-3">
