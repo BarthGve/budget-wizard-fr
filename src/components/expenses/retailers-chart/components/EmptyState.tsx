@@ -58,10 +58,18 @@ export const EmptyState = ({ viewMode }: EmptyStateProps) => {
         </div>
       </CardHeader>
       <CardContent className="pt-1 pb-6 relative z-10">
-        <div className="flex items-center justify-center h-[250px]">
-          <p className="text-muted-foreground">
+        <div className="flex flex-col items-center justify-center h-[250px] space-y-4">
+          <div className={cn(
+            "p-3 rounded-full",
+            "bg-tertiary-100/60 text-tertiary-500/80",
+            "dark:bg-tertiary-900/30 dark:text-tertiary-400/90"
+          )}>
+            <BarChart3 className="h-8 w-8" />
+          </div>
+          
+          <p className="text-muted-foreground text-sm text-center max-w-xs">
             {viewMode === 'monthly' 
-              ? "Aucune dépense ce mois-ci" 
+              ? "Aucune dépense enregistrée ce mois-ci" 
               : "Aucune donnée annuelle disponible"}
           </p>
         </div>

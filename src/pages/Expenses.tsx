@@ -2,7 +2,6 @@
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
 import { useState, memo, useMemo } from "react";
-import StyledLoader from "@/components/ui/StyledLoader";
 import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
 import { YearlyTotalCard } from "@/components/expenses/YearlyTotalCard";
@@ -16,6 +15,7 @@ import { formatCurrency } from "@/utils/format";
 import { Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { ExpensesPageSkeleton } from "@/components/expenses/skeletons/ExpensesPageSkeleton";
 
 const Expenses = memo(function Expenses() {
   const { retailers } = useRetailers();
@@ -115,7 +115,7 @@ const Expenses = memo(function Expenses() {
   };
   
   if (isLoading) {
-    return <StyledLoader/>;
+    return <ExpensesPageSkeleton displayMode={displayMode} />;
   }
   
   return (

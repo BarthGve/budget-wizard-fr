@@ -1,8 +1,9 @@
 
-import { RetailerCard } from "./RetailerCard";
+import { RetailerCard } from "./retailer-card/RetailerCard";
 import { MiniRetailerCard } from "./MiniRetailerCard";
 import { useEffect, useState } from "react";
 import { RetailerCardSkeleton } from "./skeletons/RetailerCardSkeleton";
+import { MiniRetailerCardSkeleton } from "./skeletons/MiniRetailerCardSkeleton";
 import { cn } from "@/lib/utils";
 
 export interface Retailer {
@@ -35,6 +36,7 @@ interface RetailersGridProps {
   viewMode: "monthly" | "yearly";
   displayMode?: "grid" | "list";
   isLoading?: boolean;
+  className?: string;
 }
 
 export function RetailersGrid({
@@ -45,6 +47,7 @@ export function RetailersGrid({
   viewMode,
   displayMode = "grid",
   isLoading = false,
+  className,
 }: RetailersGridProps) {
   // État pour alterner les styles de couleur des cartes
   const [colorSchemes, setColorSchemes] = useState<Array<"blue" | "purple" | "amber">>([]);
@@ -70,10 +73,33 @@ export function RetailersGrid({
 
   if (isLoading) {
     return (
-      <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className={cn(
+        displayMode === 'grid' 
+          ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" 
+          : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3",
+        "py-8",
+        className
+      )}>
         {[...Array(8)].map((_, index) => (
-          <RetailerCardSkeleton key={index} />
+          displayMode === 'grid' 
+            ? <RetailerCardSkeleton key={index} /> 
+            : <MiniRetailerCardSkeleton key={index} delay={index} />
         ))}
+      </div>
+    );
+  }
+  
+  if (retailersData.length === 0) {
+    return (
+      <div className={cn("py-8", className)}>
+        <div className="text-center p-8 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700/50">
+          <h3 className="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2">
+            Aucune enseigne trouvée
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Ajoutez des enseignes dans vos paramètres pour commencer à suivre vos dépenses
+          </p>
+        </div>
       </div>
     );
   }
@@ -83,7 +109,8 @@ export function RetailersGrid({
       displayMode === 'grid' 
         ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" 
         : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3",
-      "py-8"
+      "py-8",
+      className
     )}>
       {retailersData.map((item, index) => (
         displayMode === 'grid' ? (
