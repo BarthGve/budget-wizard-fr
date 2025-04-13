@@ -2,7 +2,7 @@
 import { Store } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { RetailersGrid } from "../RetailersGrid";
+import { RetailersGrid, SimpleExpense } from "../RetailersGrid";
 
 interface RetailersSectionProps {
   expensesByRetailer: Array<{
@@ -29,6 +29,15 @@ export function RetailersSection({
   viewMode, 
   displayMode 
 }: RetailersSectionProps) {
+  // Transformer les données pour qu'elles correspondent à la structure attendue par RetailersGrid
+  const formattedExpensesByRetailer = expensesByRetailer.map(item => ({
+    retailer: item.retailer,
+    expenses: item.expenses.map(expense => ({
+      ...expense,
+      retailer_id: item.retailer.id // Ajouter la propriété retailer_id manquante
+    })) as SimpleExpense[]
+  }));
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -54,7 +63,7 @@ export function RetailersSection({
       </div>
       
       <RetailersGrid 
-        expensesByRetailer={expensesByRetailer}
+        expensesByRetailer={formattedExpensesByRetailer}
         onExpenseUpdated={onExpenseUpdated}
         viewMode={viewMode}
         displayMode={displayMode}
