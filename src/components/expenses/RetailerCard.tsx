@@ -180,27 +180,27 @@ export function RetailerCard({
                 to={`/expenses/retailer/${retailer.id}`}
                 className={cn(
                   "text-lg font-medium transition-colors",
-                  "text-tertiary-700 hover:text-tertiary-600",
-                  "dark:text-tertiary-300 dark:hover:text-tertiary-400"
+                  "text-blue-700 hover:text-blue-600",
+                  "dark:text-blue-300 dark:hover:text-blue-400"
                 )}
               >
                 {retailer.name}
               </Link>
             </div>
             
-     <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "flex-shrink-0 rounded-full h-7 w-7 p-0 ml-2",
-              "bg-tertiary/10 text-tertiary hover:text-tertiary-foreground hover:bg-tertiary/80", // Remplacement par tertiary
-              "dark:bg-tertiary/30 dark:text-tertiary dark:hover:text-tertiary-foreground dark:hover:bg-tertiary/50" // Remplacement pour dark mode
-            )}
-            onClick={() => setAddDialogOpen(true)}
-          >
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span className="sr-only">Ajouter une dépense pour {retailer.name}</span>
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "rounded-full h-8 w-8 p-0",
+                "bg-blue-100 text-blue-700 hover:bg-blue-200",
+                "dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/50"
+              )}
+              onClick={() => setAddDialogOpen(true)}
+            >
+              <PlusCircle className="h-4 w-4" />
+              <span className="sr-only">Ajouter une dépense pour {retailer.name}</span>
+            </Button>
           </div>
           
           <div className="space-y-3">
@@ -218,7 +218,7 @@ export function RetailerCard({
                     transition={{ duration: 0.3 }}
                     className={cn(
                       "text-2xl font-bold",
-                      "text-tertiary-700 dark:text-tertiary-200"
+                      "text-blue-700 dark:text-blue-200"
                     )}
                   >
                     {formatCurrency(totalCurrentPeriod)}
@@ -228,31 +228,21 @@ export function RetailerCard({
             </div>
             
             {totalPreviousPeriod > 0 && (
-              <div className={cn(
-                "flex items-center gap-1.5 text-sm",
-              )}>
+              <div className="flex items-center gap-1.5 text-sm">
                 <div className={cn(
                   "p-1 rounded",
-                  isIncrease ? "bg-red-100" : "bg-green-100",
-                  isIncrease ? "dark:bg-red-900/30" : "dark:bg-green-900/30",
+                  isIncrease ? "bg-red-100 dark:bg-red-900/30" : "bg-green-100 dark:bg-green-900/30"
                 )}>
                   {isIncrease ? (
-                    <TrendingUp className={cn(
-                      "h-3 w-3",
-                      "text-red-600 dark:text-red-300"
-                    )} />
+                    <TrendingUp className="h-3 w-3 text-red-600 dark:text-red-300" />
                   ) : (
-                    <TrendingDown className={cn(
-                      "h-3 w-3",
-                      "text-green-600 dark:text-green-300"
-                    )} />
+                    <TrendingDown className="h-3 w-3 text-green-600 dark:text-green-300" />
                   )}
                 </div>
                 
                 <span className={cn(
                   "font-medium", 
-                  isIncrease ? "text-red-600" : "text-green-600",
-                  isIncrease ? "dark:text-red-300" : "dark:text-green-300"
+                  isIncrease ? "text-red-600 dark:text-red-300" : "text-green-600 dark:text-green-300"
                 )}>
                   {Math.abs(percentageChange).toFixed(1)}%
                 </span>
