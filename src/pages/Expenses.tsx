@@ -178,10 +178,7 @@ const Expenses = memo(function Expenses() {
                     </div>
                     <CardTitle className={cn(
                       "text-lg font-semibold",
-                      // Light mode
-                      "text-tertiary-700",
-                      // Dark mode
-                      "dark:text-tertiary-300"
+              
                     )}>
                       Moyenne des dépenses
                     </CardTitle>
@@ -213,7 +210,8 @@ const Expenses = memo(function Expenses() {
                 <div className="mt-3">
                   <p className={cn(
                     "text-sm",
-                    "text-tertiary-600/80 dark:text-tertiary-400/90"
+      "text-muted-foreground",
+                   
                   )}>
                     {Math.round(viewMode === 'monthly' ? averageMonthlyTransactions : averageYearlyTransactions)} 
                     {viewMode === 'monthly' ? " achats par mois" : " achats par an"}
