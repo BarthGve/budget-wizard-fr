@@ -56,7 +56,7 @@ export function AutoGenerateField({ form }: AutoGenerateFieldProps) {
           </div>
           <div className="flex flex-col items-end gap-1">
             <FormControl>
-        <Switch
+          <Switch
   checked={field.value || false}
   onCheckedChange={(checked) => {
     // Utiliser null quand désactivé pour éviter les problèmes de types
