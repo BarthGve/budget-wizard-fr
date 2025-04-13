@@ -178,7 +178,10 @@ const Expenses = memo(function Expenses() {
                     </div>
                     <CardTitle className={cn(
                       "text-lg font-semibold",
-              
+                      // Light mode
+                      "text-tertiary-700",
+                      // Dark mode
+                      "dark:text-tertiary-300"
                     )}>
                       Moyenne des dépenses
                     </CardTitle>
@@ -198,11 +201,7 @@ const Expenses = memo(function Expenses() {
               
               <CardContent className="pt-1 pb-6 relative z-10">
                 <p className={cn(
-                  "text-2xl font-bold",
-                  // Light mode
-                  "text-tertiary-700",
-                  // Dark mode
-                  "dark:text-tertiary-300"
+                  "text-2xl font-bold"
                 )}>
                   {formatCurrency(viewMode === 'monthly' ? monthlyAverage : yearlyAverage)}
                 </p>
@@ -210,8 +209,7 @@ const Expenses = memo(function Expenses() {
                 <div className="mt-3">
                   <p className={cn(
                     "text-sm",
-      "text-muted-foreground",
-                   
+                    "text-tertiary-600/80 dark:text-tertiary-400/90"
                   )}>
                     {Math.round(viewMode === 'monthly' ? averageMonthlyTransactions : averageYearlyTransactions)} 
                     {viewMode === 'monthly' ? " achats par mois" : " achats par an"}
