@@ -34,7 +34,7 @@ export function AmountDisplay({
             className={cn(
               "text-2xl font-bold",
               // Teinte bleue pour le montant
-              "text-blue-700 dark:text-blue-200"
+              "text-tertiary-700 dark:text-tertiary-200"
             )}
           >
             {formatCurrency(amount)}

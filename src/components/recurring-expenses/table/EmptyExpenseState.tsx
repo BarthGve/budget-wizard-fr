@@ -8,26 +8,26 @@ export const EmptyExpenseState = () => {
     <Card className={cn(
       "border shadow-sm overflow-hidden",
       // Light mode
-      "bg-white border-blue-100", 
+      "bg-white border-tertiary-100", 
       // Dark mode
-      "dark:bg-gray-800/90 dark:border-blue-800/50"
+      "dark:bg-gray-800/90 dark:border-tertiary-800/50"
     )}>
       <CardContent className="py-12">
         <div className={cn(
           "flex flex-col items-center justify-center gap-4 text-center",
           // Light mode
-          "text-blue-500/80",
+          "text-tertiary-500/80",
           // Dark mode
-          "dark:text-blue-400/80"
+          "dark:text-tertiary-400/80"
         )}>
           <FileText className="h-12 w-12 opacity-40" />
           <div className="space-y-2">
             <h3 className={cn(
               "font-semibold text-lg",
               // Light mode
-              "text-blue-700",
+              "text-tertiary-700",
               // Dark mode
-              "dark:text-blue-300"
+              "dark:text-tertiary-300"
             )}>
               Aucune charge récurrente
             </h3>

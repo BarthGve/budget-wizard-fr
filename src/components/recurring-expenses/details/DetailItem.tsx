@@ -17,9 +17,9 @@ export const DetailItem = ({ icon, label, value }: DetailItemProps) => {
       <div className={cn(
         "w-9 h-9 rounded-md flex items-center justify-center mt-0.5 flex-shrink-0",
         // Light mode
-        "bg-gray-100 text-blue-500",
+        "bg-gray-100 text-tertiary-500",
         // Dark mode
-        "dark:bg-gray-800 dark:text-blue-400"
+        "dark:bg-gray-800 dark:text-tertiary-400"
       )}>
         {icon}
       </div>

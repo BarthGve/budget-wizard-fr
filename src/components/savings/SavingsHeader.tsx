@@ -39,22 +39,22 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
           transition={{ delay: 0.2, duration: 0.3 }}
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
-            "bg-gradient-to-br from-emerald-100 to-green-50",
-            "dark:bg-gradient-to-br dark:from-emerald-900/40 dark:to-green-800/30 dark:shadow-emerald-900/10"
+            "bg-gradient-to-br from-quaternary-100 to-quaternary-50",
+            "dark:bg-gradient-to-br dark:from-quaternary-900/40 dark:to-quaternary-800/30 dark:shadow-quaternary-900/10"
           )}
         >
           <PiggyBank className={cn(
             "h-6 w-6",
-            "text-emerald-600",
-            "dark:text-emerald-400"
+            "text-quaternary-600",
+            "dark:text-quaternary-400"
           )} />
         </motion.div>
         
         <div>
           <h1 className={cn(
             "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
-            "bg-gradient-to-r from-emerald-500 via-green-500 to-teal-400",
-            "dark:bg-gradient-to-r dark:from-emerald-400 dark:via-green-400 dark:to-teal-300"
+            "bg-gradient-to-r from-quaternary-500 via-quaternary-500 to-teal-400",
+            "dark:bg-gradient-to-r dark:from-quaternary-400 dark:via-quaternary-400 dark:to-teal-300"
           )}>
             Épargne
           </h1>
@@ -82,10 +82,10 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
             className={cn(
               "h-10 px-3 md:px-4 border transition-all duration-200 rounded-md w-full md:w-auto",
               "hover:scale-[1.02] active:scale-[0.98]",
-              "bg-white border-emerald-200 text-emerald-600",
-              "hover:border-emerald-300 hover:bg-emerald-50/50 hover:text-emerald-700",
-              "dark:bg-gray-800 dark:border-emerald-800/60 dark:text-emerald-400",
-              "dark:hover:bg-emerald-900/20 dark:hover:border-emerald-700 dark:hover:text-emerald-300"
+              "bg-white border-quaternary-200 text-quaternary-600",
+              "hover:border-quaternary-300 hover:bg-quaternary-50/50 hover:text-quaternary-700",
+              "dark:bg-gray-800 dark:border-quaternary-800/60 dark:text-quaternary-400",
+              "dark:hover:bg-quaternary-900/20 dark:hover:border-quaternary-700 dark:hover:text-quaternary-300"
             )}
             style={{
               boxShadow: isDarkMode
@@ -97,8 +97,8 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
             <div className="flex items-center gap-1.5">
               <span className={cn(
                 "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
-                "bg-emerald-100/80 text-emerald-600",
-                "dark:bg-emerald-800/50 dark:text-emerald-300"
+                "bg-quaternary-100/80 text-quaternary-600",
+                "dark:bg-quaternary-800/50 dark:text-quaternary-300"
               )}>
                 <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
               </span>
@@ -123,10 +123,10 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
             className={cn(
               "h-10 px-3 md:px-4 border transition-all duration-200 rounded-md w-full md:w-auto",
               "hover:scale-[1.02] active:scale-[0.98]",
-              "bg-white border-emerald-200 text-emerald-600",
-              "hover:border-emerald-300 hover:bg-emerald-50/50 hover:text-emerald-700",
-              "dark:bg-gray-800 dark:border-emerald-800/60 dark:text-emerald-400",
-              "dark:hover:bg-emerald-900/20 dark:hover:border-emerald-700 dark:hover:text-emerald-300"
+              "bg-white border-quaternary-200 text-quaternary-600",
+              "hover:border-quaternary-300 hover:bg-quaternary-50/50 hover:text-quaternary-700",
+              "dark:bg-gray-800 dark:border-quaternary-800/60 dark:text-quaternary-400",
+              "dark:hover:bg-quaternary-900/20 dark:hover:border-quaternary-700 dark:hover:text-quaternary-300"
             )}
             style={{
               boxShadow: isDarkMode
@@ -138,8 +138,8 @@ export const SavingsHeader = ({ onSavingAdded, onProjectCreated }: SavingsHeader
             <div className="flex items-center gap-1.5">
               <span className={cn(
                 "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
-                "bg-emerald-100/80 text-emerald-600",
-                "dark:bg-emerald-800/50 dark:text-emerald-300"
+                "bg-quaternary-100/80 text-quaternary-600",
+                "dark:bg-quaternary-800/50 dark:text-quaternary-300"
               )}>
                 <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
               </span>

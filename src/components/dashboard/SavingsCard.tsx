@@ -39,10 +39,10 @@ export const SavingsCard = memo(({
       <Card 
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
-          // Light mode styles - alignés avec les styles de ExpensesCard
-          "bg-gradient-to-br from-background to-green-50 border border-green-100 shadow-lg hover:shadow-xl",
-          // Dark mode styles - alignés exactement avec ExpensesCard
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-green-950 dark:border-green-900/30 dark:shadow-green-800/30 dark:hover:shadow-green-800/50"
+          // Light mode styles with quaternary  color
+          "shadow-lg border hover:shadow-xl",
+          // Dark mode styles with quaternary  color
+          "dark:bg-quaternary/10 dark:border-quaternary/30 dark:shadow-quaternary/30 dark:hover:shadow-quaternary/50"
         )}
         onClick={() => navigate("/savings")}
       >
@@ -51,8 +51,8 @@ export const SavingsCard = memo(({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-green-100 text-green-600", // Light mode
-                "dark:bg-green-900/40 dark:text-green-400" // Dark mode
+                "bg-quaternary/20 text-quaternary ", // Apply quaternary  color for icon background
+                "dark:bg-quaternary/20 dark:text-quaternary " // Dark mode variant
               )}>
                 <PiggyBank className="h-5 w-5" />
               </div>
@@ -67,8 +67,8 @@ export const SavingsCard = memo(({
               <motion.p 
                 className={cn(
                   "text-xl font-bold leading-none w-1/3",
-                  "text-gray-800", // Light mode
-                  "dark:text-green-100" // Dark mode - légèrement teinté de vert
+                  "text-gray-800", // Light mode text color
+                  "dark:text-quaternary " // Dark mode text color using quaternary 
                 )}
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -80,38 +80,33 @@ export const SavingsCard = memo(({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="w-2/3 relative">
-                    {/* Effet de lueur subtil pour le mode sombre */}
                     <div className={cn(
-                      "absolute inset-0 bg-green-500/10 dark:bg-green-400/5 rounded-full blur-sm",
-                      "opacity-0 dark:opacity-100 transition-opacity",
-                      isGoalReached ? "dark:bg-green-300/10" : "" // Lueur plus forte si objectif atteint
+                      "absolute inset-0 bg-quaternary/10 blur-sm rounded-full opacity-0 dark:opacity-60", 
+                      isGoalReached ? "dark:bg-quaternary/10" : "" // Change intensity based on goal
                     )} />
                     
                     <Progress 
                       value={progressPercentage} 
                       className={cn(
                         "h-2.5 rounded-full",
-                        // Light mode - progress background
-                        "bg-green-100/50",
-                        // Dark mode - progress background
-                        "dark:bg-green-950/70"
+                        "bg-quaternary/50", // Light mode progress background using quaternary 
+                        "dark:bg-quaternary/70" // Dark mode progress background using quaternary 
                       )}
                       indicatorClassName={cn(
-                        // Couleur verte pour l'indicateur
-                        isGoalReached ? "bg-green-500" : "bg-green-500", 
-                        isGoalReached ? "dark:bg-green-400" : "dark:bg-green-500"
+                        "bg-quaternary ", // Indicator color using quaternary 
+                        isGoalReached ? "dark:bg-quaternary/40" : "dark:bg-quaternary "
                       )}
                     />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
                   <p className="flex items-center gap-1.5 dark:text-white font-medium">
-                    <Info className="h-4 w-4 text-green-500 dark:text-green-400" />
+                    <Info className="h-4 w-4 text-quaternary  dark:text-quaternary " />
                     {Math.round(progressPercentage)}% de l'objectif atteint
                   </p>
                   <span className="dark:text-gray-300 mt-1 block">
                     {isGoalReached ? (
-                      <span className="font-medium text-green-600 dark:text-green-400">
+                      <span className="font-medium text-quaternary  dark:text-quaternary ">
                         Objectif atteint ! (+{Math.abs(remainingAmount).toLocaleString('fr-FR')} €)
                       </span>
                     ) : (
@@ -131,6 +126,5 @@ export const SavingsCard = memo(({
     </motion.div>
   );
 });
-
 // Nom d'affichage pour le débogage
 SavingsCard.displayName = "SavingsCard";

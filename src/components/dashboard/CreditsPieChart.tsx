@@ -1,4 +1,3 @@
-
 import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +19,7 @@ interface CreditsPieChartProps {
   totalMensualites: number;
 }
 
-// Palette de couleurs adaptée du violet au pourpre
+// Palette de couleurs adaptée du violet au pourpre, remplacée par "primary"
 const COLORS = ['#c4b5fd', '#a78bfa', '#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6', '#4c1d95'];
 
 // Couleurs pour dark mode - légèrement plus lumineuses
@@ -32,7 +31,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     return (
       <div className="bg-background/95 backdrop-blur-sm shadow-md border border-border rounded-lg p-2 text-sm dark:bg-gray-800/95 dark:border-gray-700">
         <p className="font-medium dark:text-white">{payload[0].name}</p>
-        <p className="font-semibold text-purple-600 dark:text-purple-300">{formatCurrency(payload[0].value)}</p>
+        <p className="font-semibold text-primary dark:text-primary">{formatCurrency(payload[0].value)}</p>
       </div>
     );
   }
@@ -84,9 +83,9 @@ export const CreditsPieChart = ({
         className={cn(
           "cursor-pointer h-[320px] flex flex-col transition-all duration-300",
           // Light mode
-          "bg-white border border-purple-100/60 shadow-lg hover:shadow-xl",
+          "bg-white border border-primary/20 shadow-lg hover:shadow-xl",
           // Dark mode
-          "dark:bg-gray-900/90 dark:border-purple-900/30 dark:shadow-purple-900/20 dark:hover:shadow-purple-800/30"
+          "dark:bg-primary/20 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
         )}
         onClick={() => navigate("/credits")}
       >
@@ -95,15 +94,15 @@ export const CreditsPieChart = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-1.5 rounded-full",
-                "bg-purple-100 text-purple-600", // Light mode
-                "dark:bg-purple-900/40 dark:text-purple-300" // Dark mode
+                "bg-primary/20 text-primary", // Light mode
+                "dark:bg-primary/30 dark:text-primary" // Dark mode
               )}>
                 <CreditCard className="h-4 w-4" />
               </div>
-              <span className="text-gray-800 dark:text-white">Crédits</span>
+              <span>Crédits</span>
             </CardTitle>
           </div>
-          <CardDescription className="text-sm text-gray-500 dark:text-gray-400">Vue d'ensemble des mensualités</CardDescription>
+          <CardDescription className="text-sm text-primary/80 dark:text-primary/70">Vue d'ensemble des mensualités</CardDescription>
         </CardHeader>
         
         <CardContent className="flex-1 flex items-center justify-center p-0 w-full">
@@ -135,14 +134,14 @@ export const CreditsPieChart = ({
                               <tspan 
                                 x={viewBox.cx} 
                                 y={viewBox.cy - 5} 
-                                className="fill-current text-gray-900 dark:text-gray-100 text-xl font-bold"
+                                className="fill-current text-primary dark:text-primary text-xl font-bold"
                               >
                                 {formatCurrency(totalMensualites)}
                               </tspan>
                               <tspan 
                                 x={viewBox.cx} 
                                 y={(viewBox.cy || 0) + 18} 
-                                className="fill-current text-gray-500 dark:text-gray-400 text-sm"
+                                className="fill-current text-primary/70 dark:text-primary/60 text-sm"
                               >
                                 par mois
                               </tspan>

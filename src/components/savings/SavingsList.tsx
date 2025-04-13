@@ -180,8 +180,8 @@ export const SavingsList = ({
                 <h3
                   className={cn(
                     "text-lg font-medium bg-clip-text text-transparent",
-                    "bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500",
-                    "dark:bg-gradient-to-r dark:from-teal-400 dark:via-teal-300 dark:to-emerald-400"
+                    "bg-gradient-to-r from-teal-600 via-teal-500 to-quaternary-500",
+                    "dark:bg-gradient-to-r dark:from-teal-400 dark:via-teal-300 dark:to-quaternary-400"
                   )}
                 >
                   Aucune épargne

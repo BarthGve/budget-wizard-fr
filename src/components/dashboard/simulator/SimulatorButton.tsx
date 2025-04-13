@@ -13,23 +13,28 @@ export const SimulatorButton = () => {
   return (
     <>
       <Button
-        onClick={() => setOpen(true)}
-        variant="outline"
-        size={isMobile ? "sm" : "default"}
-        className={cn(
-          "min-w-[110px] justify-between",
-          "bg-purple-50 border-purple-100 hover:bg-purple-100",
-          "dark:bg-purple-950/30 dark:border-purple-800/50 dark:hover:bg-purple-900/40",
-          isMobile ? "text-xs" : ""
-        )}
-      >
-        <Calculator className={cn(
-          "mr-2", 
-          isMobile ? "h-3 w-3" : "h-4 w-4",
-          "text-purple-500 dark:text-purple-400"
-        )} />
-        <span className="text-purple-700 dark:text-purple-300">Simulateur</span>
-      </Button>
+  onClick={() => setOpen(true)}
+  size={isMobile ? "sm" : "default"}
+  className={cn(
+    "group flex items-center justify-center gap-2 rounded-lg",
+    "min-w-[140px] px-4 py-2 font-medium shadow-md",
+    "bg-primary/10 text-primary border border-primary/20",
+    "hover:bg-primary/20 hover:border-primary/30",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+    "transition-all duration-150 ease-in-out",
+    "active:scale-[0.97]",
+    isMobile ? "text-xs" : "text-sm"
+  )}
+>
+  <Calculator
+    className={cn(
+      "transition-transform duration-200 ease-in-out group-hover:rotate-6",
+      isMobile ? "w-3.5 h-3.5" : "w-4 h-4",
+      "text-primary"
+    )}
+  />
+  <span>Simuler mon budget</span>
+</Button>
       <FinanceSimulator open={open} onOpenChange={setOpen} />
     </>
   );

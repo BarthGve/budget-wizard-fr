@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -20,7 +19,7 @@ interface RetailerCardProps {
   }>;
   onExpenseUpdated: () => void;
   viewMode: "monthly" | "yearly";
-  colorScheme?: "blue" | "purple" | "amber";
+  colorScheme?: "tertiary"; // Changement de couleur uniquement pour tertiary
 }
 
 export function RetailerCard({
@@ -28,7 +27,7 @@ export function RetailerCard({
   expenses,
   onExpenseUpdated,
   viewMode,
-  colorScheme = "blue",
+  colorScheme = "tertiary", // Défaut à 'tertiary'
 }: RetailerCardProps) {
   const [expensesDialogOpen, setExpensesDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -56,8 +55,8 @@ export function RetailerCard({
         {/* Fond radial gradient ultra-subtil */}
         <div className={cn(
           "absolute inset-0",
-          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.01]",
-          "dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.015]"
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary/20 via-tertiary/15 to-transparent opacity-[0.01]", // Utilisation de tertiary
+          "dark:from-tertiary/30 dark:via-tertiary/20 dark:to-transparent dark:opacity-[0.015]"
         )} />
         
         <RetailerCardContent 

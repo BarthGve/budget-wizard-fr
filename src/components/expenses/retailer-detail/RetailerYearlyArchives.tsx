@@ -105,19 +105,19 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
         <CardTitle
           className={cn(
             "text-xl font-semibold flex items-center gap-2",
-            "text-blue-700 dark:text-blue-300"
+            "text-tertiary-700 dark:text-tertiary-300"
           )}
         >
           <div
             className={cn(
               "p-1.5 rounded",
-              "bg-blue-100 dark:bg-blue-800/40"
+              "bg-tertiary-100 dark:bg-tertiary-800/40"
             )}
           >
             <Calendar
               className={cn(
                 "w-5 h-5",
-                "text-blue-600 dark:text-blue-400"
+                "text-tertiary-600 dark:text-tertiary-400"
               )}
             />
           </div>
@@ -138,11 +138,11 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                 value={year.year.toString()}
                 onClick={() => handleYearClick(year.year)}
                 className={cn(
-                  "data-[state=active]:bg-blue-500 data-[state=active]:text-white",
+                  "data-[state=active]:bg-tertiary-500 data-[state=active]:text-white",
                   "data-[state=active]:shadow-sm",
                   "text-gray-600 dark:text-gray-300",
-                  "hover:text-blue-600 dark:hover:text-blue-300", 
-                  "data-[state=active]:border-blue-500 dark:data-[state=active]:border-blue-400",
+                  "hover:text-tertiary-600 dark:hover:text-tertiary-300", 
+                  "data-[state=active]:border-tertiary-500 dark:data-[state=active]:border-tertiary-400",
                   "transition-all duration-150"
                 )}
               >
@@ -151,8 +151,8 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                   {year.year}
                   <span className={cn(
                     "ml-1 px-1.5 py-0.5 rounded-full text-xs",
-                    "bg-blue-100 dark:bg-blue-900/50", 
-                    "text-blue-700 dark:text-blue-300"
+                    "bg-tertiary-100 dark:bg-tertiary-900/50", 
+                    "text-tertiary-700 dark:text-tertiary-300"
                   )}>
                     {year.count}
                   </span>
@@ -181,14 +181,14 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "p-2 rounded-lg",
-                    "bg-blue-100 dark:bg-blue-900/30",
-                    "text-blue-600 dark:text-blue-300"
+                    "bg-tertiary-100 dark:bg-tertiary-900/30",
+                    "text-tertiary-600 dark:text-tertiary-300"
                   )}>
                     <BarChart className="w-5 h-5" />
                   </div>
                   <DialogTitle className={cn(
                     "text-xl font-bold",
-                    "text-blue-800 dark:text-blue-100"
+                    "text-tertiary-800 dark:text-tertiary-100"
                   )}>
                     Statistiques {selectedYear}
                   </DialogTitle>
@@ -217,21 +217,21 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                     <Card 
                       className={cn(
                         "border shadow-sm overflow-hidden",
-                        "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10",
-                        "border-blue-100/60 dark:border-blue-800/30"
+                        "bg-gradient-to-br from-tertiary-50 to-tertiary-100 dark:from-tertiary-900/20 dark:to-tertiary-800/10",
+                        "border-tertiary-100/60 dark:border-tertiary-800/30"
                       )}
                     >
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-xl text-blue-600 dark:text-blue-300 flex items-center gap-2">
-                          <Receipt className="w-4 h-4 opacity-80 text-blue-500 dark:text-blue-300" />
+                        <CardTitle className="text-xl text-tertiary-600 dark:text-tertiary-300 flex items-center gap-2">
+                          <Receipt className="w-4 h-4 opacity-80 text-tertiary-500 dark:text-tertiary-300" />
                           Total des dépenses
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-xl font-bold text-blue-700 dark:text-blue-100">
+                        <p className="text-xl font-bold text-tertiary-700 dark:text-tertiary-100">
                           {formatCurrency(selectedYearData.total)}
                         </p>
-                        <p className="text-sm text-blue-500 dark:text-blue-300 mt-1">
+                        <p className="text-sm text-tertiary-500 dark:text-tertiary-300 mt-1">
                           {selectedYearData.count} dépenses enregistrées
                         </p>
                       </CardContent>
@@ -245,21 +245,21 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                     <Card 
                       className={cn(
                         "border shadow-sm overflow-hidden",
-                        "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10",
-                        "border-purple-100/60 dark:border-purple-800/30"
+                        "bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/10",
+                        "border-primary-100/60 dark:border-primary-800/30"
                       )}
                     >
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-xl text-purple-600 dark:text-purple-300 flex items-center gap-2">
-                          <Wallet className="w-4 h-4 opacity-80 text-purple-500 dark:text-purple-300" />
+                        <CardTitle className="text-xl text-primary-600 dark:text-primary-300 flex items-center gap-2">
+                          <Wallet className="w-4 h-4 opacity-80 text-primary-500 dark:text-primary-300" />
                           Achats mensuels moyens
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-xl font-bold text-purple-700 dark:text-purple-100">
+                        <p className="text-xl font-bold text-primary-700 dark:text-primary-100">
                           {formatCurrency(selectedYearData.total / 12)}
                         </p>
-                        <p className="text-sm text-purple-500 dark:text-purple-300 mt-1">
+                        <p className="text-sm text-primary-500 dark:text-primary-300 mt-1">
                           Moyenne par mois
                         </p>
                       </CardContent>
@@ -300,7 +300,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                             <div className={cn(
                               "w-2 h-10 rounded-full",
                               hasData 
-                                ? "bg-blue-500 dark:bg-blue-500" 
+                                ? "bg-tertiary-500 dark:bg-tertiary-500" 
                                 : "bg-gray-300 dark:bg-gray-700"
                             )} />
                             <span className={cn(
@@ -315,7 +315,7 @@ export function RetailerYearlyArchives({ expenses, currentYear }: RetailerYearly
                             <div className="text-right">
                               <p className={cn(
                                 "font-semibold",
-                                "text-blue-600 dark:text-blue-300"
+                                "text-tertiary-600 dark:text-tertiary-300"
                               )}>
                                 {formatCurrency(data.total)}
                               </p>

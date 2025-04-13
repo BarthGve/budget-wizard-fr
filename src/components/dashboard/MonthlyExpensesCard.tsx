@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingBasket } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
@@ -35,10 +34,10 @@ export const MonthlyExpensesCard = ({
       <Card 
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300 h-full",
-          // Light mode styles - Bleu au lieu de jaune/ambre
-          "bg-gradient-to-br from-background to-blue-50 shadow-lg border border-blue-100 hover:shadow-xl",
-          // Dark mode styles - Bleu au lieu de jaune/ambre
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-blue-950 dark:border-blue-900/30 dark:shadow-blue-800/30 dark:hover:shadow-blue-800/50"
+          // Light mode styles
+           "shadow-lg border hover:shadow-xl",
+          // Dark mode styles
+          "dark:bg-tertiary/10 dark:border-tertiary/30 dark:shadow-tertiary/30 dark:hover:shadow-tertiary/50"
         )} 
         onClick={() => navigate("/expenses")}
       >
@@ -47,10 +46,8 @@ export const MonthlyExpensesCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                // Icône dans un cercle bleu
-                "bg-blue-100 text-blue-600",
-                // Light mode
-                "dark:bg-blue-900/40 dark:text-blue-400" // Dark mode
+                "bg-tertiary/20 text-tertiary",
+                "dark:bg-tertiary/20 dark:text-tertiary"
               )}>
                 <ShoppingBasket className="h-5 w-5" />
               </div>
@@ -70,8 +67,7 @@ export const MonthlyExpensesCard = ({
               className={cn(
                 "text-xl font-bold leading-none", 
                 "text-gray-800",
-                // Light mode
-                "dark:text-blue-100" // Dark mode - texte bleu clair au lieu d'ambre
+                "dark:text-tertiary"
               )} 
               initial={{ scale: 0.9 }} 
               animate={{ scale: 1 }} 

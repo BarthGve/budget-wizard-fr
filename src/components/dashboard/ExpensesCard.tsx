@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ClipboardList, Info } from 'lucide-react';
@@ -60,9 +59,9 @@ export const ExpensesCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-gradient-to-br from-background to-blue-50 shadow-lg border border-blue-100 hover:shadow-xl",
+             "shadow-lg border hover:shadow-xl",
           // Dark mode styles - alignées avec les cards de graphiques
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-blue-950 dark:border-blue-900/30 dark:shadow-blue-800/30 dark:hover:shadow-blue-800/50"
+          "dark:bg-tertiary/10 dark:border-tertiary/30 dark:shadow-tertiary/30 dark:hover:shadow-tertiary/50"
         )}
         onClick={() => navigate("/recurring-expenses")}
       >
@@ -71,8 +70,8 @@ export const ExpensesCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-blue-100 text-blue-600", // Light mode
-                "dark:bg-blue-900/40 dark:text-blue-400" // Dark mode
+                "bg-tertiary/20 text-tertiary", // Light mode
+                "dark:bg-tertiary/20 dark:text-tertiary" // Dark mode
               )}>
                 <ClipboardList className="h-5 w-5" />
               </div>
@@ -93,7 +92,7 @@ export const ExpensesCard = ({
                 className={cn(
                   "text-xl font-bold leading-none w-1/3",
                   "text-gray-800", // Light mode
-                  "dark:text-blue-100" // Dark mode
+                  "dark:text-tertiary" // Dark mode
                 )}
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -106,7 +105,7 @@ export const ExpensesCard = ({
                 <TooltipTrigger asChild>
                   <div className="w-2/3 relative">
                     <div className={cn(
-                      "absolute inset-0 bg-blue-500/10 dark:bg-blue-400/5 rounded-full blur-sm",
+                      "absolute inset-0 bg-tertiary/10 dark:bg-tertiary/5 rounded-full blur-sm",
                       "opacity-0 dark:opacity-100 transition-opacity"
                     )} />
                     <Progress 
@@ -114,25 +113,25 @@ export const ExpensesCard = ({
                       className={cn(
                         "h-2.5 rounded-full",
                         // Light mode - progress background
-                        "bg-blue-100/50",
+                        "bg-tertiary/50",
                         // Dark mode - progress background
-                        "dark:bg-blue-950/70"
+                        "dark:bg-tertiary/70"
                       )}
                       indicatorClassName={cn(
-                        // Définit explicitement une couleur bleue pour l'indicateur de progression
-                        "bg-blue-500", 
-                        "dark:bg-blue-400"
+                        // Définit explicitement une couleur pour l'indicateur de progression
+                        "bg-tertiary", 
+                        "dark:bg-tertiary"
                       )}
                     />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
                   <p className="flex items-center gap-1.5 dark:text-white font-medium">
-                    <Info className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                    <Info className="h-4 w-4 text-tertiary dark:text-tertiary" />
                     {Math.round(progressPercentage)}% des charges payées
                   </p>
                   <span className="dark:text-gray-300 mt-1 block">
-                    Reste : <span className="font-medium text-blue-600 dark:text-blue-300">{Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
+                    Reste : <span className="font-medium text-tertiary dark:text-tertiary">{Math.round(totalExpenses - paidExpenses).toLocaleString('fr-FR')} €</span>
                   </span>
                 </TooltipContent>
               </Tooltip>

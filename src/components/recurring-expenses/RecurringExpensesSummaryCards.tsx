@@ -103,11 +103,11 @@ export const RecurringExpensesSummaryCards = ({
               // Base styling
               "border shadow-lg hover:shadow-xl",
               // Selected state
-              selectedPeriod === period && "ring-2 ring-blue-500 dark:ring-blue-400",
+              selectedPeriod === period && "ring-2 ring-tertiary-500 dark:ring-tertiary-400",
               // Light mode
-              "bg-white hover:bg-blue-50",
+              "bg-white hover:bg-tertiary-50",
               // Dark mode
-              "dark:bg-gray-800/90 dark:hover:bg-blue-900/20 dark:border-blue-800/50"
+              "dark:bg-gray-800/90 dark:hover:bg-tertiary-900/20 dark:border-tertiary-800/50"
             )}
             style={{
               boxShadow: selectedPeriod === period 
@@ -121,9 +121,9 @@ export const RecurringExpensesSummaryCards = ({
             <div className={cn(
               "absolute inset-0 opacity-5",
               // Light mode
-              "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+              "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary-400 via-tertiary-300 to-transparent",
               // Dark mode
-              "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+              "dark:opacity-10 dark:from-tertiary-400 dark:via-tertiary-500 dark:to-transparent"
             )} />
             
             <CardHeader className="pb-2 pt-6 relative z-10">
@@ -131,9 +131,9 @@ export const RecurringExpensesSummaryCards = ({
                 <div className="flex items-center space-x-2">
                   <div className={cn(
                     // Light mode
-                    "bg-blue-100 text-blue-700",
+                    "bg-tertiary-100 text-tertiary-700",
                     // Dark mode
-                    "dark:bg-blue-800/40 dark:text-blue-300",
+                    "dark:bg-tertiary-800/40 dark:text-tertiary-300",
                     // Common
                     "p-2 rounded-lg"
                   )}>
@@ -142,9 +142,9 @@ export const RecurringExpensesSummaryCards = ({
                   <CardTitle className={cn(
                     "text-lg font-semibold",
                     // Light mode
-                    "text-blue-700",
+                    "text-tertiary-700",
                     // Dark mode
-                    "dark:text-blue-300"
+                    "dark:text-tertiary-300"
                   )}>
                     {title}
                   </CardTitle>
@@ -154,9 +154,9 @@ export const RecurringExpensesSummaryCards = ({
               <CardDescription className={cn(
                 "mt-2 text-sm",
                 // Light mode
-                "text-blue-600/80",
+                "text-tertiary-600/80",
                 // Dark mode
-                "dark:text-blue-400/90"
+                "dark:text-tertiary-400/90"
               )}>
                 {description}
               </CardDescription>
@@ -166,9 +166,9 @@ export const RecurringExpensesSummaryCards = ({
               <p className={cn(
                 "text-2xl font-bold",
                 // Light mode
-                "text-blue-700",
+                "text-tertiary-700",
                 // Dark mode
-                "dark:text-blue-300"
+                "dark:text-tertiary-300"
               )}>
                 {formatCurrency(value)}
               </p>

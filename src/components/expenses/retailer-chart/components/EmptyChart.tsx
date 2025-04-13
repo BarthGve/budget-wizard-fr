@@ -25,8 +25,8 @@ export function EmptyChart({ className }: EmptyChartProps) {
       className={cn("flex flex-col items-center justify-center py-16 text-muted-foreground space-y-2", className)}
       variants={itemVariants}
     >
-      <BarChart3 className="h-12 w-12 text-blue-200 dark:text-blue-800/40" />
-      <p className="text-center text-blue-600/70 dark:text-blue-400/70">
+      <BarChart3 className="h-12 w-12 text-tertiary-200 dark:text-tertiary-800/40" />
+      <p className="text-center text-tertiary-600/70 dark:text-tertiary-400/70">
         Aucune donnée disponible pour afficher l'évolution des dépenses
       </p>
     </motion.div>

@@ -19,7 +19,7 @@ export const MonthlyRepaymentsCard = ({
       amount={totalRepaidMensualitesThisMonth}
       subtitle="Mensualités échues"
       badgeText="ce mois"
-      colorScheme="green"
+      colorScheme="quaternary"
     />
   );
 };

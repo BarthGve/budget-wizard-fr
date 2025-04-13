@@ -1,20 +1,30 @@
+
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
-import { ShoppingBasket } from "lucide-react";
+import { ShoppingBasket, LayoutGrid, LayoutList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ExpensesHeaderProps {
   viewMode: 'monthly' | 'yearly';
   setViewMode: (mode: 'monthly' | 'yearly') => void;
   onExpenseAdded: () => void;
+  displayMode: 'grid' | 'list';
+  setDisplayMode: (mode: 'grid' | 'list') => void;
 }
 
-export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: ExpensesHeaderProps) => {
+export const ExpensesHeader = ({ 
+  viewMode, 
+  setViewMode, 
+  onExpenseAdded, 
+  displayMode, 
+  setDisplayMode 
+}: ExpensesHeaderProps) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
@@ -40,22 +50,22 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
             transition={{ delay: 0.2, duration: 0.3 }}
             className={cn(
               "p-2.5 rounded-lg shadow-sm mt-0.5",
-              "bg-gradient-to-br from-blue-100 to-cyan-50",
-              "dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-cyan-800/30 dark:shadow-blue-900/10"
+              "bg-gradient-to-br from-tertiary/20 to-tertiary/10", 
+              "dark:bg-gradient-to-br dark:from-tertiary/40 dark:to-tertiary/30 dark:shadow-tertiary/10"
             )}
           >
             <ShoppingBasket className={cn(
               "h-6 w-6",
-              "text-blue-600",
-              "dark:text-blue-400"
+              "text-tertiary", 
+              "dark:text-tertiary"
             )} />
           </motion.div>
         
           <div>
             <h1 className={cn(
               "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
-              "bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500",
-              "dark:bg-gradient-to-r dark:from-blue-400 dark:via-blue-300 dark:to-cyan-400"
+              "bg-gradient-to-r from-tertiary via-tertiary/90 to-tertiary/70", 
+              "dark:bg-gradient-to-r dark:from-tertiary/60 dark:via-tertiary/50 dark:to-tertiary/40"
             )}>
               Dépenses
             </h1>
@@ -70,8 +80,8 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
         </div>
     
         <div className={cn(
-          "flex items-center",
-          isMobile ? "justify-between w-full" : "gap-8"
+          "flex flex-col sm:flex-row items-center gap-3",
+          isMobile ? "w-full" : "gap-4"
         )}>
           <motion.div 
             className="flex items-center p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-inner"
@@ -85,8 +95,8 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
                 checked={viewMode === 'yearly'} 
                 onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
                 className={cn(
-                  "data-[state=checked]:bg-blue-500",
-                  "dark:data-[state=checked]:bg-blue-600"
+                  "data-[state=checked]:bg-tertiary", 
+                  "dark:data-[state=checked]:bg-tertiary"
                 )}
               />
               <Label 
@@ -97,6 +107,43 @@ export const ExpensesHeader = ({ viewMode, setViewMode, onExpenseAdded }: Expens
               </Label>
             </div>
           </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <ToggleGroup 
+              type="single" 
+              value={displayMode}
+              onValueChange={(value) => {
+                if (value) setDisplayMode(value as 'grid' | 'list');
+              }}
+              className="bg-gray-100/80 dark:bg-gray-800/80 rounded-full border border-gray-200/50 dark:border-gray-700/50 p-1"
+            >
+              <ToggleGroupItem 
+                value="grid" 
+                className={cn(
+                  "rounded-full w-8 h-8 p-0 flex items-center justify-center",
+                  displayMode === 'grid' && "bg-tertiary text-white dark:bg-tertiary dark:text-white"
+                )}
+                aria-label="Affichage en grille"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem 
+                value="list" 
+                className={cn(
+                  "rounded-full w-8 h-8 p-0 flex items-center justify-center",
+                  displayMode === 'list' && "bg-tertiary text-white dark:bg-tertiary dark:text-white"
+                )}
+                aria-label="Affichage en liste"
+              >
+                <LayoutList className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </motion.div>
+          
           <AddExpenseDialog 
             onExpenseAdded={onExpenseAdded} 
             open={addExpenseDialogOpen} 

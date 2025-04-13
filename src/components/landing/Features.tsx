@@ -37,7 +37,7 @@ export const Features = ({ features, isLoaded }: FeaturesProps) => {
               className={`group p-6 rounded-2xl bg-white/5 hover:bg-primary/5 border border-primary/10 
                 transition-all duration-500 hover:shadow-lg transform hover:-translate-y-1
                 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
-              style={{ transitionDelay: `${800 + index * 100}ms` }}
+              style={{ transitionDelay: `${500 + index * 100}ms` }}
             >
               <div className="flex flex-col items-start gap-4">
                 <div className="p-3 rounded-xl bg-primary/10 text-primary">

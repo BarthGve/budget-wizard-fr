@@ -113,12 +113,12 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
   const getBarColor = (index: number) => {
     const baseColors = {
       light: {
-        active: '#2563EB', // blue-600
-        inactive: '#60A5FA' // blue-400
+        active: '#2563EB', // tertiary-600
+        inactive: '#60A5FA' // tertiary-400
       },
       dark: {
-        active: '#3B82F6', // blue-500
-        inactive: '#93C5FD' // blue-300
+        active: '#3B82F6', // tertiary-500
+        inactive: '#93C5FD' // tertiary-300
       }
     };
     
@@ -137,17 +137,17 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
         "w-full relative overflow-hidden",
         "border shadow-lg",
         // Light mode
-        "bg-white border-blue-100",
+        "bg-white border-tertiary-100",
         // Dark mode
-        "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10",
+        "dark:bg-gray-800/90 dark:border-tertiary-800/50 dark:shadow-tertiary-900/10",
       "mb-6"
       )}>
         <div className={cn(
           "absolute inset-0 opacity-5",
           // Light mode
-          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-blue-300 to-transparent",
+          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary-400 via-tertiary-300 to-transparent",
           // Dark mode
-          "dark:opacity-10 dark:from-blue-400 dark:via-blue-500 dark:to-transparent"
+          "dark:opacity-10 dark:from-tertiary-400 dark:via-tertiary-500 dark:to-transparent"
         )} />
         
         <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
@@ -155,23 +155,23 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
             <CardTitle className={cn(
               "text-xl font-semibold flex items-center gap-2",
               // Light mode
-              "text-blue-700",
+              "text-tertiary-700",
               // Dark mode
-              "dark:text-blue-300"
+              "dark:text-tertiary-300"
             )}>
               <div className={cn(
                 "p-1.5 rounded",
                 // Light mode
-                "bg-blue-100",
+                "bg-tertiary-100",
                 // Dark mode
-                "dark:bg-blue-800/40"
+                "dark:bg-tertiary-800/40"
               )}>
                 <BarChartIcon className={cn(
                   "h-5 w-5",
                   // Light mode
-                  "text-blue-600",
+                  "text-tertiary-600",
                   // Dark mode
-                  "dark:text-blue-400"
+                  "dark:text-tertiary-400"
                 )} />
               </div>
               Dépenses par catégorie
@@ -179,9 +179,9 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
             <CardDescription className={cn(
               "mt-1 text-sm",
               // Light mode
-              "text-blue-600/80",
+              "text-tertiary-600/80",
               // Dark mode
-              "dark:text-blue-400/90"
+              "dark:text-tertiary-400/90"
             )}>
               Répartition des charges {selectedPeriod ? periodicityLabels[selectedPeriod].toLowerCase() : chartPeriodicity === "monthly" ? "mensuelles" : chartPeriodicity === "quarterly" ? "trimestrielles" : "annuelles"}
               
@@ -191,7 +191,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                     <UITooltip>
                       <TooltipTrigger asChild>
                         <span className="inline-flex items-center cursor-help">
-                          <InfoIcon className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                          <InfoIcon className="h-4 w-4 text-tertiary-500 dark:text-tertiary-400" />
                         </span>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
@@ -216,9 +216,9 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
             className={cn(
               "flex items-center gap-1 transition-colors font-medium",
               // Light mode
-              "border-blue-200 hover:bg-blue-50 text-blue-700",
+              "border-tertiary-200 hover:bg-tertiary-50 text-tertiary-700",
               // Dark mode
-              "dark:border-blue-800 dark:hover:bg-blue-900/30 dark:text-blue-300"
+              "dark:border-tertiary-800 dark:hover:bg-tertiary-900/30 dark:text-tertiary-300"
             )}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -304,9 +304,9 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                   <div className={cn(
                     "h-full flex items-center justify-center",
                     // Light mode
-                    "text-blue-500/70",
+                    "text-tertiary-500/70",
                     // Dark mode
-                    "dark:text-blue-400/70"
+                    "dark:text-tertiary-400/70"
                   )}>
                     <motion.div
                       initial={{ opacity: 0 }}

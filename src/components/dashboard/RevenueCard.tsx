@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Banknote } from 'lucide-react';
 import { useEffect, useState } from "react";
@@ -46,9 +45,9 @@ export const RevenueCard = ({
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
           // Light mode styles
-          "bg-gradient-to-br from-background to-amber-50 shadow-lg border border-amber-100 hover:shadow-xl",
+        "shadow-lg border hover:shadow-xl",
           // Dark mode styles
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-amber-950 dark:border-amber-900/30 dark:shadow-amber-800/30 dark:hover:shadow-amber-800/50"
+          "dark:bg-quinary/10 dark:border-quinary/30 dark:shadow-quinary/30 dark:hover:shadow-quinary/50"
         )}
         onClick={handleCardClick}
       >
@@ -57,8 +56,8 @@ export const RevenueCard = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-amber-100 text-amber-600", // Light mode
-                "dark:bg-amber-900/40 dark:text-amber-400" // Dark mode
+                "bg-quinary/20 text-quinary", // Light mode
+                "dark:bg-quinary/20 dark:text-quinary" // Dark mode
               )}>
                 <Banknote className="h-5 w-5" />
               </div>
@@ -77,7 +76,7 @@ export const RevenueCard = ({
                 className={cn(
                   "font-bold text-xl leading-none",
                   "text-gray-800", // Light mode
-                  "dark:text-amber-100" // Dark mode
+                  "dark:text-quinary" // Dark mode - couleur quinary pour correspondre à l'effet voulu
                 )}
               >
                 {displayedRevenue.toLocaleString('fr-FR')} €

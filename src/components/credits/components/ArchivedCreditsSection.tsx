@@ -47,14 +47,14 @@ export const ArchivedCreditsSection = ({
         <h2 className={cn(
           "font-bold tracking-tight text-xl flex items-center gap-2",
           // Même dégradé que le titre principal pour la cohérence
-          "bg-gradient-to-r from-purple-600 via-purple-500 to-violet-500 bg-clip-text text-transparent",
-          "dark:from-purple-400 dark:via-purple-400 dark:to-violet-400"
+          "bg-gradient-to-r from-primary-600 via-primary-500 to-violet-500 bg-clip-text text-transparent",
+          "dark:from-primary-400 dark:via-primary-400 dark:to-violet-400"
         )}>
           <div className={cn(
             "p-1 rounded",
-            "bg-purple-100 dark:bg-purple-800/40"
+            "bg-primary-100 dark:bg-primary-800/40"
           )}>
-            <Archive className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            <Archive className="h-4 w-4 text-primary-600 dark:text-primary-400" />
           </div>
           Archives
         </h2>
@@ -65,8 +65,8 @@ export const ArchivedCreditsSection = ({
           onClick={() => setExpanded(!expanded)}
           className={cn(
             "flex items-center gap-1 text-sm font-medium",
-            "text-gray-500 hover:text-purple-600",
-            "dark:text-gray-400 dark:hover:text-purple-400"
+            "text-gray-500 hover:text-primary-600",
+            "dark:text-gray-400 dark:hover:text-primary-400"
           )}
         >
           {expanded ? (
@@ -92,10 +92,10 @@ export const ArchivedCreditsSection = ({
         >
           <div className={cn(
             "p-3 mb-3 rounded-md",
-            "bg-purple-50/80 border border-purple-100",
-            "dark:bg-purple-900/10 dark:border-purple-800/30"
+            "bg-primary-50/80 border border-primary-100",
+            "dark:bg-primary-900/10 dark:border-primary-800/30"
           )}>
-            <span className="text-sm text-purple-700 dark:text-purple-400">
+            <span className="text-sm text-primary-700 dark:text-primary-400">
               Montant total remboursé : <strong>{totalAmountRepaid.toLocaleString('fr-FR')} €</strong>
             </span>
           </div>

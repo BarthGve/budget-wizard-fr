@@ -114,7 +114,7 @@ export const DesktopDialog = ({
             <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.025] z-0">
               <svg
                 viewBox="0 0 100 100"
-                className="w-full h-full fill-blue-400 dark:fill-blue-600"
+                className="w-full h-full fill-tertiary-400 dark:fill-tertiary-600"
                 style={{ mixBlendMode: isDarkMode ? "soft-light" : "overlay" }}
               >
                 <circle cx={50} cy={50} r={50} />

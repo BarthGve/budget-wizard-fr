@@ -18,17 +18,17 @@ export const ExpenseHeader = ({ expense }: ExpenseHeaderProps) => {
     <div className={cn(
       "relative overflow-hidden py-6 px-6",
       // Light mode
-      "bg-gradient-to-br from-blue-50 to-white",
+      "bg-gradient-to-br from-tertiary-50 to-white",
       // Dark mode
-      "dark:bg-gradient-to-br dark:from-blue-900/20 dark:to-gray-800/90"
+      "dark:bg-gradient-to-br dark:from-tertiary-900/20 dark:to-gray-800/90"
     )}>
       {/* Cercle décoratif en arrière-plan */}
       <div className={cn(
         "absolute -top-24 -right-24 w-64 h-64 rounded-full opacity-20",
         // Light mode
-        "bg-gradient-to-br from-blue-400 to-blue-600",
+        "bg-gradient-to-br from-tertiary-400 to-tertiary-600",
         // Dark mode
-        "dark:from-blue-500 dark:to-blue-700 dark:opacity-10"
+        "dark:from-tertiary-500 dark:to-tertiary-700 dark:opacity-10"
       )} />
 
       <div className="flex items-center gap-4 relative z-10">
@@ -54,9 +54,9 @@ export const ExpenseHeader = ({ expense }: ExpenseHeaderProps) => {
           <div className={cn(
             "w-14 h-14 rounded-lg flex items-center justify-center",
             // Light mode
-            "bg-blue-100 text-blue-600",
+            "bg-tertiary-100 text-tertiary-600",
             // Dark mode
-            "dark:bg-blue-800/40 dark:text-blue-400"
+            "dark:bg-tertiary-800/40 dark:text-tertiary-400"
           )}>
             <CreditCard size={24} />
           </div>
@@ -77,9 +77,9 @@ export const ExpenseHeader = ({ expense }: ExpenseHeaderProps) => {
             <Badge variant="outline" className={cn(
               "h-6 font-medium border px-2 py-0",
               // Light mode
-              "bg-blue-50 border-blue-200 text-blue-700",
+              "bg-tertiary-50 border-tertiary-200 text-tertiary-700",
               // Dark mode
-              "dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300"
+              "dark:bg-tertiary-900/30 dark:border-tertiary-800 dark:text-tertiary-300"
             )}>
               {expense.amount.toLocaleString('fr-FR')} €/
               {expense.periodicity === "monthly" ? "mois" : 

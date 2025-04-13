@@ -9,10 +9,38 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
+    
+    /* Couleur primaire (violet) et ses variantes */
     --primary: 262.1 83.3% 57.8%;
+    --primary-50: 262.1 83.3% 95%;
+    --primary-100: 262.1 83.3% 90%;
+    --primary-200: 262.1 83.3% 80%;
+    --primary-300: 262.1 83.3% 70%;
+    --primary-400: 262.1 83.3% 65%;
+    --primary-500: 262.1 83.3% 57.8%; /* Base */
+    --primary-600: 262.1 83.3% 50%;
+    --primary-700: 262.1 83.3% 40%;
+    --primary-800: 262.1 83.3% 30%;
+    --primary-900: 262.1 83.3% 25%;
+    --primary-950: 262.1 83.3% 20%;
     --primary-foreground: 210 20% 98%;
+    
+    /* Couleur secondaire et ses variantes */
     --secondary: 240 4.8% 95.9%;
+    --secondary-50: 240 4.8% 95.9%;
+    --secondary-100: 240 4.8% 90%;
+    --secondary-200: 240 4.8% 80%;
+    --secondary-300: 240 4.8% 70%;
+    --secondary-400: 240 4.8% 60%;
+    --secondary-500: 240 4.8% 50%;
+    --secondary-600: 240 4.8% 40%;
+    --secondary-700: 240 4.8% 30%;
+    --secondary-800: 240 4.8% 20%;
+    --secondary-900: 240 4.8% 15%;
+    --secondary-950: 240 4.8% 10%;
     --secondary-foreground: 240 5.9% 10%;
+    
+    /* Autres variables de base */
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
     --accent: 240 4.8% 95.9%;
@@ -23,19 +51,107 @@
     --input: 220 13% 91%;
     --ring: 220 13% 91%;
     --radius: 0.75rem;
-  }
+    
+    /* Couleur tertiaire (bleu) et ses variantes */
+    --tertiary: 210 60% 40%;
+    --tertiary-50: 210 60% 95%;
+    --tertiary-100: 210 60% 90%;
+    --tertiary-200: 210 60% 80%;
+    --tertiary-300: 210 60% 70%;
+    --tertiary-400: 210 60% 60%;
+    --tertiary-500: 210 60% 50%;
+    --tertiary-600: 210 60% 45%;
+    --tertiary-700: 210 60% 40%; /* Base */
+    --tertiary-800: 210 60% 30%;
+    --tertiary-900: 210 60% 20%;
+    --tertiary-950: 210 60% 15%;
+    --tertiary-foreground: 210 20% 98%;
+    
+    /* Couleur quaternaire (vert) et ses variantes */
+    --quaternary: 135 50% 40%;
+    --quaternary-50: 135 50% 95%;
+    --quaternary-100: 135 50% 90%;
+    --quaternary-200: 135 50% 80%;
+    --quaternary-300: 135 50% 70%;
+    --quaternary-400: 135 50% 60%;
+    --quaternary-500: 135 50% 50%;
+    --quaternary-600: 135 50% 45%;
+    --quaternary-700: 135 50% 40%; /* Base */
+    --quaternary-800: 135 50% 30%;
+    --quaternary-900: 135 50% 20%;
+    --quaternary-950: 135 50% 15%;
+    --quaternary-foreground: 0 0% 98%;
+    
+    /* Couleur quinary (jaune) et ses variantes */
+    --quinary: 45 100% 51%;
+    --quinary-50: 45 100% 96%;
+    --quinary-100: 45 100% 90%;
+    --quinary-200: 45 100% 80%;
+    --quinary-300: 45 100% 70%;
+    --quinary-400: 45 100% 60%;
+    --quinary-500: 45 100% 51%; /* Base */
+    --quinary-600: 45 100% 45%;
+    --quinary-700: 45 100% 40%;
+    --quinary-800: 45 100% 30%;
+    --quinary-900: 45 100% 25%;
+    --quinary-950: 45 100% 20%;
+    --quinary-foreground: 210 20% 98%;
+    
+    /* Couleur senary (gris) et ses variantes */
+    --senary: 0 0% 50%;
+    --senary-50: 0 0% 95%;
+    --senary-100: 0 0% 90%;
+    --senary-200: 0 0% 80%;
+    --senary-300: 0 0% 70%;
+    --senary-400: 0 0% 60%;
+    --senary-500: 0 0% 50%; /* Base */
+    --senary-600: 0 0% 40%;
+    --senary-700: 0 0% 30%;
+    --senary-800: 0 0% 20%;
+    --senary-900: 0 0% 15%;
+    --senary-950: 0 0% 10%;
+    --senary-foreground: 0 0% 98%;
+}
 
-  .dark {
+.dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
+    
+    /* Couleur primaire (violet) et ses variantes en mode sombre */
     --primary: 262.1 83.3% 57.8%;
+    --primary-50: 262.1 40% 98%;
+    --primary-100: 262.1 50% 95%;
+    --primary-200: 262.1 60% 90%;
+    --primary-300: 262.1 70% 80%;
+    --primary-400: 262.1 80% 70%;
+    --primary-500: 262.1 83.3% 57.8%; /* Base */
+    --primary-600: 262.1 70% 50%;
+    --primary-700: 262.1 60% 45%;
+    --primary-800: 262.1 50% 40%;
+    --primary-900: 262.1 40% 35%;
+    --primary-950: 262.1 30% 30%;
     --primary-foreground: 210 20% 98%;
+    
+    /* Couleur secondaire et ses variantes en mode sombre */
     --secondary: 240 3.7% 15.9%;
+    --secondary-50: 240 5% 95%;
+    --secondary-100: 240 5% 85%;
+    --secondary-200: 240 5% 75%;
+    --secondary-300: 240 5% 65%;
+    --secondary-400: 240 4% 45%;
+    --secondary-500: 240 3.7% 35%;
+    --secondary-600: 240 3.7% 25%;
+    --secondary-700: 240 3.7% 15.9%; /* Base */
+    --secondary-800: 240 5% 10%;
+    --secondary-900: 240 5% 5%;
+    --secondary-950: 240 10% 3.9%;
     --secondary-foreground: 0 0% 98%;
+    
+    /* Autres variables de base en mode sombre */
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
     --accent: 240 3.7% 15.9%;
@@ -45,7 +161,67 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
-  }
+    
+    /* Couleur tertiaire (bleu) et ses variantes en mode sombre */
+    --tertiary: 210 60% 40%;
+    --tertiary-50: 210 40% 95%;
+    --tertiary-100: 210 45% 90%;
+    --tertiary-200: 210 50% 80%;
+    --tertiary-300: 210 55% 70%;
+    --tertiary-400: 210 60% 60%;
+    --tertiary-500: 210 60% 50%;
+    --tertiary-600: 210 60% 45%;
+    --tertiary-700: 210 55% 40%; /* Base */
+    --tertiary-800: 210 50% 35%;
+    --tertiary-900: 210 45% 30%;
+    --tertiary-950: 210 40% 25%;
+    --tertiary-foreground: 210 20% 98%;
+    
+    /* Couleur quaternaire (vert) et ses variantes en mode sombre */
+    --quaternary: 135 50% 40%;
+    --quaternary-50: 135 30% 95%;
+    --quaternary-100: 135 35% 90%;
+    --quaternary-200: 135 40% 80%;
+    --quaternary-300: 135 45% 70%;
+    --quaternary-400: 135 50% 60%;
+    --quaternary-500: 135 50% 50%;
+    --quaternary-600: 135 45% 45%;
+    --quaternary-700: 135 40% 40%; /* Base */
+    --quaternary-800: 135 35% 35%;
+    --quaternary-900: 135 30% 30%;
+    --quaternary-950: 135 25% 25%;
+    --quaternary-foreground: 0 0% 98%;
+    
+    /* Couleur quinary (jaune) et ses variantes en mode sombre */
+    --quinary: 45 100% 51%;
+    --quinary-50: 45 70% 95%;
+    --quinary-100: 45 75% 90%;
+    --quinary-200: 45 80% 80%;
+    --quinary-300: 45 85% 70%;
+    --quinary-400: 45 90% 60%;
+    --quinary-500: 45 95% 55%;
+    --quinary-600: 45 100% 51%; /* Base */
+    --quinary-700: 45 90% 45%;
+    --quinary-800: 45 80% 40%;
+    --quinary-900: 45 70% 35%;
+    --quinary-950: 45 60% 30%;
+    --quinary-foreground: 210 20% 98%;
+    
+    /* Couleur senary (gris) et ses variantes en mode sombre */
+    --senary: 0 0% 50%;
+    --senary-50: 0 0% 95%;
+    --senary-100: 0 0% 90%;
+    --senary-200: 0 0% 80%;
+    --senary-300: 0 0% 70%;
+    --senary-400: 0 0% 60%;
+    --senary-500: 0 0% 50%; /* Base */
+    --senary-600: 0 0% 40%;
+    --senary-700: 0 0% 30%;
+    --senary-800: 0 0% 20%;
+    --senary-900: 0 0% 15%;
+    --senary-950: 0 0% 10%;
+    --senary-foreground: 0 0% 98%;
+}
 
   * {
     @apply border-border;

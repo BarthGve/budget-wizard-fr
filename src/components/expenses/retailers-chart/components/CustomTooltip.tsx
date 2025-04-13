@@ -54,7 +54,7 @@ export const CustomTooltip = ({ active, payload, label, viewMode }: CustomToolti
       
       {isMonthlyViewMode ? (
         <div className="flex items-center gap-2">
-          <div className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+          <div className="h-2.5 w-2.5 rounded-full bg-tertiary-500" />
           <p className="text-sm text-gray-700 dark:text-gray-300">
             <span className="font-medium">{formatCurrency(payload[0]?.value || 0)}</span>
           </p>

@@ -1,3 +1,4 @@
+
 import { format, differenceInMonths, isAfter, isSameDay, addMonths, isBefore } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
@@ -7,9 +8,14 @@ import { cn } from "@/lib/utils";
 
 // Couleurs pour la barre de progression en fonction du colorScheme
 const progressColors = {
+  // Anciennes couleurs
   purple: "bg-violet-600",
   green: "bg-green-600",
-  blue: "bg-blue-600"
+  blue: "bg-blue-600",
+  // Nouveaux schémas de couleurs
+  primary: "bg-violet-600", // Équivalent de purple
+  quaternary: "bg-green-600", // Équivalent de green
+  tertiary: "bg-blue-600" // Équivalent de blue
 };
 
 interface CreditProgressBarProps {
@@ -17,7 +23,7 @@ interface CreditProgressBarProps {
   dateFin: string;
   montantMensuel: number;
   withTooltip?: boolean;
-  colorScheme?: "purple" | "green" | "blue";
+  colorScheme?: "purple" | "green" | "blue" | "primary" | "quaternary" | "tertiary";
   value?: number; // Pourcentage direct (0-100)
   amountPaid?: number; // Montant payé pour l'affichage du tooltip
   totalAmount?: number; // Montant total pour l'affichage du tooltip

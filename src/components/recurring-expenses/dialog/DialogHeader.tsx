@@ -24,12 +24,12 @@ export const DialogHeader = ({ isEditMode }: DialogHeaderProps) => {
               "p-2.5 rounded-lg flex items-center justify-center flex-shrink-0",
               // Light mode - édition ou création
               isEditMode
-                ? "bg-blue-100 text-blue-600" 
-                : "bg-blue-100 text-blue-600",
+                ? "bg-tertiary-100 text-tertiary-600" 
+                : "bg-tertiary-100 text-tertiary-600",
               // Dark mode - édition ou création
               isEditMode
-                ? "dark:bg-blue-900/30 dark:text-blue-300" 
-                : "dark:bg-blue-900/30 dark:text-blue-300",
+                ? "dark:bg-tertiary-900/30 dark:text-tertiary-300" 
+                : "dark:bg-tertiary-900/30 dark:text-tertiary-300",
               // Mobile
               isMobile && "p-2"
             )}
@@ -46,9 +46,9 @@ export const DialogHeader = ({ isEditMode }: DialogHeaderProps) => {
               className={cn(
                 "text-xl sm:text-2xl font-bold",
                 // Light mode
-                "text-blue-900",
+                "text-tertiary-900",
                 // Dark mode
-                "dark:text-blue-200",
+                "dark:text-tertiary-200",
                 // Mobile
                 isMobile && "text-lg"
               )}
@@ -60,9 +60,9 @@ export const DialogHeader = ({ isEditMode }: DialogHeaderProps) => {
               className={cn(
                 "mt-1.5 text-base",
                 // Light mode
-                "text-blue-700/80",
+                "text-tertiary-700/80",
                 // Dark mode
-                "dark:text-blue-300/80",
+                "dark:text-tertiary-300/80",
                 // Mobile
                 isMobile && "text-sm mt-1 line-clamp-2"
               )}

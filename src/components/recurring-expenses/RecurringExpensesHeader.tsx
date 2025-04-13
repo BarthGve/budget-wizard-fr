@@ -28,15 +28,15 @@ export const RecurringExpensesHeader = () => {
           className={cn(
             "p-2.5 rounded-lg shadow-sm mt-0.5",
             // Light mode
-            "bg-gradient-to-br from-blue-100 to-blue-50",
+            "bg-gradient-to-br from-tertiary-100 to-tertiary-50",
             // Dark mode
-            "dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 dark:shadow-blue-900/10"
+            "dark:bg-gradient-to-br dark:from-tertiary-900/40 dark:to-tertiary-800/30 dark:shadow-tertiary-900/10"
           )}
         >
           <ClipboardList className={cn(
             "h-6 w-6",
-            "text-blue-600",
-            "dark:text-blue-400"
+            "text-tertiary-600",
+            "dark:text-tertiary-400"
           )} />
         </motion.div>
         
@@ -44,9 +44,9 @@ export const RecurringExpensesHeader = () => {
           <h1 className={cn(
             "text-3xl font-bold tracking-tight bg-clip-text text-transparent",
             // Light mode gradient
-            "bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500",
+            "bg-gradient-to-r from-tertiary-600 via-tertiary-500 to-indigo-500",
             // Dark mode gradient (plus lumineux pour meilleure lisibilité)
-            "dark:bg-gradient-to-r dark:from-blue-400 dark:via-blue-300 dark:to-indigo-400"
+            "dark:bg-gradient-to-r dark:from-tertiary-400 dark:via-tertiary-300 dark:to-indigo-400"
           )}>
             Charges
           </h1>
@@ -73,11 +73,11 @@ export const RecurringExpensesHeader = () => {
                 "h-10 px-4 border transition-all duration-200 rounded-md",
                 "hover:scale-[1.02] active:scale-[0.98]",
                 // Light mode
-                "bg-white border-blue-200 text-blue-600",
-                "hover:border-blue-300 hover:bg-blue-50/50 hover:text-blue-700",
+                "bg-white border-tertiary-200 text-tertiary-600",
+                "hover:border-tertiary-300 hover:bg-tertiary-50/50 hover:text-tertiary-700",
                 // Dark mode
-                "dark:bg-gray-800 dark:border-blue-800/60 dark:text-blue-400",
-                "dark:hover:bg-blue-900/20 dark:hover:border-blue-700 dark:hover:text-blue-300"
+                "dark:bg-gray-800 dark:border-tertiary-800/60 dark:text-tertiary-400",
+                "dark:hover:bg-tertiary-900/20 dark:hover:border-tertiary-700 dark:hover:text-tertiary-300"
               )}
               style={{
                 boxShadow: isDarkMode
@@ -89,9 +89,9 @@ export const RecurringExpensesHeader = () => {
                 <span className={cn(
                   "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
                   // Light mode
-                  "bg-blue-100/80 text-blue-600",
+                  "bg-tertiary-100/80 text-tertiary-600",
                   // Dark mode
-                  "dark:bg-blue-800/50 dark:text-blue-300"
+                  "dark:bg-tertiary-800/50 dark:text-tertiary-300"
                 )}>
                   <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
                 </span>

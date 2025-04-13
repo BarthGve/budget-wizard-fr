@@ -20,23 +20,23 @@ export function ExpensesChartHeader({ viewMode, onViewModeChange }: ExpensesChar
         <h3 className={cn(
           "text-xl font-semibold flex items-center gap-2",
           // Light mode
-          "text-blue-700",
+          "text-tertiary-700",
           // Dark mode
-          "dark:text-blue-300"
+          "dark:text-tertiary-300"
         )}>
           <div className={cn(
             "p-1.5 rounded",
             // Light mode
-            "bg-blue-100",
+            "bg-tertiary-100",
             // Dark mode
-            "dark:bg-blue-800/40"
+            "dark:bg-tertiary-800/40"
           )}>
             <BarChart3 className={cn(
               "h-5 w-5",
               // Light mode
-              "text-blue-600",
+              "text-tertiary-600",
               // Dark mode
-              "dark:text-blue-400"
+              "dark:text-tertiary-400"
             )} />
           </div>
           Évolution des dépenses
@@ -44,20 +44,20 @@ export function ExpensesChartHeader({ viewMode, onViewModeChange }: ExpensesChar
         <p className={cn(
           "mt-1 text-sm",
           // Light mode
-          "text-blue-600/80",
+          "text-tertiary-600/80",
           // Dark mode
-          "dark:text-blue-400/90"
+          "dark:text-tertiary-400/90"
         )}>
           Évolution de vos dépenses {viewMode === 'monthly' ? 'mensuelles' : 'annuelles'} chez ce commerçant
         </p>
       </div>
       
-      <div className="flex items-center p-1 bg-blue-50 rounded-full border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/60">
+      <div className="flex items-center p-1 bg-tertiary-50 rounded-full border border-tertiary-100 dark:bg-tertiary-900/20 dark:border-tertiary-800/60">
         <div className="flex items-center space-x-2 px-3">
-          <Calendar className={`h-4 w-4 ${viewMode === 'monthly' ? 'text-blue-600' : 'text-gray-400'} transition-colors dark:${viewMode === 'monthly' ? 'text-blue-300' : 'text-gray-500'}`} />
+          <Calendar className={`h-4 w-4 ${viewMode === 'monthly' ? 'text-tertiary-600' : 'text-gray-400'} transition-colors dark:${viewMode === 'monthly' ? 'text-tertiary-300' : 'text-gray-500'}`} />
           <Label 
             htmlFor="chart-view-mode" 
-            className={`${viewMode === 'monthly' ? 'text-blue-600 font-medium dark:text-blue-300' : 'text-gray-400 dark:text-gray-500'} transition-colors`}
+            className={`${viewMode === 'monthly' ? 'text-tertiary-600 font-medium dark:text-tertiary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors`}
           >
             Mensuel
           </Label>
@@ -67,17 +67,17 @@ export function ExpensesChartHeader({ viewMode, onViewModeChange }: ExpensesChar
           id="chart-view-mode"
           checked={viewMode === 'yearly'}
           onCheckedChange={(checked) => onViewModeChange(checked ? 'yearly' : 'monthly')}
-          className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
+          className="data-[state=checked]:bg-tertiary-600 dark:data-[state=checked]:bg-tertiary-500"
         />
         
         <div className="flex items-center space-x-2 px-3">
           <Label 
             htmlFor="chart-view-mode" 
-            className={`${viewMode === 'yearly' ? 'text-blue-600 font-medium dark:text-blue-300' : 'text-gray-400 dark:text-gray-500'} transition-colors`}
+            className={`${viewMode === 'yearly' ? 'text-tertiary-600 font-medium dark:text-tertiary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors`}
           >
             Annuel
           </Label>
-          <BarChart3 className={`h-4 w-4 ${viewMode === 'yearly' ? 'text-blue-600 dark:text-blue-300' : 'text-gray-400 dark:text-gray-500'} transition-colors`} />
+          <BarChart3 className={`h-4 w-4 ${viewMode === 'yearly' ? 'text-tertiary-600 dark:text-tertiary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors`} />
         </div>
       </div>
     </div>
