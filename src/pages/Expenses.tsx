@@ -167,11 +167,6 @@ const Expenses = memo(function Expenses() {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-2">
                     <div className={cn(
-                      // Light mode
-                      "bg-tertiary-100 text-tertiary-700",
-                      // Dark mode
-                      "dark:bg-tertiary-800/40 dark:text-tertiary-300",
-                      // Common
                       "p-2 rounded-lg"
                     )}>
                       <Calculator className="h-4 w-4" />
@@ -186,10 +181,7 @@ const Expenses = memo(function Expenses() {
                 
                 <CardDescription className={cn(
                   "mt-2 text-sm",
-                  // Light mode
-                  "text-tertiary-600/80",
-                  // Dark mode
-                  "dark:text-tertiary-400/90"
+            
                 )}>
                   {viewMode === 'monthly' ? "Moyenne mensuelle" : "Moyenne annuelle"}
                 </CardDescription>
