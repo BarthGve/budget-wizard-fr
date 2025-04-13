@@ -128,12 +128,12 @@ export const SavingsGoal = ({
         // Light mode - fond blanc avec effet d'ombre élégant
         "bg-white border border-gray-200/60 shadow-lg",
         // Dark mode - fond adapté avec effet d'ombre verdâtre, identique à la carte graphique
-        "dark:bg-gray-900/90 dark:border-green-900/30 dark:shadow-green-900/20"
+        "dark:bg-gray-900/90 dark:border-quaternary-900/30 dark:shadow-quaternary-900/20"
       )}>
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-              <Target className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <div className="p-1.5 rounded-full bg-quaternary-100 dark:bg-quaternary-900/30">
+              <Target className="h-4 w-4 text-quaternary-600 dark:text-quaternary-400" />
             </div>
             <CardTitle className="text-lg font-medium">Objectif d'épargne</CardTitle>
           </div>
@@ -146,7 +146,7 @@ export const SavingsGoal = ({
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <Label className="text-sm text-muted-foreground">Pourcentage d'épargne</Label>
-              <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{localPercentage}%</span>
+              <span className="text-sm font-medium text-quaternary-600 dark:text-quaternary-400">{localPercentage}%</span>
             </div>
             <Slider
               min={0}
@@ -155,7 +155,7 @@ export const SavingsGoal = ({
               value={[localPercentage]}
               onValueChange={handleValueChange}
               onValueCommit={handleValueCommit}
-              className="text-emerald-500 dark:text-emerald-400"
+              className="text-quaternary-500 dark:text-quaternary-400"
               aria-label="Pourcentage d'épargne"
             />
           </div>
@@ -172,7 +172,7 @@ export const SavingsGoal = ({
               </div>
               <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
                 <div 
-                  className={`h-full ${isTargetMet ? 'bg-emerald-500' : 'bg-emerald-400/80'} transition-all duration-300 ease-out`}
+                  className={`h-full ${isTargetMet ? 'bg-quaternary-500' : 'bg-quaternary-400/80'} transition-all duration-300 ease-out`}
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
@@ -180,7 +180,7 @@ export const SavingsGoal = ({
 
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Objectif mensuel</span>
-              <span className="font-medium text-emerald-600 dark:text-emerald-400">{targetMonthlySavings.toFixed(0)}€</span>
+              <span className="font-medium text-quaternary-600 dark:text-quaternary-400">{targetMonthlySavings.toFixed(0)}€</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Total épargné</span>
@@ -188,7 +188,7 @@ export const SavingsGoal = ({
             </div>
             <div className="flex items-center justify-between text-sm border-t border-border/40 mt-1 pt-2">
               <span className="text-muted-foreground">Reste à épargner</span>
-              <span className={`font-medium ${isTargetMet ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
+              <span className={`font-medium ${isTargetMet ? 'text-quaternary-600 dark:text-quaternary-400' : 'text-destructive'}`}>
                 {Math.abs(remainingToTarget).toFixed(0)}€ {isTargetMet ? 'dépassé' : 'manquant'}
               </span>
             </div>
