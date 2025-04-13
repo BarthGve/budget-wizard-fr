@@ -52,12 +52,8 @@ export function RetailerCard({
           "dark:bg-gray-800/90 dark:hover:bg-gray-800/70 dark:border-gray-700/50"
         )}
       >
-        {/* Fond radial gradient ultra-subtil */}
-        <div className={cn(
-          "absolute inset-0",
-          "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary/20 via-tertiary/15 to-transparent opacity-[0.01]", // Utilisation de tertiary
-          "dark:from-tertiary/30 dark:via-tertiary/20 dark:to-transparent dark:opacity-[0.015]"
-        )} />
+     
+   
         
         <RetailerCardContent 
           retailer={retailer}
