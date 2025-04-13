@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -31,6 +30,15 @@ export const CreditCard = ({
   colorScheme = "tertiary",
   children
 }: CreditCardProps) => {
+  // Déterminer les couleurs à utiliser en fonction du schéma
+  const colorMap = {
+    primary: "purple",
+    quaternary: "green", 
+    tertiary: "blue"
+  } as const;
+
+  const mappedColorScheme = colorMap[colorScheme];
+  
   // Couleurs pour la barre de progression en fonction du schéma
   const colors = {
     purple: {
@@ -71,7 +79,7 @@ export const CreditCard = ({
     }
   };
 
-  const currentColors = colors[colorScheme];
+  const currentColors = colors[mappedColorScheme];
 
   return (
     <Card 

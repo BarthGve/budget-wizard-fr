@@ -3,19 +3,32 @@ import { RetailerCard } from "./RetailerCard";
 import { useEffect, useState } from "react";
 import { RetailerCardSkeleton } from "./skeletons/RetailerCardSkeleton";
 
+export interface Retailer {
+  id: string;
+  name: string;
+  logo_url?: string;
+}
+
+export interface SimpleExpense {
+  id: string;
+  date: string;
+  amount: number;
+  comment?: string;
+  retailer_id: string;
+}
+
+interface RetailerWithExpenses {
+  retailer: Retailer;
+  expenses: SimpleExpense[];
+}
+
 interface RetailersGridProps {
-  retailers: Array<{
-    id: string;
-    name: string;
-    logo_url?: string;
-  }>;
-  expenses: Array<{
-    id: string;
-    date: string;
-    amount: number;
-    comment?: string;
-    retailer_id: string;
-  }>;
+  // Deux façons alternatives de passer les données
+  retailers?: Retailer[];
+  expenses?: SimpleExpense[];
+  // OU
+  expensesByRetailer?: RetailerWithExpenses[];
+  
   onExpenseUpdated: () => void;
   viewMode: "monthly" | "yearly";
   isLoading?: boolean;
@@ -24,6 +37,7 @@ interface RetailersGridProps {
 export function RetailersGrid({
   retailers,
   expenses,
+  expensesByRetailer,
   onExpenseUpdated,
   viewMode,
   isLoading = false,
@@ -31,26 +45,24 @@ export function RetailersGrid({
   // État pour alterner les styles de couleur des cartes
   const [colorSchemes, setColorSchemes] = useState<Array<"blue" | "purple" | "amber">>([]);
 
+  // Traiter les données selon le format d'entrée
+  const retailersData = expensesByRetailer || 
+    (retailers && expenses ? retailers.map(retailer => ({
+      retailer,
+      expenses: expenses.filter(expense => expense.retailer_id === retailer.id) || []
+    })) : []);
+
   // Générer les schémas de couleur pour chaque retailer
   useEffect(() => {
     const schemes: Array<"blue" | "purple" | "amber"> = [];
     const colorOptions: Array<"blue" | "purple" | "amber"> = ["blue", "purple", "amber"];
     
-    retailers.forEach((_, index) => {
+    retailersData.forEach((_, index) => {
       schemes.push(colorOptions[index % colorOptions.length]);
     });
     
     setColorSchemes(schemes);
-  }, [retailers]);
-
-  // Regrouper les dépenses par retailer_id
-  const expensesByRetailer = expenses.reduce((acc, expense) => {
-    if (!acc[expense.retailer_id]) {
-      acc[expense.retailer_id] = [];
-    }
-    acc[expense.retailer_id].push(expense);
-    return acc;
-  }, {} as Record<string, typeof expenses>);
+  }, [retailersData]);
 
   if (isLoading) {
     return (
@@ -64,11 +76,11 @@ export function RetailersGrid({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {retailers.map((retailer, index) => (
+      {retailersData.map((item, index) => (
         <RetailerCard
-          key={retailer.id}
-          retailer={retailer}
-          expenses={expensesByRetailer[retailer.id] || []}
+          key={item.retailer.id}
+          retailer={item.retailer}
+          expenses={item.expenses || []}
           onExpenseUpdated={onExpenseUpdated}
           viewMode={viewMode}
           colorScheme={colorSchemes[index]}
