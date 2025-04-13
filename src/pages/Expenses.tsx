@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useRealtimeListeners } from "@/hooks/useRealtimeListeners";
 import { YearlyTotalCard } from "@/components/expenses/YearlyTotalCard";
 import { ExpensesHeader } from "@/components/expenses/ExpensesHeader";
-import { RetailersGrid } from "@/components/expenses/RetailersGrid";
 import { useExpensesData } from "@/hooks/useExpensesData";
 import { useYearlyTotals } from "@/hooks/useYearlyTotals";
 import { RetailersExpensesChart } from "@/components/expenses/retailers-chart";
@@ -16,6 +15,7 @@ import { Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ExpensesPageSkeleton } from "@/components/expenses/skeletons/ExpensesPageSkeleton";
+import { RetailersSection } from "@/components/expenses/retailers-section";
 
 const Expenses = memo(function Expenses() {
   const { retailers } = useRetailers();
@@ -242,12 +242,12 @@ const Expenses = memo(function Expenses() {
           )}
         </motion.div>
         
-        <RetailersGrid 
+        {/* Remplacement de la grille de cartes détaillants par la nouvelle section */}
+        <RetailersSection 
           expensesByRetailer={expensesByRetailer || []}
           onExpenseUpdated={handleExpenseUpdated}
           viewMode={viewMode}
           displayMode={displayMode}
-          className="py-4"
         />
       </motion.div>
     </motion.div>
