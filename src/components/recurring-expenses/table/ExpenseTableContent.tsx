@@ -77,10 +77,7 @@ export const ExpenseTableContent = ({ expenseTable }: ExpenseTableContentProps) 
           <div>
             <CardTitle className={cn(
               "text-xl font-semibold flex items-center gap-2",
-              // Light mode
-              "text-tertiary-700",
-              // Dark mode
-              "dark:text-tertiary-300"
+          
             )}>
               <div className={cn(
                 "p-1.5 rounded",
