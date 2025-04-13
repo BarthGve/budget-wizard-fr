@@ -54,7 +54,7 @@ const Dashboard = () => {
   // Utiliser useDashboardViewCalculations pour prendre en compte la vue actuelle
   const {
     revenue,
-    expenses,
+    expenses, // Nous n'utilisons plus cette valeur directement
     savings,
     balance,
     savingsGoal,
@@ -113,7 +113,7 @@ const Dashboard = () => {
           ) : (
             <DashboardTabContent
               revenue={revenue}
-              expenses={expenses}
+              expenses={expenses} // On passe expenses pour des raisons de compatibilité, mais on n'utilisera pas cette valeur
               savings={savings}
               balance={balance}
               savingsGoal={savingsGoal}
