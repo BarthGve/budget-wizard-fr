@@ -161,14 +161,7 @@ const Expenses = memo(function Expenses() {
               // Dark mode
               "dark:bg-gray-800/90 dark:border-tertiary-800/50"
             )}>
-              {/* Fond radial gradient */}
-              <div className={cn(
-                "absolute inset-0 opacity-5",
-                // Light mode
-                "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-tertiary-400 via-tertiary-300 to-transparent",
-                // Dark mode
-                "dark:opacity-10 dark:from-tertiary-400 dark:via-tertiary-500 dark:to-transparent"
-              )} />
+         
               
               <CardHeader className="pb-2 pt-6 relative z-10">
                 <div className="flex justify-between items-center">
