@@ -180,7 +180,7 @@ export function RetailerCard({
                 to={`/expenses/retailer/${retailer.id}`}
                 className={cn(
                   "text-lg font-medium transition-colors",
-                  "text-tertiary-700 hover:text-blue-600",
+                  "text-tertiary-700 hover:text-tertiary-600",
                   "dark:text-tertiary-300 dark:hover:text-tertiary-400"
                 )}
               >
