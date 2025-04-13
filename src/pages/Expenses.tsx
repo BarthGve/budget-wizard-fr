@@ -247,6 +247,7 @@ const Expenses = memo(function Expenses() {
           onExpenseUpdated={handleExpenseUpdated}
           viewMode={viewMode}
           displayMode={displayMode}
+          className="py-4"
         />
       </motion.div>
     </motion.div>
