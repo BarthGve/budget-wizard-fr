@@ -155,10 +155,7 @@ export const RecurringExpensesSummaryCards = ({
             <CardContent className="pt-1 pb-6 relative z-10">
               <p className={cn(
                 "text-2xl font-bold",
-                // Light mode
-                "text-tertiary-700",
-                // Dark mode
-                "dark:text-tertiary-300"
+     
               )}>
                 {formatCurrency(value)}
               </p>
