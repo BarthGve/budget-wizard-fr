@@ -125,7 +125,7 @@ const Expenses = memo(function Expenses() {
       animate="visible"
       variants={containerVariants}
     >
-      <motion.div variants={itemVariants} className="space-y-4">
+      <motion.div variants={itemVariants} className="space-y-4 gap-6">
         <ExpensesHeader 
           viewMode={viewMode} 
           setViewMode={setViewMode} 
