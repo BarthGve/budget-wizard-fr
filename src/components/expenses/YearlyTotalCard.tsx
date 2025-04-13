@@ -112,7 +112,13 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
               )}>
                 <PieChart className="h-4 w-4" />
               </div>
-              <CardTitle>
+              <CardTitle className={cn(
+                "text-lg font-semibold",
+                // Light mode
+                "text-tertiary-700",
+                // Dark mode
+                "dark:text-tertiary-300"
+              )}>
                 Total des dépenses
               </CardTitle>
             </div>
@@ -133,7 +139,13 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
           <AnimatePresence mode="wait">
             <motion.p 
               key={`total-${totalAmount}`}
-         
+              className={cn(
+                "text-2xl font-bold",
+                // Light mode
+                "text-tertiary-700",
+                // Dark mode
+                "dark:text-tertiary-300"
+              )}
               initial={hasChanged ? { opacity: 0, y: totalAmount > prevAmount ? 20 : -20 } : false}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: totalAmount > prevAmount ? -20 : 20 }}
