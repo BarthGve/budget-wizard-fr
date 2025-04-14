@@ -77,22 +77,22 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
     <>
       <div className={cn(
         "absolute inset-0",
-        "bg-gradient-to-b from-primary-50/70 to-white",
-        "dark:from-primary-950/20 dark:to-gray-900/60",
+        "bg-gradient-to-b from-purple-50/70 to-white",
+        "dark:from-purple-950/20 dark:to-gray-900/60",
         "pointer-events-none"
       )}>
         <div className={cn(
           "absolute inset-0",
           "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
-          "from-primary-100/40 via-primary-50/20 to-transparent",
-          "dark:from-primary-800/15 dark:via-primary-700/10 dark:to-transparent",
+          "from-purple-100/40 via-purple-50/20 to-transparent",
+          "dark:from-purple-800/15 dark:via-purple-700/10 dark:to-transparent",
           "opacity-60"
         )} />
       </div>
       <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.025] z-0">
         <svg
           viewBox="0 0 100 100"
-          className="w-full h-full fill-primary-400 dark:fill-primary-600"
+          className="w-full h-full fill-purple-400 dark:fill-purple-600"
           style={{ mixBlendMode: isDarkMode ? "soft-light" : "overlay" }}
         >
           <circle cx={50} cy={50} r={50} />
@@ -189,14 +189,14 @@ const MobileFinanceSimulator = ({
             >
               <DialogHeader>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
+                  <div className="p-2 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
                     <BarChart3 size={18} />
                   </div>
                   <div>
-                    <DialogTitle className="text-lg font-bold text-primary-900 dark:text-primary-200">
+                    <DialogTitle className="text-lg font-bold text-purple-900 dark:text-purple-200">
                       Simulateur Financier
                     </DialogTitle>
-                    <DialogDescription className="mt-1 text-sm text-primary-700/80 dark:text-primary-300/80 line-clamp-2">
+                    <DialogDescription className="mt-1 text-sm text-purple-700/80 dark:text-purple-300/80 line-clamp-2">
                       Simulez vos finances en ajustant vos revenus et votre objectif d'épargne.
                     </DialogDescription>
                   </div>
@@ -261,15 +261,15 @@ const DesktopFinanceSimulator = ({
             {/* Arrière-plan décoratif */}
             <div className={cn(
               "absolute inset-0",
-              "bg-gradient-to-b from-primary-50/70 to-white",
-              "dark:from-primary-950/20 dark:to-gray-900/60",
+              "bg-gradient-to-b from-purple-50/70 to-white",
+              "dark:from-purple-950/20 dark:to-gray-900/60",
               "pointer-events-none"
             )}>
               <div className={cn(
                 "absolute inset-0",
                 "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
-                "from-primary-100/40 via-primary-50/20 to-transparent",
-                "dark:from-primary-800/15 dark:via-primary-700/10 dark:to-transparent",
+                "from-purple-100/40 via-purple-50/20 to-transparent",
+                "dark:from-purple-800/15 dark:via-purple-700/10 dark:to-transparent",
                 "opacity-60"
               )} />
             </div>
@@ -297,14 +297,14 @@ const DesktopFinanceSimulator = ({
               >
                 <DialogHeader>
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
+                    <div className="p-2.5 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
                       <BarChart3 size={22} />
                     </div>
                     <div>
-                      <DialogTitle className="text-xl sm:text-2xl font-bold text-primary-900 dark:text-primary-200">
+                      <DialogTitle className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-200">
                         Simulateur Financier
                       </DialogTitle>
-                      <DialogDescription className="mt-1.5 text-base text-primary-700/80 dark:text-primary-300/80">
+                      <DialogDescription className="mt-1.5 text-base text-purple-700/80 dark:text-purple-300/80">
                         Simulez vos finances en ajustant vos revenus et votre objectif d'épargne.
                       </DialogDescription>
                     </div>
@@ -323,7 +323,7 @@ const DesktopFinanceSimulator = ({
             <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.025] z-0">
               <svg
                 viewBox="0 0 100 100"
-                className="w-full h-full fill-primary-400 dark:fill-primary-600"
+                className="w-full h-full fill-purple-400 dark:fill-purple-600"
                 style={{ mixBlendMode: isDarkMode ? "soft-light" : "overlay" }}
               >
                 <circle cx={50} cy={50} r={50} />
@@ -401,19 +401,13 @@ const SimulatorContent = ({
           <h3 className="text-sm font-medium">Objectif d'épargne (%)</h3>
           <span className="text-sm font-medium">{data.savingsGoalPercentage}%</span>
         </div>
-      import { Slider } from "@/components/ui/slider";
-
-<Slider
-  value={[data.savingsGoalPercentage]}
-  min={0}
-  max={50}
-  step={1}
-  onValueChange={(value) => updateSavingsGoal(value[0])}
-  className="w-full" // taille globale
-  trackClassName="bg-muted" // rail vide
-  rangeClassName="bg-primary" // barre remplie
-  thumbClassName="border-2 border-primary bg-background hover:bg-primary/80" // le bouton mobile
-/>
+        <Slider
+          value={[data.savingsGoalPercentage]}
+          min={0}
+          max={50}
+          step={1}
+          onValueChange={(value) => updateSavingsGoal(value[0])}
+        />
         <p className="text-sm text-muted-foreground mt-2">
           Montant d'épargne: {formatCurrency(savingsAmount)} €
         </p>
@@ -454,7 +448,7 @@ const SimulatorContent = ({
         <Button variant="outline" onClick={onClose} disabled={isUpdating}>
           Annuler
         </Button>
-        <Button   className="bg-primary-500 hover:bg-primary-700 text-white" onClick={applyChanges} disabled={isUpdating}>
+        <Button   className="bg-purple-500 hover:bg-purple-700 text-white" onClick={applyChanges} disabled={isUpdating}>
           {isUpdating ? "Application en cours..." : "Appliquer ces modifications"}
         </Button>
       </DialogFooter>
