@@ -13,14 +13,14 @@ export const AmountsSection = ({ savedAmount, totalAmount }: AmountsSectionProps
       <div className={cn(
         "p-2.5 rounded-lg",
         // Light mode
-        "bg-emerald-50 border border-emerald-100",
+        "bg-quaternary-50 border border-quaternary-100",
         // Dark mode
-        "dark:bg-emerald-900/20 dark:border-emerald-800/30"
+        "dark:bg-quaternary-900/20 dark:border-quaternary-800/30"
       )}>
         <p className="text-xs text-muted-foreground mb-1">Épargné</p>
         <p className={cn(
           "font-bold",
-          "text-emerald-700 dark:text-emerald-300"
+          "text-quaternary-700 dark:text-quaternary-300"
         )}>
           {formatCurrency(savedAmount)}
         </p>

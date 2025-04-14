@@ -4,11 +4,11 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import StyledLoader from "@/components/ui/StyledLoader";
 import { Credit } from "@/components/credits/types";
 import { CreditsContainer } from "@/components/credits/components/CreditsContainer";
 import { useCreditsRealtimeListener } from "@/hooks/useCreditsRealtimeListener";
 import { useAuthContext } from "@/context/AuthProvider";
+import { CreditsSkeleton } from "@/components/credits/skeletons/CreditsSkeleton";
 
 const Credits = memo(function Credits() {
   const navigate = useNavigate();
@@ -132,7 +132,7 @@ const Credits = memo(function Credits() {
   const isLoading = isLoadingCredits || isLoadingStats;
   
   if (isLoading) {
-    return <StyledLoader />;
+    return <CreditsSkeleton />;
   }
   
   return (

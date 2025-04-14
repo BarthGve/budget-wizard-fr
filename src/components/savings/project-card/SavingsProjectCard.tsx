@@ -78,9 +78,9 @@ export const SavingsProjectCard = ({
       <Card className={cn(
         "flex flex-col backface-hidden transform-gpu h-full border overflow-hidden relative",
         // Light mode
-        "bg-white border-emerald-100 hover:border-emerald-200",
+        "bg-white border-quaternary-100 hover:border-quaternary-200",
         // Dark mode
-        "dark:bg-gray-800 dark:border-emerald-900/40 dark:hover:border-emerald-800/50"
+        "dark:bg-gray-800 dark:border-quaternary-900/40 dark:hover:border-quaternary-800/50"
       )}
       style={{
         boxShadow: isDarkMode
@@ -99,9 +99,9 @@ export const SavingsProjectCard = ({
         <CardContent className={cn(
           "pt-4 flex-1 flex flex-col justify-between space-y-4",
           // Light mode specific gradient background for content
-          "bg-gradient-to-b from-white to-emerald-50/30",
+          "bg-gradient-to-b from-white to-quaternary-50/30",
           // Dark mode specific gradient
-          "dark:bg-gradient-to-b dark:from-gray-800 dark:to-emerald-900/10"
+          "dark:bg-gradient-to-b dark:from-gray-800 dark:to-quaternary-900/10"
         )}>
           {/* Section de progression */}
           {project.montant_mensuel && project.montant_mensuel > 0 && (
