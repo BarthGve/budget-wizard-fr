@@ -406,6 +406,7 @@ const SimulatorContent = ({
           min={0}
           max={50}
           step={1}
+          rangeClassName="bg-tertiary"
           onValueChange={(value) => updateSavingsGoal(value[0])}
         />
         <p className="text-sm text-muted-foreground mt-2">
