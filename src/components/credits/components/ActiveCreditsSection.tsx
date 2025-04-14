@@ -5,7 +5,7 @@ import { Credit } from "../types";
 import { CreditsList } from "../CreditsList";
 import { cn } from "@/lib/utils";
 import { NoActiveCredits } from "./NoActiveCredits";
-import { ChevronDown, ChevronUp, WalletCards } from "lucide-react";
+import { ChevronDown, ChevronUp, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ActiveCreditsSectionProps {
