@@ -28,18 +28,18 @@ export const ActiveCreditsSection = ({
     >
       <div className="flex items-center justify-between mb-4">
         <h2 className={cn(
-          "font-bold tracking-tight text-xl mb-0",
+          "font-bold tracking-tight text-xl flex items-center gap-2",
           // Même dégradé que le titre principal pour la cohérence
           "bg-gradient-to-r from-primary-600 via-primary-500 to-violet-500 bg-clip-text text-transparent",
           "dark:from-primary-400 dark:via-primary-400 dark:to-violet-400"
         )}>
-            <div className={cn(
+          <div className={cn(
             "p-1 rounded",
             "bg-primary-100 dark:bg-primary-800/40"
           )}>
-            <WalletCards className="h-4 w-4 text-primary-600 dark:text-primary-400" />
-            </div>
-          Crédits en cours
+            <Archive className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+          </div>
+          Archives
         </h2>
         
         <Button
