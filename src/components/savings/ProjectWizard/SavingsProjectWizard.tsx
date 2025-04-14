@@ -194,11 +194,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
               </div>
             </div>
             
-            <div className={cn(
-              "h-px w-full my-2",
-              "bg-gradient-to-r from-transparent to-transparent",
-              colors.separator
-            )} />
+       
             
             <div className="px-4 py-1">
               <div className="text-sm font-medium text-center">
