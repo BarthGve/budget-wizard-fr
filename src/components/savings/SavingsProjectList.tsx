@@ -202,8 +202,8 @@ export const SavingsProjectList = ({
               <div className="flex flex-col items-center justify-center space-y-3">
                 <div className={cn(
                   "p-3 rounded-full",
-                  "bg-gradient-to-br from-teal-100 to-teal-50",
-                  "dark:bg-gradient-to-br dark:from-teal-900/40 dark:to-teal-800/30"
+                  "bg-gradient-to-br from-quaternary-100 to-quaternary-50",
+                  "dark:bg-gradient-to-br dark:from-quaternary-900/40 dark:to-quaternary-800/30"
                 )}>
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
@@ -217,8 +217,8 @@ export const SavingsProjectList = ({
                     strokeLinejoin="round" 
                     className={cn(
                       "h-6 w-6",
-                      "text-teal-600",
-                      "dark:text-teal-400"
+                      "text-quaternary-600",
+                      "dark:text-quaternary-400"
                     )}
                   >
                     <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
@@ -226,8 +226,8 @@ export const SavingsProjectList = ({
                 </div>
                 <h3 className={cn(
                   "text-lg font-medium bg-clip-text text-transparent",
-                  "bg-gradient-to-r from-teal-600 via-teal-500 to-quaternary-500",
-                  "dark:bg-gradient-to-r dark:from-teal-400 dark:via-teal-300 dark:to-quaternary-400"
+                  "bg-gradient-to-r from-quaternary-600 via-quaternary-500 to-quaternary-500",
+                  "dark:bg-gradient-to-r dark:from-quaternary-400 dark:via-quaternary-300 dark:to-quaternary-400"
                 )}>
                   Aucun projet d'épargne
                 </h3>
