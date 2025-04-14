@@ -77,7 +77,7 @@ export const CreditsHeader = () => {
             <Button 
               variant="outline"
               className={cn(
-                "h-10 px-4 border transition-all duration-200 rounded-md",
+                "h-10 px-4 border transition-all duration-200 rounded-md shadow-md",
                 "hover:scale-[1.02] active:scale-[0.98]",
                 // Light mode
                 "bg-white border-primary-200 text-primary-600",
