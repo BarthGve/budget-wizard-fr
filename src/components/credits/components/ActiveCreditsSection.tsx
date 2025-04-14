@@ -5,7 +5,7 @@ import { Credit } from "../types";
 import { CreditsList } from "../CreditsList";
 import { cn } from "@/lib/utils";
 import { NoActiveCredits } from "./NoActiveCredits";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, WalletCards } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ActiveCreditsSectionProps {
@@ -33,6 +33,7 @@ export const ActiveCreditsSection = ({
           "bg-gradient-to-r from-primary-600 via-primary-500 to-violet-500 bg-clip-text text-transparent",
           "dark:from-primary-400 dark:via-primary-400 dark:to-violet-400"
         )}>
+            <WalletCards className="h-4 w-4 text-primary-600 dark:text-primary-400" />
           Crédits en cours
         </h2>
         
