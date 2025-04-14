@@ -33,7 +33,12 @@ export const ActiveCreditsSection = ({
           "bg-gradient-to-r from-primary-600 via-primary-500 to-violet-500 bg-clip-text text-transparent",
           "dark:from-primary-400 dark:via-primary-400 dark:to-violet-400"
         )}>
+            <div className={cn(
+            "p-1 rounded",
+            "bg-primary-100 dark:bg-primary-800/40"
+          )}>
             <WalletCards className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+            </div>
           Crédits en cours
         </h2>
         
