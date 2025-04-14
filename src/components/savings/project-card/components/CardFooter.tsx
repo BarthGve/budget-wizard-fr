@@ -21,9 +21,9 @@ export const CardFooter = ({ onSelect, project }: CardFooterProps) => {
         className={cn(
           "w-full py-2 px-3 rounded-md flex items-center justify-between text-sm font-medium transition-colors",
           // Light mode
-          "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200",
+          "bg-quaternary-50 hover:bg-quaternary-100 text-quaternary-700 border border-quaternary-200",
           // Dark mode
-          "dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30"
+          "dark:bg-quaternary-900/20 dark:hover:bg-quaternary-900/30 dark:text-quaternary-300 dark:border-quaternary-800/30"
         )}
       >
         <span>Voir les détails</span>
