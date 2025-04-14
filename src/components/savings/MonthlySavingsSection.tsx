@@ -52,8 +52,8 @@ export const MonthlySavingsSection = ({
               size="icon"
               onClick={toggleMonthlySavingsVisibility}
               className={cn(
-                "transition-all duration-300 rounded-full hover:bg-primary/10", 
-                showMonthlySavings ? "bg-primary/5" : ""
+                "transition-all duration-300 rounded-full hover:bg-quaternary/10", 
+                showMonthlySavings ? "bg-quaternary/5" : ""
               )}
             >
               {showMonthlySavings ? 
