@@ -342,11 +342,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
             </div>
           </div>
           
-          <div className={cn(
-            "h-px w-full my-4",
-            "bg-gradient-to-r from-transparent to-transparent",
-            colors.separator
-          )} />
+   
           
           <div className="px-6 py-2">
             <WizardStepper 
