@@ -53,36 +53,39 @@
     --radius: 0.75rem;
     
      /* Dépenses –*/
---tertiary-hue: 234;
---tertiary-saturation: 80%;
---tertiary-lightness: 70%;
---tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
---tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 95%;
---tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 90%;
---tertiary-200: var(--tertiary-hue) var(--tertiary-saturation) 80%;
---tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 70%;
---tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 65%;
---tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 60%;
---tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 50%;
---tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 40%;
---tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 30%;
---tertiary-900: var(--tertiary-hue) var(--tertiary-saturation) 20%;
---tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 15%;
---tertiary-foreground: 0 0% 98%;
+    --tertiary-hue: 234;
+    --tertiary-saturation: 80%;
+    --tertiary-lightness: 70%;
+    --tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
+    --tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 95%;
+    --tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 90%;
+    --tertiary-200: var(--tertiary-hue) var(--tertiary-saturation) 80%;
+    --tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 70%;
+    --tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 65%;
+    --tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 60%;
+    --tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 50%;
+    --tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 40%;
+    --tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 30%;
+    --tertiary-900: var(--tertiary-hue) var(--tertiary-saturation) 20%;
+    --tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 15%;
+    --tertiary-foreground: 0 0% 98%;
     
-    /* Épargne – bleu glacier */
-  --quaternary: 196 100% 35%;
-  --quaternary-50: 196 100% 95%;
-  --quaternary-100: 196 100% 90%;
-  --quaternary-200: 196 100% 80%;
-  --quaternary-300: 196 100% 70%;
-  --quaternary-400: 196 100% 60%;
-  --quaternary-500: 196 100% 35%;
-  --quaternary-600: 196 100% 28%;
-  --quaternary-700: 196 100% 22%;
-  --quaternary-800: 196 100% 17%;
-  --quaternary-900: 196 100% 12%;
-  --quaternary-950: 196 100% 10%;
+    /* Épargne  */
+  --quaternary-hue: 196;
+  --quaternary-saturation: 100%;
+  --quaternary-lightness: 35%;
+  --quaternary: var(--quaternary-hue) var(--quaternary-saturation) var(--quaternary-lightness);
+  --quaternary-50: var(--quaternary-hue) var(--quaternary-saturation) 95%;
+  --quaternary-100: var(--quaternary-hue) var(--quaternary-saturation) 90%;
+  --quaternary-200: var(--quaternary-hue) var(--quaternary-saturation) 80%;
+  --quaternary-300: var(--quaternary-hue) var(--quaternary-saturation) 70%;
+  --quaternary-400: var(--quaternary-hue) var(--quaternary-saturation) 65%;
+  --quaternary-500: var(--quaternary-hue) var(--quaternary-saturation) 60%;
+  --quaternary-600: var(--quaternary-hue) var(--quaternary-saturation) 50%;
+  --quaternary-700: var(--quaternary-hue) var(--quaternary-saturation) 40%;
+  --quaternary-800: var(--quaternary-hue) var(--quaternary-saturation) 30%;
+  --quaternary-900: var(--quaternary-hue) var(--quaternary-saturation) 20%;
+  --quaternary-950: var(--quaternary-hue) var(--quaternary-saturation) 15%;
   --quaternary-foreground: 0 0% 98%;
     
      /* Revenus – vert dollar */
@@ -197,18 +200,21 @@
   --quinary-950: 162 72% 80%;
   --quinary-foreground: 0 0% 98%;
 
-  --quaternary: 196 100% 28%;
-  --quaternary-50: 196 100% 12%;
-  --quaternary-100: 196 100% 15%;
-  --quaternary-200: 196 100% 18%;
-  --quaternary-300: 196 100% 22%;
-  --quaternary-400: 196 100% 25%;
-  --quaternary-500: 196 100% 28%;
-  --quaternary-600: 196 100% 35%;
-  --quaternary-700: 196 100% 42%;
-  --quaternary-800: 196 100% 50%;
-  --quaternary-900: 196 100% 60%;
-  --quaternary-950: 196 100% 70%;
+  --quaternary-hue: 196;
+  --quaternary-saturation: 100%;
+  --quaternary-lightness: 28%;
+  --quaternary: var(--quaternary-hue) var(--quaternary-saturation) var(--quaternary-lightness);
+  --quaternary-50: var(--quaternary-hue) var(--quaternary-saturation) 95%;
+  --quaternary-100: var(--quaternary-hue) var(--quaternary-saturation) 90%;
+  --quaternary-200: var(--quaternary-hue) var(--quaternary-saturation) 80%;
+  --quaternary-300: var(--quaternary-hue) var(--quaternary-saturation) 70%;
+  --quaternary-400: var(--quaternary-hue) var(--quaternary-saturation) 65%;
+  --quaternary-500: var(--quaternary-hue) var(--quaternary-saturation) 60%;
+  --quaternary-600: var(--quaternary-hue) var(--quaternary-saturation) 50%;
+  --quaternary-700: var(--quaternary-hue) var(--quaternary-saturation) 40%;
+  --quaternary-800: var(--quaternary-hue) var(--quaternary-saturation) 30%;
+  --quaternary-900: var(--quaternary-hue) var(--quaternary-saturation) 20%;
+  --quaternary-950: var(--quaternary-hue) var(--quaternary-saturation) 15%;
   --quaternary-foreground: 0 0% 98%;
     
     /* Couleur senary (gris) et ses variantes en mode sombre */
