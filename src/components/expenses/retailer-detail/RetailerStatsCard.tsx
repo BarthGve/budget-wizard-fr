@@ -31,11 +31,11 @@ export function RetailerStatsCard({
   return (
     <Card className={cn(
       "p-6 overflow-hidden border shadow-lg transition-all duration-200",
-    
+      className
     )}>
       {/* En-tête avec titre */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg text-gray-900 font-medium">{title}</h3>
+        <h3 className="text-lg font-medium">{title}</h3>
         {icon && (
           <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/20">
             {icon}
@@ -46,7 +46,7 @@ export function RetailerStatsCard({
       {/* Montant principal et indicateur de variation sur la même ligne */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <p className="text-2xl text-gray-900 font-bold">{formatCurrency(amount)}</p>
+          <p className="text-2xl font-bold">{formatCurrency(amount)}</p>
           
           {/* Indicateur de variation */}
           {hasVariation && (
