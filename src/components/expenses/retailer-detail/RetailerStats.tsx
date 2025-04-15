@@ -74,7 +74,7 @@ export function RetailerStats({
           amount={yearlyTotal}
           count={yearlyCount}
           label="achats cette année"
-          className="border shadow-lg overflow-hidden bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/10"
+          className="border shadow-lg overflow-hidden "
           previousAmount={previousYearTotal}
           icon={<Wallet className="h-5 w-5 text-primary-500 dark:text-primary-300" />}
           colorScheme="purple"
@@ -88,7 +88,7 @@ export function RetailerStats({
           amount={monthlyAverage}
           count={monthlyAverageCount}
           label="achats par mois"
-          className="border shadow-lg overflow-hidden bg-gradient-to-br from-quinary-50 to-quinary-100 dark:from-quinary-900/20 dark:to-quinary-800/10"
+          className="border shadow-lg overflow-hidden"
           icon={<Calculator className="h-5 w-5 text-quinary-500 dark:text-quinary-300" />}
           colorScheme="amber"
         />
