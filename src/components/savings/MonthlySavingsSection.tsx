@@ -35,7 +35,7 @@ export const MonthlySavingsSection = ({
 
   return (
     <motion.div 
-      className="flex-none mt-6 w-full px-2 md:px-0"
+      className="mt-6 w-full px-2 md:px-0"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
