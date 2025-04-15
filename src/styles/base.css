@@ -52,50 +52,50 @@
     --ring: 220 13% 91%;
     --radius: 0.75rem;
     
-    /* Couleur tertiaire (bleu) et ses variantes */
-    --tertiary: 210 60% 40%;
-    --tertiary-50: 210 60% 95%;
-    --tertiary-100: 210 60% 90%;
-    --tertiary-200: 210 60% 80%;
-    --tertiary-300: 210 60% 70%;
-    --tertiary-400: 210 60% 60%;
-    --tertiary-500: 210 60% 50%;
-    --tertiary-600: 210 60% 45%;
-    --tertiary-700: 210 60% 40%; /* Base */
-    --tertiary-800: 210 60% 30%;
-    --tertiary-900: 210 60% 20%;
-    --tertiary-950: 210 60% 15%;
-    --tertiary-foreground: 210 20% 98%;
+     /* Dépenses – rouge corail */
+  --tertiary: 0 84% 60%;
+  --tertiary-50: 0 84% 95%;
+  --tertiary-100: 0 84% 90%;
+  --tertiary-200: 0 84% 80%;
+  --tertiary-300: 0 84% 70%;
+  --tertiary-400: 0 84% 65%;
+  --tertiary-500: 0 84% 60%;
+  --tertiary-600: 0 84% 50%;
+  --tertiary-700: 0 84% 40%;
+  --tertiary-800: 0 84% 30%;
+  --tertiary-900: 0 84% 20%;
+  --tertiary-950: 0 84% 15%;
+  --tertiary-foreground: 0 0% 98%;
     
-    /* Couleur quaternaire (vert) et ses variantes */
-    --quaternary: 135 50% 40%;
-    --quaternary-50: 135 50% 95%;
-    --quaternary-100: 135 50% 90%;
-    --quaternary-200: 135 50% 80%;
-    --quaternary-300: 135 50% 70%;
-    --quaternary-400: 135 50% 60%;
-    --quaternary-500: 135 50% 50%;
-    --quaternary-600: 135 50% 45%;
-    --quaternary-700: 135 50% 40%; /* Base */
-    --quaternary-800: 135 50% 30%;
-    --quaternary-900: 135 50% 20%;
-    --quaternary-950: 135 50% 15%;
-    --quaternary-foreground: 0 0% 98%;
+    /* Épargne – bleu glacier */
+  --quaternary: 196 100% 35%;
+  --quaternary-50: 196 100% 95%;
+  --quaternary-100: 196 100% 90%;
+  --quaternary-200: 196 100% 80%;
+  --quaternary-300: 196 100% 70%;
+  --quaternary-400: 196 100% 60%;
+  --quaternary-500: 196 100% 35%;
+  --quaternary-600: 196 100% 28%;
+  --quaternary-700: 196 100% 22%;
+  --quaternary-800: 196 100% 17%;
+  --quaternary-900: 196 100% 12%;
+  --quaternary-950: 196 100% 10%;
+  --quaternary-foreground: 0 0% 98%;
     
-    /* Couleur quinary (jaune) et ses variantes */
-    --quinary: 45 100% 51%;
-    --quinary-50: 45 100% 96%;
-    --quinary-100: 45 100% 90%;
-    --quinary-200: 45 100% 80%;
-    --quinary-300: 45 100% 70%;
-    --quinary-400: 45 100% 60%;
-    --quinary-500: 45 100% 51%; /* Base */
-    --quinary-600: 45 100% 45%;
-    --quinary-700: 45 100% 40%;
-    --quinary-800: 45 100% 30%;
-    --quinary-900: 45 100% 25%;
-    --quinary-950: 45 100% 20%;
-    --quinary-foreground: 210 20% 98%;
+     /* Revenus – vert dollar */
+  --quinary: 162 72% 42%;
+  --quinary-50: 162 72% 95%;
+  --quinary-100: 162 72% 90%;
+  --quinary-200: 162 72% 80%;
+  --quinary-300: 162 72% 70%;
+  --quinary-400: 162 72% 60%;
+  --quinary-500: 162 72% 42%;
+  --quinary-600: 162 72% 35%;
+  --quinary-700: 162 72% 28%;
+  --quinary-800: 162 72% 22%;
+  --quinary-900: 162 72% 16%;
+  --quinary-950: 162 72% 12%;
+  --quinary-foreground: 0 0% 98%;
     
     /* Couleur senary (gris) et ses variantes */
     --senary: 0 0% 50%;
