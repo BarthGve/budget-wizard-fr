@@ -77,15 +77,7 @@ export const DashboardHeader = ({
             "bg-primary/5 border border-primary/20 dark:bg-primary/10 dark:border-primary/30"
           )}
         >
-          <div className="flex items-center space-x-2 px-3">
-            <Calendar className={`h-4 w-4 ${currentView === 'monthly' ? 'text-primary' : 'text-gray-400'} transition-colors dark:${currentView === 'monthly' ? 'text-primary-300' : 'text-gray-500'}`} />
-            <Label 
-              htmlFor="dashboard-view-mode" 
-              className={`${currentView === 'monthly' ? 'text-primary font-medium dark:text-primary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors text-sm`}
-            >
-              Mensuel
-            </Label>
-          </div>
+      
           
           <Switch
             id="dashboard-view-mode"
