@@ -52,20 +52,23 @@
     --ring: 220 13% 91%;
     --radius: 0.75rem;
     
-     /* Dépenses – rouge corail */
-  --tertiary: 0 84% 60%;
-  --tertiary-50: 0 84% 95%;
-  --tertiary-100: 0 84% 90%;
-  --tertiary-200: 0 84% 80%;
-  --tertiary-300: 0 84% 70%;
-  --tertiary-400: 0 84% 65%;
-  --tertiary-500: 0 84% 60%;
-  --tertiary-600: 0 84% 50%;
-  --tertiary-700: 0 84% 40%;
-  --tertiary-800: 0 84% 30%;
-  --tertiary-900: 0 84% 20%;
-  --tertiary-950: 0 84% 15%;
-  --tertiary-foreground: 0 0% 98%;
+     /* Dépenses –*/
+--tertiary-hue: 10;
+--tertiary-saturation: 80%;
+--tertiary-lightness: 70%;
+--tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
+--tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 95%;
+--tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 90%;
+--tertiary-200: var(--tertiary-hue) var(--tertiary-saturation) 80%;
+--tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 70%;
+--tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 65%;
+--tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 60%;
+--tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 50%;
+--tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 40%;
+--tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 30%;
+--tertiary-900: var(--tertiary-hue) var(--tertiary-saturation) 20%;
+--tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 15%;
+--tertiary-foreground: 0 0% 98%;
     
     /* Épargne – bleu glacier */
   --quaternary: 196 100% 35%;
@@ -163,19 +166,22 @@
     --ring: 240 4.9% 83.9%;
     
     
-   --tertiary: 0 84% 50%;
-  --tertiary-50: 0 84% 20%;
-  --tertiary-100: 0 84% 25%;
-  --tertiary-200: 0 84% 30%;
-  --tertiary-300: 0 84% 35%;
-  --tertiary-400: 0 84% 40%;
-  --tertiary-500: 0 84% 50%;
-  --tertiary-600: 0 84% 60%;
-  --tertiary-700: 0 84% 70%;
-  --tertiary-800: 0 84% 80%;
-  --tertiary-900: 0 84% 90%;
-  --tertiary-950: 0 84% 95%;
-  --tertiary-foreground: 0 0% 98%;
+   --tertiary-hue: 10;
+  --tertiary-saturation: 80%;
+  --tertiary-lightness: 40%;  /* Généralement plus sombre pour le dark mode */
+  --tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
+  --tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 15%;
+  --tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 20%;
+  --tertiary-200: var(--tertiary-hue) var(--tertiary-saturation) 25%;
+  --tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 30%;
+  --tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 35%;
+  --tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 40%;
+  --tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 45%;
+  --tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 55%;
+  --tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 70%;
+  --tertiary-900: var(--tertiary-hue) var(--tertiary-saturation) 85%;
+  --tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 90%;
+  --tertiary-foreground: 0 0% 10%; /
 
   --quinary: 162 72% 35%;
   --quinary-50: 162 72% 15%;
