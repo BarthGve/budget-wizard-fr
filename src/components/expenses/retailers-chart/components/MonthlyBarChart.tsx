@@ -40,7 +40,7 @@ export const MonthlyBarChart = ({ retailerExpenses }: MonthlyBarChartProps) => {
           tickFormatter={(value) => formatCurrency(value)} 
           axisLine={false}
           tickLine={false}
-          tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
+          tick={{ fill: isDarkMode ? '#bec1c4' : '#5c5d5e' }}
         />
         <YAxis 
           type="category" 
