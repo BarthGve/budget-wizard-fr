@@ -140,7 +140,7 @@ export function AddExpenseDialog({
     "border-t border-gray-200 dark:border-gray-800",
     "shadow-2xl",
     currentColors.border,
-    "h-[60vh] sm:h-[60vh] overflow-y-auto",
+    "h-[75vh] sm:h-[75vh] overflow-y-auto",
     "transition-all duration-300 ease-in-out",
     "backdrop-blur-sm bg-white/95 dark:bg-gray-900/95"
   )}
