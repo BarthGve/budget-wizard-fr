@@ -32,6 +32,11 @@ export const ExpensesHeader = ({
   // Utiliser useMediaQuery pour détecter les écrans mobiles
   const isMobile = useMediaQuery("(max-width: 768px)");
   
+  // Fonction pour gérer le changement de mode de vue
+  const handleViewModeChange = (checked: boolean) => {
+    setViewMode(checked ? 'yearly' : 'monthly');
+  };
+  
   return (
     <motion.div 
       className="pb-4 mb-2"
@@ -84,24 +89,22 @@ export const ExpensesHeader = ({
           isMobile ? "w-full" : "gap-4"
         )}>
           <motion.div 
-            className="flex items-center p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-inner"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
+            className={cn(
+              "flex items-center p-1 rounded-full",
+              "bg-tertiary/5 border border-tertiary/20 dark:bg-tertiary/10 dark:border-tertiary/30"
+            )}
           >
+            <Switch
+              id="dashboard-view-mode"
+              checked={viewMode === 'yearly'}
+              onCheckedChange={handleViewModeChange}
+              className="data-[state=checked]:bg-tertiary dark:data-[state=checked]:bg-tertiary"
+            />
+            
             <div className="flex items-center space-x-2 px-3">
-              <Switch 
-                id="view-mode" 
-                checked={viewMode === 'yearly'} 
-                onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
-                className={cn(
-                  "data-[state=checked]:bg-tertiary", 
-                  "dark:data-[state=checked]:bg-tertiary"
-                )}
-              />
               <Label 
-                htmlFor="view-mode"
-                className="text-gray-700 dark:text-gray-300 font-medium"
+                htmlFor="dashboard-view-mode" 
+                className={`${viewMode === 'yearly' ? 'text-tertiary font-medium dark:text-tertiary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors text-sm`}
               >
                 Vue annuelle
               </Label>

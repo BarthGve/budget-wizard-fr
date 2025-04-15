@@ -31,15 +31,15 @@ export function ContributorDetailsHeader({
       "border-b",
       isDarkTheme
         ? "border-gray-700/50"
-        : "border-amber-100/70"
+        : "border-quinary-100/70"
     )}>
       <div className="flex items-center space-x-4">
         {/* Avatar avec fallback */}
         <Avatar className={cn(
           "h-12 w-12 rounded-full border-2",
           isDarkTheme
-            ? "border-amber-500/30"
-            : "border-amber-200"
+            ? "border-quinary-500/30"
+            : "border-quinary-200"
         )}>
           {avatarUrl ? (
             <AvatarImage src={avatarUrl} alt={name} />
@@ -47,8 +47,8 @@ export function ContributorDetailsHeader({
             <AvatarFallback className={cn(
               "bg-gradient-to-br text-white font-medium text-lg",
               isDarkTheme
-                ? "from-amber-600 to-amber-700"
-                : "from-amber-400 to-amber-500"
+                ? "from-quinary-600 to-quinary-700"
+                : "from-quinary-400 to-quinary-500"
             )}>
               {getInitials(name)}
             </AvatarFallback>
@@ -57,8 +57,8 @@ export function ContributorDetailsHeader({
             <div className={cn(
               "absolute -bottom-1 -right-1 rounded-full p-1",
               isDarkTheme
-                ? "bg-amber-600 text-black"
-                : "bg-amber-300 text-amber-800"
+                ? "bg-quinary-600 text-black"
+                : "bg-quinary-300 text-quinary-800"
             )}>
               <Crown className="h-3 w-3" />
             </div>
@@ -70,8 +70,8 @@ export function ContributorDetailsHeader({
           <h2 className={cn(
             "text-lg font-semibold",
             isDarkTheme
-              ? "text-amber-300"
-              : "text-amber-700"
+              ? "text-quinary-300"
+              : "text-quinary-700"
           )}>
             {name}
           </h2>
@@ -79,8 +79,8 @@ export function ContributorDetailsHeader({
             <p className={cn(
               "text-xs",
               isDarkTheme
-                ? "text-amber-400/70"
-                : "text-amber-600/70"
+                ? "text-quinary-400/70"
+                : "text-quinary-600/70"
             )}>
               Propriétaire du compte
             </p>

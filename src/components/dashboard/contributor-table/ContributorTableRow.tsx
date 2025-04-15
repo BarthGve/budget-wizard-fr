@@ -53,7 +53,7 @@ export function ContributorTableRow({
             <Avatar className={cn(
               "h-9 w-9 ring-1",
               contributor.is_owner 
-                ? "ring-amber-300 dark:ring-amber-500" 
+                ? "ring-quinary-300 dark:ring-quinary-500" 
                 : "ring-gray-200 dark:ring-gray-700"
             )}>
               {contributor.is_owner && avatarUrl ? (
@@ -77,7 +77,7 @@ export function ContributorTableRow({
             {contributor.is_owner && (
               <div className={cn(
                 "absolute -bottom-1 -right-1",
-                "bg-amber-400 dark:bg-amber-500",
+                "bg-quinary-400 dark:bg-quinary-500",
                 "rounded-full p-0.5",
                 "border-2 border-white dark:border-gray-800",
                 "shadow-sm"

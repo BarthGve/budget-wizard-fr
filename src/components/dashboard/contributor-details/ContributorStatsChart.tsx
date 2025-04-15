@@ -58,7 +58,7 @@ export function ContributorStatsChart({
                  style={{ backgroundColor: entry.color }} />
             <span className={cn(
               "text-sm font-medium",
-              "text-amber-800 dark:text-amber-300"
+              "text-quinary-800 dark:text-quinary-300"
             )}>
               {`${entry.name} (${formatValue(entry.fullValue || entry.value)})`}
             </span>
@@ -74,7 +74,7 @@ export function ContributorStatsChart({
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       {isEmpty ? (
-        <div className="text-center text-amber-600/70 dark:text-amber-400/70 text-sm">
+        <div className="text-center text-quinary-600/70 dark:text-quinary-400/70 text-sm">
           Aucune contribution ce mois-ci
         </div>
       ) : (

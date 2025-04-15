@@ -34,14 +34,14 @@ export const ContributorFormContent = ({
       {isSubmitting ? (
         <div className="space-y-4 py-5">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="h-10 w-10 animate-spin text-amber-500 dark:text-amber-400" />
-            <div className="text-center text-sm font-medium text-amber-600 dark:text-amber-400">
+            <Loader2 className="h-10 w-10 animate-spin text-quinary-500 dark:text-quinary-400" />
+            <div className="text-center text-sm font-medium text-quinary-600 dark:text-quinary-400">
               Création du contributeur en cours...
             </div>
           </div>
           <Progress 
             value={progress} 
-            className="h-2 w-full bg-amber-100 dark:bg-gray-700"
+            className="h-2 w-full bg-quinary-100 dark:bg-gray-700"
             style={{
               "--progress-foreground": isDarkMode ? "#F59E0B" : "#F59E0B"
             } as React.CSSProperties}
