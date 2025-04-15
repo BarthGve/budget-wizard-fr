@@ -104,7 +104,7 @@ export function YearlyTotalCard({ currentYearTotal, previousYearTotal, expenses,
             <div className="flex items-center space-x-2">
               <div className={cn(
                 // Light mode
-                "bg-tertiary-100 text-tertiary-700",
+                "text-tertiary-700",
                 // Dark mode
                 "dark:bg-tertiary-800/40 dark:text-tertiary-300",
                 // Common
