@@ -19,12 +19,25 @@ interface CreditsPieChartProps {
   totalMensualites: number;
 }
 
-// Palette de couleurs adaptée du violet au pourpre, remplacée par "primary"
-const COLORS = ['#c4b5fd', '#a78bfa', '#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6', '#4c1d95'];
+const COLORS = [
+  '#d8b4fe', // mauve doux
+  '#c084fc', // violet lavande
+  '#a855f7', // primary + 1 ton
+  '#9333ea', // purple flashy
+  '#7e22ce', // deep purple
+  '#6b21a8', // bordeaux violet
+  '#581c87'  // aubergine foncé
+];
 
-// Couleurs pour dark mode - légèrement plus lumineuses
-const DARK_COLORS = ['#ddd6fe', '#c4b5fd', '#a78bfa', '#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6'];
-
+const DARK_COLORS = [
+  '#f3e8ff', // pastel clair
+  '#e9d5ff',
+  '#d8b4fe',
+  '#c084fc',
+  '#a855f7',
+  '#9333ea',
+  '#7e22ce'
+];
 // Composant personnalisé pour le tooltip
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
