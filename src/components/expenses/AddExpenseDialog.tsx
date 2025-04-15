@@ -134,23 +134,43 @@ export function AddExpenseDialog({
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent 
-          side="bottom" 
-          className={cn(
-            "px-0 py-0 rounded-t-xl",
-            "border-t shadow-lg",
-            currentColors.border,
-          
-            "h-[85vh] overflow-y-auto",
-            "dark:bg-gray-900"
-          )}
-        >
-          <div className={cn(
-            "absolute inset-x-0 top-0 h-1.5 w-12 mx-auto my-2",
-            "bg-gray-300 dark:bg-gray-600 rounded-full"
-          )} />
-          
-          {dialogContent}
-        </SheetContent>
+  side="bottom" 
+  className={cn(
+    "px-0 py-0 rounded-t-2xl",
+    "border-t border-gray-200 dark:border-gray-800",
+    "shadow-2xl",
+    currentColors.border,
+    "h-[85vh] sm:h-[90vh] overflow-y-auto",
+    "transition-all duration-300 ease-in-out",
+    "backdrop-blur-sm bg-white/95 dark:bg-gray-900/95"
+  )}
+>
+  {/* Poignée de glissement améliorée */}
+  <div className={cn(
+    "absolute inset-x-0 top-0 w-16 mx-auto my-3",
+    "flex items-center justify-center"
+  )}>
+    <div className={cn(
+      "h-1.5 w-12",
+      "bg-gray-300 dark:bg-gray-600 rounded-full",
+      "hover:bg-gray-400 dark:hover:bg-gray-500",
+      "transition-colors duration-200"
+    )} />
+  </div>
+  
+  {/* Contenu avec padding */}
+  <div className="pt-8 px-4 sm:px-6">
+    {dialogContent}
+  </div>
+  
+  {/* Indicateur de scroll optionnel - apparaît seulement si le contenu est scrollable */}
+  <div className={cn(
+    "absolute bottom-4 inset-x-0 flex justify-center",
+    "pointer-events-none opacity-70"
+  )}>
+    <div className="w-1.5 h-8 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+  </div>
+</SheetContent>
       </Sheet>
     );
   }
