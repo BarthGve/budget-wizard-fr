@@ -19,11 +19,27 @@ interface SavingsPieChartProps {
   totalSavings: number;
 }
 
-// Palette de couleurs verte pour l'épargne - mode clair
-const COLORS = ['#22c55e', '#16a34a', '#15803d', '#166534', '#14532d', '#10b981', '#34d399'];
+// Palette bleu glacier – mode clair
+const COLORS = [
+  '#0ea5e9', // hsl(196, 100%, 45%)
+  '#38bdf8', // hsl(196, 94%, 67%)
+  '#22d3ee', // teinte un peu turquoise
+  '#0bc5ea', // variante plus saturée
+  '#0284c7', // plus foncée
+  '#0369a1', // encore plus foncée
+  '#0c4a6e'  // très foncée, bleue-gris
+];
 
-// Palette de couleurs verte pour l'épargne - mode sombre (plus lumineuses)
-const DARK_COLORS = ['#4ade80', '#22c55e', '#16a34a', '#34d399', '#10b981', '#059669', '#6ee7b7'];
+// Palette bleu glacier – mode sombre
+const DARK_COLORS = [
+  '#38bdf8', // clair lumineux
+  '#0ea5e9', // couleur principale
+  '#22d3ee', // turquoise
+  '#0bc5ea', // saturée
+  '#0284c7', // intermédiaire
+  '#0369a1', // foncée
+  '#7dd3fc'  // pastel très clair pour contraste
+];
 
 // Composant personnalisé pour le tooltip
 const CustomTooltip = ({ active, payload }: any) => {
