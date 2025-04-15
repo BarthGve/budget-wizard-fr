@@ -2,7 +2,7 @@
 import { Card } from "@/components/ui/card";
 import { ContributorsHeader } from "@/components/contributors/ContributorsHeader";
 import { ContributorsContent } from "@/components/contributors/ContributorsContent";
-import StyledLoader from "@/components/ui/StyledLoader";
+import { ContributorsSkeleton } from "@/components/dashboard/skeletons/ContributorsSkeleton";
 import { useContributorsData } from "@/hooks/useContributorsData";
 import { memo } from "react";
 
@@ -12,7 +12,7 @@ const Contributors = memo(function Contributors() {
   const { contributors, isLoading, handleAddContributor, handleUpdateContributor, handleDeleteContributor } = useContributorsData();
   
   if (isLoading) {
-    return <StyledLoader />;
+    return <ContributorsSkeleton />;
   }
   
   return (
