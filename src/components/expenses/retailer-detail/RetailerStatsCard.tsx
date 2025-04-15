@@ -31,7 +31,7 @@ export function RetailerStatsCard({
   return (
     <Card className={cn(
       "p-6 overflow-hidden border shadow-lg transition-all duration-200",
-      className
+    
     )}>
       {/* En-tête avec titre */}
       <div className="flex items-center justify-between mb-4">
@@ -46,7 +46,7 @@ export function RetailerStatsCard({
       {/* Montant principal et indicateur de variation sur la même ligne */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <p className="text-2xl font-bold">{formatCurrency(amount)}</p>
+          <p className="text-2xl text-gray-900 font-bold">{formatCurrency(amount)}</p>
           
           {/* Indicateur de variation */}
           {hasVariation && (
