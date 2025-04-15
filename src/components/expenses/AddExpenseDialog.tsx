@@ -158,7 +158,10 @@ export function AddExpenseDialog({
     )} />
   </div>
   
-
+  {/* Contenu avec padding */}
+  <div >
+    {dialogContent}
+  </div>
   
   {/* Indicateur de scroll optionnel - apparaît seulement si le contenu est scrollable */}
   <div className={cn(
