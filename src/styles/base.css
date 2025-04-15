@@ -72,8 +72,8 @@
     
     /* Épargne  */
   --quaternary-hue: 196;
-  --quaternary-saturation: 76%;
-  --quaternary-lightness: 65%;
+  --quaternary-saturation: 62%;
+  --quaternary-lightness: 46%;
   --quaternary: var(--quaternary-hue) var(--quaternary-saturation) var(--quaternary-lightness);
   --quaternary-50: var(--quaternary-hue) var(--quaternary-saturation) 95%;
   --quaternary-100: var(--quaternary-hue) var(--quaternary-saturation) 90%;
