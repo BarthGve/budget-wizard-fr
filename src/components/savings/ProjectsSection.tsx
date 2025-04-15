@@ -38,26 +38,30 @@ export const ProjectsSection = ({
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
           <h2 className="font-bold tracking-tight bg-gradient-to-r from-quaternary-500 via-quaternary-500 to-quaternary-400 bg-clip-text text-transparent dark:from-quaternary-400 dark:via-quaternary-400 dark:to-teal-300 animate-fade-in text-2xl">Projets</h2>
-          <motion.div
-            whileTap={{ scale: 0.9 }}
-            whileHover={{ scale: 1.1 }}
-          >
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={toggleProjectsVisibility}
-              className={cn(
-                "transition-all duration-300 rounded-full hover:bg-quaternary/10", 
-                showProjects ? "bg-quaternary/5" : ""
-              )}
-            >
-              {showProjects ? 
-                <ChevronUp className="h-4 w-4 transition-all duration-300 transform" /> : 
-                <ChevronDown className="h-4 w-4 transition-all duration-300 transform" />
-              }
-            </Button>
-          </motion.div>
         </div>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleProjectsVisibility}
+          className={cn(
+            "flex items-center gap-1 text-sm font-medium",
+            "text-gray-500 hover:text-quaternary-600",
+            "dark:text-gray-400 dark:hover:text-quaternary-400"
+          )}
+        >
+          {showProjects ? (
+            <>
+              Masquer
+              <ChevronUp className="h-4 w-4" />
+            </>
+          ) : (
+            <>
+              Afficher ({projects.length})
+              <ChevronDown className="h-4 w-4" />
+            </>
+          )}
+        </Button>
       </div>
       
       <div className="flex-1 overflow-hidden">
