@@ -91,9 +91,9 @@ export const DashboardHeader = ({
               htmlFor="dashboard-view-mode" 
               className={`${currentView === 'yearly' ? 'text-primary font-medium dark:text-primary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors text-sm`}
             >
-              Annuel
+              Vue annuelle
             </Label>
-            <BarChart3 className={`h-4 w-4 ${currentView === 'yearly' ? 'text-primary dark:text-primary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors`} />
+        
           </div>
         </motion.div>
       </div>
