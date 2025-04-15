@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
@@ -6,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useChartColors } from "@/hooks/useChartColors";
 
 interface RecurringExpense {
   id: string;
@@ -24,12 +26,6 @@ interface CategoryTotal {
   amount: number;
 }
 
-// Palette de couleurs pour le mode clair (couleur tertiaire)
-const COLORS = ['#3b82f6', '#2563eb', '#1d4ed8', '#0ea5e9', '#0284c7', '#0369a1', '#38bdf8'];
-
-// Palette de couleurs pour le mode sombre - légèrement plus lumineuse
-const DARK_COLORS = ['#60a5fa', '#3b82f6', '#2563eb', '#38bdf8', '#0ea5e9', '#0284c7', '#7dd3fc'];
-
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
@@ -47,8 +43,8 @@ export const RecurringExpensesPieChart = ({
   totalExpenses
 }: RecurringExpensesPieChartProps) => {
   const navigate = useNavigate();
-  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const chartColors = isDarkMode ? DARK_COLORS : COLORS;
+  // Utiliser notre hook personnalisé pour obtenir les couleurs basées sur tertiary
+  const chartColors = useChartColors("tertiary").all;
   
   const categoryTotals = recurringExpenses.reduce<CategoryTotal[]>((acc, expense) => {
     const existingCategory = acc.find(cat => cat.category === expense.category);

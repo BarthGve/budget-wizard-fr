@@ -50,20 +50,20 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
   const isMobile = useIsMobile();
 
   const colors = {
-    gradientFrom: "from-green-500",
+    gradientFrom: "from-quaternary-500",
     gradientTo: "to-emerald-400",
-    darkGradientFrom: "dark:from-green-700",
+    darkGradientFrom: "dark:from-quaternary-700",
     darkGradientTo: "dark:to-emerald-600",
-    iconBg: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-    headingText: "text-green-900 dark:text-green-200",
-    descriptionText: "text-green-700/80 dark:text-green-300/80",
-    buttonBg: "bg-green-600 hover:bg-green-500 dark:bg-green-700 dark:hover:bg-green-600",
-    lightBg: "from-white via-green-50/40 to-green-100/70",
-    darkBg: "dark:from-gray-900 dark:via-green-950/20 dark:to-green-900/30",
-    borderLight: "border-green-100/70",
-    borderDark: "dark:border-green-800/20",
-    ringFocus: "focus-visible:ring-green-500 dark:focus-visible:ring-green-400",
-    separator: "via-green-200/60 dark:via-green-800/30"
+    iconBg: "bg-quaternary-100 text-quaternary-700 dark:bg-quaternary-900/30 dark:text-quaternary-300",
+    headingText: "text-quaternary-900 dark:text-quaternary-200",
+    descriptionText: "text-quaternary-700/80 dark:text-quaternary-300/80",
+    buttonBg: "bg-quaternary-600 hover:bg-quaternary-500 dark:bg-quaternary-700 dark:hover:bg-quaternary-600",
+    lightBg: "from-white via-quaternary-50/40 to-quaternary-100/70",
+    darkBg: "dark:from-gray-900 dark:via-quaternary-950/20 dark:to-quaternary-900/30",
+    borderLight: "border-quaternary-100/70",
+    borderDark: "dark:border-quaternary-800/20",
+    ringFocus: "focus-visible:ring-quaternary-500 dark:focus-visible:ring-quaternary-400",
+    separator: "via-quaternary-200/60 dark:via-quaternary-800/30"
   };
 
   const steps: Step[] = [
@@ -207,7 +207,7 @@ export const SavingsProjectWizard = ({ onClose, onProjectCreated }: SavingsProje
                     className={cn(
                       "h-1 rounded-full flex-1 mx-0.5 transition-colors",
                       index <= currentStep 
-                        ? "bg-green-500 dark:bg-green-600" 
+                        ? "bg-quaternary-500 dark:bg-quaternary-600" 
                         : "bg-gray-200 dark:bg-gray-700"
                     )}
                   />

@@ -120,9 +120,6 @@ export const SavingsList = ({
 
   return (
     <motion.div
-      className={cn(
-        "space-y-6",
-      )}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -171,7 +168,7 @@ export const SavingsList = ({
                 <div
                   className={cn(
                     "p-3 rounded-full",
-                    "bg-gradient-to-br from-teal-100 to-teal-50",
+                    "bg-gradient-to-br from-quaternary-100 to-quaternary-50",
                     "dark:bg-gradient-to-br dark:from-teal-900/40 dark:to-teal-800/30"
                   )}
                 >
@@ -180,8 +177,8 @@ export const SavingsList = ({
                 <h3
                   className={cn(
                     "text-lg font-medium bg-clip-text text-transparent",
-                    "bg-gradient-to-r from-teal-600 via-teal-500 to-quaternary-500",
-                    "dark:bg-gradient-to-r dark:from-teal-400 dark:via-teal-300 dark:to-quaternary-400"
+                    "bg-gradient-to-r from-quaternary-600 via-teal-500 to-quaternary-500",
+                    "dark:bg-gradient-to-r dark:from-quaternary-400 dark:via-quaternary-300 dark:to-quaternary-400"
                   )}
                 >
                   Aucune épargne

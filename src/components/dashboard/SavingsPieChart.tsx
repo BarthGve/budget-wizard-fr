@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { formatCurrency } from "@/utils/format";
@@ -7,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PiggyBank } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useChartColors } from "@/hooks/useChartColors";
 
 interface MonthlySaving {
   id: string;
@@ -18,12 +20,6 @@ interface SavingsPieChartProps {
   monthlySavings: MonthlySaving[];
   totalSavings: number;
 }
-
-// Palette de couleurs verte pour l'épargne - mode clair
-const COLORS = ['#22c55e', '#16a34a', '#15803d', '#166534', '#14532d', '#10b981', '#34d399'];
-
-// Palette de couleurs verte pour l'épargne - mode sombre (plus lumineuses)
-const DARK_COLORS = ['#4ade80', '#22c55e', '#16a34a', '#34d399', '#10b981', '#059669', '#6ee7b7'];
 
 // Composant personnalisé pour le tooltip
 const CustomTooltip = ({ active, payload }: any) => {
@@ -43,8 +39,8 @@ export const SavingsPieChart = ({
   totalSavings
 }: SavingsPieChartProps) => {
   const navigate = useNavigate();
-  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const chartColors = isDarkMode ? DARK_COLORS : COLORS;
+  // Utiliser notre hook personnalisé pour obtenir les couleurs basées sur quaternary
+  const chartColors = useChartColors("quaternary").all;
   
   const chartData = monthlySavings.map((saving, index) => ({
     name: saving.name,

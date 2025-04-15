@@ -42,7 +42,7 @@ export function RetailerStatsCard({
           increaseText: "text-red-500 dark:text-red-300",
           decreaseText: "text-green-500 dark:text-green-300",
           primaryText: "text-primary-700 dark:text-primary-200",
-          secondaryText: "text-primary-600/80 dark:text-primary-300/80"
+          secondaryText: "text-secondary-600/80 dark:text-secondary-300/80"
         };
       case "amber":
         return {
@@ -52,7 +52,7 @@ export function RetailerStatsCard({
           increaseText: "text-red-500 dark:text-red-300",
           decreaseText: "text-green-500 dark:text-green-300",
           primaryText: "text-quinary-700 dark:text-quinary-200",
-          secondaryText: "text-quinary-600/80 dark:text-quinary-300/80"
+          secondaryText: "text-secondary-600/80 dark:text-secondary-300/80"
         };
       default: // blue
         return {
@@ -62,7 +62,7 @@ export function RetailerStatsCard({
           increaseText: "text-red-500 dark:text-red-300",
           decreaseText: "text-green-500 dark:text-green-300", 
           primaryText: "text-tertiary-700 dark:text-tertiary-200",
-          secondaryText: "text-tertiary-600/80 dark:text-tertiary-300/80"
+          secondaryText: "text-secondary-600/80 dark:text-secondary-300/80"
         };
     }
   };

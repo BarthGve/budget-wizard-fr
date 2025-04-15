@@ -60,9 +60,9 @@ export function RetailerStats({
           amount={monthlyTotal}
           count={monthlyCount}
           label="achats ce mois-ci"
-          className="border shadow-lg overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10"
+          className="border shadow-lg overflow-hidden "
           previousAmount={previousMonthTotal}
-          icon={<Calendar className="h-5 w-5 text-blue-500 dark:text-blue-300" />}
+          icon={<Calendar className="h-5 w-5 text-tertiary-500 dark:text-tertiary-300" />}
           colorScheme="blue"
         />
       </motion.div>
@@ -74,9 +74,9 @@ export function RetailerStats({
           amount={yearlyTotal}
           count={yearlyCount}
           label="achats cette année"
-          className="border shadow-lg overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10"
+          className="border shadow-lg overflow-hidden "
           previousAmount={previousYearTotal}
-          icon={<Wallet className="h-5 w-5 text-purple-500 dark:text-purple-300" />}
+          icon={<Wallet className="h-5 w-5 text-primary-500 dark:text-primary-300" />}
           colorScheme="purple"
         />
       </motion.div>
@@ -88,8 +88,8 @@ export function RetailerStats({
           amount={monthlyAverage}
           count={monthlyAverageCount}
           label="achats par mois"
-          className="border shadow-lg overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10"
-          icon={<Calculator className="h-5 w-5 text-amber-500 dark:text-amber-300" />}
+          className="border shadow-lg overflow-hidden"
+          icon={<Calculator className="h-5 w-5 text-quinary-500 dark:text-quinary-300" />}
           colorScheme="amber"
         />
       </motion.div>
