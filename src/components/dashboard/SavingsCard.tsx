@@ -51,8 +51,8 @@ export const SavingsCard = memo(({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-quaternary/20 text-quaternary ", // Apply quaternary  color for icon background
-                "dark:bg-quaternary/20 dark:text-quaternary " // Dark mode variant
+                "bg-quaternary-100 text-quaternary-600", // Light mode
+                "dark:bg-quaternary-900/40 dark:text-quaternary-300" // Dark mode
               )}>
                 <PiggyBank className="h-5 w-5" />
               </div>
