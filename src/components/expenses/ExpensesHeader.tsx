@@ -91,20 +91,20 @@ export const ExpensesHeader = ({
           <motion.div 
             className={cn(
               "flex items-center p-1 rounded-full",
-              "bg-primary/5 border border-primary/20 dark:bg-primary/10 dark:border-primary/30"
+              "bg-tertiary/5 border border-tertiary/20 dark:bg-tertiary/10 dark:border-tertiary/30"
             )}
           >
             <Switch
               id="dashboard-view-mode"
               checked={viewMode === 'yearly'}
               onCheckedChange={handleViewModeChange}
-              className="data-[state=checked]:bg-primary dark:data-[state=checked]:bg-primary"
+              className="data-[state=checked]:bg-tertiary dark:data-[state=checked]:bg-tertiary"
             />
             
             <div className="flex items-center space-x-2 px-3">
               <Label 
                 htmlFor="dashboard-view-mode" 
-                className={`${viewMode === 'yearly' ? 'text-primary font-medium dark:text-primary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors text-sm`}
+                className={`${viewMode === 'yearly' ? 'text-tertiary font-medium dark:text-tertiary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors text-sm`}
               >
                 Vue annuelle
               </Label>
