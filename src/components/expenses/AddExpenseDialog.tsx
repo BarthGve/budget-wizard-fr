@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ExpenseForm } from "./ExpenseForm";
@@ -14,54 +13,13 @@ export function AddExpenseDialog({
   open, 
   onOpenChange,
   hideDialogWrapper = false,
-  hideTitleBar = false,
-  colorScheme = "blue" 
+  hideTitleBar = false
 }: AddExpenseDialogProps & { 
   hideDialogWrapper?: boolean, 
-  hideTitleBar?: boolean,
-  colorScheme?: "blue" | "green" | "purple" 
+  hideTitleBar?: boolean
 }) {
   const contentRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-  
-  // Couleurs dynamiques selon le colorScheme
-  const colors = {
-    blue: {
-      gradientFrom: "from-blue-50",
-      gradientTo: "to-blue-100",
-      darkGradientFrom: "dark:from-blue-950",
-      darkGradientTo: "dark:to-blue-900",
-      iconBg: "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300",
-      headingText: "text-blue-900 dark:text-blue-100",
-      descriptionText: "text-blue-700 dark:text-blue-400",
-      buttonBg: "bg-blue-600 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600",
-      border: "border-blue-200 dark:border-blue-800",
-    },
-    green: {
-      gradientFrom: "from-green-50",
-      gradientTo: "to-green-100",
-      darkGradientFrom: "dark:from-green-950",
-      darkGradientTo: "dark:to-green-900",
-      iconBg: "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300",
-      headingText: "text-green-900 dark:text-green-100",
-      descriptionText: "text-green-700 dark:text-green-400",
-      buttonBg: "bg-green-600 hover:bg-green-500 dark:bg-green-700 dark:hover:bg-green-600",
-      border: "border-green-200 dark:border-green-800",
-    },
-    purple: {
-      gradientFrom: "from-purple-50",
-      gradientTo: "to-purple-100",
-      darkGradientFrom: "dark:from-purple-950",
-      darkGradientTo: "dark:to-purple-900",
-      iconBg: "bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-300",
-      headingText: "text-purple-900 dark:text-purple-100",
-      descriptionText: "text-purple-700 dark:text-purple-400",
-      buttonBg: "bg-purple-600 hover:bg-purple-500 dark:bg-purple-700 dark:hover:bg-purple-600",
-      border: "border-purple-200 dark:border-purple-800",
-    },
-  };
-  
-  const currentColors = colors[colorScheme];
   
   // Contenu du dialogue commun aux deux versions
   const dialogContent = (
@@ -70,11 +28,11 @@ export function AddExpenseDialog({
       className={cn(
         "relative flex flex-col pb-6 p-6 rounded-lg border",
         "bg-gradient-to-br",
-        currentColors.gradientFrom,
-        currentColors.gradientTo,
-        currentColors.darkGradientFrom,
-        currentColors.darkGradientTo,
-        currentColors.border
+        "from-blue-50",
+        "to-blue-100",
+        "dark:from-blue-950",
+        "dark:to-blue-900",
+        "border-blue-200 dark:border-blue-800"
       )}
       style={{
         backgroundImage: `
@@ -93,15 +51,15 @@ export function AddExpenseDialog({
       {!hideTitleBar && (
         <DialogHeader className="relative z-10 mb-4">
           <div className="flex items-center gap-3">
-            <div className={cn("p-2.5 rounded-lg shadow-sm", currentColors.iconBg)}>
+            <div className="p-2.5 rounded-lg shadow-sm bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300">
               <PlusCircle className="w-5 h-5" />
             </div>
-            <DialogTitle className={cn("text-2xl font-bold", currentColors.headingText)}>
+            <DialogTitle className="text-2xl font-bold text-blue-900 dark:text-blue-100">
               Ajouter une dépense
             </DialogTitle>
           </div>
           <div className="ml-[52px] mt-2">
-            <DialogDescription className={cn("text-base", currentColors.descriptionText)}>
+            <DialogDescription className="text-base text-blue-700 dark:text-blue-400">
               Ajoutez une nouvelle dépense à votre historique financier.
             </DialogDescription>
           </div>
@@ -134,43 +92,43 @@ export function AddExpenseDialog({
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent 
-  side="bottom" 
-  className={cn(
-    "px-0 py-0 rounded-t-2xl",
-    "border-t border-gray-200 dark:border-gray-800",
-    "shadow-2xl",
-    currentColors.border,
-    "h-[80vh] sm:h-[80vh] overflow-y-auto",
-    "transition-all duration-300 ease-in-out",
-    "backdrop-blur-sm bg-white/95 dark:bg-gray-900/95"
-  )}
->
-  {/* Poignée de glissement améliorée */}
-  <div className={cn(
-    "absolute inset-x-0 top-0 w-16 mx-auto my-3",
-    "flex items-center justify-center"
-  )}>
-    <div className={cn(
-      "h-1.5 w-12",
-      "bg-gray-300 dark:bg-gray-600 rounded-full",
-      "hover:bg-gray-400 dark:hover:bg-gray-500",
-      "transition-colors duration-200"
-    )} />
-  </div>
-  
-  {/* Contenu avec padding */}
-  <div className="mt-4" >
-    {dialogContent}
-  </div>
-  
-  {/* Indicateur de scroll optionnel - apparaît seulement si le contenu est scrollable */}
-  <div className={cn(
-    "absolute bottom-4 inset-x-0 flex justify-center",
-    "pointer-events-none opacity-70"
-  )}>
-    <div className="w-1.5 h-8 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-  </div>
-</SheetContent>
+          side="bottom" 
+          className={cn(
+            "px-0 py-0 rounded-t-2xl",
+            "border-t border-gray-200 dark:border-gray-800",
+            "shadow-2xl",
+            "border-blue-200 dark:border-blue-800",
+            "h-[80vh] sm:h-[80vh] overflow-y-auto",
+            "transition-all duration-300 ease-in-out",
+            "backdrop-blur-sm bg-white/95 dark:bg-gray-900/95"
+          )}
+        >
+          {/* Poignée de glissement améliorée */}
+          <div className={cn(
+            "absolute inset-x-0 top-0 w-16 mx-auto my-3",
+            "flex items-center justify-center"
+          )}>
+            <div className={cn(
+              "h-1.5 w-12",
+              "bg-gray-300 dark:bg-gray-600 rounded-full",
+              "hover:bg-gray-400 dark:hover:bg-gray-500",
+              "transition-colors duration-200"
+            )} />
+          </div>
+          
+          {/* Contenu avec padding */}
+          <div className="mt-4" >
+            {dialogContent}
+          </div>
+          
+          {/* Indicateur de scroll optionnel - apparaît seulement si le contenu est scrollable */}
+          <div className={cn(
+            "absolute bottom-4 inset-x-0 flex justify-center",
+            "pointer-events-none opacity-70"
+          )}>
+            <div className="w-1.5 h-8 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+          </div>
+        </SheetContent>
       </Sheet>
     );
   }
