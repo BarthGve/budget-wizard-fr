@@ -28,27 +28,22 @@ export function AddExpenseDialog({
       className={cn(
         "relative flex flex-col pb-6 p-6 rounded-lg border",
         "bg-gradient-to-br",
-        "from-tertiary-50",
-        "to-tertiary-100",
-        "dark:from-tertiary-950",
-        "dark:to-tertiary-900",
-        "border-tertiary-200 dark:border-tertiary-800"
+        "from-blue-50",
+        "to-blue-100",
+        "dark:from-blue-950",
+        "dark:to-blue-900",
+        "border-blue-200 dark:border-blue-800"
       )}
       style={{
         backgroundImage: `
           linear-gradient(to bottom right, 
-            var(--tw-gradient-stops)
-          ),
-          linear-gradient(
-            135deg, 
-            hsl(var(--tertiary-100) / 0.05), 
-            hsl(var(--tertiary-200) / 0.1)
-          )
+          var(--tw-gradient-stops)),
+          linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(37, 99, 235, 0.1))
         `
       }}
     >
       {/* Accent diagonal bleu subtil en haut */}
-      <div className="absolute top-0 right-0 h-24 w-1/2 bg-gradient-to-br from-tertiary-200/40 to-tertiary-300/10 dark:from-tertiary-800/20 dark:to-tertiary-700/5 rounded-tr-lg pointer-events-none" />
+      <div className="absolute top-0 right-0 h-24 w-1/2 bg-gradient-to-br from-blue-200/40 to-blue-300/10 dark:from-blue-800/20 dark:to-blue-700/5 rounded-tr-lg pointer-events-none" />
       
       {/* Point brillant dans le coin */}
       <div className="absolute top-4 right-4 h-20 w-20 rounded-full bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 dark:to-transparent blur-xl pointer-events-none" />
@@ -56,15 +51,15 @@ export function AddExpenseDialog({
       {!hideTitleBar && (
         <DialogHeader className="relative z-10 mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg shadow-sm bg-tertiary-100 text-tertiary-700 dark:bg-tertiary-800 dark:text-tertiary-300">
+            <div className="p-2.5 rounded-lg shadow-sm bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300">
               <PlusCircle className="w-5 h-5" />
             </div>
-            <DialogTitle className="text-2xl font-bold text-tertiary-900 dark:text-tertiary-100">
+            <DialogTitle className="text-2xl font-bold text-blue-900 dark:text-blue-100">
               Ajouter une dépense
             </DialogTitle>
           </div>
           <div className="ml-[52px] mt-2">
-            <DialogDescription className="text-base text-tertiary-700 dark:text-tertiary-400">
+            <DialogDescription className="text-base text-blue-700 dark:text-blue-400">
               Ajoutez une nouvelle dépense à votre historique financier.
             </DialogDescription>
           </div>
@@ -83,7 +78,7 @@ export function AddExpenseDialog({
       </div>
       
       {/* Ligne décorative subtile */}
-      <div className="absolute bottom-4 left-4 w-16 h-0.5 bg-tertiary-300/30 dark:bg-tertiary-700/30 rounded-full pointer-events-none" />
+      <div className="absolute bottom-4 left-4 w-16 h-0.5 bg-blue-300/30 dark:bg-blue-700/30 rounded-full pointer-events-none" />
     </div>
   );
 
@@ -102,7 +97,7 @@ export function AddExpenseDialog({
             "px-0 py-0 rounded-t-2xl",
             "border-t border-gray-200 dark:border-gray-800",
             "shadow-2xl",
-            "border-tertiary-200 dark:border-tertiary-800",
+            "border-blue-200 dark:border-blue-800",
             "h-[80vh] sm:h-[80vh] overflow-y-auto",
             "transition-all duration-300 ease-in-out",
             "backdrop-blur-sm bg-white/95 dark:bg-gray-900/95"
