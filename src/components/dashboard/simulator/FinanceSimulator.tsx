@@ -407,7 +407,7 @@ const SimulatorContent = ({
           max={50}
           step={1}
           rangeClassName="bg-primary-500 dark:bg-primary-400"
-          thumbClassName="border-2 border-primary bg-background hover:bg-primary/80" 
+          thumbClassName="border-2 border-primary bg-background hover:bg-primary" 
           onValueChange={(value) => updateSavingsGoal(value[0])}
         />
         <p className="text-sm text-muted-foreground mt-2">
