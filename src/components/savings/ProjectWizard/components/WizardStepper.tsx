@@ -24,19 +24,19 @@ export const WizardStepper = ({
   // Définition des couleurs en fonction du colorScheme
   const colors = {
     green: {
-      bg: "bg-green-600",
-      bgHover: "hover:bg-green-500",
-      bgDark: "dark:bg-green-700",
-      bgDarkHover: "dark:hover:bg-green-600",
-      border: "border-green-600",
-      borderDark: "dark:border-green-700",
-      text: "text-green-600",
-      textDark: "dark:text-green-400",
-      completed: "bg-green-600 dark:bg-green-700",
+      bg: "bg-quaternary-600",
+      bgHover: "hover:bg-quaternary-500",
+      bgDark: "dark:bg-quaternary-700",
+      bgDarkHover: "dark:hover:bg-quaternary-600",
+      border: "border-quaternary-600",
+      borderDark: "dark:border-quaternary-700",
+      text: "text-quaternary-600",
+      textDark: "dark:text-quaternary-400",
+      completed: "bg-quaternary-600 dark:bg-quaternary-700",
       completedText: "text-white",
       inactive: "border-gray-300 dark:border-gray-600",
       inactiveText: "text-gray-400 dark:text-gray-500",
-      line: "bg-green-600 dark:bg-green-700",
+      line: "bg-quaternary-600 dark:bg-quaternary-700",
       linePending: "bg-gray-300 dark:bg-gray-600"
     },
     purple: {
