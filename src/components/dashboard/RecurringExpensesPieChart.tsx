@@ -24,11 +24,27 @@ interface CategoryTotal {
   amount: number;
 }
 
-// Palette de couleurs pour le mode clair (couleur tertiaire)
-const COLORS = ['#3b82f6', '#2563eb', '#1d4ed8', '#0ea5e9', '#0284c7', '#0369a1', '#38bdf8'];
+// Palette rouge saturé – mode clair (teinte de base : hsl(0, 84%, 60%) ≈ #ef4444)
+const COLORS = [
+  '#f87171', // hsl(0, 85%, 72%)
+  '#ef4444', // hsl(0, 84%, 60%) ← couleur de base
+  '#dc2626', // plus foncé
+  '#b91c1c', // plus intense
+  '#991b1b', // bordeaux
+  '#7f1d1d', // très foncé
+  '#fee2e2'  // pastel doux (fin de palette)
+];
 
-// Palette de couleurs pour le mode sombre - légèrement plus lumineuse
-const DARK_COLORS = ['#60a5fa', '#3b82f6', '#2563eb', '#38bdf8', '#0ea5e9', '#0284c7', '#7dd3fc'];
+// Palette rouge saturé – mode sombre (légèrement plus lumineuse ou contrastée)
+const DARK_COLORS = [
+  '#fca5a5', // plus clair
+  '#f87171', // intermédiaire
+  '#ef4444', // couleur de base
+  '#dc2626', // plus soutenu
+  '#fb7185', // rosé pour contraster
+  '#f43f5e', // tirant vers framboise
+  '#fecaca'  // pastel doux
+];
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
