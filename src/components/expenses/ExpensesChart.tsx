@@ -25,7 +25,7 @@ const chartConfig = {
   expenses: {
     label: "Dépenses",
     theme: {
-      light: "#3B82F6", // Bleu plus vif qui correspond à l'image de référence
+      light: "tertiary", // Bleu plus vif qui correspond à l'image de référence
       dark: "#60A5FA"
     }
   }

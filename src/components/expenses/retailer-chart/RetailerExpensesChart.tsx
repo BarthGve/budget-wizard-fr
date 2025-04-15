@@ -51,7 +51,7 @@ export function RetailerExpensesChart({ expenses }: RetailerExpensesChartProps) 
         // Light mode
         "bg-white border-blue-100",
         // Dark mode
-        "dark:bg-gray-800/90 dark:border-blue-800/50 dark:shadow-blue-900/10"
+        "dark:bg-gray-800/90 dark:border-tertiary-800/50 dark:shadow-tertiary-900/10"
       )}>
         <ChartBackground />
         
