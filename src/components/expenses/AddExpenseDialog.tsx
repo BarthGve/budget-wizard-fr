@@ -159,7 +159,7 @@ export function AddExpenseDialog({
   </div>
   
   {/* Contenu avec padding */}
-  <div >
+  <div className="mt-4" >
     {dialogContent}
   </div>
   
