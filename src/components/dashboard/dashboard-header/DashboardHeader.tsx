@@ -91,7 +91,7 @@ export const DashboardHeader = ({
               htmlFor="dashboard-view-mode" 
               className={`${currentView === 'yearly' ? 'text-primary font-medium dark:text-primary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors text-sm`}
             >
-              Vue annuelle
+            Annuel
             </Label>
         
           </div>
