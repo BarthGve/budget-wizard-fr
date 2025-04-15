@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SavingsList } from "@/components/savings/SavingsList";
@@ -25,7 +24,6 @@ export const MonthlySavingsSection = ({
   showInitial = true
 }: MonthlySavingsSectionProps) => {
   const isMobile = useIsMobile();
-  // Si on est sur mobile, on masque par défaut, sinon on utilise la valeur passée
   const [showMonthlySavings, setShowMonthlySavings] = useState(isMobile ? false : showInitial);
   const { theme } = useTheme();
 
@@ -35,7 +33,7 @@ export const MonthlySavingsSection = ({
 
   return (
     <motion.div 
-      className="mt-6 w-full px-2 md:px-0"
+      className="w-full px-2 md:px-0"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}

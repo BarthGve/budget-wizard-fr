@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -124,7 +125,7 @@ const Savings = () => {
   return (
     <WithTooltipProvider>
       <motion.div 
-        className="space-y-6 overflow-hidden flex flex-col container px-4 py-6 mx-auto"
+        className="space-y-4 overflow-hidden flex flex-col container px-4 py-6 mx-auto"
         initial="hidden"
         animate="visible"
         variants={containerVariants}

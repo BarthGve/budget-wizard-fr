@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SavingsProjectList } from "@/components/savings/SavingsProjectList";
@@ -12,14 +11,14 @@ interface ProjectsSectionProps {
   projects: SavingsProject[];
   onProjectDeleted: () => void;
   showInitial?: boolean;
-  forceRefresh: number; // Nouveau prop pour forcer le rafraîchissement
+  forceRefresh: number;
 }
 
 export const ProjectsSection = ({ 
   projects, 
   onProjectDeleted,
   showInitial = true,
-  forceRefresh // Utilisation du nouveau prop
+  forceRefresh
 }: ProjectsSectionProps) => {
   const [showProjects, setShowProjects] = useState(showInitial);
   const { theme } = useTheme();
@@ -30,7 +29,7 @@ export const ProjectsSection = ({
 
   return (
     <motion.div 
-      className="mt-6 h-full flex flex-col"
+      className="h-full flex flex-col"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
