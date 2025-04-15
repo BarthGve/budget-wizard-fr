@@ -85,7 +85,7 @@ export const CreditsPieChart = ({
           // Light mode
           "bg-white border border-primary/20 shadow-lg hover:shadow-xl",
           // Dark mode
-          "dark:bg-primary/20 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
+          "dark:bg-gray-900/90 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
         )}
         onClick={() => navigate("/credits")}
       >
