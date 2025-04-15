@@ -32,6 +32,11 @@ export const ExpensesHeader = ({
   // Utiliser useMediaQuery pour détecter les écrans mobiles
   const isMobile = useMediaQuery("(max-width: 768px)");
   
+  // Fonction pour gérer le changement de mode de vue
+  const handleViewModeChange = (checked: boolean) => {
+    setViewMode(checked ? 'yearly' : 'monthly');
+  };
+  
   return (
     <motion.div 
       className="pb-4 mb-2"
@@ -83,33 +88,28 @@ export const ExpensesHeader = ({
           "flex flex-col sm:flex-row items-center gap-3",
           isMobile ? "w-full" : "gap-4"
         )}>
-               <motion.div 
-          className={cn(
-            "flex items-center p-1 rounded-full",
-            "bg-primary/5 border border-primary/20 dark:bg-primary/10 dark:border-primary/30"
-          )}
-        >
-      
-          
-          <Switch
-            id="dashboard-view-mode"
-            checked={currentView === 'yearly'}
-            onCheckedChange={handleViewModeChange}
-            className="data-[state=checked]:bg-primary dark:data-[state=checked]:bg-primary"
-          />
-          
-          <div className="flex items-center space-x-2 px-3">
-            <Label 
-              htmlFor="dashboard-view-mode" 
-              className={`${currentView === 'yearly' ? 'text-primary font-medium dark:text-primary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors text-sm`}
-            >
-              Vue annuelle
-            </Label>
-        
-          </div>
-        </motion.div>
-      </div>
-    </motion.div>
+          <motion.div 
+            className={cn(
+              "flex items-center p-1 rounded-full",
+              "bg-primary/5 border border-primary/20 dark:bg-primary/10 dark:border-primary/30"
+            )}
+          >
+            <Switch
+              id="dashboard-view-mode"
+              checked={viewMode === 'yearly'}
+              onCheckedChange={handleViewModeChange}
+              className="data-[state=checked]:bg-primary dark:data-[state=checked]:bg-primary"
+            />
+            
+            <div className="flex items-center space-x-2 px-3">
+              <Label 
+                htmlFor="dashboard-view-mode" 
+                className={`${viewMode === 'yearly' ? 'text-primary font-medium dark:text-primary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors text-sm`}
+              >
+                Vue annuelle
+              </Label>
+            </div>
+          </motion.div>
           
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
