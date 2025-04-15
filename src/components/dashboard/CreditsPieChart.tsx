@@ -1,3 +1,4 @@
+
 import { Label, Pie, PieChart, Tooltip } from "recharts";
 import { formatCurrency } from "@/utils/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useChartColors } from "@/hooks/useChartColors";
 
 interface Credit {
   nom_credit: string;
@@ -19,25 +21,6 @@ interface CreditsPieChartProps {
   totalMensualites: number;
 }
 
-const COLORS = [
-  '#d8b4fe', // mauve doux
-  '#c084fc', // violet lavande
-  '#a855f7', // primary + 1 ton
-  '#9333ea', // purple flashy
-  '#7e22ce', // deep purple
-  '#6b21a8', // bordeaux violet
-  '#581c87'  // aubergine foncé
-];
-
-const DARK_COLORS = [
-  '#f3e8ff', // pastel clair
-  '#e9d5ff',
-  '#d8b4fe',
-  '#c084fc',
-  '#a855f7',
-  '#9333ea',
-  '#7e22ce'
-];
 // Composant personnalisé pour le tooltip
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
@@ -56,9 +39,8 @@ export const CreditsPieChart = ({
   totalMensualites
 }: CreditsPieChartProps) => {
   const navigate = useNavigate();
-  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  const chartColors = isDarkMode ? DARK_COLORS : COLORS;
+  // Utiliser notre hook personnalisé pour obtenir les couleurs basées sur primary
+  const chartColors = useChartColors("primary").all;
 
   const chartData = credits
     .filter(credit => {
