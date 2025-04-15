@@ -1,8 +1,10 @@
 
-import { Store } from "lucide-react";
+import { Store, ChevronDown, ChevronUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { RetailersGrid, SimpleExpense } from "../RetailersGrid";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface RetailersSectionProps {
   expensesByRetailer: Array<{
@@ -29,6 +31,9 @@ export function RetailersSection({
   viewMode, 
   displayMode 
 }: RetailersSectionProps) {
+  // Ajout de l'état pour contrôler l'affichage de la section
+  const [expanded, setExpanded] = useState(true);
+
   // Transformer les données pour qu'elles correspondent à la structure attendue par RetailersGrid
   const formattedExpensesByRetailer = expensesByRetailer.map(item => ({
     retailer: item.retailer,
@@ -45,7 +50,7 @@ export function RetailersSection({
       transition={{ delay: 0.4, duration: 0.5 }}
       className="py-8"
     >
-      <div className="flex items-center mb-4">
+      <div className="flex items-center justify-between mb-4">
         <h2 className={cn(
           "font-bold tracking-tight text-xl flex items-center gap-2",
           // Style cohérent avec les autres sections
@@ -60,14 +65,47 @@ export function RetailersSection({
           </div>
           Enseignes
         </h2>
+        
+        {/* Bouton pour basculer l'affichage */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setExpanded(!expanded)}
+          className={cn(
+            "flex items-center gap-1 text-sm font-medium",
+            "text-gray-500 hover:text-tertiary-600",
+            "dark:text-gray-400 dark:hover:text-tertiary-400"
+          )}
+        >
+          {expanded ? (
+            <>
+              Masquer
+              <ChevronUp className="h-4 w-4" />
+            </>
+          ) : (
+            <>
+              Afficher ({formattedExpensesByRetailer.length})
+              <ChevronDown className="h-4 w-4" />
+            </>
+          )}
+        </Button>
       </div>
       
-      <RetailersGrid 
-        expensesByRetailer={formattedExpensesByRetailer}
-        onExpenseUpdated={onExpenseUpdated}
-        viewMode={viewMode}
-        displayMode={displayMode}
-      />
+      {expanded && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <RetailersGrid 
+            expensesByRetailer={formattedExpensesByRetailer}
+            onExpenseUpdated={onExpenseUpdated}
+            viewMode={viewMode}
+            displayMode={displayMode}
+          />
+        </motion.div>
+      )}
     </motion.div>
   );
 }
