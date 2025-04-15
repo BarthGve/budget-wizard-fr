@@ -17,11 +17,11 @@ export const TriggerButton = ({ onClick, isDarkMode }: TriggerButtonProps) => {
         "h-10 px-3 sm:px-4 border transition-all duration-200 rounded-md",
         "hover:scale-[1.02] active:scale-[0.98]",
         // Light mode
-        "bg-white border-amber-200 text-amber-600",
-        "hover:border-amber-300 hover:bg-amber-50/50 hover:text-amber-700",
+        "bg-white border-quinary-200 text-quinary-600",
+        "hover:border-quinary-300 hover:bg-quinary-50/50 hover:text-quinary-700",
         // Dark mode
-        "dark:bg-gray-800 dark:border-amber-800/60 dark:text-amber-400",
-        "dark:hover:bg-amber-900/20 dark:hover:border-amber-700 dark:hover:text-amber-300"
+        "dark:bg-gray-800 dark:border-quinary-800/60 dark:text-quinary-400",
+        "dark:hover:bg-quinary-900/20 dark:hover:border-quinary-700 dark:hover:text-quinary-300"
       )}
       style={{
         boxShadow: isDarkMode
@@ -32,8 +32,8 @@ export const TriggerButton = ({ onClick, isDarkMode }: TriggerButtonProps) => {
       <div className="flex items-center gap-1.5">
         <span className={cn(
           "flex items-center justify-center w-5 h-5 rounded-md transition-colors",
-          "bg-amber-100/80 text-amber-600",
-          "dark:bg-amber-800/50 dark:text-amber-300"
+          "bg-quinary-100/80 text-quinary-600",
+          "dark:bg-quinary-800/50 dark:text-quinary-300"
         )}>
           <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
         </span>
