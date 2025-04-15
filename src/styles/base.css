@@ -181,7 +181,7 @@
   --tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 70%;
   --tertiary-900: var(--tertiary-hue) var(--tertiary-saturation) 85%;
   --tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 90%;
-  --tertiary-foreground: 0 0% 10%; /
+  --tertiary-foreground: 0 0% 10%; 
 
   --quinary: 162 72% 35%;
   --quinary-50: 162 72% 15%;
