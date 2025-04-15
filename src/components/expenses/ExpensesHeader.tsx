@@ -83,30 +83,33 @@ export const ExpensesHeader = ({
           "flex flex-col sm:flex-row items-center gap-3",
           isMobile ? "w-full" : "gap-4"
         )}>
-          <motion.div 
-            className="flex items-center p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-inner"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className="flex items-center space-x-2 px-3">
-              <Switch 
-                id="view-mode" 
-                checked={viewMode === 'yearly'} 
-                onCheckedChange={checked => setViewMode(checked ? 'yearly' : 'monthly')}
-                className={cn(
-                  "data-[state=checked]:bg-tertiary", 
-                  "dark:data-[state=checked]:bg-tertiary"
-                )}
-              />
-              <Label 
-                htmlFor="view-mode"
-                className="text-gray-700 dark:text-gray-300 font-medium"
-              >
-                Vue annuelle
-              </Label>
-            </div>
-          </motion.div>
+               <motion.div 
+          className={cn(
+            "flex items-center p-1 rounded-full",
+            "bg-primary/5 border border-primary/20 dark:bg-primary/10 dark:border-primary/30"
+          )}
+        >
+      
+          
+          <Switch
+            id="dashboard-view-mode"
+            checked={currentView === 'yearly'}
+            onCheckedChange={handleViewModeChange}
+            className="data-[state=checked]:bg-primary dark:data-[state=checked]:bg-primary"
+          />
+          
+          <div className="flex items-center space-x-2 px-3">
+            <Label 
+              htmlFor="dashboard-view-mode" 
+              className={`${currentView === 'yearly' ? 'text-primary font-medium dark:text-primary-300' : 'text-gray-400 dark:text-gray-500'} transition-colors text-sm`}
+            >
+              Vue annuelle
+            </Label>
+        
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
           
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
