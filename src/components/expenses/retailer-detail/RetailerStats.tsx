@@ -60,7 +60,7 @@ export function RetailerStats({
           amount={monthlyTotal}
           count={monthlyCount}
           label="achats ce mois-ci"
-          className="border shadow-lg overflow-hidden bg-gradient-to-br from-tertiary-50 to-tertiary-100 dark:from-tertiary-900/20 dark:to-tertiary-800/10"
+          className="border shadow-lg overflow-hidden "
           previousAmount={previousMonthTotal}
           icon={<Calendar className="h-5 w-5 text-tertiary-500 dark:text-tertiary-300" />}
           colorScheme="blue"
