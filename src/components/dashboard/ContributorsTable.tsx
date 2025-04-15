@@ -63,21 +63,21 @@ export const ContributorsTable = ({
           <div className={cn(
             "px-4 py-3 border-b flex items-center gap-2",
             // Light mode styling avec fond jaune subtil dégradé
-            "border-amber-100 bg-gradient-to-r from-amber-50/90 to-amber-50/60",
+            "border-quinary-100 bg-gradient-to-r from-quinary-50/90 to-quinary-50/60",
             // Dark mode styling avec fond jaune subtil plus sombre
-            "dark:border-amber-900/20 dark:bg-gradient-to-r dark:from-amber-900/20 dark:to-amber-900/10"
+            "dark:border-quinary-900/20 dark:bg-gradient-to-r dark:from-quinary-900/20 dark:to-quinary-900/10"
           )}>
             <div className={cn(
               "p-1.5 rounded-full",
               // Light mode - fond légèrement teinté jaune
-              "bg-amber-100/90",
+              "bg-quinary-100/90",
               // Dark mode - fond ambré sombre
-              "dark:bg-amber-800/30"
+              "dark:bg-quinary-800/30"
             )}>
               <Users className={cn(
                 "h-4 w-4", 
-                "text-amber-600/80", 
-                "dark:text-amber-400/90"
+                "text-quinary-600/80", 
+                "dark:text-quinary-400/90"
               )} />
             </div>
             <h3 className={cn(
