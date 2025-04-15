@@ -139,7 +139,8 @@ export function AddExpenseDialog({
             "px-0 py-0 rounded-t-xl",
             "border-t shadow-lg",
             currentColors.border,
-            "max-h-[90vh] overflow-y-auto",
+          
+            "h-[85vh] overflow-y-auto",
             "dark:bg-gray-900"
           )}
         >
