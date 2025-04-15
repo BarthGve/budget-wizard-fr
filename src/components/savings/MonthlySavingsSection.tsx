@@ -42,7 +42,7 @@ export const MonthlySavingsSection = ({
     >
       <div className="flex items-center justify-between p-2 md:p-4">
         <div className="flex items-center gap-2">
-          <h2 className="font-bold tracking-tight bg-gradient-to-r from-quaternary-500 via-green-500 to-teal-400 bg-clip-text text-transparent dark:from-quaternary-400 dark:via-green-400 dark:to-teal-300 animate-fade-in text-xl md:text-2xl">Versements mensuels</h2>
+          <h2 className="font-bold tracking-tight bg-gradient-to-r from-quaternary-500 via-quaternary-500 to-teal-400 bg-clip-text text-transparent dark:from-quaternary-400 dark:via-quaternary-400 dark:to-teal-300 animate-fade-in text-xl md:text-2xl">Versements mensuels</h2>
           <motion.div
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.1 }}
