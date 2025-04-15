@@ -155,6 +155,8 @@ export const SavingsGoal = ({
               value={[localPercentage]}
               onValueChange={handleValueChange}
               onValueCommit={handleValueCommit}
+                rangeClassName="bg-quaternary-500 dark:bg-quaternary-400"
+          thumbClassName="border-2 border-quaternary bg-background hover:bg-quaternary" 
               className="text-quaternary-500 dark:text-quaternary-400"
               aria-label="Pourcentage d'épargne"
             />
