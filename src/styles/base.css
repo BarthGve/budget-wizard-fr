@@ -56,9 +56,9 @@
     --radius: 0.75rem;
     
      /* Dépenses –*/
-    --tertiary-hue: 234;
-    --tertiary-saturation: 80%;
-    --tertiary-lightness: 70%;
+ --tertiary-hue: 234;
+--tertiary-saturation: 85%;
+--tertiary-lightness: 50%;
     --tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
     --tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 95%;
     --tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 90%;
