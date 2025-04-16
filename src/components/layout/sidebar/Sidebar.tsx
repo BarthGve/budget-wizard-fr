@@ -8,9 +8,8 @@ import { useSidebar } from "./useSidebar";
 import { useUserData } from "./useUserData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
-import { parseColorPalette } from "@/types/profile";
 import { useEffect } from "react";
-import { useColorPalette } from "@/hooks/useColorPalette";
+import { useColorPalette } from "@/hooks/color-palette";
 
 interface SidebarProps {
   className?: string;
@@ -23,12 +22,13 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
   const { currentUser, profile, isAdmin, isLoading } = useUserData();
   const { loadColorPalette } = useColorPalette();
   
-  // Charger les couleurs lorsque le profil utilisateur change
+  // Charger les couleurs lorsque le profil ou l'utilisateur change
   useEffect(() => {
-    if (profile && currentUser) {
+    if (currentUser?.id) {
+      console.log("Sidebar: Chargement des couleurs pour l'utilisateur", currentUser.id);
       loadColorPalette();
     }
-  }, [profile?.id, currentUser?.id, loadColorPalette]);
+  }, [currentUser?.id, loadColorPalette]);
   
   // Gestion du clic sur les liens dans la sidebar
   const handleSidebarLinkClick = () => {
@@ -42,8 +42,6 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     dashboard_preferences: profile.dashboard_preferences ? 
       mergeDashboardPreferences(profile.dashboard_preferences) : 
       null,
-    // S'assurer que color_palette est correctement traité seulement au moment de l'utilisation
-    // Nous gardons la valeur originale ici pour éviter les problèmes de type
   } : undefined;
 
   return (

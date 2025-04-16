@@ -1,12 +1,12 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import { ColorPaletteProfile, HSLColor, defaultColors } from './types';
 import { hslToRgb, rgbToHsl } from './colorConversion';
 import { deriveDarkColor } from './colorDerivation';
 import { applyColorPalette, loadUserColorPalette, saveUserColorPalette } from './paletteStorage';
-import { useUserSession } from "@/hooks/useUserSession";
+import { useAuthContext } from "@/context/AuthProvider";
 
 export function useColorPalette() {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,30 +15,41 @@ export function useColorPalette() {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   
-  // Intégrer useUserSession pour réagir aux changements d'utilisateur
-  const { currentUser, isAuthenticated } = useUserSession();
+  // Accéder directement au contexte d'authentification pour éviter les dépendances circulaires
+  const { isAuthenticated, user } = useAuthContext();
   
   // État pour les couleurs personnalisées
   const [colorPalette, setColorPalette] = useState<ColorPaletteProfile>(defaultColors);
   // Initialiser savedColorPalette avec defaultColors pour éviter la comparaison avec null
   const [savedColorPalette, setSavedColorPalette] = useState<ColorPaletteProfile>(defaultColors);
   const [hasChanges, setHasChanges] = useState(false);
+  const [lastLoadedUserId, setLastLoadedUserId] = useState<string | null>(null);
 
-  // Charger les couleurs au démarrage et à chaque changement d'utilisateur
-  const loadColorPalette = async () => {
+  // Charger les couleurs via une fonction optimisée avec useCallback
+  const loadColorPalette = useCallback(async () => {
+    // Éviter les chargements répétés pour le même utilisateur
+    if (isLoading) return;
+    if (user?.id && lastLoadedUserId === user.id) return;
+    
     try {
       setIsLoading(true);
+      console.log("Chargement de la palette de couleurs...");
       
       // Si l'utilisateur n'est pas authentifié, utiliser les valeurs par défaut
-      if (!isAuthenticated || !currentUser) {
+      if (!isAuthenticated || !user) {
+        console.log("Aucun utilisateur authentifié, utilisation des couleurs par défaut");
         resetToDefaults();
         setIsLoading(false);
         return;
       }
       
+      // Mettre à jour l'ID de l'utilisateur chargé
+      setLastLoadedUserId(user.id);
+      
       const loadedPalette = await loadUserColorPalette();
       
       if (loadedPalette) {
+        console.log("Palette de couleurs chargée avec succès");
         setColorPalette(loadedPalette);
         setSavedColorPalette(loadedPalette);
         
@@ -46,6 +57,7 @@ export function useColorPalette() {
         applyColorPalette(loadedPalette, isDarkMode);
       } else {
         // Si aucune palette n'existe, utiliser les valeurs par défaut
+        console.log("Aucune palette trouvée, utilisation des couleurs par défaut");
         resetToDefaults();
       }
     } catch (error) {
@@ -60,18 +72,27 @@ export function useColorPalette() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated, user?.id, isDarkMode, toast]);
 
-  // Recharger la palette à chaque changement d'utilisateur ou de thème
+  // Recharger la palette à chaque changement d'utilisateur avec dépendances optimisées
   useEffect(() => {
-    loadColorPalette();
-  }, [currentUser?.id, isDarkMode, isAuthenticated]);
+    if (user?.id) {
+      console.log("ID utilisateur changé, rechargement des couleurs");
+      loadColorPalette();
+    } else if (!isAuthenticated && lastLoadedUserId) {
+      // Réinitialiser si l'utilisateur se déconnecte
+      console.log("Déconnexion détectée, réinitialisation des couleurs");
+      setLastLoadedUserId(null);
+      resetToDefaults();
+    }
+  }, [user?.id, isAuthenticated, loadColorPalette]);
 
   // Appliquer les couleurs à chaque changement de thème
   useEffect(() => {
     // Appliquer les couleurs actuelles quand le thème change
+    console.log("Thème changé, application des couleurs");
     applyColorPalette(colorPalette, isDarkMode);
-  }, [isDarkMode]);
+  }, [isDarkMode, colorPalette]);
 
   // Vérifier si des modifications ont été apportées
   useEffect(() => {
@@ -129,13 +150,12 @@ export function useColorPalette() {
   };
 
   // Réinitialiser aux valeurs par défaut
-  const resetToDefaults = () => {
+  const resetToDefaults = useCallback(() => {
     setColorPalette(defaultColors);
     // Important: Mettre à jour aussi l'état sauvegardé pour que hasChanges soit false après reset
-    // Cela évite que le bouton reste activé après réinitialisation
     setSavedColorPalette({...defaultColors});
     applyColorPalette(defaultColors, isDarkMode);
-  };
+  }, [isDarkMode]);
 
   // Récupérer la valeur hexadécimale d'une couleur HSL
   const getHexColor = (colorType: keyof ColorPaletteProfile["light"], mode: "light" | "dark"): string => {

@@ -11,7 +11,7 @@ import { memo } from "react";
 import { MobileUserMenu } from "./dashboard/MobileUserMenu";
 import { Profile } from "@/types/profile"; 
 import { useAuthContext } from "@/context/AuthProvider";
-import { useColorPalette } from "@/hooks/useColorPalette";
+import { useColorPalette } from "@/hooks/color-palette";
 
 // Optimisation avec mémorisation pour éviter les re-renders inutiles
 const MemoizedSidebar = memo(Sidebar);
@@ -24,7 +24,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isMobile = useIsMobile();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { isAuthenticated } = useAuthContext();
-  const { loadColorPalette } = useColorPalette(); // Utiliser le hook de couleur
+  const { loadColorPalette } = useColorPalette();
   
   // Récupérer les données du dashboard
   const { userProfile, globalBalance, refetch } = useDashboardPageData();
@@ -32,9 +32,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   // Configurer les écouteurs de mise à jour en temps réel
   useRealtimeUpdates(refetch);
 
-  // Charger les couleurs au chargement initial et à chaque changement d'utilisateur
+  // Charger les couleurs une seule fois au démarrage du layout
   useEffect(() => {
     if (isAuthenticated) {
+      console.log("DashboardLayout: Chargement initial des couleurs");
       loadColorPalette();
     }
   }, [isAuthenticated, loadColorPalette]);
