@@ -30,8 +30,8 @@ export const ActiveCreditsSection = ({
         <h2 className={cn(
           "font-bold tracking-tight text-xl flex items-center gap-2",
           // Même dégradé que le titre principal pour la cohérence
-          "bg-gradient-to-r from-senary-600 via-senary-500 to-violet-500 bg-clip-text text-transparent",
-          "dark:from-senary-400 dark:via-senary-400 dark:to-violet-400"
+          "bg-gradient-to-r from-senary-600 to-senary-500  bg-clip-text text-transparent",
+          "dark:from-senary-400 dark:to-violet-200"
         )}>
           <div className={cn(
             "p-1 rounded",
