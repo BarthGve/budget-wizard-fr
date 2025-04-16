@@ -41,19 +41,19 @@ export const CreditDialog = memo(({
   // Couleurs du thème selon le colorScheme
   const colors = {
     purple: {
-      gradientFrom: "from-primary-500",
+      gradientFrom: "from-senary-500",
       gradientTo: "to-violet-400", 
-      darkGradientFrom: "dark:from-primary-600",
+      darkGradientFrom: "dark:from-senary-600",
       darkGradientTo: "dark:to-violet-500",
-      iconBg: "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300",
-      headingText: "text-primary-900 dark:text-primary-200",
-      descriptionText: "text-primary-700/80 dark:text-primary-300/80",
-      buttonBg: "bg-primary-600 hover:bg-primary-500 dark:bg-primary-700 dark:hover:bg-primary-600",
-      lightBg: "from-white via-primary-50/40 to-primary-100/70",
-      darkBg: "dark:from-gray-900 dark:via-primary-950/20 dark:to-primary-900/30",
-      borderLight: "border-primary-100/70",
-      borderDark: "dark:border-primary-800/20",
-      separator: "via-primary-200/60 dark:via-primary-800/30"
+      iconBg: "bg-senary-100 text-senary-700 dark:bg-senary-900/30 dark:text-senary-300",
+      headingText: "text-senary-900 dark:text-senary-200",
+      descriptionText: "text-senary-700/80 dark:text-senary-300/80",
+      buttonBg: "bg-senary-600 hover:bg-senary-500 dark:bg-senary-700 dark:hover:bg-senary-600",
+      lightBg: "from-white via-senary-50/40 to-senary-100/70",
+      darkBg: "dark:from-gray-900 dark:via-senary-950/20 dark:to-senary-900/30",
+      borderLight: "border-senary-100/70",
+      borderDark: "dark:border-senary-800/20",
+      separator: "via-senary-200/60 dark:via-senary-800/30"
     },
     green: {
       gradientFrom: "from-quaternary-500",

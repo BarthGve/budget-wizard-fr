@@ -45,11 +45,11 @@ export const CreditCard = ({ credit, index, onCreditDeleted, isArchived = false 
           // Light mode - style différent pour les crédits archivés
           isArchived 
             ? "bg-gray-50 border border-gray-200 shadow-sm "
-            : "bg-white border border-primary-100 shadow-sm ",
+            : "bg-white border border-senary-100 shadow-sm ",
           // Dark mode - alignées avec les cards de graphiques
           isArchived
             ? "dark:bg-gray-800/70 dark:border-gray-700/40 dark:hover:border-gray-700/60"
-            : "dark:bg-gray-800/90 dark:border-primary-800/40  dark:shadow-primary-800/30 "
+            : "dark:bg-gray-800/90 dark:border-senary-800/40  dark:shadow-senary-800/30 "
         )}
       >
         {isMobile ? (

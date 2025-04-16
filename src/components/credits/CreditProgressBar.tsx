@@ -9,13 +9,13 @@ import { cn } from "@/lib/utils";
 // Couleurs pour la barre de progression en fonction du colorScheme
 const progressColors = {
   // Anciennes couleurs
-  purple: "bg-violet-600",
+  purple: "bg-senary-600",
   green: "bg-green-600",
-  blue: "bg-blue-600",
+  blue: "bg-tertiary-600",
   // Nouveaux schémas de couleurs
-  primary: "bg-violet-600", // Équivalent de purple
+  primary: "bg-senary-600", // Équivalent de purple
   quaternary: "bg-green-600", // Équivalent de green
-  tertiary: "bg-blue-600" // Équivalent de blue
+  tertiary: "bg-tertiary-600" // Équivalent de blue
 };
 
 interface CreditProgressBarProps {

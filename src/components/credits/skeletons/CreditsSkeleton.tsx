@@ -26,8 +26,8 @@ export const CreditsSkeleton = () => {
             transition={{ delay: 0.2, duration: 0.3 }}
             className={cn(
               "p-2.5 rounded-lg shadow-sm mt-0.5",
-              "bg-gradient-to-br from-primary-100 to-primary-50",
-              "dark:bg-gradient-to-br dark:from-primary-900/40 dark:to-primary-800/30"
+              "bg-gradient-to-br from-senary-100 to-senary-50",
+              "dark:bg-gradient-to-br dark:from-senary-900/40 dark:to-senary-800/30"
             )}
           >
             <Skeleton className="h-6 w-6 rounded" />
@@ -62,7 +62,7 @@ export const CreditsSkeleton = () => {
               "overflow-hidden transition-all duration-200 h-full relative",
               "border shadow-lg",
               "bg-white border-gray-100",
-              "dark:bg-gray-800/90 dark:border-primary-800/50 dark:shadow-primary-800/30"
+              "dark:bg-gray-800/90 dark:border-senary-800/50 dark:shadow-senary-800/30"
             )}
           >
             <div className="p-6">
@@ -96,8 +96,8 @@ export const CreditsSkeleton = () => {
               key={index}
               className={cn(
                 "overflow-hidden transition-all duration-200",
-                "bg-white border border-primary-100 shadow-sm",
-                "dark:bg-gray-800/90 dark:border-primary-800/40 dark:shadow-primary-800/30"
+                "bg-white border border-senary-100 shadow-sm",
+                "dark:bg-gray-800/90 dark:border-senary-800/40 dark:shadow-senary-800/30"
               )}
             >
               <div className="flex flex-col md:flex-row md:items-center md:justify-between p-3">

@@ -15,15 +15,15 @@ export const EmptyCredits = () => {
       {/* Fond radial gradient */}
       <div className={cn(
         "absolute inset-0 opacity-5",
-        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-400 via-violet-300 to-transparent",
-        "dark:opacity-10 dark:from-primary-400 dark:via-violet-500 dark:to-transparent"
+        "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-senary-400 via-violet-300 to-transparent",
+        "dark:opacity-10 dark:from-senary-400 dark:via-violet-500 dark:to-transparent"
       )} />
       
       <div className="flex flex-col items-center justify-center py-4 relative z-10">
         <div className={cn(
           "mb-4 rounded-full p-3",
-          "bg-primary-100 text-primary-700",
-          "dark:bg-primary-800/40 dark:text-primary-300" 
+          "bg-senary-100 text-senary-700",
+          "dark:bg-senary-800/40 dark:text-senary-300" 
         )}>
           <CreditCard className="h-6 w-6" />
         </div>
@@ -47,9 +47,9 @@ export const EmptyCredits = () => {
             <Button
               size="sm" 
               className={cn(
-                "bg-white hover:bg-primary-50 text-primary-700 border border-primary-200",
+                "bg-white hover:bg-senary-50 text-senary-700 border border-senary-200",
                 "shadow-sm",
-                "dark:bg-primary-900/30 dark:hover:bg-primary-800/40 dark:text-primary-300 dark:border-primary-700/50"
+                "dark:bg-senary-900/30 dark:hover:bg-senary-800/40 dark:text-senary-300 dark:border-senary-700/50"
               )}
             >
               <Plus className="mr-2 h-4 w-4" />

@@ -30,14 +30,14 @@ export const ActiveCreditsSection = ({
         <h2 className={cn(
           "font-bold tracking-tight text-xl flex items-center gap-2",
           // Même dégradé que le titre principal pour la cohérence
-          "bg-gradient-to-r from-primary-600 via-primary-500 to-violet-500 bg-clip-text text-transparent",
-          "dark:from-primary-400 dark:via-primary-400 dark:to-violet-400"
+          "bg-gradient-to-r from-senary-600 via-senary-500 to-violet-500 bg-clip-text text-transparent",
+          "dark:from-senary-400 dark:via-senary-400 dark:to-violet-400"
         )}>
           <div className={cn(
             "p-1 rounded",
-            "bg-primary-100 dark:bg-primary-800/40"
+            "bg-senary-100 dark:bg-senary-800/40"
           )}>
-            <WalletCards className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+            <WalletCards className="h-4 w-4 text-senary-600 dark:text-senary-400" />
           </div>
           Crédits en cours
         </h2>
@@ -48,8 +48,8 @@ export const ActiveCreditsSection = ({
           onClick={() => setExpanded(!expanded)}
           className={cn(
             "flex items-center gap-1 text-sm font-medium",
-            "text-gray-500 hover:text-primary-600",
-            "dark:text-gray-400 dark:hover:text-primary-400"
+            "text-gray-500 hover:text-senary-600",
+            "dark:text-gray-400 dark:hover:text-senary-400"
           )}
         >
           {expanded ? (

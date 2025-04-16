@@ -43,11 +43,11 @@ export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = f
             // Couleur différente pour les crédits archivés
             isArchived 
               ? "bg-gray-200 dark:bg-gray-700" 
-              : "bg-primary-100 dark:bg-primary-900/40",
+              : "bg-senary-100 dark:bg-senary-900/40",
             // Texte
             isArchived 
               ? "text-gray-500 dark:text-gray-400" 
-              : "text-primary-700 dark:text-primary-300"
+              : "text-senary-700 dark:text-senary-300"
           )}>
             <span className="text-lg font-semibold">
               {credit.nom_credit.charAt(0).toUpperCase()}
