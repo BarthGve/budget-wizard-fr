@@ -174,29 +174,30 @@
     
     /* Autres variables de base en mode sombre */
     --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted-foreground: 240 5% 74.9%; /* Augmenté la luminosité pour meilleur contraste */
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 74% 42%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 3.7% 20.9%; /* Augmenté la luminosité pour meilleure visibilité des bordures */
+    --input: 240 3.7% 20.9%; /* Augmenté la luminosité pour meilleure visibilité */
     --ring: 240 4.9% 83.9%;
     
     
+   /* Dépenses en mode sombre - amélioration des contrastes */
    --tertiary-hue: 234;
-  --tertiary-saturation: 50%;
-  --tertiary-lightness: 90%;  /* Généralement plus sombre pour le dark mode */
+  --tertiary-saturation: 75%; /* Réduit pour moins de saturation */
+  --tertiary-lightness: 70%;  /* Augmenté pour meilleure visibilité */
   --tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
   --tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 15%;
   --tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 20%;
   --tertiary-200: var(--tertiary-hue) var(--tertiary-saturation) 25%;
-  --tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 30%;
-  --tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 35%;
-  --tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 40%;
-  --tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 45%;
-  --tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 55%;
-  --tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 70%;
+  --tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 40%; /* Augmenté pour meilleure visibilité */
+  --tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 50%; /* Augmenté pour meilleure visibilité */
+  --tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 60%; /* Augmenté pour meilleure visibilité */
+  --tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 65%; /* Augmenté pour meilleure visibilité */
+  --tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 70%; /* Augmenté pour meilleure visibilité */
+  --tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 75%; /* Augmenté pour meilleure visibilité */
   --tertiary-900: var(--tertiary-hue) var(--tertiary-saturation) 85%;
   --tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 90%;
   --tertiary-foreground: 0 0% 10%; 

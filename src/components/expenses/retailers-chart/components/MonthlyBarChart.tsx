@@ -40,7 +40,7 @@ export const MonthlyBarChart = ({ retailerExpenses }: MonthlyBarChartProps) => {
           tickFormatter={(value) => formatCurrency(value)} 
           axisLine={false}
           tickLine={false}
-          tick={{ fill: isDarkMode ? '#bec1c4' : '#5c5d5e' }}
+          tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(107, 114, 128, 0.9)' }} // Amélioration du contraste
         />
         <YAxis 
           type="category" 
@@ -51,7 +51,10 @@ export const MonthlyBarChart = ({ retailerExpenses }: MonthlyBarChartProps) => {
           }
           axisLine={false}
           tickLine={false}
-          tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
+          tick={{ 
+            fill: isDarkMode ? 'hsl(var(--tertiary-300))' : 'hsl(var(--tertiary-700))',
+            fontWeight: 500 // Police plus épaisse pour meilleure lisibilité
+          }}
         />
         <Tooltip 
           formatter={(value) => [
@@ -60,11 +63,13 @@ export const MonthlyBarChart = ({ retailerExpenses }: MonthlyBarChartProps) => {
           ]}
           labelFormatter={(label) => `Enseigne: ${label}`}
           contentStyle={{
-            backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.97)' : 'rgba(255, 255, 255, 0.97)', // Opacité augmentée
             borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-            border: isDarkMode ? '1px solid #1e40af' : '1px solid #bfdbfe',
-            color: isDarkMode ? '#bfdbfe' : '#1e40af'
+            boxShadow: isDarkMode ? '0 4px 12px rgba(0, 0, 0, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.1)', // Ombre plus prononcée en mode sombre
+            border: isDarkMode ? '1px solid hsl(var(--tertiary-600))' : '1px solid hsl(var(--tertiary-300))',
+            color: isDarkMode ? 'hsl(var(--tertiary-100))' : 'hsl(var(--tertiary-800))',
+            padding: '10px', // Padding augmenté
+            fontWeight: 500 // Police plus lisible
           }}
         />
         <Bar 
@@ -79,6 +84,8 @@ export const MonthlyBarChart = ({ retailerExpenses }: MonthlyBarChartProps) => {
               key={`cell-${index}`} 
               fill={getBarColor(index)}
               className="transition-all duration-200"
+              stroke={isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'} // Bordure légère pour mieux distinguer les barres
+              strokeWidth={1}
             />
           ))}
         </Bar>
