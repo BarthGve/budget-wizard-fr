@@ -72,6 +72,8 @@ export const useDashboardPageData = () => {
           }
         }
         
+        // Ne pas convertir color_palette ici, le garder tel quel
+        
         // Ajouter l'email s'il est manquant et que l'utilisateur a un email
         const typedProfile = profile as Profile;
         if (user.email && !typedProfile.hasOwnProperty('email')) {

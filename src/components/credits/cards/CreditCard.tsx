@@ -16,7 +16,7 @@ interface CreditCardProps {
   amount: number;
   subtitle: ReactNode;
   badgeText: string;
-  colorScheme: "primary" | "quaternary" | "tertiary";
+  colorScheme: "senary" | "quaternary" | "tertiary";
   children?: ReactNode;
 }
 
@@ -32,7 +32,7 @@ export const CreditCard = ({
 }: CreditCardProps) => {
   // Déterminer les couleurs à utiliser en fonction du schéma
   const colorMap = {
-    primary: "purple",
+    senary: "purple",
     quaternary: "green", 
     tertiary: "blue"
   } as const;
@@ -43,15 +43,15 @@ export const CreditCard = ({
   const colors = {
     purple: {
       // Light mode
-      card: "bg-white border-primary-100",
-      darkBorder: "dark:border-primary-800/50",
-      gradient: "from-primary-400 via-violet-300 to-transparent",
-      darkGradient: "dark:from-primary-400 dark:via-violet-500 dark:to-transparent",
-      icon: "bg-primary-100 text-primary-700 dark:bg-primary-800/40 dark:text-primary-300",
-      title: "text-primary-900 dark:text-primary-300",
-      amount: "text-primary-800 dark:text-primary-200",
-      description: "text-primary-600/80 dark:text-primary-400/90",
-      badge: "bg-primary-100 dark:bg-primary-800/40 text-primary-700 dark:text-primary-300",
+      card: "bg-white border-senary-100",
+      darkBorder: "dark:border-senary-800/50",
+      gradient: "from-senary-400 via-violet-300 to-transparent",
+      darkGradient: "dark:from-senary-400 dark:via-violet-500 dark:to-transparent",
+      icon: "bg-senary-100 text-senary-700 dark:bg-senary-800/40 dark:text-senary-300",
+      title: "text-senary-900 dark:text-senary-300",
+      amount: "text-senary-800 dark:text-senary-200",
+      description: "text-senary-600/80 dark:text-senary-400/90",
+      badge: "bg-senary-100 dark:bg-senary-800/40 text-senary-700 dark:text-senary-300",
     },
     green: {
       // Light mode
@@ -90,7 +90,7 @@ export const CreditCard = ({
         "bg-white",
         "border-gray-100",
         // Dark mode - alignées avec les cards de graphiques
-        "dark:bg-gray-800/90  dark:shadow-primary-800/30 ", 
+        "dark:bg-gray-800/90  dark:shadow-senary-800/30 ", 
         currentColors.darkBorder
       )}
     >

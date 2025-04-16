@@ -43,6 +43,8 @@ export const ProfileSettings = () => {
         throw error;
       }
       
+      // Ne pas traiter la palette de couleur ici, la laisser telle quelle
+      
       console.log("ProfileSettings: Profil récupéré:", data?.full_name);
       return data as Profile;
     },

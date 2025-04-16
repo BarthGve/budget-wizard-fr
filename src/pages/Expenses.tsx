@@ -1,4 +1,3 @@
-
 import { CreateRetailerBanner } from "@/components/expenses/CreateRetailerBanner";
 import { useRetailers } from "@/components/settings/retailers/useRetailers";
 import { useState, memo, useMemo } from "react";
@@ -28,10 +27,8 @@ const Expenses = memo(function Expenses() {
   
   const { currentYearTotal, lastYearTotal } = useYearlyTotals(expenses);
   
-  // Utiliser useMediaQuery pour détecter les petits écrans (smartphones)
   const isMobileScreen = useMediaQuery("(max-width: 768px)");
 
-  // Calcul de la moyenne mensuelle et annuelle des dépenses
   const { monthlyAverage, yearlyAverage, averageMonthlyTransactions, averageYearlyTransactions } = useMemo(() => {
     if (!expenses || expenses.length === 0) return { 
       monthlyAverage: 0, 
@@ -40,33 +37,25 @@ const Expenses = memo(function Expenses() {
       averageYearlyTransactions: 0 
     };
     
-    // Trouver la date de la plus ancienne dépense
     const oldestExpenseDate = expenses.reduce((oldest, expense) => {
       const expenseDate = new Date(expense.date);
       return expenseDate < oldest ? expenseDate : oldest;
     }, new Date());
     
-    // Date actuelle
     const currentDate = new Date();
     
-    // Calculer le nombre de mois entre la plus ancienne dépense et aujourd'hui
     let monthsDiff = (currentDate.getFullYear() - oldestExpenseDate.getFullYear()) * 12 +
                      (currentDate.getMonth() - oldestExpenseDate.getMonth()) + 1;
     
-    // S'assurer que le nombre de mois est au moins 1
     monthsDiff = Math.max(1, monthsDiff);
     
-    // Calculer la somme totale des dépenses
     const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
     
-    // Calculer le nombre d'années
     const yearsDiff = Math.max(1, monthsDiff / 12);
     
-    // Calculer les moyennes
     const monthlyAvg = totalAmount / monthsDiff;
     const yearlyAvg = totalAmount / yearsDiff;
     
-    // Calculer le nombre moyen de transactions par mois et par an
     const avgMonthlyTx = expenses.length / monthsDiff;
     const avgYearlyTx = expenses.length / yearsDiff;
     
@@ -137,11 +126,8 @@ const Expenses = memo(function Expenses() {
           <CreateRetailerBanner />
         </motion.div>
         
-        {/* Disposition avec flex pour les écrans larges, colonne pour mobile */}
         <motion.div variants={itemVariants} className="flex flex-col lg:flex-row gap-6 mt-8 mb-8">
-          {/* Carte de total des dépenses (1/3 sur grands écrans, pleine largeur sur mobile) */}
           <motion.div variants={itemVariants} className="w-full lg:w-1/3 grid grid-cols-1 gap-4">
-            {/* Supprimer l'effet whileHover pour cette carte */}
             <motion.div>
               <YearlyTotalCard 
                 key={`total-card-${currentYearTotal}`}
@@ -152,14 +138,11 @@ const Expenses = memo(function Expenses() {
               />
             </motion.div>
             
-            {/* Carte de moyenne mensuelle/annuelle avec le même design - sans effet hover */}
             <Card className={cn(
               "overflow-hidden transition-all duration-200 h-full relative",
               "border shadow-lg",
-              // Light mode
               "bg-white border-tertiary-100",
-              // Dark mode
-              "dark:bg-gray-800/90 dark:border-tertiary-800/50"
+              "dark:bg-gray-800/95 dark:border-tertiary-700/50 dark:shadow-lg dark:shadow-black/20"
             )}>
          
               
@@ -167,17 +150,15 @@ const Expenses = memo(function Expenses() {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-2">
                     <div className={cn(
-                      // Light mode
                       "bg-tertiary-100 text-tertiary-700",
-                      // Dark mode
-                      "dark:bg-tertiary-800/40 dark:text-tertiary-300",
-                      // Common
+                      "dark:bg-tertiary-800/70 dark:text-tertiary-200",
                       "p-2 rounded-lg"
                     )}>
                       <Calculator className="h-4 w-4" />
                     </div>
                     <CardTitle className={cn(
                       "text-lg font-semibold",
+                      "dark:text-white"
                     )}>
                       Moyenne des dépenses
                     </CardTitle>
@@ -186,10 +167,8 @@ const Expenses = memo(function Expenses() {
                 
                 <CardDescription className={cn(
                   "mt-2 text-sm",
-                  // Light mode
                   "text-tertiary-600/80",
-                  // Dark mode
-                  "dark:text-tertiary-400/90"
+                  "dark:text-tertiary-300"
                 )}>
                   {viewMode === 'monthly' ? "Moyenne mensuelle" : "Moyenne annuelle"}
                 </CardDescription>
@@ -198,7 +177,7 @@ const Expenses = memo(function Expenses() {
               <CardContent className="pt-1 pb-6 relative z-10">
                 <p className={cn(
                   "text-2xl font-bold",
-             
+                  "text-tertiary-800 dark:text-tertiary-200"
                 )}>
                   {formatCurrency(viewMode === 'monthly' ? monthlyAverage : yearlyAverage)}
                 </p>
@@ -206,7 +185,7 @@ const Expenses = memo(function Expenses() {
                 <div className="mt-3">
                   <p className={cn(
                     "text-sm",
-                    "text-muted-foreground"
+                    "text-muted-foreground dark:text-gray-300"
                   )}>
                     {Math.round(viewMode === 'monthly' ? averageMonthlyTransactions : averageYearlyTransactions)} 
                     {viewMode === 'monthly' ? " achats par mois" : " achats par an"}
@@ -216,7 +195,6 @@ const Expenses = memo(function Expenses() {
             </Card>
           </motion.div>
           
-          {/* Graphique des dépenses par enseigne (2/3) - masqué sur mobile */}
           {!isMobileScreen && (
             <motion.div variants={itemVariants} className="w-full lg:w-2/3">
               <RetailersExpensesChart 
@@ -228,7 +206,6 @@ const Expenses = memo(function Expenses() {
           )}
         </motion.div>
         
-        {/* Remplacement de la grille de cartes détaillants par la nouvelle section */}
         <RetailersSection 
           expensesByRetailer={expensesByRetailer || []}
           onExpenseUpdated={handleExpenseUpdated}

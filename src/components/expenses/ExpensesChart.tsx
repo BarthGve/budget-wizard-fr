@@ -8,6 +8,7 @@ import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { useChartColors } from "@/hooks/useChartColors";
 
 interface Expense {
   id: string;
@@ -20,17 +21,6 @@ interface ExpensesChartProps {
   viewMode: 'monthly' | 'yearly';
 }
 
-// Nouvelle configuration des couleurs du graphique avec du bleu
-const chartConfig = {
-  expenses: {
-    label: "Dépenses",
-    theme: {
-      light: "#73767a", // Bleu plus vif qui correspond à l'image de référence
-      dark: "#60A5FA"
-    }
-  }
-};
-
 export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   // État pour suivre la version des données pour les animations
   const [dataVersion, setDataVersion] = useState(0);
@@ -38,6 +28,20 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   const startOfCurrentYear = startOfYear(today);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  
+  // Utiliser le hook useChartColors pour récupérer les couleurs tertiary
+  const tertiaryColors = useChartColors("tertiary");
+
+  // Nouvelle configuration des couleurs du graphique avec la couleur tertiary
+  const chartConfig = useMemo(() => ({
+    expenses: {
+      label: "Dépenses",
+      theme: {
+        light: tertiaryColors.base, // Utiliser la couleur tertiary de base en mode clair
+        dark: tertiaryColors.base    // Utiliser la couleur tertiary de base en mode sombre
+      }
+    }
+  }), [tertiaryColors]);
 
   // Surveiller les changements dans les dépenses pour déclencher l'animation
   useEffect(() => {
@@ -94,9 +98,14 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   }
 
   // Configurez les couleurs en fonction du thème
-  const gridColor = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
+  const gridColor = isDarkMode ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)"; // Augmenté l'opacité en mode sombre
   const axisColor = isDarkMode ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground))";
   const backgroundColor = "transparent"; // Rendre le fond transparent pour qu'il prenne la couleur de la carte
+  
+  // Utiliser la couleur tertiary pour le remplissage de la barre
+  const barFillColor = isDarkMode 
+    ? `hsl(var(--tertiary-600))` 
+    : `hsl(var(--tertiary-600))`;
 
   return (
     <div className="rounded-lg p-2 mt-2">
@@ -112,18 +121,16 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
           <ChartContainer 
             className={cn(
               "h-[250px] w-full p-0",
-              // Supprimer toute classe bg- ou background-
+              "bg-white/20 dark:bg-gray-800/30" // Ajout d'un fond légèrement visible pour améliorer le contraste
             )} 
             config={chartConfig}
-            style={{ background: backgroundColor }} // Rendre le fond transparent
           >
             <ResponsiveContainer width="100%" height="100%" >
               <BarChart 
                 data={chartData} 
                 margin={{ top: 0, right: 0, left: 0, bottom: 20 }}
-                style={{ background: backgroundColor }} // Rendre le fond transparent
               >
-                <CartesianGrid vertical={false} stroke={gridColor} opacity={0.1} />
+                <CartesianGrid vertical={false} stroke={gridColor} opacity={0.15} strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="period"
                   axisLine={false}
@@ -131,20 +138,26 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
                   stroke={axisColor}
                   fontSize={12}
                   tickMargin={10}
+                  className="font-medium" // Ajout de font-medium pour meilleure lisibilité
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent 
                       formatter={(value: number) => formatCurrency(value)}
                       labelFormatter={(label) => viewMode === 'yearly' ? `Année ${label}` : label}
+                      className={cn(
+                        "border-2", // Bordure plus épaisse
+                        "dark:border-tertiary-600/50 dark:bg-gray-800/95" // Amélioration du contraste en mode sombre
+                      )}
                     />
                   }
                 />
                 <Bar 
                   dataKey="total" 
-                  fill="#60A5FA" // Remplace le violet par un bleu qui correspond à l'image
+                  fill={barFillColor} // Utiliser la couleur tertiary dynamique
                   radius={[4, 4, 0, 0]}
                   maxBarSize={50}
+                  className="dark:opacity-90" // Légère réduction d'opacité en mode sombre pour adoucir
                 />
               </BarChart>
             </ResponsiveContainer>

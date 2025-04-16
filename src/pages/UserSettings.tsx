@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RetailersSettings } from "@/components/settings/RetailersSettings";
 import { ExpenseCategoriesSettings } from "@/components/settings/expense-categories/ExpenseCategoriesSettings";
 import { DashboardPreferencesSettings } from "@/components/settings/dashboard-preferences/DashboardPreferencesSettings";
-import { User, Settings2, Bell } from "lucide-react";
+import { ColorPaletteSettings } from "@/components/settings/color-palette/ColorPaletteSettings";
+import { User, Settings2, Bell, Palette } from "lucide-react";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
 import { useLocation } from "react-router-dom"; 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -31,6 +32,8 @@ const UserSettings = () => {
     activeTab = 'settings';
   } else if (defaultTab === 'notifications') {
     activeTab = 'notifications';
+  } else if (defaultTab === 'appearance') {
+    activeTab = 'appearance';
   }
 
   return (
@@ -78,6 +81,18 @@ const UserSettings = () => {
               <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Notif.</span>
             </TabsTrigger>
             <TabsTrigger 
+              value="appearance" 
+              className={`flex items-center gap-2 ${
+                isMobile 
+                  ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                  : ""
+              }`}
+            >
+              <Palette className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+              {!isMobile ? "Apparence" : ""}
+              <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Apparence</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="settings" 
               className={`flex items-center gap-2 ${
                 isMobile 
@@ -99,6 +114,9 @@ const UserSettings = () => {
         </TabsContent>
         <TabsContent value="notifications" className="space-y-6">
           <NotificationSettings />
+        </TabsContent>
+        <TabsContent value="appearance" className="space-y-6">
+          <ColorPaletteSettings />
         </TabsContent>
         <TabsContent value="settings" className="space-y-6">
           <DashboardPreferencesSettings />

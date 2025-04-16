@@ -10,20 +10,23 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
     
-    /* Couleur primaire (violet) et ses variantes */
-    --primary: 262.1 83.3% 57.8%;
-    --primary-50: 262.1 83.3% 95%;
-    --primary-100: 262.1 83.3% 90%;
-    --primary-200: 262.1 83.3% 80%;
-    --primary-300: 262.1 83.3% 70%;
-    --primary-400: 262.1 83.3% 65%;
-    --primary-500: 262.1 83.3% 57.8%; /* Base */
-    --primary-600: 262.1 83.3% 50%;
-    --primary-700: 262.1 83.3% 40%;
-    --primary-800: 262.1 83.3% 30%;
-    --primary-900: 262.1 83.3% 25%;
-    --primary-950: 262.1 83.3% 20%;
-    --primary-foreground: 210 20% 98%;
+    /* Couleur primaire et ses variantes */
+    --primary-hue: 268;
+    --primary-saturation: 65%;
+    --primary-lightness: 64%;
+    --primary: var(--primary-hue) var(--primary-saturation) var(--primary-lightness);
+    --primary-50: var(--primary-hue) var(--primary-saturation) 95%;
+    --primary-100: var(--primary-hue) var(--primary-saturation) 90%;
+    --primary-200: var(--primary-hue) var(--primary-saturation) 80%;
+    --primary-300: var(--primary-hue) var(--primary-saturation) 70%;
+    --primary-400: var(--primary-hue) var(--primary-saturation) 65%;
+    --primary-500: var(--primary-hue) var(--primary-saturation) 60%;
+    --primary-600: var(--primary-hue) var(--primary-saturation) 50%;
+    --primary-700: var(--primary-hue) var(--primary-saturation) 40%;
+    --primary-800: var(--primary-hue) var(--primary-saturation) 30%;
+    --primary-900: var(--primary-hue) var(--primary-saturation) 20%;
+    --primary-950: var(--primary-hue) var(--primary-saturation) 15%;
+    --primary-foreground: 0 0% 98%;
     
     /* Couleur secondaire et ses variantes */
     --secondary: 240 4.8% 95.9%;
@@ -53,9 +56,9 @@
     --radius: 0.75rem;
     
      /* Dépenses –*/
-    --tertiary-hue: 234;
-    --tertiary-saturation: 80%;
-    --tertiary-lightness: 70%;
+ --tertiary-hue: 234;
+--tertiary-saturation: 85%;
+--tertiary-lightness: 50%;
     --tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
     --tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 95%;
     --tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 90%;
@@ -70,7 +73,7 @@
     --tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 15%;
     --tertiary-foreground: 0 0% 98%;
     
-    /* Épargne  */
+    /* Épargne */
   --quaternary-hue: 196;
   --quaternary-saturation: 62%;
   --quaternary-lightness: 46%;
@@ -88,35 +91,42 @@
   --quaternary-950: var(--quaternary-hue) var(--quaternary-saturation) 15%;
   --quaternary-foreground: 0 0% 98%;
     
-     /* Revenus – vert dollar */
-  --quinary: 162 72% 42%;
-  --quinary-50: 162 72% 95%;
-  --quinary-100: 162 72% 90%;
-  --quinary-200: 162 72% 80%;
-  --quinary-300: 162 72% 70%;
-  --quinary-400: 162 72% 60%;
-  --quinary-500: 162 72% 42%;
-  --quinary-600: 162 72% 35%;
-  --quinary-700: 162 72% 28%;
-  --quinary-800: 162 72% 22%;
-  --quinary-900: 162 72% 16%;
-  --quinary-950: 162 72% 12%;
+     /* Revenus */
+  --quinary-hue: 162;
+  --quinary-saturation: 72%;
+  --quinary-lightness: 42%;
+  --quinary: var(--quinary-hue) var(--quinary-saturation) var(--quinary-lightness);
+  --quinary-50: var(--quinary-hue) var(--quinary-saturation) 95%;
+  --quinary-100: var(--quinary-hue) var(--quinary-saturation) 90%;
+  --quinary-200: var(--quinary-hue) var(--quinary-saturation) 80%;
+  --quinary-300: var(--quinary-hue) var(--quinary-saturation) 70%;
+  --quinary-400: var(--quinary-hue) var(--quinary-saturation) 65%;
+  --quinary-500: var(--quinary-hue) var(--quinary-saturation) 60%;
+  --quinary-600: var(--quinary-hue) var(--quinary-saturation) 50%;
+  --quinary-700: var(--quinary-hue) var(--quinary-saturation) 40%;
+  --quinary-800: var(--quinary-hue) var(--quinary-saturation) 30%;
+  --quinary-900: var(--quinary-hue) var(--quinary-saturation) 20%;
+  --quinary-950: var(--quinary-hue) var(--quinary-saturation) 15%;
   --quinary-foreground: 0 0% 98%;
     
-    /* Couleur senary (gris) et ses variantes */
-    --senary: 0 0% 50%;
-    --senary-50: 0 0% 95%;
-    --senary-100: 0 0% 90%;
-    --senary-200: 0 0% 80%;
-    --senary-300: 0 0% 70%;
-    --senary-400: 0 0% 60%;
-    --senary-500: 0 0% 50%; /* Base */
-    --senary-600: 0 0% 40%;
-    --senary-700: 0 0% 30%;
-    --senary-800: 0 0% 20%;
-    --senary-900: 0 0% 15%;
-    --senary-950: 0 0% 10%;
-    --senary-foreground: 0 0% 98%;
+    /* Crédits*/
+ 
+  --senary-hue: 42;
+  --senary-saturation: 87%;
+  --senary-lightness: 55%;
+  --senary: var(--senary-hue) var(--senary-saturation) var(--senary-lightness);
+  --senary-50: var(--senary-hue) var(--senary-saturation) 95%;
+  --senary-100: var(--senary-hue) var(--senary-saturation) 90%;
+  --senary-200: var(--senary-hue) var(--senary-saturation) 80%;
+  --senary-300: var(--senary-hue) var(--senary-saturation) 70%;
+  --senary-400: var(--senary-hue) var(--senary-saturation) 65%;
+  --senary-500: var(--senary-hue) var(--senary-saturation) 60%;
+  --senary-600: var(--senary-hue) var(--senary-saturation) 50%;
+  --senary-700: var(--senary-hue) var(--senary-saturation) 40%;
+  --senary-800: var(--senary-hue) var(--senary-saturation) 30%;
+  --senary-900: var(--senary-hue) var(--senary-saturation) 20%;
+  --senary-950: var(--senary-hue) var(--senary-saturation) 15%;
+   
 }
 
 .dark {
@@ -127,20 +137,25 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
     
-    /* Couleur primaire (violet) et ses variantes en mode sombre */
-   --primary: 275 70% 50%;
-  --primary-50: 275 70% 15%;
-  --primary-100: 275 70% 18%;
-  --primary-200: 275 70% 22%;
-  --primary-300: 275 70% 30%;
-  --primary-400: 275 70% 35%;
-  --primary-500: 275 70% 50%;
-  --primary-600: 275 70% 60%;
-  --primary-700: 275 70% 70%;
-  --primary-800: 275 70% 80%;
-  --primary-900: 275 70% 90%;
-  --primary-950: 275 70% 95%;
-  --primary-foreground: 0 0% 98%;
+
+    /* Couleur primaire et ses variantes */
+    --primary-hue: 268;
+    --primary-saturation: 65%;
+    --primary-lightness: 44%;
+    --primary: var(--primary-hue) var(--primary-saturation) var(--primary-lightness);
+    --primary-50: var(--primary-hue) var(--primary-saturation) 95%;
+    --primary-100: var(--primary-hue) var(--primary-saturation) 90%;
+    --primary-200: var(--primary-hue) var(--primary-saturation) 80%;
+    --primary-300: var(--primary-hue) var(--primary-saturation) 70%;
+    --primary-400: var(--primary-hue) var(--primary-saturation) 65%;
+    --primary-500: var(--primary-hue) var(--primary-saturation) 60%;
+    --primary-600: var(--primary-hue) var(--primary-saturation) 50%;
+    --primary-700: var(--primary-hue) var(--primary-saturation) 40%;
+    --primary-800: var(--primary-hue) var(--primary-saturation) 30%;
+    --primary-900: var(--primary-hue) var(--primary-saturation) 20%;
+    --primary-950: var(--primary-hue) var(--primary-saturation) 15%;
+    --primary-foreground: 0 0% 98%;
+    
     
     /* Couleur secondaire et ses variantes en mode sombre */
     --secondary: 240 3.7% 15.9%;
@@ -159,47 +174,36 @@
     
     /* Autres variables de base en mode sombre */
     --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted-foreground: 240 5% 74.9%; /* Augmenté la luminosité pour meilleur contraste */
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 74% 42%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 3.7% 20.9%; /* Augmenté la luminosité pour meilleure visibilité des bordures */
+    --input: 240 3.7% 20.9%; /* Augmenté la luminosité pour meilleure visibilité */
     --ring: 240 4.9% 83.9%;
     
     
-   --tertiary-hue: 10;
-  --tertiary-saturation: 80%;
-  --tertiary-lightness: 40%;  /* Généralement plus sombre pour le dark mode */
+   /* Dépenses en mode sombre - amélioration des contrastes */
+   --tertiary-hue: 234;
+  --tertiary-saturation: 75%; /* Réduit pour moins de saturation */
+  --tertiary-lightness: 70%;  /* Augmenté pour meilleure visibilité */
   --tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
   --tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 15%;
   --tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 20%;
   --tertiary-200: var(--tertiary-hue) var(--tertiary-saturation) 25%;
-  --tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 30%;
-  --tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 35%;
-  --tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 40%;
-  --tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 45%;
-  --tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 55%;
-  --tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 70%;
+  --tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 40%; /* Augmenté pour meilleure visibilité */
+  --tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 50%; /* Augmenté pour meilleure visibilité */
+  --tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 60%; /* Augmenté pour meilleure visibilité */
+  --tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 65%; /* Augmenté pour meilleure visibilité */
+  --tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 70%; /* Augmenté pour meilleure visibilité */
+  --tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 75%; /* Augmenté pour meilleure visibilité */
   --tertiary-900: var(--tertiary-hue) var(--tertiary-saturation) 85%;
   --tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 90%;
   --tertiary-foreground: 0 0% 10%; 
 
-  --quinary: 162 72% 35%;
-  --quinary-50: 162 72% 15%;
-  --quinary-100: 162 72% 18%;
-  --quinary-200: 162 72% 22%;
-  --quinary-300: 162 72% 28%;
-  --quinary-400: 162 72% 32%;
-  --quinary-500: 162 72% 35%;
-  --quinary-600: 162 72% 42%;
-  --quinary-700: 162 72% 50%;
-  --quinary-800: 162 72% 60%;
-  --quinary-900: 162 72% 70%;
-  --quinary-950: 162 72% 80%;
-  --quinary-foreground: 0 0% 98%;
 
+ /* Epargne */
   --quaternary-hue: 196;
   --quaternary-saturation: 100%;
   --quaternary-lightness: 28%;
@@ -216,21 +220,42 @@
   --quaternary-900: var(--quaternary-hue) var(--quaternary-saturation) 20%;
   --quaternary-950: var(--quaternary-hue) var(--quaternary-saturation) 15%;
   --quaternary-foreground: 0 0% 98%;
-    
-    /* Couleur senary (gris) et ses variantes en mode sombre */
-    --senary: 0 0% 50%;
-    --senary-50: 0 0% 95%;
-    --senary-100: 0 0% 90%;
-    --senary-200: 0 0% 80%;
-    --senary-300: 0 0% 70%;
-    --senary-400: 0 0% 60%;
-    --senary-500: 0 0% 50%; /* Base */
-    --senary-600: 0 0% 40%;
-    --senary-700: 0 0% 30%;
-    --senary-800: 0 0% 20%;
-    --senary-900: 0 0% 15%;
-    --senary-950: 0 0% 10%;
-    --senary-foreground: 0 0% 98%;
+
+
+       /* Revenus */
+  --quinary-hue: 162;
+  --quinary-saturation: 72%;
+  --quinary-lightness: 22%;
+  --quinary: var(--quinary-hue) var(--quinary-saturation) var(--quinary-lightness);
+  --quinary-50: var(--quinary-hue) var(--quinary-saturation) 95%;
+  --quinary-100: var(--quinary-hue) var(--quinary-saturation) 90%;
+  --quinary-200: var(--quinary-hue) var(--quinary-saturation) 80%;
+  --quinary-300: var(--quinary-hue) var(--quinary-saturation) 70%;
+  --quinary-400: var(--quinary-hue) var(--quinary-saturation) 65%;
+  --quinary-500: var(--quinary-hue) var(--quinary-saturation) 60%;
+  --quinary-600: var(--quinary-hue) var(--quinary-saturation) 50%;
+  --quinary-700: var(--quinary-hue) var(--quinary-saturation) 40%;
+  --quinary-800: var(--quinary-hue) var(--quinary-saturation) 30%;
+  --quinary-900: var(--quinary-hue) var(--quinary-saturation) 20%;
+  --quinary-950: var(--quinary-hue) var(--quinary-saturation) 15%;
+  --quinary-foreground: 0 0% 98%;
+
+  /* Crédits */
+  --senary-hue: 42;
+  --senary-saturation: 87%;
+  --senary-lightness: 35%;
+  --senary: var(--senary-hue) var(--senary-saturation) var(--senary-lightness);
+  --senary-50: var(--senary-hue) var(--senary-saturation) 95%;
+  --senary-100: var(--senary-hue) var(--senary-saturation) 90%;
+  --senary-200: var(--senary-hue) var(--senary-saturation) 80%;
+  --senary-300: var(--senary-hue) var(--senary-saturation) 70%;
+  --senary-400: var(--senary-hue) var(--senary-saturation) 65%;
+  --senary-500: var(--senary-hue) var(--senary-saturation) 60%;
+  --senary-600: var(--senary-hue) var(--senary-saturation) 50%;
+  --senary-700: var(--senary-hue) var(--senary-saturation) 40%;
+  --senary-800: var(--senary-hue) var(--senary-saturation) 30%;
+  --senary-900: var(--senary-hue) var(--senary-saturation) 20%;
+  --senary-950: var(--senary-hue) var(--senary-saturation) 15%;
 }
 
   * {

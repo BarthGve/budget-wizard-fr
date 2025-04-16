@@ -7,6 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useProfileFetcher } from "@/components/dashboard/dashboard-tab/ProfileFetcher";
+import { useColorPalette } from "@/hooks/color-palette";
 
 interface MobileUserMenuProps {
   profile?: Profile & { isAdmin?: boolean };
@@ -23,12 +24,21 @@ export const MobileUserMenu = ({
   const [initialized, setInitialized] = useState(false);
   const { data: fetchedProfile, isLoading: isProfileLoading } = useProfileFetcher();
   const queryClient = useQueryClient();
+  const { loadColorPalette } = useColorPalette();
   
   // Utiliser soit le profil fourni en prop, soit le profil récupéré par le hook
   const profile = providedProfile || fetchedProfile;
   
   // Calculer l'état de chargement global
   const isLoading = isLoadingProp || authLoading || isProfileLoading;
+  
+  // Charger les couleurs lorsque l'utilisateur change
+  useEffect(() => {
+    if (user?.id && isAuthenticated) {
+      console.log("MobileUserMenu: Chargement des couleurs pour l'utilisateur", user.id);
+      loadColorPalette();
+    }
+  }, [user?.id, isAuthenticated, loadColorPalette]);
   
   // S'assurer que nous avons un état d'initialisation cohérent
   useEffect(() => {

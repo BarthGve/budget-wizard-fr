@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Profile, ProfileType } from "@/types/profile";
@@ -28,6 +27,8 @@ export const usePagePermissions = () => {
         .single();
 
       if (error) throw error;
+
+      // Ne pas traiter la palette de couleur ici, la laisser telle quelle
 
       return {
         ...data,

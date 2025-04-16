@@ -119,7 +119,7 @@ export const CreditCard = ({
   className={cn(
     "backdrop-blur-sm cursor-pointer transition-all duration-300",
    "shadow-lg border hover:shadow-xl",
-    "dark:bg-primary/10 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
+    "dark:bg-senary/10 dark:border-senary/30 dark:shadow-senary/30 dark:hover:shadow-senary/50"
   )}
   onClick={() => navigate("/credits")}
 >
@@ -128,8 +128,8 @@ export const CreditCard = ({
       <CardTitle className="text-lg flex items-center gap-2">
         <div className={cn(
           "p-2 rounded-full",
-          "bg-primary/20 text-primary",
-          "dark:bg-primary/20 dark:text-primary"
+          "bg-senary/20 text-senary",
+          "dark:bg-senary/20 dark:text-senary"
         )}>
           <CreditCardIcon className="h-5 w-5" />
         </div>
@@ -138,8 +138,8 @@ export const CreditCard = ({
       <Badge 
         variant="default"
         className={cn(
-          "bg-primary px-3 py-1 flex items-center gap-1 text-white",
-          "dark:bg-primary dark:text-white"
+          "bg-senary px-3 py-1 flex items-center gap-1 text-white",
+          "dark:bg-senary dark:text-white"
         )}
       >
         {getStatusIcon(tauxEndettement)}
@@ -149,7 +149,7 @@ export const CreditCard = ({
               <span className="text-xs">{Math.round(tauxEndettement)}%</span>
             </div>
           </TooltipTrigger>
-          <TooltipContent className="dark:bg-primary dark:text-white dark:border-primary">
+          <TooltipContent className="dark:bg-senary dark:text-white dark:border-senary">
             <p className="flex items-center gap-1">
               <Info className="h-4 w-4" />
               Taux d'endettement {currentView === "monthly" ? "mensuel" : "annuel"}
@@ -178,7 +178,7 @@ export const CreditCard = ({
            
                   "font-bold text-xl leading-none",
                   "text-gray-800", // Light mode
-                  "dark:text-primary" // Dark mode - couleur quinary pour correspondre à l'effet voulu            
+                  "dark:text-senary" // Dark mode - couleur quinary pour correspondre à l'effet voulu            
              
             )}
             initial={{ scale: 0.9 }}
@@ -187,7 +187,7 @@ export const CreditCard = ({
           >
             {Math.round(totalAmount).toLocaleString('fr-FR')} €
           </motion.p>
-          <div className="absolute -inset-1 bg-primary/10 blur-md rounded-full opacity-0 dark:opacity-60" />
+          <div className="absolute -inset-1 bg-senary/10 blur-md rounded-full opacity-0 dark:opacity-60" />
         </motion.div>
       </div>
     </div>

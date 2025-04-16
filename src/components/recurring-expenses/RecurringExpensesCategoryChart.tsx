@@ -11,6 +11,7 @@ import { itemVariants } from "./animations/AnimationVariants";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useChartColors } from "@/hooks/useChartColors";
 
 interface RecurringExpensesCategoryChartProps {
   expenses: RecurringExpense[];
@@ -20,6 +21,8 @@ interface RecurringExpensesCategoryChartProps {
 export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: RecurringExpensesCategoryChartProps) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  // Utiliser le hook useChartColors pour obtenir les couleurs tertiary
+  const tertiaryColors = useChartColors("tertiary", 5);
   
   // État local pour le type de périodicité à afficher dans le graphique
   const [chartPeriodicity, setChartPeriodicity] = useState<"monthly" | "quarterly" | "yearly">("monthly");
@@ -109,16 +112,17 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
     ? periodicityLabels[selectedPeriod] 
     : periodicityLabels[chartPeriodicity];
 
-  // Générer des couleurs pour les barres - maintenant en bleu pour la cohérence
+  // Générer des couleurs pour les barres en utilisant les couleurs tertiary
   const getBarColor = (index: number) => {
+    // Utiliser les couleurs de tertiary au lieu des couleurs codées en dur
     const baseColors = {
       light: {
-        active: '#2563EB', // tertiary-600
-        inactive: '#60A5FA' // tertiary-400
+        active: tertiaryColors.base, // Couleur de base pour l'élément actif
+        inactive: tertiaryColors.lighter[0] // Première variante plus claire pour les éléments inactifs
       },
       dark: {
-        active: '#3B82F6', // tertiary-500
-        inactive: '#93C5FD' // tertiary-300
+        active: tertiaryColors.base, // Couleur de base pour l'élément actif
+        inactive: tertiaryColors.lighter[0] // Première variante plus claire pour les éléments inactifs
       }
     };
     
@@ -247,7 +251,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                         tickFormatter={(value) => formatCurrency(value)} 
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
+                        tick={{ fill: isDarkMode ? `hsl(var(--tertiary-300))` : `hsl(var(--tertiary-600))` }}
                       />
                       <YAxis 
                         type="category" 
@@ -258,7 +262,7 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                         }
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: isDarkMode ? '#93C5FD' : '#3B82F6' }}
+                        tick={{ fill: isDarkMode ? `hsl(var(--tertiary-300))` : `hsl(var(--tertiary-600))` }}
                       />
                       <Tooltip 
                         formatter={(value) => [
@@ -270,8 +274,8 @@ export const RecurringExpensesCategoryChart = ({ expenses, selectedPeriod }: Rec
                           backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                          border: isDarkMode ? '1px solid #1e40af' : '1px solid #bfdbfe',
-                          color: isDarkMode ? '#bfdbfe' : '#1e40af'
+                          border: isDarkMode ? `1px solid hsl(var(--tertiary-700))` : `1px solid hsl(var(--tertiary-200))`,
+                          color: isDarkMode ? `hsl(var(--tertiary-300))` : `hsl(var(--tertiary-700))`
                         }}
                       />
                       <Bar 
