@@ -186,7 +186,7 @@
     
    --tertiary-hue: 234;
   --tertiary-saturation: 80%;
-  --tertiary-lightness: 20%;  /* Généralement plus sombre pour le dark mode */
+  --tertiary-lightness: 70%;  /* Généralement plus sombre pour le dark mode */
   --tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
   --tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 15%;
   --tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 20%;
