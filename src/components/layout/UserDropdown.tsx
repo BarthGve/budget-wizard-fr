@@ -195,7 +195,7 @@ export const UserDropdown = ({
                 {localProfile?.profile_type === "pro" && (
                   <Badge 
                     className={cn(
-                      "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
+                      "absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-[0.6rem] font-bold px-2 py-0.5 rounded-full border-[1.5px] border-white shadow-sm",
                       collapsed ? "scale-90" : ""
                     )}>
                     Pro
