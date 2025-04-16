@@ -27,7 +27,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     return (
       <div className="bg-background/95 backdrop-blur-sm shadow-md border border-border rounded-lg p-2 text-sm dark:bg-gray-800/95 dark:border-gray-700">
         <p className="font-medium dark:text-white">{payload[0].name}</p>
-        <p className="font-semibold text-primary dark:text-primary">{formatCurrency(payload[0].value)}</p>
+        <p className="font-semibold text-senary dark:text-senary">{formatCurrency(payload[0].value)}</p>
       </div>
     );
   }
@@ -39,8 +39,8 @@ export const CreditsPieChart = ({
   totalMensualites
 }: CreditsPieChartProps) => {
   const navigate = useNavigate();
-  // Utiliser notre hook personnalisé pour obtenir les couleurs basées sur primary
-  const chartColors = useChartColors("primary").all;
+  // Utiliser notre hook personnalisé pour obtenir les couleurs basées sur senary
+  const chartColors = useChartColors("senary").all;
 
   const chartData = credits
     .filter(credit => {
@@ -78,9 +78,9 @@ export const CreditsPieChart = ({
         className={cn(
           "cursor-pointer h-[320px] flex flex-col transition-all duration-300",
           // Light mode
-          "bg-white border border-primary/20 shadow-lg hover:shadow-xl",
+          "bg-white border border-senary/20 shadow-lg hover:shadow-xl",
           // Dark mode
-          "dark:bg-gray-900/90 dark:border-primary/30 dark:shadow-primary/30 dark:hover:shadow-primary/50"
+          "dark:bg-gray-900/90 dark:border-senary/30 dark:shadow-senary/30 dark:hover:shadow-senary/50"
         )}
         onClick={() => navigate("/credits")}
       >
@@ -89,8 +89,8 @@ export const CreditsPieChart = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-1.5 rounded-full",
-                "bg-primary/20 text-primary", // Light mode
-                "dark:bg-primary/30 dark:text-primary" // Dark mode
+                "bg-senary/20 text-senary", // Light mode
+                "dark:bg-senary/30 dark:text-senary" // Dark mode
               )}>
                 <CreditCard className="h-4 w-4" />
               </div>
@@ -129,14 +129,14 @@ export const CreditsPieChart = ({
                               <tspan 
                                 x={viewBox.cx} 
                                 y={viewBox.cy - 5} 
-                                className="fill-current text-primary dark:text-primary text-xl font-bold"
+                                className="fill-current text-senary dark:text-senary text-xl font-bold"
                               >
                                 {formatCurrency(totalMensualites)}
                               </tspan>
                               <tspan 
                                 x={viewBox.cx} 
                                 y={(viewBox.cy || 0) + 18} 
-                                className="fill-current text-primary/70 dark:text-primary/60 text-sm"
+                                className="fill-current text-senary/70 dark:text-senary/60 text-sm"
                               >
                                 par mois
                               </tspan>

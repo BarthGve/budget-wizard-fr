@@ -38,7 +38,7 @@ export function CreditForm({
 
   // Couleurs du bouton en fonction du colorScheme
   const buttonColors = {
-    purple: "bg-violet-600 hover:bg-violet-500",
+    purple: "bg-senary-600 hover:bg-senary-500",
     green: "bg-green-600 hover:bg-green-500",
     blue: "bg-blue-600 hover:bg-blue-500"
   };
