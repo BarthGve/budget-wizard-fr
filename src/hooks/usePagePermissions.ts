@@ -1,7 +1,6 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Profile, ProfileType, parseColorPalette } from "@/types/profile";
+import { Profile, ProfileType } from "@/types/profile";
 
 interface PagePermission {
   page_path: string;
@@ -29,10 +28,7 @@ export const usePagePermissions = () => {
 
       if (error) throw error;
 
-      // Traiter la palette de couleur
-      if (data) {
-        data.color_palette = parseColorPalette(data.color_palette);
-      }
+      // Ne pas traiter la palette de couleur ici, la laisser telle quelle
 
       return {
         ...data,

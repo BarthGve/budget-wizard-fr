@@ -48,8 +48,9 @@ export const useProfileFetcher = () => {
           }
         }
         
-        // Traiter la palette de couleur
-        data.color_palette = parseColorPalette(data.color_palette);
+        // Traiter la palette de couleur mais conserver le format original
+        // Nous allons simplement vérifier si c'est une chaîne et la laisser telle quelle
+        // parseColorPalette sera appelé au moment de l'utilisation
 
         // S'assurer que l'email est bien présent dans les données du profil
         const profileData = data as Profile;

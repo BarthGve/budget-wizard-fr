@@ -32,8 +32,8 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     dashboard_preferences: profile.dashboard_preferences ? 
       mergeDashboardPreferences(profile.dashboard_preferences) : 
       null,
-    // S'assurer que color_palette est correctement traité
-    color_palette: parseColorPalette(profile.color_palette)
+    // S'assurer que color_palette est correctement traité seulement au moment de l'utilisation
+    // Nous gardons la valeur originale ici pour éviter les problèmes de type
   } : undefined;
 
   return (
