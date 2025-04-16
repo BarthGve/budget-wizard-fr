@@ -68,7 +68,7 @@ export const ColorPaletteSettings = () => {
             <Tabs defaultValue="light">
               <TabsList className="mb-4 w-full">
                 <TabsTrigger value="light" className="flex-1">Mode clair</TabsTrigger>
-                <TabsTrigger value="dark" className="flex-1">Mode sombre</TabsTrigger>
+                <TabsTrigger value="dark" className="flex-1">Mode sombre (auto)</TabsTrigger>
               </TabsList>
               
               <TabsContent value="light" className="space-y-6">
@@ -94,6 +94,12 @@ export const ColorPaletteSettings = () => {
               </TabsContent>
               
               <TabsContent value="dark" className="space-y-6">
+                <div className="p-4 mb-2 bg-muted/50 rounded-lg border border-border">
+                  <p className="text-sm text-muted-foreground">
+                    Les couleurs du mode sombre sont automatiquement générées à partir des couleurs du mode clair pour une meilleure cohérence visuelle.
+                  </p>
+                </div>
+                
                 <div className="space-y-4">
                   {Object.entries(colorLabels).map(([key, label]) => (
                     <ColorPicker
@@ -103,6 +109,7 @@ export const ColorPaletteSettings = () => {
                       hexColor={getHexColor(key as keyof typeof colorLabels, "dark")}
                       onColorChange={(hsl) => handleColorChange(key as keyof typeof colorLabels, "dark", hsl)}
                       rgbToHsl={rgbToHsl}
+                      disabled={true}
                     />
                   ))}
                 </div>
