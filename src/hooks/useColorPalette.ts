@@ -53,7 +53,8 @@ export function useColorPalette() {
   
   // État pour les couleurs personnalisées
   const [colorPalette, setColorPalette] = useState<ColorPaletteProfile>(defaultColors);
-  const [savedColorPalette, setSavedColorPalette] = useState<ColorPaletteProfile | null>(null);
+  // Initialiser savedColorPalette avec defaultColors pour éviter la comparaison avec null
+  const [savedColorPalette, setSavedColorPalette] = useState<ColorPaletteProfile>(defaultColors);
   const [hasChanges, setHasChanges] = useState(false);
 
   // Charger les couleurs depuis le profil utilisateur
@@ -97,6 +98,8 @@ export function useColorPalette() {
         description: "Impossible de charger vos préférences de couleurs",
         variant: "destructive",
       });
+      // En cas d'erreur, initialiser avec les couleurs par défaut
+      resetToDefaults();
     } finally {
       setIsLoading(false);
     }
@@ -104,8 +107,7 @@ export function useColorPalette() {
 
   // Vérifier si des modifications ont été apportées
   useEffect(() => {
-    if (!savedColorPalette) return;
-
+    // Toujours procéder à la comparaison puisque savedColorPalette est maintenant initialisé
     setHasChanges(JSON.stringify(colorPalette) !== JSON.stringify(savedColorPalette));
   }, [colorPalette, savedColorPalette]);
 
@@ -253,6 +255,9 @@ export function useColorPalette() {
   // Réinitialiser aux valeurs par défaut
   const resetToDefaults = () => {
     setColorPalette(defaultColors);
+    // Important: Mettre à jour aussi l'état sauvegardé pour que hasChanges soit false après reset
+    // Cela évite que le bouton reste activé après réinitialisation
+    setSavedColorPalette({...defaultColors});
     applyColorPalette(defaultColors);
   };
 
