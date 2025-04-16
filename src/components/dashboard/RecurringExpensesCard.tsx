@@ -4,6 +4,7 @@ import { BarChart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCategoryColor } from "@/utils/colors";
+import { cn } from "@/lib/utils";
 
 interface RecurringExpense {
   id: string;
@@ -41,12 +42,12 @@ export const RecurringExpensesCard = ({ recurringExpenses, totalExpenses }: Recu
           {recurringExpenses?.map((expense, index) => (
             <div key={expense.id} className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-medium">{expense.name}</span>
-                <span className="text-primary font-semibold">{Math.round(expense.amount)} €</span>
+                <span className="font-medium dark:text-gray-200">{expense.name}</span>
+                <span className="text-primary font-semibold dark:text-primary-300">{Math.round(expense.amount)} €</span>
               </div>
-              <div className="h-2 rounded-full bg-gray-100">
+              <div className="h-2 rounded-full bg-gray-100 dark:bg-gray-800">
                 <div
-                  className="h-full rounded-full bg-primary"
+                  className="h-full rounded-full"
                   style={{
                     width: `${(expense.amount / totalExpenses) * 100}%`,
                     backgroundColor: getCategoryColor(index),
