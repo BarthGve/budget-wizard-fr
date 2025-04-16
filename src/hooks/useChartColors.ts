@@ -12,12 +12,12 @@ type ColorVariants = {
 
 /**
  * Hook qui génère des palettes de couleurs basées sur les variables CSS
- * @param colorType - Le type de couleur à utiliser ('primary', 'tertiary', 'quaternary', 'senary')
+ * @param colorType - Le type de couleur à utiliser ('primary', 'tertiary', 'quaternary', 'senary', 'quinary')
  * @param shades - Nombre de nuances à générer dans chaque direction
  * @returns Un objet contenant les variantes de couleurs
  */
 export const useChartColors = (
-  colorType: "primary" | "tertiary" | "quaternary" | "senary",
+  colorType: "primary" | "tertiary" | "quaternary" | "senary" | "quinary",
   shades: number = 3
 ): ColorVariants => {
   const { theme } = useTheme();
@@ -39,7 +39,9 @@ export const useChartColors = (
           ? "#ef4444" 
           : colorType === "senary"
             ? "#f59e0b" // Couleur par défaut pour senary (orange ambre)
-            : "#0ea5e9";
+            : colorType === "quinary"
+              ? "#10b981" // Couleur par défaut pour quinary (vert émeraude)
+              : "#0ea5e9";
     }
     
     return `hsl(${cssVar})`;

@@ -8,6 +8,7 @@ import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { useChartColors } from "@/hooks/useChartColors";
 
 interface Expense {
   id: string;
@@ -20,17 +21,6 @@ interface ExpensesChartProps {
   viewMode: 'monthly' | 'yearly';
 }
 
-// Nouvelle configuration des couleurs du graphique avec du bleu
-const chartConfig = {
-  expenses: {
-    label: "Dépenses",
-    theme: {
-      light: "#73767a", // Bleu plus vif qui correspond à l'image de référence
-      dark: "#60A5FA"
-    }
-  }
-};
-
 export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   // État pour suivre la version des données pour les animations
   const [dataVersion, setDataVersion] = useState(0);
@@ -38,6 +28,20 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   const startOfCurrentYear = startOfYear(today);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  
+  // Utiliser le hook useChartColors pour récupérer les couleurs tertiary
+  const tertiaryColors = useChartColors("tertiary");
+
+  // Nouvelle configuration des couleurs du graphique avec la couleur tertiary
+  const chartConfig = useMemo(() => ({
+    expenses: {
+      label: "Dépenses",
+      theme: {
+        light: tertiaryColors.base, // Utiliser la couleur tertiary de base en mode clair
+        dark: tertiaryColors.base    // Utiliser la couleur tertiary de base en mode sombre
+      }
+    }
+  }), [tertiaryColors]);
 
   // Surveiller les changements dans les dépenses pour déclencher l'animation
   useEffect(() => {
@@ -97,6 +101,11 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
   const gridColor = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
   const axisColor = isDarkMode ? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground))";
   const backgroundColor = "transparent"; // Rendre le fond transparent pour qu'il prenne la couleur de la carte
+  
+  // Utiliser la couleur tertiary pour le remplissage de la barre
+  const barFillColor = isDarkMode 
+    ? `hsl(var(--tertiary-500))` 
+    : `hsl(var(--tertiary-600))`;
 
   return (
     <div className="rounded-lg p-2 mt-2">
@@ -142,7 +151,7 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
                 />
                 <Bar 
                   dataKey="total" 
-                  fill="#60A5FA" // Remplace le violet par un bleu qui correspond à l'image
+                  fill={barFillColor} // Utiliser la couleur tertiary dynamique
                   radius={[4, 4, 0, 0]}
                   maxBarSize={50}
                 />
