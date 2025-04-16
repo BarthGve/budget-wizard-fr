@@ -6,6 +6,7 @@ import { ColorPaletteProfile, HSLColor, defaultColors } from './types';
 import { hslToRgb, rgbToHsl } from './colorConversion';
 import { deriveDarkColor } from './colorDerivation';
 import { applyColorPalette, loadUserColorPalette, saveUserColorPalette } from './paletteStorage';
+import { useUserSession } from "@/hooks/useUserSession";
 
 export function useColorPalette() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,16 +15,26 @@ export function useColorPalette() {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   
+  // Intégrer useUserSession pour réagir aux changements d'utilisateur
+  const { currentUser, isAuthenticated } = useUserSession();
+  
   // État pour les couleurs personnalisées
   const [colorPalette, setColorPalette] = useState<ColorPaletteProfile>(defaultColors);
   // Initialiser savedColorPalette avec defaultColors pour éviter la comparaison avec null
   const [savedColorPalette, setSavedColorPalette] = useState<ColorPaletteProfile>(defaultColors);
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Charger les couleurs au démarrage
+  // Charger les couleurs au démarrage et à chaque changement d'utilisateur
   const loadColorPalette = async () => {
     try {
       setIsLoading(true);
+      
+      // Si l'utilisateur n'est pas authentifié, utiliser les valeurs par défaut
+      if (!isAuthenticated || !currentUser) {
+        resetToDefaults();
+        setIsLoading(false);
+        return;
+      }
       
       const loadedPalette = await loadUserColorPalette();
       
@@ -50,6 +61,17 @@ export function useColorPalette() {
       setIsLoading(false);
     }
   };
+
+  // Recharger la palette à chaque changement d'utilisateur ou de thème
+  useEffect(() => {
+    loadColorPalette();
+  }, [currentUser?.id, isDarkMode, isAuthenticated]);
+
+  // Appliquer les couleurs à chaque changement de thème
+  useEffect(() => {
+    // Appliquer les couleurs actuelles quand le thème change
+    applyColorPalette(colorPalette, isDarkMode);
+  }, [isDarkMode]);
 
   // Vérifier si des modifications ont été apportées
   useEffect(() => {
