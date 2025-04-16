@@ -11,9 +11,9 @@
     --popover-foreground: 240 10% 3.9%;
     
     /* Couleur primaire et ses variantes */
-    --primary-hue: 222;
-    --primary-saturation: 85%;
-    --primary-lightness: 60%;
+    --primary-hue: 268;
+    --primary-saturation: 65%;
+    --primary-lightness: 64%;
     --primary: var(--primary-hue) var(--primary-saturation) var(--primary-lightness);
     --primary-50: var(--primary-hue) var(--primary-saturation) 95%;
     --primary-100: var(--primary-hue) var(--primary-saturation) 90%;
@@ -137,11 +137,11 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
     
-    /* Couleur primaire (violet) et ses variantes en mode sombre */
+
     /* Couleur primaire et ses variantes */
-    --primary-hue: 222;
-    --primary-saturation: 85%;
-    --primary-lightness: 40%;
+    --primary-hue: 268;
+    --primary-saturation: 65%;
+    --primary-lightness: 44%;
     --primary: var(--primary-hue) var(--primary-saturation) var(--primary-lightness);
     --primary-50: var(--primary-hue) var(--primary-saturation) 95%;
     --primary-100: var(--primary-hue) var(--primary-saturation) 90%;
