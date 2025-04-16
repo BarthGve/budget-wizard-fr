@@ -11,11 +11,32 @@ export interface DashboardPreferences {
   show_contributors?: boolean;
 }
 
+export interface HSLColorPalette {
+  hue: number;
+  saturation: number;
+  lightness: number;
+}
+
+export interface ColorPalette {
+  light: {
+    tertiary: HSLColorPalette;
+    quaternary: HSLColorPalette;
+    quinary: HSLColorPalette;
+    senary: HSLColorPalette;
+  };
+  dark: {
+    tertiary: HSLColorPalette;
+    quaternary: HSLColorPalette;
+    quinary: HSLColorPalette;
+    senary: HSLColorPalette;
+  };
+}
+
 export interface Profile {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
-  color_palette: string | null;
+  color_palette: ColorPalette | null;
   savings_goal_percentage: number | null;
   updated_at: string | null;
   email?: string | null;
