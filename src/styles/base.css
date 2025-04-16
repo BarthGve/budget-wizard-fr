@@ -108,9 +108,9 @@
     
     /* Crédits*/
  
-  --senary-hue: 162;
-  --senary-saturation: 72%;
-  --senary-lightness: 42%;
+  --senary-hue: 42;
+  --senary-saturation: 87%;
+  --senary-lightness: 55%;
   --senary: var(--senary-hue) var(--senary-saturation) var(--senary-lightness);
   --senary-50: var(--senary-hue) var(--senary-saturation) 95%;
   --senary-100: var(--senary-hue) var(--senary-saturation) 90%;
@@ -232,9 +232,9 @@
   --quinary-foreground: 0 0% 98%;
 
   /* Crédits */
-  --senary-hue: 162;
-  --senary-saturation: 72%;
-  --senary-lightness: 22%;
+  --senary-hue: 42;
+  --senary-saturation: 87%;
+  --senary-lightness: 35%;
   --senary: var(--senary-hue) var(--senary-saturation) var(--senary-lightness);
   --senary-50: var(--senary-hue) var(--senary-saturation) 95%;
   --senary-100: var(--senary-hue) var(--senary-saturation) 90%;
