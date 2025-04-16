@@ -36,7 +36,7 @@ export interface Profile {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
-  color_palette: ColorPalette | null;
+  color_palette: ColorPalette | null | string; // Permettre à la fois string et ColorPalette pour la compatibilité
   savings_goal_percentage: number | null;
   updated_at: string | null;
   email?: string | null;
@@ -48,4 +48,20 @@ export interface Profile {
   notif_credits?: boolean;
   onboarding_completed?: boolean;
   dashboard_preferences?: DashboardPreferences | null;
+}
+
+// Fonction utilitaire pour parser le color_palette si c'est une chaîne
+export function parseColorPalette(colorPalette: string | ColorPalette | null): ColorPalette | null {
+  if (!colorPalette) return null;
+  
+  if (typeof colorPalette === 'string') {
+    try {
+      return JSON.parse(colorPalette) as ColorPalette;
+    } catch (e) {
+      console.error("Erreur lors du parsing de la palette de couleurs:", e);
+      return null;
+    }
+  }
+  
+  return colorPalette;
 }

@@ -8,6 +8,7 @@ import { useSidebar } from "./useSidebar";
 import { useUserData } from "./useUserData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
+import { parseColorPalette } from "@/types/profile";
 
 interface SidebarProps {
   className?: string;
@@ -30,7 +31,9 @@ export const Sidebar = ({ className, onClose }: SidebarProps) => {
     // Convertir dashboard_preferences si nécessaire
     dashboard_preferences: profile.dashboard_preferences ? 
       mergeDashboardPreferences(profile.dashboard_preferences) : 
-      null
+      null,
+    // S'assurer que color_palette est correctement traité
+    color_palette: parseColorPalette(profile.color_palette)
   } : undefined;
 
   return (

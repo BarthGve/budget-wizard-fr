@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
+import { parseColorPalette } from "@/types/profile";
 
 // Types pour les couleurs HSL
 export interface HSLColor {
@@ -73,15 +74,18 @@ export function useColorPalette() {
       
       if (data?.color_palette) {
         // Analyser la chaîne JSON si nécessaire
-        const palette = typeof data.color_palette === 'string' 
-          ? JSON.parse(data.color_palette) 
-          : data.color_palette;
+        const parsedPalette = parseColorPalette(data.color_palette);
         
-        setColorPalette(palette);
-        setSavedColorPalette(palette);
-        
-        // Appliquer les couleurs immédiatement
-        applyColorPalette(palette);
+        if (parsedPalette) {
+          setColorPalette(parsedPalette);
+          setSavedColorPalette(parsedPalette);
+          
+          // Appliquer les couleurs immédiatement
+          applyColorPalette(parsedPalette);
+        } else {
+          // Si le parsing échoue, utiliser les valeurs par défaut
+          resetToDefaults();
+        }
       } else {
         // Si aucune palette n'existe, utiliser les valeurs par défaut
         resetToDefaults();
@@ -215,10 +219,11 @@ export function useColorPalette() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
       
+      // Convertir l'objet colorPalette en JSON pour stockage
       const { error } = await supabase
         .from("profiles")
         .update({ 
-          color_palette: colorPalette,
+          color_palette: JSON.stringify(colorPalette),
           updated_at: new Date().toISOString()
         })
         .eq("id", user.id);

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Profile } from "@/types/profile";
+import { Profile, parseColorPalette } from "@/types/profile";
 import { ProfileForm } from "./profile/ProfileForm";
 import { EmailChangeDialog } from "./profile/EmailChangeDialog";
 import { useProfileUpdate } from "./profile/useProfileUpdate";
@@ -41,6 +41,11 @@ export const ProfileSettings = () => {
       if (error) {
         console.error("Erreur lors de la récupération du profil:", error);
         throw error;
+      }
+      
+      // Traiter la palette de couleur
+      if (data) {
+        data.color_palette = parseColorPalette(data.color_palette);
       }
       
       console.log("ProfileSettings: Profil récupéré:", data?.full_name);

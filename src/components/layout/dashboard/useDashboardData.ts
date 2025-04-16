@@ -6,7 +6,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { calculateGlobalBalance } from "@/utils/dashboardCalculations";
 import { Credit } from "@/components/credits/types";
 import { mergeDashboardPreferences } from "@/utils/dashboard-preferences";
-import { Profile } from "@/types/profile";
+import { Profile, parseColorPalette } from "@/types/profile";
 import { useAuthContext } from "@/context/AuthProvider";
 
 // Hook pour la récupération et le calcul des données du dashboard
@@ -71,6 +71,9 @@ export const useDashboardPageData = () => {
             profile.dashboard_preferences = null;
           }
         }
+        
+        // Traiter la palette de couleur
+        profile.color_palette = parseColorPalette(profile.color_palette);
         
         // Ajouter l'email s'il est manquant et que l'utilisateur a un email
         const typedProfile = profile as Profile;
