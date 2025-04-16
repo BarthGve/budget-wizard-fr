@@ -136,7 +136,7 @@ export const CreditsPieChart = ({
                               <tspan 
                                 x={viewBox.cx} 
                                 y={(viewBox.cy || 0) + 18} 
-                                className="fill-current text-senary/70 dark:text-senary/60 text-sm"
+                                 className="fill-current text-gray-500 dark:text-gray-400 text-sm"
                               >
                                 par mois
                               </tspan>
