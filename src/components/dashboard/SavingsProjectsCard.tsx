@@ -1,6 +1,6 @@
 
-import { CalendarClock, PiggyBank } from "lucide-react";
-import { motion } from "framer-motion";
+import { PiggyBank } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +15,9 @@ export const SavingsProjectsCard = ({
   savingsProjects = [], 
   isLoading = false 
 }: SavingsProjectsCardProps) => {
+  // Ajouter le hook useNavigate pour la redirection
+  const navigate = useNavigate();
+  
   if (isLoading) {
     return <SavingsProjectsCardSkeleton />;
   }
@@ -40,12 +43,7 @@ export const SavingsProjectsCard = ({
   }, 0);
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }} 
-      animate={{ opacity: 1, y: 0 }} 
-      transition={{ duration: 0.4 }} 
-      whileHover={{ y: -3 }}
-    >
+    <div className="transition-all duration-300 transform hover:-translate-y-1">
       <Card 
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300 h-full",
@@ -53,8 +51,8 @@ export const SavingsProjectsCard = ({
           "shadow-lg border hover:shadow-xl",
           // Dark mode styles
           "dark:bg-quaternary/10 dark:border-quaternary/30 dark:shadow-quaternary/30 dark:hover:shadow-quaternary/50"
-      onClick={() => navigate("/credits")}
         )}
+        onClick={() => navigate("/savings")}
       >
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">
@@ -68,30 +66,24 @@ export const SavingsProjectsCard = ({
               </div>
               <div>
                 <span className="dark:text-white">Projets d'épargne</span>
-     
               </div>
             </CardTitle>
           </div>
         </CardHeader>
         <CardContent className="pb-4">
           <div className="space-y-4">
-            <motion.p 
-              className={cn(
-                "text-xl font-bold leading-none", 
-                "text-gray-800",
-                "dark:text-quaternary"
-              )} 
-              initial={{ scale: 0.9 }} 
-              animate={{ scale: 1 }} 
-              transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-            >
-                    {activeProjects.length} projet{activeProjects.length !== 1 ? 's' : ''} actif{activeProjects.length !== 1 ? 's' : ''}
-            </motion.p>
-      
+            <p className={cn(
+              "text-xl font-bold leading-none", 
+              "text-gray-800",
+              "dark:text-quaternary",
+              "animate-fadeIn"
+            )}>
+              {activeProjects.length} projet{activeProjects.length !== 1 ? 's' : ''} actif{activeProjects.length !== 1 ? 's' : ''}
+            </p>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 };
 
