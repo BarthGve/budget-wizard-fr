@@ -14,6 +14,7 @@ export const DashboardPreferencesSettings = () => {
     showExpenseStats,
     showCharts,
     showContributors,
+    showSavingsProjectsCard,
     isUpdating,
     handleRevenueCardToggle,
     handleExpensesCardToggle,
@@ -21,7 +22,8 @@ export const DashboardPreferencesSettings = () => {
     handleSavingsCardToggle,
     handleExpenseStatsToggle,
     handleChartsToggle,
-    handleContributorsToggle
+    handleContributorsToggle,
+    handleSavingsProjectsCardToggle
   } = useDashboardPreferences(profile);
 
   return (
@@ -59,6 +61,15 @@ export const DashboardPreferencesSettings = () => {
         tooltipContent="Affiche ou masque la carte d'épargne sur votre tableau de bord"
         checked={showSavingsCard}
         onCheckedChange={handleSavingsCardToggle}
+        disabled={isUpdating}
+      />
+
+      <DashboardToggle
+        label="Carte des Projets d'Épargne"
+        description="Afficher la carte des projets d'épargne sur le tableau de bord"
+        tooltipContent="Affiche ou masque la carte des projets d'épargne sur votre tableau de bord"
+        checked={showSavingsProjectsCard}
+        onCheckedChange={handleSavingsProjectsCardToggle}
         disabled={isUpdating}
       />
 

@@ -9,6 +9,7 @@ export interface DashboardPreferences {
   show_expense_stats?: boolean;
   show_charts?: boolean;
   show_contributors?: boolean;
+  show_savings_projects_card?: boolean;
 }
 
 export interface HSLColorPalette {

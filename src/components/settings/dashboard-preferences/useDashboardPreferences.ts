@@ -12,7 +12,8 @@ const defaultPreferences: DashboardPreferences = {
   show_savings_card: true,
   show_expense_stats: true,
   show_charts: true,
-  show_contributors: true
+  show_contributors: true,
+  show_savings_projects_card: true
 };
 
 // Fonction utilitaire améliorée pour vérifier si un objet est du type DashboardPreferences
@@ -58,6 +59,9 @@ export const useDashboardPreferences = (profile: Profile | null | undefined) => 
   const [showContributors, setShowContributors] = useState<boolean>(
     profilePreferences.show_contributors !== false
   );
+  const [showSavingsProjectsCard, setShowSavingsProjectsCard] = useState<boolean>(
+    profilePreferences.show_savings_projects_card !== false
+  );
   
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const queryClient = useQueryClient();
@@ -77,7 +81,8 @@ export const useDashboardPreferences = (profile: Profile | null | undefined) => 
         show_savings_card: preferences.show_savings_card ?? true,
         show_expense_stats: preferences.show_expense_stats ?? true,
         show_charts: preferences.show_charts ?? true,
-        show_contributors: preferences.show_contributors ?? true
+        show_contributors: preferences.show_contributors ?? true,
+        show_savings_projects_card: preferences.show_savings_projects_card ?? true
       };
 
       const { error } = await supabase
@@ -207,6 +212,21 @@ export const useDashboardPreferences = (profile: Profile | null | undefined) => 
     }
   };
 
+  const handleSavingsProjectsCardToggle = (checked: boolean) => {
+    setShowSavingsProjectsCard(checked);
+    try {
+      const updatedPreferences = {
+        ...defaultPreferences,
+        ...(isDashboardPreferences(profile?.dashboard_preferences) ? profile.dashboard_preferences : {}),
+        show_savings_projects_card: checked
+      };
+      updatePreferences(updatedPreferences);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences:", error);
+      toast.error("Erreur lors de la mise à jour des préférences");
+    }
+  };
+
   return {
     showRevenueCard,
     showExpensesCard,
@@ -215,6 +235,7 @@ export const useDashboardPreferences = (profile: Profile | null | undefined) => 
     showExpenseStats,
     showCharts,
     showContributors,
+    showSavingsProjectsCard,
     isUpdating,
     handleRevenueCardToggle,
     handleExpensesCardToggle,
@@ -222,6 +243,7 @@ export const useDashboardPreferences = (profile: Profile | null | undefined) => 
     handleSavingsCardToggle,
     handleExpenseStatsToggle,
     handleChartsToggle,
-    handleContributorsToggle
+    handleContributorsToggle,
+    handleSavingsProjectsCardToggle
   };
 };

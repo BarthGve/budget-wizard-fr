@@ -1,4 +1,3 @@
-
 import { DashboardPreferences } from "@/types/profile";
 
 /**
@@ -23,7 +22,8 @@ export const defaultDashboardPreferences: DashboardPreferences = {
   show_savings_card: true,
   show_expense_stats: true,
   show_charts: true,
-  show_contributors: true
+  show_contributors: true,
+  show_savings_projects_card: true
 };
 
 /**
