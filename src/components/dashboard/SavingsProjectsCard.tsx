@@ -40,40 +40,70 @@ export const SavingsProjectsCard = ({
   }, 0);
 
   return (
-    <Card className="relative overflow-hidden border-quaternary-100 dark:border-quaternary-800/50 shadow-lg">
-      <div className="p-6">
-        <div className="flex items-center space-x-2">
-          <div className="h-10 w-10 rounded-full bg-quaternary-100 dark:bg-quaternary-800/40 flex items-center justify-center">
-            <PiggyBank className="h-5 w-5 text-quaternary-700 dark:text-quaternary-300" />
+    <motion.div 
+  initial={{ opacity: 0, y: 10 }} 
+  animate={{ opacity: 1, y: 0 }} 
+  transition={{ duration: 0.4 }} 
+  whileHover={{ y: -3 }}
+>
+  <Card 
+    className={cn(
+      "backdrop-blur-sm cursor-pointer transition-all duration-300 h-full",
+      // Light mode styles
+      "shadow-lg border hover:shadow-xl",
+      // Dark mode styles
+      "dark:bg-quaternary/10 dark:border-quaternary/30 dark:shadow-quaternary/30 dark:hover:shadow-quaternary/50"
+    )}
+  >
+    <CardHeader className="py-4">
+      <div className="flex flex-row items-center justify-between">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <div className={cn(
+            "p-2 rounded-full",
+            "bg-quaternary/20 text-quaternary",
+            "dark:bg-quaternary/20 dark:text-quaternary"
+          )}>
+            <PiggyBank className="h-5 w-5" />
           </div>
           <div>
-           <span className="dark:text-white">Projets d'épargne</span>
-           
-      
-            <p className="text-sm text-quaternary-600/80 dark:text-quaternary-400/90">
+            <span className="dark:text-white">Projets d'épargne</span>
+            <p className={cn(
+              "text-sm",
+              "text-gray-500", 
+              "dark:text-gray-400"
+            )}>
               {activeProjects.length} projet{activeProjects.length !== 1 ? 's' : ''} actif{activeProjects.length !== 1 ? 's' : ''}
             </p>
           </div>
-        </div>
-
-        <div className="mt-4">
-          <div className="text-2xl font-bold text-quaternary-800 dark:text-quaternary-200">
-            {totalMonthlyAmount.toLocaleString('fr-FR')} €
-          </div>
-          <p className="text-sm text-quaternary-600/80 dark:text-quaternary-400/90 flex items-center mt-1">
-            <CalendarClock className="inline-block h-4 w-4 mr-1" />
-            Épargne mensuelle totale
-          </p>
-        </div>
-
-        {/* Gradient subtil */}
-        <div className={cn(
-          "absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r",
-          "from-quaternary-400 via-emerald-300 to-transparent",
-          "dark:from-quaternary-400 dark:via-emerald-500 dark:to-transparent"
-        )} />
+        </CardTitle>
       </div>
-    </Card>
+    </CardHeader>
+    <CardContent className="pb-4">
+      <div className="space-y-4">
+        <motion.p 
+          className={cn(
+            "text-xl font-bold leading-none", 
+            "text-gray-800",
+            "dark:text-quaternary"
+          )} 
+          initial={{ scale: 0.9 }} 
+          animate={{ scale: 1 }} 
+          transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+        >
+          {totalMonthlyAmount.toLocaleString('fr-FR')} €
+        </motion.p>
+        <p className={cn(
+          "text-sm flex items-center",
+          "text-gray-500", 
+          "dark:text-gray-400"
+        )}>
+          <CalendarClock className="inline-block h-4 w-4 mr-1" />
+          Épargne mensuelle totale
+        </p>
+      </div>
+    </CardContent>
+  </Card>
+</motion.div>
   );
 };
 
