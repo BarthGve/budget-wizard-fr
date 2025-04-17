@@ -37,7 +37,6 @@ interface DashboardCardsSectionProps {
   }>;
   currentView: "monthly" | "yearly";
   dashboardPreferences: DashboardPreferences;
-  savingsProjects?: any[];
 }
 
 /**
@@ -53,7 +52,7 @@ export const DashboardCardsSection = ({
   recurringExpenses,
   currentView,
   dashboardPreferences,
-}) => {
+}: DashboardCardsSectionProps) => {
   const shouldRenderCards = 
     dashboardPreferences.show_revenue_card || 
     dashboardPreferences.show_expenses_card || 

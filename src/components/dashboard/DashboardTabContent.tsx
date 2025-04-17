@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
@@ -123,7 +124,6 @@ export const DashboardTabContent = ({
           }))}
           currentView={currentView}
           dashboardPreferences={dashboardPrefs}
-          savingsProjects={savingsProjects}
         />
         
         <ExpenseStatsWrapper 
