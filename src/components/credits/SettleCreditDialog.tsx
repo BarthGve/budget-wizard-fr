@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Credit } from "./types";
@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { LoadingButton } from "@/components/ui/loading-button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 interface SettleCreditDialogProps {
   credit: Credit;
@@ -41,24 +43,33 @@ export const SettleCreditDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const [settleDate, setSettleDate] = useState<Date>(new Date());
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-
+  const [isEarlySettlement, setIsEarlySettlement] = useState(false);
+  
+  // Vérifier si le règlement est anticipé en comparant avec la date de fin prévue
+  const isBeforeEndDate = credit.date_derniere_mensualite && 
+    settleDate < new Date(credit.date_derniere_mensualite);
+  
   // Fonction pour solder le crédit
   const handleSettleCredit = async () => {
     setIsLoading(true);
     try {
+      // Déterminer si le règlement est anticipé (soit manuellement indiqué ou par date)
+      const effectiveEarlySettlement = isEarlySettlement || isBeforeEndDate;
+      
       // Mettre à jour le statut du crédit en "remboursé"
       const { error } = await supabase
         .from("credits")
         .update({
           statut: "remboursé",
           date_derniere_mensualite: settleDate.toISOString().split("T")[0], // Format YYYY-MM-DD
+          is_early_settlement: effectiveEarlySettlement, // Enregistrer l'information d'anticipation
         })
         .eq("id", credit.id);
 
       if (error) throw error;
 
       // Notification de succès
-      toast.success(`Le crédit ${credit.nom_credit} a été soldé avec succès`);
+      toast.success(`Le crédit ${credit.nom_credit} a été soldé avec succès${effectiveEarlySettlement ? ' par anticipation' : ''}`);
       
       // Fermer la boîte de dialogue et rafraîchir la liste
       onOpenChange(false);
@@ -120,6 +131,42 @@ export const SettleCreditDialog = ({
                 />
               </PopoverContent>
             </Popover>
+          </div>
+          
+          {/* Section pour détecter si le crédit est soldé par anticipation */}
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="earlySettlement" 
+                checked={isEarlySettlement || isBeforeEndDate}
+                onCheckedChange={(checked) => {
+                  // Si la date est avant la fin, on ne peut pas décocher la case
+                  if (!isBeforeEndDate || checked) {
+                    setIsEarlySettlement(checked === true);
+                  }
+                }}
+                disabled={isBeforeEndDate} // Désactiver si la date est déjà anticipée
+              />
+              <label 
+                htmlFor="earlySettlement" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+              >
+                Solde anticipé
+                {isBeforeEndDate && (
+                  <Badge 
+                    variant="outline" 
+                    className="ml-2 bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800/50"
+                  >
+                    <Zap className="h-3 w-3 mr-1" /> Détecté
+                  </Badge>
+                )}
+              </label>
+            </div>
+            <p className="text-xs text-muted-foreground pl-6">
+              {isBeforeEndDate 
+                ? `Date de fin prévue: ${format(new Date(credit.date_derniere_mensualite), "dd MMMM yyyy", { locale: fr })}`
+                : "Cochez cette case si vous avez remboursé ce crédit avant son échéance prévue."}
+            </p>
           </div>
         </div>
 
