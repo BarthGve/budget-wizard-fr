@@ -152,8 +152,9 @@ export function useColorPalette() {
   // Réinitialiser aux valeurs par défaut
   const resetToDefaults = useCallback(() => {
     setColorPalette(defaultColors);
-    // Important: Mettre à jour aussi l'état sauvegardé pour que hasChanges soit false après reset
-    setSavedColorPalette({...defaultColors});
+    // CORRECTION: Ne pas mettre à jour l'état sauvegardé lors de la réinitialisation
+    // Cela permet à hasChanges de devenir true et donc d'activer le bouton de sauvegarde
+    // setSavedColorPalette({...defaultColors});
     applyColorPalette(defaultColors, isDarkMode);
   }, [isDarkMode]);
 
