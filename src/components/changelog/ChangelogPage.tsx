@@ -30,9 +30,11 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
+  // Correction: Passons simplement showHidden à la fonction fetchChangelogEntries
+  // Quand on est admin, on peut voir toutes les entrées si showHidden est true
   const { data: entries = [], isLoading } = useQuery({
     queryKey: ["changelog", showHidden],
-    queryFn: () => fetchChangelogEntries(isAdminView && showHidden),
+    queryFn: () => fetchChangelogEntries(showHidden),
   });
 
   useEffect(() => {

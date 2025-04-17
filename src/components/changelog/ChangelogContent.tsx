@@ -25,6 +25,7 @@ import {
 import { useState } from "react";
 import { toggleChangelogVisibility } from "@/services/changelog";
 import { toast } from "@/hooks/useToastWrapper";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ChangelogContentProps {
   entries: ChangelogEntry[];
@@ -42,6 +43,7 @@ export const ChangelogContent = ({
   onDelete 
 }: ChangelogContentProps) => {
   const [updatingVisibility, setUpdatingVisibility] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   if (isLoading) {
     return (
@@ -111,6 +113,9 @@ export const ChangelogContent = ({
     try {
       setUpdatingVisibility(entryId);
       await toggleChangelogVisibility(entryId, !currentVisibility);
+      
+      await queryClient.invalidateQueries({ queryKey: ["changelog"] });
+      
       toast(!currentVisibility 
         ? "Entrée rendue visible" 
         : "Entrée masquée"

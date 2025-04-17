@@ -4,12 +4,13 @@ import { ChangelogEntry, FormData } from "@/components/changelog/types";
 import { toast } from "@/hooks/useToastWrapper";
 
 export async function fetchChangelogEntries(showHidden = false) {
+  // Modification: Simplification de la fonction pour gérer correctement le filtrage
   const query = supabase
     .from("changelog_entries")
     .select("*")
     .order("date", { ascending: false });
   
-  // Si showHidden est false (par défaut), filtrer les entrées visibles uniquement
+  // Si showHidden est false, on filtre pour n'afficher que les entrées visibles
   if (!showHidden) {
     query.eq("is_visible", true);
   }
