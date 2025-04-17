@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { ExpenseStatsSection } from "../dashboard-tab/ExpenseStats";
 import { DashboardPreferences } from "@/types/profile";
@@ -56,6 +57,7 @@ export const ExpenseStatsWrapper = ({
         profile={profile}
         hasActiveVehicles={hasActiveVehicles}
         savingsProjects={savingsProjects}
+        dashboardPreferences={dashboardPreferences}
       />
     </motion.div>
   );

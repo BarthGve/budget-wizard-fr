@@ -1,8 +1,11 @@
+
 import { memo } from "react";
 import { motion } from "framer-motion";
 import { MonthlyExpensesCard } from "../MonthlyExpensesCard";
 import { VehicleFuelExpensesCard } from "../VehicleFuelExpensesCard";
 import { SavingsProjectsCard } from "../SavingsProjectsCard";
+import { DashboardPreferences } from "@/types/profile";
+import { SavingsProject } from "@/types/savings-project";
 
 const MemoizedMonthlyExpensesCard = memo(MonthlyExpensesCard);
 const MemoizedVehicleFuelExpensesCard = memo(VehicleFuelExpensesCard);
@@ -29,7 +32,8 @@ interface ExpenseStatsProps {
   fuelExpensesCount?: number;
   profile: any;
   hasActiveVehicles: boolean;
-  savingsProjects?: any[];
+  savingsProjects?: SavingsProject[];
+  dashboardPreferences: DashboardPreferences;
 }
 
 /**
@@ -43,8 +47,12 @@ export const ExpenseStatsSection = ({
   fuelExpensesCount = 0,
   profile,
   hasActiveVehicles,
-  savingsProjects = []
+  savingsProjects = [],
+  dashboardPreferences
 }: ExpenseStatsProps) => {
+  // Déterminer si la carte des projets d'épargne doit être affichée
+  const shouldShowSavingsProjectsCard = dashboardPreferences.show_savings_projects_card && savingsProjects.length > 0;
+
   return (
     <motion.div 
       className="grid gap-6 md:grid-cols-3"
@@ -62,9 +70,11 @@ export const ExpenseStatsSection = ({
         viewMode={viewMode}
         hasActiveVehicles={hasActiveVehicles}
       />
-      <MemoizedSavingsProjectsCard
-        savingsProjects={savingsProjects}
-      />
+      {shouldShowSavingsProjectsCard && (
+        <MemoizedSavingsProjectsCard
+          savingsProjects={savingsProjects}
+        />
+      )}
     </motion.div>
   );
 };

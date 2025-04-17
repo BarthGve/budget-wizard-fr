@@ -2,8 +2,6 @@
 import { motion } from "framer-motion";
 import { DashboardPreferences } from "@/types/profile";
 import { DashboardCards } from "../dashboard-tab/DashboardCards";
-import { SavingsProjectsCard } from "../SavingsProjectsCard";
-import { SavingsProject } from "@/types/savings-project";
 
 // Animation variants
 const sectionVariants = {
@@ -39,7 +37,7 @@ interface DashboardCardsSectionProps {
   }>;
   currentView: "monthly" | "yearly";
   dashboardPreferences: DashboardPreferences;
-  savingsProjects?: SavingsProject[];
+  savingsProjects?: any[];
 }
 
 /**
@@ -55,18 +53,14 @@ export const DashboardCardsSection = ({
   recurringExpenses,
   currentView,
   dashboardPreferences,
-  savingsProjects = []
-}: DashboardCardsSectionProps) => {
+}) => {
   const shouldRenderCards = 
     dashboardPreferences.show_revenue_card || 
     dashboardPreferences.show_expenses_card || 
     dashboardPreferences.show_credits_card || 
     dashboardPreferences.show_savings_card;
 
-  const shouldRenderSavingsProjectsCard = 
-    dashboardPreferences.show_savings_projects_card && savingsProjects.length > 0;
-
-  if (!shouldRenderCards && !shouldRenderSavingsProjectsCard) return null;
+  if (!shouldRenderCards) return null;
 
   return (
     <motion.div variants={sectionVariants}>
@@ -81,14 +75,6 @@ export const DashboardCardsSection = ({
         currentView={currentView}
         dashboardPreferences={dashboardPreferences}
       />
-
-      {shouldRenderSavingsProjectsCard && (
-        <div className="mt-6">
-          <SavingsProjectsCard
-            savingsProjects={savingsProjects}
-          />
-        </div>
-      )}
     </motion.div>
   );
 };
