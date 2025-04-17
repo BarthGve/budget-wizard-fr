@@ -86,14 +86,7 @@ export const SavingsProjectsCard = ({
             >
                     {activeProjects.length} projet{activeProjects.length !== 1 ? 's' : ''} actif{activeProjects.length !== 1 ? 's' : ''}
             </motion.p>
-            <p className={cn(
-              "text-sm flex items-center",
-              "text-gray-500", 
-              "dark:text-gray-400"
-            )}>
-              <CalendarClock className="inline-block h-4 w-4 mr-1" />
-              Épargne mensuelle totale
-            </p>
+      
           </div>
         </CardContent>
       </Card>
