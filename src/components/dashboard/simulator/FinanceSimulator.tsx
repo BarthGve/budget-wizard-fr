@@ -367,7 +367,7 @@ const SimulatorContent = ({
     >
       <div>
         <h3 className="text-sm font-medium mb-3">Revenus des contributeurs</h3>
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {data.contributors.map((contributor) => (
             <div key={contributor.id} className="space-y-1">
               <div className="flex justify-between items-center">
@@ -378,7 +378,7 @@ const SimulatorContent = ({
                   {formatCurrency(contributor.total_contribution)} €
                 </span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="flex items-center gap-2">
                 <Input
                   id={`contributor-${contributor.id}`}
                   type="number"
