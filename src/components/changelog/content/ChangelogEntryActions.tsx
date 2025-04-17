@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Edit, EyeOff, MoreHorizontal, Trash2 } from "lucide-react";
+import { Bell, Edit, EyeOff, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +13,7 @@ import {
 import { ChangelogEntry } from "../types";
 import { toggleChangelogVisibility } from "@/services/changelog";
 import { toast } from "@/hooks/useToastWrapper";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChangelogEntryActionsProps {
   entry: ChangelogEntry;
@@ -26,6 +27,7 @@ export const ChangelogEntryActions = ({
   onDelete 
 }: ChangelogEntryActionsProps) => {
   const [updatingVisibility, setUpdatingVisibility] = useState<boolean>(false);
+  const [isNotifying, setIsNotifying] = useState<boolean>(false);
   const queryClient = useQueryClient();
 
   const handleToggleVisibility = async () => {
@@ -44,6 +46,33 @@ export const ChangelogEntryActions = ({
       toast.error("Impossible de changer la visibilité de l'entrée");
     } finally {
       setUpdatingVisibility(false);
+    }
+  };
+
+  const handleNotifyUsers = async () => {
+    if (isNotifying) return;
+    
+    try {
+      setIsNotifying(true);
+      console.log(`Envoi d'une notification manuelle pour l'entrée ${entry.id}`);
+      
+      // Appel à la fonction Edge pour notifier les utilisateurs
+      const { data, error } = await supabase.functions.invoke("notify-changelog", {
+        body: { id: entry.id, manual: true }
+      });
+      
+      if (error) {
+        console.error("Erreur lors de la notification:", error);
+        throw new Error(`Échec de la notification: ${error.message || "Erreur inconnue"}`);
+      }
+      
+      toast("Notification envoyée aux utilisateurs");
+      console.log("Réponse de notification:", data);
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de notification:", error);
+      toast.error("Impossible d'envoyer la notification");
+    } finally {
+      setIsNotifying(false);
     }
   };
 
@@ -78,6 +107,16 @@ export const ChangelogEntryActions = ({
             </>
           )}
         </DropdownMenuItem>
+        
+        {/* Nouvel élément de menu pour notifier les utilisateurs */}
+        <DropdownMenuItem
+          onClick={handleNotifyUsers}
+          disabled={isNotifying}
+        >
+          <Bell className="h-4 w-4 mr-2" />
+          {isNotifying ? "Notification en cours..." : "Notifier les utilisateurs"}
+        </DropdownMenuItem>
+        
         <DropdownMenuSeparator />
         <DropdownMenuItem 
           onClick={() => onDelete(entry.id)}
