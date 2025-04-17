@@ -105,7 +105,7 @@ export const SavingsProjectsCard = ({
   </Card>
 </motion.div>
   );
-};
+
 
 export const SavingsProjectsCardSkeleton = () => {
   return (
