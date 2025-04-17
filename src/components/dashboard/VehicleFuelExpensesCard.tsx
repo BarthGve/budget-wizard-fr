@@ -78,12 +78,8 @@ export const VehicleFuelExpensesCard = ({
     >
       <Card 
         className={cn(
-          "backdrop-blur-sm cursor-pointer transition-all duration-300 h-full relative overflow-hidden",
-          // Light mode styles - Gris au lieu de vert
-          "bg-gradient-to-br from-background to-gray-100 shadow-lg border border-gray-200 hover:shadow-xl",
-          // Dark mode styles - Gris au lieu de vert
-          "dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 dark:border-gray-700/30 dark:shadow-gray-800/30 dark:hover:shadow-gray-800/50"
-        )} 
+          "backdrop-blur-sm cursor-pointer transition-all duration-300 h-full relative overflow-hidden shadow-lg",
+         )} 
         onClick={() => navigate("/vehicles")}
       >
         <CardHeader className="py-4">
