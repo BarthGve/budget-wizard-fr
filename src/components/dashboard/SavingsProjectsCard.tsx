@@ -40,16 +40,16 @@ export const SavingsProjectsCard = ({
   }, 0);
 
   return (
-    <Card className="relative overflow-hidden border-quaternary-100 dark:border-quaternary-800/50">
+    <Card className="relative overflow-hidden border-quaternary-100 dark:border-quaternary-800/50 shadow-lg">
       <div className="p-6">
         <div className="flex items-center space-x-2">
           <div className="h-10 w-10 rounded-full bg-quaternary-100 dark:bg-quaternary-800/40 flex items-center justify-center">
             <PiggyBank className="h-5 w-5 text-quaternary-700 dark:text-quaternary-300" />
           </div>
           <div>
-            <h3 className="font-medium text-quaternary-900 dark:text-quaternary-300">
-              Projets d'épargne
-            </h3>
+           <span className="dark:text-white">Projets d'épargne</span>
+           
+      
             <p className="text-sm text-quaternary-600/80 dark:text-quaternary-400/90">
               {activeProjects.length} projet{activeProjects.length !== 1 ? 's' : ''} actif{activeProjects.length !== 1 ? 's' : ''}
             </p>
