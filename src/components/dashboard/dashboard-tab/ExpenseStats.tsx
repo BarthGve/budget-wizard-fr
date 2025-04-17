@@ -1,12 +1,11 @@
+
 import { memo } from "react";
 import { motion } from "framer-motion";
 import { MonthlyExpensesCard } from "../MonthlyExpensesCard";
 import { VehicleFuelExpensesCard } from "../VehicleFuelExpensesCard";
-import { SavingsProjectsCard } from "../SavingsProjectsCard";
 
 const MemoizedMonthlyExpensesCard = memo(MonthlyExpensesCard);
 const MemoizedVehicleFuelExpensesCard = memo(VehicleFuelExpensesCard);
-const MemoizedSavingsProjectsCard = memo(SavingsProjectsCard);
 
 // Animation variants
 const rowVariants = {
@@ -28,8 +27,7 @@ interface ExpenseStatsProps {
   fuelVolume?: number;
   fuelExpensesCount?: number;
   profile: any;
-  hasActiveVehicles: boolean;
-  savingsProjects?: any[];
+  hasActiveVehicles: boolean; 
 }
 
 /**
@@ -42,12 +40,11 @@ export const ExpenseStatsSection = ({
   fuelVolume = 0,
   fuelExpensesCount = 0,
   profile,
-  hasActiveVehicles,
-  savingsProjects = []
+  hasActiveVehicles
 }: ExpenseStatsProps) => {
   return (
     <motion.div 
-      className="grid gap-6 md:grid-cols-3"
+      className="grid gap-6 md:grid-cols-2"
       variants={rowVariants}
     >
       <MemoizedMonthlyExpensesCard 
@@ -61,9 +58,6 @@ export const ExpenseStatsSection = ({
         profile={profile}
         viewMode={viewMode}
         hasActiveVehicles={hasActiveVehicles}
-      />
-      <MemoizedSavingsProjectsCard
-        savingsProjects={savingsProjects}
       />
     </motion.div>
   );
