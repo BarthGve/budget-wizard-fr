@@ -67,13 +67,7 @@ export const SavingsProjectsCard = ({
               </div>
               <div>
                 <span className="dark:text-white">Projets d'épargne</span>
-                <p className={cn(
-                  "text-sm",
-                  "text-gray-500", 
-                  "dark:text-gray-400"
-                )}>
-                  {activeProjects.length} projet{activeProjects.length !== 1 ? 's' : ''} actif{activeProjects.length !== 1 ? 's' : ''}
-                </p>
+     
               </div>
             </CardTitle>
           </div>
@@ -90,7 +84,7 @@ export const SavingsProjectsCard = ({
               animate={{ scale: 1 }} 
               transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
             >
-              {totalMonthlyAmount.toLocaleString('fr-FR')} €
+                    {activeProjects.length} projet{activeProjects.length !== 1 ? 's' : ''} actif{activeProjects.length !== 1 ? 's' : ''}
             </motion.p>
             <p className={cn(
               "text-sm flex items-center",
