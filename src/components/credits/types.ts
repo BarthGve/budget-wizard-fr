@@ -1,4 +1,3 @@
-
 export interface Credit {
   id: string;
   nom_credit: string;
@@ -12,7 +11,7 @@ export interface Credit {
   vehicle_id?: string | null;
   vehicle_expense_type?: string | null;
   auto_generate_vehicle_expense?: boolean;
-  is_early_settlement?: boolean; // Nouveau champ pour indiquer un solde anticipé
+  is_early_settlement?: boolean; // Nouveau champ marqué comme optionnel
 }
 
 export const ALL_STATUS = "all_status";
@@ -24,4 +23,3 @@ export const statusLabels = {
 
 // Définir un type pour les schémas de couleurs cohérent dans toute l'application
 export type ColorScheme = "purple" | "green" | "blue";
-
