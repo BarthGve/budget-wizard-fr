@@ -2,7 +2,7 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { MonthlyExpensesCard } from "../MonthlyExpensesCard";
 import { VehicleFuelExpensesCard } from "../VehicleFuelExpensesCard";
-import { SavingsProjectsCard } from "../../SavingsProjectsCard";
+import { SavingsProjectsCard } from "../SavingsProjectsCard";
 
 const MemoizedMonthlyExpensesCard = memo(MonthlyExpensesCard);
 const MemoizedVehicleFuelExpensesCard = memo(VehicleFuelExpensesCard);
