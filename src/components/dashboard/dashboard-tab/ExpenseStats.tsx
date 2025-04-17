@@ -1,13 +1,12 @@
-
 import { memo } from "react";
 import { motion } from "framer-motion";
 import { MonthlyExpensesCard } from "../MonthlyExpensesCard";
 import { VehicleFuelExpensesCard } from "../VehicleFuelExpensesCard";
-import { SavingsProjectsCard } from "../../SavingsProjectsCard"; // Nouvelle importation
+import { SavingsProjectsCard } from "../../SavingsProjectsCard";
 
 const MemoizedMonthlyExpensesCard = memo(MonthlyExpensesCard);
 const MemoizedVehicleFuelExpensesCard = memo(VehicleFuelExpensesCard);
-const MemoizedSavingsProjectsCard = memo(SavingsProjectsCard); // Nouveau memo
+const MemoizedSavingsProjectsCard = memo(SavingsProjectsCard);
 
 // Animation variants
 const rowVariants = {
@@ -30,7 +29,7 @@ interface ExpenseStatsProps {
   fuelExpensesCount?: number;
   profile: any;
   hasActiveVehicles: boolean;
-  savingsProjects?: any[]; // Ajout du type pour les projets d'épargne
+  savingsProjects?: any[];
 }
 
 /**
@@ -44,11 +43,11 @@ export const ExpenseStatsSection = ({
   fuelExpensesCount = 0,
   profile,
   hasActiveVehicles,
-  savingsProjects = [] // Valeur par défaut
+  savingsProjects = []
 }: ExpenseStatsProps) => {
   return (
     <motion.div 
-      className="grid gap-6 md:grid-cols-3" // Modification pour 3 colonnes
+      className="grid gap-6 md:grid-cols-3"
       variants={rowVariants}
     >
       <MemoizedMonthlyExpensesCard 
