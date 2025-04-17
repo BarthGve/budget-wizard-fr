@@ -54,6 +54,7 @@ export const SavingsProjectsCard = ({
           // Dark mode styles
           "dark:bg-quaternary/10 dark:border-quaternary/30 dark:shadow-quaternary/30 dark:hover:shadow-quaternary/50"
         )}
+           onClick={() => navigate("/credits")}
       >
         <CardHeader className="py-4">
           <div className="flex flex-row items-center justify-between">
