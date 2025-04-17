@@ -378,7 +378,7 @@ const SimulatorContent = ({
                   {formatCurrency(contributor.total_contribution)} €
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <Input
                   id={`contributor-${contributor.id}`}
                   type="number"
