@@ -78,8 +78,9 @@ export const VehicleFuelExpensesCard = ({
     >
       <Card 
         className={cn(
-          "backdrop-blur-sm cursor-pointer transition-all duration-300 h-full relative overflow-hidden shadow-lg",
-         )} 
+          "backdrop-blur-sm cursor-pointer transition-all duration-300 h-full relative overflow-hidden",
+   "shadow-lg border hover:shadow-xl",
+        )} 
         onClick={() => navigate("/vehicles")}
       >
         <CardHeader className="py-4">
