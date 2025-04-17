@@ -23,6 +23,7 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
   const isAdminView = isAdmin || userIsAdmin;
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [showHidden, setShowHidden] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<ChangelogEntry | null>(null);
@@ -30,8 +31,8 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
   const queryClient = useQueryClient();
 
   const { data: entries = [], isLoading } = useQuery({
-    queryKey: ["changelog"],
-    queryFn: fetchChangelogEntries,
+    queryKey: ["changelog", showHidden],
+    queryFn: () => fetchChangelogEntries(isAdminView && showHidden),
   });
 
   useEffect(() => {
@@ -81,11 +82,26 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
     setIsDialogOpen(true);
   };
 
+  // Calcul des statistiques pour affichage admin
+  const hiddenEntriesCount = isAdminView 
+    ? entries.filter(entry => !entry.is_visible).length
+    : 0;
+
+  const toggleShowHidden = () => {
+    setShowHidden(prev => !prev);
+  };
+
   const content = (
     <div className={`${isAdminView ? "" : "min-h-screen bg-gradient-to-br from-primary/5 via-background to-background"}`}>
       {!isAdminView && <Navbar />}
       <div className={`container mx-auto px-4 py-8 ${!isAdminView ? "pt-32" : ""}`}>
-        <ChangelogHeader isAdmin={isAdminView} onCreateNew={handleCreate} />
+        <ChangelogHeader 
+          isAdmin={isAdminView} 
+          onCreateNew={handleCreate}
+          hiddenCount={hiddenEntriesCount}
+          showHidden={showHidden}
+          onToggleShowHidden={toggleShowHidden} 
+        />
         
         <ChangelogFilters 
           search={search} 

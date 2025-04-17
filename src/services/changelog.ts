@@ -1,12 +1,20 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { ChangelogEntry, FormData } from "@/components/changelog/types";
 import { toast } from "@/hooks/useToastWrapper";
 
-export async function fetchChangelogEntries() {
-  const { data, error } = await supabase
+export async function fetchChangelogEntries(showHidden = false) {
+  const query = supabase
     .from("changelog_entries")
     .select("*")
     .order("date", { ascending: false });
+  
+  // Si showHidden est false (par défaut), filtrer les entrées visibles uniquement
+  if (!showHidden) {
+    query.eq("is_visible", true);
+  }
+
+  const { data, error } = await query;
 
   if (error) throw error;
   return data as ChangelogEntry[];
@@ -41,6 +49,7 @@ export async function createChangelogEntry(values: FormData, skipNotification: b
       description: values.description,
       type: values.type,
       date: values.date.toISOString(),
+      is_visible: values.isVisible !== undefined ? values.isVisible : true, // Ajout du paramètre de visibilité
     })
     .select()
     .single();
@@ -69,6 +78,7 @@ export async function updateChangelogEntry(id: string, values: FormData) {
       description: values.description,
       type: values.type,
       date: values.date.toISOString(),
+      is_visible: values.isVisible !== undefined ? values.isVisible : true, // Ajout du paramètre de visibilité
     })
     .eq("id", id)
     .select()
@@ -85,4 +95,16 @@ export async function deleteChangelogEntry(id: string) {
     .eq("id", id);
 
   if (error) throw error;
+}
+
+export async function toggleChangelogVisibility(id: string, isVisible: boolean) {
+  const { data, error } = await supabase
+    .from("changelog_entries")
+    .update({ is_visible: isVisible })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 }

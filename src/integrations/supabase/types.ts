@@ -39,6 +39,7 @@ export type Database = {
           date: string
           description: string
           id: string
+          is_visible: boolean
           title: string
           type: Database["public"]["Enums"]["changelog_entry_type"]
           updated_at: string
@@ -49,6 +50,7 @@ export type Database = {
           date?: string
           description: string
           id?: string
+          is_visible?: boolean
           title: string
           type: Database["public"]["Enums"]["changelog_entry_type"]
           updated_at?: string
@@ -59,6 +61,7 @@ export type Database = {
           date?: string
           description?: string
           id?: string
+          is_visible?: boolean
           title?: string
           type?: Database["public"]["Enums"]["changelog_entry_type"]
           updated_at?: string

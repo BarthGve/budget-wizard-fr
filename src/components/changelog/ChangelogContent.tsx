@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { BugOff, CheckCircle2, Edit, Sparkles, Trash2 } from "lucide-react";
+import { BugOff, CheckCircle2, Edit, EyeOff, MoreHorizontal, Sparkles, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
@@ -16,6 +16,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
+import { toggleChangelogVisibility } from "@/services/changelog";
+import { toast } from "@/hooks/useToastWrapper";
 
 interface ChangelogContentProps {
   entries: ChangelogEntry[];
@@ -32,6 +42,8 @@ export const ChangelogContent = ({
   onEdit,
   onDelete 
 }: ChangelogContentProps) => {
+  const [updatingVisibility, setUpdatingVisibility] = useState<string | null>(null);
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">
@@ -96,13 +108,39 @@ export const ChangelogContent = ({
     }
   };
 
+  const handleToggleVisibility = async (entryId: string, currentVisibility: boolean) => {
+    try {
+      setUpdatingVisibility(entryId);
+      await toggleChangelogVisibility(entryId, !currentVisibility);
+      toast({
+        title: !currentVisibility ? "Entrée rendue visible" : "Entrée masquée",
+        description: !currentVisibility 
+          ? "L'entrée est maintenant visible pour tous les utilisateurs" 
+          : "L'entrée est maintenant cachée pour les utilisateurs normaux",
+      });
+    } catch (error) {
+      console.error("Erreur lors du changement de visibilité:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de changer la visibilité de l'entrée",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingVisibility(null);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="space-y-8">
         {entries.map((entry) => (
           <Card
             key={entry.id}
-            className={cn("relative animate-fade-up border overflow-hidden", getEntryTypeColor(entry.type))}
+            className={cn(
+              "relative animate-fade-up border overflow-hidden", 
+              getEntryTypeColor(entry.type),
+              !entry.is_visible && "border-dashed opacity-70"
+            )}
           >
             <div className="p-6">
               <div className="flex items-start gap-2 flex-wrap">
@@ -125,6 +163,12 @@ export const ChangelogContent = ({
                     <Badge variant="outline" className="text-xs">
                       v{entry.version}
                     </Badge>
+                    {isAdmin && !entry.is_visible && (
+                      <Badge variant="outline" className="text-amber-500 border-amber-500/20 bg-amber-500/10">
+                        <EyeOff className="w-3 h-3 mr-1" />
+                        Caché
+                      </Badge>
+                    )}
                   </div>
                   <time className="text-sm text-muted-foreground block mb-4">
                     {format(new Date(entry.date), "d MMMM yyyy", { locale: fr })}
@@ -135,24 +179,46 @@ export const ChangelogContent = ({
                 </div>
                   
                 {isAdmin && (
-                  <div className="ml-auto flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEdit?.(entry)}
-                      className="h-8 px-2"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDelete?.(entry.id)}
-                      className="h-8 px-2 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => onEdit(entry)}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Modifier
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleToggleVisibility(entry.id, entry.is_visible)}
+                        disabled={updatingVisibility === entry.id}
+                      >
+                        {entry.is_visible ? (
+                          <>
+                            <EyeOff className="h-4 w-4 mr-2" />
+                            Masquer
+                          </>
+                        ) : (
+                          <>
+                            <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                            Rendre visible
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={() => onDelete(entry.id)}
+                        className="text-destructive focus:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Supprimer
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </div>
             </div>
