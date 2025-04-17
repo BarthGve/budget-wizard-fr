@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
 import { useCreditsFetcher } from "./dashboard-tab/CreditsFetcher";
@@ -136,6 +135,7 @@ export const DashboardTabContent = ({
           profile={profile}
           hasActiveVehicles={hasActiveVehicles}
           dashboardPreferences={dashboardPrefs}
+          savingsProjects={savingsProjects}
         />
         
         <ChartsWrapper 

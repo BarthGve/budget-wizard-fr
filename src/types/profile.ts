@@ -1,4 +1,3 @@
-
 export type ProfileType = 'basic' | 'pro';
 
 export interface DashboardPreferences {
