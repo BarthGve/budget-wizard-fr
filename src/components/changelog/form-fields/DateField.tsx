@@ -8,17 +8,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { FormData } from "../types";
 
-interface DateFieldProps {
-  form: UseFormReturn<FormData>;
+export interface DateFieldProps {
+  control: Control<FormData>;
 }
 
-export function DateField({ form }: DateFieldProps) {
+export function DateField({ control }: DateFieldProps) {
   return (
     <FormField
-      control={form.control}
+      control={control}
       name="date"
       render={({ field }) => {
         // Convert Date object to YYYY-MM-DD format for input

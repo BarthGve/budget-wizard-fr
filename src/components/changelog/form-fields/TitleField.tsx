@@ -7,17 +7,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { FormData } from "../types";
 
-interface TitleFieldProps {
-  form: UseFormReturn<FormData>;
+export interface TitleFieldProps {
+  control: Control<FormData>;
 }
 
-export function TitleField({ form }: TitleFieldProps) {
+export function TitleField({ control }: TitleFieldProps) {
   return (
     <FormField
-      control={form.control}
+      control={control}
       name="title"
       render={({ field }) => (
         <FormItem>

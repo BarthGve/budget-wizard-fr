@@ -7,17 +7,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { FormData } from "../types";
 
-interface VersionFieldProps {
-  form: UseFormReturn<FormData>;
+export interface VersionFieldProps {
+  control: Control<FormData>;
 }
 
-export function VersionField({ form }: VersionFieldProps) {
+export function VersionField({ control }: VersionFieldProps) {
   return (
     <FormField
-      control={form.control}
+      control={control}
       name="version"
       render={({ field }) => (
         <FormItem>

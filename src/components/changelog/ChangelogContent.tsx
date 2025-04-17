@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
@@ -112,19 +111,13 @@ export const ChangelogContent = ({
     try {
       setUpdatingVisibility(entryId);
       await toggleChangelogVisibility(entryId, !currentVisibility);
-      toast({
-        title: !currentVisibility ? "Entrée rendue visible" : "Entrée masquée",
-        description: !currentVisibility 
-          ? "L'entrée est maintenant visible pour tous les utilisateurs" 
-          : "L'entrée est maintenant cachée pour les utilisateurs normaux",
-      });
+      toast(!currentVisibility 
+        ? "Entrée rendue visible" 
+        : "Entrée masquée"
+      );
     } catch (error) {
       console.error("Erreur lors du changement de visibilité:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de changer la visibilité de l'entrée",
-        variant: "destructive",
-      });
+      toast.error("Impossible de changer la visibilité de l'entrée");
     } finally {
       setUpdatingVisibility(null);
     }
