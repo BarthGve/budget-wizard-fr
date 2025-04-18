@@ -48,7 +48,7 @@ export const SavingsList = ({
         type: "spring",
         stiffness: 100,
         damping: 15,
-        className="space-y-2"
+     
       }}
     >
       <motion.div className={cn("mb-2", showSavings ? "mb-4" : "mb-0")}>
@@ -57,6 +57,7 @@ export const SavingsList = ({
           onEdit={handleEdit}
           onDelete={handleOpenDelete}
           showSavings={showSavings}
+          className="space-y-2"
         />
 
         {showSavings && monthlySavings.length === 0 && <EmptySavingsState />}
