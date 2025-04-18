@@ -131,7 +131,7 @@ export const CreditsPieChart = ({
                                 y={viewBox.cy - 5} 
                                 className="fill-current text-senary dark:text-senary text-xl font-bold"
                               >
-                                {formatCurrency(totalMensualites)}
+                                {formatCurrency(totalMensualites,0)}
                               </tspan>
                               <tspan 
                                 x={viewBox.cx} 

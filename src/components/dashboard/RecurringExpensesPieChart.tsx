@@ -141,7 +141,7 @@ export const RecurringExpensesPieChart = ({
                                 y={viewBox.cy - 5} 
                                 className="fill-current text-tertiary text-xl font-bold"
                               >
-                                {formatCurrency(totalExpenses)}
+                                {formatCurrency(totalExpenses,0)}
                               </tspan>
                               <tspan 
                                 x={viewBox.cx} 
