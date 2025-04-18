@@ -19,7 +19,7 @@ export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = f
     isArchived 
       ? "bg-gray-200 dark:bg-gray-700" 
       : "bg-senary-100 dark:bg-senary-800/70",
-    isMobile ? "h-10 w-10" : "h-16 w-16 md:h-12 md:w-12 lg:h-16 lg:w-16"
+    isMobile ? "h-10 w-10" : "h-12 w-12 md:h-12 md:w-12 lg:h-12 lg:w-12"
   );
   
   const titleClass = cn(
@@ -48,7 +48,7 @@ export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = f
           <img 
             src={credit.logo_url} 
             alt={credit.nom_credit} 
-            className="object-cover w-5 h-5"
+            className="object-cover w-full h-full"
           />
         ) : (
           <div className={cn(
