@@ -1,7 +1,9 @@
+
 import { Button } from "@/components/ui/button";
 import { ClipboardEdit, Eye, EyeOff, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 interface ChangelogHeaderProps {
   isAdmin: boolean;
