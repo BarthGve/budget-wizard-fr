@@ -32,7 +32,7 @@ export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
   return (
     <div
       
-      className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card mb-2 mt-2"
+      className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card "
     >
       <div className="flex items-center gap-4">
         <img
