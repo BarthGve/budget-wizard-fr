@@ -29,15 +29,9 @@ export const SavingsProjectsCarousel = ({
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-[800px] p-0">
+      <DialogContent className="sm:max-w-[800px] p-2">
         <div className="relative p-6 flex flex-col space-y-6">
-          <Button 
-            variant="ghost" 
-            className="absolute right-4 top-4 rounded-full p-2 h-auto" 
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+       
 
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold tracking-tight">
