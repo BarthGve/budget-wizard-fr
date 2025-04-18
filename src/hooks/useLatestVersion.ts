@@ -9,6 +9,7 @@ export function useLatestVersion() {
       const { data, error } = await supabase
         .from("changelog_entries")
         .select("version")
+        .eq("is_visible", true) // Seulement les entrées visibles
         .order("date", { ascending: false })
         .limit(1)
         .single();

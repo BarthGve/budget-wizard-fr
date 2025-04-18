@@ -11,6 +11,7 @@ import { ExpenseStatsWrapper } from "./dashboard-sections/ExpenseStatsWrapper";
 import { ChartsWrapper } from "./dashboard-sections/ChartsWrapper";
 import { ContributorsWrapper } from "./dashboard-sections/ContributorsWrapper";
 import { defaultDashboardPreferences } from "@/utils/dashboard-preferences";
+import { SavingsProject } from "@/types/savings-project";
 
 interface DashboardTabContentProps {
   revenue: number;
@@ -57,6 +58,7 @@ interface DashboardTabContentProps {
   fuelExpensesCount?: number;
   fuelVolume?: number;
   hasActiveVehicles?: boolean;
+  savingsProjects?: SavingsProject[];
 }
 
 // Animation simplifiée
@@ -84,6 +86,7 @@ export const DashboardTabContent = ({
   fuelExpensesCount = 0,
   fuelVolume = 0,
   hasActiveVehicles = false,
+  savingsProjects = [],
 }: DashboardTabContentProps) => {
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -132,6 +135,7 @@ export const DashboardTabContent = ({
           profile={profile}
           hasActiveVehicles={hasActiveVehicles}
           dashboardPreferences={dashboardPrefs}
+          savingsProjects={savingsProjects}
         />
         
         <ChartsWrapper 

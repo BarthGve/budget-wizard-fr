@@ -54,4 +54,22 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Optimisation pour les dépendances problématiques
+  optimizeDeps: {
+    include: ['@radix-ui/react-checkbox', 'lucide-react']
+  },
+  // Amélioration de la gestion du cache
+  cacheDir: '.vite',
+  build: {
+    // Assurons-nous que le build est optimisé
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'radix-ui': ['@radix-ui/react-checkbox'],
+          'lucide': ['lucide-react']
+        }
+      }
+    }
+  }
 }));

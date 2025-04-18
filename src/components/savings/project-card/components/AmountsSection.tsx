@@ -22,7 +22,7 @@ export const AmountsSection = ({ savedAmount, totalAmount }: AmountsSectionProps
           "font-bold",
           "text-quaternary-700 dark:text-quaternary-300"
         )}>
-          {formatCurrency(savedAmount)}
+          {formatCurrency(savedAmount,0)}
         </p>
       </div>
       
@@ -35,7 +35,7 @@ export const AmountsSection = ({ savedAmount, totalAmount }: AmountsSectionProps
       )}>
         <p className="text-xs text-muted-foreground mb-1">Objectif</p>
         <p className="font-bold">
-          {formatCurrency(totalAmount)}
+          {formatCurrency(totalAmount,0)}
         </p>
       </div>
     </div>

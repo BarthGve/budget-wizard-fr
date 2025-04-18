@@ -3,11 +3,14 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { MonthlyExpensesCard } from "../MonthlyExpensesCard";
 import { VehicleFuelExpensesCard } from "../VehicleFuelExpensesCard";
+import { SavingsProjectsCard } from "../SavingsProjectsCard";
+import { DashboardPreferences } from "@/types/profile";
+import { SavingsProject } from "@/types/savings-project";
 
 const MemoizedMonthlyExpensesCard = memo(MonthlyExpensesCard);
 const MemoizedVehicleFuelExpensesCard = memo(VehicleFuelExpensesCard);
+const MemoizedSavingsProjectsCard = memo(SavingsProjectsCard);
 
-// Animation variants
 const rowVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
@@ -27,11 +30,13 @@ interface ExpenseStatsProps {
   fuelVolume?: number;
   fuelExpensesCount?: number;
   profile: any;
-  hasActiveVehicles: boolean; 
+  hasActiveVehicles: boolean;
+  savingsProjects?: SavingsProject[];
+  dashboardPreferences: DashboardPreferences;
 }
 
 /**
- * Composant qui affiche les statistiques des dépenses
+ * Section qui affiche les statistiques des dépenses
  */
 export const ExpenseStatsSection = ({
   totalExpenses,
@@ -40,11 +45,19 @@ export const ExpenseStatsSection = ({
   fuelVolume = 0,
   fuelExpensesCount = 0,
   profile,
-  hasActiveVehicles
+  hasActiveVehicles,
+  savingsProjects = [],
+  dashboardPreferences
 }: ExpenseStatsProps) => {
+  // Afficher uniquement si l'utilisateur a activé cette section dans ses préférences
+  if (!dashboardPreferences.show_expense_stats) return null;
+
+  // Afficher uniquement si l'utilisateur a activé la carte des projets d'épargne
+  const shouldShowSavingsProjectsCard = dashboardPreferences.show_savings_projects_card;
+
   return (
     <motion.div 
-      className="grid gap-6 md:grid-cols-2"
+      className="grid gap-6 md:grid-cols-3"
       variants={rowVariants}
     >
       <MemoizedMonthlyExpensesCard 
@@ -59,6 +72,12 @@ export const ExpenseStatsSection = ({
         viewMode={viewMode}
         hasActiveVehicles={hasActiveVehicles}
       />
+      {shouldShowSavingsProjectsCard && (
+        <MemoizedSavingsProjectsCard
+          savingsProjects={savingsProjects}
+        />
+      )}
     </motion.div>
   );
 };
+

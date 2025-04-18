@@ -34,7 +34,7 @@ export const ExpenseHeader = ({ expense }: ExpenseHeaderProps) => {
       <div className="flex items-center gap-4 relative z-10">
         {expense.logo_url ? (
           <div className={cn(
-            "w-14 h-14 rounded-lg p-2 flex items-center justify-center overflow-hidden",
+            "w-14 h-14 rounded-full flex items-center justify-center overflow-hidden",
             // Light mode
             "bg-white shadow-sm border border-gray-200",
             // Dark mode
@@ -43,7 +43,7 @@ export const ExpenseHeader = ({ expense }: ExpenseHeaderProps) => {
             <img
               src={expense.logo_url}
               alt={expense.name}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = "/placeholder.svg";

@@ -131,7 +131,7 @@ export const SavingsPieChart = ({
                                 y={viewBox.cy - 5} 
                                 className="fill-current text-gray-900 dark:text-gray-100 text-xl font-bold"
                               >
-                                {formatCurrency(totalSavings)}
+                                {formatCurrency(totalSavings,0)}
                               </tspan>
                               <tspan 
                                 x={viewBox.cx} 

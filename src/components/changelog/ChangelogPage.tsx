@@ -23,15 +23,18 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
   const isAdminView = isAdmin || userIsAdmin;
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  // Initialiser showHidden à true si l'utilisateur est admin
+  const [showHidden, setShowHidden] = useState(isAdminView);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<ChangelogEntry | null>(null);
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: entries = [], isLoading } = useQuery({
-    queryKey: ["changelog"],
-    queryFn: fetchChangelogEntries,
+  // Récupérer toutes les entrées pour les administrateurs
+  const { data: allEntries = [], isLoading } = useQuery({
+    queryKey: ["changelog", isAdminView, showHidden],
+    queryFn: () => fetchChangelogEntries(isAdminView && showHidden),
   });
 
   useEffect(() => {
@@ -55,7 +58,7 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
     };
   }, [queryClient]);
 
-  const filteredEntries = entries.filter((entry) => {
+  const filteredEntries = allEntries.filter((entry) => {
     const matchesSearch = search.toLowerCase() === "" 
       ? true 
       : entry.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -81,11 +84,26 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
     setIsDialogOpen(true);
   };
 
+  // Calcul des entrées cachées pour l'affichage admin
+  const hiddenEntriesCount = isAdminView 
+    ? allEntries.filter(entry => !entry.is_visible).length
+    : 0;
+
+  const toggleShowHidden = () => {
+    setShowHidden(prev => !prev);
+  };
+
   const content = (
     <div className={`${isAdminView ? "" : "min-h-screen bg-gradient-to-br from-primary/5 via-background to-background"}`}>
       {!isAdminView && <Navbar />}
       <div className={`container mx-auto px-4 py-8 ${!isAdminView ? "pt-32" : ""}`}>
-        <ChangelogHeader isAdmin={isAdminView} onCreateNew={handleCreate} />
+        <ChangelogHeader 
+          isAdmin={isAdminView} 
+          onCreateNew={handleCreate}
+          hiddenCount={hiddenEntriesCount}
+          showHidden={showHidden}
+          onToggleShowHidden={toggleShowHidden} 
+        />
         
         <ChangelogFilters 
           search={search} 

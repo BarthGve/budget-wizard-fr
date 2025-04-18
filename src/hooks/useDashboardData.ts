@@ -1,4 +1,3 @@
-
 import { useCurrentUser } from "./useCurrentUser";
 import { useDashboardQueries } from "./useDashboardQueries";
 import { useRealtimeListeners } from "./useRealtimeListeners";
@@ -111,6 +110,7 @@ export const useDashboardData = () => {
     monthlySavings: dashboardData?.monthlySavings || [],
     profile: dashboardData?.profile,
     recurringExpenses: dashboardData?.recurringExpenses || [],
+    savingsProjects: dashboardData?.savingsProjects || [],
     refetch,
   };
 };

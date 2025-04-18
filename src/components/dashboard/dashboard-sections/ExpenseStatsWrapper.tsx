@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { ExpenseStatsSection } from "../dashboard-tab/ExpenseStats";
 import { DashboardPreferences } from "@/types/profile";
+import { SavingsProject } from "@/types/savings-project";
 
 // Animation variants
 const sectionVariants = {
@@ -26,6 +27,7 @@ interface ExpenseStatsWrapperProps {
   profile: any;
   hasActiveVehicles: boolean;
   dashboardPreferences: DashboardPreferences;
+  savingsProjects?: SavingsProject[];
 }
 
 /**
@@ -39,7 +41,8 @@ export const ExpenseStatsWrapper = ({
   fuelExpensesCount,
   profile,
   hasActiveVehicles,
-  dashboardPreferences
+  dashboardPreferences,
+  savingsProjects = []
 }: ExpenseStatsWrapperProps) => {
   if (!dashboardPreferences.show_expense_stats) return null;
 
@@ -53,6 +56,8 @@ export const ExpenseStatsWrapper = ({
         fuelExpensesCount={fuelExpensesCount}
         profile={profile}
         hasActiveVehicles={hasActiveVehicles}
+        savingsProjects={savingsProjects}
+        dashboardPreferences={dashboardPreferences}
       />
     </motion.div>
   );

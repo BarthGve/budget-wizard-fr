@@ -13,17 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UseFormReturn } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { FormData } from "../types";
 
-interface TypeFieldProps {
-  form: UseFormReturn<FormData>;
+export interface TypeFieldProps {
+  control: Control<FormData>;
 }
 
-export function TypeField({ form }: TypeFieldProps) {
+export function TypeField({ control }: TypeFieldProps) {
   return (
     <FormField
-      control={form.control}
+      control={control}
       name="type"
       render={({ field }) => (
         <FormItem>

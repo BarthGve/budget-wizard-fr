@@ -15,11 +15,11 @@ export const ProgressSection = ({ progressPercentage, isComplete }: ProgressSect
         <div className="flex items-center">
           <PiggyBank className={cn(
             "h-4 w-4 mr-1.5",
-            "text-emerald-500 dark:text-emerald-400"
+            "text-quaternary-500 dark:text-quaternary-400"
           )} />
           <span className={cn(
             "font-medium",
-            "text-emerald-700 dark:text-emerald-300"
+            "text-quaternary-700 dark:text-quaternary-300"
           )}>
             Épargne accumulée
           </span>
@@ -35,8 +35,8 @@ export const ProgressSection = ({ progressPercentage, isComplete }: ProgressSect
           className={cn(
             "h-full rounded-full",
             isComplete
-              ? "bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-400 dark:to-teal-500"
-              : "bg-emerald-500 dark:bg-emerald-400"
+              ? "bg-gradient-to-r from-quaternary-500 to-teal-500 dark:from-quaternary-400 dark:to-teal-500"
+              : "bg-quaternary-500 dark:bg-quaternary-400"
           )}
           style={{ width: `${progressPercentage}%` }}
           initial={{ width: "0%" }}

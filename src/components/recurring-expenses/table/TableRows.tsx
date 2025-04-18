@@ -19,7 +19,7 @@ export const TableRows = ({ expenses, onDeleteExpense }: TableRowsProps) => {
                 <img
                   src={expense.logo_url}
                   alt={expense.name}
-                  className="w-8 h-8 rounded-full object-contain"
+                  className="w-8 h-8 rounded-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = "/placeholder.svg";

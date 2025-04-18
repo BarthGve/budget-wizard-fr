@@ -127,6 +127,7 @@ const Dashboard = () => {
               fuelExpensesCount={fuelExpensesCount}
               fuelVolume={fuelVolume}
               hasActiveVehicles={hasActiveVehicles}
+              savingsProjects={dashboardData.savingsProjects || []}
             />
           )}
         </motion.div>

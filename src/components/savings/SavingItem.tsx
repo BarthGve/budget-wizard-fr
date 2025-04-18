@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MoreVertical, SquarePen, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { formatCurrency } from "@/utils/format";
-import { motion } from "framer-motion";
+
 
 interface SavingItemProps {
   saving: {
@@ -30,41 +30,15 @@ interface SavingItemProps {
 
 export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
   return (
-    <motion.div
-      variants={{
-        visible: {
-          opacity: 1,
-          x: 0,
-          scale: 1,
-          height: "auto",
-          transition: {
-            type: "spring",
-            stiffness: 100,
-            damping: 15,
-            duration: 0.4
-          }
-        },
-        hidden: {
-          opacity: 0,
-          x: -20,
-          scale: 0.8,
-          height: 0,
-          margin: 0,
-          transition: {
-            type: "spring",
-            stiffness: 100,
-            damping: 15,
-            duration: 0.3
-          }
-        }
-      }}
-      className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card mb-2"
+    <div
+      
+      className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card "
     >
       <div className="flex items-center gap-4">
         <img
           src={saving.logo_url || "/placeholder.svg"}
           alt={saving.name}
-          className="w-10 h-10 rounded-full object-contain"
+          className="w-10 h-10 rounded-full object-cover"
           onError={e => {
             const target = e.target as HTMLImageElement;
             target.src = "/placeholder.svg";
@@ -76,7 +50,7 @@ export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
             {formatCurrency(saving.amount)} / mois
           </p>
           {saving.is_project_saving && (
-            <p className="text-xs text-blue-500 italic">
+            <p className="text-xs text-tertiary-500 italic">
               Lié à un projet d'épargne
             </p>
           )}
@@ -102,6 +76,6 @@ export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </motion.div>
+    </div>
   );
 };

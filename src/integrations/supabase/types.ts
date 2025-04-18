@@ -39,6 +39,7 @@ export type Database = {
           date: string
           description: string
           id: string
+          is_visible: boolean
           title: string
           type: Database["public"]["Enums"]["changelog_entry_type"]
           updated_at: string
@@ -49,6 +50,7 @@ export type Database = {
           date?: string
           description: string
           id?: string
+          is_visible?: boolean
           title: string
           type: Database["public"]["Enums"]["changelog_entry_type"]
           updated_at?: string
@@ -59,6 +61,7 @@ export type Database = {
           date?: string
           description?: string
           id?: string
+          is_visible?: boolean
           title?: string
           type?: Database["public"]["Enums"]["changelog_entry_type"]
           updated_at?: string
@@ -197,6 +200,7 @@ export type Database = {
           date_derniere_mensualite: string
           date_premiere_mensualite: string | null
           id: string
+          is_early_settlement: boolean | null
           logo_url: string | null
           montant_mensualite: number
           nom_credit: string
@@ -213,6 +217,7 @@ export type Database = {
           date_derniere_mensualite: string
           date_premiere_mensualite?: string | null
           id?: string
+          is_early_settlement?: boolean | null
           logo_url?: string | null
           montant_mensualite: number
           nom_credit: string
@@ -229,6 +234,7 @@ export type Database = {
           date_derniere_mensualite?: string
           date_premiere_mensualite?: string | null
           id?: string
+          is_early_settlement?: boolean | null
           logo_url?: string | null
           montant_mensualite?: number
           nom_credit?: string

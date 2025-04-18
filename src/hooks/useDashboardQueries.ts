@@ -15,7 +15,8 @@ export const useDashboardQueries = (userId: string | undefined) => {
           { data: contributors, error: contributorsError },
           { data: monthlySavings, error: savingsError },
           { data: profile, error: profileError },
-          { data: recurringExpenses, error: expensesError }
+          { data: recurringExpenses, error: expensesError },
+          { data: savingsProjects, error: savingsProjectsError }
         ] = await Promise.all([
           supabase
             .from("contributors")
@@ -36,6 +37,11 @@ export const useDashboardQueries = (userId: string | undefined) => {
             .from("recurring_expenses")
             .select("*")
             .eq("profile_id", userId)
+            .order("created_at"),
+          supabase
+            .from("projets_epargne")
+            .select("*")
+            .eq("profile_id", userId)
             .order("created_at")
         ]);
 
@@ -44,18 +50,21 @@ export const useDashboardQueries = (userId: string | undefined) => {
         if (savingsError) throw savingsError;
         if (profileError) throw profileError;
         if (expensesError) throw expensesError;
+        if (savingsProjectsError) throw savingsProjectsError;
 
         console.log("Dashboard data fetched successfully:", { 
           contributorsCount: contributors?.length, 
           savingsCount: monthlySavings?.length,
-          expensesCount: recurringExpenses?.length
+          expensesCount: recurringExpenses?.length,
+          savingsProjectsCount: savingsProjects?.length
         });
 
         return {
           contributors: contributors || [],
           monthlySavings: monthlySavings || [],
           profile,
-          recurringExpenses: recurringExpenses || []
+          recurringExpenses: recurringExpenses || [],
+          savingsProjects: savingsProjects || []
         };
       } catch (error: any) {
         console.error("Error fetching dashboard data:", error);

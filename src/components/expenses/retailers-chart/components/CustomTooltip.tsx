@@ -36,12 +36,13 @@ export const CustomTooltip = ({ active, payload, label, viewMode }: CustomToolti
   return (
     <div className={cn(
       "bg-white dark:bg-gray-800 border dark:border-gray-600", // Bordure plus visible en mode sombre
-      "p-4 rounded-lg shadow-lg min-w-[200px]", // Padding augmenté, min-width augmenté
+      "p-4 rounded-lg shadow-lg min-w-[240px] max-w-[300px]", // Augmentation de la largeur min et ajout d'une largeur max
       "flex flex-col gap-2",
       "dark:text-gray-100", // Texte plus clair en mode sombre
-      "backdrop-blur-sm dark:backdrop-blur-md" // Effet de flou pour améliorer la lisibilité
+      "backdrop-blur-sm dark:backdrop-blur-md", // Effet de flou pour améliorer la lisibilité
+      "z-[9999]" // Z-index très élevé pour s'assurer que la tooltip est au-dessus de tout
     )}>
-      <p className="font-medium text-gray-800 dark:text-white border-b pb-1 mb-1 border-gray-200 dark:border-gray-600">
+      <p className="font-medium text-gray-800 dark:text-white border-b pb-1 mb-1 border-gray-200 dark:border-gray-600 truncate">
         {getFormattedLabel()}
       </p>
       
@@ -56,21 +57,21 @@ export const CustomTooltip = ({ active, payload, label, viewMode }: CustomToolti
       
       {isMonthlyViewMode ? (
         <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded-full bg-tertiary-500 dark:bg-tertiary-400" />
-          <p className="text-sm text-gray-800 dark:text-gray-100">
+          <div className="h-3 w-3 rounded-full bg-tertiary-500 dark:bg-tertiary-400 flex-shrink-0" />
+          <p className="text-sm text-gray-800 dark:text-gray-100 truncate">
             <span className="font-medium">{formatCurrency(payload[0]?.value || 0)}</span>
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-[200px] overflow-y-auto">
           {payload.map((entry, index) => {
             // Ne pas inclure totalAmount dans la liste
             if (entry.dataKey === 'totalAmount') return null;
             
             return (
               <div key={`item-${index}`} className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full" style={{ backgroundColor: entry.color }} />
-                <p className="text-sm text-gray-800 dark:text-gray-100">
+                <div className="h-3 w-3 rounded-full flex-shrink-0" style={{ backgroundColor: entry.color }} />
+                <p className="text-sm text-gray-800 dark:text-gray-100 truncate">
                   {entry.name}: <span className="font-medium">{formatCurrency(entry.value || 0)}</span>
                 </p>
               </div>

@@ -3,12 +3,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { MoreVertical, SquarePen, Trash2, Info } from "lucide-react";
+import { MoreVertical, SquarePen, Trash2, Info, Check } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Credit } from "./types";
 import { CreditDialog } from "./CreditDialog";
 import { CreditInfoDialog } from "./CreditInfoDialog";
+import { SettleCreditDialog } from "./SettleCreditDialog";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface CreditActionsProps {
@@ -21,6 +22,7 @@ export const CreditActions = ({ credit, onCreditDeleted, isArchived = false }: C
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const [showSettleDialog, setShowSettleDialog] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const queryClient = useQueryClient();
 
@@ -60,6 +62,16 @@ export const CreditActions = ({ credit, onCreditDeleted, isArchived = false }: C
     setDropdownOpen(false);
   };
 
+  const handleSettleClick = () => {
+    setShowSettleDialog(true);
+    setDropdownOpen(false);
+  };
+
+  const handleCreditSettled = () => {
+    queryClient.invalidateQueries({ queryKey: ["credits"] });
+    queryClient.invalidateQueries({ queryKey: ["credits-monthly-stats"] });
+  };
+
   return (
     <>
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
@@ -85,10 +97,17 @@ export const CreditActions = ({ credit, onCreditDeleted, isArchived = false }: C
           </DropdownMenuItem>
           
           {!isArchived && (
-            <DropdownMenuItem onClick={handleEditClick} className="cursor-pointer">
-              <SquarePen className="mr-2 h-4 w-4" />
-              Modifier
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem onClick={handleEditClick} className="cursor-pointer">
+                <SquarePen className="mr-2 h-4 w-4" />
+                Modifier
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem onClick={handleSettleClick} className="cursor-pointer">
+                <Check className="mr-2 h-4 w-4" />
+                Solder
+              </DropdownMenuItem>
+            </>
           )}
           
           <DropdownMenuItem 
@@ -102,11 +121,20 @@ export const CreditActions = ({ credit, onCreditDeleted, isArchived = false }: C
       </DropdownMenu>
 
       {!isArchived && (
-        <CreditDialog 
-          credit={credit}
-          open={showEditDialog}
-          onOpenChange={setShowEditDialog}
-        />
+        <>
+          <CreditDialog 
+            credit={credit}
+            open={showEditDialog}
+            onOpenChange={setShowEditDialog}
+          />
+          
+          <SettleCreditDialog
+            credit={credit}
+            open={showSettleDialog}
+            onOpenChange={setShowSettleDialog}
+            onCreditSettled={handleCreditSettled}
+          />
+        </>
       )}
 
       <CreditInfoDialog

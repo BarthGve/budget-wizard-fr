@@ -51,7 +51,7 @@ export const DashboardCardsSection = ({
   contributorShares,
   recurringExpenses,
   currentView,
-  dashboardPreferences
+  dashboardPreferences,
 }: DashboardCardsSectionProps) => {
   const shouldRenderCards = 
     dashboardPreferences.show_revenue_card || 
