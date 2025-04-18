@@ -8,9 +8,9 @@ import { DeleteSavingDialog } from "./DeleteSavingDialog";
 import { EmptySavings } from "./EmptySavings";
 import { deleteSavingAndProject } from "./ProjectWizard/utils/projectUtils";
 import { cn } from "@/lib/utils";
-import {PiggyBank} from "lucide-react"
-
-import { useTheme } from "next-themes";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { PiggyBank } from "lucide-react";
 
 interface SavingsListProps {
   monthlySavings: Array<{
@@ -45,6 +45,30 @@ export const SavingsList = ({
     amount: number;
     logo_url?: string;
   } | null>(null);
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('monthly-savings-changes')
+      .on(
+        'postgres_changes',
+        { 
+          event: '*',
+          schema: 'public',
+          table: 'monthly_savings'
+        },
+        (payload) => {
+          console.log('Modification des épargnes mensuelles:', payload);
+          queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -172,7 +196,7 @@ export const SavingsList = ({
                     "dark:bg-gradient-to-br dark:from-teal-900/40 dark:to-teal-800/30"
                   )}
                 >
-                 <PiggyBank/>
+                  <PiggyBank/>
                 </div>
                 <h3
                   className={cn(

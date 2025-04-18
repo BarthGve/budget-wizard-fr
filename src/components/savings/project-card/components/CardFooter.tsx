@@ -6,6 +6,7 @@ import { SavingsProject } from "@/types/savings-project";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CardFooterProps {
   onSelect: (project: SavingsProject) => void;
@@ -13,6 +14,8 @@ interface CardFooterProps {
 }
 
 export const CardFooter = ({ onSelect, project }: CardFooterProps) => {
+  const queryClient = useQueryClient();
+
   const handleActivateProject = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
@@ -61,6 +64,10 @@ export const CardFooter = ({ onSelect, project }: CardFooterProps) => {
         });
 
       if (savingError) throw savingError;
+
+      // Invalider les requêtes pour forcer la mise à jour
+      queryClient.invalidateQueries({ queryKey: ['savings-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
 
       toast.success("Le projet a été activé avec succès");
     } catch (error) {
