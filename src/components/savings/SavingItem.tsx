@@ -2,10 +2,9 @@
 // Mettre à jour le composant SavingItem pour accepter la propriété className
 import React from "react";
 import { motion } from "framer-motion";
-import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, MoreVertical } from "lucide-react";
 
 interface SavingItemProps {
   saving: {
@@ -68,7 +67,7 @@ export const SavingItem = ({ saving, onEdit, onDelete, className }: SavingItemPr
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <DotsVerticalIcon className="h-4 w-4" />
+              <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
