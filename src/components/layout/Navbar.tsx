@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
@@ -5,6 +6,7 @@ import { appConfig } from "@/config/app.config";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const Navbar = () => {
+  // Utiliser le hook useMediaQuery pour détecter si l'écran est un mobile
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   return (
@@ -26,10 +28,12 @@ const Navbar = () => {
             <span className="font-semibold text-sm sm:text-lg">{appConfig.name}</span>
           </Link>
           
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link to="/changelog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Changelog
-            </Link>
+          <div className="flex items-center gap-1 sm:gap-4">
+            {!isMobile && (
+              <Link to="/changelog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Changelog
+              </Link>
+            )}
             <Link to="/login">
               <Button size={isMobile ? "sm" : "sm"} variant="ghost" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5">
                 <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

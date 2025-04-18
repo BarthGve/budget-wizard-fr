@@ -1,9 +1,8 @@
 
-// Renommé de Changelog.tsx à AdminChangelog.tsx
 import { ChangelogPage } from "@/components/changelog/ChangelogPage";
 
-const AdminChangelog = () => {
-  return <ChangelogPage isAdmin={true} isPublic={false} />;
+const Changelog = () => {
+  return <ChangelogPage />;
 };
 
-export default AdminChangelog;
+export default Changelog;

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -49,8 +50,6 @@ import { ChangelogPage } from "./components/changelog/ChangelogPage";
 
 // Import de la page de test des notifications de crédits
 import TestCreditNotification from "./pages/admin/TestCreditNotification";
-import PublicChangelog from "./pages/PublicChangelog";
-import AdminChangelog from "./pages/Changelog";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,7 +119,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/email-verification" element={<EmailVerification />} />
-                
+                <Route path="/changelog" element={<Changelog />} />
                 
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
@@ -250,19 +249,13 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                
-                {/* Route publique du changelog */}
-                <Route path="/changelog" element={<PublicChangelog />} />
-                
-                {/* Route admin du changelog */}
                 <Route path="/admin/changelog" element={
                   <ProtectedRoute requireAdmin={true}>
                     <DashboardLayout>
-                      <AdminChangelog />
+                      <ChangelogPage isAdmin={true} />
                     </DashboardLayout>
                   </ProtectedRoute>
                 } />
-                
                 
                 {/* Nouvelle route pour la page de test des notifications de crédits */}
                 <Route path="/admin/test-credit-notification" element={

@@ -1,3 +1,4 @@
+
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -12,8 +13,7 @@ import {
   ShoppingBasket,
   List,
   Car,
-  Bell,
-  FileText
+  Bell
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePagePermissions } from "@/hooks/usePagePermissions";
@@ -36,12 +36,14 @@ interface NavigationMenuProps {
   onItemClick?: () => void;
 }
 
+// Définir les menus en dehors du composant
 const adminMenu: MenuItem[] = [
   { title: "Tableau de bord", icon: LayoutDashboard, path: "/admin", matchPath: "^/admin$" },
   { title: "Gestion utilisateurs", icon: Users, path: "/admin/users", matchPath: "^/admin/users" },
   { title: "Boite des feedbacks", icon: Mailbox, path: "/admin/feedbacks", matchPath: "^/admin/feedbacks" },
-  { title: "Changelog", icon: FileText, path: "/admin/changelog", matchPath: "^/admin/changelog" },
+  { title: "Changelog", icon: List, path: "/admin/changelog", matchPath: "^/admin/changelog" },
   { title: "Test notification", icon: Bell, path: " /admin/test-credit-notification", matchPath: "^/admin/test-credit-notification" }
+ 
 ];
 
 const userMenu: MenuItem[] = [
@@ -61,6 +63,7 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId, onItemClick }: Navi
   const { canAccessPage } = usePagePermissions();
   const { pendingCount } = usePendingFeedbacks(isAdmin);
 
+  // Filtrer les éléments du menu accessibles à l'utilisateur
   const menuItems = isAdmin ? adminMenu : userMenu.filter(item => canAccessPage(item.path));
 
   return (
@@ -84,7 +87,7 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId, onItemClick }: Navi
                   isActive && "bg-gray-200 text-gray-900 hover:bg-gray-200/90 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-800/90"
                 )}
                 end
-                onClick={onItemClick}
+                onClick={onItemClick} // Ferme la sidebar quand un lien est cliqué
               >
                 <div className="relative">
                   <item.icon className={cn(
@@ -116,6 +119,7 @@ export const NavigationMenu = ({ collapsed, isAdmin, userId, onItemClick }: Navi
           );
         })}
         
+        {/* Ajout du composant FeedbackDialog juste après les liens de navigation */}
         {!isAdmin && (
           <li className="mt-2">
             <FeedbackDialog collapsed={collapsed} />
