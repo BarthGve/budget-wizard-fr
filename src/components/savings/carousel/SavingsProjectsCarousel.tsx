@@ -6,6 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { CardTitle} from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { X, PiggyBank } from "lucide-react";
@@ -35,7 +36,8 @@ export const SavingsProjectsCarousel = ({
        
 
           <div className="space-y-2">
-        <div className={cn(
+                <CardTitle className="text-lg flex items-center gap-2">
+                <div className={cn(
                   "p-2 rounded-full",
                   "bg-quaternary/20 text-quaternary",
                   "dark:bg-quaternary/20 dark:text-quaternary"
@@ -45,6 +47,8 @@ export const SavingsProjectsCarousel = ({
                 <div>
                   <span className="dark:text-white">Projets d'épargne</span>
                 </div>
+              </CardTitle>
+    
             <p className="text-sm text-muted-foreground">
               {activeProjects.length} projet{activeProjects.length > 1 ? 's' : ''} actif{activeProjects.length > 1 ? 's' : ''}
             </p>
