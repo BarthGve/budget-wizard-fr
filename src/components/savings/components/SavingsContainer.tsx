@@ -53,7 +53,7 @@ export const SavingsContainer = ({
       initial="hidden"
       animate={showSavings ? "visible" : "hidden"}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" className="space-y-2">
         {monthlySavings.map((saving) => (
           <SavingItem
             key={saving.id}
