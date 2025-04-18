@@ -76,7 +76,7 @@ export const SavingsProjectsCard = ({
                 "dark:text-quaternary",
                 "animate-fadeIn"
               )}>
-                {activeProjects.length} projet{activeProjects.length !== 1 ? 's' : ''} actif{activeProjects.length !== 1 ? 's' : ''}
+                {activeProjects.length} actif{activeProjects.length !== 1 ? 's' : ''}
               </p>
             </div>
           </CardContent>
