@@ -48,6 +48,7 @@ export const SavingsList = ({
         type: "spring",
         stiffness: 100,
         damping: 15,
+        className="space-y-2"
       }}
     >
       <motion.div className={cn("mb-2", showSavings ? "mb-4" : "mb-0")}>
