@@ -67,9 +67,6 @@ export const SavingsProjectsCard = ({
                 </div>
               </CardTitle>
             </div>
-               <CardDescription className={cn("text-gray-500", "dark:text-gray-400")}>
-            descriptionText
-          </CardDescription>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="space-y-4">
@@ -82,7 +79,6 @@ export const SavingsProjectsCard = ({
                 {activeProjects.length} actif{activeProjects.length !== 1 ? 's' : ''}
               </p>
             </div>
-            
           </CardContent>
         </Card>
       </div>
