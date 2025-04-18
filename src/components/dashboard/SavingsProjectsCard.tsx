@@ -68,7 +68,7 @@ export const SavingsProjectsCard = ({
               </CardTitle>
             </div>
                <CardDescription className={cn("text-gray-500", "dark:text-gray-400")}>
-            {descriptionText}
+            descriptionText
           </CardDescription>
           </CardHeader>
           <CardContent className="pb-4">
