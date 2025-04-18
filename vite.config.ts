@@ -56,7 +56,9 @@ export default defineConfig(({ mode }) => ({
   },
   // Optimisation pour les dépendances problématiques
   optimizeDeps: {
-    include: ['@radix-ui/react-checkbox', 'lucide-react']
+    include: ['@radix-ui/react-checkbox', 'lucide-react'],
+    // Exclure date-fns de l'optimisation pour éviter les conflits
+    exclude: ['date-fns']
   },
   // Amélioration de la gestion du cache
   cacheDir: '.vite',
