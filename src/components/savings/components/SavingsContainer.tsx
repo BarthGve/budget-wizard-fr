@@ -15,13 +15,15 @@ interface SavingsContainerProps {
   onEdit: (saving: any) => void;
   onDelete: (saving: any) => void;
   showSavings: boolean;
+  className?: string;
 }
 
 export const SavingsContainer = ({
   monthlySavings,
   onEdit,
   onDelete,
-  showSavings
+  showSavings,
+  className
 }: SavingsContainerProps) => {
   const containerVariants = {
     visible: {
@@ -52,16 +54,15 @@ export const SavingsContainer = ({
       variants={containerVariants}
       initial="hidden"
       animate={showSavings ? "visible" : "hidden"}
-      className="space-y-2"
+      className={className || "space-y-2"}
     >
-      <AnimatePresence mode="wait" className="space-y-2">
+      <AnimatePresence mode="wait">
         {monthlySavings.map((saving) => (
           <SavingItem
             key={saving.id}
             saving={saving}
             onEdit={onEdit}
             onDelete={onDelete}
-            className="space-y-2"
           />
         ))}
       </AnimatePresence>
