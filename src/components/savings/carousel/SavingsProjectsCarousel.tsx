@@ -34,16 +34,9 @@ export const SavingsProjectsCarousel = ({
        
 
           <div className="space-y-2">
-          <div className={cn(
-                  "p-2 rounded-full",
-                  "bg-quaternary/20 text-quaternary",
-                  "dark:bg-quaternary/20 dark:text-quaternary"
-                )}>
-                  <PiggyBank className="h-5 w-5" />
-                </div>
-                <div>
-                  <span className="dark:text-white">Projets d'épargne actifs</span>
-                </div>
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Projets d'épargne actifs
+            </h2>
             <p className="text-sm text-muted-foreground">
               {activeProjects.length} projet{activeProjects.length > 1 ? 's' : ''} actif{activeProjects.length > 1 ? 's' : ''}
             </p>
