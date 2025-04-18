@@ -1,3 +1,4 @@
+
 import { Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,10 @@ export const SavingsProjectsCard = ({
     return total;
   }, 0);
 
+  const descriptionText = activeProjects.length > 0 
+    ? `${totalMonthlyAmount.toLocaleString('fr-FR')}€ d'épargne mensuelle`
+    : "Aucun projet d'épargne actif";
+
   return (
     <>
       <div className="transition-all duration-300 transform hover:-translate-y-1">
@@ -67,9 +72,9 @@ export const SavingsProjectsCard = ({
                 </div>
               </CardTitle>
             </div>
-               <CardDescription className={cn("text-gray-500", "dark:text-gray-400")}>
-            descriptionText
-          </CardDescription>
+            <CardDescription className={cn("text-gray-500", "dark:text-gray-400")}>
+              {descriptionText}
+            </CardDescription>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="space-y-4">
@@ -82,7 +87,6 @@ export const SavingsProjectsCard = ({
                 {activeProjects.length} actif{activeProjects.length !== 1 ? 's' : ''}
               </p>
             </div>
-            
           </CardContent>
         </Card>
       </div>
