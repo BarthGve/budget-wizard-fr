@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { PiggyBank } from "lucide-react";
+import { useTheme } from "next-themes";
 
 interface SavingsListProps {
   monthlySavings: Array<{
