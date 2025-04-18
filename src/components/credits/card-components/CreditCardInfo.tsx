@@ -48,7 +48,7 @@ export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = f
           <img 
             src={credit.logo_url} 
             alt={credit.nom_credit} 
-            className="object-cover w-full h-full"
+            className="object-cover w-5 h-5"
           />
         ) : (
           <div className={cn(
