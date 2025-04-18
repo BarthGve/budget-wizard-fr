@@ -50,7 +50,7 @@ export const SavingsProjectsCarousel = ({
               </CardTitle>
     
             <p className="text-sm text-muted-foreground">
-              {activeProjects.length} projet{activeProjects.length > 1 ? 's' : ''} actif{activeProjects.length > 1 ? 's' : ''}
+              {activeProjects.length} actif{activeProjects.length > 1 ? 's' : ''}
             </p>
           </div>
 
