@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -16,9 +15,13 @@ import { fetchChangelogEntries } from "@/services/changelog";
 
 interface ChangelogPageProps {
   isAdmin?: boolean;
+  isPublic?: boolean;
 }
 
-export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
+export const ChangelogPage = ({ 
+  isAdmin = false, 
+  isPublic = false 
+}: ChangelogPageProps) => {
   const { isAdmin: userIsAdmin } = usePagePermissions();
   const isAdminView = isAdmin || userIsAdmin;
   const [search, setSearch] = useState("");
@@ -30,11 +33,9 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  // On passe showHidden à la fonction fetchChangelogEntries
-  // mais seulement si on est en mode admin
   const { data: entries = [], isLoading } = useQuery({
-    queryKey: ["changelog", showHidden],
-    queryFn: () => fetchChangelogEntries(isAdminView && showHidden),
+    queryKey: ["changelog", isAdmin && showHidden],
+    queryFn: () => fetchChangelogEntries(isAdmin && showHidden),
   });
 
   useEffect(() => {
@@ -66,8 +67,6 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
     
     const matchesType = typeFilter === "all" || entry.type === typeFilter;
     
-    // Nous ne filtrons plus sur is_visible ici car c'est déjà géré par la requête
-    // fetchChangelogEntries en fonction de showHidden
     return matchesSearch && matchesType;
   });
 
@@ -86,7 +85,6 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
     setIsDialogOpen(true);
   };
 
-  // Calcul des statistiques pour affichage admin
   const hiddenEntriesCount = isAdminView 
     ? entries.filter(entry => !entry.is_visible).length
     : 0;
@@ -96,15 +94,16 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
   };
 
   const content = (
-    <div className={`${isAdminView ? "" : "min-h-screen bg-gradient-to-br from-primary/5 via-background to-background"}`}>
-      {!isAdminView && <Navbar />}
-      <div className={`container mx-auto px-4 py-8 ${!isAdminView ? "pt-32" : ""}`}>
+    <div className={`${isPublic ? "min-h-screen bg-gradient-to-br from-primary/5 via-background to-background" : ""}`}>
+      {isPublic && <Navbar />}
+      <div className={`container mx-auto px-4 py-8 ${isPublic ? "pt-32" : ""}`}>
         <ChangelogHeader 
-          isAdmin={isAdminView} 
+          isAdmin={isAdmin} 
           onCreateNew={handleCreate}
           hiddenCount={hiddenEntriesCount}
           showHidden={showHidden}
-          onToggleShowHidden={toggleShowHidden} 
+          onToggleShowHidden={toggleShowHidden}
+          isPublic={isPublic}
         />
         
         <ChangelogFilters 
@@ -137,7 +136,7 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
     </div>
   );
 
-  if (isAdminView && !isAdmin) {
+  if (isAdmin && !isPublic) {
     return <DashboardLayout>{content}</DashboardLayout>;
   }
 
