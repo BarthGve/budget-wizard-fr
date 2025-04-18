@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MoreVertical, SquarePen, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { formatCurrency } from "@/utils/format";
-import { motion } from "framer-motion";
+
 
 interface SavingItemProps {
   saving: {
@@ -30,34 +30,8 @@ interface SavingItemProps {
 
 export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
   return (
-    <motion.div
-      variants={{
-        visible: {
-          opacity: 1,
-          x: 0,
-          scale: 1,
-          height: "auto",
-          transition: {
-            type: "spring",
-            stiffness: 100,
-            damping: 15,
-            duration: 0.4
-          }
-        },
-        hidden: {
-          opacity: 0,
-          x: -20,
-          scale: 0.8,
-          height: 0,
-          margin: 0,
-          transition: {
-            type: "spring",
-            stiffness: 100,
-            damping: 15,
-            duration: 0.3
-          }
-        }
-      }}
+    <div
+      
       className="flex items-center justify-between p-2 border rounded-lg bg-card dark:bg-card mb-2 mt-2"
     >
       <div className="flex items-center gap-4">
@@ -102,6 +76,6 @@ export const SavingItem = ({ saving, onEdit, onDelete }: SavingItemProps) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </motion.div>
+    </div>
   );
 };
