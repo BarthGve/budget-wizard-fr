@@ -36,7 +36,7 @@ export const ChangelogHeader = ({
         )}
       </div>
       
-      {isAdmin && hiddenCount > 0 && (
+      {isAdmin && (
         <div className="flex items-center space-x-4 p-3 bg-muted/50 rounded-lg">
           <div className="flex-1 flex items-center space-x-2">
             {showHidden ? (
@@ -45,7 +45,11 @@ export const ChangelogHeader = ({
               <EyeOff className="h-4 w-4 text-muted-foreground" />
             )}
             <span className="text-sm">
-              {hiddenCount} entrée{hiddenCount > 1 ? 's' : ''} cachée{hiddenCount > 1 ? 's' : ''}
+              {hiddenCount > 0 ? (
+                `${hiddenCount} entrée${hiddenCount > 1 ? 's' : ''} cachée${hiddenCount > 1 ? 's' : ''}`
+              ) : (
+                "Aucune entrée cachée"
+              )}
             </span>
             {hiddenCount > 0 && !showHidden && (
               <Badge variant="outline" className="text-xs">

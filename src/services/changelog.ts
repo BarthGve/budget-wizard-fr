@@ -4,7 +4,7 @@ import { ChangelogEntry, FormData } from "@/components/changelog/types";
 import { toast } from "@/hooks/useToastWrapper";
 
 export async function fetchChangelogEntries(showHidden = false) {
-  // Modification: Simplification de la fonction pour gérer correctement le filtrage
+  // Récupération de toutes les entrées pour les administrateurs
   const query = supabase
     .from("changelog_entries")
     .select("*")

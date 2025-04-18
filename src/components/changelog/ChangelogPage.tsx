@@ -23,17 +23,17 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
   const isAdminView = isAdmin || userIsAdmin;
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [showHidden, setShowHidden] = useState(false);
+  // Initialiser showHidden à true si l'utilisateur est admin
+  const [showHidden, setShowHidden] = useState(isAdminView);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<ChangelogEntry | null>(null);
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  // On passe showHidden à la fonction fetchChangelogEntries
-  // mais seulement si on est en mode admin
-  const { data: entries = [], isLoading } = useQuery({
-    queryKey: ["changelog", showHidden],
+  // Récupérer toutes les entrées pour les administrateurs
+  const { data: allEntries = [], isLoading } = useQuery({
+    queryKey: ["changelog", isAdminView, showHidden],
     queryFn: () => fetchChangelogEntries(isAdminView && showHidden),
   });
 
@@ -58,7 +58,7 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
     };
   }, [queryClient]);
 
-  const filteredEntries = entries.filter((entry) => {
+  const filteredEntries = allEntries.filter((entry) => {
     const matchesSearch = search.toLowerCase() === "" 
       ? true 
       : entry.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -66,8 +66,6 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
     
     const matchesType = typeFilter === "all" || entry.type === typeFilter;
     
-    // Nous ne filtrons plus sur is_visible ici car c'est déjà géré par la requête
-    // fetchChangelogEntries en fonction de showHidden
     return matchesSearch && matchesType;
   });
 
@@ -86,9 +84,9 @@ export const ChangelogPage = ({ isAdmin = false }: ChangelogPageProps) => {
     setIsDialogOpen(true);
   };
 
-  // Calcul des statistiques pour affichage admin
+  // Calcul des entrées cachées pour l'affichage admin
   const hiddenEntriesCount = isAdminView 
-    ? entries.filter(entry => !entry.is_visible).length
+    ? allEntries.filter(entry => !entry.is_visible).length
     : 0;
 
   const toggleShowHidden = () => {
