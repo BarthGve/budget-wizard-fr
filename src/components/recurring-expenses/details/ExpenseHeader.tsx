@@ -43,7 +43,7 @@ export const ExpenseHeader = ({ expense }: ExpenseHeaderProps) => {
             <img
               src={expense.logo_url}
               alt={expense.name}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = "/placeholder.svg";
