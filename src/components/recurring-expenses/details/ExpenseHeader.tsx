@@ -34,7 +34,7 @@ export const ExpenseHeader = ({ expense }: ExpenseHeaderProps) => {
       <div className="flex items-center gap-4 relative z-10">
         {expense.logo_url ? (
           <div className={cn(
-            "w-14 h-14 rounded-lg p-2 flex items-center justify-center object-cover",
+            "w-14 h-14 rounded-full flex items-center justify-center overflow-hidden",
             // Light mode
             "bg-white shadow-sm border border-gray-200",
             // Dark mode
