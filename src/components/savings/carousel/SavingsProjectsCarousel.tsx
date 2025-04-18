@@ -81,7 +81,7 @@ export const SavingsProjectsCarousel = ({
 
           <div className="flex justify-center pt-4">
             <Button
-              className="bg-quaternary"
+              className="bg-quaternary-600 hover:bg-quaternary-500 dark:bg-quaternary-700 dark:hover:bg-quaternary-600"
               onClick={() => {
               onClose();
               navigate("/savings");
