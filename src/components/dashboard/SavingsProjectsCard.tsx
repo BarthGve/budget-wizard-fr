@@ -1,7 +1,7 @@
 import { Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SavingsProject } from "@/types/savings-project";
 import { useState } from "react";
