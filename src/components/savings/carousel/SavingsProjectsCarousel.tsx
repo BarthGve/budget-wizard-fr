@@ -80,7 +80,9 @@ export const SavingsProjectsCarousel = ({
           </Carousel>
 
           <div className="flex justify-center pt-4">
-            <Button onClick={() => {
+            <Button
+              className="bg-quaternary"
+              onClick={() => {
               onClose();
               navigate("/savings");
             }}>
