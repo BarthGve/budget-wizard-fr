@@ -1,4 +1,3 @@
-
 import { Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -27,10 +26,12 @@ export const SavingsProjectsCard = ({
   // Calculer les projets actifs et leur montant total
   const activeProjects = savingsProjects.filter(project => project.statut === 'actif');
   const totalMonthlyAmount = activeProjects.reduce((total, project) => {
-    if (project.mode_planification === 'par_mensualite' && project.montant_mensuel) {
+    // Si un montant mensuel est déjà défini, l'utiliser
+    if (project.montant_mensuel) {
       return total + project.montant_mensuel;
     }
-    else if (project.mode_planification === 'par_date' && project.target_date) {
+    // Sinon, calculer le montant mensuel à partir de la date cible
+    if (project.mode_planification === 'par_date' && project.target_date) {
       const targetDate = new Date(project.target_date);
       const now = new Date();
       const monthsRemaining = Math.max(1, 
