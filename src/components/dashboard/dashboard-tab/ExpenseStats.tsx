@@ -11,7 +11,6 @@ const MemoizedMonthlyExpensesCard = memo(MonthlyExpensesCard);
 const MemoizedVehicleFuelExpensesCard = memo(VehicleFuelExpensesCard);
 const MemoizedSavingsProjectsCard = memo(SavingsProjectsCard);
 
-// Animation variants
 const rowVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
@@ -37,7 +36,7 @@ interface ExpenseStatsProps {
 }
 
 /**
- * Composant qui affiche les statistiques des dépenses
+ * Section qui affiche les statistiques des dépenses
  */
 export const ExpenseStatsSection = ({
   totalExpenses,
@@ -50,8 +49,11 @@ export const ExpenseStatsSection = ({
   savingsProjects = [],
   dashboardPreferences
 }: ExpenseStatsProps) => {
-  // Déterminer si la carte des projets d'épargne doit être affichée
-  const shouldShowSavingsProjectsCard = dashboardPreferences.show_savings_projects_card && savingsProjects.length > 0;
+  // Afficher uniquement si l'utilisateur a activé cette section dans ses préférences
+  if (!dashboardPreferences.show_expense_stats) return null;
+
+  // Afficher uniquement si l'utilisateur a activé la carte des projets d'épargne
+  const shouldShowSavingsProjectsCard = dashboardPreferences.show_savings_projects_card;
 
   return (
     <motion.div 
@@ -78,3 +80,4 @@ export const ExpenseStatsSection = ({
     </motion.div>
   );
 };
+
