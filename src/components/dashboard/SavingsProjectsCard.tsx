@@ -14,7 +14,7 @@ interface SavingsProjectsCardProps {
 
 export const SavingsProjectsCard = ({ 
   savingsProjects = [], 
-  isLoading = false 
+  isLoading = true 
 }: SavingsProjectsCardProps) => {
   const navigate = useNavigate();
   const [showCarousel, setShowCarousel] = useState(false);
