@@ -52,6 +52,7 @@ export const SavingsContainer = ({
       variants={containerVariants}
       initial="hidden"
       animate={showSavings ? "visible" : "hidden"}
+      className="space-y-2"
     >
       <AnimatePresence mode="wait" className="space-y-2">
         {monthlySavings.map((saving) => (
@@ -60,6 +61,7 @@ export const SavingsContainer = ({
             saving={saving}
             onEdit={onEdit}
             onDelete={onDelete}
+            className="space-y-2"
           />
         ))}
       </AnimatePresence>
