@@ -57,7 +57,7 @@ export const SavingsList = ({
           onEdit={handleEdit}
           onDelete={handleOpenDelete}
           showSavings={showSavings}
-          className="space-y-2"
+          className="space-y-4"
         />
 
         {showSavings && monthlySavings.length === 0 && <EmptySavingsState />}
