@@ -17,9 +17,22 @@ export const CardFooter = ({ onSelect, project }: CardFooterProps) => {
     e.stopPropagation();
     try {
       const now = new Date();
-      const estimatedDate = project.mode_planification === 'par_mensualite'
-        ? new Date(now.setMonth(now.getMonth() + (project.montant_total / project.montant_mensuel)))
-        : project.target_date;
+      // Calculer la date estimée en fonction du mode de planification
+      let estimatedDate: Date;
+      
+      if (project.mode_planification === 'par_mensualite' && project.montant_mensuel) {
+        estimatedDate = new Date();
+        estimatedDate.setMonth(estimatedDate.getMonth() + Math.ceil(project.montant_total / project.montant_mensuel));
+      } else if (project.target_date) {
+        // Si target_date est une chaîne, la convertir en Date
+        estimatedDate = typeof project.target_date === 'string' 
+          ? new Date(project.target_date) 
+          : project.target_date;
+      } else {
+        // Date par défaut si aucune date n'est spécifiée
+        estimatedDate = new Date();
+        estimatedDate.setMonth(estimatedDate.getMonth() + 12); // Par défaut: 1 an
+      }
 
       // Mettre à jour le projet
       const { error: projectError } = await supabase
@@ -27,7 +40,7 @@ export const CardFooter = ({ onSelect, project }: CardFooterProps) => {
         .update({
           statut: 'actif',
           created_at: new Date().toISOString(),
-          date_estimee: estimatedDate?.toISOString(),
+          date_estimee: estimatedDate.toISOString(),
           added_to_recurring: true,
         })
         .eq('id', project.id);
