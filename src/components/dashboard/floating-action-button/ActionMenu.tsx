@@ -80,7 +80,7 @@ export const ActionMenu = ({
         <motion.div whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 400 }}>
           <Button 
             size="sm" 
-            className="h-12 w-12 rounded-full backdrop-blur-md bg-blue-500/90 hover:bg-blue-500 shadow-lg border border-blue-400/20"
+            className="h-12 w-12 rounded-full backdrop-blur-md bg-quaternary-500/90 hover:bg-quaternary-500 shadow-lg border border-quaternary-400/20"
             onClick={handleAddFuelExpenseClick}
           >
             <CarFront className="h-5 w-5 text-white" />
@@ -95,7 +95,7 @@ export const ActionMenu = ({
         <motion.div whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 400 }}>
           <Button 
             size="sm" 
-            className="h-12 w-12 rounded-full backdrop-blur-md bg-purple-500/90 hover:bg-purple-500 shadow-lg border border-purple-400/20"
+            className="h-12 w-12 rounded-full backdrop-blur-md bg-tertiary-500/90 hover:bg-tertiary-500 shadow-lg border border-tertiary-400/20"
             onClick={handleAddRetailerExpense}
           >
             <Store className="h-5 w-5 text-white" />
