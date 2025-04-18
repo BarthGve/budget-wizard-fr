@@ -21,9 +21,9 @@ export const MonthlyExpensesCard = ({
   });
   
   // Titre et description adaptés en fonction du mode de vue
-  const titleText = viewMode === "monthly" ? "Total des dépenses" : "Total des dépenses";
+  const titleText = viewMode === "monthly" ? "Dépenses" : "Dépenses";
   const descriptionText = viewMode === "monthly" 
-    ? `Mois de ${currentMonthName}` 
+    ? `${currentMonthName}` 
     : `Année ${new Date().getFullYear()}`;
 
   return (

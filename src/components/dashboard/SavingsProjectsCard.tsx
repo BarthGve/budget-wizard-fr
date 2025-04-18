@@ -44,7 +44,7 @@ export const SavingsProjectsCard = ({
   }, 0);
 
   const descriptionText = activeProjects.length > 0 
-    ? `${totalMonthlyAmount.toLocaleString('fr-FR')}€ d'épargne mensuelle`
+    ? `Nécessite ${totalMonthlyAmount.toLocaleString('fr-FR')}€ d'épargne mensuelle`
     : "Aucun projet d'épargne actif";
 
   return (
@@ -69,7 +69,7 @@ export const SavingsProjectsCard = ({
                   <Target className="h-5 w-5" />
                 </div>
                 <div>
-                  <span className="dark:text-white">Projets d'épargne</span>
+                  <span className="dark:text-white">Projets</span>
                 </div>
               </CardTitle>
             </div>
