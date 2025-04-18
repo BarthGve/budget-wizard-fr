@@ -7,7 +7,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { X, PiggyBank } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SavingsProjectCard } from "../project-card/SavingsProjectCard";
 import { SavingsProject } from "@/types/savings-project";
