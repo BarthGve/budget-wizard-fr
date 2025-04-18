@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Store, CarFront } from "lucide-react";
+import { Store, CarFront, RotateCcw } from "lucide-react";
 import { type Retailer } from "./useFloatingActionButton";
 
 // Animation variants
@@ -55,6 +55,7 @@ interface ActionMenuProps {
   isProUser: boolean;
   handleAddFuelExpenseClick: () => void;
   handleAddRetailerExpense: () => void;
+  handleRestoreContribution?: () => void;
 }
 
 /**
@@ -63,7 +64,8 @@ interface ActionMenuProps {
 export const ActionMenu = ({
   isProUser,
   handleAddFuelExpenseClick,
-  handleAddRetailerExpense
+  handleAddRetailerExpense,
+  handleRestoreContribution
 }: ActionMenuProps) => {
   return (
     <motion.div 
@@ -102,6 +104,23 @@ export const ActionMenu = ({
           </Button>
         </motion.div>
       </motion.div>
+
+      {handleRestoreContribution && (
+        <motion.div variants={itemVariants} className="flex items-center gap-3">
+          <span className="backdrop-blur-xl bg-white/80 dark:bg-slate-800/80 text-sm font-medium px-4 py-2 rounded-full shadow-md border border-white/20 dark:border-gray-700/30">
+            Restaurer contributeur
+          </span>
+          <motion.div whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 400 }}>
+            <Button 
+              size="sm" 
+              className="h-12 w-12 rounded-full backdrop-blur-md bg-quinary-500/90 hover:bg-quinary-500 shadow-lg border border-quinary-400/20"
+              onClick={handleRestoreContribution}
+            >
+              <RotateCcw className="h-5 w-5 text-white" />
+            </Button>
+          </motion.div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };
