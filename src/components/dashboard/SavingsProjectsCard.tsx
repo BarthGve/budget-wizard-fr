@@ -44,7 +44,7 @@ export const SavingsProjectsCard = ({
   }, 0);
 
   const descriptionText = activeProjects.length > 0 
-    ? `Nécessite ${totalMonthlyAmount.toLocaleString('fr-FR')}€ d'épargne mensuelle`
+    ? `Mobilise ${totalMonthlyAmount.toLocaleString('fr-FR')}€ d'épargne mensuelle`
     : "Aucun projet d'épargne actif";
 
   return (
