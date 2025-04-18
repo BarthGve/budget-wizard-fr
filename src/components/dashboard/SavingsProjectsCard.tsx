@@ -1,4 +1,4 @@
-import { PiggyBank } from "lucide-react";
+import { Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -60,7 +60,7 @@ export const SavingsProjectsCard = ({
                   "bg-quaternary/20 text-quaternary",
                   "dark:bg-quaternary/20 dark:text-quaternary"
                 )}>
-                  <PiggyBank className="h-5 w-5" />
+                  <Target className="h-5 w-5" />
                 </div>
                 <div>
                   <span className="dark:text-white">Projets d'épargne</span>
