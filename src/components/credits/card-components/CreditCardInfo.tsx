@@ -82,9 +82,7 @@ export const CreditCardInfo = ({ credit, index, isMobile = false, isArchived = f
             </Badge>
           )}
         </div>
-        <p className={domainClass}>
-          {credit.nom_domaine}
-        </p>
+     
       </div>
     </motion.div>
   );
