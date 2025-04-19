@@ -1,5 +1,4 @@
 
-// Mettre à jour le composant SavingItem pour accepter la propriété className
 import React from "react";
 import { motion } from "framer-motion";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -61,6 +60,11 @@ export const SavingItem = ({ saving, onEdit, onDelete, className }: SavingItemPr
             <p className="text-tertiary-600 dark:text-tertiary-400 font-semibold">
               {saving.amount.toLocaleString('fr-FR')} €/mois
             </p>
+            {saving.is_project_saving && (
+              <p className="text-sm text-quaternary-600 dark:text-quaternary-400 mt-1">
+                Lié à un projet d'épargne
+              </p>
+            )}
           </div>
         </div>
 
