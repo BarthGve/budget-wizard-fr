@@ -52,7 +52,7 @@ const UserSettings = () => {
             className={`bg-background border w-full ${
               isMobile 
                 ? "flex justify-between overflow-x-auto scrollbar-none p-0.5" 
-                : ""
+                : "justify-between"
             }`}
             style={isMobile ? { scrollbarWidth: 'none' } : {}}
           >
