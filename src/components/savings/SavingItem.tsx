@@ -35,7 +35,7 @@ export const SavingItem = ({ saving, onEdit, onDelete, className }: SavingItemPr
       className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-3 ${className || ""}`}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 justify-between">
           {saving.logo_url ? (
             <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
               <img 
