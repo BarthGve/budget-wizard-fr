@@ -1,6 +1,6 @@
 
 import { NotificationSettings } from "@/components/settings/notification-settings";
-import { PrivacySettings } from "@/components/settings/PrivacySettings";
+
 import { ProfileSettings } from "@/components/settings/ProfileSettings";
 import { SecuritySettings } from "@/components/settings/SecuritySettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -126,7 +126,7 @@ const UserSettings = () => {
         {/* Onglet Sécurité */}
         <TabsContent value="security" className="space-y-6">
           <SecuritySettings />
-          <PrivacySettings />
+         
         </TabsContent>
 
         {/* Onglet Notifications */}
