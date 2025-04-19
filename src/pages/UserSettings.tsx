@@ -1,6 +1,5 @@
 
 import { NotificationSettings } from "@/components/settings/notification-settings";
-
 import { ProfileSettings } from "@/components/settings/ProfileSettings";
 import { SecuritySettings } from "@/components/settings/SecuritySettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,119 +35,116 @@ const UserSettings = () => {
   }
 
   return (
-    <div className="space-y-4 md:space-y-6 px-4 py-6 mx-auto">
-      <div className={isMobile ? "px-2" : ""}>
-        <h2 className={`font-bold tracking-tight ${isMobile ? "text-2xl" : "text-3xl"}`}>
-          Paramètres Du Compte
-        </h2>
-        <p className={`text-muted-foreground ${isMobile ? "text-sm" : ""}`}>
-          Gérez vos paramètres de compte et préférences
-        </p>
-      </div>
-      <Tabs defaultValue={activeTab} className="space-y-4 md:space-y-6">
-        <div className="relative w-full">
+    <div className="w-full max-w-[1200px] mx-auto">
+      <div className="px-4 py-6 space-y-6 md:space-y-8">
+        {/* En-tête */}
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Paramètres Du Compte
+          </h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
+            Gérez vos paramètres de compte et préférences
+          </p>
+        </div>
+
+        {/* Tabs Navigation */}
+        <Tabs defaultValue={activeTab} className="w-full">
           <TabsList 
-            className={`bg-background border w-full ${
+            className={`w-full flex ${
               isMobile 
-                ? "flex justify-between overflow-x-auto scrollbar-none p-0.5" 
-                : "justify-between"
+                ? "overflow-x-auto scrollbar-none p-1 gap-1" 
+                : "justify-start gap-2"
             }`}
-            style={isMobile ? { scrollbarWidth: 'none' } : {}}
           >
             <TabsTrigger 
               value="profile" 
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-2 flex-shrink-0 ${
                 isMobile 
-                  ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                  ? "flex-1 min-w-[4.5rem] h-14 flex-col text-xs" 
                   : ""
               }`}
             >
-              <User className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-              {!isMobile ? "Profil" : ""}
-              <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Profil</span>
+              <User className={isMobile ? "h-4 w-4" : "h-4 w-4"} />
+              <span className={isMobile ? "text-[11px]" : ""}>Profil</span>
             </TabsTrigger>
+
             <TabsTrigger 
               value="security" 
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-2 flex-shrink-0 ${
                 isMobile 
-                  ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                  ? "flex-1 min-w-[4.5rem] h-14 flex-col text-xs" 
                   : ""
               }`}
             >
-              <Shield className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-              {!isMobile ? "Sécurité" : ""}
-              <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Sécurité</span>
+              <Shield className={isMobile ? "h-4 w-4" : "h-4 w-4"} />
+              <span className={isMobile ? "text-[11px]" : ""}>Sécurité</span>
             </TabsTrigger>
+
             <TabsTrigger 
               value="notifications" 
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-2 flex-shrink-0 ${
                 isMobile 
-                  ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                  ? "flex-1 min-w-[4.5rem] h-14 flex-col text-xs" 
                   : ""
               }`}
             >
-              <Bell className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-              {!isMobile ? "Notifications" : ""}
-              <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Notif.</span>
+              <Bell className={isMobile ? "h-4 w-4" : "h-4 w-4"} />
+              <span className={isMobile ? "text-[11px]" : ""}>Notif.</span>
             </TabsTrigger>
+
             <TabsTrigger 
               value="appearance" 
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-2 flex-shrink-0 ${
                 isMobile 
-                  ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                  ? "flex-1 min-w-[4.5rem] h-14 flex-col text-xs" 
                   : ""
               }`}
             >
-              <Palette className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-              {!isMobile ? "Apparence" : ""}
-              <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Apparence</span>
+              <Palette className={isMobile ? "h-4 w-4" : "h-4 w-4"} />
+              <span className={isMobile ? "text-[11px]" : ""}>Style</span>
             </TabsTrigger>
+
             <TabsTrigger 
               value="preferences" 
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-2 flex-shrink-0 ${
                 isMobile 
-                  ? "flex-1 text-xs px-2 py-1.5 min-w-[80px]" 
+                  ? "flex-1 min-w-[4.5rem] h-14 flex-col text-xs" 
                   : ""
               }`}
             >
-              <Settings2 className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-              {!isMobile ? "Préférences" : ""}
-              <span className={isMobile ? "text-[10px] mt-0.5" : "hidden"}>Préf.</span>
+              <Settings2 className={isMobile ? "h-4 w-4" : "h-4 w-4"} />
+              <span className={isMobile ? "text-[11px]" : ""}>Préf.</span>
             </TabsTrigger>
           </TabsList>
-        </div>
 
-        {/* Onglet Profil */}
-        <TabsContent value="profile" className={`space-y-4 md:space-y-6 ${isMobile ? "px-0" : ""}`}>
-          <ProfileSettings />
-        </TabsContent>
+          {/* Contenu des onglets */}
+          <div className="mt-6 space-y-6">
+            <TabsContent value="profile" className="space-y-6">
+              <ProfileSettings />
+            </TabsContent>
 
-        {/* Onglet Sécurité */}
-        <TabsContent value="security" className="space-y-6">
-          <SecuritySettings />
-         
-        </TabsContent>
+            <TabsContent value="security" className="space-y-6">
+              <SecuritySettings />
+            </TabsContent>
 
-        {/* Onglet Notifications */}
-        <TabsContent value="notifications" className="space-y-6">
-          <NotificationSettings />
-        </TabsContent>
+            <TabsContent value="notifications" className="space-y-6">
+              <NotificationSettings />
+            </TabsContent>
 
-        {/* Onglet Apparence */}
-        <TabsContent value="appearance" className="space-y-6">
-          <ColorPaletteSettings />
-        </TabsContent>
+            <TabsContent value="appearance" className="space-y-6">
+              <ColorPaletteSettings />
+            </TabsContent>
 
-        {/* Onglet Préférences */}
-        <TabsContent value="preferences" className="space-y-6">
-          <DashboardPreferencesSettings />
-          {canAccessRetailers && <RetailersSettings />}
-          <ExpenseCategoriesSettings />
-        </TabsContent>
-      </Tabs>
+            <TabsContent value="preferences" className="space-y-6">
+              <DashboardPreferencesSettings />
+              {canAccessRetailers && <RetailersSettings />}
+              <ExpenseCategoriesSettings />
+            </TabsContent>
+          </div>
+        </Tabs>
+      </div>
     </div>
   );
 };
 
 export default UserSettings;
-
