@@ -54,7 +54,7 @@ export const SavingsContainer = ({
       variants={containerVariants}
       initial="hidden"
       animate={showSavings ? "visible" : "hidden"}
-      className={className || "space-y-2"}
+      className={className || "space-y-1"}
     >
       <AnimatePresence mode="wait">
         {monthlySavings.map((saving) => (
