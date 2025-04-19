@@ -41,18 +41,18 @@ export const ContributorsMobileCard = ({
         {/* En-tête */}
         <div className={cn(
           "px-4 py-3 border-b flex items-center gap-2",
-          "border-amber-100 bg-gradient-to-r from-amber-50/90 to-amber-50/60",
-          "dark:border-amber-900/20 dark:bg-gradient-to-r dark:from-amber-900/20 dark:to-amber-900/10"
+          "border-quinary-100 bg-gradient-to-r from-quinary-50/90 to-quinary-50/60",
+          "dark:border-quinary-900/20 dark:bg-gradient-to-r dark:from-quinary-900/20 dark:to-quinary-900/10"
         )}>
           <div className={cn(
             "p-1.5 rounded-full",
-            "bg-amber-100/90",
-            "dark:bg-amber-800/30"
+            "bg-quinary-100/90",
+            "dark:bg-quinary-800/30"
           )}>
             <Users className={cn(
               "h-4 w-4", 
-              "text-amber-600/80", 
-              "dark:text-amber-400/90"
+              "text-quinary-600/80", 
+              "dark:text-quinary-400/90"
             )} />
           </div>
           <h3 className={cn(
@@ -77,7 +77,7 @@ export const ContributorsMobileCard = ({
               <div className="flex items-center gap-3">
                 <div className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
-                  isDarkTheme ? "bg-amber-800/30 text-amber-200" : "bg-amber-100 text-amber-800"
+                  isDarkTheme ? "bg-quinary-800/30 text-quinary-200" : "bg-quinary-100 text-quinary-800"
                 )}>
                   {contributor.name.charAt(0).toUpperCase()}
                 </div>
