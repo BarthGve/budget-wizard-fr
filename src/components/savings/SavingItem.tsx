@@ -25,7 +25,6 @@ export const SavingItem = ({ saving, onEdit, onDelete, className }: SavingItemPr
     visible: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -20 }
   };
-
   return (
     <motion.div
       variants={itemVariants}
@@ -35,7 +34,7 @@ export const SavingItem = ({ saving, onEdit, onDelete, className }: SavingItemPr
       className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-3 ${className || ""}`}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 justify-between">
+        <div className="flex items-center gap-3">
           {saving.logo_url ? (
             <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
               <img 
@@ -61,35 +60,35 @@ export const SavingItem = ({ saving, onEdit, onDelete, className }: SavingItemPr
               {saving.amount.toLocaleString('fr-FR')} €/mois
             </p>
           </div>
-          <div>
-           {saving.is_project_saving && (
-              <p className="text-sm text-quaternary-600 dark:text-quaternary-400 mt-1">
-                Lié à un projet d'épargne
-              </p>
-            )}
-          </div>
         </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onEdit(saving)}>
-              <Edit className="mr-2 h-4 w-4" />
-              Modifier
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => onDelete(saving)}
-              className="text-destructive focus:text-destructive"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Supprimer
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        
+        <div className="flex items-center">
+          {saving.is_project_saving && (
+            <p className="text-sm text-quaternary-600 dark:text-quaternary-400 mr-2">
+              Lié à un projet d'épargne
+            </p>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onEdit(saving)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Modifier
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onDelete(saving)}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Supprimer
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </motion.div>
   );
