@@ -1,5 +1,5 @@
 
-// Adaptation du design général en cohérence avec l'app
+// Adaptation du design général pour cohérence totale avec la page épargne (fond, glassmorphism, gradient, padding...)
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -10,7 +10,7 @@ import { PropertiesHeader } from "@/components/properties/PropertiesHeader";
 import { PropertyContent } from "@/components/properties/PropertyContent";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-// On harmonise le fond, le conteneur principal et les espacements
+// On harmonise le fond, le conteneur principal "glass", les espacements et la structure
 const Properties = () => {
   const navigate = useNavigate();
 
@@ -59,13 +59,18 @@ const Properties = () => {
   return (
     <TooltipProvider>
       <motion.div
-        className="container mx-auto max-w-4xl py-8 px-2 md:px-6"
+        // On reprend l'approche de la page épargne pour les paddings/centreur
+        className="container mx-auto flex flex-col px-4 py-6 md:px-8 space-y-0 min-h-[100dvh] md:min-h-[80vh]"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
+        style={{
+          background:
+            "linear-gradient(90deg, hsla(186, 33%, 94%, 1) 0%, hsla(216, 41%, 79%, 1) 100%)"
+        }}
       >
-        {/* Ajout d'une carte globale pour plus d'homogénéité */}
-        <div className="bg-card shadow-lg rounded-lg border p-4 md:p-8 space-y-8">
+        {/* Carte principale avec glassmorphism et gradient comme sur Épargne. */}
+        <div className="w-full rounded-2xl glass shadow-xl border border-white/30 bg-white/80 dark:bg-gray-900/60 p-2 md:p-6 lg:p-10 max-w-4xl mx-auto space-y-8 backdrop-blur-md">
           {/* Header harmonisé */}
           <PropertiesHeader />
           {/* Contenu des propriétés */}
@@ -76,3 +81,4 @@ const Properties = () => {
   );
 };
 export default Properties;
+
