@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExpensesList } from "@/components/properties/ExpensesList";
@@ -22,8 +23,8 @@ export const PropertyExpensesSection = ({
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.07,
-        delayChildren: 0.07
+        staggerChildren: 0.1,
+        delayChildren: 0.1
       }
     }
   };
@@ -48,23 +49,18 @@ export const PropertyExpensesSection = ({
 
   return (
     <motion.div 
-      className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full mt-2"
+      className="grid lg:grid-cols-2 gap-4 md:col-span-2"
       variants={containerVariants}
-      initial="hidden"
-      animate="visible"
     >
       <motion.div 
         variants={itemVariants}
         whileHover={{ 
           scale: 1.01,
-          boxShadow: "0 5px 15px rgba(90,81,207,0.09)",
+          boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
         }}
-        className="w-full"
       >
-        <Card className="p-6 bg-white/80 dark:bg-quaternary-900/40 shadow-lg rounded-2xl border border-white/20 dark:border-quaternary-900/20">
-          <h2 className="text-lg md:text-xl font-semibold mb-4 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Dépenses
-          </h2>
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Dépenses</h2>
           {isLoadingExpenses ? (
             <div className="space-y-4">
               <Skeleton className="h-12 w-full" />
@@ -86,11 +82,10 @@ export const PropertyExpensesSection = ({
           variants={itemVariants}
           whileHover={{ 
             scale: 1.01,
-            boxShadow: "0 5px 15px rgba(90,81,207,0.09)"
+            boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)"
           }}
-          className="w-full"
         >
-          <Card className="p-6 bg-white/80 dark:bg-quaternary-900/40 shadow-lg rounded-2xl border border-white/20 dark:border-quaternary-900/20">
+          <Card className="p-6">
             <ExpensesChart expenses={expenses} />
           </Card>
         </motion.div>
