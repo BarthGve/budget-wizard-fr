@@ -264,7 +264,7 @@ export const CreditInfoDialog = memo(({
                 <InfoIcon className="w-5 h-5" />
               </div>
               <DialogTitle className={cn("text-2xl font-bold flex items-center gap-2", currentColors.headingText)}>
-                <span>Détails du crédit</span>
+                <span>{credit.nom_credit}</span>
                 {credit.statut === "remboursé" && credit.is_early_settlement && (
                   <Badge variant="outline" className={cn(currentColors.earlySettlement)}>
                     <Zap className="h-3 w-3 mr-1" /> Soldé par anticipation
