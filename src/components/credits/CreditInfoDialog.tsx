@@ -118,7 +118,7 @@ export const CreditInfoDialog = memo(({
             
             <DialogHeader className="relative z-10 mb-4 px-6">
               <div className="flex items-center gap-3">
-                <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
+                <div className={cn("rounded-lg", currentColors.iconBg)}>
                  <CreditLogoPreview
                       url={previewLogoUrl}
                       isValid={isLogoValid}
@@ -260,8 +260,13 @@ export const CreditInfoDialog = memo(({
           
           <DialogHeader className="relative z-10 mb-4">
             <div className="flex items-center gap-3">
-              <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
-                <InfoIcon className="w-5 h-5" />
+              <div className={cn("rounded-lg", currentColors.iconBg)}>
+                  <CreditLogoPreview
+                      url={previewLogoUrl}
+                      isValid={isLogoValid}
+                      isChecking={isCheckingLogo}
+                      name={credit.nom_credit}
+                    />
               </div>
               <DialogTitle className={cn("text-2xl font-bold flex items-center gap-2", currentColors.headingText)}>
                 <span>{credit.nom_credit}</span>
@@ -281,23 +286,6 @@ export const CreditInfoDialog = memo(({
           )} />
           
           <div className="relative z-10 grid gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <h3 className={cn("text-sm font-medium mb-1", currentColors.descriptionText)}>Nom</h3>
-                <p className={cn("text-base font-medium", currentColors.headingText)}>{credit.nom_credit}</p>
-              </div>
-              <div>
-                <h3 className={cn("text-sm font-medium mb-1", currentColors.descriptionText)}>Logo</h3>
-                <div className="mt-0.5">
-                  <CreditLogoPreview
-                    url={previewLogoUrl}
-                    isValid={isLogoValid}
-                    isChecking={isCheckingLogo}
-                    name={credit.nom_credit}
-                  />
-                </div>
-              </div>
-            </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
