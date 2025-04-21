@@ -1,4 +1,5 @@
 
+  
 // Visuel harmonisé : fond blanc/vitreux, shadow doux, border-radius homogène, hover léger et responsive adapté
 import { Property } from "@/types/property";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -16,6 +17,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -161,3 +163,4 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
     </Card>
   );
 };
+
