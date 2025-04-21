@@ -42,9 +42,9 @@ export const CreditInfoDialog = memo(({
   const colors = {
     purple: {
       gradientFrom: "from-senary-500",
-      gradientTo: "to-violet-400", 
+      gradientTo: "to-senary-400", 
       darkGradientFrom: "dark:from-senary-600",
-      darkGradientTo: "dark:to-violet-500",
+      darkGradientTo: "dark:to-senary-500",
       iconBg: "bg-senary-100 text-senary-700 dark:bg-senary-900/30 dark:text-senary-300",
       headingText: "text-senary-900 dark:text-senary-200",
       descriptionText: "text-senary-700/80 dark:text-senary-300/80",
@@ -127,7 +127,7 @@ export const CreditInfoDialog = memo(({
                     />
                 </div>
                 <DialogTitle className={cn("text-2xl font-bold flex items-center gap-2", currentColors.headingText)}>
-                  <span>Détails du crédit</span>
+                  <span>{credit.nom_credit}</span>
                   {credit.statut === "remboursé" && credit.is_early_settlement && (
                     <Badge variant="outline" className={cn(currentColors.earlySettlement)}>
                       <Zap className="h-3 w-3 mr-1" /> Soldé par anticipation
