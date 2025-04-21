@@ -10,6 +10,8 @@ import { CreditCardIcon, Zap, X, InfoIcon } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useTheme } from "next-themes";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { CreditLogoPreview } from "./card-components/CreditLogoPreview";
+import { useLogoPreview } from "@/components/savings/hooks/useLogoPreview";
 
 interface CreditInfoDialogProps {
   credit: Credit;
@@ -30,16 +32,13 @@ export const CreditInfoDialog = memo(({
   const contentRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
-  // Détecter si nous sommes sur mobile ou tablette
   const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
   const isMobile = useIsMobile();
 
-  // Gestion de l'état contrôlé/non contrôlé
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : uncontrolledOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange : setUncontrolledOpen;
 
-  // Couleurs du thème selon le colorScheme
   const colors = {
     purple: {
       gradientFrom: "from-senary-500",
@@ -102,21 +101,20 @@ export const CreditInfoDialog = memo(({
 
   const currentColors = colors[colorScheme];
 
-  // Calculer le montant total du crédit
   const calculateTotalAmount = () => {
     if (!credit.date_premiere_mensualite) return credit.montant_mensualite;
     
     const firstDate = new Date(credit.date_premiere_mensualite);
     const lastDate = new Date(credit.date_derniere_mensualite);
     
-    // Calculer le nombre de mois entre les dates
     const months = (lastDate.getFullYear() - firstDate.getFullYear()) * 12 + 
                   (lastDate.getMonth() - firstDate.getMonth()) + 1;
     
     return months * credit.montant_mensualite;
   };
 
-  // Afficher Sheet sur mobile, Dialog sur desktop
+  const { previewLogoUrl, isLogoValid, isCheckingLogo } = useLogoPreview(credit.nom_domaine);
+
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
@@ -145,7 +143,6 @@ export const CreditInfoDialog = memo(({
               currentColors.darkBg
             )}
           >
-            {/* Background gradient */}
             <div className={cn(
               "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-t-lg",
               currentColors.gradientFrom,
@@ -154,10 +151,8 @@ export const CreditInfoDialog = memo(({
               currentColors.darkGradientTo
             )} />
 
-            {/* Radial gradient */}
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-t-lg" />
             
-            {/* Dialog header */}
             <DialogHeader className="relative z-10 mb-4 px-6">
               <div className="flex items-center gap-3">
                 <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
@@ -174,14 +169,12 @@ export const CreditInfoDialog = memo(({
               </div>
             </DialogHeader>
             
-            {/* Ligne séparatrice stylée */}
             <div className={cn(
               "h-px w-full mb-6",
               "bg-gradient-to-r from-transparent to-transparent",
               currentColors.separator
             )} />
             
-            {/* Contenu des informations */}
             <div className="relative z-10 px-6 grid gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -189,8 +182,15 @@ export const CreditInfoDialog = memo(({
                   <p className={cn("text-base font-medium", currentColors.headingText)}>{credit.nom_credit}</p>
                 </div>
                 <div>
-                  <h3 className={cn("text-sm font-medium mb-1", currentColors.descriptionText)}>Domaine</h3>
-                  <p className={cn("text-base font-medium", currentColors.headingText)}>{credit.nom_domaine}</p>
+                  <h3 className={cn("text-sm font-medium mb-1", currentColors.descriptionText)}>Logo</h3>
+                  <div className="mt-0.5">
+                    <CreditLogoPreview
+                      url={previewLogoUrl}
+                      isValid={isLogoValid}
+                      isChecking={isCheckingLogo}
+                      name={credit.nom_credit}
+                    />
+                  </div>
                 </div>
               </div>
               
@@ -245,7 +245,6 @@ export const CreditInfoDialog = memo(({
               </div>
             </div>
             
-            {/* Decorative icon */}
             <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
               <CreditCardIcon className="w-full h-full" />
             </div>
@@ -255,7 +254,6 @@ export const CreditInfoDialog = memo(({
     );
   }
 
-  // Version desktop avec Dialog
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger}
@@ -277,7 +275,6 @@ export const CreditInfoDialog = memo(({
             currentColors.darkBg
           )}
         >
-          {/* Background gradient */}
           <div className={cn(
             "absolute inset-0 pointer-events-none opacity-5 bg-gradient-to-br rounded-lg",
             currentColors.gradientFrom,
@@ -286,10 +283,8 @@ export const CreditInfoDialog = memo(({
             currentColors.darkGradientTo
           )} />
 
-          {/* Radial gradient */}
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-gray-100 to-transparent opacity-[0.015] dark:from-gray-500 dark:via-gray-600 dark:to-transparent dark:opacity-[0.01] rounded-lg" />
           
-          {/* Bouton de fermeture */}
           <DialogClose 
             className={cn(
               "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none z-20",
@@ -300,7 +295,6 @@ export const CreditInfoDialog = memo(({
             <span className="sr-only">Close</span>
           </DialogClose>
           
-          {/* Dialog header */}
           <DialogHeader className="relative z-10 mb-4">
             <div className="flex items-center gap-3">
               <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
@@ -317,14 +311,12 @@ export const CreditInfoDialog = memo(({
             </div>
           </DialogHeader>
           
-          {/* Ligne séparatrice stylée */}
           <div className={cn(
             "h-px w-full mb-6",
             "bg-gradient-to-r from-transparent to-transparent",
             currentColors.separator
           )} />
           
-          {/* Contenu des informations */}
           <div className="relative z-10 grid gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -332,8 +324,15 @@ export const CreditInfoDialog = memo(({
                 <p className={cn("text-base font-medium", currentColors.headingText)}>{credit.nom_credit}</p>
               </div>
               <div>
-                <h3 className={cn("text-sm font-medium mb-1", currentColors.descriptionText)}>Domaine</h3>
-                <p className={cn("text-base font-medium", currentColors.headingText)}>{credit.nom_domaine}</p>
+                <h3 className={cn("text-sm font-medium mb-1", currentColors.descriptionText)}>Logo</h3>
+                <div className="mt-0.5">
+                  <CreditLogoPreview
+                    url={previewLogoUrl}
+                    isValid={isLogoValid}
+                    isChecking={isCheckingLogo}
+                    name={credit.nom_credit}
+                  />
+                </div>
               </div>
             </div>
             
@@ -388,7 +387,6 @@ export const CreditInfoDialog = memo(({
             </div>
           </div>
           
-          {/* Decorative icon */}
           <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] dark:opacity-[0.02]">
             <CreditCardIcon className="w-full h-full" />
           </div>
