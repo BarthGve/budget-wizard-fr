@@ -1,27 +1,10 @@
 
 import { Property } from "@/types/property";
 import { ChevronLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AddExpenseDialog } from "@/components/properties/AddExpenseDialog";
 import { PropertyWeather } from "@/components/properties/PropertyWeather";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useState } from "react";
 
 interface PropertyHeaderProps {
   property: Property;
@@ -38,31 +21,6 @@ export const PropertyHeader = ({
   isEditDialogOpen,
   setIsEditDialogOpen
 }: PropertyHeaderProps) => {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
-  // Suppression d'un bien
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    try {
-      const { error } = await supabase
-        .from("properties")
-        .delete()
-        .eq("id", property.id);
-
-      if (error) throw error;
-      toast.success("Bien supprimé avec succès");
-      queryClient.invalidateQueries({ queryKey: ["properties"] });
-      navigate("/properties");
-    } catch (error) {
-      console.error("Erreur lors de la suppression du bien :", error);
-      toast.error("Erreur lors de la suppression du bien");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   return (
     <motion.div 
       className="flex flex-col gap-6"
@@ -101,38 +59,6 @@ export const PropertyHeader = ({
               <PropertyWeather latitude={property.latitude} longitude={property.longitude} />
             </motion.div>
           }
-          {/* Ajout du bouton de suppression */}
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button 
-                variant="ghost"
-                size="icon"
-                disabled={isDeleting}
-                aria-label="Supprimer le bien"
-                className="text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="h-5 w-5" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Supprimer le bien</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer ce bien ? Cette action est irréversible.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleDelete}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  disabled={isDeleting}
-                >
-                  Supprimer
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <AddExpenseDialog 
               propertyId={property.id} 
