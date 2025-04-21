@@ -25,6 +25,7 @@ export const SavingsProjectsCard = ({
 
   // Calculer les projets actifs et leur montant total
   const activeProjects = savingsProjects.filter(project => project.statut === 'actif');
+   const stayingProjects = savingsProjects.filter(project => project.statut === 'en_attente');
   const totalMonthlyAmount = activeProjects.reduce((total, project) => {
     // Si un montant mensuel est déjà défini, l'utiliser
     if (project.montant_mensuel) {
@@ -85,7 +86,7 @@ export const SavingsProjectsCard = ({
                 "dark:text-quaternary",
                 "animate-fadeIn"
               )}>
-                {activeProjects.length} actif{activeProjects.length !== 1 ? 's' : ''}
+                {activeProjects.length} actif{activeProjects.length !== 1 ? 's' : ''} / {stayingProjects.length} en attente
               </p>
             </div>
           </CardContent>
