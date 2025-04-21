@@ -1,10 +1,20 @@
-
 import { Property } from "@/types/property";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AddExpenseDialog } from "@/components/properties/AddExpenseDialog";
 import { PropertyWeather } from "@/components/properties/PropertyWeather";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface PropertyHeaderProps {
   property: Property;
