@@ -144,18 +144,7 @@ export const CreditInfoDialog = memo(({
             )} />
             
             <div className="relative z-10 px-6 grid gap-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h3 className={cn("text-sm font-medium mb-1", currentColors.descriptionText)}>Nom</h3>
-                  <p className={cn("text-base font-medium", currentColors.headingText)}>{credit.nom_credit}</p>
-                </div>
-                <div>
-                  <h3 className={cn("text-sm font-medium mb-1", currentColors.descriptionText)}>Logo</h3>
-                  <div className="mt-0.5">
-                 
-                  </div>
-                </div>
-              </div>
+              
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
