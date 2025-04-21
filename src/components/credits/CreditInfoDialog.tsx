@@ -59,44 +59,7 @@ export const CreditInfoDialog = memo(({
       reimbursedStatus: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
       defaultStatus: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
     },
-    green: {
-      gradientFrom: "from-quaternary-500",
-      gradientTo: "to-emerald-400",
-      darkGradientFrom: "dark:from-quaternary-600",
-      darkGradientTo: "dark:to-emerald-500",
-      iconBg: "bg-quaternary-100 text-quaternary-700 dark:bg-quaternary-900/30 dark:text-quaternary-300",
-      headingText: "text-quaternary-900 dark:text-quaternary-200",
-      descriptionText: "text-quaternary-700/80 dark:text-quaternary-300/80",
-      buttonBg: "bg-quaternary-600 hover:bg-quaternary-500 dark:bg-quaternary-700 dark:hover:bg-quaternary-600",
-      lightBg: "from-white via-quaternary-50/40 to-quaternary-100/70",
-      darkBg: "dark:from-gray-900 dark:via-quaternary-950/20 dark:to-quaternary-900/30",
-      borderLight: "border-quaternary-100/70",
-      borderDark: "dark:border-quaternary-800/20",
-      separator: "via-quaternary-200/60 dark:via-quaternary-800/30",
-      earlySettlement: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800/50",
-      activeStatus: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-      reimbursedStatus: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-      defaultStatus: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-    },
-    blue: {
-      gradientFrom: "from-tertiary-500",
-      gradientTo: "to-sky-400",
-      darkGradientFrom: "dark:from-tertiary-600",
-      darkGradientTo: "dark:to-sky-500",
-      iconBg: "bg-tertiary-100 text-tertiary-700 dark:bg-tertiary-900/30 dark:text-tertiary-300",
-      headingText: "text-tertiary-900 dark:text-tertiary-200",
-      descriptionText: "text-tertiary-700/80 dark:text-tertiary-300/80",
-      buttonBg: "bg-tertiary-600 hover:bg-tertiary-500 dark:bg-tertiary-700 dark:hover:bg-tertiary-600",
-      lightBg: "from-white via-tertiary-50/40 to-tertiary-100/70",
-      darkBg: "dark:from-gray-900 dark:via-tertiary-950/20 dark:to-tertiary-900/30", 
-      borderLight: "border-tertiary-100/70",
-      borderDark: "dark:border-tertiary-800/20",
-      separator: "via-tertiary-200/60 dark:via-tertiary-800/30",
-      earlySettlement: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800/50",
-      activeStatus: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", 
-      reimbursedStatus: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-      defaultStatus: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-    }
+
   };
 
   const currentColors = colors[colorScheme];
@@ -156,7 +119,12 @@ export const CreditInfoDialog = memo(({
             <DialogHeader className="relative z-10 mb-4 px-6">
               <div className="flex items-center gap-3">
                 <div className={cn("p-2.5 rounded-lg", currentColors.iconBg)}>
-                  <InfoIcon className="w-5 h-5" />
+                 <CreditLogoPreview
+                      url={previewLogoUrl}
+                      isValid={isLogoValid}
+                      isChecking={isCheckingLogo}
+                      name={credit.nom_credit}
+                    />
                 </div>
                 <DialogTitle className={cn("text-2xl font-bold flex items-center gap-2", currentColors.headingText)}>
                   <span>Détails du crédit</span>
@@ -184,12 +152,7 @@ export const CreditInfoDialog = memo(({
                 <div>
                   <h3 className={cn("text-sm font-medium mb-1", currentColors.descriptionText)}>Logo</h3>
                   <div className="mt-0.5">
-                    <CreditLogoPreview
-                      url={previewLogoUrl}
-                      isValid={isLogoValid}
-                      isChecking={isCheckingLogo}
-                      name={credit.nom_credit}
-                    />
+                 
                   </div>
                 </div>
               </div>
