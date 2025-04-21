@@ -1,4 +1,5 @@
 
+// Ajout d'un container arrondi et ombré, cohérent avec les autres maps de l'app
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -15,25 +16,22 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    // Initialize map
+    // Initialisation de la map Leaflet
     map.current = L.map(mapContainer.current, {
-      zoomControl: false // Désactiver les contrôles de zoom par défaut
+      zoomControl: false,
     }).setView([46.227638, 2.213749], 5);
 
-    // Add OpenStreetMap tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map.current);
 
-    // Add navigation controls
+    // Contrôles de navigation
     L.control.zoom({
       position: 'topright'
     }).addTo(map.current);
 
-    // Create bounds object to fit all markers
+    // Extension des bounds pour les markers
     const bounds = L.latLngBounds([]);
-
-    // Add markers for each property
     properties.forEach((property) => {
       if (property.latitude && property.longitude) {
         const marker = L.marker([Number(property.latitude), Number(property.longitude)])
@@ -43,12 +41,10 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
           `)
           .addTo(map.current!);
 
-        // Extend bounds to include this location
         bounds.extend([Number(property.latitude), Number(property.longitude)]);
       }
     });
 
-    // Fit map to bounds if we have properties
     if (bounds.isValid()) {
       map.current.fitBounds(bounds, {
         padding: [50, 50],
@@ -56,7 +52,6 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
       });
     }
 
-    // Force a resize after a short delay to ensure proper sizing
     setTimeout(() => {
       map.current?.invalidateSize();
     }, 100);
@@ -70,8 +65,11 @@ export const PropertiesMap = ({ properties }: PropertiesMapProps) => {
   }, [properties]);
 
   return (
-    <div className="w-full h-[400px]" style={{ position: 'relative', zIndex: 0 }}>
-      <div ref={mapContainer} className="absolute inset-0 rounded-lg overflow-hidden border" />
+    <div className="relative w-full h-[340px] md:h-[400px] overflow-hidden rounded-2xl shadow-xl border bg-white/80 dark:bg-quaternary-900/30 backdrop-blur-md">
+      {/* Le contenu de la map */}
+      <div ref={mapContainer} className="absolute inset-0 rounded-2xl" />
+      {/* Effet de glassmorphism pour mettre la map dans la même "carte" graphique */}
+      <div className="absolute inset-0 pointer-events-none rounded-2xl bg-gradient-to-b from-transparent to-background/10" />
     </div>
   );
 };
