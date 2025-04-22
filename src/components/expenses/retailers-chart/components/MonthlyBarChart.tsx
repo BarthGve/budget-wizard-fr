@@ -40,7 +40,7 @@ export const MonthlyBarChart = ({ retailerExpenses }: MonthlyBarChartProps) => {
           tickFormatter={(value) => formatCurrency(value)} 
           axisLine={false}
           tickLine={false}
-          tick={{  fill: isDarkMode ? 'hsl(var(--tertiary-300))' : 'hsl(var(--tertiary-700))',
+          tick={{  fill: isDarkMode ? 'hsl(var(--gray-300))' : 'hsl(var(--gray-700))',
             fontWeight: 500 // Police plus épaisse pour meilleure lisibilité 
               }} 
         />
