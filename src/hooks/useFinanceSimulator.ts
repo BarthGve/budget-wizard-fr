@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Profile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,6 +25,7 @@ export const useFinanceSimulator = (
   onClose?: () => void,
   actualMonthlySavings?: number
 ) => {
+  // On initialise le state du simulateur avec une éventuelle correction du savingsGoalPercentage 
   const [data, setData] = useState<SimulatorData>(() => {
     if (actualMonthlySavings !== undefined) {
       const totalRev = initialData.contributors.reduce(
@@ -43,17 +44,39 @@ export const useFinanceSimulator = (
   const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
 
+  // ➜ Ajout : recalcul automatique du pourcentage d'épargne si actualMonthlySavings fourni et changements de revenu
+  useEffect(() => {
+    if (actualMonthlySavings !== undefined) {
+      const totalRev = data.contributors.reduce(
+        (sum, contributor) => sum + contributor.total_contribution,
+        0
+      );
+      const computedPercentage = totalRev > 0 ? Math.round((actualMonthlySavings / totalRev) * 100) : 0;
+      // On ne met à jour que si le pourcentage change pour éviter des re-render inutiles
+      if (data.savingsGoalPercentage !== computedPercentage) {
+        setData(prev => ({
+          ...prev,
+          savingsGoalPercentage: computedPercentage,
+        }));
+      }
+    }
+    // On dépend de actualMonthlySavings et des montants de revenus contributeurs
+    // eslint-disable-next-line
+  }, [actualMonthlySavings, data.contributors]);
+
   const totalRevenue = data.contributors.reduce(
     (sum, contributor) => sum + contributor.total_contribution,
     0
   );
 
+  // On garde toujours la logique existante
   const savingsAmount = (actualMonthlySavings !== undefined)
     ? actualMonthlySavings
     : (totalRevenue * data.savingsGoalPercentage) / 100;
 
   const remainingAmount = totalRevenue - data.expenses - data.creditPayments - savingsAmount;
 
+  // Fonction de modification d'un revenu contributeur : on modifie (setData) les revenus de manière habituelle
   const updateContributor = (id: string, amount: number) => {
     setData((prev) => ({
       ...prev,
