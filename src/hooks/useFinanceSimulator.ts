@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Profile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +20,7 @@ export type SimulatorData = {
 };
 
 export const useFinanceSimulator = (
-  initialData: SimulatorData & { savingsAmount?: number },
+  initialData: SimulatorData,
   userProfile?: Profile | null,
   onClose?: () => void,
   actualMonthlySavings?: number

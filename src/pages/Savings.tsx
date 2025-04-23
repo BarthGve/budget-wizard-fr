@@ -43,6 +43,7 @@ const Savings = () => {
         (payload) => {
           console.log('Monthly savings changed in Savings page:', payload);
           queryClient.invalidateQueries({ queryKey: ["savings-projects"] });
+          queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
           refetch();
         }
       )
@@ -90,12 +91,16 @@ const Savings = () => {
     console.log('Saving added, refreshing data...');
     refetch();
     refetchProjects();
+    // Invalider également les données du tableau de bord pour que le simulateur ait accès aux données mises à jour
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 
   const handleSavingDeleted = () => {
     console.log('Saving deleted, refreshing data...');
     refetch();
     refetchProjects();
+    // Invalider également les données du tableau de bord pour que le simulateur ait accès aux données mises à jour
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 
   const handleProjectCreated = () => {
@@ -103,12 +108,16 @@ const Savings = () => {
     refetch();
     refetchProjects();
     setProjectRefreshCounter(prev => prev + 1);
+    // Invalider également les données du tableau de bord
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 
   const handleProjectDeleted = () => {
     console.log('Project deleted, refreshing data...');
     refetch();
     refetchProjects();
+    // Invalider également les données du tableau de bord
+    queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
   };
 
   const containerVariants = {

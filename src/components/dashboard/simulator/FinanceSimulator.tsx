@@ -56,10 +56,9 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
         savingsGoalPercentage: profile.savings_goal_percentage || 0,
         expenses: currentMonthExpenses,
         creditPayments: totalCreditPayments,
-        actualMonthlySavingsAmount,
       });
     }
-  }, [contributors, profile, currentMonthExpenses, totalCreditPayments, isLoadingCredits, actualMonthlySavingsAmount]);
+  }, [contributors, profile, currentMonthExpenses, totalCreditPayments, isLoadingCredits]);
 
   const loadingContent = (
     <div className="space-y-4 py-4">
@@ -145,6 +144,7 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
       onOpenChange={onOpenChange}
       initialData={initialData}
       profile={profile}
+      actualMonthlySavings={actualMonthlySavingsAmount}
     />
   ) : (
     <DesktopFinanceSimulator
@@ -152,6 +152,7 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
       onOpenChange={onOpenChange}
       initialData={initialData}
       profile={profile}
+      actualMonthlySavings={actualMonthlySavingsAmount}
     />
   );
 };
@@ -160,12 +161,14 @@ const MobileFinanceSimulator = ({
   open, 
   onOpenChange, 
   initialData, 
-  profile 
+  profile,
+  actualMonthlySavings
 }: { 
   open: boolean; 
   onOpenChange: (open: boolean) => void; 
   initialData: SimulatorData;
   profile: any;
+  actualMonthlySavings: number;
 }) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -204,6 +207,7 @@ const MobileFinanceSimulator = ({
             initialData={initialData} 
             profile={profile} 
             onClose={() => onOpenChange(false)}
+            actualMonthlySavings={actualMonthlySavings}
             className="px-4 pb-20" 
           />
         </div>
@@ -216,12 +220,14 @@ const DesktopFinanceSimulator = ({
   open, 
   onOpenChange, 
   initialData, 
-  profile 
+  profile,
+  actualMonthlySavings
 }: { 
   open: boolean; 
   onOpenChange: (open: boolean) => void; 
   initialData: SimulatorData;
   profile: any;
+  actualMonthlySavings: number;
 }) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -309,6 +315,7 @@ const DesktopFinanceSimulator = ({
                 initialData={initialData} 
                 profile={profile} 
                 onClose={() => onOpenChange(false)}
+                actualMonthlySavings={actualMonthlySavings}
                 className="p-6" 
               />
             </div>
@@ -333,14 +340,15 @@ const SimulatorContent = ({
   initialData, 
   profile, 
   onClose,
+  actualMonthlySavings,
   className
 }: { 
-  initialData: SimulatorData & { actualMonthlySavingsAmount?: number }; 
+  initialData: SimulatorData; 
   profile: any;
   onClose: () => void;
+  actualMonthlySavings: number;
   className?: string;
 }) => {
-  const actualMonthlySavings = initialData.actualMonthlySavingsAmount || 0;
   const {
     data,
     totalRevenue,
@@ -351,7 +359,7 @@ const SimulatorContent = ({
     applyChanges,
     isUpdating,
   } = useFinanceSimulator(
-    { ...initialData, savingsAmount: actualMonthlySavings },
+    initialData,
     profile,
     onClose,
     actualMonthlySavings
@@ -449,7 +457,7 @@ const SimulatorContent = ({
         <Button variant="outline" onClick={onClose} disabled={isUpdating}>
           Annuler
         </Button>
-        <Button   className="bg-purple-500 hover:bg-purple-700 text-white" onClick={applyChanges} disabled={isUpdating}>
+        <Button className="bg-purple-500 hover:bg-purple-700 text-white" onClick={applyChanges} disabled={isUpdating}>
           {isUpdating ? "Application en cours..." : "Appliquer ces modifications"}
         </Button>
       </DialogFooter>
