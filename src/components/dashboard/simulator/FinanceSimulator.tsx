@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +32,7 @@ interface FinanceSimulatorProps {
 }
 
 export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) => {
-  const { contributors, recurringExpenses } = useDashboardData();
+  const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
   const { data: profile } = useProfileFetcher();
   const { totalCreditPayments, isLoadingCredits } = useSimulatorDataFetcher();
   const [initialData, setInitialData] = useState<SimulatorData | null>(null);
@@ -42,10 +40,10 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
-  // Calculer les dépenses récurrentes uniquement pour le mois en cours
   const currentMonthExpenses = calculateMonthlyExpenses(recurringExpenses);
 
-  // Préparer les données initiales pour le simulateur
+  const actualMonthlySavingsAmount = (monthlySavings || []).reduce((acc, saving) => acc + (saving.amount || 0), 0);
+
   useEffect(() => {
     if (contributors.length > 0 && profile && !isLoadingCredits) {
       setInitialData({
@@ -58,11 +56,11 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
         savingsGoalPercentage: profile.savings_goal_percentage || 0,
         expenses: currentMonthExpenses,
         creditPayments: totalCreditPayments,
+        actualMonthlySavingsAmount,
       });
     }
-  }, [contributors, profile, currentMonthExpenses, totalCreditPayments, isLoadingCredits]);
+  }, [contributors, profile, currentMonthExpenses, totalCreditPayments, isLoadingCredits, actualMonthlySavingsAmount]);
 
-  // Contenu de chargement
   const loadingContent = (
     <div className="space-y-4 py-4">
       <Skeleton className="h-8 w-full" />
@@ -72,7 +70,6 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
     </div>
   );
 
-  // Fond de dialogue avec dégradé
   const DialogBackground = () => (
     <>
       <div className={cn(
@@ -101,7 +98,6 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
     </>
   );
 
-  // Si les données ne sont pas encore prêtes, afficher un skeleton
   if (!initialData) {
     if (isMobile) {
       return (
@@ -160,7 +156,6 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
   );
 };
 
-// Version mobile du simulateur
 const MobileFinanceSimulator = ({ 
   open, 
   onOpenChange, 
@@ -217,7 +212,6 @@ const MobileFinanceSimulator = ({
   );
 };
 
-// Version desktop du simulateur
 const DesktopFinanceSimulator = ({ 
   open, 
   onOpenChange, 
@@ -258,7 +252,6 @@ const DesktopFinanceSimulator = ({
                 : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)",
             }}
           >
-            {/* Arrière-plan décoratif */}
             <div className={cn(
               "absolute inset-0",
               "bg-gradient-to-b from-purple-50/70 to-white",
@@ -342,11 +335,12 @@ const SimulatorContent = ({
   onClose,
   className
 }: { 
-  initialData: SimulatorData; 
+  initialData: SimulatorData & { actualMonthlySavingsAmount?: number }; 
   profile: any;
   onClose: () => void;
   className?: string;
 }) => {
+  const actualMonthlySavings = initialData.actualMonthlySavingsAmount || 0;
   const {
     data,
     totalRevenue,
@@ -356,7 +350,12 @@ const SimulatorContent = ({
     updateSavingsGoal,
     applyChanges,
     isUpdating,
-  } = useFinanceSimulator(initialData, profile, onClose);
+  } = useFinanceSimulator(
+    { ...initialData, savingsAmount: actualMonthlySavings },
+    profile,
+    onClose,
+    actualMonthlySavings
+  );
 
   return (
     <motion.div 
@@ -458,7 +457,6 @@ const SimulatorContent = ({
   );
 };
 
-// Hook personnalisé pour les requêtes médias
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
 
@@ -476,4 +474,3 @@ function useMediaQuery(query: string) {
 
   return matches;
 }
-
