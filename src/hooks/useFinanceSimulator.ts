@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Profile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
@@ -68,12 +67,8 @@ export const useFinanceSimulator = (
     0
   );
 
-  // Calcul du montant d'épargne basé sur le mode
-  const savingsAmount = isManualMode
-    ? (totalRevenue * data.savingsGoalPercentage) / 100
-    : actualMonthlySavings !== undefined
-    ? actualMonthlySavings
-    : (totalRevenue * data.savingsGoalPercentage) / 100;
+  // Simplification du calcul du montant d'épargne - toujours basé sur le pourcentage
+  const savingsAmount = (totalRevenue * data.savingsGoalPercentage) / 100;
 
   const remainingAmount = totalRevenue - data.expenses - data.creditPayments - savingsAmount;
 
