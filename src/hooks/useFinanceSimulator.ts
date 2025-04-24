@@ -41,18 +41,19 @@ export const useFinanceSimulator = (
     return initialData;
   });
 
+  // État pour suivre si l'utilisateur a manuellement ajusté le pourcentage
+  const [isManualMode, setIsManualMode] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
 
-  // ➜ Ajout : recalcul automatique du pourcentage d'épargne si actualMonthlySavings fourni et changements de revenu
+  // Recalcul automatique du pourcentage d'épargne si actualMonthlySavings fourni et changements de revenu
   useEffect(() => {
-    if (actualMonthlySavings !== undefined) {
+    if (actualMonthlySavings !== undefined && !isManualMode) {
       const totalRev = data.contributors.reduce(
         (sum, contributor) => sum + contributor.total_contribution,
         0
       );
       const computedPercentage = totalRev > 0 ? Math.round((actualMonthlySavings / totalRev) * 100) : 0;
-      // On ne met à jour que si le pourcentage change pour éviter des re-render inutiles
       if (data.savingsGoalPercentage !== computedPercentage) {
         setData(prev => ({
           ...prev,
@@ -60,17 +61,17 @@ export const useFinanceSimulator = (
         }));
       }
     }
-    // On dépend de actualMonthlySavings et des montants de revenus contributeurs
-    // eslint-disable-next-line
-  }, [actualMonthlySavings, data.contributors]);
+  }, [actualMonthlySavings, data.contributors, isManualMode]);
 
   const totalRevenue = data.contributors.reduce(
     (sum, contributor) => sum + contributor.total_contribution,
     0
   );
 
-  // On garde toujours la logique existante
-  const savingsAmount = (actualMonthlySavings !== undefined)
+  // Calcul du montant d'épargne basé sur le mode
+  const savingsAmount = isManualMode
+    ? (totalRevenue * data.savingsGoalPercentage) / 100
+    : actualMonthlySavings !== undefined
     ? actualMonthlySavings
     : (totalRevenue * data.savingsGoalPercentage) / 100;
 
@@ -89,6 +90,7 @@ export const useFinanceSimulator = (
   };
 
   const updateSavingsGoal = (percentage: number) => {
+    setIsManualMode(true); // Active le mode manuel lors de l'ajustement du slider
     setData((prev) => ({
       ...prev,
       savingsGoalPercentage: percentage,
