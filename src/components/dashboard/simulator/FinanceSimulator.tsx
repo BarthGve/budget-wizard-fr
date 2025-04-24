@@ -353,6 +353,7 @@ const SimulatorContent = ({
     data,
     totalRevenue,
     savingsAmount,
+    scheduledSavingsAmount,
     remainingAmount,
     updateContributor,
     updateSavingsGoal,
@@ -418,7 +419,7 @@ const SimulatorContent = ({
           onValueChange={(value) => updateSavingsGoal(value[0])}
         />
         <p className="text-sm text-muted-foreground mt-2">
-          Montant d'épargne: {formatCurrency(savingsAmount)} €
+          Montant d'épargne visé: {formatCurrency(savingsAmount)} €
         </p>
       </div>
 
@@ -439,7 +440,7 @@ const SimulatorContent = ({
         </div>
         <div className="flex justify-between">
           <span className="text-sm">Épargne:</span>
-          <span className="font-medium text-amber-500">-{formatCurrency(savingsAmount)} €</span>
+          <span className="font-medium text-amber-500">-{formatCurrency(scheduledSavingsAmount)} €</span>
         </div>
         <Separator />
         <div className="flex justify-between">

@@ -24,7 +24,6 @@ export const useFinanceSimulator = (
   onClose?: () => void,
   actualMonthlySavings?: number
 ) => {
-  // On initialise le state du simulateur avec une éventuelle correction du savingsGoalPercentage 
   const [data, setData] = useState<SimulatorData>(() => {
     if (actualMonthlySavings !== undefined) {
       const totalRev = initialData.contributors.reduce(
@@ -40,12 +39,10 @@ export const useFinanceSimulator = (
     return initialData;
   });
 
-  // État pour suivre si l'utilisateur a manuellement ajusté le pourcentage
   const [isManualMode, setIsManualMode] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
 
-  // Recalcul automatique du pourcentage d'épargne si actualMonthlySavings fourni et changements de revenu
   useEffect(() => {
     if (actualMonthlySavings !== undefined && !isManualMode) {
       const totalRev = data.contributors.reduce(
@@ -67,12 +64,12 @@ export const useFinanceSimulator = (
     0
   );
 
-  // Simplification du calcul du montant d'épargne - toujours basé sur le pourcentage
   const savingsAmount = (totalRevenue * data.savingsGoalPercentage) / 100;
 
-  const remainingAmount = totalRevenue - data.expenses - data.creditPayments - savingsAmount;
+  const scheduledSavingsAmount = actualMonthlySavings || 0;
 
-  // Fonction de modification d'un revenu contributeur : on modifie (setData) les revenus de manière habituelle
+  const remainingAmount = totalRevenue - data.expenses - data.creditPayments - scheduledSavingsAmount;
+
   const updateContributor = (id: string, amount: number) => {
     setData((prev) => ({
       ...prev,
@@ -85,7 +82,7 @@ export const useFinanceSimulator = (
   };
 
   const updateSavingsGoal = (percentage: number) => {
-    setIsManualMode(true); // Active le mode manuel lors de l'ajustement du slider
+    setIsManualMode(true);
     setData((prev) => ({
       ...prev,
       savingsGoalPercentage: percentage,
@@ -135,6 +132,7 @@ export const useFinanceSimulator = (
     data,
     totalRevenue,
     savingsAmount,
+    scheduledSavingsAmount,
     remainingAmount,
     updateContributor,
     updateSavingsGoal,
