@@ -73,7 +73,7 @@ export const SavingsCard = memo(({
         </CardHeader>
         <CardContent className="pb-4">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <motion.div 
                 className="flex items-center gap-2"
                 initial={{ scale: 0.9 }}
