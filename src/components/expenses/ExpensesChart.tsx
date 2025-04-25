@@ -118,6 +118,12 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
           transition={{ duration: 0.3 }}
           className="w-full h-full"
         >
+          {/* Fond radial gradient */}
+      <div className={cn(
+        "absolute inset-0 opacity-5",
+        // Light mode
+
+      )} />
           <ChartContainer 
             className={cn(
               "h-[250px] w-full p-0",
