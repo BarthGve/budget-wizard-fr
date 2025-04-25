@@ -121,7 +121,6 @@ export function ExpensesChart({ expenses, viewMode }: ExpensesChartProps) {
           <ChartContainer 
             className={cn(
               "h-[250px] w-full p-0",
-              "bg-white/20 dark:bg-gray-800/30" // Ajout d'un fond légèrement visible pour améliorer le contraste
             )} 
             config={chartConfig}
           >
