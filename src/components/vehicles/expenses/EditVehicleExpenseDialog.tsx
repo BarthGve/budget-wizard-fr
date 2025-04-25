@@ -76,9 +76,7 @@ export function EditVehicleExpenseDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Modifier la dépense</DialogTitle>
-        </DialogHeader>
+      
         {expense && (
           <AddVehicleExpenseDialog 
             isEditMode={true}
