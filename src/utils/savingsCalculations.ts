@@ -16,10 +16,18 @@ export const getSavingsStatus = (totalMonthlySavings: number, savingsGoal: numbe
     };
   }
   
-  if (percentage >= 80) {
+  if (percentage >= 80 && percentage < 100) {
     return {
       color: "text-amber-600 dark:text-amber-400",
       icon: "alert-circle",
+      message: `${percentage.toFixed(1)}% de l'objectif atteint`
+    };
+  }
+  
+  if (percentage >= 0.1) {
+    return {
+      color: "text-red-600 dark:text-red-400",
+      icon: "x",
       message: `${percentage.toFixed(1)}% de l'objectif atteint`
     };
   }

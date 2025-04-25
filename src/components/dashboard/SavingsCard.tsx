@@ -41,6 +41,22 @@ export const SavingsCard = memo(({
     }
   };
 
+  // Fonction pour déterminer la classe de couleur de la progress bar
+  const getProgressBarColor = () => {
+    if (!savingsStatus) return "bg-quaternary";
+    
+    // Extraire le nom de couleur de la classe text-X
+    if (savingsStatus.color.includes('green')) {
+      return "bg-green-600 dark:bg-green-400";
+    } else if (savingsStatus.color.includes('amber')) {
+      return "bg-amber-600 dark:bg-amber-400";
+    } else if (savingsStatus.color.includes('red')) {
+      return "bg-red-600 dark:bg-red-400";
+    }
+    
+    return "bg-quaternary";
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -107,7 +123,7 @@ export const SavingsCard = memo(({
                         "dark:bg-gray/70"
                       )}
                       indicatorClassName={cn(
-                        savingsStatus?.color?.replace("text-", "bg-") || "bg-quaternary",
+                        getProgressBarColor(),
                         "transition-colors duration-300"
                       )}
                     />
