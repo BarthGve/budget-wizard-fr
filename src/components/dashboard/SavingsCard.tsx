@@ -103,8 +103,8 @@ export const SavingsCard = memo(({
                       value={progressPercentage} 
                       className={cn(
                         "h-2.5 rounded-full",
-                        "bg-quaternary/50",
-                        "dark:bg-quaternary/70"
+                        "bg-gray/50",
+                        "dark:bg-gray/70"
                       )}
                       indicatorClassName={cn(
                         savingsStatus?.color?.replace("text-", "bg-") || "bg-quaternary",
