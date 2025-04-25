@@ -16,7 +16,7 @@ export const getSavingsStatus = (totalMonthlySavings: number, savingsGoal: numbe
     };
   }
   
-  if (percentage >= 0.1 && percentage < 10) {
+  if (percentage <= 0.1 && percentage < 10) {
     return {
       color: "text-amber-600 dark:text-amber-400",
       icon: "alert-circle",
