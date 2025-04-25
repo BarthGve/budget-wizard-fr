@@ -119,8 +119,8 @@ export const SavingsCard = memo(({
                       value={progressPercentage} 
                       className={cn(
                         "h-2.5 rounded-full",
-                        "bg-amber/50",
-                        "dark:bg-gray/70"
+                        "bg-gray-50",
+                        "dark:bg-gray-70"
                       )}
                       indicatorClassName={cn(
                         getProgressBarColor(),
