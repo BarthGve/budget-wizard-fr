@@ -46,7 +46,9 @@ const handleStaleWhileRevalidate = async (event) => {
       const fetchPromise = fetch(event.request)
         .then(networkResponse => {
           if (networkResponse && networkResponse.status === 200) {
-            cache.put(event.request, networkResponse.clone());
+            // Stocker une copie de la réponse dans le cache
+            const responseToCache = networkResponse.clone();
+            cache.put(event.request, responseToCache);
           }
           return networkResponse;
         })
