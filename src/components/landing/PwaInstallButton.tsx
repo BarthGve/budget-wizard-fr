@@ -80,7 +80,7 @@ export const PwaInstallButton = () => {
     <Button 
       onClick={handleInstallClick}
       variant="outline"
-      className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 border-none"
+      className="flex items-center gap-2 bg-primary/80 text-primary-foreground hover:bg-primary/90 border-none"
     >
       <Download size={16} />
       Installer l'application
