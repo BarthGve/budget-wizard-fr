@@ -63,17 +63,18 @@ export const DashboardCardsSection = ({
 
   return (
     <motion.div variants={sectionVariants}>
-      <DashboardCards 
-        revenue={revenue}
-        expenses={expenses}
-        totalMensualites={totalMensualites}
-        savings={savings}
-        savingsGoal={savingsGoal}
-        contributorShares={contributorShares}
-        recurringExpenses={recurringExpenses}
-        currentView={currentView}
-        dashboardPreferences={dashboardPreferences}
-      />
-    </motion.div>
+  <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Budget</h2>
+  <DashboardCards 
+    revenue={revenue}
+    expenses={expenses}
+    totalMensualites={totalMensualites}
+    savings={savings}
+    savingsGoal={savingsGoal}
+    contributorShares={contributorShares}
+    recurringExpenses={recurringExpenses}
+    currentView={currentView}
+    dashboardPreferences={dashboardPreferences}
+  />
+</motion.div>
   );
 };
