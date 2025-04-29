@@ -13,9 +13,9 @@ export function useLatestVersion() {
       try {
         // Tenter de récupérer la dernière version depuis la table des paramètres
         const { data, error } = await supabase
-          .from('settings')
+          .from('app_settings')
           .select('value')
-          .eq('key', 'app_version')
+          .eq('name', 'app_version')
           .single();
 
         if (error) {
