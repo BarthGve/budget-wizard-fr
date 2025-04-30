@@ -78,6 +78,7 @@ bg-gradient-to-r from-primary-600 to-primary-500  bg-clip-text text-transparent
           </div>
           Crédits en cours
         </h2>
+  </div>
   <DashboardCards 
     revenue={revenue}
     expenses={expenses}
