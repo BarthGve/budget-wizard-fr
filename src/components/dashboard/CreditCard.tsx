@@ -160,8 +160,8 @@ export const CreditCard = ({
     </div>
     <CardDescription className= "text-gray-500 dark:text-gray-400">
       {currentView === "monthly" 
-        ? `Total dû en ${currentMonthName}` 
-        : `Total dû en ${currentYear}`}
+        ? `Total des mensualités dûes en ${currentMonthName}` 
+        : `Total des mensualités dûes en ${currentYear}`}
     </CardDescription>
   </CardHeader>
   <CardContent className="pb-4">
