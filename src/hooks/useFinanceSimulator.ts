@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Profile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -22,25 +21,55 @@ export type SimulatorData = {
 export const useFinanceSimulator = (
   initialData: SimulatorData,
   userProfile?: Profile | null,
-  onClose?: () => void
+  onClose?: () => void,
+  actualMonthlySavings?: number
 ) => {
-  const [data, setData] = useState<SimulatorData>(initialData);
+  const [data, setData] = useState<SimulatorData>(() => {
+    if (actualMonthlySavings !== undefined) {
+      const totalRev = initialData.contributors.reduce(
+        (sum, contributor) => sum + contributor.total_contribution,
+        0
+      );
+      const computedPercentage = totalRev > 0 ? Math.round((actualMonthlySavings / totalRev) * 100) : 0;
+      return {
+        ...initialData,
+        savingsGoalPercentage: computedPercentage,
+      };
+    }
+    return initialData;
+  });
+
+  const [isManualMode, setIsManualMode] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
 
-  // Calculer le total des revenus
+  useEffect(() => {
+    if (actualMonthlySavings !== undefined && !isManualMode) {
+      const totalRev = data.contributors.reduce(
+        (sum, contributor) => sum + contributor.total_contribution,
+        0
+      );
+      const computedPercentage = totalRev > 0 ? Math.round((actualMonthlySavings / totalRev) * 100) : 0;
+      if (data.savingsGoalPercentage !== computedPercentage) {
+        setData(prev => ({
+          ...prev,
+          savingsGoalPercentage: computedPercentage,
+        }));
+      }
+    }
+  }, [actualMonthlySavings, data.contributors, isManualMode]);
+
   const totalRevenue = data.contributors.reduce(
     (sum, contributor) => sum + contributor.total_contribution,
     0
   );
 
-  // Calculer le montant d'épargne basé sur le pourcentage
   const savingsAmount = (totalRevenue * data.savingsGoalPercentage) / 100;
 
-  // Calculer le montant restant disponible
-  const remainingAmount = totalRevenue - data.expenses - data.creditPayments - savingsAmount;
+  const scheduledSavingsAmount = actualMonthlySavings || 0;
 
-  // Mettre à jour les contributeurs
+  const remainingAmount = totalRevenue - data.expenses - data.creditPayments - scheduledSavingsAmount;
+
   const updateContributor = (id: string, amount: number) => {
     setData((prev) => ({
       ...prev,
@@ -52,15 +81,14 @@ export const useFinanceSimulator = (
     }));
   };
 
-  // Mettre à jour le pourcentage d'épargne
   const updateSavingsGoal = (percentage: number) => {
+    setIsManualMode(true);
     setData((prev) => ({
       ...prev,
       savingsGoalPercentage: percentage,
     }));
   };
 
-  // Appliquer les modifications à l'application
   const applyChanges = async () => {
     if (!userProfile?.id) {
       toast.error("Profil utilisateur introuvable");
@@ -69,7 +97,6 @@ export const useFinanceSimulator = (
 
     setIsUpdating(true);
     try {
-      // 1. Mettre à jour les contributeurs
       for (const contributor of data.contributors) {
         const { error } = await supabase
           .from("contributors")
@@ -80,7 +107,6 @@ export const useFinanceSimulator = (
         if (error) throw error;
       }
 
-      // 2. Mettre à jour l'objectif d'épargne dans le profil
       const { error } = await supabase
         .from("profiles")
         .update({ savings_goal_percentage: data.savingsGoalPercentage })
@@ -88,13 +114,11 @@ export const useFinanceSimulator = (
 
       if (error) throw error;
 
-      // 3. Invalider les requêtes pour forcer un rafraîchissement
       queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
       queryClient.invalidateQueries({ queryKey: ["current-profile"] });
 
       toast.success("Simulation appliquée avec succès");
 
-      // Fermer le dialog
       if (onClose) onClose();
     } catch (error: any) {
       console.error("Erreur lors de l'application des modifications:", error);
@@ -108,6 +132,7 @@ export const useFinanceSimulator = (
     data,
     totalRevenue,
     savingsAmount,
+    scheduledSavingsAmount,
     remainingAmount,
     updateContributor,
     updateSavingsGoal,

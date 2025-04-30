@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { PiggyBank, Info } from 'lucide-react';
+import { PiggyBank, Info, Check, AlertCircle, X } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { memo } from "react";
 import { motion } from "framer-motion";
@@ -11,23 +11,51 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { getSavingsStatus } from "@/utils/savingsCalculations";
 
 interface SavingsCardProps {
   totalMonthlySavings: number;
   savingsGoal: number;
 }
 
-// Utilisation de memo pour éviter les re-rendus inutiles
 export const SavingsCard = memo(({
   totalMonthlySavings,
   savingsGoal
 }: SavingsCardProps) => {
   const navigate = useNavigate();
-
-  // Calculs pour la barre de progression
   const progressPercentage = savingsGoal > 0 ? Math.min(100, (totalMonthlySavings / savingsGoal) * 100) : 0;
-  const remainingAmount = Math.max(0, Math.round(savingsGoal - totalMonthlySavings));
-  const isGoalReached = (savingsGoal - totalMonthlySavings) <= 0;
+  const savingsStatus = getSavingsStatus(totalMonthlySavings, savingsGoal);
+
+  const StatusIcon = () => {
+    if (!savingsStatus) return null;
+    
+    switch (savingsStatus.icon) {
+      case 'check':
+        return <Check className="h-4 w-4" />;
+      case 'alert-circle':
+        return <AlertCircle className="h-4 w-4" />;
+      case 'x':
+        return <X className="h-4 w-4" />;
+      default:
+        return null;
+    }
+  };
+
+  // Fonction pour déterminer la classe de couleur de la progress bar
+  const getProgressBarColor = () => {
+    if (!savingsStatus) return "bg-quaternary";
+    
+    // Extraire le nom de couleur de la classe text-X
+    if (savingsStatus.color.includes('green')) {
+      return "bg-green-600 dark:bg-green-400";
+    } else if (savingsStatus.color.includes('amber')) {
+      return "bg-amber-600 dark:bg-amber-400";
+    } else if (savingsStatus.color.includes('red')) {
+      return "bg-red-600 dark:bg-red-400";
+    }
+    
+    return "bg-quaternary";
+  };
 
   return (
     <motion.div
@@ -39,9 +67,7 @@ export const SavingsCard = memo(({
       <Card 
         className={cn(
           "backdrop-blur-sm cursor-pointer transition-all duration-300",
-          // Light mode styles with quaternary  color
           "shadow-lg border hover:shadow-xl",
-          // Dark mode styles with quaternary  color
           "dark:bg-quaternary/10 dark:border-quaternary/30 dark:shadow-quaternary/30 dark:hover:shadow-quaternary/50"
         )}
         onClick={() => navigate("/savings")}
@@ -51,8 +77,8 @@ export const SavingsCard = memo(({
             <CardTitle className="text-lg flex items-center gap-2">
               <div className={cn(
                 "p-2 rounded-full",
-                "bg-quaternary-100 text-quaternary-600", // Light mode
-                "dark:bg-quaternary-900/40 dark:text-quaternary-300" // Dark mode
+                "bg-quaternary-100 text-quaternary-600",
+                "dark:bg-quaternary-900/40 dark:text-quaternary-300"
               )}>
                 <PiggyBank className="h-5 w-5" />
               </div>
@@ -63,60 +89,51 @@ export const SavingsCard = memo(({
         </CardHeader>
         <CardContent className="pb-4">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <motion.p 
-                className={cn(
-                  "text-xl font-bold leading-none w-1/3",
-                  "text-gray-800", // Light mode text color
-                  "dark:text-quaternary " // Dark mode text color using quaternary 
-                )}
+            <div className="flex items-center gap-1">
+              <motion.div 
+                className="flex items-center gap-2"
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
               >
-                {Math.round(totalMonthlySavings).toLocaleString('fr-FR')} €
-              </motion.p>
+                <p className={cn(
+                  "text-xl font-bold leading-none",
+                  savingsStatus?.color || "text-gray-800 dark:text-quaternary"
+                )}>
+                  {Math.round(totalMonthlySavings).toLocaleString('fr-FR')} €
+                </p>
+                {savingsStatus && (
+                  <span className={cn("flex items-center", savingsStatus.color)}>
+                    <StatusIcon />
+                  </span>
+                )}
+              </motion.div>
               
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="w-2/3 relative">
                     <div className={cn(
-                      "absolute inset-0 bg-quaternary/10 blur-sm rounded-full opacity-0 dark:opacity-60", 
-                      isGoalReached ? "dark:bg-quaternary/10" : "" // Change intensity based on goal
+                      "absolute inset-0 bg-quaternary/10 blur-sm rounded-full opacity-0 dark:opacity-60"
                     )} />
-                    
                     <Progress 
                       value={progressPercentage} 
                       className={cn(
                         "h-2.5 rounded-full",
-                        "bg-quaternary/50", // Light mode progress background using quaternary 
-                        "dark:bg-quaternary/70" // Dark mode progress background using quaternary 
+                        "bg-gray-200",
+                        "dark:bg-gray-400"
                       )}
                       indicatorClassName={cn(
-                        "bg-quaternary ", // Indicator color using quaternary 
-                        isGoalReached ? "dark:bg-quaternary/40" : "dark:bg-quaternary "
+                        getProgressBarColor(),
+                        "transition-colors duration-300"
                       )}
                     />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="dark:bg-gray-800 dark:border-gray-700 p-3">
                   <p className="flex items-center gap-1.5 dark:text-white font-medium">
-                    <Info className="h-4 w-4 text-quaternary  dark:text-quaternary " />
-                    {Math.round(progressPercentage)}% de l'objectif atteint
+                    <Info className="h-4 w-4 text-quaternary dark:text-quaternary" />
+                    {savingsStatus?.message || `${Math.round(progressPercentage)}% de l'objectif atteint`}
                   </p>
-                  <span className="dark:text-gray-300 mt-1 block">
-                    {isGoalReached ? (
-                      <span className="font-medium text-quaternary  dark:text-quaternary ">
-                        Objectif atteint ! (+{Math.abs(remainingAmount).toLocaleString('fr-FR')} €)
-                      </span>
-                    ) : (
-                      <>
-                        Reste : <span className="font-medium text-red-600 dark:text-red-400">
-                          {remainingAmount.toLocaleString('fr-FR')} €
-                        </span>
-                      </>
-                    )}
-                  </span>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -126,5 +143,5 @@ export const SavingsCard = memo(({
     </motion.div>
   );
 });
-// Nom d'affichage pour le débogage
+
 SavingsCard.displayName = "SavingsCard";

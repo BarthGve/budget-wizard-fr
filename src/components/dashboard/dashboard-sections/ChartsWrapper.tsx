@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { DashboardChartsSection } from "../dashboard-tab/DashboardChartsSection";
 import { DashboardPreferences } from "@/types/profile";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import {ChartPie} from "lucide-react";
 
 // Animation simplifiée
 const sectionVariants = {
@@ -58,6 +59,22 @@ export const ChartsWrapper = ({
       initial="hidden"
       animate="visible"
     >
+  <div className="flex items-center gap-3 mb-4">
+   <h2 className=
+          "tracking-tight text-xl font-medium text-primary flex items-center gap-2
+
+    "
+        >
+          <div className=
+            "p-1 rounded"
+        
+          >
+            <ChartPie className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+          </div>
+          Analyse
+        </h2>
+  </div>
+      
       <DashboardChartsSection 
         expenses={expenses}
         savings={savings}

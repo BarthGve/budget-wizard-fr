@@ -21,10 +21,10 @@ export const MonthlyExpensesCard = ({
   });
   
   // Titre et description adaptés en fonction du mode de vue
-  const titleText = viewMode === "monthly" ? "Dépenses" : "Dépenses";
+  const titleText = viewMode === "monthly" ? "Enseignes" : "Enseignes";
   const descriptionText = viewMode === "monthly" 
-    ? `Dans les enseignes en ${currentMonthName}` 
-    : `Dans les enseignes en Année ${new Date().getFullYear()}`;
+    ? `Dépenses en ${currentMonthName}` 
+    : `Dépenses en ${new Date().getFullYear()}`;
 
   return (
     <motion.div 

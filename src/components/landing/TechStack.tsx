@@ -1,57 +1,68 @@
 
-import { appConfig } from "@/config/app.config";
+import { motion } from "framer-motion";
+import { Card } from "@/components/ui/card";
 
-interface TechStackItem {
+interface Technology {
   icon: string;
   name: string;
 }
 
 interface TechStackProps {
-  technologies: TechStackItem[];
-  appVersion?: string;
+  technologies: Technology[];
+  appVersion: string;
 }
 
 export const TechStack = ({ technologies, appVersion }: TechStackProps) => {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <div className="py-4 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900/80 dark:to-gray-900">
-    <div className="container mx-auto px-4">
-      {/* Technologies employées */}
-      <div className="mb-6">
-      <h3 className="text-sm font-medium text-gray-400 dark:text-gray-500 mb-6 text-center">
-  <span className="inline-block grayscale opacity-60">🚀</span> Propulsé par
-</h3>
-        <div className="flex flex-wrap gap-8 justify-center max-w-3xl mx-auto">
-          {technologies.map((tech, index) => (
-            <div key={index} className="group flex flex-col items-center transition-all duration-300">
-              <div className="h-10 w-10 flex items-center justify-center mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-2 group-hover:shadow-md transition-all">
-                <img
-                  src={tech.icon}
-                  alt={tech.name}
-                  className="max-h-6 max-w-6 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all"
-                />
-              </div>
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary-foreground transition-colors">
-                {tech.name}
-              </span>
-            </div>
-          ))}
+    <section className="py-20 bg-gradient-to-b from-background to-primary/5">
+      <div className="container mx-auto max-w-7xl px-4">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl font-bold mb-4">
+            Propulsé par les meilleures technologies
+          </h2>
+          <p className="text-muted-foreground max-w-3xl mx-auto">
+            Notre application est construite avec les technologies les plus modernes pour vous offrir 
+            une expérience utilisateur fluide et des performances exceptionnelles.
+          </p>
+        </motion.div>
+
+        <div className="relative overflow-hidden py-10">
+          <div className="animate-marquee flex space-x-8">
+            {[...technologies, ...technologies].map((tech, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                whileHover={{ y: -5 }}
+              >
+                <Card className="p-4 flex flex-col items-center justify-center w-32 h-32 bg-white/5 backdrop-blur-sm border border-primary/10 hover:border-primary/30 transition-all">
+                  <img 
+                    src={tech.icon} 
+                    alt={tech.name}
+                    className="w-12 h-12 object-contain mb-3" 
+                  />
+                  <p className="text-sm font-medium text-center">{tech.name}</p>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-12 text-center">
+          <div className="inline-block rounded-full bg-primary/10 px-4 py-2 text-sm">
+            <span className="text-muted-foreground">Version actuelle:</span>{" "}
+            <span className="font-semibold">{appVersion}</span>
+          </div>
         </div>
       </div>
-      
-      {/* Divider */}
-      <div className="max-w-4xl mx-auto border-t border-gray-200 dark:border-gray-800 mb-2"></div>
-      
-      {/* Copyright */}
-      <div className="text-center">
-        <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
-          <span className="font-medium">{appConfig.name}</span>
-          <span className="text-xs bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded-full">v{appVersion || appConfig.version}</span>
-          <span>© {currentYear}</span>
-        </p>
-      </div>
-    </div>
-  </div>
+    </section>
   );
 };

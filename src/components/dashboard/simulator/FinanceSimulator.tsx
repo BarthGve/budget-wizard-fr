@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +32,7 @@ interface FinanceSimulatorProps {
 }
 
 export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) => {
-  const { contributors, recurringExpenses } = useDashboardData();
+  const { contributors, recurringExpenses, monthlySavings } = useDashboardData();
   const { data: profile } = useProfileFetcher();
   const { totalCreditPayments, isLoadingCredits } = useSimulatorDataFetcher();
   const [initialData, setInitialData] = useState<SimulatorData | null>(null);
@@ -42,10 +40,10 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
-  // Calculer les dépenses récurrentes uniquement pour le mois en cours
   const currentMonthExpenses = calculateMonthlyExpenses(recurringExpenses);
 
-  // Préparer les données initiales pour le simulateur
+  const actualMonthlySavingsAmount = (monthlySavings || []).reduce((acc, saving) => acc + (saving.amount || 0), 0);
+
   useEffect(() => {
     if (contributors.length > 0 && profile && !isLoadingCredits) {
       setInitialData({
@@ -62,7 +60,6 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
     }
   }, [contributors, profile, currentMonthExpenses, totalCreditPayments, isLoadingCredits]);
 
-  // Contenu de chargement
   const loadingContent = (
     <div className="space-y-4 py-4">
       <Skeleton className="h-8 w-full" />
@@ -72,27 +69,26 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
     </div>
   );
 
-  // Fond de dialogue avec dégradé
   const DialogBackground = () => (
     <>
       <div className={cn(
         "absolute inset-0",
-        "bg-gradient-to-b from-purple-50/70 to-white",
-        "dark:from-purple-950/20 dark:to-gray-900/60",
+        "bg-gradient-to-b from-primary-50/70 to-white",
+        "dark:from-primary-950/20 dark:to-gray-900/60",
         "pointer-events-none"
       )}>
         <div className={cn(
           "absolute inset-0",
           "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
-          "from-purple-100/40 via-purple-50/20 to-transparent",
-          "dark:from-purple-800/15 dark:via-purple-700/10 dark:to-transparent",
+          "from-primary-100/40 via-primary-50/20 to-transparent",
+          "dark:from-primary-800/15 dark:via-primary-700/10 dark:to-transparent",
           "opacity-60"
         )} />
       </div>
       <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.025] z-0">
         <svg
           viewBox="0 0 100 100"
-          className="w-full h-full fill-purple-400 dark:fill-purple-600"
+          className="w-full h-full fill-primary-400 dark:fill-primary-600"
           style={{ mixBlendMode: isDarkMode ? "soft-light" : "overlay" }}
         >
           <circle cx={50} cy={50} r={50} />
@@ -101,7 +97,6 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
     </>
   );
 
-  // Si les données ne sont pas encore prêtes, afficher un skeleton
   if (!initialData) {
     if (isMobile) {
       return (
@@ -149,6 +144,7 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
       onOpenChange={onOpenChange}
       initialData={initialData}
       profile={profile}
+      actualMonthlySavings={actualMonthlySavingsAmount}
     />
   ) : (
     <DesktopFinanceSimulator
@@ -156,21 +152,23 @@ export const FinanceSimulator = ({ open, onOpenChange }: FinanceSimulatorProps) 
       onOpenChange={onOpenChange}
       initialData={initialData}
       profile={profile}
+      actualMonthlySavings={actualMonthlySavingsAmount}
     />
   );
 };
 
-// Version mobile du simulateur
 const MobileFinanceSimulator = ({ 
   open, 
   onOpenChange, 
   initialData, 
-  profile 
+  profile,
+  actualMonthlySavings
 }: { 
   open: boolean; 
   onOpenChange: (open: boolean) => void; 
   initialData: SimulatorData;
   profile: any;
+  actualMonthlySavings: number;
 }) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -189,14 +187,14 @@ const MobileFinanceSimulator = ({
             >
               <DialogHeader>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
+                  <div className="p-2 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
                     <BarChart3 size={18} />
                   </div>
                   <div>
-                    <DialogTitle className="text-lg font-bold text-purple-900 dark:text-purple-200">
+                    <DialogTitle className="text-lg font-bold text-primary-900 dark:text-primary-200">
                       Simulateur Financier
                     </DialogTitle>
-                    <DialogDescription className="mt-1 text-sm text-purple-700/80 dark:text-purple-300/80 line-clamp-2">
+                    <DialogDescription className="mt-1 text-sm text-primary-700/80 dark:text-primary-300/80 line-clamp-2">
                       Simulez vos finances en ajustant vos revenus et votre objectif d'épargne.
                     </DialogDescription>
                   </div>
@@ -209,6 +207,7 @@ const MobileFinanceSimulator = ({
             initialData={initialData} 
             profile={profile} 
             onClose={() => onOpenChange(false)}
+            actualMonthlySavings={actualMonthlySavings}
             className="px-4 pb-20" 
           />
         </div>
@@ -217,17 +216,18 @@ const MobileFinanceSimulator = ({
   );
 };
 
-// Version desktop du simulateur
 const DesktopFinanceSimulator = ({ 
   open, 
   onOpenChange, 
   initialData, 
-  profile 
+  profile,
+  actualMonthlySavings
 }: { 
   open: boolean; 
   onOpenChange: (open: boolean) => void; 
   initialData: SimulatorData;
   profile: any;
+  actualMonthlySavings: number;
 }) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -258,18 +258,17 @@ const DesktopFinanceSimulator = ({
                 : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.1)",
             }}
           >
-            {/* Arrière-plan décoratif */}
             <div className={cn(
               "absolute inset-0",
-              "bg-gradient-to-b from-purple-50/70 to-white",
-              "dark:from-purple-950/20 dark:to-gray-900/60",
+              "bg-gradient-to-b from-primary-50/70 to-white",
+              "dark:from-primary-950/20 dark:to-gray-900/60",
               "pointer-events-none"
             )}>
               <div className={cn(
                 "absolute inset-0",
                 "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]", 
-                "from-purple-100/40 via-purple-50/20 to-transparent",
-                "dark:from-purple-800/15 dark:via-purple-700/10 dark:to-transparent",
+                "from-primary-100/40 via-primary-50/20 to-transparent",
+                "dark:from-primary-800/15 dark:via-primary-700/10 dark:to-transparent",
                 "opacity-60"
               )} />
             </div>
@@ -297,14 +296,14 @@ const DesktopFinanceSimulator = ({
               >
                 <DialogHeader>
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
+                    <div className="p-2.5 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-300">
                       <BarChart3 size={22} />
                     </div>
                     <div>
-                      <DialogTitle className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-200">
+                      <DialogTitle className="text-xl sm:text-2xl font-bold text-primary-900 dark:text-primary-200">
                         Simulateur Financier
                       </DialogTitle>
-                      <DialogDescription className="mt-1.5 text-base text-purple-700/80 dark:text-purple-300/80">
+                      <DialogDescription className="mt-1.5 text-base text-primary-700/80 dark:text-primary-300/80">
                         Simulez vos finances en ajustant vos revenus et votre objectif d'épargne.
                       </DialogDescription>
                     </div>
@@ -316,6 +315,7 @@ const DesktopFinanceSimulator = ({
                 initialData={initialData} 
                 profile={profile} 
                 onClose={() => onOpenChange(false)}
+                actualMonthlySavings={actualMonthlySavings}
                 className="p-6" 
               />
             </div>
@@ -323,7 +323,7 @@ const DesktopFinanceSimulator = ({
             <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.025] z-0">
               <svg
                 viewBox="0 0 100 100"
-                className="w-full h-full fill-purple-400 dark:fill-purple-600"
+                className="w-full h-full fill-primary-400 dark:fill-primary-600"
                 style={{ mixBlendMode: isDarkMode ? "soft-light" : "overlay" }}
               >
                 <circle cx={50} cy={50} r={50} />
@@ -340,23 +340,31 @@ const SimulatorContent = ({
   initialData, 
   profile, 
   onClose,
+  actualMonthlySavings,
   className
 }: { 
   initialData: SimulatorData; 
   profile: any;
   onClose: () => void;
+  actualMonthlySavings: number;
   className?: string;
 }) => {
   const {
     data,
     totalRevenue,
     savingsAmount,
+    scheduledSavingsAmount,
     remainingAmount,
     updateContributor,
     updateSavingsGoal,
     applyChanges,
     isUpdating,
-  } = useFinanceSimulator(initialData, profile, onClose);
+  } = useFinanceSimulator(
+    initialData,
+    profile,
+    onClose,
+    actualMonthlySavings
+  );
 
   return (
     <motion.div 
@@ -411,7 +419,7 @@ const SimulatorContent = ({
           onValueChange={(value) => updateSavingsGoal(value[0])}
         />
         <p className="text-sm text-muted-foreground mt-2">
-          Montant d'épargne: {formatCurrency(savingsAmount)} €
+          Montant d'épargne visé: {formatCurrency(savingsAmount)} €
         </p>
       </div>
 
@@ -432,7 +440,7 @@ const SimulatorContent = ({
         </div>
         <div className="flex justify-between">
           <span className="text-sm">Épargne:</span>
-          <span className="font-medium text-amber-500">-{formatCurrency(savingsAmount)} €</span>
+          <span className="font-medium text-amber-500">-{formatCurrency(scheduledSavingsAmount)} €</span>
         </div>
         <Separator />
         <div className="flex justify-between">
@@ -450,7 +458,7 @@ const SimulatorContent = ({
         <Button variant="outline" onClick={onClose} disabled={isUpdating}>
           Annuler
         </Button>
-        <Button   className="bg-purple-500 hover:bg-purple-700 text-white" onClick={applyChanges} disabled={isUpdating}>
+        <Button className="bg-primary-500 hover:bg-primary-700 text-white" onClick={applyChanges} disabled={isUpdating}>
           {isUpdating ? "Application en cours..." : "Appliquer ces modifications"}
         </Button>
       </DialogFooter>
@@ -458,7 +466,6 @@ const SimulatorContent = ({
   );
 };
 
-// Hook personnalisé pour les requêtes médias
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
 
@@ -476,4 +483,3 @@ function useMediaQuery(query: string) {
 
   return matches;
 }
-

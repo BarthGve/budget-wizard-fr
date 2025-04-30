@@ -26,10 +26,10 @@ window.addEventListener('load', () => {
     // Enregistrement du service worker pour les fonctionnalités PWA
     registerServiceWorker();
     
-    // Vérifier les mises à jour toutes les 60 minutes
+    // Vérifier les mises à jour toutes les 15 minutes
     setInterval(() => {
       checkForSWUpdates();
-    }, 60 * 60 * 1000);
+    }, 15 * 60 * 1000);
   }, delay);
 });
 

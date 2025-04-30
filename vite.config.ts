@@ -44,8 +44,22 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
-        // Augmentation de la taille maximale des fichiers à mettre en cache à 4 Mo
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4 Mo
+        // Augmentation de la taille maximale des fichiers à mettre en cache à 6 Mo
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6 Mo
+        // Amélioration de la gestion du cache
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 an
+              }
+            }
+          }
+        ]
       }
     })
   ].filter(Boolean),
@@ -65,11 +79,31 @@ export default defineConfig(({ mode }) => ({
   build: {
     // Assurons-nous que le build est optimisé
     sourcemap: true,
+    // Augmenter la limite d'avertissement pour les gros chunks
+    chunkSizeWarningLimit: 1000, // 1000 KB (1 Mo)
     rollupOptions: {
       output: {
         manualChunks: {
-          'radix-ui': ['@radix-ui/react-checkbox'],
-          'lucide': ['lucide-react']
+          'vendor': [
+            'react', 
+            'react-dom', 
+            'react-router-dom'
+          ],
+          'ui': [
+            '@radix-ui/react-checkbox', 
+            '@radix-ui/react-dialog', 
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-label',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast'
+          ],
+          'charts': ['recharts'],
+          'motion': ['framer-motion'],
+          'forms': ['react-hook-form', 'zod'],
+          'date': ['date-fns'],
+          'queries': ['@tanstack/react-query'],
+          'icons': ['lucide-react']
         }
       }
     }

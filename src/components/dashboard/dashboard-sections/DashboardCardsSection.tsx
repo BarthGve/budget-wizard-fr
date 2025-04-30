@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { DashboardPreferences } from "@/types/profile";
 import { DashboardCards } from "../dashboard-tab/DashboardCards";
+import { Scale } from "lucide-react";
 
 // Animation variants
 const sectionVariants = {
@@ -62,18 +63,32 @@ export const DashboardCardsSection = ({
   if (!shouldRenderCards) return null;
 
   return (
-    <motion.div variants={sectionVariants}>
-      <DashboardCards 
-        revenue={revenue}
-        expenses={expenses}
-        totalMensualites={totalMensualites}
-        savings={savings}
-        savingsGoal={savingsGoal}
-        contributorShares={contributorShares}
-        recurringExpenses={recurringExpenses}
-        currentView={currentView}
-        dashboardPreferences={dashboardPreferences}
-      />
-    </motion.div>
+<motion.div variants={sectionVariants} className="mt-4">
+  <div className="flex items-center gap-3 mb-4">
+   <h2 className=
+          " tracking-tight text-xl text-primary font-medium flex items-center gap-2
+"
+        >
+          <div className=
+            "p-1 rounded
+          "
+          >
+            <Scale className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+          </div>
+          Budget
+        </h2>
+  </div>
+  <DashboardCards 
+    revenue={revenue}
+    expenses={expenses}
+    totalMensualites={totalMensualites}
+    savings={savings}
+    savingsGoal={savingsGoal}
+    contributorShares={contributorShares}
+    recurringExpenses={recurringExpenses}
+    currentView={currentView}
+    dashboardPreferences={dashboardPreferences}
+  />
+</motion.div>
   );
 };

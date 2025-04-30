@@ -40,7 +40,9 @@ export const MonthlyBarChart = ({ retailerExpenses }: MonthlyBarChartProps) => {
           tickFormatter={(value) => formatCurrency(value)} 
           axisLine={false}
           tickLine={false}
-          tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(107, 114, 128, 0.9)' }} // Amélioration du contraste
+          tick={{  fill: isDarkMode ? 'hsl(var(--gray-300))' : 'hsl(var(--gray-700))',
+            fontWeight: 500 // Police plus épaisse pour meilleure lisibilité 
+              }} 
         />
         <YAxis 
           type="category" 
@@ -52,7 +54,7 @@ export const MonthlyBarChart = ({ retailerExpenses }: MonthlyBarChartProps) => {
           axisLine={false}
           tickLine={false}
           tick={{ 
-            fill: isDarkMode ? 'hsl(var(--tertiary-300))' : 'hsl(var(--tertiary-700))',
+            fill: isDarkMode ? 'hsl(var(--gray-300))' : 'hsl(var(--gray-700))',
             fontWeight: 500 // Police plus épaisse pour meilleure lisibilité
           }}
         />
