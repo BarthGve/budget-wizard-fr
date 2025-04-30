@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { DashboardPreferences } from "@/types/profile";
 import { DashboardCards } from "../dashboard-tab/DashboardCards";
-import { BarChart3 } from "lucide-react";
+import { WalletCards } from "lucide-react";
 
 // Animation variants
 const sectionVariants = {
@@ -65,11 +65,19 @@ export const DashboardCardsSection = ({
   return (
 <motion.div variants={sectionVariants} className="mt-4">
   <div className="flex items-center gap-3 mb-4">
-    <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
-      <BarChart3 className="h-5 w-5 text-primary-600 dark:text-primary-300" />
-    </div>
-    <h2 className="text-primary text-2xl font-semibold text-gray-800 dark:text-gray-100">Budget</h2>
-  </div>
+   <h2 className=
+          "font-bold tracking-tight text-xl flex items-center gap-2
+          bg-gradient-to-r from-primary-600 to-primary-500  bg-clip-text text-transparent
+          dark:from-primary-400 dark:to-violet-200"
+        )}>
+          <div className=
+            "p-1 rounded
+            bg-primary-100 dark:bg-primary-800/40"
+          >
+            <WalletCards className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+          </div>
+          Crédits en cours
+        </h2>
   <DashboardCards 
     revenue={revenue}
     expenses={expenses}
