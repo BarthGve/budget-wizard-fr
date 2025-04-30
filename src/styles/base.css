@@ -25,6 +25,66 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.75rem;
+    
+    /* Couleurs tertiary (rouge) avec toutes les nuances */
+    --tertiary: 234 85% 50%;
+    --tertiary-foreground: 0 0% 100%;
+    --tertiary-50: 234 85% 95%;
+    --tertiary-100: 234 85% 90%;
+    --tertiary-200: 234 85% 80%;
+    --tertiary-300: 234 85% 70%;
+    --tertiary-400: 234 85% 60%;
+    --tertiary-500: 234 85% 50%;
+    --tertiary-600: 234 85% 40%;
+    --tertiary-700: 234 85% 30%;
+    --tertiary-800: 234 85% 20%;
+    --tertiary-900: 234 85% 10%;
+    --tertiary-950: 234 85% 5%;
+    
+    /* Couleurs quaternary (bleu) avec toutes les nuances */
+    --quaternary: 196 62% 46%;
+    --quaternary-foreground: 0 0% 100%;
+    --quaternary-50: 196 62% 95%;
+    --quaternary-100: 196 62% 90%;
+    --quaternary-200: 196 62% 80%;
+    --quaternary-300: 196 62% 70%;
+    --quaternary-400: 196 62% 60%;
+    --quaternary-500: 196 62% 50%;
+    --quaternary-600: 196 62% 40%;
+    --quaternary-700: 196 62% 30%;
+    --quaternary-800: 196 62% 20%;
+    --quaternary-900: 196 62% 10%;
+    --quaternary-950: 196 62% 5%;
+    
+    /* Couleurs quinary (vert) avec toutes les nuances */
+    --quinary: 162 72% 42%;
+    --quinary-foreground: 0 0% 100%;
+    --quinary-50: 162 72% 95%;
+    --quinary-100: 162 72% 90%;
+    --quinary-200: 162 72% 80%;
+    --quinary-300: 162 72% 70%;
+    --quinary-400: 162 72% 60%;
+    --quinary-500: 162 72% 50%;
+    --quinary-600: 162 72% 40%;
+    --quinary-700: 162 72% 30%;
+    --quinary-800: 162 72% 20%;
+    --quinary-900: 162 72% 10%;
+    --quinary-950: 162 72% 5%;
+    
+    /* Couleurs senary (orange/ambre) avec toutes les nuances */
+    --senary: 42 87% 55%;
+    --senary-foreground: 0 0% 100%;
+    --senary-50: 42 87% 95%;
+    --senary-100: 42 87% 90%;
+    --senary-200: 42 87% 80%;
+    --senary-300: 42 87% 70%;
+    --senary-400: 42 87% 60%;
+    --senary-500: 42 87% 50%;
+    --senary-600: 42 87% 40%;
+    --senary-700: 42 87% 30%;
+    --senary-800: 42 87% 20%;
+    --senary-900: 42 87% 10%;
+    --senary-950: 42 87% 5%;
   }
 
   .dark {
@@ -50,6 +110,66 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
     --radius: 0.75rem;
+    
+    /* Couleurs tertiary (rouge) avec toutes les nuances - mode sombre */
+    --tertiary: 234 75% 70%;
+    --tertiary-foreground: 240 10% 3.9%;
+    --tertiary-50: 234 75% 5%;
+    --tertiary-100: 234 75% 10%;
+    --tertiary-200: 234 75% 20%;
+    --tertiary-300: 234 75% 30%;
+    --tertiary-400: 234 75% 40%;
+    --tertiary-500: 234 75% 50%;
+    --tertiary-600: 234 75% 60%;
+    --tertiary-700: 234 75% 70%;
+    --tertiary-800: 234 75% 80%;
+    --tertiary-900: 234 75% 90%;
+    --tertiary-950: 234 75% 95%;
+    
+    /* Couleurs quaternary (bleu) avec toutes les nuances - mode sombre */
+    --quaternary: 196 100% 28%;
+    --quaternary-foreground: 0 0% 100%;
+    --quaternary-50: 196 100% 5%;
+    --quaternary-100: 196 100% 10%;
+    --quaternary-200: 196 100% 20%;
+    --quaternary-300: 196 100% 30%;
+    --quaternary-400: 196 100% 40%;
+    --quaternary-500: 196 100% 50%;
+    --quaternary-600: 196 100% 60%;
+    --quaternary-700: 196 100% 70%;
+    --quaternary-800: 196 100% 80%;
+    --quaternary-900: 196 100% 90%;
+    --quaternary-950: 196 100% 95%;
+    
+    /* Couleurs quinary (vert) avec toutes les nuances - mode sombre */
+    --quinary: 162 72% 22%;
+    --quinary-foreground: 0 0% 100%;
+    --quinary-50: 162 72% 5%;
+    --quinary-100: 162 72% 10%;
+    --quinary-200: 162 72% 20%;
+    --quinary-300: 162 72% 30%;
+    --quinary-400: 162 72% 40%;
+    --quinary-500: 162 72% 50%;
+    --quinary-600: 162 72% 60%;
+    --quinary-700: 162 72% 70%;
+    --quinary-800: 162 72% 80%;
+    --quinary-900: 162 72% 90%;
+    --quinary-950: 162 72% 95%;
+    
+    /* Couleurs senary (orange/ambre) avec toutes les nuances - mode sombre */
+    --senary: 42 87% 35%;
+    --senary-foreground: 0 0% 100%;
+    --senary-50: 42 87% 5%;
+    --senary-100: 42 87% 10%;
+    --senary-200: 42 87% 20%;
+    --senary-300: 42 87% 30%;
+    --senary-400: 42 87% 40%;
+    --senary-500: 42 87% 50%;
+    --senary-600: 42 87% 60%;
+    --senary-700: 42 87% 70%;
+    --senary-800: 42 87% 80%;
+    --senary-900: 42 87% 90%;
+    --senary-950: 42 87% 95%;
   }
   
   * {

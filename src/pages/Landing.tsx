@@ -127,7 +127,7 @@ const Landing = () => {
       
       {/* Bouton de retour en haut de page */}
       <motion.button
-        className="fixed right-6 bottom-6 p-3 rounded-full bg-primary text-white shadow-lg z-50"
+        className="fixed right-6 bottom-6 p-3 rounded-full bg-primary text-primary-foreground shadow-lg z-50"
         onClick={scrollToTop}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ 

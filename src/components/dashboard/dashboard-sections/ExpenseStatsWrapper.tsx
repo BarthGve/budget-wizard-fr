@@ -50,19 +50,13 @@ export const ExpenseStatsWrapper = ({
   return (
     <motion.div variants={sectionVariants}>
       <div className="flex items-center justify-between mb-4">
-        <h2 className=
-          "font-bold tracking-tight text-xl flex items-center gap-2 
-         
-          bg-gradient-to-r from-primary-600 to-primary-500  bg-clip-text text-transparent
-         dark:from-primary-400 dark:to-primary-200"
-        >
-          <div className="p-1 rounded bg-primary-100 dark:bg-primay-800/40"
-          >
-            <WalletCards className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+        <h2 className="font-bold tracking-tight text-xl flex items-center gap-2 bg-gradient-to-r from-tertiary-600 to-tertiary-500 bg-clip-text text-transparent dark:from-tertiary-400 dark:to-tertiary-200">
+          <div className="p-1 rounded bg-tertiary-100 dark:bg-tertiary-800/40">
+            <WalletCards className="h-4 w-4 text-tertiary-600 dark:text-tertiary-400" />
           </div>
           Dépenses
         </h2>
-  </div>
+      </div>
       <ExpenseStatsSection 
         totalExpenses={totalExpenses}
         viewMode={viewMode}

@@ -61,7 +61,7 @@ export const Hero = ({
         particle.style.height = `${size}px`;
         particle.style.position = 'absolute';
         particle.style.borderRadius = '50%';
-        particle.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        particle.style.backgroundColor = 'rgba(var(--primary-rgb), 0.2)';
         particle.style.top = `${Math.random() * 100}%`;
         particle.style.left = `${Math.random() * 100}%`;
         particle.style.opacity = `${Math.random() * 0.5 + 0.1}`;
@@ -193,7 +193,7 @@ export const Hero = ({
               }}
               initial="hidden"
               animate={isLoaded ? "visible" : "hidden"}
-              className="text-lg sm:text-xl text-gray-500 dark:text-gray-400 mb-8 max-w-2xl"
+              className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl"
             >
               {description}
             </motion.p>
@@ -215,9 +215,9 @@ export const Hero = ({
               className="flex flex-wrap gap-4 justify-center lg:justify-start"
             >
               <Link to="/register">
-                <Button className="cta-button gap-2">
+                <button className="cta-button">
                   {registerButtonText}
-                </Button>
+                </button>
               </Link>
               
               <PwaInstallButton />
@@ -324,7 +324,7 @@ export const Hero = ({
       >
         <motion.button 
           onClick={scrollToFeatures}
-          className="flex flex-col items-center text-gray-500 hover:text-primary transition-colors"
+          className="flex flex-col items-center text-muted-foreground hover:text-primary transition-colors"
           aria-label="Défiler vers le bas"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
