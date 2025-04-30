@@ -66,7 +66,7 @@ export const DashboardCardsSection = ({
 <motion.div variants={sectionVariants} className="mt-4">
   <div className="flex items-center gap-3 mb-4">
    <h2 className=
-          "font-bold tracking-tight text-xl flex items-center gap-2
+          " tracking-tight text-xl text-primary flex items-center gap-2
 "
         >
           <div className=
