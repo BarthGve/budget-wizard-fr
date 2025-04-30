@@ -43,7 +43,7 @@ export const Features = ({ features, isLoaded }: FeaturesProps) => {
   };
 
   return (
-    <section ref={ref} id="features" className="py-20 md:py-32 px-4">
+    <section ref={ref} id="features" className="py-10 md:py-20 px-4">
       <div className="container mx-auto max-w-7xl">
         <motion.div 
           className="text-center max-w-3xl mx-auto mb-16"
