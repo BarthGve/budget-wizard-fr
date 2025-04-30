@@ -11,9 +11,9 @@
     --popover-foreground: 240 10% 3.9%;
     
     /* Couleur primaire et ses variantes */
-    --primary-hue: 268;
-    --primary-saturation: 65%;
-    --primary-lightness: 64%;
+    --primary-hue: 249;
+    --primary-saturation: 5.9%;
+    --primary-lightness: 10%;
     --primary: var(--primary-hue) var(--primary-saturation) var(--primary-lightness);
     --primary-50: var(--primary-hue) var(--primary-saturation) 95%;
     --primary-100: var(--primary-hue) var(--primary-saturation) 90%;
