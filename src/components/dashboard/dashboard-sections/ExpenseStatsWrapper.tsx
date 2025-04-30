@@ -53,7 +53,8 @@ export const ExpenseStatsWrapper = ({
 
        <div className="flex items-center gap-3 mb-4">
    <h2 className=
-          "font-bold tracking-tight flex items-center gap-2"
+          "font-bold tracking-tight text-xl flex items-center gap-2
+"
         >
           <div className=
             "p-1 rounded

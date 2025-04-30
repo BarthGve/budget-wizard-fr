@@ -67,8 +67,7 @@ export const DashboardCardsSection = ({
   <div className="flex items-center gap-3 mb-4">
    <h2 className=
           "font-bold tracking-tight text-xl flex items-center gap-2
-bg-gradient-to-r from-primary to-primary-400  bg-clip-text text-transparent
-          dark:from-primary-400 dark:to-primary-200"
+"
         >
           <div className=
             "p-1 rounded
