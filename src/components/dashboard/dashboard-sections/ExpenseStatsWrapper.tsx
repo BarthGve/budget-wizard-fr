@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ExpenseStatsSection } from "../dashboard-tab/ExpenseStats";
 import { DashboardPreferences } from "@/types/profile";
 import { SavingsProject } from "@/types/savings-project";
-import {BanknoteArrowDown} from "lucide-react";
+import {Store} from "lucide-react";
 
 
 // Animation variants
@@ -61,7 +61,7 @@ bg-gradient-to-r from-primary to-primary-400  bg-clip-text text-transparent
             "p-1 rounded
             bg-primary-100 dark:bg-primary-800/40"
           >
-            <BanknoteArrowDown className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+            <Store className="h-4 w-4 text-primary-600 dark:text-primary-400" />
           </div>
           Dépenses
         </h2>
