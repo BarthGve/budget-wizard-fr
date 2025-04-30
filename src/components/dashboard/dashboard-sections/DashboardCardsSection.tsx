@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { DashboardPreferences } from "@/types/profile";
 import { DashboardCards } from "../dashboard-tab/DashboardCards";
-import { WalletCards } from "lucide-react";
+import { Scale } from "lucide-react";
 
 // Animation variants
 const sectionVariants = {
@@ -74,7 +74,7 @@ bg-gradient-to-r from-primary to-primary-400  bg-clip-text text-transparent
             "p-1 rounded
             bg-primary-100 dark:bg-primary-800/40"
           >
-            <WalletCards className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+            <Scale className="h-4 w-4 text-primary-600 dark:text-primary-400" />
           </div>
           Budget
         </h2>
