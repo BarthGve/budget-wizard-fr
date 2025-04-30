@@ -62,7 +62,7 @@ export const ChartsWrapper = ({
   <div className="flex items-center gap-3 mb-4">
    <h2 className=
           "tracking-tight text-xl flex items-center gap-2
-bg-gradient-to-r from-primary to-primary-400  bg-clip-text text-transparent
+bg-gradient-to-r from-gray to-gray-400  bg-clip-text text-transparent
           dark:from-primary-400 dark:to-primary-200"
         >
           <div className=
