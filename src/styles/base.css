@@ -9,179 +9,272 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    
+    /* Couleur primaire et ses variantes */
+    --primary-hue: 268;
+    --primary-saturation: 65%;
+    --primary-lightness: 64%;
+    --primary: var(--primary-hue) var(--primary-saturation) var(--primary-lightness);
+    --primary-50: var(--primary-hue) var(--primary-saturation) 95%;
+    --primary-100: var(--primary-hue) var(--primary-saturation) 90%;
+    --primary-200: var(--primary-hue) var(--primary-saturation) 80%;
+    --primary-300: var(--primary-hue) var(--primary-saturation) 70%;
+    --primary-400: var(--primary-hue) var(--primary-saturation) 65%;
+    --primary-500: var(--primary-hue) var(--primary-saturation) 60%;
+    --primary-600: var(--primary-hue) var(--primary-saturation) 50%;
+    --primary-700: var(--primary-hue) var(--primary-saturation) 40%;
+    --primary-800: var(--primary-hue) var(--primary-saturation) 30%;
+    --primary-900: var(--primary-hue) var(--primary-saturation) 20%;
+    --primary-950: var(--primary-hue) var(--primary-saturation) 15%;
     --primary-foreground: 0 0% 98%;
-    --primary-rgb: 24, 24, 27;
+    
+    /* Couleur secondaire et ses variantes */
     --secondary: 240 4.8% 95.9%;
+    --secondary-50: 240 4.8% 95.9%;
+    --secondary-100: 240 4.8% 90%;
+    --secondary-200: 240 4.8% 80%;
+    --secondary-300: 240 4.8% 70%;
+    --secondary-400: 240 4.8% 60%;
+    --secondary-500: 240 4.8% 50%;
+    --secondary-600: 240 4.8% 40%;
+    --secondary-700: 240 4.8% 30%;
+    --secondary-800: 240 4.8% 20%;
+    --secondary-900: 240 4.8% 15%;
+    --secondary-950: 240 4.8% 10%;
     --secondary-foreground: 240 5.9% 10%;
-    --secondary-rgb: 245, 245, 247;
+    
+    /* Autres variables de base */
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 20% 98%;
     --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --input: 220 13% 91%;
+    --ring: 220 13% 91%;
     --radius: 0.75rem;
     
-    /* Couleurs tertiary (rouge) avec toutes les nuances */
-    --tertiary: 234 85% 50%;
-    --tertiary-foreground: 0 0% 100%;
-    --tertiary-50: 234 85% 95%;
-    --tertiary-100: 234 85% 90%;
-    --tertiary-200: 234 85% 80%;
-    --tertiary-300: 234 85% 70%;
-    --tertiary-400: 234 85% 60%;
-    --tertiary-500: 234 85% 50%;
-    --tertiary-600: 234 85% 40%;
-    --tertiary-700: 234 85% 30%;
-    --tertiary-800: 234 85% 20%;
-    --tertiary-900: 234 85% 10%;
-    --tertiary-950: 234 85% 5%;
+     /* Dépenses –*/
+ --tertiary-hue: 234;
+--tertiary-saturation: 85%;
+--tertiary-lightness: 50%;
+    --tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
+    --tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 95%;
+    --tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 90%;
+    --tertiary-200: var(--tertiary-hue) var(--tertiary-saturation) 80%;
+    --tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 70%;
+    --tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 65%;
+    --tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 60%;
+    --tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 50%;
+    --tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 40%;
+    --tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 30%;
+    --tertiary-900: var(--tertiary-hue) var(--tertiary-saturation) 20%;
+    --tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 15%;
+    --tertiary-foreground: 0 0% 98%;
     
-    /* Couleurs quaternary (bleu) avec toutes les nuances */
-    --quaternary: 196 62% 46%;
-    --quaternary-foreground: 0 0% 100%;
-    --quaternary-50: 196 62% 95%;
-    --quaternary-100: 196 62% 90%;
-    --quaternary-200: 196 62% 80%;
-    --quaternary-300: 196 62% 70%;
-    --quaternary-400: 196 62% 60%;
-    --quaternary-500: 196 62% 50%;
-    --quaternary-600: 196 62% 40%;
-    --quaternary-700: 196 62% 30%;
-    --quaternary-800: 196 62% 20%;
-    --quaternary-900: 196 62% 10%;
-    --quaternary-950: 196 62% 5%;
+    /* Épargne */
+  --quaternary-hue: 196;
+  --quaternary-saturation: 62%;
+  --quaternary-lightness: 46%;
+  --quaternary: var(--quaternary-hue) var(--quaternary-saturation) var(--quaternary-lightness);
+  --quaternary-50: var(--quaternary-hue) var(--quaternary-saturation) 95%;
+  --quaternary-100: var(--quaternary-hue) var(--quaternary-saturation) 90%;
+  --quaternary-200: var(--quaternary-hue) var(--quaternary-saturation) 80%;
+  --quaternary-300: var(--quaternary-hue) var(--quaternary-saturation) 70%;
+  --quaternary-400: var(--quaternary-hue) var(--quaternary-saturation) 65%;
+  --quaternary-500: var(--quaternary-hue) var(--quaternary-saturation) 60%;
+  --quaternary-600: var(--quaternary-hue) var(--quaternary-saturation) 50%;
+  --quaternary-700: var(--quaternary-hue) var(--quaternary-saturation) 40%;
+  --quaternary-800: var(--quaternary-hue) var(--quaternary-saturation) 30%;
+  --quaternary-900: var(--quaternary-hue) var(--quaternary-saturation) 20%;
+  --quaternary-950: var(--quaternary-hue) var(--quaternary-saturation) 15%;
+  --quaternary-foreground: 0 0% 98%;
     
-    /* Couleurs quinary (vert) avec toutes les nuances */
-    --quinary: 162 72% 42%;
-    --quinary-foreground: 0 0% 100%;
-    --quinary-50: 162 72% 95%;
-    --quinary-100: 162 72% 90%;
-    --quinary-200: 162 72% 80%;
-    --quinary-300: 162 72% 70%;
-    --quinary-400: 162 72% 60%;
-    --quinary-500: 162 72% 50%;
-    --quinary-600: 162 72% 40%;
-    --quinary-700: 162 72% 30%;
-    --quinary-800: 162 72% 20%;
-    --quinary-900: 162 72% 10%;
-    --quinary-950: 162 72% 5%;
+     /* Revenus */
+  --quinary-hue: 162;
+  --quinary-saturation: 72%;
+  --quinary-lightness: 42%;
+  --quinary: var(--quinary-hue) var(--quinary-saturation) var(--quinary-lightness);
+  --quinary-50: var(--quinary-hue) var(--quinary-saturation) 95%;
+  --quinary-100: var(--quinary-hue) var(--quinary-saturation) 90%;
+  --quinary-200: var(--quinary-hue) var(--quinary-saturation) 80%;
+  --quinary-300: var(--quinary-hue) var(--quinary-saturation) 70%;
+  --quinary-400: var(--quinary-hue) var(--quinary-saturation) 65%;
+  --quinary-500: var(--quinary-hue) var(--quinary-saturation) 60%;
+  --quinary-600: var(--quinary-hue) var(--quinary-saturation) 50%;
+  --quinary-700: var(--quinary-hue) var(--quinary-saturation) 40%;
+  --quinary-800: var(--quinary-hue) var(--quinary-saturation) 30%;
+  --quinary-900: var(--quinary-hue) var(--quinary-saturation) 20%;
+  --quinary-950: var(--quinary-hue) var(--quinary-saturation) 15%;
+  --quinary-foreground: 0 0% 98%;
     
-    /* Couleurs senary (orange/ambre) avec toutes les nuances */
-    --senary: 42 87% 55%;
-    --senary-foreground: 0 0% 100%;
-    --senary-50: 42 87% 95%;
-    --senary-100: 42 87% 90%;
-    --senary-200: 42 87% 80%;
-    --senary-300: 42 87% 70%;
-    --senary-400: 42 87% 60%;
-    --senary-500: 42 87% 50%;
-    --senary-600: 42 87% 40%;
-    --senary-700: 42 87% 30%;
-    --senary-800: 42 87% 20%;
-    --senary-900: 42 87% 10%;
-    --senary-950: 42 87% 5%;
-  }
+    /* Crédits*/
+ 
+  --senary-hue: 42;
+  --senary-saturation: 87%;
+  --senary-lightness: 55%;
+  --senary: var(--senary-hue) var(--senary-saturation) var(--senary-lightness);
+  --senary-50: var(--senary-hue) var(--senary-saturation) 95%;
+  --senary-100: var(--senary-hue) var(--senary-saturation) 90%;
+  --senary-200: var(--senary-hue) var(--senary-saturation) 80%;
+  --senary-300: var(--senary-hue) var(--senary-saturation) 70%;
+  --senary-400: var(--senary-hue) var(--senary-saturation) 65%;
+  --senary-500: var(--senary-hue) var(--senary-saturation) 60%;
+  --senary-600: var(--senary-hue) var(--senary-saturation) 50%;
+  --senary-700: var(--senary-hue) var(--senary-saturation) 40%;
+  --senary-800: var(--senary-hue) var(--senary-saturation) 30%;
+  --senary-900: var(--senary-hue) var(--senary-saturation) 20%;
+  --senary-950: var(--senary-hue) var(--senary-saturation) 15%;
+   
+}
 
-  .dark {
+.dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --primary-rgb: 249, 249, 250;
+    
+
+    /* Couleur primaire et ses variantes */
+    --primary-hue: 268;
+    --primary-saturation: 65%;
+    --primary-lightness: 44%;
+    --primary: var(--primary-hue) var(--primary-saturation) var(--primary-lightness);
+    --primary-50: var(--primary-hue) var(--primary-saturation) 95%;
+    --primary-100: var(--primary-hue) var(--primary-saturation) 90%;
+    --primary-200: var(--primary-hue) var(--primary-saturation) 80%;
+    --primary-300: var(--primary-hue) var(--primary-saturation) 70%;
+    --primary-400: var(--primary-hue) var(--primary-saturation) 65%;
+    --primary-500: var(--primary-hue) var(--primary-saturation) 60%;
+    --primary-600: var(--primary-hue) var(--primary-saturation) 50%;
+    --primary-700: var(--primary-hue) var(--primary-saturation) 40%;
+    --primary-800: var(--primary-hue) var(--primary-saturation) 30%;
+    --primary-900: var(--primary-hue) var(--primary-saturation) 20%;
+    --primary-950: var(--primary-hue) var(--primary-saturation) 15%;
+    --primary-foreground: 0 0% 98%;
+    
+    
+    /* Couleur secondaire et ses variantes en mode sombre */
     --secondary: 240 3.7% 15.9%;
+    --secondary-50: 240 5% 95%;
+    --secondary-100: 240 5% 85%;
+    --secondary-200: 240 5% 75%;
+    --secondary-300: 240 5% 65%;
+    --secondary-400: 240 4% 45%;
+    --secondary-500: 240 3.7% 35%;
+    --secondary-600: 240 3.7% 25%;
+    --secondary-700: 240 3.7% 15.9%; /* Base */
+    --secondary-800: 240 5% 10%;
+    --secondary-900: 240 5% 5%;
+    --secondary-950: 240 10% 3.9%;
     --secondary-foreground: 0 0% 98%;
-    --secondary-rgb: 39, 39, 45;
+    
+    /* Autres variables de base en mode sombre */
     --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted-foreground: 240 5% 74.9%; /* Augmenté la luminosité pour meilleur contraste */
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 74% 42%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 3.7% 20.9%; /* Augmenté la luminosité pour meilleure visibilité des bordures */
+    --input: 240 3.7% 20.9%; /* Augmenté la luminosité pour meilleure visibilité */
     --ring: 240 4.9% 83.9%;
-    --radius: 0.75rem;
     
-    /* Couleurs tertiary (rouge) avec toutes les nuances - mode sombre */
-    --tertiary: 234 75% 70%;
-    --tertiary-foreground: 240 10% 3.9%;
-    --tertiary-50: 234 75% 5%;
-    --tertiary-100: 234 75% 10%;
-    --tertiary-200: 234 75% 20%;
-    --tertiary-300: 234 75% 30%;
-    --tertiary-400: 234 75% 40%;
-    --tertiary-500: 234 75% 50%;
-    --tertiary-600: 234 75% 60%;
-    --tertiary-700: 234 75% 70%;
-    --tertiary-800: 234 75% 80%;
-    --tertiary-900: 234 75% 90%;
-    --tertiary-950: 234 75% 95%;
     
-    /* Couleurs quaternary (bleu) avec toutes les nuances - mode sombre */
-    --quaternary: 196 100% 28%;
-    --quaternary-foreground: 0 0% 100%;
-    --quaternary-50: 196 100% 5%;
-    --quaternary-100: 196 100% 10%;
-    --quaternary-200: 196 100% 20%;
-    --quaternary-300: 196 100% 30%;
-    --quaternary-400: 196 100% 40%;
-    --quaternary-500: 196 100% 50%;
-    --quaternary-600: 196 100% 60%;
-    --quaternary-700: 196 100% 70%;
-    --quaternary-800: 196 100% 80%;
-    --quaternary-900: 196 100% 90%;
-    --quaternary-950: 196 100% 95%;
-    
-    /* Couleurs quinary (vert) avec toutes les nuances - mode sombre */
-    --quinary: 162 72% 22%;
-    --quinary-foreground: 0 0% 100%;
-    --quinary-50: 162 72% 5%;
-    --quinary-100: 162 72% 10%;
-    --quinary-200: 162 72% 20%;
-    --quinary-300: 162 72% 30%;
-    --quinary-400: 162 72% 40%;
-    --quinary-500: 162 72% 50%;
-    --quinary-600: 162 72% 60%;
-    --quinary-700: 162 72% 70%;
-    --quinary-800: 162 72% 80%;
-    --quinary-900: 162 72% 90%;
-    --quinary-950: 162 72% 95%;
-    
-    /* Couleurs senary (orange/ambre) avec toutes les nuances - mode sombre */
-    --senary: 42 87% 35%;
-    --senary-foreground: 0 0% 100%;
-    --senary-50: 42 87% 5%;
-    --senary-100: 42 87% 10%;
-    --senary-200: 42 87% 20%;
-    --senary-300: 42 87% 30%;
-    --senary-400: 42 87% 40%;
-    --senary-500: 42 87% 50%;
-    --senary-600: 42 87% 60%;
-    --senary-700: 42 87% 70%;
-    --senary-800: 42 87% 80%;
-    --senary-900: 42 87% 90%;
-    --senary-950: 42 87% 95%;
-  }
-  
+   /* Dépenses en mode sombre - amélioration des contrastes */
+   --tertiary-hue: 234;
+  --tertiary-saturation: 75%; /* Réduit pour moins de saturation */
+  --tertiary-lightness: 70%;  /* Augmenté pour meilleure visibilité */
+  --tertiary: var(--tertiary-hue) var(--tertiary-saturation) var(--tertiary-lightness);
+  --tertiary-50: var(--tertiary-hue) var(--tertiary-saturation) 15%;
+  --tertiary-100: var(--tertiary-hue) var(--tertiary-saturation) 20%;
+  --tertiary-200: var(--tertiary-hue) var(--tertiary-saturation) 25%;
+  --tertiary-300: var(--tertiary-hue) var(--tertiary-saturation) 40%; /* Augmenté pour meilleure visibilité */
+  --tertiary-400: var(--tertiary-hue) var(--tertiary-saturation) 50%; /* Augmenté pour meilleure visibilité */
+  --tertiary-500: var(--tertiary-hue) var(--tertiary-saturation) 60%; /* Augmenté pour meilleure visibilité */
+  --tertiary-600: var(--tertiary-hue) var(--tertiary-saturation) 65%; /* Augmenté pour meilleure visibilité */
+  --tertiary-700: var(--tertiary-hue) var(--tertiary-saturation) 70%; /* Augmenté pour meilleure visibilité */
+  --tertiary-800: var(--tertiary-hue) var(--tertiary-saturation) 75%; /* Augmenté pour meilleure visibilité */
+  --tertiary-900: var(--tertiary-hue) var(--tertiary-saturation) 85%;
+  --tertiary-950: var(--tertiary-hue) var(--tertiary-saturation) 90%;
+  --tertiary-foreground: 0 0% 10%; 
+
+
+ /* Epargne */
+  --quaternary-hue: 196;
+  --quaternary-saturation: 100%;
+  --quaternary-lightness: 28%;
+  --quaternary: var(--quaternary-hue) var(--quaternary-saturation) var(--quaternary-lightness);
+  --quaternary-50: var(--quaternary-hue) var(--quaternary-saturation) 95%;
+  --quaternary-100: var(--quaternary-hue) var(--quaternary-saturation) 90%;
+  --quaternary-200: var(--quaternary-hue) var(--quaternary-saturation) 80%;
+  --quaternary-300: var(--quaternary-hue) var(--quaternary-saturation) 70%;
+  --quaternary-400: var(--quaternary-hue) var(--quaternary-saturation) 65%;
+  --quaternary-500: var(--quaternary-hue) var(--quaternary-saturation) 60%;
+  --quaternary-600: var(--quaternary-hue) var(--quaternary-saturation) 50%;
+  --quaternary-700: var(--quaternary-hue) var(--quaternary-saturation) 40%;
+  --quaternary-800: var(--quaternary-hue) var(--quaternary-saturation) 30%;
+  --quaternary-900: var(--quaternary-hue) var(--quaternary-saturation) 20%;
+  --quaternary-950: var(--quaternary-hue) var(--quaternary-saturation) 15%;
+  --quaternary-foreground: 0 0% 98%;
+
+
+       /* Revenus */
+  --quinary-hue: 162;
+  --quinary-saturation: 72%;
+  --quinary-lightness: 22%;
+  --quinary: var(--quinary-hue) var(--quinary-saturation) var(--quinary-lightness);
+  --quinary-50: var(--quinary-hue) var(--quinary-saturation) 95%;
+  --quinary-100: var(--quinary-hue) var(--quinary-saturation) 90%;
+  --quinary-200: var(--quinary-hue) var(--quinary-saturation) 80%;
+  --quinary-300: var(--quinary-hue) var(--quinary-saturation) 70%;
+  --quinary-400: var(--quinary-hue) var(--quinary-saturation) 65%;
+  --quinary-500: var(--quinary-hue) var(--quinary-saturation) 60%;
+  --quinary-600: var(--quinary-hue) var(--quinary-saturation) 50%;
+  --quinary-700: var(--quinary-hue) var(--quinary-saturation) 40%;
+  --quinary-800: var(--quinary-hue) var(--quinary-saturation) 30%;
+  --quinary-900: var(--quinary-hue) var(--quinary-saturation) 20%;
+  --quinary-950: var(--quinary-hue) var(--quinary-saturation) 15%;
+  --quinary-foreground: 0 0% 98%;
+
+  /* Crédits */
+  --senary-hue: 42;
+  --senary-saturation: 87%;
+  --senary-lightness: 35%;
+  --senary: var(--senary-hue) var(--senary-saturation) var(--senary-lightness);
+  --senary-50: var(--senary-hue) var(--senary-saturation) 95%;
+  --senary-100: var(--senary-hue) var(--senary-saturation) 90%;
+  --senary-200: var(--senary-hue) var(--senary-saturation) 80%;
+  --senary-300: var(--senary-hue) var(--senary-saturation) 70%;
+  --senary-400: var(--senary-hue) var(--senary-saturation) 65%;
+  --senary-500: var(--senary-hue) var(--senary-saturation) 60%;
+  --senary-600: var(--senary-hue) var(--senary-saturation) 50%;
+  --senary-700: var(--senary-hue) var(--senary-saturation) 40%;
+  --senary-800: var(--senary-hue) var(--senary-saturation) 30%;
+  --senary-900: var(--senary-hue) var(--senary-saturation) 20%;
+  --senary-950: var(--senary-hue) var(--senary-saturation) 15%;
+}
+
   * {
-    @apply border-border selection:bg-primary/10 selection:text-primary;
+    @apply border-border;
   }
   
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overflow-x: hidden;
   }
-
-  html {
-    @apply scroll-smooth;
+  
+  .pt-safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  
+  .pb-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
