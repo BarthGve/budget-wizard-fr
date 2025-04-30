@@ -71,7 +71,7 @@ bg-gradient-to-r from-primary to-primary-400  bg-clip-text text-transparent
           >
             <ChartPie className="h-4 w-4 text-primary-600 dark:text-primary-400" />
           </div>
-          Budget
+          Analyse
         </h2>
   </div>
       
