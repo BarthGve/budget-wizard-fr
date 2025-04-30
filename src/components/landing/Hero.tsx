@@ -158,22 +158,7 @@ export const Hero = ({
         </div>
       </div>
       
-      {/* Indicateur de défilement */}
-      <motion.div 
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.5 }}
-      >
-        <button 
-          onClick={scrollToFeatures}
-          className="flex flex-col items-center text-gray-500 hover:text-primary transition-colors"
-          aria-label="Défiler vers le bas"
-        >
-          <span className="text-sm font-medium mb-2">Découvrir</span>
-          <ChevronDown className="animate-bounce" />
-        </button>
-      </motion.div>
+
     </section>
   );
 };
