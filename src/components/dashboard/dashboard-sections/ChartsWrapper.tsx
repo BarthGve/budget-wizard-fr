@@ -66,7 +66,7 @@ export const ChartsWrapper = ({
     "
         >
           <div className=
-            "p-1 rounded
+            "p-1 rounded"
         
           >
             <ChartPie className="h-4 w-4 text-primary-600 dark:text-primary-400" />
