@@ -34,3 +34,7 @@ verify_jwt = true
 
 [functions.create-monthly-credits-cron]
 verify_jwt = true
+
+[functions.notify-expenses-monthly]
+verify_jwt = true
+
