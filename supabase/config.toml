@@ -37,4 +37,3 @@ verify_jwt = true
 
 [functions.notify-expenses-monthly]
 verify_jwt = true
-

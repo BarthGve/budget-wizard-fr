@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ExpenseStatsSection } from "../dashboard-tab/ExpenseStats";
 import { DashboardPreferences } from "@/types/profile";
 import { SavingsProject } from "@/types/savings-project";
-import {Store} from "lucide-react";
+import { Store } from "lucide-react";
 
 
 // Animation variants
@@ -50,20 +50,14 @@ export const ExpenseStatsWrapper = ({
 
   return (
     <motion.div variants={sectionVariants}>
-
-       <div className="flex items-center gap-3 mb-4">
-   <h2 className=
-          "text-primary tracking-tight text-xl font-medium flex items-center gap-2
-"
-        >
-          <div className=
-            "p-1 rounded"
-          >
+      <div className="flex items-center gap-3 mb-4">
+        <h2 className="text-primary tracking-tight text-xl font-medium flex items-center gap-2">
+          <div className="p-1 rounded">
             <Store className="h-4 w-4 text-primary-600 dark:text-primary-400" />
           </div>
           Dépenses
         </h2>
-  </div>
+      </div>
       
       <ExpenseStatsSection 
         totalExpenses={totalExpenses}
