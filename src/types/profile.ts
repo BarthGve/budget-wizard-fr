@@ -1,3 +1,4 @@
+
 export type ProfileType = 'basic' | 'pro';
 
 export interface DashboardPreferences {
@@ -46,6 +47,7 @@ export interface Profile {
   notif_changelog?: boolean;
   notif_feedbacks?: boolean;
   notif_credits?: boolean;
+  notif_expenses?: boolean;
   onboarding_completed?: boolean;
   dashboard_preferences?: DashboardPreferences | null;
 }
