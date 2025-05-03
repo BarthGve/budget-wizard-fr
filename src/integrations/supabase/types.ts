@@ -429,6 +429,33 @@ export type Database = {
           },
         ]
       }
+      notification_logs: {
+        Row: {
+          details: Json | null
+          id: string
+          notification_type: string
+          recipients_count: number | null
+          sent_at: string | null
+          success: boolean
+        }
+        Insert: {
+          details?: Json | null
+          id?: string
+          notification_type: string
+          recipients_count?: number | null
+          sent_at?: string | null
+          success: boolean
+        }
+        Update: {
+          details?: Json | null
+          id?: string
+          notification_type?: string
+          recipients_count?: number | null
+          sent_at?: string | null
+          success?: boolean
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -1379,6 +1406,14 @@ export type Database = {
       check_expired_credits: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      check_notification_sent: {
+        Args: {
+          notification_type_param: string
+          start_date: string
+          end_date: string
+        }
+        Returns: boolean
       }
       create_admin_user: {
         Args: {
