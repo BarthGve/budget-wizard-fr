@@ -11,12 +11,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { LoadingButton } from "@/components/ui/loading-button";
+import { validateEmail, loginRateLimiter, getRateLimitIdentifier } from "@/utils/security";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [formError, setFormError] = useState<string | null>(null);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(0);
   
   const { login, loading: authLoading, isAuthenticated } = useAuthContext();
 
@@ -29,9 +31,29 @@ export const LoginForm = () => {
     }
   }, [isAuthenticated, navigate, location.state, submitAttempted]);
 
+  // Gérer le décompte de limitation de taux
+  useEffect(() => {
+    if (remainingTime > 0) {
+      const timer = setInterval(() => {
+        setRemainingTime(prev => {
+          if (prev <= 1000) {
+            setFormError(null);
+            return 0;
+          }
+          return prev - 1000;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [remainingTime]);
+
   const formSchema = z.object({
-    email: z.string().email({ message: "Adresse email invalide" }),
-    password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" }),
+    email: z.string()
+      .email({ message: "Adresse email invalide" })
+      .max(254, "L'email ne peut pas dépasser 254 caractères")
+      .refine((val) => validateEmail(val), "Format d'email invalide"),
+    password: z.string().min(1, { message: "Le mot de passe est obligatoire" }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,7 +66,17 @@ export const LoginForm = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Éviter les soumissions multiples
-    if (authLoading) return;
+    if (authLoading || remainingTime > 0) return;
+
+    // Vérifier la limite de taux
+    const rateLimitId = getRateLimitIdentifier();
+    if (!loginRateLimiter.isAllowed(rateLimitId)) {
+      const remaining = loginRateLimiter.getRemainingTime(rateLimitId);
+      setRemainingTime(remaining);
+      const minutes = Math.ceil(remaining / 1000 / 60);
+      setFormError(`Trop de tentatives de connexion. Veuillez réessayer dans ${minutes} minute${minutes > 1 ? 's' : ''}.`);
+      return;
+    }
     
     setFormError(null);
     setSubmitAttempted(true);
@@ -52,24 +84,43 @@ export const LoginForm = () => {
     try {
       console.log("Tentative de connexion...");
       
+      // Nettoyer et valider l'email
+      const cleanEmail = values.email.toLowerCase().trim();
+      
       await login({
-        email: values.email,
+        email: cleanEmail,
         password: values.password,
       });
       
       // Login gère déjà la redirection
     } catch (error: any) {
       console.error("Erreur dans le formulaire:", error);
-      setFormError(error.message || "Erreur lors de la connexion");
+      
+      // Messages d'erreur génériques pour éviter l'énumération d'utilisateurs
+      const genericMessage = "Email ou mot de passe incorrect";
+      setFormError(genericMessage);
       setSubmitAttempted(false);
     }
+  };
+
+  const formatRemainingTime = (ms: number): string => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   return (
     <>
       {formError && (
         <Alert variant="destructive" className="mb-4">
-          <AlertDescription>{formError}</AlertDescription>
+          <AlertDescription>
+            {formError}
+            {remainingTime > 0 && (
+              <div className="mt-2 font-mono">
+                Temps restant: {formatRemainingTime(remainingTime)}
+              </div>
+            )}
+          </AlertDescription>
         </Alert>
       )}
       
@@ -82,7 +133,8 @@ export const LoginForm = () => {
             placeholder="vous@exemple.com"
             {...form.register("email")}
             required
-            disabled={authLoading}
+            disabled={authLoading || remainingTime > 0}
+            maxLength={254}
           />
           {form.formState.errors.email && (
             <p className="text-sm text-destructive mt-1">
@@ -105,7 +157,7 @@ export const LoginForm = () => {
             type="password"
             {...form.register("password")}
             required
-            disabled={authLoading}
+            disabled={authLoading || remainingTime > 0}
           />
           {form.formState.errors.password && (
             <p className="text-sm text-destructive mt-1">
@@ -113,8 +165,13 @@ export const LoginForm = () => {
             </p>
           )}
         </div>
-        <LoadingButton type="submit" className="w-full" loading={authLoading} disabled={authLoading}>
-          Se connecter
+        <LoadingButton 
+          type="submit" 
+          className="w-full" 
+          loading={authLoading} 
+          disabled={authLoading || remainingTime > 0}
+        >
+          {remainingTime > 0 ? `Veuillez patienter (${formatRemainingTime(remainingTime)})` : 'Se connecter'}
         </LoadingButton>
       </form>
     </>
