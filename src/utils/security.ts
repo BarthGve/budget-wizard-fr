@@ -1,9 +1,15 @@
 
-import DOMPurify from 'dompurify';
-
 /**
  * Utilitaires de sécurité pour la validation et la sanitisation
  */
+
+// Import conditionnel de DOMPurify pour éviter les erreurs de build
+let DOMPurify: any = null;
+try {
+  DOMPurify = require('dompurify');
+} catch (error) {
+  console.warn('DOMPurify non disponible, utilisation de la sanitisation manuelle');
+}
 
 // Configuration DOMPurify pour une sécurité maximale
 const sanitizeConfig = {
@@ -20,7 +26,14 @@ export const sanitizeHtml = (dirty: string): string => {
   if (!dirty || typeof dirty !== 'string') {
     return '';
   }
-  return DOMPurify.sanitize(dirty, sanitizeConfig);
+  
+  // Utiliser DOMPurify si disponible, sinon fallback sur sanitizeText
+  if (DOMPurify && DOMPurify.sanitize) {
+    return DOMPurify.sanitize(dirty, sanitizeConfig);
+  }
+  
+  // Fallback: sanitisation manuelle
+  return sanitizeText(dirty);
 };
 
 /**
