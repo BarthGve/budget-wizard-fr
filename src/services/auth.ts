@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { recalculatePercentages } from "./contributors";
+import { validateAndSanitizeInput, validateEmail } from "@/utils/security";
 
 /**
  * Service pour gérer l'authentification des utilisateurs
@@ -62,30 +63,42 @@ const notifyAdmin = async (name: string, email: string) => {
 export const registerUser = async (credentials: RegisterCredentials) => {
   console.log("Inscription utilisateur:", { email: credentials.email });
   
+  // Validation et sanitisation des entrées
+  if (!validateEmail(credentials.email)) {
+    throw new Error("Format d'email invalide");
+  }
+  
+  const sanitizedName = validateAndSanitizeInput(credentials.name, 50);
+  const cleanEmail = credentials.email.toLowerCase().trim();
+  
+  if (!sanitizedName) {
+    throw new Error("Le nom contient des caractères non autorisés");
+  }
+  
   // Vérifier si une inscription est déjà en cours pour cet email
-  if (registrationsInProgress.has(credentials.email)) {
-    console.warn("Inscription déjà en cours pour:", credentials.email);
+  if (registrationsInProgress.has(cleanEmail)) {
+    console.warn("Inscription déjà en cours pour:", cleanEmail);
     throw new Error("Une inscription est déjà en cours pour cet email");
   }
   
   // Marquer cet email comme étant en cours d'inscription
-  registrationsInProgress.add(credentials.email);
+  registrationsInProgress.add(cleanEmail);
   
   try {
     // Étape 1: Créer l'utilisateur dans auth.users
     const { data, error } = await supabase.auth.signUp({
-      email: credentials.email,
+      email: cleanEmail,
       password: credentials.password,
       options: {
         data: { 
-          name: credentials.name,
+          name: sanitizedName,
         }
       }
     });
 
     if (error) {
       console.error("Erreur lors de la création de l'utilisateur:", error);
-      registrationsInProgress.delete(credentials.email); // Nettoyer en cas d'erreur
+      registrationsInProgress.delete(cleanEmail); // Nettoyer en cas d'erreur
       
       if (error.message.includes("User already registered")) {
         throw new Error("Un compte existe déjà avec cet email");
@@ -95,7 +108,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     }
     
     if (!data || !data.user) {
-      registrationsInProgress.delete(credentials.email); // Nettoyer en cas d'erreur
+      registrationsInProgress.delete(cleanEmail); // Nettoyer en cas d'erreur
       throw new Error("Réponse inattendue du serveur. Veuillez réessayer.");
     }
     
@@ -113,7 +126,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
         .from('profiles')
         .insert([{ 
           id: data.user.id, 
-          full_name: credentials.name, 
+          full_name: sanitizedName, 
           profile_type: 'basic' 
         }]);
         
@@ -137,7 +150,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
         .from('contributors')
         .insert([{
           profile_id: data.user.id,
-          name: credentials.name,
+          name: sanitizedName,
           is_owner: true,
           total_contribution: 0,
           percentage_contribution: 0
@@ -152,19 +165,19 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     }
     
     // Stocker l'email pour la vérification
-    localStorage.setItem("verificationEmail", credentials.email);
+    localStorage.setItem("verificationEmail", cleanEmail);
     
     console.log("Inscription réussie:", data.user.id);
     
     // Envoyer une notification à l'administrateur (en arrière-plan)
     // Cette opération ne bloque pas le processus d'inscription
-    notifyAdmin(credentials.name, credentials.email);
+    notifyAdmin(sanitizedName, cleanEmail);
     
     return data;
   } catch (error: any) {
     console.error("Erreur finale lors de l'inscription:", error);
     // Nettoyer en cas d'erreur
-    registrationsInProgress.delete(credentials.email);
+    registrationsInProgress.delete(cleanEmail);
     throw error;
   }
 };
@@ -175,8 +188,15 @@ export const registerUser = async (credentials: RegisterCredentials) => {
 export const loginUser = async (credentials: LoginCredentials) => {
   console.log("Tentative de connexion avec:", { email: credentials.email });
   
+  // Validation et nettoyage des entrées
+  if (!validateEmail(credentials.email)) {
+    throw new Error("Format d'email invalide");
+  }
+  
+  const cleanEmail = credentials.email.toLowerCase().trim();
+  
   const { data, error } = await supabase.auth.signInWithPassword({
-    email: credentials.email,
+    email: cleanEmail,
     password: credentials.password,
   });
 
@@ -185,12 +205,8 @@ export const loginUser = async (credentials: LoginCredentials) => {
   if (error) {
     console.error("Erreur détaillée:", error);
     
-    // Gérer les erreurs spécifiques
-    if (error.message.includes("Invalid login credentials")) {
-      throw new Error("Email ou mot de passe incorrect");
-    } else {
-      throw new Error(`Erreur de connexion: ${error.message}`);
-    }
+    // Messages d'erreur génériques pour éviter l'énumération d'utilisateurs
+    throw new Error("Email ou mot de passe incorrect");
   }
   
   if (!data || !data.user) {

@@ -429,6 +429,33 @@ export type Database = {
           },
         ]
       }
+      notification_logs: {
+        Row: {
+          details: Json | null
+          id: string
+          notification_type: string
+          recipients_count: number | null
+          sent_at: string | null
+          success: boolean
+        }
+        Insert: {
+          details?: Json | null
+          id?: string
+          notification_type: string
+          recipients_count?: number | null
+          sent_at?: string | null
+          success: boolean
+        }
+        Update: {
+          details?: Json | null
+          id?: string
+          notification_type?: string
+          recipients_count?: number | null
+          sent_at?: string | null
+          success?: boolean
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -564,6 +591,7 @@ export type Database = {
           id: string
           notif_changelog: boolean | null
           notif_credits: boolean | null
+          notif_expenses: boolean | null
           notif_feedbacks: boolean | null
           notif_inscriptions: boolean | null
           onboarding_completed: boolean | null
@@ -580,6 +608,7 @@ export type Database = {
           id: string
           notif_changelog?: boolean | null
           notif_credits?: boolean | null
+          notif_expenses?: boolean | null
           notif_feedbacks?: boolean | null
           notif_inscriptions?: boolean | null
           onboarding_completed?: boolean | null
@@ -596,6 +625,7 @@ export type Database = {
           id?: string
           notif_changelog?: boolean | null
           notif_credits?: boolean | null
+          notif_expenses?: boolean | null
           notif_feedbacks?: boolean | null
           notif_inscriptions?: boolean | null
           onboarding_completed?: boolean | null
@@ -1377,6 +1407,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      check_notification_sent: {
+        Args: {
+          notification_type_param: string
+          start_date: string
+          end_date: string
+        }
+        Returns: boolean
+      }
       create_admin_user: {
         Args: {
           email: string
@@ -1460,6 +1498,13 @@ export type Database = {
           email: string
           profile_id: string
           credits_count: number
+        }[]
+      }
+      get_users_with_expense_notifications_enabled: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          email: string
+          profile_id: string
         }[]
       }
       get_yearly_expenses_stats: {

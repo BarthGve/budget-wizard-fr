@@ -1,67 +1,66 @@
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/useToastWrapper";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { toast } from "sonner";
+import { sanitizeHtml, validateAndSanitizeInput } from "@/utils/security";
 
 export const useFeedbackSubmit = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { currentUser } = useCurrentUser();
-
-  const notifyAdmins = async (feedbackId: string) => {
-    try {
-      const { error } = await supabase.functions.invoke("notify-feedback", {
-        body: { feedbackId }
-      });
-      
-      if (error) {
-        console.error("Erreur lors de l'envoi de la notification:", error);
-      } else {
-        console.log("Notification envoyée aux administrateurs");
-      }
-    } catch (error) {
-      console.error("Erreur lors de l'appel de la fonction notify-feedback:", error);
-    }
-  };
 
   const submitFeedback = async (title: string, content: string, rating: number | null) => {
-    if (!title.trim() || !content.trim() || !rating) {
-      toast.error("Veuillez remplir tous les champs");
+    if (!rating) {
+      toast.error("Veuillez sélectionner une note avant d'envoyer votre feedback");
       return false;
     }
 
     setIsSubmitting(true);
-    try {
-      if (!currentUser) throw new Error("Non authentifié");
 
-      const { data: feedback, error } = await supabase.from("feedbacks").insert({
-        title: title.trim(),
-        content: content.trim(),
-        rating,
-        profile_id: currentUser.id,
-        status: "pending"
-      }).select('id').single();
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) throw userError;
+      if (!user) {
+        toast.error("Vous devez être connecté pour envoyer un feedback");
+        return false;
+      }
+
+      // Sanitiser les entrées utilisateur
+      const sanitizedTitle = validateAndSanitizeInput(title, 200);
+      const sanitizedContent = sanitizeHtml(content);
+
+      // Validation supplémentaire
+      if (!sanitizedTitle.trim()) {
+        toast.error("Le titre ne peut pas être vide");
+        return false;
+      }
+
+      if (sanitizedContent.length > 2000) {
+        toast.error("Le contenu est trop long (maximum 2000 caractères)");
+        return false;
+      }
+
+      const { error } = await supabase
+        .from("feedbacks")
+        .insert({
+          title: sanitizedTitle,
+          content: sanitizedContent,
+          rating,
+          profile_id: user.id,
+        });
 
       if (error) throw error;
-      
-      // Message de succès supprimé (ne s'affichera plus)
-      
-      if (feedback) {
-        await notifyAdmins(feedback.id);
-      }
-      
+
+      toast.success("Merci pour votre feedback ! 🎉");
       return true;
+
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      toast.error("Une erreur est survenue lors de l'envoi du feedback");
+      toast.error("Erreur lors de l'envoi du feedback");
       return false;
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return {
-    isSubmitting,
-    submitFeedback
-  };
+  return { isSubmitting, submitFeedback };
 };

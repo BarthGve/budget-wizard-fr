@@ -2,5 +2,7 @@
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.gpteng.co https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://xwdrfdtgesrivifhmche.supabase.co https://api.mapbox.com; img-src 'self' data: blob: https://*.supabase.co https://logo.clearbit.com https://cdn.worldvectorlogo.com/logos/ https://raw.githubusercontent.com https://*.openstreetmap.org; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
   X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.gpteng.co https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://xwdrfdtgesrivifhmche.supabase.co https://api.mapbox.com; img-src 'self' data: blob: https://*.supabase.co https://logo.clearbit.com https://cdn.worldvectorlogo.com/logos/ https://raw.githubusercontent.com https://*.openstreetmap.org; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'
