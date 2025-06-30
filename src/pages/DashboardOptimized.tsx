@@ -1,24 +1,21 @@
 
-import React, { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useEffect, useMemo } from "react";
 import { DashboardTabContent } from "@/components/dashboard/DashboardTabContent";
 import { useDashboardOptimized } from "@/hooks/useDashboardOptimized";
 import { useDashboardViewCalculations } from "@/hooks/useDashboardViewCalculations";
 import { useExpenseStats } from "@/hooks/useExpenseStats";
-import { useRealtimeManager } from "@/hooks/useRealtimeManager";
-import { motion } from "framer-motion";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header/DashboardHeader";
-import { useState, useMemo } from "react";
 import { DashboardSkeleton } from "@/components/dashboard/skeletons/DashboardSkeleton";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { prefetchCriticalData } from "@/utils/cacheOptimization";
+import { useQueryClient } from "@tanstack/react-query";
 
-const Dashboard = () => {
+const DashboardOptimized = () => {
   const [currentView, setCurrentView] = useState<"monthly" | "yearly">("monthly");
+  const queryClient = useQueryClient();
   
-  // Gestionnaire temps réel optimisé
-  useRealtimeManager();
-
   // Hook principal optimisé
   const { 
     dashboardData, 
@@ -30,17 +27,6 @@ const Dashboard = () => {
     profile
   } = useDashboardOptimized();
 
-  // Récupérer l'ID utilisateur de manière optimisée
-  const { data: { user } = {}, isLoading: isUserLoading } = useQuery({
-    queryKey: ['auth-user'],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getUser();
-      return data;
-    },
-    refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 5, // 5 minutes de cache
-  });
-
   // Statistiques des dépenses optimisées
   const { 
     expensesTotal, 
@@ -51,14 +37,7 @@ const Dashboard = () => {
     isLoading: isStatsLoading
   } = useExpenseStats(currentView);
 
-  // Rafraîchir les données lors du montage si nécessaire
-  useEffect(() => {
-    if (user?.id && !dashboardData) {
-      refreshDashboard();
-    }
-  }, [user?.id, dashboardData, refreshDashboard]);
-  
-  // Calculs optimisés du dashboard
+  // Calculs mémorisés du dashboard
   const {
     revenue,
     expenses,
@@ -76,6 +55,13 @@ const Dashboard = () => {
     recurringExpenses,
     profile
   );
+
+  // Préchargement des données critiques
+  useEffect(() => {
+    if (profile?.id) {
+      prefetchCriticalData(queryClient, profile.id);
+    }
+  }, [profile?.id, queryClient]);
 
   // Nom du mois actuel mémorisé
   const currentMonthName = useMemo(() => {
@@ -95,8 +81,23 @@ const Dashboard = () => {
     }
   }), []);
 
-  // Vérifier si les données sont en cours de chargement
-  const isLoading = isUserLoading || isDashboardLoading || isStatsLoading;
+  const isLoading = isDashboardLoading || isStatsLoading;
+
+  // Gestion d'erreur simplifiée
+  if (!dashboardData && !isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h2 className="text-xl font-bold text-red-500 mb-2">Erreur de chargement</h2>
+        <p className="text-gray-600">Un problème est survenu lors du chargement du tableau de bord.</p>
+        <button 
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          onClick={refreshDashboard}
+        >
+          Réessayer
+        </button>
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
@@ -121,7 +122,7 @@ const Dashboard = () => {
             savings={savings}
             balance={balance}
             savingsGoal={savingsGoal}
-            contributors={contributors || []}
+            contributors={contributors}
             contributorShares={contributorShares}
             expenseShares={expenseShares}
             recurringExpenses={recurringExpensesForChart || []}
@@ -139,4 +140,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardOptimized;
