@@ -1,5 +1,5 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "./useCurrentUser";
 import { useState } from "react";
@@ -46,7 +46,7 @@ export const usePaginatedExpenses = (pageSize: number = 20) => {
     },
     enabled: !!currentUser?.id,
     staleTime: 1000 * 60, // 1 minute de cache
-    keepPreviousData: true // Garder les données précédentes lors du changement de page
+    placeholderData: keepPreviousData // Syntaxe correcte pour v5
   });
 
   const nextPage = () => {
