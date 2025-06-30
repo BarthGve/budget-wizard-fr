@@ -35,7 +35,7 @@ export const useExpensesOptimized = (options: UseExpensesOptimizedOptions = {}) 
           includeRetailers 
             ? `
               *,
-              retailers!inner(
+              retailers (
                 id,
                 name,
                 logo_url
