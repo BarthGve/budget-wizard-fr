@@ -42,29 +42,32 @@ export const CreditsPieChart = ({
   // Utiliser notre hook personnalisé pour obtenir les couleurs basées sur senary
   const chartColors = useChartColors("senary").all;
 
-  const chartData = credits
-    .filter(credit => {
-      const today = new Date();
-      const lastPaymentDate = new Date(credit.date_derniere_mensualite);
-      const isInCurrentMonth = lastPaymentDate.getMonth() === today.getMonth() && 
-                            lastPaymentDate.getFullYear() === today.getFullYear();
-      return credit.statut === 'actif' || isInCurrentMonth;
-    })
-    .map((credit, index) => ({
-      name: credit.nom_credit,
-      value: credit.montant_mensualite,
-      fill: chartColors[index % chartColors.length]
-    }));
+  // Filtrer pour ne garder que les crédits actifs
+  const activeCredits = credits.filter(credit => credit.statut === 'actif');
+
+  const chartData = activeCredits.map((credit, index) => ({
+    name: credit.nom_credit,
+    value: credit.montant_mensualite,
+    fill: chartColors[index % chartColors.length]
+  }));
+
+  // Calculer le total des mensualités des crédits actifs uniquement
+  const activeTotalMensualites = activeCredits.reduce((total, credit) => total + credit.montant_mensualite, 0);
 
   const chartConfig = {
     value: {
       label: "Montant"
     },
-    ...Object.fromEntries(credits.map((credit, index) => [credit.nom_credit, {
+    ...Object.fromEntries(activeCredits.map((credit, index) => [credit.nom_credit, {
       label: credit.nom_credit,
       color: chartColors[index % chartColors.length]
     }]))
   };
+
+  // Ne pas afficher le graphique s'il n'y a pas de crédits actifs
+  if (activeCredits.length === 0) {
+    return null;
+  }
 
   return (
     <motion.div
@@ -94,10 +97,10 @@ export const CreditsPieChart = ({
               )}>
                 <CreditCard className="h-4 w-4" />
               </div>
-              <span>Crédits</span>
+              <span>Crédits Actifs</span>
             </CardTitle>
           </div>
-          <CardDescription className="text-sm dark:text-gray-400">Vue d'ensemble des mensualités</CardDescription>
+          <CardDescription className="text-sm dark:text-gray-400">Mensualités des crédits en cours</CardDescription>
         </CardHeader>
         
         <CardContent className="flex-1 flex items-center justify-center p-0 w-full">
@@ -131,7 +134,7 @@ export const CreditsPieChart = ({
                                 y={viewBox.cy - 5} 
                                 className="fill-current text-senary dark:text-senary text-xl font-bold"
                               >
-                                {formatCurrency(totalMensualites,0)}
+                                {formatCurrency(activeTotalMensualites, 0)}
                               </tspan>
                               <tspan 
                                 x={viewBox.cx} 

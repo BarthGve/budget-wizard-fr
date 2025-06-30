@@ -17,7 +17,7 @@ export const useExpensesOptimized = (options: UseExpensesOptimizedOptions = {}) 
   const { currentUser } = useCurrentUser();
   const [currentPage, setCurrentPage] = useState(0);
 
-  // Requête principale avec pagination et jointures optimisées
+  // Requête principale avec pagination optimisée
   const { data, isLoading, error } = useQuery({
     queryKey: ["expenses-optimized", currentUser?.id, currentPage, pageSize, includeRetailers],
     queryFn: async () => {
@@ -28,38 +28,51 @@ export const useExpensesOptimized = (options: UseExpensesOptimizedOptions = {}) 
 
       console.log(`🔍 Chargement des dépenses page ${currentPage + 1}`);
 
-      // Construction de la requête avec jointure conditionnelle
-      let query = supabase
-        .from("expenses")
-        .select(
-          includeRetailers 
-            ? `
-              *,
-              retailers (
-                id,
-                name,
-                logo_url
-              )
-            `
-            : "*",
-          { count: 'exact' }
-        )
-        .eq("profile_id", currentUser.id)
-        .order("date", { ascending: false })
-        .range(from, to);
+      let query;
+      if (includeRetailers) {
+        // Requête avec jointure pour récupérer les détails du retailer
+        const { data, error, count } = await supabase
+          .from("expenses")
+          .select(`
+            *,
+            retailers (
+              id,
+              name,
+              logo_url
+            )
+          `, { count: 'exact' })
+          .eq("profile_id", currentUser.id)
+          .order("date", { ascending: false })
+          .range(from, to);
 
-      const { data, error, count } = await query;
+        if (error) throw error;
+        return {
+          expenses: data || [],
+          totalCount: count || 0,
+          hasNextPage: (count || 0) > to + 1,
+          hasPreviousPage: currentPage > 0,
+          currentPage,
+          totalPages: Math.ceil((count || 0) / pageSize)
+        };
+      } else {
+        // Requête simple sans jointure
+        const { data, error, count } = await supabase
+          .from("expenses")
+          .select("*", { count: 'exact' })
+          .eq("profile_id", currentUser.id)
+          .order("date", { ascending: false })
+          .range(from, to);
 
-      if (error) throw error;
-
-      return {
-        expenses: data || [],
-        totalCount: count || 0,
-        hasNextPage: (count || 0) > to + 1,
-        hasPreviousPage: currentPage > 0,
-        currentPage,
-        totalPages: Math.ceil((count || 0) / pageSize)
-      };
+        if (error) throw error;
+        return {
+          expenses: data || [],
+          totalCount: count || 0,
+          hasNextPage: (count || 0) > to + 1,
+          hasPreviousPage: currentPage > 0,
+          currentPage,
+          totalPages: Math.ceil((count || 0) / pageSize)
+        };
+      }
     },
     enabled: !!currentUser?.id,
     staleTime: 1000 * 60, // 1 minute
